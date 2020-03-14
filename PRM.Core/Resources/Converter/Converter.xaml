@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converter="clr-namespace:PRM.Resources.Converter">
+    <converter:Bool2Visible x:Key="Bool2Visible"/>
+    <converter:Bool2VisibleInv x:Key="Bool2VisibleInv"/>
+    <converter:TextWidthAndContent2FontSize x:Key="TextWidthAndContent2FontSize"/>
+</ResourceDictionary>
