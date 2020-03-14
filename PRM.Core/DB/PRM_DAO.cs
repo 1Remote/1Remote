@@ -78,7 +78,7 @@ namespace PRM.Core.DB
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                throw;
             }
             finally
             {
