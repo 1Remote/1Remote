@@ -1,0 +1,17 @@
+﻿{
+  "confirm": "确定",
+  "cancel": "取消",
+  "save": "保存",
+  "close": "关闭",
+  "server_display_name": "名称",
+  "server_group": "分组",
+  "server_icon": "图标",
+  "server_color_mark": "颜色标记",
+  "server_address": "地址",
+  "server_prot": "端口",
+  "server_username": "用户名",
+  "server_password": "密码",
+  "server_resolution": "分辨率",
+  "server_rdp": "RDP连接",
+  "tab_all": "全部"
+}

@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using RdpRunner.Annotations;
+
+namespace RdpRunner
+{
+    public class RdpConfig
+    {
+        public enum EDisplayMode
+        {
+            FullScreen = 1,
+            Window = 2,
+        }
+        public enum ERdpResizeMode
+        {
+            Fixed = 1,
+            Sizable = 2,
+        }
+        public enum EDisplaySize
+        {
+            CustomSize = 0,
+            UseCurrentMonitor = 1,
+            UseMultiMonitors = 2,
+        }
+
+        public string IconInBase64 { get; set; } = null;
+        public string ServerName { get; set; }
+        public string ServerAddress { get; set; }
+        public int RdpPort { get; set; } = 3389;
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public bool ConnWhenStartup { get; set; } = false;
+
+        public EDisplayMode DisplayMode { get; set; } = EDisplayMode.FullScreen;
+        public EDisplaySize RdpDisplaySize { get; set; } = EDisplaySize.UseCurrentMonitor;
+        public int RdpWidth { get; set; } = -1;
+        public int RdpHeight { get; set; } = -1;
+        public ERdpResizeMode RdpResizeMode { get; set; } = ERdpResizeMode.Sizable;
+
+        public bool EnableAudio { get; set; } = true;
+    }
+}

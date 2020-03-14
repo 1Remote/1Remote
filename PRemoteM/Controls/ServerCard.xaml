@@ -1,0 +1,281 @@
+﻿<UserControl x:Class="PRM.Controls.ServerCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             xmlns:s="clr-namespace:System;assembly=mscorlib"
+             d:DesignHeight="450" d:DesignWidth="800" >
+    <UserControl.Resources>
+        <s:Double x:Key="CardWidth">144</s:Double>
+    </UserControl.Resources>
+    <Grid>
+
+        <Grid Name="DispServerContext">
+            <Grid.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ConnServer}"></MouseBinding>
+            </Grid.InputBindings>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Server.Id}" Value="0">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <!-- Card Bottom Layer - with shadow effect -->
+            <Border CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColor}" BorderBrush="{DynamicResource MainBgColor}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
+                </Border.Effect>
+            </Border>
+
+
+            <Grid Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+                <Grid.Clip>
+                    <RectangleGeometry RadiusX="5" RadiusY="5" Rect="0 0 144 144"></RectangleGeometry>
+                </Grid.Clip>
+                <!-- Card Content Middle Layer - with icon -->
+                <Grid Name="CardContent" Background="{DynamicResource MainColor1}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid Width="100" Height="100" Grid.Row="0" Grid.RowSpan="2">
+                        <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="RenderTransform">
+                                        <Setter.Value>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" CenterX="50" CenterY="50"></ScaleTransform>
+                                                <RotateTransform Angle="0"></RotateTransform>
+                                            </TransformGroup>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                            <Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <TransformGroup>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="50" CenterY="50"></ScaleTransform>
+                                                    </TransformGroup>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
+                                            <Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <TransformGroup>
+                                                        <ScaleTransform ScaleX="1.3" ScaleY="1.3"></ScaleTransform>
+                                                    </TransformGroup>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.RowSpan="3">
+                        <TextBlock Name="TbServerType" Opacity="0.3"
+                               FontWeight="Bold" Text="{Binding Server.ServerType}" 
+                               Width="40"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush Color="#ccc"></SolidColorBrush>
+                            </TextBlock.Foreground>
+                            <TextBlock.FontSize>
+                                <MultiBinding Converter="{StaticResource TextWidthAndContent2FontSize}" ConverterParameter="FontSize">
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="FontStyle"></Binding>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="FontWeight"></Binding>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="FontStretch"></Binding>
+                                </MultiBinding>
+                            </TextBlock.FontSize>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="RenderTransform">
+                                        <Setter.Value>
+                                            <TransformGroup>
+                                                <TranslateTransform X="-2.5" Y="25"></TranslateTransform>
+                                                <RotateTransform CenterX="0" CenterY="25" Angle="-45"></RotateTransform>
+                                            </TransformGroup>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Grid>
+
+                <!-- Card Border: Top Layer - with button -->
+                <Border Name="CardRealBorder" CornerRadius="4" BorderThickness="2">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                            <Setter Property="BorderBrush" Value="Transparent"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"></Setter>
+                                </DataTrigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="20"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource Bool2Visible}}"
+                                Command="{Binding DeleteServer}"
+                                >
+                                <Button.Template>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border BorderBrush="{TemplateBinding Control.BorderBrush}" Background="{TemplateBinding Control.Background}" BorderThickness="0" CornerRadius="0,2,0,0" Name="PART_Background">
+                                            <Path Margin="5"
+                                              Name="Symbol"
+                                              Data="M 50.864 62.832 L 41.888 62.832 L 25.256 35.552 L 8.360001 62.832 L 0 62.832 L 20.856 30.096 L 1.320002 0 L 10.12 0 L 25.52 24.64 L 41.008 0 L 49.368 0 L 29.92 29.92 Z"
+                                              Fill="{DynamicResource MainColor1}"
+                                              Stretch="Fill" />
+                                            <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Symbol" Property="Margin" Value="4"></Setter>
+                                                <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+
+                        <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
+                            <Grid HorizontalAlignment="Center" Margin="0 1 0 0">
+                                <TextBlock VerticalAlignment="Center" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}"/>
+                            </Grid>
+                            <Grid>
+                                <!-- setting button -->
+                                <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
+                                    BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource Bool2Visible}}"
+                                    Command="{Binding EditServer}"
+                                    >
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border BorderBrush="{TemplateBinding Control.BorderBrush}" Background="{TemplateBinding Control.Background}" BorderThickness="0" CornerRadius="0,2,0,0" Name="PART_Background">
+                                                <Path Margin="5 6 5 3"
+                                              Name="Symbol"
+                                              Data="M 2.707031 0 L 49.97266 0 L 49.97266 5 L 2.707031 5 Z M 2.707031 20 L 49.97266 20 L 49.97266 25 L 2.707031 25 Z M 2.707031 40 L 49.97266 40 L 49.97266 45 L 2.707031 45 Z"
+                                              Fill="{DynamicResource MainColor1}"
+                                              Stretch="Fill" />
+                                                <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
+                                                    <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Card Mask Layer -->
+                <Grid Name="CardNameBarMask" VerticalAlignment="Bottom" Height="20" Background="Black">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Opacity" Value="0.2"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                </Grid>
+
+            </Grid>
+        </Grid>
+
+
+        <Grid Name="AddServerContext">
+            <Grid.InputBindings>
+                <MouseBinding MouseAction="LeftClick" Command="{Binding AddServer}"></MouseBinding>
+            </Grid.InputBindings>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Server.Id}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <!-- Card Bottom Layer - with shadow effect -->
+            <Border Opacity="0.2" CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColor}" BorderBrush="{DynamicResource MainBgColor}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
+                </Border.Effect>
+            </Border>
+            <Grid Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+                <Grid.Clip>
+                    <RectangleGeometry RadiusX="5" RadiusY="5" Rect="0 0 144 144"></RectangleGeometry>
+                </Grid.Clip>
+
+                <!-- Card Mask Layer -->
+                <Grid Background="{DynamicResource MainColor1}">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Opacity" Value="0.2"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Opacity" Value="0.5"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                          Fill="{DynamicResource MainBgColor}"
+                          Stretch="Fill">
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Setter Property="Margin" Value="50"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid},Path=IsMouseOver}" Value="True">
+                                        <Setter Property="Margin" Value="40"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
+                </Grid>
+            </Grid>
+        </Grid>
+
+
+    </Grid>
+</UserControl>
