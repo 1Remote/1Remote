@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows;
 using System.Windows.Controls;
 using PRM.Core.Base;
 using PRM.Core.DB;
@@ -14,15 +16,48 @@ namespace PRM.Core.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-        private ObservableCollection<VmServerCard> _serverlist = new ObservableCollection<VmServerCard>();
+        private ObservableCollection<VmServerCard> _dispServerlist = new ObservableCollection<VmServerCard>();
+        private ConcurrentDictionary<string, VmServerCard> _groupsServerlist = new ConcurrentDictionary<string, VmServerCard>();
+        private ObservableCollection<string> _serverGroups = new ObservableCollection<string>();
+        private string _selectedGroup;
+
         /// <summary>
-        /// 设备列表
+        /// ServerList data source for list view
         /// </summary>
-        public ObservableCollection<VmServerCard> ServerList
+        public ObservableCollection<VmServerCard> DispServerList
         {
-            get => _serverlist;
-            set => SetAndNotifyIfChanged(nameof(ServerList), ref _serverlist, value);
+            get => _dispServerlist;
+            set => SetAndNotifyIfChanged(nameof(DispServerList), ref _dispServerlist, value);
         }
+
+
+
+        public ObservableCollection<string> ServerGroups
+        {
+            get => _serverGroups;
+            set => SetAndNotifyIfChanged(nameof(ServerGroups), ref _serverGroups, value);
+        }
+
+        public string SelectedGroup
+        {
+            get => _selectedGroup;
+            set => SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
+        }
+
+        private RelayCommand _clearSelectedGroup;
+        public RelayCommand ClearSelectedGroup
+        {
+            get
+            {
+                if (_clearSelectedGroup == null)
+                    _clearSelectedGroup = new RelayCommand((o) =>
+                    {
+                        SelectedGroup = "";
+                    });
+                return _clearSelectedGroup;
+            }
+        }
+
 
         public VmMain()
         {
@@ -53,22 +88,44 @@ namespace PRM.Core.ViewModel
                 }
             }
 #endif
+            
 
 
-            // read from database
+
+            // read all server configs from database into dict['all']
             var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
             foreach (var serverOrm in serverOrmList)
             {
                 var s = ServerFactory.GetInstance().CreateFromDb(serverOrm);
                 if (s != null)
                 {
-                    ServerList.Add(new VmServerCard(s));
-                    ServerList.Last().OnAction += OnAction;
+                    DispServerList.Add(new VmServerCard(s));
+                    DispServerList.Last().OnAction += OnAction;
                 }
             }
 
+
+            ServerGroups.Clear();
+            foreach (var vmServerCard in DispServerList)
+            {
+                if (!string.IsNullOrEmpty(vmServerCard.Server.GroupName) &&
+                    !ServerGroups.Contains(vmServerCard.Server.GroupName))
+                {
+                    ServerGroups.Add(vmServerCard.Server.GroupName);
+                }
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                ServerGroups.Add("tttttttt" + i);
+            }
+            SelectedGroup = ServerGroups[0];
+
+
             OrderServerList();
         }
+
+
 
         private void OnAction(VmServerCard sender, VmServerCard.EServerAction action)
         {
@@ -78,7 +135,7 @@ namespace PRM.Core.ViewModel
                     {
                         var id = ((VmServerCard)sender).Server.Id;
                         PRM_DAO.GetInstance().DeleteServer(id);
-                        ServerList.Remove(((VmServerCard)sender));
+                        DispServerList.Remove(((VmServerCard)sender));
                         break;
                     }
                 case VmServerCard.EServerAction.Add:
@@ -86,8 +143,8 @@ namespace PRM.Core.ViewModel
                         var serverOrm = ServerOrm.ConvertFrom(sender.Server);
                         if (PRM_DAO.GetInstance().Insert(serverOrm))
                         {
-                            ServerList.Add(new VmServerCard(ServerFactory.GetInstance().CreateFromDb(serverOrm)));
-                            ServerList.Last().OnAction += OnAction;
+                            DispServerList.Add(new VmServerCard(ServerFactory.GetInstance().CreateFromDb(serverOrm)));
+                            DispServerList.Last().OnAction += OnAction;
                         }
                         break;
                     }
@@ -101,20 +158,20 @@ namespace PRM.Core.ViewModel
 
         private void OrderServerList()
         {
-            // Delete none id card
-            var noneServers = ServerList.Where(s => s.Server.Id <= 0).ToArray();
+            // Delete NoneServer
+            var noneServers = DispServerList.Where(s => s.GetType() == typeof(NoneServer)).ToArray();
             foreach (var s in noneServers)
             {
-                ServerList.Remove(s);
+                DispServerList.Remove(s);
             }
 
             // TODO flag to order by LassConnTime
-            ServerList = new ObservableCollection<VmServerCard>(ServerList.OrderByDescending(s => s.Server.LassConnTime));
+            DispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.LassConnTime));
 
-            // add new none id card so that a add server button will be shown
+            // add a 'NoneServer' so that 'add server' button will be shown
             var addServerCard = new VmServerCard(new NoneServer());
             addServerCard.OnAction += OnAction;
-            ServerList.Add(addServerCard);
+            DispServerList.Add(addServerCard);
         }
     }
 }

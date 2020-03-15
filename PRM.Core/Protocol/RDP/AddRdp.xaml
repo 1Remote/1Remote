@@ -108,7 +108,7 @@
 
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_prot}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_port}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding Port}"></TextBox>
                                     </Grid>

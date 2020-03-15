@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core;
+using PRM.Core.Model;
+using PRM.Core.Ulits;
 
 namespace PersonalRemoteManager
 {
@@ -18,16 +20,14 @@ namespace PersonalRemoteManager
         {
             try
             {
-                var langRd = MultiLangHelper.LangDictFromJsonFile(@"Languages\" + "zh-cn" + ".json");
-                if (langRd != null)
-                {
-                    var rs = Resources.MergedDictionaries.Where(o => o.Source.AbsolutePath.ToLower().IndexOf("Languages".ToLower()) >= 0).ToArray();
-                    foreach (var r in rs)
-                    {
-                        this.Resources.MergedDictionaries.Remove(r);
-                    }
-                    this.Resources.MergedDictionaries.Add(langRd);
-                }
+                Global.GetInstance().CurrentLanguage = "xxxx";
+                MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+
+                Global.GetInstance().CurrentLanguage = "zh-cn";
+                MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+
+                Global.GetInstance().CurrentLanguage = "en-us";
+                MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
             }
             catch (Exception ex)
             {

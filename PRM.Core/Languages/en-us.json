@@ -1,4 +1,17 @@
 ﻿{
   "confirm": "Confirm",
-  "cancle": "Cancle",
+  "cancel": "Cancel",
+  "save": "Save",
+  "close": "Close",
+  "server_display_name": "Name",
+  "server_group": "Group",
+  "server_icon": "Icon",
+  "server_color_mark": "Color",
+  "server_address": "Address",
+  "server_port": "Port",
+  "server_username": "User name",
+  "server_password": "Password",
+  "server_resolution": "Resolution",
+  "server_rdp": "RDP",
+  "tab_all": "All"
 }

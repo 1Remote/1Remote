@@ -81,28 +81,13 @@ namespace PersonalRemoteManager
             }
         }
 
-        private string langName = "zh-cn";
         private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
         {
-            langName = langName == "zh-cn" ? "en-us" : "zh-cn";
-            //CultureInfo currentCultureInfo = CultureInfo.CurrentCulture;
-            ResourceDictionary langRd = null;
-            try
-            {
-                langRd = MultiLangHelper.LangDictFromJsonFile(@"Languages\" + langName + ".json");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            if (langRd != null)
-            {
-                if (this.Resources.MergedDictionaries.Count > 0)
-                {
-                    this.Resources.MergedDictionaries.Clear();
-                }
-                this.Resources.MergedDictionaries.Add(langRd);
-            }
+        }
+
+        private void BtnAllServer_Click(object sender, RoutedEventArgs e)
+        {
+            ((VmMain) this.DataContext).SelectedGroup = "";
         }
     }
 }
