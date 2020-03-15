@@ -8,7 +8,7 @@
   "server_icon": "图标",
   "server_color_mark": "颜色标记",
   "server_address": "地址",
-  "server_prot": "端口",
+  "server_port": "端口",
   "server_username": "用户名",
   "server_password": "密码",
   "server_resolution": "分辨率",
