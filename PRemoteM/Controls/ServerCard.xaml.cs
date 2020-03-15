@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.ViewModel;
@@ -16,32 +17,18 @@ namespace PRM.Controls
 
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            VmServerCard value = (VmServerCard)e.NewValue;
+            var value = (VmServerCard)e.NewValue;
             ((ServerCard)d).DataContext = value;
         }
-
         public VmServerCard VmServerCard
         {
-            get { return (VmServerCard)GetValue(VmServerCardProperty); }
-            set { SetValue(VmServerCardProperty, value); }
+            get => (VmServerCard)GetValue(VmServerCardProperty);
+            set => SetValue(VmServerCardProperty, value);
         }
 
         public ServerCard()
         {
             InitializeComponent();
-        }
-
-        private void Card_OnMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
-            {
-                (this.DataContext as VmServerCard)?.Server?.Conn();
-            }
-        }
-
-        private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

@@ -15,7 +15,7 @@ namespace PRM.Core.Protocol.RDP
         public ServerRDP Server
         {
             get => this.DataContext as ServerRDP;
-            set => this.DataContext = value.Clone();
+            set => this.DataContext = value;
         }
 
         public bool IsSave { get; set; }
