@@ -4,10 +4,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using PRM.Core.Base;
 
 namespace PRM.Resources.Converter
 {
-    public class Bool2Visible : IValueConverter
+    public class ConverterBool2Visible : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -24,7 +25,7 @@ namespace PRM.Resources.Converter
     }
 
 
-    public class Bool2VisibleInv : IValueConverter
+    public class ConverterBool2VisibleInv : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -43,7 +44,7 @@ namespace PRM.Resources.Converter
     
 
 
-    public class TextWidthAndContent2FontSize : IMultiValueConverter
+    public class ConverterTextWidthAndContent2FontSize : IMultiValueConverter
     {
         private static Size MeasureText(TextBlock tb, int fontsize)
         {
@@ -84,6 +85,48 @@ namespace PRM.Resources.Converter
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
         { 
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+
+
+
+
+
+
+
+    public class ConverterStringIsContainXXX : IMultiValueConverter
+    {
+        #region IValueConverter 成员  
+        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            try
+            {
+                var server = (ServerAbstract)values[0];
+                string nameFilter = values[1].ToString();
+                string selectedGroup = values[2].ToString();
+
+                if (string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup)
+                {
+                    if (string.IsNullOrEmpty(nameFilter) 
+                        || string.IsNullOrEmpty(server.DispName) 
+                        || server.DispName.ToLower().IndexOf(nameFilter.ToLower()) >= 0
+                        || server.DispNamePinyin.ToLower().IndexOf(nameFilter.ToLower()) >= 0
+                        || server.DispNamePinyinInitials.ToLower().IndexOf(nameFilter.ToLower()) >= 0
+                        )
+                        return true;
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                return true;
+            }
+        }
+
+        public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
             throw new NotSupportedException();
         }
         #endregion

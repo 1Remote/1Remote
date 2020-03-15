@@ -32,8 +32,6 @@ namespace PRM.Core.ViewModel
             }
         }
 
-        private readonly Dictionary<string, ObservableCollection<VmServerCard>> _serverGoup2Serverlist = new Dictionary<string, ObservableCollection<VmServerCard>>();
-
         private ObservableCollection<string> _serverGroups = new ObservableCollection<string>();
         public ObservableCollection<string> ServerGroups
         {
@@ -41,19 +39,26 @@ namespace PRM.Core.ViewModel
             set => SetAndNotifyIfChanged(nameof(ServerGroups), ref _serverGroups, value);
         }
 
-        private string _selectedGroup;
+        private string _selectedGroup = "";
         public string SelectedGroup
         {
             get => _selectedGroup;
             set
             {
+                DispNameFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
-                if (_serverGoup2Serverlist.ContainsKey(_selectedGroup))
-                    DispServerList = _serverGoup2Serverlist[_selectedGroup];
-                else
-                    DispServerList = _serverGoup2Serverlist["all"];
             }
         }
+
+
+        private string _dispNameFilter = "Ali";
+        public string DispNameFilter
+        {
+            get => _dispNameFilter;
+            set => SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
+        }
+
+
 
         //private RelayCommand _clearSelectedGroup;
         //public RelayCommand ClearSelectedGroup
@@ -117,18 +122,13 @@ namespace PRM.Core.ViewModel
 
 
             ServerGroups.Clear();
-            _serverGoup2Serverlist.Clear();
-            _serverGoup2Serverlist.Add("all", new ObservableCollection<VmServerCard>());
             foreach (var vmServerCard in DispServerList)
             {
                 if (!string.IsNullOrEmpty(vmServerCard.Server.GroupName) &&
                     !ServerGroups.Contains(vmServerCard.Server.GroupName))
                 {
                     ServerGroups.Add(vmServerCard.Server.GroupName);
-                    _serverGoup2Serverlist.Add(vmServerCard.Server.GroupName, new ObservableCollection<VmServerCard>());
                 }
-                _serverGoup2Serverlist["all"].Add(vmServerCard);
-                _serverGoup2Serverlist[vmServerCard.Server.GroupName].Add(vmServerCard);
             }
             OrderServerList();
         }
@@ -142,21 +142,12 @@ namespace PRM.Core.ViewModel
                 case VmServerCard.EServerAction.Delete:
                     {
                         var id = ((VmServerCard)sender).Server.Id;
+                        var groupName = ((VmServerCard)sender).Server.GroupName;
                         PRM_DAO.GetInstance().DeleteServer(id);
                         DispServerList.Remove(((VmServerCard)sender));
-                        foreach (var kv in _serverGoup2Serverlist)
+                        if (DispServerList.All(s => s.Server.GroupName != groupName))
                         {
-                            var tmp = kv.Value.Where(o => o.Server.Id == id).ToList();
-                            foreach (var card in tmp)
-                            {
-                                kv.Value.Remove(card);
-                            }
-                        }
-
-                        foreach (var kv in _serverGoup2Serverlist.Where(o => o.Value.Count == 0).ToList())
-                        {
-                            _serverGoup2Serverlist.Remove(kv.Key);
-                            ServerGroups.Remove(kv.Key);
+                            ServerGroups.Remove(groupName);
                         }
                         break;
                     }
@@ -165,8 +156,13 @@ namespace PRM.Core.ViewModel
                         var serverOrm = ServerOrm.ConvertFrom(sender.Server);
                         if (PRM_DAO.GetInstance().Insert(serverOrm))
                         {
-                            DispServerList.Add(new VmServerCard(ServerFactory.GetInstance().CreateFromDb(serverOrm)));
+                            var newCard = new VmServerCard(ServerFactory.GetInstance().CreateFromDb(serverOrm));
+                            DispServerList.Add(newCard);
                             DispServerList.Last().OnAction += OnAction;
+                            if (!string.IsNullOrEmpty(newCard.Server.GroupName) && DispServerList.All(s => s.Server.GroupName != newCard.Server.GroupName))
+                            {
+                                ServerGroups.Add(newCard.Server.GroupName);
+                            }
                         }
                         break;
                     }

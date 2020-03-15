@@ -9,7 +9,7 @@
   "server_color_mark": "Color",
   "server_address": "Address",
   "server_port": "Port",
-  "server_username": "User name",
+  "server_username": "User",
   "server_password": "Password",
   "server_resolution": "Resolution",
   "server_rdp": "RDP",

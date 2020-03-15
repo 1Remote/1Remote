@@ -37,8 +37,12 @@ namespace PRM.Core.Ulits
         {
             var fi = new FileInfo(jsonPath);
             if (!fi.Exists) return null;
-
             var rd = LangDictFromJsonString(File.ReadAllText(fi.FullName));
+#if DEBUG
+            // TODO 调试用
+            if (jsonPath.IndexOf("zh-cn") >= 0)
+                SaveLangResourceDictionary(rd, "zh-cn.xaml");
+#endif
             SetKey(rd, LangFilePathKey, fi.FullName);
             SetKey(rd, ResourceTypeKey, ResourceTypeValue);
             return rd;
@@ -54,10 +58,6 @@ namespace PRM.Core.Ulits
                 {
                     SetKey(rd, kv.Key, kv.Value);
                 }
-#if DEBUG
-                // TODO 调试用
-                SaveLangResourceDictionary(rd, "zh-cn.xaml");
-#endif
                 SetKey(rd, LangFilePathKey, "from_memory");
                 SetKey(rd, ResourceTypeKey, ResourceTypeValue);
                 return rd;
