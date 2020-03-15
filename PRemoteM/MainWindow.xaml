@@ -285,6 +285,10 @@
                                             <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>

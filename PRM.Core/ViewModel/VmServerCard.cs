@@ -55,11 +55,13 @@ namespace PRM.Core.ViewModel
                     _addServer = new RelayCommand((o) =>
                     {
                         Debug.Assert(OnAction != null);
+                        Debug.Assert(this.Server.Id == 0);
                         Debug.Assert(this.Server.GetType() == typeof(NoneServer));
 
                         // TODO 打开对话框，选择要新增的服务器类型
                         var add = new AddRdp();
                         add.Server = new ServerRDP();
+                        add.Server.GroupName = this.Server.GroupName;
                         add.ShowDialog();
                         if (add.IsSave)
                         {
@@ -82,7 +84,7 @@ namespace PRM.Core.ViewModel
                     {
                         Debug.Assert(OnAction != null);
                         var add = new AddRdp();
-                        add.Server = (ServerRDP)this.Server;
+                        add.Server = (ServerRDP)this.Server.Clone();
                         add.ShowDialog();
                         if (add.IsSave)
                         {
