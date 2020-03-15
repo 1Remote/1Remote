@@ -48,8 +48,20 @@ namespace PRM.Core.Base
         public string DispName
         {
             get => _dispName;
-            set => SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
+                DispNamePinyin = TinyPinyin.PinyinHelper.GetPinyin(DispName, "").ToLower();
+                DispNamePinyinInitials = TinyPinyin.PinyinHelper.GetPinyinInitials(DispName).ToLower();
+            }
         }
+
+        [JsonIgnore]
+        public string DispNamePinyin { get; set; }
+
+        [JsonIgnore]
+        public string DispNamePinyinInitials { get; set; }
+
 
         private string _groupName = "";
         public string GroupName

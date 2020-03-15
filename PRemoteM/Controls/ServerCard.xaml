@@ -93,7 +93,7 @@
                                 <SolidColorBrush Color="#ccc"></SolidColorBrush>
                             </TextBlock.Foreground>
                             <TextBlock.FontSize>
-                                <MultiBinding Converter="{StaticResource TextWidthAndContent2FontSize}" ConverterParameter="FontSize">
+                                <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2FontSize}" ConverterParameter="FontSize">
                                     <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
                                     <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
                                     <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>
@@ -141,7 +141,7 @@
                             <RowDefinition Height="20"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid>
-                            <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource Bool2Visible}}"
+                            <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource ConverterBool2Visible}}"
                                 Command="{Binding DeleteServer}"
                                 >
                                 <Button.Template>
@@ -172,7 +172,7 @@
                             <Grid>
                                 <!-- setting button -->
                                 <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
-                                    BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource Bool2Visible}}"
+                                    BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource ConverterBool2Visible}}"
                                     Command="{Binding EditServer}"
                                     >
                                     <Button.Template>

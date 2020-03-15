@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
+        x:Name="Window"
         Title="MainWindow" Height="500" Width="680" MinWidth="520" MinHeight="300">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
@@ -16,8 +17,17 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter"/>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.CommandBindings>
+        <!--  TODO 添加 CanExecute 当不在主页时禁止命令 -->
+        <CommandBinding Command="{StaticResource CommandFocusFilter}" Executed="CommandFocusFilter_OnExecuted"></CommandBinding>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <!-- map ctrl + f to focus on filter-->
+        <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
+    </Window.InputBindings>
 
     <Border>
         <Border.Style>
@@ -85,31 +95,53 @@
                 </StackPanel.Resources>
 
                 <Grid Height="25" VerticalAlignment="Top" Width="150">
-                    <TextBox Width="140" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center"
-                             Text="Filter">
+                    <TextBox Name="TbFilter" Width="140" Height="20" 
+                        Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
+                        KeyUp="TbFilter_OnKeyUp"
+                        VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left">
+                        <TextBox.Resources>
+                            <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
+                                <VisualBrush.Visual>
+                                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_info}"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </TextBox.Resources>
                         <TextBox.Style>
                             <Style TargetType="{x:Type TextBox}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type TextBox}">
-                                            <Border x:Name="border" Width="Auto" Height="Auto" BorderThickness="1" Cursor="IBeam">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="BorderBrush" Value="Transparent"></Setter>
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"></Setter>
-                                                            </Trigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <Grid x:Name="grid" Background="#FFFFFF" Opacity="0.5">
-                                                    <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+                                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                                <Grid>
+                                                    <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}">
+                                                    </Grid>
+                                                    <Grid x:Name="grid1" Background="{TemplateBinding Background}" Opacity="{TemplateBinding Opacity}">
+                                                        <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                                    </Grid>
                                                 </Grid>
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                                <Setter Property="Background" Value="Transparent"></Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource MainBgColor}"/>
+                                        <Setter Property="Opacity" Value="0.6"></Setter>
+                                    </Trigger>
+                                    <Trigger Property="IsFocused" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"/>
+                                        <Setter Property="Opacity" Value="0.6"></Setter>
+                                    </Trigger>
+                                    <Trigger Property="Text" Value="{x:Null}">
+                                        <Setter Property="Background" Value="{StaticResource HintText}"/>
+                                    </Trigger>
+                                    <Trigger Property="Text" Value="">
+                                        <Setter Property="Background" Value="{StaticResource HintText}"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                         </TextBox.Style>
                     </TextBox>
@@ -227,7 +259,7 @@
                                                 HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" 
                                                 VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" 
                                                 SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                        </ControlTemplate>
+                                    </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
                         </Style>
@@ -239,8 +271,33 @@
                     </ListBox.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Width="165" Height="164">
-                                <controls1:ServerCard VmServerCard="{Binding}"></controls1:ServerCard>
+                            <Grid>
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        <Setter Property="Height" Value="164"></Setter>
+                                        <!--determine this item's visibility-->
+                                        <Setter Property="Width" Value="0"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger>
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource ConverterStringIsContainXXX}">
+                                                        <Binding Path="Server"></Binding>
+                                                        <Binding Path="DataContext.DispNameFilter" ElementName="Window"></Binding>
+                                                        <Binding Path="DataContext.SelectedGroup" ElementName="Window"></Binding>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <DataTrigger.Value>True</DataTrigger.Value>
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                                <Setter Property="Width" Value="165"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <!--determine this item's visibility end -->
+                                    </Style>
+                                </Grid.Style>
+
+                                <controls1:ServerCard VmServerCard="{Binding}">
+                                </controls1:ServerCard>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

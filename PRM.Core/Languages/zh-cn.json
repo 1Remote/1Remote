@@ -13,5 +13,6 @@
   "server_password": "密码",
   "server_resolution": "分辨率",
   "server_rdp": "RDP连接",
-  "tab_all": "全部"
+  "tab_all": "全部",
+  "filter_info" : "输入筛选关键词"
 }

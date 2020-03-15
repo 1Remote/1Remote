@@ -7,20 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using PRM;
-using PRM.Core;
-using PRM.Core.Base;
-using PRM.Core.DB;
 using PRM.Core.ViewModel;
-using PRM.RDP;
 
 namespace PersonalRemoteManager
 {
@@ -37,8 +25,6 @@ namespace PersonalRemoteManager
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => this.WindowState = WindowState.Minimized;
         }
-
-
 
 
         [DllImport("user32.dll")]
@@ -88,6 +74,19 @@ namespace PersonalRemoteManager
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
             ((VmMain) this.DataContext).SelectedGroup = "";
+        }
+
+        private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            TbFilter.Focus();
+        }
+
+        private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                ((TextBox)sender).Text = "";
+            }
         }
     }
 }

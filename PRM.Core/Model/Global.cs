@@ -45,6 +45,21 @@ namespace PRM.Core.Model
             }
         }
 
+        public const string DefaultLanguage = "zh-cn";
+        private ResourceDictionary _defaultLanguageResourceDictionary = null;
+        public ResourceDictionary DefaultLanguageResourceDictionary
+        {
+            get
+            {
+                if (_defaultLanguageResourceDictionary == null)
+                {
+                    _defaultLanguageResourceDictionary = MultiLangHelper.LangDictFromJsonFile(@"Languages\" + DefaultLanguage + ".json") ??
+                                                         MultiLangHelper.LangDictFromXamlUri(new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml"));
+                    Assert(_defaultLanguageResourceDictionary != null);
+                }
+                return _defaultLanguageResourceDictionary;
+            }
+        }
         private ResourceDictionary _currentLanguageResourceDictionary = null;
 
         public ResourceDictionary CurrentLanguageResourceDictionary
@@ -54,15 +69,22 @@ namespace PRM.Core.Model
                 if (_currentLanguageResourceDictionary == null)
                 {
                     _currentLanguageResourceDictionary = MultiLangHelper.LangDictFromJsonFile(@"Languages\" + CurrentLanguage + ".json");
-                    if (_currentLanguageResourceDictionary == null)
+                    if (_currentLanguageResourceDictionary != null)
+                    {
+                        // add lost key from default language
+                        foreach (var key in DefaultLanguageResourceDictionary.Keys)
+                        {
+                            if (!_currentLanguageResourceDictionary.Contains(key))
+                                _currentLanguageResourceDictionary.Add(key, DefaultLanguageResourceDictionary[key]);
+                        }
+                    }
+                    else
                     {
                         // use default
-                        _currentLanguage = "zh-cn";
-                        _currentLanguageResourceDictionary =
-                            MultiLangHelper.LangDictFromXamlUri(
-                                new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml"));
-                        Assert(_currentLanguageResourceDictionary != null);
+                        _currentLanguage = DefaultLanguage;
+                        _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
                     }
+
                 }
                 return _currentLanguageResourceDictionary;
             }
