@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.ViewModel;
 
-namespace PersonalRemoteManager
+namespace PRM
 {
     public partial class MainWindow : Window
     {
@@ -87,6 +82,11 @@ namespace PersonalRemoteManager
             {
                 ((TextBox)sender).Text = "";
             }
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var x = LogoSelector.Logo;
         }
     }
 }

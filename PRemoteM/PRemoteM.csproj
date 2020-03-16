@@ -123,6 +123,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y $(TargetDir)zh-cn.xaml $(SolutionDir)\PRM.Core\Languages\zh-cn.xaml*</PostBuildEvent>
+    <PostBuildEvent>if exist $(TargetDir)zh-cn.xaml (
+xcopy /y $(TargetDir)zh-cn.xaml $(SolutionDir)\PRM.Core\Languages\zh-cn.xaml*  /C /E /Q
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

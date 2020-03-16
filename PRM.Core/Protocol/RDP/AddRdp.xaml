@@ -10,7 +10,13 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
-
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Converter/Converter.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Border>
         <Border.Style>
             <Style TargetType="Border">
@@ -132,6 +138,7 @@
                                     </Grid>
                                 </StackPanel>
                             </Grid>
+
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
                                     <Button Name="BtnSave" Content="{DynamicResource close}" Click="BtnSave_OnClick"></Button>
