@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using PRM.Core.Annotations;
 
 namespace PRM.Core.Resources.Controls
@@ -59,6 +61,13 @@ namespace PRM.Core.Resources.Controls
             }
         }
 
+        public BitmapImage LogoSourceBitmapImage
+        {
+            get => (BitmapImage)Img.Source;
+        }
+
+
+
 
         private double _scaling = 1.0;
         public double Scaling
@@ -72,8 +81,8 @@ namespace PRM.Core.Resources.Controls
                     if (Img?.Source != null)
                     {
                         OnPropertyChanged(nameof(Scaling));
-                        double wl = Img.Source.Width * Scaling - CanvasImage.Width;
-                        double hl = Img.Source.Height * Scaling - CanvasImage.Height;
+                        double wl = LogoSourceBitmapImage.PixelWidth * Scaling - CanvasImage.Width;
+                        double hl = LogoSourceBitmapImage.PixelHeight * Scaling - CanvasImage.Height;
                         CanvasImage.Width += wl;
                         CanvasImage.Height += hl;
                         // 缩放后保持图像中心不变
@@ -99,7 +108,7 @@ namespace PRM.Core.Resources.Controls
             //Close();
             //PRMSqliteHelper psh = new PRMSqliteHelper();
             //psh.CreateDb();
-            SetImg(GetBitmapSource(@"E:\数据存档\5160\老算法错误样本图例\Id02889___SN10125124___20190126___5160A1_Cbc5Diff.5160xml.jpg"));
+            SetImg(GetBitmapSource(@"D:\Users\Desktop\111.jpg"));
         }
 
         public void SetImg(ImageSource img)
@@ -109,32 +118,97 @@ namespace PRM.Core.Resources.Controls
             if (img != null)
             {
                 //Img.Source = GetBitmapSource(@"E:\数据存档\5160\老算法错误样本图例\Id02889___SN10125124___20190126___5160A1_Cbc5Diff.5160xml.jpg");
-                CanvasImage.Width = Img.Source.Width * Scaling;
-                CanvasImage.Height = Img.Source.Height * Scaling;
+                CanvasImage.Width = LogoSourceBitmapImage.PixelWidth * Scaling;
+                CanvasImage.Height = LogoSourceBitmapImage.PixelHeight * Scaling;
                 // pos at center parent
                 CanvasImage.SetValue(Canvas.LeftProperty, (CanvasWhiteBoard.Width - CanvasImage.Width) / 2);
                 CanvasImage.SetValue(Canvas.TopProperty, (CanvasWhiteBoard.Height - CanvasImage.Height) / 2);
+
+                Scaling = Math.Min(CanvasWhiteBoard.Width / CanvasImage.Width,
+                    CanvasWhiteBoard.Height / CanvasImage.Height);
             }
         }
 
+
+        public static Bitmap Roi(Bitmap image, Rectangle section)
+        {
+            var roiBit = new Bitmap(section.Width, section.Height);
+            using (var g = Graphics.FromImage(roiBit))
+            {
+                g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+                g.SmoothingMode = SmoothingMode.HighSpeed;
+                g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+                g.DrawImage(image, 0, 0, section, GraphicsUnit.Pixel);
+                return roiBit;
+            }
+        }
 
         public BitmapSource Logo
         {
             get
             {
-                // 截图
-                CanvasWhiteBoard.Background = Brushes.Transparent;
-                RenderTargetBitmap rtb = new RenderTargetBitmap((int)CanvasWhiteBoard.RenderSize.Width, (int)CanvasWhiteBoard.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
-                rtb.Render(CanvasWhiteBoard);
-                var crop = new CroppedBitmap(rtb, new Int32Rect(0, 0, (int)CanvasWhiteBoard.Width, (int)CanvasWhiteBoard.Height));
-                return crop.Source;
+                var resize = (Img.Source as BitmapSource).Resize(Scaling, Scaling);
 
-                //BitmapEncoder pngEncoder = new PngBitmapEncoder();
-                //pngEncoder.Frames.Add(BitmapFrame.Create(crop));
-                //using (var fs = System.IO.File.OpenWrite("logo.png"))
-                //{
-                //    pngEncoder.Save(fs);
-                //}
+                // calc roi
+                double x = (double)CanvasImage.GetValue(Canvas.LeftProperty);
+                double y = (double)CanvasImage.GetValue(Canvas.TopProperty);
+
+                var startPoint = new PointF(0, 0);
+                double roiWidth = 0;
+                double roiHeight = 0;
+                var drawPoint = new PointF(0, 0);
+                if (x < 0)
+                {
+                    drawPoint.X = 0;
+                    startPoint.X = (float)Math.Abs(x);
+                }
+                else
+                {
+                    drawPoint.X = (float)Math.Abs(x);
+                    startPoint.X = 0;
+                }
+                if (y < 0)
+                {
+                    drawPoint.Y = 0;
+                    startPoint.Y = (float)Math.Abs(y);
+                }
+                else
+                {
+                    drawPoint.Y = (float)Math.Abs(y);
+                    startPoint.Y = 0;
+                }
+
+                if (x + resize.PixelWidth > CanvasWhiteBoard.Width)
+                {
+                    roiWidth = CanvasWhiteBoard.Width - drawPoint.X;
+                }
+                else
+                {
+                    roiWidth = resize.PixelWidth - startPoint.X;
+                }
+
+                if (y + resize.PixelHeight > CanvasWhiteBoard.Height)
+                {
+                    roiHeight = CanvasWhiteBoard.Height - drawPoint.Y;
+                }
+                else
+                {
+                    roiHeight = resize.PixelHeight - startPoint.Y;
+                }
+
+                var roi = resize.Roi(new Rectangle((int)startPoint.X, (int)startPoint.Y, (int)roiWidth, (int)roiHeight));
+
+
+                var bitmap = new Bitmap((int)CanvasWhiteBoard.Width, (int)CanvasWhiteBoard.Height);
+                using (var g = Graphics.FromImage(bitmap))
+                {
+                    g.Save();
+                    g.DrawImage(roi, drawPoint);
+                }
+                bitmap.MakeTransparent(System.Drawing.Color.Transparent);
+
+                //double imgAccWidth = CanvasImage.
+                return bitmap.ToBitmapSource();
             }
         }
 
@@ -328,11 +402,11 @@ namespace PRM.Core.Resources.Controls
                 }
                 return new ImageBrush(bg.ToBitmapImage())
                 {
-                    Stretch = Stretch.None,
+                    Stretch = Stretch.UniformToFill,
                     TileMode = TileMode.Tile,
                     AlignmentX = AlignmentX.Left,
                     AlignmentY = AlignmentY.Top,
-                    Viewport = new Rect(new Point(0, 0), new Point(span * 2, span * 2)),
+                    Viewport = new Rect(new System.Windows.Point(0, 0), new System.Windows.Point(span * 2, span * 2)),
                     ViewportUnits = BrushMappingMode.Absolute
                 };
             }
