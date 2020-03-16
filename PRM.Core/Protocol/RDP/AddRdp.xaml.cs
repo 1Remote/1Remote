@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using PRM.Core.Base;
 using PRM.Core.DB;
 using PRM.Core.ViewModel;
@@ -35,13 +39,10 @@ namespace PRM.Core.Protocol.RDP
             BtnClose.Click += (sender, args) => Close();
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => this.WindowState = WindowState.Minimized;
-
-            //Close();
-            //PRMSqliteHelper psh = new PRMSqliteHelper();
-            //psh.CreateDb();
         }
 
 
+        #region wind btn
 
 
         [DllImport("user32.dll")]
@@ -95,5 +96,7 @@ namespace PRM.Core.Protocol.RDP
             IsSave = false;
             Close();
         }
+
+        #endregion
     }
 }

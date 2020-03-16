@@ -51,7 +51,7 @@ namespace PRM.Core.ViewModel
         }
 
 
-        private string _dispNameFilter = "Ali";
+        private string _dispNameFilter = "";
         public string DispNameFilter
         {
             get => _dispNameFilter;

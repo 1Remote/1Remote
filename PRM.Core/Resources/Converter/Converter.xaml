@@ -5,4 +5,5 @@
     <converter:ConverterBool2VisibleInv x:Key="ConverterBool2VisibleInv"/>
     <converter:ConverterTextWidthAndContent2FontSize x:Key="ConverterTextWidthAndContent2FontSize"/>
     <converter:ConverterStringIsContainXXX x:Key="ConverterStringIsContainXXX"/>
+    <converter:ConverterDouble2Half x:Key="ConverterDouble2Half"/>
 </ResourceDictionary>

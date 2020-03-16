@@ -41,6 +41,39 @@ namespace PRM.Resources.Converter
         #endregion
     }
 
+
+    //public class ConverterDouble2Negate : IValueConverter
+    //{
+    //    #region IValueConverter 成员  
+    //    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    //    {
+    //        double ss = (double)value;
+    //        return ss * -1;
+    //    }
+    //    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    //    {
+    //        throw new NotSupportedException();
+    //    }
+    //    #endregion
+    //}
+
+
+
+    public class ConverterDouble2Half : IValueConverter
+    {
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            double ss = (double)value;
+            return ss * 0.5;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+
     
 
 
