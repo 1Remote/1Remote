@@ -81,7 +81,7 @@
     <Compile Include="Protocol\ServerAbstract.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Ulits\AutoCompleteBehavior.cs" />
-    <Compile Include="Ulits\NetImageFormatHelper.cs" />
+    <Compile Include="Ulits\NetImageProcessHelper.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode1.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode2.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode3.cs" />

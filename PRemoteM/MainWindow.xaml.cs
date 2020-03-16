@@ -87,6 +87,7 @@ namespace PRM
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             var x = LogoSelector.Logo;
+            ImgRet.Source = x;
         }
     }
 }

@@ -445,7 +445,10 @@
             <Grid Grid.Row="2">
                 <StackPanel>
                     <controls:LogoSelector Width="180" Height="180" Name="LogoSelector"></controls:LogoSelector>
-<Button Click="ButtonBase_OnClick">test</Button>
+                    <Button Click="ButtonBase_OnClick">test</Button>
+                    <Border Width="144" Height="144" BorderThickness="1" BorderBrush="Red">
+                        <Image Name="ImgRet" ></Image>
+                    </Border>
                 </StackPanel>
             </Grid>
 
