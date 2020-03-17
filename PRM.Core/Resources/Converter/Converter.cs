@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using PRM.Core.Base;
+using PRM.Core.Ulits;
 
 namespace PRM.Resources.Converter
 {
@@ -74,7 +75,7 @@ namespace PRM.Resources.Converter
         #endregion
     }
 
-    
+
 
 
     public class ConverterTextWidthAndContent2FontSize : IMultiValueConverter
@@ -94,12 +95,12 @@ namespace PRM.Resources.Converter
             try
             {
                 var tb = new TextBlock();
-                tb.Text=  values[0].ToString();
+                tb.Text = values[0].ToString();
                 tb.Width = int.Parse(values[1].ToString());
-                tb.FontFamily = (FontFamily) values[2];
-                tb.FontStyle = (FontStyle) values[3];
-                tb.FontWeight = (FontWeight) values[4];
-                tb.FontStretch = (FontStretch) values[5];
+                tb.FontFamily = (FontFamily)values[2];
+                tb.FontStyle = (FontStyle)values[3];
+                tb.FontWeight = (FontWeight)values[4];
+                tb.FontStretch = (FontStretch)values[5];
                 var size = MeasureText(tb, 20);
                 double k = 1.0 * tb.Width / size.Width;
                 double fs = (int) (20 * k);
@@ -117,7 +118,7 @@ namespace PRM.Resources.Converter
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
-        { 
+        {
             throw new NotSupportedException();
         }
         #endregion
@@ -142,13 +143,18 @@ namespace PRM.Resources.Converter
 
                 if (string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup)
                 {
-                    if (string.IsNullOrEmpty(nameFilter) 
-                        || string.IsNullOrEmpty(server.DispName) 
-                        || server.DispName.ToLower().IndexOf(nameFilter.ToLower()) >= 0
-                        || server.DispNamePinyin.ToLower().IndexOf(nameFilter.ToLower()) >= 0
-                        || server.DispNamePinyinInitials.ToLower().IndexOf(nameFilter.ToLower()) >= 0
-                        )
+                    if (string.IsNullOrEmpty(nameFilter)
+                        || KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, nameFilter, out var m))
+                    {
                         return true;
+                    }
+                    //if (string.IsNullOrEmpty(nameFilter) 
+                    //    || string.IsNullOrEmpty(server.DispName) 
+                    //    || server.DispName.ToLower().IndexOf(nameFilter.ToLower()) >= 0
+                    //    || server.DispNamePinyin.ToLower().IndexOf(nameFilter.ToLower()) >= 0
+                    //    || server.DispNamePinyinInitials.ToLower().IndexOf(nameFilter.ToLower()) >= 0
+                    //    )
+                    //    return true;
                 }
                 return false;
             }

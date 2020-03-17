@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
@@ -136,6 +137,13 @@
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding Password}"></TextBox>
                                     </Grid>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource StyleRow}" Height="175">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_password}"></TextBlock>
+                                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
                                 </StackPanel>
                             </Grid>
 

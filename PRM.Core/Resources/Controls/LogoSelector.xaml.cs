@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Microsoft.Win32;
 using PRM.Core.Annotations;
 
 namespace PRM.Core.Resources.Controls
@@ -383,12 +384,33 @@ namespace PRM.Core.Resources.Controls
 
         public static BitmapSource GetBitmapSource(string filePath)
         {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.StreamSource = File.OpenRead(filePath);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-            return bitmap;
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = File.OpenRead(filePath);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                return bitmap;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            //ofd.InitialDirectory = Application.StartupPath;
+            ofd.Title = "TXT:select image";
+            ofd.Filter = "jpg|*.jpg|png|*.png|bmp|*.bmp|所有文件|*.*";
+            //ofd.FilterIndex = 2;
+            ofd.RestoreDirectory = true;
+            if (ofd.ShowDialog() == true)
+            { 
+                SetImg(GetBitmapSource(ofd.FileName));
+            }
         }
     }
 
