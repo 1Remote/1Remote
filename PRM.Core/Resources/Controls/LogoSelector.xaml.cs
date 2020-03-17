@@ -108,7 +108,7 @@ namespace PRM.Core.Resources.Controls
             //Close();
             //PRMSqliteHelper psh = new PRMSqliteHelper();
             //psh.CreateDb();
-            SetImg(GetBitmapSource(@"D:\Users\Desktop\111.jpg"));
+            SetImg(GetBitmapSource(@"D:\Users\Desktop\LOGO\hp-logo-png-1.png"));
         }
 
         public void SetImg(ImageSource img)
@@ -147,7 +147,16 @@ namespace PRM.Core.Resources.Controls
         {
             get
             {
-                var resize = (Img.Source as BitmapSource).Resize(Scaling, Scaling);
+                if (Img.Source == null)
+                    return null;
+
+                ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
+
+                BitmapSource resize;
+                if (Math.Abs(Scaling - 1) < 0.01)
+                    resize = (Img.Source as BitmapSource);
+                else
+                    resize = (Img.Source as BitmapSource).Resize(Scaling, Scaling);
 
                 // calc roi
                 double x = (double)CanvasImage.GetValue(Canvas.LeftProperty);
@@ -196,19 +205,30 @@ namespace PRM.Core.Resources.Controls
                     roiHeight = resize.PixelHeight - startPoint.Y;
                 }
 
-                var roi = resize.Roi(new Rectangle((int)startPoint.X, (int)startPoint.Y, (int)roiWidth, (int)roiHeight));
-
-
-                var bitmap = new Bitmap((int)CanvasWhiteBoard.Width, (int)CanvasWhiteBoard.Height);
-                using (var g = Graphics.FromImage(bitmap))
+                if (roiWidth > 0 && roiHeight > 0)
                 {
-                    g.Save();
-                    g.DrawImage(roi, drawPoint);
+                    var roi = resize.Roi(new Rectangle((int) startPoint.X, (int) startPoint.Y, (int) roiWidth, (int) roiHeight));
+                    var bitmap = new Bitmap((int) CanvasWhiteBoard.Width, (int) CanvasWhiteBoard.Height);
+                    using (var g = Graphics.FromImage(bitmap))
+                    {
+                        g.Save();
+                        g.DrawImage(roi, drawPoint);
+                    }
+                    bitmap.MakeTransparent(System.Drawing.Color.Transparent);
+                    //double imgAccWidth = CanvasImage.
+                    return bitmap.ToBitmapSource();
                 }
-                bitmap.MakeTransparent(System.Drawing.Color.Transparent);
-
-                //double imgAccWidth = CanvasImage.
-                return bitmap.ToBitmapSource();
+                else
+                {
+                    var bitmap = new Bitmap((int) CanvasWhiteBoard.Width, (int) CanvasWhiteBoard.Height);
+                    using (var g = Graphics.FromImage(bitmap))
+                    {
+                        g.Save();
+                    }
+                    bitmap.MakeTransparent(System.Drawing.Color.Transparent);
+                    //double imgAccWidth = CanvasImage.
+                    return bitmap.ToBitmapSource();
+                }
             }
         }
 
@@ -326,7 +346,7 @@ namespace PRM.Core.Resources.Controls
         /// <returns></returns>
         private bool ReplaceChild(ref Canvas child, ref Canvas parent)
         {
-            const double span = 2;
+            const double span = 10;
             bool ret = false;
             if (parent.ActualHeight > span * 2 && parent.ActualWidth > span * 2)
             {
