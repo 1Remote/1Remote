@@ -61,7 +61,7 @@ namespace PRM.Core.Ulits
 
 
         /// <summary>
-        /// 字符串中的汉字同时会被转为拼音进行匹配
+        /// 汉字全拼音匹配
         /// </summary>
         /// <param name="orgString"></param>
         /// <param name="keyword"></param>
@@ -73,8 +73,26 @@ namespace PRM.Core.Ulits
             if (string.IsNullOrEmpty(keyWordSeparator))
                 return IsMatchPinyinKeyWords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive);
             var kws = keyword.Split(new string[]{keyWordSeparator}, StringSplitOptions.RemoveEmptyEntries);
-            return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive);
+            return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive, true);
         }
+
+        
+        /// <summary>
+        /// 汉字拼音首字母匹配
+        /// </summary>
+        /// <param name="orgString"></param>
+        /// <param name="keyword"></param>
+        /// <param name="matchPlace"></param>
+        /// <param name="isCaseSensitive"></param>
+        /// <returns></returns>
+        public static bool IsMatchPinyinInitialKeyWords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keyWordSeparator = " ", bool isCaseSensitive = false)
+        {
+            if (string.IsNullOrEmpty(keyWordSeparator))
+                return IsMatchPinyinKeyWords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive);
+            var kws = keyword.Split(new string[]{keyWordSeparator}, StringSplitOptions.RemoveEmptyEntries);
+            return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive, false);
+        }
+
 
         /// <summary>
         /// 字符串中的汉字同时会被转为拼音进行匹配
@@ -83,8 +101,9 @@ namespace PRM.Core.Ulits
         /// <param name="keywords"></param>
         /// <param name="matchPlace"></param>
         /// <param name="isCaseSensitive"></param>
+        /// <param name="isInitialOnly">是否用只用拼音首字母匹配</param>
         /// <returns></returns>
-        public static bool IsMatchPinyinKeyWords(this string orgString, [NotNull] IEnumerable<string> keywords, out List<bool> matchPlace, bool isCaseSensitive = false)
+        public static bool IsMatchPinyinKeyWords(this string orgString, [NotNull] IEnumerable<string> keywords, out List<bool> matchPlace, bool isCaseSensitive = false, bool isInitialOnly = false)
         {
             matchPlace = null;
             if (string.IsNullOrEmpty(orgString))
@@ -116,7 +135,7 @@ namespace PRM.Core.Ulits
             // 直接匹配成功或未发现汉字时，直接返回匹配结果
             if (pinyinFlagOnOrgString.All(x => x == false) || isDirectMatch == true)
             {
-                return true;
+                return isDirectMatch;
             }
 
             // 否则进行拼音首字母的匹配
@@ -167,6 +186,7 @@ namespace PRM.Core.Ulits
 
 
             // 否则进行拼音全词匹配
+            if(isInitialOnly)
             {
                 // 拼音字符串中字符，对应原始汉字字符的索引，非拼音首字母字符索引为负数，例如 "你好世界2020" 的拼音 "nihaoshijie2020"，其索引为 [0,-1,  1,-1,-1,   2,-1,-1,   3,-1,-1,  4,5,6,7]
                 var pinyinChar2OrgCharIndex = new List<int>();
@@ -227,7 +247,7 @@ namespace PRM.Core.Ulits
                             index2OnOrg = pinyinChar2OrgCharIndex[index1OnPy + offset];
                             --offset;
                         }
-                        for (int i = index1OnOrg; i < index2OnOrg; i++)
+                        for (int i = index1OnOrg; i <= index2OnOrg; i++)
                         {
                             matchPlace[i] = true;
                         }
