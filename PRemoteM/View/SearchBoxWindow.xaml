@@ -1,0 +1,297 @@
+﻿<Window x:Class="PRM.View.SearchBoxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Topmost="True"
+        mc:Ignorable="d"
+        Name="Window"
+        Title="SearchBoxWindow" Height="46" Width="400">
+    <Window.Resources>
+
+
+        <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
+            <VisualBrush.Visual>
+                <Grid>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" Foreground="Black" Opacity="0.5" FontSize="18"/>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" Foreground="White" Opacity="0.5" FontSize="18"/>
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="AllowDrop" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="{x:Null}">
+                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                </Trigger>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+
+
+
+
+
+
+
+
+
+        <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ScrollBarThumbVertical" TargetType="{x:Type Thumb}">
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Rectangle x:Name="rectangle" Fill="#AAA" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Opacity" TargetName="rectangle" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="false">
+                                <Setter Property="Opacity" TargetName="rectangle" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" SnapsToDevicePixels="true" HorizontalAlignment="Right">
+
+                            <!--<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Row="1"/>-->
+
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}" Width="5">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource RepeatButtonTransparent}"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource RepeatButtonTransparent}"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource ScrollBarThumbVertical}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="SearchBoxSelectionList_ScrollViewerTemplate" TargetType="{x:Type ScrollViewer}">
+            <Border BorderThickness="0" BorderBrush="{TemplateBinding BorderBrush}">
+                <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" 
+                                    CanHorizontallyScroll="False" CanVerticallyScroll="False" 
+                                    ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" 
+                                    Margin="{TemplateBinding Padding}"/>
+                    <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow"
+                       HorizontalAlignment="Right"
+                       Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" 
+                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
+                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                       ViewportSize="{TemplateBinding ViewportHeight}" 
+                       Style="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}"/>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <DataTemplate x:Key="SearchBoxSelectionItemNormal">
+            <Grid>
+                <Grid Height="30" Margin="0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="10"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                        <Image Source="{Binding IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                    </Grid>
+
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding DispName}" FontSize="18" VerticalAlignment="Center"></TextBlock>
+                    <Grid Grid.Row="1" Grid.Column="3" Opacity="0.7">
+                        <TextBlock Text="{Binding SubTitle}" FontSize="10" VerticalAlignment="Center"></TextBlock>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+
+        <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Template="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplate}">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border>
+                                        <Grid x:Name="GridContainer">
+                                            <Grid Name="Background" Background="{TemplateBinding Background}"></Grid>
+                                            <Border Name="Mask" Background="Black"></Border>
+                                            <Grid>
+                                                <ContentPresenter/>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" TargetName="GridContainer">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="Black" Opacity="0.4"></SolidColorBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Opacity" Value="0" TargetName="Mask" />
+                                            <Setter Property="Opacity" Value="0.6" TargetName="GridContainer"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Opacity" Value="0.2" TargetName="Mask" />
+                                            <Setter Property="Opacity" Value="1" TargetName="GridContainer"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate" Value="{StaticResource SearchBoxSelectionItemNormal}"></Setter>
+        </Style>
+
+
+
+    </Window.Resources>
+
+
+
+
+
+
+
+
+    <Grid Width="400">
+        <Grid.Resources>
+            <ResourceDictionary>
+                <SolidColorBrush x:Key="BgColor" Color="#333a4d"></SolidColorBrush>
+                <SolidColorBrush x:Key="FgColor" Color="#FFF"></SolidColorBrush>
+                <SolidColorBrush x:Key="BorderColor" Color="#AAA"></SolidColorBrush>
+                <system:Double x:Key="Width">400</system:Double>
+            </ResourceDictionary>
+        </Grid.Resources>
+        <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="1 1 1 1"
+                     Background="{StaticResource BgColor}"
+                    >
+            <Grid>
+                <TextBox Name="TbKeyWord" 
+                         Margin="10 0 0 0"
+                         Foreground="{StaticResource FgColor}" 
+                         CaretBrush="{StaticResource FgColor}"
+                         Width="{StaticResource Width}" Height="44" 
+                         FontSize="18"
+                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
+                         PreviewKeyDown="TbKeyWord_OnKeyDown"
+                         VerticalContentAlignment="Center"
+                         Style="{DynamicResource SearchBoxTbKeyWordStyle}"></TextBox>
+
+                <Grid Width="50" Height="44" HorizontalAlignment="Right" 
+                          Background="{StaticResource BgColor}"
+                          MouseMove="WindowHeader_MouseMove"></Grid>
+            </Grid>
+        </Border>
+        <Popup Name="PopupSelections" StaysOpen="True" 
+               IsOpen="{Binding PopupIsOpen}"
+               Width="{StaticResource Width}"
+               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+            <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="1 0 1 1">
+                <Grid>
+                    <ListBox x:Name="ListBoxSelections" MaxHeight="402"
+                                 BorderThickness="0"
+                                 SelectedIndex="{Binding SelectedServerTextIndex}" 
+                                 ItemsSource="{Binding DispServerList}"
+                                 Background="{DynamicResource BgColor}"
+                                 Foreground="{DynamicResource FgColor}"
+                                 Style="{DynamicResource SearchBoxSelectionList}">
+                    </ListBox>
+                </Grid>
+            </Border>
+        </Popup>
+    </Grid>
+</Window>
