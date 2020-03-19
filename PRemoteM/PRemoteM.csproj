@@ -65,6 +65,9 @@
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="View\SearchBoxWindow.xaml.cs">
+      <DependentUpon>SearchBoxWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Controls\ServerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -84,6 +87,10 @@
     <Page Include="Styles\MinHorizontalScrollViewerStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SearchBoxWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -118,9 +125,7 @@
       <Name>PRM.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)zh-cn.xaml (

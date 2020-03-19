@@ -103,7 +103,7 @@
                         <TextBox.Resources>
                             <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                                 <VisualBrush.Visual>
-                                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_info}"/>
+                                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </TextBox.Resources>
@@ -442,7 +442,7 @@
             </Grid>
 
 
-            <Grid Grid.Row="2">
+            <!--<Grid Grid.Row="2">
                 <StackPanel>
                     <controls:LogoSelector Width="180" Height="180" Name="LogoSelector"></controls:LogoSelector>
                     <Button Click="ButtonBase_OnClick">test</Button>
@@ -450,7 +450,7 @@
                         <Image Name="ImgRet" ></Image>
                     </Border>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
 
         </Grid>
     </Border>
