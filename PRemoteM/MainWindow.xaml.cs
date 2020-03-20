@@ -6,6 +6,7 @@ using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.Core.ViewModel;
 using PRM.View;
+using Shawn.Ulits;
 
 namespace PRM
 {
@@ -23,29 +24,29 @@ namespace PRM
             BtnMinimize.Click += (sender, args) => this.WindowState = WindowState.Minimized;
 
 
-            //Loaded += (sender, args) =>
-            //{
-            //    var r = GlobalHotkeyHooker.GetInstance().Regist(this, GlobalHotkeyHooker.HotkeyModifiers.MOD_CONTROL,
-            //        Key.M,
-            //        () =>
-            //        {
-            //            var sb = new SearchBoxWindow(this.DataContext as VmMain);
-            //            sb.Show();
-            //        });
-            //    switch (r)
-            //    {
-            //        case GlobalHotkeyHooker.RetCode.Success:
-            //            break;
-            //        case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-            //            MessageBox.Show(Global.GetInstance().GetText("info_hotkey_registered_fail"));
-            //            break;
-            //        case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-            //            MessageBox.Show(Global.GetInstance().GetText("info_hotkey_already_registered"));
-            //            break;
-            //        default:
-            //            throw new ArgumentOutOfRangeException();
-            //    }
-            //};
+            Loaded += (sender, args) =>
+            {
+                var r = GlobalHotkeyHooker.GetInstance().Regist(this, GlobalHotkeyHooker.HotkeyModifiers.MOD_CONTROL,
+                    Key.M,
+                    () =>
+                    {
+                        var sb = new SearchBoxWindow(this.DataContext as VmMain);
+                        sb.Show();
+                    });
+                switch (r)
+                {
+                    case GlobalHotkeyHooker.RetCode.Success:
+                        break;
+                    case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
+                        MessageBox.Show(Global.GetInstance().GetText("info_hotkey_registered_fail"));
+                        break;
+                    case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
+                        MessageBox.Show(Global.GetInstance().GetText("info_hotkey_already_registered"));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
         }
 
 
@@ -95,7 +96,7 @@ namespace PRM
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            ((VmMain) this.DataContext).SelectedGroup = "";
+            ((VmMain)this.DataContext).SelectedGroup = "";
         }
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)

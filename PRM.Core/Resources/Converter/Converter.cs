@@ -138,23 +138,18 @@ namespace PRM.Resources.Converter
             try
             {
                 var server = (ServerAbstract)values[0];
-                string nameFilter = values[1].ToString();
+                string keyWord = values[1].ToString();
                 string selectedGroup = values[2].ToString();
 
                 if (string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup)
                 {
-                    if (string.IsNullOrEmpty(nameFilter)
-                        || KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, nameFilter, out var m))
+                    if (string.IsNullOrEmpty(keyWord))
+                        return true;
+                    var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
+                    if (f1)
                     {
                         return true;
                     }
-                    //if (string.IsNullOrEmpty(nameFilter) 
-                    //    || string.IsNullOrEmpty(server.DispName) 
-                    //    || server.DispName.ToLower().IndexOf(nameFilter.ToLower()) >= 0
-                    //    || server.DispNamePinyin.ToLower().IndexOf(nameFilter.ToLower()) >= 0
-                    //    || server.DispNamePinyinInitials.ToLower().IndexOf(nameFilter.ToLower()) >= 0
-                    //    )
-                    //    return true;
                 }
                 return false;
             }

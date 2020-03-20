@@ -324,6 +324,7 @@
                                 BorderThickness="0" Content="{DynamicResource tab_all}">
                             <Button.Style>
                                 <Style TargetType="Button">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                                     <Setter Property="Background" Value="{DynamicResource MainColor1}"/>
                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
                                     <Setter Property="Template">

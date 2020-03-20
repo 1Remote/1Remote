@@ -10,6 +10,8 @@
         Topmost="True"
         mc:Ignorable="d"
         Name="Window"
+        AllowsTransparency="True"
+        Background="Transparent"
         Title="SearchBoxWindow" Height="46" Width="400">
     <Window.Resources>
 
@@ -30,6 +32,7 @@
             <Setter Property="AllowDrop" Value="true"/>
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
             <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -65,6 +68,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Focusable" Value="false"/>
             <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -98,6 +102,7 @@
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
             <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
             <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -184,10 +189,11 @@
 
 
         <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBox}">
-                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
                             <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Template="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplate}">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                             </ScrollViewer>
@@ -201,30 +207,20 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Border>
-                                        <Grid x:Name="GridContainer">
-                                            <Grid Name="Background" Background="{TemplateBinding Background}"></Grid>
-                                            <Border Name="Mask" Background="Black"></Border>
-                                            <Grid>
-                                                <ContentPresenter/>
-                                            </Grid>
-                                        </Grid>
-                                    </Border>
+                                    <Grid>
+                                        <Grid x:Name="GridContainer"></Grid>
+                                        <ContentPresenter/>
+                                    </Grid>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="GridContainer">
-                                                <Setter.Value>
-                                                    <SolidColorBrush Color="Black" Opacity="0.4"></SolidColorBrush>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="False">
-                                            <Setter Property="Opacity" Value="0" TargetName="Mask" />
-                                            <Setter Property="Opacity" Value="0.6" TargetName="GridContainer"/>
+                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource MainColor1Foreground}"></Setter>
+                                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer"/>
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Opacity" Value="0.2" TargetName="Mask" />
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer"/>
+                                            <Setter Property="Background" Value="{DynamicResource MainColor2}" TargetName="GridContainer"/>
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -247,23 +243,21 @@
 
 
 
-    <Grid Width="400">
+    <Grid Width="400" Background="Transparent">
         <Grid.Resources>
             <ResourceDictionary>
-                <SolidColorBrush x:Key="BgColor" Color="#333a4d"></SolidColorBrush>
-                <SolidColorBrush x:Key="FgColor" Color="#FFF"></SolidColorBrush>
-                <SolidColorBrush x:Key="BorderColor" Color="#AAA"></SolidColorBrush>
+                <SolidColorBrush x:Key="SearchBoxBorderColor" Color="#666" Opacity="0.2"></SolidColorBrush>
                 <system:Double x:Key="Width">400</system:Double>
             </ResourceDictionary>
         </Grid.Resources>
-        <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="1 1 1 1"
-                     Background="{StaticResource BgColor}"
-                    >
+        <Border BorderBrush="{StaticResource SearchBoxBorderColor}" 
+                BorderThickness="1 1 1 1"
+                Background="{DynamicResource MainColor1}">
             <Grid>
                 <TextBox Name="TbKeyWord" 
                          Margin="10 0 0 0"
-                         Foreground="{StaticResource FgColor}" 
-                         CaretBrush="{StaticResource FgColor}"
+                         Foreground="{DynamicResource MainColor1Foreground}" 
+                         CaretBrush="{DynamicResource MainColor1Foreground}"
                          Width="{StaticResource Width}" Height="44" 
                          FontSize="18"
                          Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
@@ -272,22 +266,35 @@
                          Style="{DynamicResource SearchBoxTbKeyWordStyle}"></TextBox>
 
                 <Grid Width="50" Height="44" HorizontalAlignment="Right" 
-                          Background="{StaticResource BgColor}"
+                          Background="{DynamicResource MainColor1}"
                           MouseMove="WindowHeader_MouseMove"></Grid>
             </Grid>
         </Border>
+        <Border BorderBrush="{DynamicResource MainColor2}" BorderThickness="0 0 0 1">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=PopupSelections, Path=IsOpen}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
         <Popup Name="PopupSelections" StaysOpen="True" 
+               AllowsTransparency="True"
                IsOpen="{Binding PopupIsOpen}"
                Width="{StaticResource Width}"
                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-            <Border BorderBrush="{StaticResource BorderColor}" BorderThickness="1 0 1 1">
+            <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" Background="{DynamicResource MainColor1}">
                 <Grid>
                     <ListBox x:Name="ListBoxSelections" MaxHeight="402"
                                  BorderThickness="0"
                                  SelectedIndex="{Binding SelectedServerTextIndex}" 
                                  ItemsSource="{Binding DispServerList}"
-                                 Background="{DynamicResource BgColor}"
-                                 Foreground="{DynamicResource FgColor}"
+                                 Background="{DynamicResource MainColor1}"
+                                 Foreground="{DynamicResource MainColor1Foreground}"
                                  Style="{DynamicResource SearchBoxSelectionList}">
                     </ListBox>
                 </Grid>

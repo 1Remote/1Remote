@@ -14,7 +14,7 @@ namespace Shawn.Ulits
         {
             if (string.IsNullOrEmpty(keyWordSeparator))
                 return IsMatchKeyWords(orgString, new[] { keyword }, out matchPlace, isCaseSensitive);
-            var kws = keyword.Split(new string[]{keyWordSeparator}, StringSplitOptions.RemoveEmptyEntries);
+            var kws = keyword.Split(new string[] { keyWordSeparator }, StringSplitOptions.RemoveEmptyEntries);
             return IsMatchKeyWords(orgString, kws, out matchPlace, isCaseSensitive);
         }
 
@@ -34,7 +34,7 @@ namespace Shawn.Ulits
             var keyWordList = keywords.ToList();
             if (!keyWordList.Any())
                 return false;
-            
+
 
             var orgStringInTrueCase = orgString;
             if (isCaseSensitive == false)
@@ -58,7 +58,7 @@ namespace Shawn.Ulits
                 {
                     var placeholderString = new string(placeholder, keyword.Length);
                     // 标记所有匹配位置
-                    var tmpString = orgStringInTrueCase.Replace(keyword,placeholderString);
+                    var tmpString = orgStringInTrueCase.Replace(keyword, placeholderString);
                     for (var i = 0; i < tmpString.Length; i++)
                     {
                         var @char = tmpString[i];
@@ -95,11 +95,11 @@ namespace Shawn.Ulits
         {
             if (string.IsNullOrEmpty(keyWordSeparator))
                 return IsMatchPinyinKeyWords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive);
-            var kws = keyword.Split(new string[]{keyWordSeparator}, StringSplitOptions.RemoveEmptyEntries);
+            var kws = keyword.Split(new string[] { keyWordSeparator }, StringSplitOptions.RemoveEmptyEntries);
             return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive);
         }
 
-        
+
         /// <summary>
         /// 汉字拼音首字母匹配
         /// </summary>
@@ -112,7 +112,7 @@ namespace Shawn.Ulits
         {
             if (string.IsNullOrEmpty(keyWordSeparator))
                 return IsMatchPinyinKeyWords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive, true);
-            var kws = keyword.Split(new string[]{keyWordSeparator}, StringSplitOptions.RemoveEmptyEntries);
+            var kws = keyword.Split(new string[] { keyWordSeparator }, StringSplitOptions.RemoveEmptyEntries);
             return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive, true);
         }
 
@@ -203,6 +203,18 @@ namespace Shawn.Ulits
                     if (string.IsNullOrEmpty(keyword))
                         continue;
 
+                    bool isThisKeyWordDirectMatched = false;
+                    if (IsMatchKeyWords(orgString, keyword, out var m1, "", isCaseSensitive))
+                    {
+                        isThisKeyWordDirectMatched = true;
+                        for (int i = 0; i < m1.Count; i++)
+                        {
+                            if (m1[i])
+                                matchPlace[i] = true;
+                        }
+                    }
+
+                    bool isThisKeyWordMatched = false;
                     if (pinyinInitialsLowerString.IndexOf(keyword.ToLower(), StringComparison.Ordinal) >= 0)
                     {
                         var placeholderString = new string(placeholder, keyword.Length);
@@ -218,13 +230,13 @@ namespace Shawn.Ulits
                                     matchPlace[i] = true;
                                 }
                             }
+                            isThisKeyWordMatched = true;
                         }
                         else
                         {
                             // 针对大小写敏感的情况，先找出全小写模式下的匹配位置，再判断这些匹配位置处非汉字字符的大小写匹配情况
                             int n = tmpString.IndexOf(placeholderString, StringComparison.Ordinal);
                             int offset = 0;
-                            bool isThisKeyWordMatched = false;
                             while (n >= 0)
                             {
                                 bool isThisPlaceMatched = true;
@@ -246,7 +258,7 @@ namespace Shawn.Ulits
                                         var @char = tmpString[i + n];
                                         if (@char == placeholder)
                                         {
-                                            matchPlace[i + n  + offset] = true;
+                                            matchPlace[i + n + offset] = true;
                                         }
                                     }
                                 }
@@ -255,15 +267,11 @@ namespace Shawn.Ulits
                                 tmpString = tmpString.Substring(n + keyword.Length);
                                 n = tmpString.IndexOf(placeholderString, StringComparison.Ordinal);
                             }
-
-                            if (isThisKeyWordMatched == false)
-                            {
-                                isAllKeyWordMatched = false;
-                                break;
-                            }
                         }
                     }
-                    else
+
+                    // 该关键词直接匹配，拼音匹配均不成功时，标记匹配失败
+                    if (isThisKeyWordDirectMatched == false && isThisKeyWordMatched == false)
                     {
                         isAllKeyWordMatched = false;
                         break;
@@ -277,7 +285,7 @@ namespace Shawn.Ulits
 
 
             // 否则进行拼音全词匹配
-            if(isInitialOnly == false)
+            if (isInitialOnly == false)
             {
                 // 拼音字符串中字符，对应原始汉字字符的索引，非拼音首字母字符索引为负数，例如 "你好世界2020" 的拼音 "nihaoshijie2020"，其索引为 [0,-1,  1,-1,-1,   2,-1,-1,   3,-1,-1,  4,5,6,7]
                 var pinyinChar2OrgCharIndex = new List<int>();
@@ -323,7 +331,7 @@ namespace Shawn.Ulits
                                 matchPlace[i] = true;
                         }
                     }
-                    
+
                     bool isThisKeyWordMatched = false;
                     if (pinyinLowerString.IndexOf(keyword.ToLower()) >= 0)
                     {
@@ -393,7 +401,7 @@ namespace Shawn.Ulits
                         }
 
                     }
-                    
+
                     // 该关键词直接匹配，拼音匹配均不成功时，标记匹配失败
                     if (isThisKeyWordDirectMatched == false && isThisKeyWordMatched == false)
                     {
@@ -428,6 +436,6 @@ namespace Shawn.Ulits
                 return (char)0;
             return placeholder;
         }
-        
+
     }
 }

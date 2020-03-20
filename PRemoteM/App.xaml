@@ -7,7 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Skins/Default/DefaultSkins.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Skins/Default.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Converter/Converter.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
