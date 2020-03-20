@@ -19,7 +19,7 @@ namespace PRM.Core.ViewModel
 
         private ObservableCollection<VmServerCard> _dispServerlist = new ObservableCollection<VmServerCard>();
         /// <summary>
-        /// ServerList data source for list view
+        /// AllServerList data source for list view
         /// </summary>
         public ObservableCollection<VmServerCard> DispServerList
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.Core.Ulits;
+using Shawn.Ulits;
 using static System.Diagnostics.Debug;
 
 namespace PRM.Core.Model
@@ -61,7 +61,6 @@ namespace PRM.Core.Model
             }
         }
         private ResourceDictionary _currentLanguageResourceDictionary = null;
-
         public ResourceDictionary CurrentLanguageResourceDictionary
         {
             get
@@ -90,6 +89,15 @@ namespace PRM.Core.Model
             }
         }
 
+        public string GetText(string textKey)
+        {
+            if (CurrentLanguageResourceDictionary.Contains(textKey))
+                return CurrentLanguageResourceDictionary[textKey].ToString();
+            if (DefaultLanguageResourceDictionary.Contains(textKey))
+                return DefaultLanguageResourceDictionary[textKey].ToString();
+
+            throw new NotImplementedException("can't find any string by '" + textKey + "'!");
+        }
 
         #endregion
     }

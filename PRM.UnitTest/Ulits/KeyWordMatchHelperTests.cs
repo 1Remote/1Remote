@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.Core.Ulits;
+using Shawn.Ulits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRM.Core.Ulits.Tests
+namespace Shawn.Ulits.Tests
 {
     [TestClass()]
     public class KeyWordMatchHelperTests
