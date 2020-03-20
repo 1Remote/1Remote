@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
+using PRM.Core.Annotations;
 using PRM.Core.Base;
 
 namespace PRM.RDP
@@ -35,10 +36,15 @@ namespace PRM.RDP
 
 
         private string _address;
+
+        [NotNull]
         public string Address
         {
             get => _address;
-            set => SetAndNotifyIfChanged(nameof(Address), ref _address, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(Address), ref _address, value);
+            }
         }
 
 
@@ -152,6 +158,11 @@ namespace PRM.RDP
             {
                 return null;
             }
+        }
+
+        protected override string GetSubTitle()
+        {
+            return Address + " @ " + UserName;
         }
     }
 }
