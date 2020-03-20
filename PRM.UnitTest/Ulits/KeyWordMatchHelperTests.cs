@@ -33,7 +33,6 @@ namespace PRM.Core.Ulits.Tests
                 string kws = "A";
                 var ret = KeyWordMatchHelper.IsMatchKeyWords(org, kws, out var m, " ", true);
                 Assert.IsTrue(ret == false);
-                Assert.IsTrue(m.Count == org.Length && m[0] == false && m[1] == false);
             }
             {
                 string org = "abcdefg";
@@ -71,6 +70,20 @@ namespace PRM.Core.Ulits.Tests
                 string kws = " ";
                 var ret = KeyWordMatchHelper.IsMatchKeyWords(org, kws, out var m, "", true);
                 Assert.IsTrue(ret == true);
+            }
+            {
+                string org = "aabbAa";
+                string kws = "a";
+                var ret = KeyWordMatchHelper.IsMatchKeyWords(org, kws, out var m, "", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m[0] == true && m[1] == true && m[2] == false && m[3] == false && m[4] == true && m[5] == true);
+            }
+            {
+                string org = "aabbAa";
+                string kws = "a";
+                var ret = KeyWordMatchHelper.IsMatchKeyWords(org, kws, out var m, "", true);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m[0] == true && m[1] == true && m[2] == false && m[3] == false && m[4] == false && m[5] == true);
             }
         }
 
@@ -127,13 +140,6 @@ namespace PRM.Core.Ulits.Tests
                 Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == false && m[3] == true);
             }
             {
-                string org = "你好世界";
-                string kws = "N j";
-                var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", true);
-                Assert.IsTrue(ret == true);
-                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == false && m[3] == true);
-            }
-            {
                 string org = "你好世界HelloWorld";
                 string kws = "sjhello";
                 var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", true);
@@ -144,7 +150,7 @@ namespace PRM.Core.Ulits.Tests
                 string kws = "SJHello";
                 var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", false);
                 Assert.IsTrue(ret == true);
-                Assert.IsTrue(m.Count == org.Length && m[0] == false && m[1] == false && m[2] == true && m[3] == true && m[4] == true&& m[5] == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == false && m[1] == false && m[2] == true && m[3] == true && m[4] == true && m[5] == true);
             }
             {
                 string org = "你好世界HelloWorld";
@@ -160,10 +166,128 @@ namespace PRM.Core.Ulits.Tests
                 Assert.IsTrue(m.Count == org.Length && m[0] == false && m[1] == false && m[2] == true && m[3] == true && m[4] == true);
             }
             {
+                string org = "你好世界HelloWorld";
+                string kws = "Ni 世界";
+                var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == true && m[3] == true);
+            }
+            {
+                string org = "你好世界HelloWorld";
+                string kws = "Ni 世界 rLD";
+                var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == true && m[3] == true);
+            }
+            {
                 // 多音字，不支持
                 string org = "行动起来HAHAH一行白鹭";
                 string kws = "X D";
                 var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == true);
+            }
+        }
+
+        [TestMethod()]
+        public void IsMatchPinyinInitialKeyWordsTest()
+        {
+            {
+                string org = "你好世界";
+                string kws = "你好";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == true);
+            }
+            {
+                string org = "你好世界";
+                string kws = "你 好";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == true);
+            }
+            {
+                string org = "你好世界";
+                string kws = "好";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == false && m[1] == true);
+            }
+            {
+                string org = "你好世界";
+                string kws = "NiHao";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == false);
+            }
+            {
+                string org = "你好世界";
+                string kws = "NH";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == true);
+            }
+            {
+                string org = "你好世界";
+                string kws = "N j";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == false && m[3] == true);
+            }
+            {
+                string org = "你好世界HelloWorld";
+                string kws = "sjhello";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == false);
+            }
+            {
+                string org = "你好世界HelloWorld";
+                string kws = "SJHello";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == false && m[1] == false && m[2] == true && m[3] == true && m[4] == true && m[5] == true);
+            }
+            {
+                string org = "你好世界HelloWorld";
+                string kws = "shi jieh";
+                var ret = KeyWordMatchHelper.IsMatchPinyinKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == false);
+            }
+            {
+                string org = "你好世界HelloWorld";
+                string kws = "shi jieh";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == false);
+            }
+            {
+                string org = "你好世界HelloWorld";
+                string kws = "Ni 世界";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == false);
+            }
+            {
+                string org = "New你好世界";
+                string kws = "N 世界";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == false && m[3] == false && m[5] == true && m[6] == true);
+            }
+            {
+                string org = "New你好世界";
+                string kws = "n 世界";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", true);
+                Assert.IsTrue(ret == false);
+            }
+            {
+                string org = "New你好世界";
+                string kws = "n 世界";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", false);
+                Assert.IsTrue(ret == true);
+                Assert.IsTrue(m.Count == org.Length && m[0] == true && m[1] == false && m[2] == false && m[3] == false && m[5] == true && m[6] == true);
+            }
+            {
+                // 多音字，不支持
+                string org = "行动起来HAHAH一行白鹭";
+                string kws = "X D AH";
+                var ret = KeyWordMatchHelper.IsMatchPinyinInitialKeyWords(org, kws, out var m, " ", true);
                 Assert.IsTrue(ret == true);
             }
         }

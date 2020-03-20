@@ -16,14 +16,14 @@ namespace PRM.View
     {
         private Point lastPoint = new Point(0, 0);
         private readonly object _keyDownLocker = new object();
-        private readonly VmSearchBox _vmSearchBox = null;
+        //private readonly VmSearchBox _vmSearchBox = null;
 
 
         public SearchBoxWindow(VmMain vmMain)
         {
             InitializeComponent();
-            _vmSearchBox = new VmSearchBox(vmMain);
-            DataContext = _vmSearchBox;
+            //_vmSearchBox = new VmSearchBox(vmMain);
+            //DataContext = _vmSearchBox;
             TbKeyWord.Focus();
 
 
@@ -66,62 +66,62 @@ namespace PRM.View
 
         private void TbKeyWord_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
-            {
-                Close();
-            }
-            if (e.Key == Key.Enter)
-            {
-                if(_vmSearchBox.DispServerList.Count > _vmSearchBox.SelectedServerTextIndex)
-                    MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
-                // TODO open
-                Close();
-            }
+            //if (e.Key == Key.Escape)
+            //{
+            //    Close();
+            //}
+            //if (e.Key == Key.Enter)
+            //{
+            //    if(_vmSearchBox.DispServerList.Count > _vmSearchBox.SelectedServerTextIndex)
+            //        MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
+            //    // TODO open
+            //    Close();
+            //}
 
-            if (e.Key == Key.Down)
-            {
-                lock (_keyDownLocker)
-                {
-                    if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
-                    {
-                        ++_vmSearchBox.SelectedServerTextIndex;
-                        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                    }
-                }
-            }
-            if (e.Key == Key.Up)
-            {
-                lock (_keyDownLocker)
-                {
-                    if (_vmSearchBox.SelectedServerTextIndex > 0)
-                    {
-                        --_vmSearchBox.SelectedServerTextIndex;
-                        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                    }
-                }
-            }
-            if (e.Key == Key.PageUp)
-            {
-                lock (_keyDownLocker)
-                {
-                    var i = _vmSearchBox.SelectedServerTextIndex - 5;
-                    if (i < 0)
-                        i = 0;
-                    _vmSearchBox.SelectedServerTextIndex = i;
-                    ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                }
-            }
-            if (e.Key == Key.PageDown)
-            {
-                lock (_keyDownLocker)
-                {
-                    var i = _vmSearchBox.SelectedServerTextIndex + 5;
-                    if (i > _vmSearchBox.DispServerList.Count - 1)
-                        i = _vmSearchBox.DispServerList.Count - 1;
-                    _vmSearchBox.SelectedServerTextIndex = i;
-                    ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                }
-            }
+            //if (e.Key == Key.Down)
+            //{
+            //    lock (_keyDownLocker)
+            //    {
+            //        if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
+            //        {
+            //            ++_vmSearchBox.SelectedServerTextIndex;
+            //            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+            //        }
+            //    }
+            //}
+            //if (e.Key == Key.Up)
+            //{
+            //    lock (_keyDownLocker)
+            //    {
+            //        if (_vmSearchBox.SelectedServerTextIndex > 0)
+            //        {
+            //            --_vmSearchBox.SelectedServerTextIndex;
+            //            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+            //        }
+            //    }
+            //}
+            //if (e.Key == Key.PageUp)
+            //{
+            //    lock (_keyDownLocker)
+            //    {
+            //        var i = _vmSearchBox.SelectedServerTextIndex - 5;
+            //        if (i < 0)
+            //            i = 0;
+            //        _vmSearchBox.SelectedServerTextIndex = i;
+            //        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+            //    }
+            //}
+            //if (e.Key == Key.PageDown)
+            //{
+            //    lock (_keyDownLocker)
+            //    {
+            //        var i = _vmSearchBox.SelectedServerTextIndex + 5;
+            //        if (i > _vmSearchBox.DispServerList.Count - 1)
+            //            i = _vmSearchBox.DispServerList.Count - 1;
+            //        _vmSearchBox.SelectedServerTextIndex = i;
+            //        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+            //    }
+            //}
         }
     }
 }

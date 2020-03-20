@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core;
 using PRM.Core.Model;
+using PRM.Core.Ulits;
 using PRM.Core.ViewModel;
 using PRM.View;
-using Shawn.Ulits;
 
 namespace PersonalRemoteManager
 {
@@ -32,11 +32,10 @@ namespace PersonalRemoteManager
                 MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
 
 
-                var vm = new VmMain();
-                var sb = new SearchBoxWindow(vm);
-                sb.ShowDialog();
-
-                Environment.Exit(0);
+                //var vm = new VmMain();
+                //var sb = new SearchBoxWindow(vm);
+                //sb.ShowDialog();
+                //Environment.Exit(0);
 
             }
             catch (Exception ex)
