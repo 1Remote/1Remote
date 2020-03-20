@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Markup;
 using Newtonsoft.Json;
 
-namespace PRM.Core.Ulits
+namespace Shawn.Ulits
 {
     public static class MultiLangHelper
     {

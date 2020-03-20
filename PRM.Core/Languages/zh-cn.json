@@ -14,5 +14,7 @@
   "server_resolution": "分辨率",
   "server_rdp": "RDP连接",
   "tab_all": "全部",
-  "filter_info" : "输入筛选关键词"
+  "info_filter": "搜索",
+  "info_hotkey_already_registered": "快捷键已被占用",
+  "info_hotkey_registered_fail": "快捷键注册失败"
 }
