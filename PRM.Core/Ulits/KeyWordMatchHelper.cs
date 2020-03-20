@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Converters;
 using PRM.Core.Annotations;
 
-namespace PRM.Core.Ulits
+namespace Shawn.Ulits
 {
     public static class KeyWordMatchHelper
     {

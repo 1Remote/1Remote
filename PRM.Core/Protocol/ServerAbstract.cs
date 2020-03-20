@@ -51,17 +51,11 @@ namespace PRM.Core.Base
             set
             {
                 SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
-                DispNamePinyin = TinyPinyin.PinyinHelper.GetPinyin(DispName, "").ToLower();
-                DispNamePinyinInitials = TinyPinyin.PinyinHelper.GetPinyinInitials(DispName).ToLower();
             }
         }
 
         [JsonIgnore]
-        public string DispNamePinyin { get; set; }
-
-        [JsonIgnore]
-        public string DispNamePinyinInitials { get; set; }
-
+        public string SubTitle => GetSubTitle();
 
         private string _groupName = "";
         public string GroupName
@@ -116,12 +110,12 @@ namespace PRM.Core.Base
         }
 
 
-        private BitmapSource _iconimg;
+        private BitmapSource _iconImg;
         [JsonIgnore]
         public BitmapSource IconImg
         {
-            get => _iconimg;
-            private set => SetAndNotifyIfChanged(nameof(IconImg), ref _iconimg, value);
+            get => _iconImg;
+            private set => SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
         }
 
 
@@ -185,7 +179,7 @@ namespace PRM.Core.Base
 
 
 
-
+        protected abstract string GetSubTitle();
 
 
 
@@ -356,6 +350,11 @@ namespace PRM.Core.Base
         public override ServerAbstract CreateFromJsonString(string jsonString)
         {
             throw new NotImplementedException();
+        }
+
+        protected override string GetSubTitle()
+        {
+            return  "";
         }
 
         public NoneServer() : base("", "")
