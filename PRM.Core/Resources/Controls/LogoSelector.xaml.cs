@@ -77,22 +77,27 @@ namespace PRM.Core.Resources.Controls
             get => _scaling;
             set
             {
-                if (value > 0.2 && value < 2)
-                {
+                if (Math.Abs(value - _scaling) < 0.1)
+                    return;
+
+                if (value < 0.1)
+                    _scaling = 0.1;
+                if (value > 2)
+                    _scaling = 2;
+                else
                     _scaling = value;
-                    if (Img?.Source != null)
-                    {
-                        OnPropertyChanged(nameof(Scaling));
-                        double wl = LogoSourceBitmapImage.PixelWidth * Scaling - CanvasImage.Width;
-                        double hl = LogoSourceBitmapImage.PixelHeight * Scaling - CanvasImage.Height;
-                        CanvasImage.Width += wl;
-                        CanvasImage.Height += hl;
-                        // 缩放后保持图像中心不变
-                        CanvasImage.SetValue(Canvas.LeftProperty, Canvas.GetLeft(CanvasImage) - wl / 2.0);
-                        CanvasImage.SetValue(Canvas.TopProperty, Canvas.GetTop(CanvasImage) - hl / 2.0);
-                        ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
-                    }
+                if (Img?.Source != null)
+                {
+                    double wl = LogoSourceBitmapImage.PixelWidth * Scaling - CanvasImage.Width;
+                    double hl = LogoSourceBitmapImage.PixelHeight * Scaling - CanvasImage.Height;
+                    CanvasImage.Width += wl;
+                    CanvasImage.Height += hl;
+                    // 缩放后保持图像中心不变
+                    CanvasImage.SetValue(Canvas.LeftProperty, Canvas.GetLeft(CanvasImage) - wl / 2.0);
+                    CanvasImage.SetValue(Canvas.TopProperty, Canvas.GetTop(CanvasImage) - hl / 2.0);
+                    ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
                 }
+                OnPropertyChanged(nameof(Scaling));
             }
         }
 
@@ -338,7 +343,7 @@ namespace PRM.Core.Resources.Controls
         }
 
 
-        
+
 
         /// <summary>
         ///  防止 child 跑到 parent 外面
@@ -409,7 +414,7 @@ namespace PRM.Core.Resources.Controls
             //ofd.FilterIndex = 2;
             ofd.RestoreDirectory = true;
             if (ofd.ShowDialog() == true)
-            { 
+            {
                 SetImg(GetBitmapSource(ofd.FileName));
             }
         }

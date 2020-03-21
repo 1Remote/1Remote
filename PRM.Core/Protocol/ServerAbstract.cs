@@ -54,7 +54,6 @@ namespace PRM.Core.Base
             }
         }
 
-        [JsonIgnore]
         public string SubTitle => GetSubTitle();
 
         private string _groupName = "";

@@ -141,16 +141,18 @@ namespace PRM.Resources.Converter
                 string keyWord = values[1].ToString();
                 string selectedGroup = values[2].ToString();
 
-                if (string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup)
+                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup || server.GetType() == typeof(NoneServer);
+                if (!bGroupMatched)
+                    return false;
+
+                if (string.IsNullOrEmpty(keyWord))
+                    return true;
+                var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
+                if (f1)
                 {
-                    if (string.IsNullOrEmpty(keyWord))
-                        return true;
-                    var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
-                    if (f1)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
                 return false;
             }
             catch (Exception e)
