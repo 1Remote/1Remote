@@ -61,13 +61,29 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\PageHost.xaml.cs">
+      <DependentUpon>PageHost.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StoryboardHelpers.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModel\RelayCommand.cs" />
+    <Compile Include="ViewModel\VmMain.cs" />
+    <Compile Include="ViewModel\VmSearchBox.cs" />
+    <Compile Include="ViewModel\VmServerCard.cs" />
+    <Compile Include="ViewModel\VmServerListPage.cs" />
     <Compile Include="View\SearchBoxWindow.xaml.cs">
       <DependentUpon>SearchBoxWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ServerListPage.xaml.cs">
+      <DependentUpon>ServerListPage.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Controls\PageHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ServerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -91,6 +107,10 @@
     <Page Include="View\SearchBoxWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ServerListPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

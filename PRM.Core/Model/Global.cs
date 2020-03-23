@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core.Base;
 using Shawn.Ulits;
 using static System.Diagnostics.Debug;
 
@@ -98,6 +99,13 @@ namespace PRM.Core.Model
 
             throw new NotImplementedException("can't find any string by '" + textKey + "'!");
         }
+
+        #endregion
+
+
+        #region MyRegion
+
+        public readonly List<ServerAbstract> ServerList = new List<ServerAbstract>();
 
         #endregion
     }

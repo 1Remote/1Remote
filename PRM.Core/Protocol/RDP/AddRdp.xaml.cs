@@ -7,9 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PRM.Core.Base;
-using PRM.Core.DB;
-using PRM.Core.ViewModel;
 using PRM.RDP;
 
 namespace PRM.Core.Protocol.RDP

@@ -4,9 +4,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.Model;
-using PRM.Core.ViewModel;
 using PRM.View;
+using PRM.ViewModel;
 using Shawn.Ulits;
+using Shawn.Ulits.PageHost;
 
 namespace PRM
 {
@@ -23,6 +24,12 @@ namespace PRM
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => this.WindowState = WindowState.Minimized;
 
+            ((VmMain)DataContext).DispPage = new Shawn.Ulits.PageHost.AnimationPage
+            {
+                InAnimationType = AnimationPage.InOutAnimationType.FadeIn,
+                OutAnimationType = AnimationPage.InOutAnimationType.FadeOut,
+                Page =  new ServerListPage()
+            };
 
             Loaded += (sender, args) =>
             {
@@ -46,6 +53,9 @@ namespace PRM
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+
+                //PageHost.Show(new ServerListPage());
             };
         }
 
@@ -92,11 +102,6 @@ namespace PRM
 
         private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
         {
-        }
-
-        private void BtnAllServer_Click(object sender, RoutedEventArgs e)
-        {
-            ((VmMain)this.DataContext).SelectedGroup = "";
         }
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)

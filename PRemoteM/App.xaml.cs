@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core;
+using PRM.Core.DB;
 using PRM.Core.Model;
-using PRM.Core.ViewModel;
+using PRM.RDP;
 using PRM.View;
 using Shawn.Ulits;
 
@@ -30,6 +32,39 @@ namespace PersonalRemoteManager
 
                 Global.GetInstance().CurrentLanguage = "en-us";
                 MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+
+
+
+
+#if DEBUG
+                // TODO 测试用
+                if (File.Exists(PRM_DAO.DbPath))
+                    File.Delete(PRM_DAO.DbPath);
+                if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
+                {
+                    var di = new DirectoryInfo(@"D:\rdpjson");
+                    if (di.Exists)
+                    {
+                        // read from jsonfile 
+                        var fis = di.GetFiles("*.rdpjson", SearchOption.AllDirectories);
+                        var rdp = new ServerRDP();
+                        foreach (var fi in fis)
+                        {
+                            var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
+                            if (newRdp != null)
+                            {
+                                PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        di.Create();
+                    }
+                }
+#endif
+
+
 
 
                 //var vm = new VmMain();

@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls1="clr-namespace:PRM.Controls"
         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+        xmlns:pageHost="clr-namespace:Shawn.Ulits.PageHost"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
@@ -15,9 +16,6 @@
     </WindowChrome.WindowChrome>
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter"/>
         </ResourceDictionary>
     </Window.Resources>
@@ -53,14 +51,14 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="20"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
 
             <Grid Background="{DynamicResource MainColor1}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown" PreviewMouseMove="System_MouseMove">
                 <StackPanel Orientation="Horizontal">
-                    <Grid Background="Aquamarine" Width="25" Height="25" Margin="2"></Grid>
+                    <Grid Background="Aquamarine" Width="25" Height="25" Margin="2">
+                    </Grid>
 
                     <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1Foreground}">
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
@@ -238,209 +236,10 @@
                 </Button>
             </StackPanel>
 
-
-
-            <Grid Background="#ced8e1" Grid.Row="2">
-                <ListView ItemsSource="{Binding DispServerList}" 
-                      Padding="10"
-                      BorderThickness="0"
-                      Background="Transparent"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Grid.ColumnSpan="2" Margin="0,0,0,0.5"
-                      >
-                    <ListView.Resources>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                            <Setter Property="Control.Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListViewItem">
-                                        <ContentPresenter 
-                                                Content="{TemplateBinding ContentControl.Content}" 
-                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" 
-                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" 
-                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" 
-                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" 
-                                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListView.Resources>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Setter Property="Visibility" Value="Hidden"></Setter>
-                                        <Setter Property="Height" Value="164"></Setter>
-                                        <!--determine this item's visibility-->
-                                        <Setter Property="Width" Value="0"></Setter>
-                                        <Style.Triggers>
-                                            <DataTrigger>
-                                                <DataTrigger.Binding>
-                                                    <MultiBinding Converter="{StaticResource ConverterStringIsContainXXX}">
-                                                        <Binding Path="Server"></Binding>
-                                                        <Binding Path="DataContext.DispNameFilter" ElementName="Window"></Binding>
-                                                        <Binding Path="DataContext.SelectedGroup" ElementName="Window"></Binding>
-                                                    </MultiBinding>
-                                                </DataTrigger.Binding>
-                                                <DataTrigger.Value>True</DataTrigger.Value>
-                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                <Setter Property="Width" Value="165"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <!--determine this item's visibility end -->
-                                    </Style>
-                                </Grid.Style>
-
-                                <controls1:ServerCard VmServerCard="{Binding}">
-                                </controls1:ServerCard>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ListView>
+            <Grid Grid.Row="1">
+                <pageHost:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost:PageHost>
             </Grid>
 
-
-            <Grid Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top">
-                <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1Foreground}" Height="20">
-                    <Border.Effect>
-                        <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
-                    </Border.Effect>
-                </Border>
-
-                <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1}">
-                    <Grid Height="20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Button Padding="0 1 0 0"
-                                Click="BtnAllServer_Click"
-                                BorderThickness="0" Content="{DynamicResource tab_all}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Background" Value="{DynamicResource MainColor1}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource MainBgColor}"></Setter>
-                                        </Trigger>
-                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="">
-                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
-                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-
-                        <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" 
-                                      Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                      Style="{StaticResource MinHorizontalScrollViewerStyle}">
-                            <StackPanel Orientation="Horizontal">
-                                <ListBox 
-                                    IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding ServerGroups}" 
-                                    SelectedValue="{Binding SelectedGroup}"
-                                    Background="{StaticResource MainColor1}"
-                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                                    BorderThickness="0"
-                                    Margin="0"
-                                    Padding="0">
-                                    <ListBox.Style>
-                                        <Style TargetType="ListBox">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListBox">
-                                                        <ItemsPresenter/>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ListBox.Style>
-                                    <ListBox.Resources>
-                                        <Style TargetType="ListBoxItem">
-                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListBoxItem">
-                                                        <Border BorderThickness="0" Margin="{TemplateBinding Margin}"
-                                                        Padding="{TemplateBinding Control.Padding}" 
-                                                        Background="{TemplateBinding Panel.Background}" 
-                                                        Name="Bd" 
-                                                        SnapsToDevicePixels="True">
-                                                            <ContentPresenter 
-                                                                Content="{TemplateBinding ContentControl.Content}" 
-                                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" 
-                                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" 
-                                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" 
-                                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" 
-                                                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="Selector.IsSelected" Value="True">
-                                                                <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2}"></Setter>
-                                                            </Trigger>
-                                                            <Trigger Property="UIElement.IsMouseOver" Value="True">
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainBgColor}"></Setter>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-
-                                            <Setter Property="Foreground" Value="{StaticResource MainColor1Foreground}"></Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter Property="Foreground" Value="{StaticResource MainColor2Foreground}"></Setter>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ListBox.Resources>
-                                    <ListBox.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal"></StackPanel>
-                                        </ItemsPanelTemplate>
-                                    </ListBox.ItemsPanel>
-
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <TextBlock Margin="15 0" 
-                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" 
-                                                           FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           Text="{Binding}"></TextBlock>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ListBox>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-            </Grid>
 
 
             <!--<Grid Grid.Row="2">

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
 using PRM.Core.Base;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
 using PRM.RDP;
 
-namespace PRM.Core.ViewModel
+namespace PRM.ViewModel
 {
     public class VmServerCard : NotifyPropertyChangedBase
     {

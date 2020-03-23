@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PRM.Core.Base;
 using Shawn.Ulits;
 
-namespace PRM.Core.ViewModel
+namespace PRM.ViewModel
 {
     public class VmSearchBox : NotifyPropertyChangedBase
     {
@@ -90,18 +86,18 @@ namespace PRM.Core.ViewModel
             //}
 
 
-            // 高级搜索
-            foreach (var item in _vmMain.DispServerList
-                .Where(x => x.Server.GetType() != typeof(NoneServer))
-                .Select(x => x.Server))
-            {
-                var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.DispName, keyWord, out var m1);
-                var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.SubTitle, keyWord, out var m2);
-                if (f1 || f2)
-                {
-                    DispServerList.Add(item);
-                }
-            }
+            //// 高级搜索
+            //foreach (var item in _vmMain.ServerListPageEntity
+            //    .Where(x => x.Server.GetType() != typeof(NoneServer))
+            //    .Select(x => x.Server))
+            //{
+            //    var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.DispName, keyWord, out var m1);
+            //    var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.SubTitle, keyWord, out var m2);
+            //    if (f1 || f2)
+            //    {
+            //        DispServerList.Add(item);
+            //    }
+            //}
 
 
             if (!DispServerList.Any())

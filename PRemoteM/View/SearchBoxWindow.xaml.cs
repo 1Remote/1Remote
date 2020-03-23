@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.Base;
-using PRM.Core.ViewModel;
+using PRM.ViewModel;
 
 namespace PRM.View
 {
