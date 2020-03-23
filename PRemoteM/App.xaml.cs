@@ -59,33 +59,6 @@ namespace PersonalRemoteManager
 
 
 
-#if DEBUG
-                // TODO 测试用
-                if (File.Exists(PRM_DAO.DbPath))
-                    File.Delete(PRM_DAO.DbPath);
-                if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
-                {
-                    var di = new DirectoryInfo(@"D:\rdpjson");
-                    if (di.Exists)
-                    {
-                        // read from jsonfile 
-                        var fis = di.GetFiles("*.rdpjson", SearchOption.AllDirectories);
-                        var rdp = new ServerRDP();
-                        foreach (var fi in fis)
-                        {
-                            var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
-                            if (newRdp != null)
-                            {
-                                PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        di.Create();
-                    }
-                }
-#endif
 
 
 

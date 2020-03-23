@@ -22,7 +22,7 @@ namespace PRM.View
         public SearchBoxWindow(VmMain vmMain)
         {
             InitializeComponent();
-            _vmSearchBox = new VmSearchBox(vmMain);
+            _vmSearchBox = new VmSearchBox();
             DataContext = _vmSearchBox;
             TbKeyWord.Focus();
 

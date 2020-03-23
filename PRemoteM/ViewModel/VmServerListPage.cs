@@ -61,13 +61,8 @@ namespace PRM.ViewModel
         public VmServerListPage()
         {
             ServerGroups.Clear();
-            // TODO read from global
-            // read all server configs from database into dict['all']
-            //foreach (var serverAbstract in Global.GetInstance().ServerList)
-            var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
-            foreach (var serverOrm in serverOrmList)
+            foreach (var serverAbstract in Global.GetInstance().ServerDict.Values)
             {
-                var serverAbstract = ServerFactory.GetInstance().CreateFromDb(serverOrm);
                 DispServerList.Add(new VmServerCard(serverAbstract));
                 DispServerList.Last().OnAction += VmServerCardOnAction;
 

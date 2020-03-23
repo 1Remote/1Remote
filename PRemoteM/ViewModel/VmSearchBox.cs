@@ -2,20 +2,15 @@
 using System.Diagnostics;
 using System.Linq;
 using PRM.Core.Base;
+using PRM.Core.Model;
 using Shawn.Ulits;
 
 namespace PRM.ViewModel
 {
     public class VmSearchBox : NotifyPropertyChangedBase
     {
-        private readonly VmMain _vmMain = null;
-
-
-
-        public VmSearchBox(VmMain vmMain)
+        public VmSearchBox()
         {
-            Debug.Assert(vmMain != null);
-            _vmMain = vmMain;
             UpdateDispList("");
         }
 
@@ -23,7 +18,7 @@ namespace PRM.ViewModel
 
         private ObservableCollection<ServerAbstract> _dispServerlist = new ObservableCollection<ServerAbstract>();
         /// <summary>
-        /// ServerList data source for listbox
+        /// ServerDict data source for listbox
         /// </summary>
         public ObservableCollection<ServerAbstract> DispServerList
         {
@@ -78,26 +73,18 @@ namespace PRM.ViewModel
         private void UpdateDispList(string keyWord)
         {
             DispServerList.Clear();
-            //foreach (var item in _vmMain.DispServerList
-            //    .Where(x => x.Server.DispName.IndexOf(keyWord.Trim()) >= 0 && x.Server.GetType() != typeof(NoneServer))
-            //    .Select(x => x.Server))
-            //{
-            //    DispServerList.Add(item);
-            //}
 
-
-            //// 高级搜索
-            //foreach (var item in _vmMain.ServerListPageEntity
-            //    .Where(x => x.Server.GetType() != typeof(NoneServer))
-            //    .Select(x => x.Server))
-            //{
-            //    var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.DispName, keyWord, out var m1);
-            //    var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.SubTitle, keyWord, out var m2);
-            //    if (f1 || f2)
-            //    {
-            //        DispServerList.Add(item);
-            //    }
-            //}
+            // 高级搜索
+            foreach (var item in Global.GetInstance().ServerDict.Values
+                .Where(x => x.GetType() != typeof(NoneServer)))
+            {
+                var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.DispName, keyWord, out var m1);
+                var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.SubTitle, keyWord, out var m2);
+                if (f1 || f2)
+                {
+                    DispServerList.Add(item);
+                }
+            }
 
 
             if (!DispServerList.Any())

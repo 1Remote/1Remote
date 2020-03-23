@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.Base;
+using PRM.Core.DB;
+using PRM.RDP;
 using Shawn.Ulits;
 using static System.Diagnostics.Debug;
 
@@ -17,6 +20,7 @@ namespace PRM.Core.Model
         private static readonly object InstanceLock = new object();
         private Global()
         {
+            ReadServerDataFromDb();
         }
         public static Global GetInstance()
         {
@@ -103,9 +107,50 @@ namespace PRM.Core.Model
         #endregion
 
 
-        #region MyRegion
+        #region Server Data
 
-        public readonly List<ServerAbstract> ServerList = new List<ServerAbstract>();
+        public readonly Dictionary<long, ServerAbstract> ServerDict = new Dictionary<long, ServerAbstract>();
+
+        private void ReadServerDataFromDb()
+        {
+
+#if DEBUG
+            // TODO 测试用删除数据库
+            if (File.Exists(PRM_DAO.DbPath))
+                File.Delete(PRM_DAO.DbPath);
+            if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
+            {
+                var di = new DirectoryInfo(@"D:\rdpjson");
+                if (di.Exists)
+                {
+                    // read from jsonfile 
+                    var fis = di.GetFiles("*.rdpjson", SearchOption.AllDirectories);
+                    var rdp = new ServerRDP();
+                    foreach (var fi in fis)
+                    {
+                        var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
+                        if (newRdp != null)
+                        {
+                            PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
+                        }
+                    }
+                }
+                else
+                {
+                    di.Create();
+                }
+            }
+#endif
+
+            ServerDict.Clear();
+            var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
+            foreach (var serverOrm in serverOrmList)
+            {
+                var serverAbstract = ServerFactory.GetInstance().CreateFromDb(serverOrm);
+                ServerDict.Add(serverAbstract.Id, serverAbstract);
+            }
+        }
+
 
         #endregion
     }
