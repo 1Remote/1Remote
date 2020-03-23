@@ -91,13 +91,11 @@
     <Compile Include="Ulits\TinyPinyin.Net\IPinyinDict.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\PinyinDict.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\PinyinHelper.cs" />
-    <Compile Include="ViewModel\RelayCommand.cs" />
-    <Compile Include="ViewModel\VmSearchBox.cs" />
-    <Compile Include="ViewModel\VmServerCard.cs" />
-    <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="View\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

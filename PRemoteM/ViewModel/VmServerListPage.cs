@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows;
-using System.Windows.Controls;
 using PRM.Core.Base;
 using PRM.Core.DB;
-using PRM.Core.UI.VM;
-using PRM.RDP;
+using PRM.Core.Model;
 
-namespace PRM.Core.ViewModel
+namespace PRM.ViewModel
 {
-    public class VmMain : NotifyPropertyChangedBase
+    public class VmServerListPage : NotifyPropertyChangedBase
     {
 
         private ObservableCollection<VmServerCard> _dispServerlist = new ObservableCollection<VmServerCard>();
@@ -31,6 +24,7 @@ namespace PRM.Core.ViewModel
                 DispServerList.CollectionChanged += (sender, args) => { OrderServerList(); };
             }
         }
+
 
         private ObservableCollection<string> _serverGroups = new ObservableCollection<string>();
         public ObservableCollection<string> ServerGroups
@@ -60,74 +54,27 @@ namespace PRM.Core.ViewModel
 
 
 
-        //private RelayCommand _clearSelectedGroup;
-        //public RelayCommand ClearSelectedGroup
-        //{
-        //    get
-        //    {
-        //        if (_clearSelectedGroup == null)
-        //            _clearSelectedGroup = new RelayCommand((o) =>
-        //            {
-        //                SelectedGroup = "";
-        //            });
-        //        return _clearSelectedGroup;
-        //    }
-        //}
 
 
-        public VmMain()
+
+
+        public VmServerListPage()
         {
-#if DEBUG
-            // TODO 测试用
-            if (File.Exists(PRM_DAO.DbPath))
-                File.Delete(PRM_DAO.DbPath);
-            if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
-            {
-                var di = new DirectoryInfo(@"D:\rdpjson");
-                if (di.Exists)
-                {
-                    // read from jsonfile 
-                    var fis = di.GetFiles("*.rdpjson", SearchOption.AllDirectories);
-                    var rdp = new ServerRDP();
-                    foreach (var fi in fis)
-                    {
-                        var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
-                        if (newRdp != null)
-                        {
-                            PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
-                        }
-                    }
-                }
-                else
-                {
-                    di.Create();
-                }
-            }
-#endif
-            
-
-
-
+            ServerGroups.Clear();
+            // TODO read from global
             // read all server configs from database into dict['all']
+            //foreach (var serverAbstract in Global.GetInstance().ServerList)
             var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
             foreach (var serverOrm in serverOrmList)
             {
-                var s = ServerFactory.GetInstance().CreateFromDb(serverOrm);
-                if (s != null)
-                {
-                    DispServerList.Add(new VmServerCard(s));
-                    DispServerList.Last().OnAction += OnAction;
-                }
-            }
+                var serverAbstract = ServerFactory.GetInstance().CreateFromDb(serverOrm);
+                DispServerList.Add(new VmServerCard(serverAbstract));
+                DispServerList.Last().OnAction += VmServerCardOnAction;
 
-
-            ServerGroups.Clear();
-            foreach (var vmServerCard in DispServerList)
-            {
-                if (!string.IsNullOrEmpty(vmServerCard.Server.GroupName) &&
-                    !ServerGroups.Contains(vmServerCard.Server.GroupName))
+                if (!string.IsNullOrEmpty(serverAbstract.GroupName) &&
+                    !ServerGroups.Contains(serverAbstract.GroupName))
                 {
-                    ServerGroups.Add(vmServerCard.Server.GroupName);
+                    ServerGroups.Add(serverAbstract.GroupName);
                 }
             }
             OrderServerList();
@@ -135,7 +82,15 @@ namespace PRM.Core.ViewModel
 
 
 
-        private void OnAction(VmServerCard sender, VmServerCard.EServerAction action)
+
+
+
+
+
+
+
+
+        private void VmServerCardOnAction(VmServerCard sender, VmServerCard.EServerAction action)
         {
             switch (action)
             {
@@ -158,7 +113,7 @@ namespace PRM.Core.ViewModel
                         {
                             var newCard = new VmServerCard(ServerFactory.GetInstance().CreateFromDb(serverOrm));
                             DispServerList.Add(newCard);
-                            DispServerList.Last().OnAction += OnAction;
+                            DispServerList.Last().OnAction += VmServerCardOnAction;
                             if (!string.IsNullOrEmpty(newCard.Server.GroupName) && DispServerList.All(s => s.Server.GroupName != newCard.Server.GroupName))
                             {
                                 ServerGroups.Add(newCard.Server.GroupName);
@@ -173,7 +128,6 @@ namespace PRM.Core.ViewModel
             }
             OrderServerList();
         }
-
         private void OrderServerList()
         {
             // Delete NoneServer
@@ -189,7 +143,7 @@ namespace PRM.Core.ViewModel
             // add a 'NoneServer' so that 'add server' button will be shown
             var addServerCard = new VmServerCard(new NoneServer());
             addServerCard.Server.GroupName = SelectedGroup;
-            addServerCard.OnAction += OnAction;
+            addServerCard.OnAction += VmServerCardOnAction;
             _dispServerlist.Add(addServerCard);
 
 
