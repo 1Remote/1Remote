@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PRM.View"
              xmlns:controls="clr-namespace:PRM.Controls"
              mc:Ignorable="d" 
+             Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -14,10 +14,8 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+
     <Grid>
-
-
-
         <Grid Background="#ced8e1" Margin="0 20 0 0 ">
             <ListView ItemsSource="{Binding DispServerList}" 
                       Padding="10"
@@ -62,8 +60,8 @@
                                             <DataTrigger.Binding>
                                                 <MultiBinding Converter="{StaticResource ConverterStringIsContainXXX}">
                                                     <Binding Path="Server"></Binding>
-                                                    <Binding Path="DataContext.DispNameFilter" ElementName="Window"></Binding>
-                                                    <Binding Path="DataContext.SelectedGroup" ElementName="Window"></Binding>
+                                                    <Binding Path="DataContext.DispNameFilter" ElementName="ThisServerListPage"></Binding>
+                                                    <Binding Path="DataContext.SelectedGroup" ElementName="ThisServerListPage"></Binding>
                                                 </MultiBinding>
                                             </DataTrigger.Binding>
                                             <DataTrigger.Value>True</DataTrigger.Value>

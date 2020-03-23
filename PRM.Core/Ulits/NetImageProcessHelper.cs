@@ -81,7 +81,7 @@ namespace Shawn.Ulits
 
         public static void SaveTo(this BitmapSource source, string path)
         {
-            // TODO 
+            // TODO NotImplementedException SaveTo
             throw new NotImplementedException();
         }
 
@@ -111,18 +111,18 @@ namespace Shawn.Ulits
 
         public static BitmapSource ToBitmapSource(this System.Drawing.Image image)
         {
-            return (BitmapSource) image.ToBitmapImage();
+            return (BitmapSource)image.ToBitmapImage();
         }
 
 
         public static Bitmap ToBitmap(this BitmapImage bitmapImage)
         {
-            return ((BitmapSource) bitmapImage).ToBitmap();
+            return ((BitmapSource)bitmapImage).ToBitmap();
         }
 
         public static Bitmap ToBitmap<T>(this T source) where T : BitmapSource
         {
-            var m = (BitmapSource) source;
+            var m = (BitmapSource)source;
             var bmp = new System.Drawing.Bitmap(m.PixelWidth, m.PixelHeight,
                 System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             var data = bmp.LockBits(new System.Drawing.Rectangle(System.Drawing.Point.Empty, bmp.Size),
@@ -247,7 +247,7 @@ namespace Shawn.Ulits
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(mStream, image);
                 mStream.Seek(0, SeekOrigin.Begin);
-                dstBitmap = (Bitmap) bf.Deserialize(mStream);
+                dstBitmap = (Bitmap)bf.Deserialize(mStream);
                 mStream.Close();
             }
 

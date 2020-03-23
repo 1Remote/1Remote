@@ -137,8 +137,6 @@ namespace PRM.Resources.Converter
         {
             try
             {
-                // TODO fix
-                return true;
                 var server = (ServerAbstract)values[0];
                 string keyWord = values[1].ToString();
                 string selectedGroup = values[2].ToString();
