@@ -97,7 +97,6 @@
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

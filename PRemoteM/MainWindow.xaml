@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls1="clr-namespace:PRM.Controls"
-        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
@@ -58,9 +57,11 @@
             </Grid.RowDefinitions>
 
 
-            <Grid Background="{DynamicResource MainColor1}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown" PreviewMouseMove="System_MouseMove">
+            <Grid Background="{DynamicResource MainColor1}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
                 <StackPanel Orientation="Horizontal">
-                    <Grid Background="Aquamarine" Width="25" Height="25" Margin="2"></Grid>
+                    <Grid Background="Aquamarine" Width="25" Height="25" Margin="2">
+                        <!--<Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo40.png"></Image>-->
+                    </Grid>
 
                     <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1Foreground}">
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
