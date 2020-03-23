@@ -93,9 +93,7 @@
     <Compile Include="Ulits\TinyPinyin.Net\PinyinHelper.cs" />
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
