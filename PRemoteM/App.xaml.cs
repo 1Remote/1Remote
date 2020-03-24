@@ -85,6 +85,7 @@ namespace PersonalRemoteManager
 
 
                     Window = new MainWindow();
+                    Window.Closed += (o, args) => { Environment.Exit(0); };
                     Window.ShowDialog();
                 }
             }

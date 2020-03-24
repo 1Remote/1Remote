@@ -14,26 +14,68 @@ namespace PRM.View
     /// </summary>
     public partial class SearchBoxWindow : Window
     {
-        private Point lastPoint = new Point(0, 0);
-        private readonly object _keyDownLocker = new object();
         private readonly VmSearchBox _vmSearchBox = null;
 
 
-        public SearchBoxWindow(VmMain vmMain)
+        public SearchBoxWindow()
         {
             InitializeComponent();
-            Topmost = true;
+            ShowInTaskbar = false;
             _vmSearchBox = new VmSearchBox();
             DataContext = _vmSearchBox;
-            TbKeyWord.Focus();
-            // close when Deactivated
-            Deactivated += (sender, args) => { Dispatcher.Invoke(() => { Close(); }); };
-            KeyDown += (sender, args) =>
+            Loaded += (sender, args) =>
             {
-                if (args.Key == Key.Escape) Close();
+                HideMe();
+                Deactivated += (sender1, args1) => { Dispatcher.Invoke(HideMe); };
+                KeyDown += (sender1, args1) =>
+                {
+                    if (args1.Key == Key.Escape) HideMe();
+                };
             };
-            //ShowInTaskbar = false;
         }
+
+        private readonly object _closeLocker = new object();
+        private bool _isHidden = false;
+        private void HideMe()
+        {
+            if (_isHidden == false)
+                lock (_closeLocker)
+                {
+                    if (_isHidden == false)
+                    {
+                        this.Visibility = Visibility.Hidden;
+                        _vmSearchBox.DispNameFilter = "";
+                        _isHidden = true;
+                    }
+                }
+        }
+
+        public void ShowMe()
+        {
+            if (_isHidden == true)
+                lock (_closeLocker)
+                {
+                    if (_isHidden == true)
+                    {
+                        this.Visibility = Visibility.Visible;
+
+                        this.Activate();
+                        this.Topmost = true;  // important
+                        this.Topmost = false; // important
+                        this.Focus();         // important
+                        TbKeyWord.Focus();
+
+                        _isHidden = false;
+                    }
+                }
+        }
+
+
+
+
+
+
+
 
 
 
@@ -48,62 +90,78 @@ namespace PRM.View
 
 
 
+        private readonly object _keyDownLocker = new object();
         private void TbKeyWord_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            switch (e.Key)
             {
-                Close();
-            }
-            if (e.Key == Key.Enter)
-            {
-                // TODO open conn
-                if (_vmSearchBox.DispServerList.Count > _vmSearchBox.SelectedServerTextIndex)
-                    MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
-                Close();
-            }
+                case Key.Escape:
+                    HideMe();
+                    break;
+                case Key.Enter:
+                {
+                    // TODO open conn
+                    if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count
+                        && _vmSearchBox.SelectedServerTextIndex >= 0)
+                        MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
+                    HideMe();
+                    break;
+                }
 
-            if (e.Key == Key.Down)
-            {
-                lock (_keyDownLocker)
+                case Key.Down:
                 {
-                    if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
+                    lock (_keyDownLocker)
                     {
-                        ++_vmSearchBox.SelectedServerTextIndex;
+                        if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
+                        {
+                            ++_vmSearchBox.SelectedServerTextIndex;
+                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                        }
+                    }
+
+                    break;
+                }
+
+                case Key.Up:
+                {
+                    lock (_keyDownLocker)
+                    {
+                        if (_vmSearchBox.SelectedServerTextIndex > 0)
+                        {
+                            --_vmSearchBox.SelectedServerTextIndex;
+                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                        }
+                    }
+
+                    break;
+                }
+
+                case Key.PageUp:
+                {
+                    lock (_keyDownLocker)
+                    {
+                        var i = _vmSearchBox.SelectedServerTextIndex - 5;
+                        if (i < 0)
+                            i = 0;
+                        _vmSearchBox.SelectedServerTextIndex = i;
                         ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                     }
+
+                    break;
                 }
-            }
-            if (e.Key == Key.Up)
-            {
-                lock (_keyDownLocker)
+
+                case Key.PageDown:
                 {
-                    if (_vmSearchBox.SelectedServerTextIndex > 0)
+                    lock (_keyDownLocker)
                     {
-                        --_vmSearchBox.SelectedServerTextIndex;
+                        var i = _vmSearchBox.SelectedServerTextIndex + 5;
+                        if (i > _vmSearchBox.DispServerList.Count - 1)
+                            i = _vmSearchBox.DispServerList.Count - 1;
+                        _vmSearchBox.SelectedServerTextIndex = i;
                         ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                     }
-                }
-            }
-            if (e.Key == Key.PageUp)
-            {
-                lock (_keyDownLocker)
-                {
-                    var i = _vmSearchBox.SelectedServerTextIndex - 5;
-                    if (i < 0)
-                        i = 0;
-                    _vmSearchBox.SelectedServerTextIndex = i;
-                    ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                }
-            }
-            if (e.Key == Key.PageDown)
-            {
-                lock (_keyDownLocker)
-                {
-                    var i = _vmSearchBox.SelectedServerTextIndex + 5;
-                    if (i > _vmSearchBox.DispServerList.Count - 1)
-                        i = _vmSearchBox.DispServerList.Count - 1;
-                    _vmSearchBox.SelectedServerTextIndex = i;
-                    ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+
+                    break;
                 }
             }
         }

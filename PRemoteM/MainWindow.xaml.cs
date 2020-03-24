@@ -17,7 +17,9 @@ namespace PRM
     public partial class MainWindow : Window
     {
         //实例化notifyIOC控件最小化托盘
-        private System.Windows.Forms.NotifyIcon notifyIcon = null;
+        private System.Windows.Forms.NotifyIcon _notifyIcon = null;
+        private SearchBoxWindow _searchBoxWindow = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +34,7 @@ namespace PRM
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
                 //托盘中显示的图标
-                notifyIcon?.ShowBalloonTip(1000);
+                _notifyIcon?.ShowBalloonTip(1000);
             };
 
             ((VmMain)DataContext).DispPage = new Shawn.Ulits.PageHost.AnimationPage
@@ -44,12 +46,13 @@ namespace PRM
 
             Loaded += (sender, args) =>
             {
+                _searchBoxWindow = new SearchBoxWindow();
+                _searchBoxWindow.Show();
                 var r = GlobalHotkeyHooker.GetInstance().Regist(this, GlobalHotkeyHooker.HotkeyModifiers.MOD_CONTROL,
                     Key.M,
                     () =>
                     {
-                        var sb = new SearchBoxWindow(this.DataContext as VmMain);
-                        sb.Show();
+                        _searchBoxWindow.ShowMe();
                     });
                 switch (r)
                 {
@@ -71,10 +74,12 @@ namespace PRM
 
             Closed += (sender, args) =>
             {
-                if (notifyIcon != null)
+                if (_notifyIcon != null)
                 {
-                    notifyIcon.Visible = false;
-                    notifyIcon.Dispose();
+                    _notifyIcon.Visible = false;
+                    _notifyIcon.Dispose();
+                    _searchBoxWindow.Close();
+                    _searchBoxWindow = null;
                 }
             };
         }
@@ -103,7 +108,7 @@ namespace PRM
 
         private void InitTaskTray()
         {
-            if (notifyIcon == null)
+            if (_notifyIcon == null)
             {
                 //右键菜单--打开菜单项
                 //System.Windows.Forms.MenuItem version = new System.Windows.Forms.MenuItem("Ver:" + Version);
@@ -114,7 +119,7 @@ namespace PRM
                 System.Windows.Forms.MenuItem[] child = new System.Windows.Forms.MenuItem[] {link, exit};
 
                 // 设置托盘
-                notifyIcon = new System.Windows.Forms.NotifyIcon
+                _notifyIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = "TXT:XXXX系统",
                     Icon = ServerAbstract.IconFromImage(ServerAbstract.ImageFromBase64(ServerAbstract.Base64Icon4)),
@@ -122,7 +127,7 @@ namespace PRM
                     BalloonTipText = "TXT:正在后台运行...",
                     Visible = true
                 };
-                notifyIcon.MouseDoubleClick += OnNotifyIconDoubleClick;
+                _notifyIcon.MouseDoubleClick += OnNotifyIconDoubleClick;
             }
         }
 
