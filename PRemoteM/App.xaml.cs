@@ -23,12 +23,9 @@ namespace PersonalRemoteManager
     // 服务端可以被代理调用的类
     internal class OneServiceRemoteProvider : MarshalByRefObject
     {
-        public string DoSomething(string parameter)
+        public void Activate()
         {
-            // do something
-            //MessageBox.Show(parameter);
             App.Window?.ActivateMe();
-            return "";
         }
     }
 
@@ -47,22 +44,6 @@ namespace PersonalRemoteManager
         {
             try
             {
-                Global.GetInstance().CurrentLanguage = "xxxx";
-                MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
-
-                Global.GetInstance().CurrentLanguage = "zh-cn";
-                MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
-
-                Global.GetInstance().CurrentLanguage = "en-us";
-                MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
-
-
-
-
-
-
-
-
                 //var vm = new VmMain();
                 //var sb = new SearchBoxWindow(vm);
                 //sb.ShowDialog();
@@ -74,10 +55,7 @@ namespace PersonalRemoteManager
                 if (!isFirst)
                 {
                     var oneRemoteProvider = (OneServiceRemoteProvider)Activator.GetObject(typeof(OneServiceRemoteProvider), $"ipc://{ServiceIpcPortName}/one");
-                    oneRemoteProvider.DoSomething("hi");
-
-                    // TODO wakeup another process
-                    //MessageBox.Show("Already an instance is running...");
+                    oneRemoteProvider.Activate();
                     Environment.Exit(0);
                 }
                 else
@@ -88,6 +66,23 @@ namespace PersonalRemoteManager
                     // 将 remoteProvider/OneServiceRemoteProvider 设置到这个路由，你还可以设置其它的 MarshalByRefObject 到不同的路由。
                     RemotingServices.Marshal(remoteProvider, "one");
                     ChannelServices.RegisterChannel(new IpcChannel(ServiceIpcPortName), false);
+
+
+
+
+                    
+                    Global.GetInstance().CurrentLanguage = "xxxx";
+                    MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+
+                    Global.GetInstance().CurrentLanguage = "zh-cn";
+                    MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+
+                    Global.GetInstance().CurrentLanguage = "en-us";
+                    MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+
+
+
+
 
                     Window = new MainWindow();
                     Window.ShowDialog();

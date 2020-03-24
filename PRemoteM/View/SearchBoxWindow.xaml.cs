@@ -22,18 +22,17 @@ namespace PRM.View
         public SearchBoxWindow(VmMain vmMain)
         {
             InitializeComponent();
+            Topmost = true;
             _vmSearchBox = new VmSearchBox();
             DataContext = _vmSearchBox;
             TbKeyWord.Focus();
-
-#if !DEBUG
             // close when Deactivated
-            Deactivated += (sender, args) => { Close(); };
+            Deactivated += (sender, args) => { Dispatcher.Invoke(() => { Close(); }); };
             KeyDown += (sender, args) =>
             {
                 if (args.Key == Key.Escape) Close();
             };
-#endif
+            //ShowInTaskbar = false;
         }
 
 
