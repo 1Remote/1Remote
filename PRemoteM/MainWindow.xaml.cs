@@ -27,7 +27,13 @@ namespace PRM
 
             BtnClose.Click += (sender, args) => Close();
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-            BtnMinimize.Click += (sender, args) => this.WindowState = WindowState.Minimized;
+            BtnMinimize.Click += (sender, args) =>
+            {
+                this.ShowInTaskbar = false;
+                this.Visibility = Visibility.Hidden;
+                //托盘中显示的图标
+                notifyIcon?.ShowBalloonTip(1000);
+            };
 
             ((VmMain)DataContext).DispPage = new Shawn.Ulits.PageHost.AnimationPage
             {
@@ -61,18 +67,16 @@ namespace PRM
 
                 InitTaskTray();
             };
-        }
 
-        ~MainWindow()
-        {
-            //notifyIcon.Visible = false;
-            //notifyIcon.Icon.Dispose();
-            //notifyIcon.Icon = null;
-            //notifyIcon.Dispose();
-            //notifyIcon = null;
-            //while (notifyIcon.Visible)
-            //{
-            //}
+
+            Closed += (sender, args) =>
+            {
+                if (notifyIcon != null)
+                {
+                    notifyIcon.Visible = false;
+                    notifyIcon.Dispose();
+                }
+            };
         }
 
         /// <summary>
@@ -99,27 +103,27 @@ namespace PRM
 
         private void InitTaskTray()
         {
-            //this.Visibility = Visibility.Hidden;
-            notifyIcon = new System.Windows.Forms.NotifyIcon();
-            notifyIcon.BalloonTipText = "TXT:最小化到托盘...";
-            notifyIcon.Text = nameof(PersonalRemoteManager);
-            notifyIcon.Visible = true;
-            notifyIcon.Icon = ServerAbstract.IconFromImage(ServerAbstract.ImageFromBase64(ServerAbstract.Base64Icon4));//托盘中显示的图标
-            notifyIcon.ShowBalloonTip(1000);
+            if (notifyIcon == null)
+            {
+                //右键菜单--打开菜单项
+                //System.Windows.Forms.MenuItem version = new System.Windows.Forms.MenuItem("Ver:" + Version);
+                System.Windows.Forms.MenuItem link = new System.Windows.Forms.MenuItem("TXT:主页");
+                link.Click += NotifyIconMenuBtnLinkOnClick;
+                System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("TXT:退出");
+                exit.Click += new EventHandler(NotifyIconMenuBtnExitOnClick);
+                System.Windows.Forms.MenuItem[] child = new System.Windows.Forms.MenuItem[] {link, exit};
 
-
-
-            //右键菜单--打开菜单项
-            //System.Windows.Forms.MenuItem version = new System.Windows.Forms.MenuItem("Ver:" + Version);
-            System.Windows.Forms.MenuItem link = new System.Windows.Forms.MenuItem("TXT:主页");
-            link.Click += NotifyIconMenuBtnLinkOnClick;
-            System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("TXT:退出");
-            exit.Click += new EventHandler(NotifyIconMenuBtnExitOnClick);
-            System.Windows.Forms.MenuItem[] child = new System.Windows.Forms.MenuItem[] { link, exit };
-            notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
-            notifyIcon.MouseDoubleClick += OnNotifyIconDoubleClick;
-
-            this.StateChanged += MainWindow_StateChanged;
+                // 设置托盘
+                notifyIcon = new System.Windows.Forms.NotifyIcon
+                {
+                    Text = "TXT:XXXX系统",
+                    Icon = ServerAbstract.IconFromImage(ServerAbstract.ImageFromBase64(ServerAbstract.Base64Icon4)),
+                    ContextMenu = new System.Windows.Forms.ContextMenu(child),
+                    BalloonTipText = "TXT:正在后台运行...",
+                    Visible = true
+                };
+                notifyIcon.MouseDoubleClick += OnNotifyIconDoubleClick;
+            }
         }
 
         private void NotifyIconMenuBtnLinkOnClick(object sender, EventArgs e)
@@ -132,12 +136,7 @@ namespace PRM
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                //ActivateMe();
-
-            
-                this.Show();
-                this.Visibility = Visibility.Visible;
-                this.ShowInTaskbar = true;
+                ActivateMe();
             }
         }
 
@@ -146,26 +145,23 @@ namespace PRM
             Close();
         }
 
-        private void MainWindow_StateChanged(object sender, EventArgs e)
-        {
-            if (this.WindowState == WindowState.Minimized)
-            {
-                //this.Visibility = Visibility.Hidden;
-                this.Hide();
-            }
-        }
-
 
         public void ActivateMe()
         {
             Dispatcher.Invoke(() =>
             {
-                this.Show();
                 this.Visibility = Visibility.Visible;
                 this.ShowInTaskbar = true;
                 this.Activate();
             });
         }
+
+
+
+
+
+
+
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
