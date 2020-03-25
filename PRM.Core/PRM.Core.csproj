@@ -83,6 +83,11 @@
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Ulits\AutoCompleteBehavior.cs" />
     <Compile Include="Ulits\NetImageProcessHelper.cs" />
+    <Compile Include="Ulits\PageHost\AnimationPage.cs" />
+    <Compile Include="Ulits\PageHost\PageHost.xaml.cs">
+      <DependentUpon>PageHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ulits\PageHost\StoryboardHelpers.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode1.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode2.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode3.cs" />
@@ -121,6 +126,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\Skins\Default.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ulits\PageHost\PageHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

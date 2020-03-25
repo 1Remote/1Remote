@@ -17,20 +17,16 @@ using PRM.ViewModel;
 namespace PRM.View
 {
     /// <summary>
-    /// ServerListPage.xaml 的交互逻辑
+    /// ServerEditorPage.xaml 的交互逻辑
     /// </summary>
-    public partial class ServerListPage : UserControl
+    public partial class ServerEditorPage : UserControl
     {
-        public ServerListPage(VmMain _host)
+        private VmServerEditorPage _vmServerEditorPage;
+        public ServerEditorPage(VmServerEditorPage vm)
         {
             InitializeComponent();
-            DataContext = new VmServerListPage(_host);
-        }
-
-
-        private void BtnAllServer_Click(object sender, RoutedEventArgs e)
-        {
-            //((VmMain)this.DataContext).SelectedGroup = "";
+            _vmServerEditorPage = vm;
+            DataContext = vm;
         }
     }
 }

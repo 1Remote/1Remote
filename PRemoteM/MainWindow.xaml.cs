@@ -37,13 +37,6 @@ namespace PRM
                 _notifyIcon?.ShowBalloonTip(1000);
             };
 
-            ((VmMain)DataContext).DispPage = new Shawn.Ulits.PageHost.AnimationPage
-            {
-                InAnimationType = AnimationPage.InOutAnimationType.FadeIn,
-                OutAnimationType = AnimationPage.InOutAnimationType.FadeOut,
-                Page =  new ServerListPage()
-            };
-
             Loaded += (sender, args) =>
             {
                 _searchBoxWindow = new SearchBoxWindow();

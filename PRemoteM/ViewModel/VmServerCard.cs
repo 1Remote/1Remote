@@ -4,6 +4,8 @@ using PRM.Core.Base;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
 using PRM.RDP;
+using PRM.View;
+using Shawn.Ulits.PageHost;
 
 namespace PRM.ViewModel
 {
@@ -16,14 +18,12 @@ namespace PRM.ViewModel
             private set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
         }
 
+        public readonly VmServerListPage Host;
 
-        public VmServerCard()
-        {
-            Server = null;
-        }
-        public VmServerCard(ServerAbstract server)
+        public VmServerCard(ServerAbstract server, VmServerListPage host)
         {
             Server = server;
+            Host = host;
         }
 
 
@@ -36,7 +36,7 @@ namespace PRM.ViewModel
                 if (_connServer == null)
                     _connServer = new RelayCommand((o) =>
                     {
-                        Debug.Assert(OnAction != null);
+                        
                         this.Server.Conn();
                     });
                 return _connServer;
@@ -52,7 +52,7 @@ namespace PRM.ViewModel
                 if (_addServer == null)
                     _addServer = new RelayCommand((o) =>
                     {
-                        Debug.Assert(OnAction != null);
+                        
                         Debug.Assert(this.Server.Id == 0);
                         Debug.Assert(this.Server.GetType() == typeof(NoneServer));
 
@@ -64,7 +64,7 @@ namespace PRM.ViewModel
                         if (add.IsSave)
                         {
                             this.Server = (ServerAbstract)add.Server.Clone();
-                            OnAction.Invoke(this, EServerAction.Add);
+                            Host.OnVmServerCardEditHandle(this, EServerAction.Add);
                         }
                     }, o => (Server?.Id ?? 0) == 0);
                 return _addServer;
@@ -80,15 +80,21 @@ namespace PRM.ViewModel
                 if (_editServer == null)
                     _editServer = new RelayCommand((o) =>
                     {
-                        Debug.Assert(OnAction != null);
-                        var add = new AddRdp();
-                        add.Server = (ServerRDP)this.Server.Clone();
-                        add.ShowDialog();
-                        if (add.IsSave)
+                        Host.Host.DispPage = new AnimationPage()
                         {
-                            this.Server.Update(add.Server);
-                            OnAction.Invoke(this, EServerAction.Edit);
-                        }
+                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                            Page = new ServerEditorPage(new VmServerEditorPage((ServerRDP)this.Server.Clone(),this.Host)),
+                        };
+
+                        //var add = new AddRdp();
+                        //add.Server = (ServerRDP)this.Server.Clone();
+                        //add.ShowDialog();
+                        //if (add.IsSave)
+                        //{
+                        //    this.Server.Update(add.Server);
+                        //    Host.OnVmServerCardEditHandle(this, EServerAction.Edit);
+                        //}
                     }, o => (Server?.Id ?? 0) > 0);
                 return _editServer;
             }
@@ -103,11 +109,11 @@ namespace PRM.ViewModel
                 if (_deleteServer == null)
                     _deleteServer = new RelayCommand((o) =>
                     {
-                        Debug.Assert(OnAction != null);
+                        
                         if (MessageBox.Show("TXT:确定要删除？", "TXT:提示", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {
-                            OnAction.Invoke(this, EServerAction.Delete);
+                            Host.OnVmServerCardEditHandle(this, EServerAction.Delete);
                         }
                     });
                 return _deleteServer;
@@ -124,8 +130,8 @@ namespace PRM.ViewModel
             Delete
         }
 
-        public delegate void OnActionEventDelegate(VmServerCard sender, EServerAction action);
+        //public delegate void OnActionEventDelegate(VmServerCard sender, EServerAction action);
 
-        public OnActionEventDelegate OnAction;
+        //public OnActionEventDelegate OnAction;
     }
 }

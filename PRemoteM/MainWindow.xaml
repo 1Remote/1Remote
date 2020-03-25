@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls1="clr-namespace:PRM.Controls"
-        xmlns:pageHost="clr-namespace:Shawn.Ulits.PageHost"
+        xmlns:pageHost1="clr-namespace:Shawn.Ulits.PageHost;assembly=PRM.Core"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
@@ -237,7 +236,8 @@
             </StackPanel>
 
             <Grid Grid.Row="1">
-                <pageHost:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost:PageHost>
+                <ContentControl Content="{Binding PageServerList}"></ContentControl>
+                <pageHost1:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
             </Grid>
 
 
