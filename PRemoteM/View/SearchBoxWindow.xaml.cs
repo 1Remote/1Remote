@@ -99,70 +99,70 @@ namespace PRM.View
                     HideMe();
                     break;
                 case Key.Enter:
-                {
-                    // TODO open conn
-                    if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count
-                        && _vmSearchBox.SelectedServerTextIndex >= 0)
-                        MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
-                    HideMe();
-                    break;
-                }
+                    {
+                        // TODO open conn
+                        if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count
+                            && _vmSearchBox.SelectedServerTextIndex >= 0)
+                            MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
+                        HideMe();
+                        break;
+                    }
 
                 case Key.Down:
-                {
-                    lock (_keyDownLocker)
                     {
-                        if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
+                        lock (_keyDownLocker)
                         {
-                            ++_vmSearchBox.SelectedServerTextIndex;
-                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                            if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
+                            {
+                                ++_vmSearchBox.SelectedServerTextIndex;
+                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                            }
                         }
-                    }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case Key.Up:
-                {
-                    lock (_keyDownLocker)
                     {
-                        if (_vmSearchBox.SelectedServerTextIndex > 0)
+                        lock (_keyDownLocker)
                         {
-                            --_vmSearchBox.SelectedServerTextIndex;
-                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                            if (_vmSearchBox.SelectedServerTextIndex > 0)
+                            {
+                                --_vmSearchBox.SelectedServerTextIndex;
+                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                            }
                         }
-                    }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case Key.PageUp:
-                {
-                    lock (_keyDownLocker)
                     {
-                        var i = _vmSearchBox.SelectedServerTextIndex - 5;
-                        if (i < 0)
-                            i = 0;
-                        _vmSearchBox.SelectedServerTextIndex = i;
-                        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                    }
+                        lock (_keyDownLocker)
+                        {
+                            var i = _vmSearchBox.SelectedServerTextIndex - 5;
+                            if (i < 0)
+                                i = 0;
+                            _vmSearchBox.SelectedServerTextIndex = i;
+                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case Key.PageDown:
-                {
-                    lock (_keyDownLocker)
                     {
-                        var i = _vmSearchBox.SelectedServerTextIndex + 5;
-                        if (i > _vmSearchBox.DispServerList.Count - 1)
-                            i = _vmSearchBox.DispServerList.Count - 1;
-                        _vmSearchBox.SelectedServerTextIndex = i;
-                        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                    }
+                        lock (_keyDownLocker)
+                        {
+                            var i = _vmSearchBox.SelectedServerTextIndex + 5;
+                            if (i > _vmSearchBox.DispServerList.Count - 1)
+                                i = _vmSearchBox.DispServerList.Count - 1;
+                            _vmSearchBox.SelectedServerTextIndex = i;
+                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
     }

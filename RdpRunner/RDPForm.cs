@@ -49,12 +49,16 @@ namespace RdpRunner
             _rdp.OnRequestLeaveFullScreen += (sender, args) => { MakeForm2Normal(); };
             _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
             _rdp.OnDisconnected += RdpcOnDisconnected;
-            _rdp.OnConnected += RdpOnOnConnected;
+            _rdp.OnConnected += RdpOnConnected;
+            _rdp.AutoSize = true;   // make _rdp resize to content size
             ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
             this.Controls.Add(_rdp);
             this.Show();
 
             RdpInit();
+
+            //_rdp.SetExtendedProperty("DesktopScaleFactor", this.GetDesktopScaleFactor()); this.SetExtendedProperty("DeviceScaleFactor", this.GetDeviceScaleFactor());
+
 
             _rdp.Connect();
             _cmd.ShowLoadingLayer(this);
@@ -116,6 +120,9 @@ namespace RdpRunner
                     _rdp.AdvancedSettings9.SmartSizing = false;
                     break;
                 case ServerRDP.ERdpResizeMode.Sizable:
+                    _rdp.AdvancedSettings9.SmartSizing = true;
+                    break;
+                case ServerRDP.ERdpResizeMode.AutoSize:
                     _rdp.AdvancedSettings9.SmartSizing = true;
                     break;
             }
@@ -189,12 +196,32 @@ namespace RdpRunner
         }
 
 
-        private void RdpOnOnConnected(object sender, EventArgs e)
+        private void ReSizeRdp()
+        {
+            if (_config.RdpResizeMode == ServerRDP.ERdpResizeMode.AutoSize)
+            {
+                var nw = (uint)_rdp.Width;
+                var nh = (uint) _rdp.Height;
+                if (nw != _rdp.DesktopWidth || nh != _rdp.DesktopHeight)
+                {
+                    //_rdp.Reconnect(nw, nh);
+                    _rdp.UpdateSessionDisplaySettings(nw, nh, nw, nh, 1, 100, 100);
+                }
+            }
+        }
+        private bool _isFirstTime = true;
+        private void RdpOnConnected(object sender, EventArgs e)
         {
             _cmd.HideOpaqueLayer();
             if (_config.DisplayMode == ServerRDP.EDisplayMode.FullScreen)
             {
                 _rdp.FullScreen = true;
+            }
+
+            if (_isFirstTime)
+            {
+                _isFirstTime = false;
+                this.ResizeEnd += (o, args) => { ReSizeRdp(); };
             }
         }
 
@@ -239,13 +266,12 @@ namespace RdpRunner
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
-                string disconnectedText = $"远程桌面 {_rdp.Server} 连接已断开！{reason}";
-                if (MessageBox.Show(disconnectedText, "远程连接") == DialogResult.OK)
+                string disconnectedText = $"TXT:远程桌面 {_rdp.Server} 连接已断开！{reason}";
+                if (MessageBox.Show(disconnectedText, "TXT:远程连接") == DialogResult.OK)
                     ;
             }
             Environment.Exit(0);
         }
-
 
 
         #region handled full screen
@@ -280,6 +306,7 @@ namespace RdpRunner
             else
             {
                 this.WindowState = FormWindowState.Maximized;
+                ReSizeRdp();
             }
         }
         private void MakeForm2Normal()
@@ -291,6 +318,7 @@ namespace RdpRunner
             this.Height = _normalHeight;
             this.Top = _normalTop;
             this.Left = _normalLeft;
+            ReSizeRdp();
         }
         private void MakeForm2Minimize()
         {
