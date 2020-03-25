@@ -13,7 +13,7 @@ namespace PRM.Controls
     {
         public static readonly DependencyProperty VmServerCardProperty =
             DependencyProperty.Register("VmServerCard", typeof(VmServerCard), typeof(ServerCard),
-                new PropertyMetadata(new VmServerCard(), new PropertyChangedCallback(OnServerDataChanged)));
+                new PropertyMetadata(new VmServerCard(null, null), new PropertyChangedCallback(OnServerDataChanged)));
 
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

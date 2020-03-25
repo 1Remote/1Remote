@@ -1,0 +1,224 @@
+﻿<UserControl x:Class="PRM.View.ServerEditorPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.View"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+        <Grid Background="#ced8e1" Margin="0 20 0 20">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Resources>
+                    <Style x:Key="StyleRow" TargetType="Grid">
+                        <Setter Property="Height" Value="20"></Setter>
+                        <Setter Property="Margin">
+                            <Setter.Value>
+                                <Thickness Bottom="15"></Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style x:Key="StyleTitle" TargetType="TextBlock">
+                        <Setter Property="Width" Value="150"></Setter>
+                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+                        <Setter Property="TextAlignment" Value="Right"></Setter>
+                        <Setter Property="Margin">
+                            <Setter.Value>
+                                <Thickness Right="30"></Thickness>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style x:Key="StyleInput" TargetType="Grid">
+                        <Setter Property="Width" Value="200"></Setter>
+                    </Style>
+                </ScrollViewer.Resources>
+                <Grid Margin="0 20 0 0">
+                    <StackPanel Orientation="Vertical">
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_display_name}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                    <TextBox Text="{Binding DispName}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_group}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                    <TextBox Text="{Binding GroupName}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_icon}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_color_mark}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_address}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                    <TextBox Text="{Binding Address}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_port}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                    <TextBox Text="{Binding Port}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_username}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                    <TextBox Text="{Binding UserName}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource StyleRow}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_password}"></TextBlock>
+                                <Grid Style="{StaticResource StyleInput}">
+                                    <TextBox Text="{Binding Password}"></TextBox>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource StyleRow}" Height="175">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_password}"></TextBlock>
+                                <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource StyleRow}">
+                            <!--<StackPanel Orientation="Horizontal">
+                                <Button Name="BtnSave" Content="{DynamicResource close}" Click="BtnSave_OnClick"></Button>
+                                <Button Name="BtnCancel" Content="{DynamicResource cancel}" Click="BtnCancel_OnClick"></Button>
+                            </StackPanel>-->
+                        </Grid>
+
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+
+
+        <Grid VerticalAlignment="Top">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1Foreground}" Height="20">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
+                </Border.Effect>
+            </Border>
+
+            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1}">
+                <Grid Height="20">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Padding="0 1 0 0" Width="30"
+                                BorderThickness="0" Content="{DynamicResource tab_all}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                    <Setter Property="Background" Value="{DynamicResource MainColor1}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource MainBgColor}"></Setter>
+                                        </Trigger>
+                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="">
+                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+
+
+        <Grid VerticalAlignment="Bottom">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1Foreground}" Height="20">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="3" Direction="90"  Opacity="0.6" Color="Black"></DropShadowEffect>
+                </Border.Effect>
+            </Border>
+
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1}">
+                <Grid Height="20">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Padding="0 1 0 0" Width="50"
+                                Command="{Binding CmdSave}"
+                                BorderThickness="0" Content="TXT:Save">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                    <Setter Property="Background" Value="{DynamicResource MainColor1}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource MainBgColor}"></Setter>
+                                        </Trigger>
+                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="">
+                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                            <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
