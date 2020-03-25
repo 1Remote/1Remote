@@ -25,6 +25,7 @@ namespace PRM.RDP
         {
             Fixed = 1,
             Sizable = 2,
+            AutoSize = 3,
         }
         public enum EDisplaySize
         {
