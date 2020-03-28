@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
+using Shawn.Ulits;
 
 namespace PRM.Core.Base
 {
@@ -71,24 +72,9 @@ namespace PRM.Core.Base
             {
                 try
                 {
-                    var iconimg = ImageFromBase64(value);
-                    var icon = IconFromImage(iconimg);
-                    var bm = icon.ToBitmap();
-
-                    IntPtr ptr = bm.GetHbitmap(); //obtain the Hbitmap
-                    try
-                    {
-                        var bs = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                            ptr,
-                            IntPtr.Zero,
-                            Int32Rect.Empty,
-                            System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-                        IconImg = bs;
-                    }
-                    finally
-                    {
-                        DeleteObject(ptr); //release the HBitmap
-                    }
+                    var bm = NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(value));
+                    var icon = bm.ToIcon();
+                    IconImg = bm.ToBitmapSource();
                     Icon = icon;
                     SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
                 }
@@ -114,7 +100,12 @@ namespace PRM.Core.Base
         public BitmapSource IconImg
         {
             get => _iconImg;
-            private set => SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
+            set
+            {
+                _iconBase64 = Convert.ToBase64String(value.ToBytes());
+                Icon = value.ToIcon();
+                SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
+            }
         }
 
 
@@ -191,61 +182,7 @@ namespace PRM.Core.Base
         [DllImport("gdi32")]
         private static extern int DeleteObject(IntPtr o);
 
-        public static Icon IconFromImage(Image img)
-        {
-            var ms = new System.IO.MemoryStream();
-            var bw = new System.IO.BinaryWriter(ms);
-            // Header
-            bw.Write((short)0);   // 0 : reserved
-            bw.Write((short)1);   // 2 : 1=ico, 2=cur
-            bw.Write((short)1);   // 4 : number of images
-            // Image directory
-            var w = img.Width;
-            if (w >= 256) w = 0;
-            bw.Write((byte)w);    // 0 : width of image
-            var h = img.Height;
-            if (h >= 256) h = 0;
-            bw.Write((byte)h);    // 1 : height of image
-            bw.Write((byte)0);    // 2 : number of colors in palette
-            bw.Write((byte)0);    // 3 : reserved
-            bw.Write((short)0);   // 4 : number of color planes
-            bw.Write((short)0);   // 6 : bits per pixel
-            var sizeHere = ms.Position;
-            bw.Write((int)0);     // 8 : image size
-            var start = (int)ms.Position + 4;
-            bw.Write(start);      // 12: offset of image data
-            // Image data
-            img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            var imageSize = (int)ms.Position - start;
-            ms.Seek(sizeHere, System.IO.SeekOrigin.Begin);
-            bw.Write(imageSize);
-            ms.Seek(0, System.IO.SeekOrigin.Begin);
 
-            // And load it
-            return new Icon(ms);
-        }
-
-        public static Image ImageFromBytes(byte[] byteArrayIn)
-        {
-            using (MemoryStream mStream = new MemoryStream(byteArrayIn))
-            {
-                return Image.FromStream(mStream);
-            }
-        }
-
-        public static Image ImageFromBase64(string base64)
-        {
-            return ImageFromBytes(Convert.FromBase64String(base64));
-        }
-
-        public static byte[] ImageToBytes(Image img)
-        {
-            using (MemoryStream mStream = new MemoryStream())
-            {
-                img.Save(mStream, img.RawFormat);
-                return mStream.ToArray();
-            }
-        }
 
 
         public const string Base64Icon1 =

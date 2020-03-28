@@ -88,38 +88,10 @@ namespace Shawn.Ulits
 
         #region Format
 
-        // Convert a Bitmap to a BitmapSource. 
-        public static BitmapSource ToBitmapSource(this System.Drawing.Bitmap src)
-        {
-            if (src == null)
-                return null;
-            var ptr = src.GetHbitmap(); //obtain the Hbitmap
-            try
-            {
-                var bs = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                    ptr,
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-                return bs;
-            }
-            finally
-            {
-                DeleteObject(ptr); //release the HBitmap
-            }
-        }
-
-        public static BitmapSource ToBitmapSource(this System.Drawing.Image image)
-        {
-            return (BitmapSource)image.ToBitmapImage();
-        }
-
-
         public static Bitmap ToBitmap(this BitmapImage bitmapImage)
         {
             return ((BitmapSource)bitmapImage).ToBitmap();
         }
-
         public static Bitmap ToBitmap<T>(this T source) where T : BitmapSource
         {
             var m = (BitmapSource)source;
@@ -131,6 +103,23 @@ namespace Shawn.Ulits
             bmp.UnlockBits(data);
             return bmp;
         }
+        public static Bitmap ToBitmap(this System.Drawing.Image image)
+        {
+            using (var ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Png);
+                ms.Seek(0, SeekOrigin.Begin);
+                var bitmapImage = new Bitmap(ms);
+                return bitmapImage;
+            }
+        }
+
+        public static Bitmap BitmapFromBytes(byte[] bytes)
+        {
+            var ms = new MemoryStream(bytes);
+            var ret = new Bitmap(ms);
+            return ret;
+        }
 
 
 
@@ -140,17 +129,17 @@ namespace Shawn.Ulits
             if (src == null)
                 return null;
 
-            using (MemoryStream stream = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 // TODO 适配GIF？
-                src.Save(stream, ImageFormat.Png); // 坑点：格式选Bmp时，不带透明度
-                stream.Position = 0;
+                src.Save(ms, ImageFormat.Png);
+                ms.Seek(0, SeekOrigin.Begin);
                 BitmapImage bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
                 // Force the bitmap to load right now so we can dispose the stream.
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = stream;
+                bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
                 return bitmapImage;
@@ -201,6 +190,147 @@ namespace Shawn.Ulits
             }
 
             return isCreated ? bitmapImage : null;
+        }
+        
+
+        public static Icon ToIcon(this Image img)
+        {
+            // TODO 尺寸超过256时压缩
+            var ms = new System.IO.MemoryStream();
+            var bw = new System.IO.BinaryWriter(ms);
+            // Header
+            bw.Write((short)0);   // 0 : reserved
+            bw.Write((short)1);   // 2 : 1=ico, 2=cur
+            bw.Write((short)1);   // 4 : number of images
+            // Image directory
+            var w = img.Width;
+            if (w >= 256) w = 0;
+            bw.Write((byte)w);    // 0 : width of image
+            var h = img.Height;
+            if (h >= 256) h = 0;
+            bw.Write((byte)h);    // 1 : height of image
+            bw.Write((byte)0);    // 2 : number of colors in palette
+            bw.Write((byte)0);    // 3 : reserved
+            bw.Write((short)0);   // 4 : number of color planes
+            bw.Write((short)0);   // 6 : bits per pixel
+            var sizeHere = ms.Position;
+            bw.Write((int)0);     // 8 : image size
+            var start = (int)ms.Position + 4;
+            bw.Write(start);      // 12: offset of image data
+            // Image data
+            img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            var imageSize = (int)ms.Position - start;
+            ms.Seek(sizeHere, System.IO.SeekOrigin.Begin);
+            bw.Write(imageSize);
+            ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+            // And load it
+            return new Icon(ms);
+        }
+        public static Icon ToIcon(this Bitmap bitmap)
+        {
+            // TODO 尺寸超过256时压缩
+            return Icon.FromHandle(bitmap.GetHicon());
+        }
+        public static Icon ToIcon<T>(this T source) where T : BitmapSource
+        {
+            // TODO 尺寸超过256时压缩
+            return Icon.FromHandle(source.ToBitmap().GetHicon());
+        }
+
+        
+        
+
+        // Convert a Bitmap to a BitmapSource. 
+        public static BitmapSource ToBitmapSource(this System.Drawing.Bitmap src)
+        {
+            if (src == null)
+                return null;
+            var ptr = src.GetHbitmap(); //obtain the Hbitmap
+            try
+            {
+                var bs = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                    ptr,
+                    IntPtr.Zero,
+                    Int32Rect.Empty,
+                    System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                return bs;
+            }
+            finally
+            {
+                DeleteObject(ptr); //release the HBitmap
+            }
+        }
+
+        public static BitmapSource ToBitmapSource(this System.Drawing.Image image)
+        {
+            return (BitmapSource)image.ToBitmapImage();
+        }
+
+
+
+
+        public static Image ImageFromBytes(byte[] byteArrayIn)
+        {
+            using (MemoryStream mStream = new MemoryStream(byteArrayIn))
+            {
+                return Image.FromStream(mStream);
+            }
+        }
+        public static Image ToImage(this Bitmap src)
+        {
+            if (src == null)
+                return null;
+
+            using (var ms = new MemoryStream())
+            {
+                src.Save(ms, ImageFormat.Png); // 坑点：格式选Bmp时，不带透明度
+                ms.Seek(0, SeekOrigin.Begin);
+                return Image.FromStream(ms);
+            }
+        }
+        public static Image ToImage<T>(this BitmapSource bitmapSource) where T : BitmapEncoder, new()
+        {
+            var frame = BitmapFrame.Create(bitmapSource);
+            var encoder = new T();
+            encoder.Frames.Add(frame);
+            try
+            {
+                using (var ms = new MemoryStream())
+                {
+                    encoder.Save(ms);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    return Image.FromStream(ms);
+                }
+            }
+            catch
+            {
+            }
+            return null;
+        }
+
+
+
+        public static byte[] ToBytes(this Image img)
+        {
+            using (var ms = new MemoryStream())
+            {
+                img.Save(ms, img.RawFormat);
+                return ms.ToArray();
+            }
+        }
+        public static byte[] ToBytes(this Bitmap bitmap)
+        {
+            using (var ms = new MemoryStream())
+            {
+                bitmap.Save(ms, ImageFormat.Png);
+                byte[] byteImage = ms.ToArray();
+                return byteImage;
+            }
+        }
+        public static byte[] ToBytes<T>(this T source) where T : BitmapSource
+        {
+            return source.ToBitmap().ToBytes();
         }
 
         #endregion

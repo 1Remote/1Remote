@@ -12,6 +12,20 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
+    <Window.Template>
+        <ControlTemplate TargetType="Window">
+            <Border Padding="0">
+                <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">
+                    <ContentPresenter />
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="WindowState" Value="Maximized">
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="2 2 2 8" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter"/>

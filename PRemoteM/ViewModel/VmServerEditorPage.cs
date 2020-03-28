@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using PRM.Core.Base;
+using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
 using PRM.RDP;
@@ -84,6 +85,10 @@ namespace PRM.ViewModel
                 if (_cmdSave == null)
                     _cmdSave = new RelayCommand((o) =>
                     {
+                        if (Server?.Id > 0 && Global.GetInstance().ServerDict.ContainsKey(Server.Id))
+                        {
+                            Global.GetInstance().ServerDict[Server.Id].Update(Server);
+                        }
                         Host.Host.DispPage = null;
                     });
                 return _cmdSave;
@@ -92,8 +97,19 @@ namespace PRM.ViewModel
 
 
 
-        //public delegate void OnActionEventDelegate(VmServerEditorPage sender, EServerAction action);
 
-        //public OnActionEventDelegate OnAction;
+        private RelayCommand _cmdCancel;
+        public RelayCommand CmdCancel
+        {
+            get
+            {
+                if (_cmdCancel == null)
+                    _cmdCancel = new RelayCommand((o) =>
+                    {
+                        Host.Host.DispPage = null;
+                    });
+                return _cmdCancel;
+            }
+        }
     }
 }

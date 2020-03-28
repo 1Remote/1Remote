@@ -115,7 +115,7 @@ namespace PRM
                 _notifyIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = "TXT:XXXX系统",
-                    Icon = ServerAbstract.IconFromImage(ServerAbstract.ImageFromBase64(ServerAbstract.Base64Icon4)),
+                    Icon = NetImageProcessHelper.ToIcon(NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(ServerAbstract.Base64Icon4))),
                     ContextMenu = new System.Windows.Forms.ContextMenu(child),
                     BalloonTipText = "TXT:正在后台运行...",
                     Visible = true
