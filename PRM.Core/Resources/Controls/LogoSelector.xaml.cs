@@ -39,18 +39,16 @@ namespace PRM.Core.Resources.Controls
         #endregion
 
 
-
-
-
+        /*
         public static readonly DependencyProperty LogoSourceProperty =
             DependencyProperty.Register("LogoSource", typeof(BitmapSource), typeof(LogoSelector),
-                new PropertyMetadata(null));
+                new PropertyMetadata(null, OnDataChanged));
 
-        //private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    var value = (BitmapSource)e.NewValue;
-        //    ((ServerCard)d).DataContext = value;
-        //}
+        private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var value = (BitmapSource)e.NewValue;
+            ((LogoSelector)d).OnPropertyChanged(nameof(LogoSource));
+        }
 
 
         public BitmapSource LogoSource
@@ -59,14 +57,12 @@ namespace PRM.Core.Resources.Controls
             set
             {
                 SetValue(LogoSourceProperty, value);
-                SetImg(value);
+                //SetImg(value);
+                OnPropertyChanged(nameof(LogoSource));
             }
-        }
+        }*/
 
-        public BitmapImage LogoSourceBitmapImage
-        {
-            get => (BitmapImage)Img.Source;
-        }
+
 
 
 
@@ -77,7 +73,7 @@ namespace PRM.Core.Resources.Controls
             get => _scaling;
             set
             {
-                if (Math.Abs(value - _scaling) < 0.1)
+                if (Math.Abs(value - _scaling) < 0.05)
                     return;
 
                 if (value < 0.1)
@@ -88,8 +84,8 @@ namespace PRM.Core.Resources.Controls
                     _scaling = value;
                 if (Img?.Source != null)
                 {
-                    double wl = LogoSourceBitmapImage.PixelWidth * Scaling - CanvasImage.Width;
-                    double hl = LogoSourceBitmapImage.PixelHeight * Scaling - CanvasImage.Height;
+                    double wl = ((BitmapSource)Img.Source).PixelWidth * Scaling - CanvasImage.Width;
+                    double hl = ((BitmapSource)Img.Source).PixelHeight * Scaling - CanvasImage.Height;
                     CanvasImage.Width += wl;
                     CanvasImage.Height += hl;
                     // 缩放后保持图像中心不变
@@ -108,25 +104,25 @@ namespace PRM.Core.Resources.Controls
 
             DataContext = this;
 
-            CanvasWhiteBoard.Background = BrushesHelper.ChessboardBrush(16);
+            CanvasWhiteBoard.Background = ChessboardBrushHelper.ChessboardBrush(16);
 
             //var img = Image.FromFile()
             //Img.Source = new ImageSource();
             //Close();
             //PRMSqliteHelper psh = new PRMSqliteHelper();
             //psh.CreateDb();
-            SetImg(GetBitmapSource(@"D:\Users\Desktop\LOGO\hp-logo-png-1.png"));
+            //SetImg(GetBitmapSource(@"D:\Users\Desktop\LOGO\hp-logo-png-1.png"));
         }
 
-        public void SetImg(ImageSource img)
+        public void SetImg(BitmapSource img)
         {
             Scaling = 1.0;
             Img.Source = img;
             if (img != null)
             {
                 //Img.Source = GetBitmapSource(@"E:\数据存档\5160\老算法错误样本图例\Id02889___SN10125124___20190126___5160A1_Cbc5Diff.5160xml.jpg");
-                CanvasImage.Width = LogoSourceBitmapImage.PixelWidth * Scaling;
-                CanvasImage.Height = LogoSourceBitmapImage.PixelHeight * Scaling;
+                CanvasImage.Width = ((BitmapSource)Img.Source).PixelWidth * Scaling;
+                CanvasImage.Height = ((BitmapSource)Img.Source).PixelHeight * Scaling;
                 // pos at center parent
                 CanvasImage.SetValue(Canvas.LeftProperty, (CanvasWhiteBoard.Width - CanvasImage.Width) / 2);
                 CanvasImage.SetValue(Canvas.TopProperty, (CanvasWhiteBoard.Height - CanvasImage.Height) / 2);
@@ -246,6 +242,8 @@ namespace PRM.Core.Resources.Controls
         //鼠标相对于作为容器的Canvas控件CanvasWhiteBoard的坐标
         private System.Windows.Point mouseNowPosition = new System.Windows.Point();
 
+        private bool dragStarted = false;
+        private DateTime dragStartTime = DateTime.MinValue;
         /// <summary>
         /// 记录移动起点
         /// </summary>
@@ -253,7 +251,14 @@ namespace PRM.Core.Resources.Controls
         /// <param name="e"></param>
         private void CanvasImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            dragStarted = true;
+            dragStartTime = DateTime.Now;
             mouseStartPosition = e.GetPosition(CanvasImage);
+        }
+
+        private void CanvasWhiteBoard_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            dragStarted = false;
         }
 
         /// <summary>
@@ -263,6 +268,7 @@ namespace PRM.Core.Resources.Controls
         /// <param name="e"></param>
         private void CanvasImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            dragStarted = false;
             ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
             CanvasImage.ReleaseMouseCapture();
         }
@@ -276,19 +282,23 @@ namespace PRM.Core.Resources.Controls
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                Canvas c = CanvasImage;
-                mouseNowPosition = e.GetPosition(CanvasWhiteBoard);
-                if (!ReplaceChild(ref c, ref CanvasWhiteBoard))
+                // 消抖
+                if (dragStarted && (DateTime.Now - dragStartTime).Milliseconds > 50)
                 {
-                    //if (Settings.Instance.MoveHorizontalEnabled)
-                    c.SetValue(Canvas.LeftProperty, mouseNowPosition.X - mouseStartPosition.X);
-                    //if (Settings.Instance.MoveVerticalEnabled)
-                    c.SetValue(Canvas.TopProperty, mouseNowPosition.Y - mouseStartPosition.Y);
-                    c.CaptureMouse();
-                }
-                else
-                {
-                    c.ReleaseMouseCapture();
+                    Canvas c = CanvasImage;
+                    mouseNowPosition = e.GetPosition(CanvasWhiteBoard);
+                    if (!ReplaceChild(ref c, ref CanvasWhiteBoard))
+                    {
+                        //if (Settings.Instance.MoveHorizontalEnabled)
+                        c.SetValue(Canvas.LeftProperty, mouseNowPosition.X - mouseStartPosition.X);
+                        //if (Settings.Instance.MoveVerticalEnabled)
+                        c.SetValue(Canvas.TopProperty, mouseNowPosition.Y - mouseStartPosition.Y);
+                        c.CaptureMouse();
+                    }
+                    else
+                    {
+                        c.ReleaseMouseCapture();
+                    }
                 }
             }
             e.Handled = true;
@@ -418,11 +428,23 @@ namespace PRM.Core.Resources.Controls
                 SetImg(GetBitmapSource(ofd.FileName));
             }
         }
+
+        private void BtnZoomIn_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Scaling += 0.1;
+        }
+
+        private void BtnZoomOut_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Scaling -= 0.1;
+        }
+
     }
 
 
 
-    public static class BrushesHelper
+    #region ChessboardBrushHelper
+    static class ChessboardBrushHelper
     {
         private static readonly object obj = new object();
         private static Dictionary<int,ImageBrush> chessbordBrushes = new Dictionary<int, ImageBrush>();
@@ -459,5 +481,6 @@ namespace PRM.Core.Resources.Controls
                 };
             }
         }
-    }
+    } 
+    #endregion
 }

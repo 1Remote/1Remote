@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PRM.Core.Base;
 using PRM.ViewModel;
 
 namespace PRM.View
@@ -27,6 +28,24 @@ namespace PRM.View
             InitializeComponent();
             _vmServerEditorPage = vm;
             DataContext = vm;
+            if (vm?.Server != null && vm.Server.GetType() != typeof(NoneServer))
+            {
+                LogoSelector.SetImg(vm?.Server?.IconImg);
+            }
+            else
+            {
+                // TODO 选择随机 LOGO
+            }
+        }
+
+        private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_vmServerEditorPage?.Server != null && _vmServerEditorPage.Server.GetType() != typeof(NoneServer))
+            {
+                _vmServerEditorPage.Server.IconImg = LogoSelector.Logo;
+            }
+            if (_vmServerEditorPage != null && _vmServerEditorPage.CmdSave.CanExecute(null))
+                _vmServerEditorPage.CmdSave.Execute(null);
         }
     }
 }

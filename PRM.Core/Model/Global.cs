@@ -109,7 +109,7 @@ namespace PRM.Core.Model
 
         #region Server Data
 
-        public readonly Dictionary<long, ServerAbstract> ServerDict = new Dictionary<long, ServerAbstract>();
+        public readonly Dictionary<uint, ServerAbstract> ServerDict = new Dictionary<uint, ServerAbstract>();
 
         private void ReadServerDataFromDb()
         {
