@@ -1,20 +1,55 @@
 ﻿{
   "confirm": "确定",
-  "cancel": "取消",
   "save": "保存",
+  "cancel": "取消",
+  "open": "打开",
   "close": "关闭",
-  "server_display_name": "名称",
-  "server_group": "分组",
-  "server_icon": "图标",
-  "server_color_mark": "颜色标记",
-  "server_address": "地址",
-  "server_port": "端口",
-  "server_username": "用户名",
-  "server_password": "密码",
-  "server_resolution": "分辨率",
-  "server_rdp": "RDP连接",
   "tab_all": "全部",
   "info_filter": "搜索远程目标",
   "info_hotkey_already_registered": "快捷键已被占用",
-  "info_hotkey_registered_fail": "快捷键注册失败"
+  "info_hotkey_registered_fail": "快捷键注册失败",
+
+
+  "server_editor_group_title_common": "常规",
+  "server_editor_group_title_connection": "连接",
+  "server_editor_group_title_display": "显示",
+  "server_editor_group_title_advantage": "高级",
+  // common group items
+  "server_editor_display_name": "名称",
+  "server_editor_group": "分组",
+  "server_editor_icon": "图标",
+  "server_editor_color_mark": "颜色标记",
+  // connection group items
+  "server_editor_connection_address": "地址",
+  "server_editor_connection_port": "端口",
+  "server_editor_connection_username": "用户名",
+  "server_editor_connection_password": "密码",
+  // display group items
+  "server_editor_display_start_with": "启动时",
+  "server_editor_display_start_with_window": "窗口化",
+  "server_editor_display_start_with_full_screen": "全屏（当前显示器）",
+  "server_editor_display_start_with_all_screens": "全屏（所有显示器）",
+  "server_editor_display_resolution": "分辨率",
+  "server_editor_display_resolution_auto": "自动调整",
+  "server_editor_display_resolution_stretch": "拉伸显示",
+  "server_editor_display_resolution_fixed": "固定分辨率",
+  "server_editor_display_performance": "桌面体验",
+  "server_editor_display_performance_auto": "自动（根据网速）",
+  "server_editor_display_performance_high": "高（32位色彩与所有特性）",
+  "server_editor_display_performance_middle": "中（16位色彩与字体平滑、桌面合成）",
+  "server_editor_display_performance_low": "低（8位色彩无任何显示增强）",
+  // Advantage group items
+  "server_editor_advantage_resources": "资源",
+  "server_editor_advantage_clipboard": "剪贴板",
+  "server_editor_advantage_key_combinations": "组合键",
+  "server_editor_advantage_disk_drives": "驱动器",
+  "server_editor_advantage_sounds": "声音",
+  "server_editor_advantage_audio_capture": "录音",
+  "server_editor_advantage_ports": "端口",
+  "server_editor_advantage_printers": "打印机",
+  "server_editor_advantage_smart_cards": "智能卡",
+
+
+
+  "server_editor_rdp": "RDP连接"
 }

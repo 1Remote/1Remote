@@ -22,9 +22,9 @@ namespace RdpRunner
         public RDPForm(ServerRDP config)
         {
             this._config = config;
-            if (this._config.RdpDisplaySize == ServerRDP.EDisplaySize.CustomSize &&
+            if (this._config.RdpStartupDisplaySize == ServerRDP.EStartupDisplaySize.Window &&
                 (this._config.RdpWidth <= 0 || this._config.RdpHeight <= 0))
-                this._config.RdpDisplaySize = ServerRDP.EDisplaySize.UseCurrentMonitor;
+                this._config.RdpStartupDisplaySize = ServerRDP.EStartupDisplaySize.FullCurrentScreen;
 
 
             if (!string.IsNullOrEmpty(config.IconBase64))
@@ -69,14 +69,14 @@ namespace RdpRunner
             _rdp.Top = 0;
             _rdp.Left = 0;
 
-            switch (_config.RdpDisplaySize)
+            switch (_config.RdpStartupDisplaySize)
             {
-                case ServerRDP.EDisplaySize.CustomSize:
+                case ServerRDP.EStartupDisplaySize.Window:
                     this.Width = (_config.RdpWidth + (this.Width - base.DisplayRectangle.Width));
                     this.Height = (_config.RdpHeight + (this.Height - base.DisplayRectangle.Height));
                     break;
-                case ServerRDP.EDisplaySize.UseCurrentMonitor:
-                case ServerRDP.EDisplaySize.UseMultiMonitors:
+                case ServerRDP.EStartupDisplaySize.FullCurrentScreen:
+                case ServerRDP.EStartupDisplaySize.FullAllScreens:
                 default:
                     Screen screen = Screen.FromControl(this);
                     this.Width = (screen.Bounds.Width + (this.Width - base.DisplayRectangle.Width)) / 2;
@@ -95,19 +95,19 @@ namespace RdpRunner
 
             #region Display
 
-            switch (_config.RdpDisplaySize)
+            switch (_config.RdpStartupDisplaySize)
             {
-                case ServerRDP.EDisplaySize.CustomSize:
+                case ServerRDP.EStartupDisplaySize.Window:
                     _rdp.DesktopWidth = _config.RdpWidth;
                     _rdp.DesktopHeight = _config.RdpHeight;
                     break;
-                case ServerRDP.EDisplaySize.UseCurrentMonitor:
+                case ServerRDP.EStartupDisplaySize.FullCurrentScreen:
                     // get current monitor size
                     Screen screen = Screen.FromControl(this);
                     _rdp.DesktopWidth = screen.Bounds.Width;
                     _rdp.DesktopHeight = screen.Bounds.Height;
                     break;
-                case ServerRDP.EDisplaySize.UseMultiMonitors:
+                case ServerRDP.EStartupDisplaySize.FullAllScreens:
                     ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
                     break;
                 default:
@@ -292,7 +292,7 @@ namespace RdpRunner
             this.TopMost = true;
             this.FormBorderStyle = FormBorderStyle.None;
 
-            if (_config.RdpDisplaySize == ServerRDP.EDisplaySize.UseMultiMonitors)
+            if (_config.RdpStartupDisplaySize == ServerRDP.EStartupDisplaySize.FullAllScreens)
             {
                 System.Drawing.Rectangle entireSize = System.Drawing.Rectangle.Empty;
                 foreach (System.Windows.Forms.Screen screen in System.Windows.Forms.Screen.AllScreens)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.Core.Base;
+using PRM.Core.Protocol.RDP;
+using PRM.RDP;
 using PRM.ViewModel;
 
 namespace PRM.View
@@ -22,30 +26,54 @@ namespace PRM.View
     /// </summary>
     public partial class ServerEditorPage : UserControl
     {
-        private VmServerEditorPage _vmServerEditorPage;
+        private readonly VmServerEditorPage _vmServerEditorPage;
         public ServerEditorPage(VmServerEditorPage vm)
         {
+            Debug.Assert(vm?.Server != null);
             InitializeComponent();
             _vmServerEditorPage = vm;
             DataContext = vm;
-            if (vm?.Server != null && vm.Server.GetType() != typeof(NoneServer))
+            // edit mode
+            if (vm.Server.Id > 0 && vm.Server.GetType() != typeof(NoneServer))
             {
                 LogoSelector.SetImg(vm?.Server?.IconImg);
             }
-            else
+            // add mode
             {
-                // TODO 选择随机 LOGO
+                // TODO 研究子类之间的互相转换
+                // TODO 随机选择LOGO
+                vm.Server = new ServerRDP();
             }
+
+
+            // TODO 反射创建对象
+            ContentDetail.Content = new ServerRDPEditForm(_vmServerEditorPage.Server);
         }
 
+
         private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_vmServerEditorPage != null && _vmServerEditorPage.CmdSave.CanExecute(null))
+                _vmServerEditorPage.CmdSave.Execute(null);
+        }
+
+        private void ImgLogo_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            PopupLogoSelector.IsOpen = true;
+        }
+
+        private void ButtonLogoSave_OnClick(object sender, RoutedEventArgs e)
         {
             if (_vmServerEditorPage?.Server != null && _vmServerEditorPage.Server.GetType() != typeof(NoneServer))
             {
                 _vmServerEditorPage.Server.IconImg = LogoSelector.Logo;
             }
-            if (_vmServerEditorPage != null && _vmServerEditorPage.CmdSave.CanExecute(null))
-                _vmServerEditorPage.CmdSave.Execute(null);
+            PopupLogoSelector.IsOpen = false;
+        }
+
+        private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
+        {
+            PopupLogoSelector.IsOpen = false;
         }
     }
 }

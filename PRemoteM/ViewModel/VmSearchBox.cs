@@ -18,7 +18,7 @@ namespace PRM.ViewModel
 
         private ObservableCollection<ServerAbstract> _dispServerlist = new ObservableCollection<ServerAbstract>();
         /// <summary>
-        /// ServerDict data source for listbox
+        /// ServerList data source for listbox
         /// </summary>
         public ObservableCollection<ServerAbstract> DispServerList
         {
@@ -75,8 +75,7 @@ namespace PRM.ViewModel
             DispServerList.Clear();
 
             // 高级搜索
-            foreach (var item in Global.GetInstance().ServerDict.Values
-                .Where(x => x.GetType() != typeof(NoneServer)))
+            foreach (var item in Global.GetInstance().ServerList.Where(x => x.GetType() != typeof(NoneServer)))
             {
                 var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.DispName, keyWord, out var m1);
                 var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.SubTitle, keyWord, out var m2);

@@ -1,9 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Brush x:Key="MainColor1">#102b3e</Brush>
-    <Brush x:Key="MainColor2">#e83d61</Brush>
-    <Brush x:Key="MainColor1Foreground">White</Brush>
-    <Brush x:Key="MainColor2Foreground">White</Brush>
-    <Brush x:Key="MainBgColor">#ced8e1</Brush>
+    <Color x:Key="MainColor1">#102b3e</Color>
+    <Color x:Key="MainColor2">#e83d61</Color>
+    <Color x:Key="MainColor1Foreground">White</Color>
+    <Color x:Key="MainColor2Foreground">White</Color>
+    <Color x:Key="MainBgColor">#ced8e1</Color>
+
+    <Brush x:Key="MainColor1Brush">#102b3e</Brush>
+    <Brush x:Key="MainColor2Brush">#e83d61</Brush>
+    <Brush x:Key="MainColor1ForegroundBrush">White</Brush>
+    <Brush x:Key="MainColor2ForegroundBrush">White</Brush>
+    <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
+
 </ResourceDictionary>

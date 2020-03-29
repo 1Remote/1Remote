@@ -16,135 +16,161 @@
         </Grid.Resources>
 
 
-        <Grid Width="600">
+        <Grid>
             <Grid.Margin>
                 <Thickness Top="{StaticResource TopHeight}" Bottom="{StaticResource BottomHeight}"></Thickness>
             </Grid.Margin>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
 
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ScrollViewer.Resources>
-                    <Style x:Key="StyleRow" TargetType="Grid">
-                        <Setter Property="Height" Value="20"></Setter>
-                        <Setter Property="Margin">
-                            <Setter.Value>
-                                <Thickness Bottom="15"></Thickness>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="StyleTitle" TargetType="TextBlock">
-                        <Setter Property="Width" Value="100"></Setter>
-                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                        <Setter Property="TextAlignment" Value="Right"></Setter>
-                        <Setter Property="Margin">
-                            <Setter.Value>
-                                <Thickness Right="30"></Thickness>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="StyleInput" TargetType="Grid">
-                        <Setter Property="Width" Value="200"></Setter>
-                    </Style>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
                 </ScrollViewer.Resources>
-                <Grid Margin="0 20 0 0">
+
+
+                <Grid>
+
                     <StackPanel Orientation="Vertical">
-                        <Grid Style="{StaticResource StyleRow}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_display_name}"></TextBlock>
-                                <Grid Style="{StaticResource StyleInput}">
-                                    <TextBox Text="{Binding Server.DispName}"></TextBox>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
-                        <Grid Style="{StaticResource StyleRow}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_group}"></TextBlock>
-                                <Grid Style="{StaticResource StyleInput}">
-                                    <TextBox Text="{Binding Server.GroupName}"></TextBox>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
-                        <Grid Style="{StaticResource StyleRow}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_address}"></TextBlock>
-                                <Grid Style="{StaticResource StyleInput}">
-                                    <TextBox Text="{Binding Server.Address}"></TextBox>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
+                        <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
+                        <StackPanel>
+                            <Grid Style="{StaticResource ServerEditorRow}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
+                                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                                        <TextBox Text="{Binding Server.DispName}"></TextBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Style="{StaticResource ServerEditorRow}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
+                                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                                        <TextBox Text="{Binding Server.GroupName}"></TextBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
 
-                        <Grid Style="{StaticResource StyleRow}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_port}"></TextBlock>
-                                <Grid Style="{StaticResource StyleInput}">
-                                    <TextBox Text="{Binding Server.Port}"></TextBox>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Style="{StaticResource StyleRow}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_username}"></TextBlock>
-                                <Grid Style="{StaticResource StyleInput}">
-                                    <TextBox Text="{Binding Server.UserName}"></TextBox>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Style="{StaticResource StyleRow}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_password}"></TextBlock>
-                                <Grid Style="{StaticResource StyleInput}">
-                                    <TextBox Text="{Binding Server.Password}"></TextBox>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
+                            <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
+                                    <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" 
+                                                   Cursor="Hand"
+                                                   Margin="0 0 30 0" MouseLeftButtonDown="ImgLogo_OnMouseLeftButtonDown"></Image>
+                                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
+                                            <Grid Width="32" Height="32" 
+                                                  Cursor="Hand"
+                                                  Background="Aqua" HorizontalAlignment="Left"></Grid>
+                                        </StackPanel>
 
 
-                        <Grid Style="{StaticResource StyleRow}">
-                            <!--<StackPanel Orientation="Horizontal">
-                                <Button Name="BtnSave" Content="{DynamicResource close}" Click="BtnSave_OnClick"></Button>
-                                <Button Name="BtnCancel" Content="{DynamicResource cancel}" Click="BtnCancel_OnClick"></Button>
-                            </StackPanel>-->
-                        </Grid>
+                                        <Popup Name="PopupLogoSelector" StaysOpen="True" 
+                                               AllowsTransparency="False"
+                                               Width="144"
+                                               PlacementTarget="{Binding ElementName=ImgLogo}"
+                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                                            <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
+                                                <StackPanel>
+                                                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
+
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Content="{DynamicResource save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button">
+                                                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                        </Button>
+
+                                                        <Button Content="{DynamicResource cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button">
+                                                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                        </Button>
+                                                    </Grid>
+                                                </StackPanel>
+                                            </Border>
+                                        </Popup>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
+                                <StackPanel Orientation="Horizontal">
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <ContentControl Name="ContentDetail"></ContentControl>
+
 
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
-
-            <Grid Grid.Column="1" Margin="20">
-                <StackPanel>
-                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
-
-                    <TextBlock Text="{DynamicResource server_color_mark}"></TextBlock>
-                </StackPanel>
-            </Grid>
         </Grid>
 
 
 
         <Grid VerticalAlignment="Top">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1Foreground}" Height="{StaticResource TopHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource TopHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1}">
+            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource TopHeight}">
                     <StackPanel Orientation="Horizontal">
                         <Button Padding="0 1 0 0" Width="80"
-                                BorderThickness="0" Content="Txt:Base">
+                                BorderThickness="0" Content="{DynamicResource server_editor_rdp}">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Background" Value="{DynamicResource MainColor1}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type Button}">
@@ -165,25 +191,25 @@
 
 
         <Grid VerticalAlignment="Bottom">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1Foreground}" Height="{StaticResource BottomHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource BottomHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="90"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1}">
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource BottomHeight}">
 
                     <Grid Width="300">
                         <Button Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
                                 Click="ButtonSave_OnClick"
-                                BorderThickness="0" Content="TXT:Save">
+                                BorderThickness="0" Content="{DynamicResource save}">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Background" Value="{DynamicResource MainColor2}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     <Setter Property="Opacity" Value="1"></Setter>
                                     <Setter Property="Template">
                                         <Setter.Value>
@@ -206,12 +232,12 @@
                         <Button Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
-                                BorderThickness="0" Content="TXT:Cancel">
+                                BorderThickness="0" Content="{DynamicResource cancel}">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Background" Value="{DynamicResource MainBgColor}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource MainBgColorBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                     <Setter Property="Opacity" Value="1"></Setter>
                                     <Setter Property="Template">
                                         <Setter.Value>

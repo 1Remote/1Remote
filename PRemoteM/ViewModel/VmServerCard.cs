@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using PRM.Core.Base;
+using PRM.Core.DB;
+using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
 using PRM.RDP;
@@ -43,59 +45,25 @@ namespace PRM.ViewModel
             }
         }
 
-
-        private RelayCommand _addServer;
-        public RelayCommand AddServer
-        {
-            get
-            {
-                if (_addServer == null)
-                    _addServer = new RelayCommand((o) =>
-                    {
-                        
-                        Debug.Assert(this.Server.Id == 0);
-                        Debug.Assert(this.Server.GetType() == typeof(NoneServer));
-
-                        // TODO 打开对话框，选择要新增的服务器类型
-                        var add = new AddRdp();
-                        add.Server = new ServerRDP();
-                        add.Server.GroupName = this.Server.GroupName;
-                        add.ShowDialog();
-                        if (add.IsSave)
-                        {
-                            this.Server = (ServerAbstract)add.Server.Clone();
-                            Host.OnVmServerCardEditHandle(this, EServerAction.Add);
-                        }
-                    }, o => (Server?.Id ?? 0) == 0);
-                return _addServer;
-            }
-        }
-
-
         private RelayCommand _editServer;
         public RelayCommand EditServer
         {
             get
             {
                 if (_editServer == null)
+                {
                     _editServer = new RelayCommand((o) =>
                     {
                         Host.Host.DispPage = new AnimationPage()
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new ServerEditorPage(new VmServerEditorPage((ServerRDP)this.Server.Clone(),this.Host)),
+                            Page = new ServerEditorPage(new VmServerEditorPage((ServerAbstract)this.Server.Clone(),
+                                this.Host)),
                         };
+                    });
+                }
 
-                        //var add = new AddRdp();
-                        //add.Server = (ServerRDP)this.Server.Clone();
-                        //add.ShowDialog();
-                        //if (add.IsSave)
-                        //{
-                        //    this.Server.Update(add.Server);
-                        //    Host.OnVmServerCardEditHandle(this, EServerAction.Edit);
-                        //}
-                    }, o => (Server?.Id ?? 0) > 0);
                 return _editServer;
             }
         }
@@ -113,7 +81,10 @@ namespace PRM.ViewModel
                         if (MessageBox.Show("TXT:确定要删除？", "TXT:提示", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {
-                            Host.OnVmServerCardEditHandle(this, EServerAction.Delete);
+                            var id = this.Server.Id;
+                            var groupName = this.Server.GroupName;
+                            PRM_DAO.GetInstance().DeleteServer(id);
+                            Global.GetInstance().ServerList.Remove(this.Server);
                         }
                     });
                 return _deleteServer;

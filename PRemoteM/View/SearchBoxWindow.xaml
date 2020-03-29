@@ -213,13 +213,13 @@
                                     </Grid>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource MainColor1Foreground}"></Setter>
+                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                                             <Setter Property="Opacity" Value="0.2" TargetName="GridContainer"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer"/>
-                                            <Setter Property="Background" Value="{DynamicResource MainColor2}" TargetName="GridContainer"/>
+                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}" TargetName="GridContainer"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
@@ -252,12 +252,12 @@
         </Grid.Resources>
         <Border BorderBrush="{StaticResource SearchBoxBorderColor}" 
                 BorderThickness="1 1 1 1"
-                Background="{DynamicResource MainColor1}">
+                Background="{DynamicResource MainColor1Brush}">
             <Grid>
                 <TextBox Name="TbKeyWord" 
                          Margin="10 0 0 0"
-                         Foreground="{DynamicResource MainColor1Foreground}" 
-                         CaretBrush="{DynamicResource MainColor1Foreground}"
+                         Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                         CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
                          Width="{StaticResource Width}" Height="44" 
                          FontSize="18"
                          Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
@@ -266,11 +266,11 @@
                          Style="{DynamicResource SearchBoxTbKeyWordStyle}"></TextBox>
 
                 <Grid Width="50" Height="44" HorizontalAlignment="Right" 
-                          Background="{DynamicResource MainColor1}"
+                          Background="{DynamicResource MainColor1Brush}"
                           MouseMove="WindowHeader_MouseMove"></Grid>
             </Grid>
         </Border>
-        <Border BorderBrush="{DynamicResource MainColor2}" BorderThickness="0 0 0 1">
+        <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="0 0 0 1">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -287,14 +287,14 @@
                IsOpen="{Binding PopupIsOpen}"
                Width="{StaticResource Width}"
                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-            <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" Background="{DynamicResource MainColor1}">
+            <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" Background="{DynamicResource MainColor1Brush}">
                 <Grid>
                     <ListBox x:Name="ListBoxSelections" MaxHeight="402"
                                  BorderThickness="0"
                                  SelectedIndex="{Binding SelectedServerTextIndex}" 
                                  ItemsSource="{Binding DispServerList}"
-                                 Background="{DynamicResource MainColor1}"
-                                 Foreground="{DynamicResource MainColor1Foreground}"
+                                 Background="{DynamicResource MainColor1Brush}"
+                                 Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                  Style="{DynamicResource SearchBoxSelectionList}">
                     </ListBox>
                 </Grid>

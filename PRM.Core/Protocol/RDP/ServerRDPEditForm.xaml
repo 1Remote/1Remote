@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="PRM.Core.Protocol.RDP.ServerRDPEditForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.Core.Protocol.RDP"
+             xmlns:rdp="clr-namespace:PRM.RDP"
+             mc:Ignorable="d" 
+             d:DesignHeight="1450" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </StackPanel.Resources>
+
+        <StackPanel>
+
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
+
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding Address}"></TextBox>
+                    </Grid>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding Port}" Width="50" HorizontalAlignment="Left"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding UserName}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding Password}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_display}"></TextBlock>
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_start_with}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <Grid.Resources>
+                            <local:ConverterEStartupDisplaySize x:Key="ConverterEStartupDisplaySize"/>
+                        </Grid.Resources>
+                        <ComboBox SelectedIndex="{Binding RdpStartupDisplaySize, Converter={StaticResource ConverterEStartupDisplaySize}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_start_with_window}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_start_with_full_screen}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_start_with_all_screens}"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_resolution}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <Grid.Resources>
+                            <local:ConverterERdpResizeMode x:Key="ConverterERdpResizeMode"/>
+                        </Grid.Resources>
+                        <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpResizeMode, Converter={StaticResource ConverterERdpResizeMode}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_resolution_auto}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_resolution_stretch}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_resolution_fixed}"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static rdp:ERdpResizeMode.Stretch}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static rdp:ERdpResizeMode.Fixed}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="W = " Margin="20 0 0 0"></TextBlock>
+                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <TextBox Text="{Binding RdpWidth}" Width="50" HorizontalAlignment="Left"></TextBox>
+                        </Grid>
+                        <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="40" Text="H = " Margin="5 0 0 0"></TextBlock>
+                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <TextBox Text="{Binding RdpHeight}" Width="50" HorizontalAlignment="Left"></TextBox>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_performance}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <Grid.Resources>
+                            <local:ConverterEDisplayPerformance x:Key="ConverterEDisplayPerformance"/>
+                        </Grid.Resources>
+                        <ComboBox SelectedIndex="{Binding DisplayPerformance,Converter={StaticResource ConverterEDisplayPerformance}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_auto}" ToolTip="{DynamicResource server_editor_display_performance_auto}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_high}" ToolTip="{DynamicResource server_editor_display_performance_high}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_middle}" ToolTip="{DynamicResource server_editor_display_performance_middle}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_low}" ToolTip="{DynamicResource server_editor_display_performance_low}"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
+
+            <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_advantage_resources}"></TextBlock>
+
+                    <UniformGrid Columns="3" Rows="3" Width="400" Height="90" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <UniformGrid.Resources>
+                            <Style TargetType="CheckBox">
+                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            </Style>
+                        </UniformGrid.Resources>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding EnableClipboard}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding EnableKeyCombinations}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>
+
+                        <CheckBox Content="{DynamicResource server_editor_advantage_sounds}" IsChecked="{Binding EnableSounds}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_audio_capture}" IsChecked="{Binding EnableAudioCapture}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_ports}" IsChecked="{Binding EnablePorts}"></CheckBox>
+
+
+                        <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding EnablePrinters}"></CheckBox>
+                        <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding EnableSmartCardsAndWinHello}"></CheckBox>
+                    </UniformGrid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

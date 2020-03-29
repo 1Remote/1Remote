@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -109,7 +110,7 @@ namespace PRM.Core.Model
 
         #region Server Data
 
-        public readonly Dictionary<uint, ServerAbstract> ServerDict = new Dictionary<uint, ServerAbstract>();
+        public ObservableCollection<ServerAbstract> ServerList = new ObservableCollection<ServerAbstract>();
 
         private void ReadServerDataFromDb()
         {
@@ -142,12 +143,12 @@ namespace PRM.Core.Model
             }
 #endif
 
-            ServerDict.Clear();
+            ServerList.Clear();
             var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
             foreach (var serverOrm in serverOrmList)
             {
                 var serverAbstract = ServerFactory.GetInstance().CreateFromDb(serverOrm);
-                ServerDict.Add(serverAbstract.Id, serverAbstract);
+                ServerList.Add(serverAbstract);
             }
         }
 

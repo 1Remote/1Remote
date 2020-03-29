@@ -10,32 +10,34 @@ using PRM.Core.Base;
 
 namespace PRM.RDP
 {
+    public enum ERdpResizeMode
+    {
+        AutoResize = 0,
+        Stretch = 1,
+        Fixed = 2,
+    }
+    public enum EStartupDisplaySize
+    {
+        Window = 0,
+        FullCurrentScreen = 1,
+        FullAllScreens = 2,
+    }
+
+    public enum EDisplayPerformance
+    {
+        Auto = 0,
+        Low = 1,
+        FullAllScreens = 2,
+    }
+
+
     public class ServerRDP : ServerAbstract
     {
         public ServerRDP() : base("RDP", "RDP.V1")
         {
         }
 
-        public enum EDisplayMode
-        {
-            FullScreen = 1,
-            Window = 2,
-        }
-        public enum ERdpResizeMode
-        {
-            Fixed = 1,
-            Sizable = 2,
-            AutoSize = 3,
-        }
-        public enum EDisplaySize
-        {
-            CustomSize = 0,
-            UseCurrentMonitor = 1,
-            UseMultiMonitors = 2,
-        }
-
-
-
+        #region Conn
         private string _address;
 
         [NotNull]
@@ -71,37 +73,15 @@ namespace PRM.RDP
             get => _password;
             set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
         }
+        #endregion
 
+        #region Display
 
-        private EDisplayMode _displayMode;
-        public EDisplayMode DisplayMode
+        private EStartupDisplaySize _rdpStartupDisplaySize;
+        public EStartupDisplaySize RdpStartupDisplaySize
         {
-            get => _displayMode;
-            set => SetAndNotifyIfChanged(nameof(DisplayMode), ref _displayMode, value);
-        }
-
-
-        private EDisplaySize _rdpDisplaySize;
-        public EDisplaySize RdpDisplaySize
-        {
-            get => _rdpDisplaySize;
-            set => SetAndNotifyIfChanged(nameof(RdpDisplaySize), ref _rdpDisplaySize, value);
-        }
-
-
-        private int _rdpWidth;
-        public int RdpWidth
-        {
-            get => _rdpWidth;
-            set => SetAndNotifyIfChanged(nameof(RdpWidth), ref _rdpWidth, value);
-        }
-
-
-        private int _rdpHeight;
-        public int RdpHeight
-        {
-            get => _rdpHeight;
-            set => SetAndNotifyIfChanged(nameof(RdpHeight), ref _rdpHeight, value);
+            get => _rdpStartupDisplaySize;
+            set => SetAndNotifyIfChanged(nameof(RdpStartupDisplaySize), ref _rdpStartupDisplaySize, value);
         }
 
 
@@ -113,12 +93,114 @@ namespace PRM.RDP
         }
 
 
-        private string _enableAudio;
-        public string EnableAudio
+        private int _rdpWidth = 800;
+        public int RdpWidth
         {
-            get => _enableAudio;
-            set => SetAndNotifyIfChanged(nameof(EnableAudio), ref _enableAudio, value);
+            get => _rdpWidth;
+            set => SetAndNotifyIfChanged(nameof(RdpWidth), ref _rdpWidth, value);
         }
+
+
+        private int _rdpHeight = 600;
+        public int RdpHeight
+        {
+            get => _rdpHeight;
+            set => SetAndNotifyIfChanged(nameof(RdpHeight), ref _rdpHeight, value);
+        }
+
+
+
+        private EDisplayPerformance _displayPerformance;
+        public EDisplayPerformance DisplayPerformance
+        {
+            get => _displayPerformance;
+            set => SetAndNotifyIfChanged(nameof(DisplayPerformance), ref _displayPerformance, value);
+        }
+
+
+        #endregion
+
+
+        #region resource switch
+
+        private bool _enableClipboard = true;
+        public bool EnableClipboard
+        {
+            get => _enableClipboard;
+            set => SetAndNotifyIfChanged(nameof(EnableClipboard), ref _enableClipboard, value);
+        }
+
+
+
+        private bool _enableDiskDrives = true;
+        public bool EnableDiskDrives
+        {
+            get => _enableDiskDrives;
+            set => SetAndNotifyIfChanged(nameof(EnableDiskDrives), ref _enableDiskDrives, value);
+        }
+
+
+
+        private bool _enableKeyCombinations = true;
+        public bool EnableKeyCombinations
+        {
+            get => _enableKeyCombinations;
+            set => SetAndNotifyIfChanged(nameof(EnableKeyCombinations), ref _enableKeyCombinations, value);
+        }
+
+
+        private bool _enableSounds = true;
+        public bool EnableSounds
+        {
+            get => _enableSounds;
+            set
+            {
+                EnableClipboard = true;
+                SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, value);
+            }
+        }
+
+
+        private bool _enableAudioCapture = false;
+        public bool EnableAudioCapture
+        {
+            get => _enableAudioCapture;
+            set => SetAndNotifyIfChanged(nameof(EnableAudioCapture), ref _enableAudioCapture, value);
+        }
+
+
+
+
+
+        private bool _enablePorts = false;
+        public bool EnablePorts
+        {
+            get => _enablePorts;
+            set => SetAndNotifyIfChanged(nameof(EnablePorts), ref _enablePorts, value);
+        }
+
+
+
+
+        private bool _enablePrinters = false;
+        public bool EnablePrinters
+        {
+            get => _enablePrinters;
+            set => SetAndNotifyIfChanged(nameof(EnablePrinters), ref _enablePrinters, value);
+        }
+
+
+
+
+        private bool _enableSmartCardsAndWinHello = false;
+        public bool EnableSmartCardsAndWinHello
+        {
+            get => _enableSmartCardsAndWinHello;
+            set => SetAndNotifyIfChanged(nameof(EnableSmartCardsAndWinHello), ref _enableSmartCardsAndWinHello, value);
+        }
+
+        #endregion
+
 
 
         public override void Conn()

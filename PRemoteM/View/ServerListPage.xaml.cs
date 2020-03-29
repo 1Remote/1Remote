@@ -21,16 +21,20 @@ namespace PRM.View
     /// </summary>
     public partial class ServerListPage : UserControl
     {
-        public ServerListPage(VmMain _host)
+        public VmMain Host;
+        public VmServerListPage VmDataContext;
+        public ServerListPage(VmMain host)
         {
+            Host = host;
+            VmDataContext = new VmServerListPage(host);
             InitializeComponent();
-            DataContext = new VmServerListPage(_host);
+            DataContext = VmDataContext;
         }
 
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            //((VmMain)this.DataContext).SelectedGroup = "";
+            VmDataContext.SelectedGroup = "";
         }
     }
 }
