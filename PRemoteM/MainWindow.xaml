@@ -10,18 +10,25 @@
         x:Name="Window"
         Title="MainWindow" Height="500" Width="680" MinWidth="520" MinHeight="300">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
     <Window.Template>
         <ControlTemplate TargetType="Window">
-            <Border Padding="0">
+            <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource MainColor1Brush}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="#333"></Setter>
+                        <Setter Property="BorderThickness" Value="1"></Setter>
+                    </Style>
+                </Border.Style>
                 <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">
                     <ContentPresenter />
                 </Grid>
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="2 2 2 8" />
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="4"/>
+                    <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -40,223 +47,203 @@
         <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
     </Window.InputBindings>
 
-    <Border>
-        <Border.Style>
-            <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="#333"></Setter>
-                <Setter Property="BorderThickness" Value="1"></Setter>
-                <Setter Property="Margin" Value="0"></Setter>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                        <Setter Property="Margin">
-                            <Setter.Value>
-                                <Thickness Left="6" Top="6" Right="6" Bottom="0"></Thickness>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="BorderThickness" Value="0"></Setter>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
 
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-            </Grid.RowDefinitions>
+        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
+            <StackPanel Orientation="Horizontal">
+                <Grid Background="Aquamarine" Width="25" Height="25" Margin="2">
+                    <!--<Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo40.png"></Image>-->
+                </Grid>
 
+                <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
+                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+                </Label>
+            </StackPanel>
+        </Grid>
 
-            <Grid Background="{DynamicResource MainColor1}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
-                <StackPanel Orientation="Horizontal">
-                    <Grid Background="Aquamarine" Width="25" Height="25" Margin="2">
-                        <!--<Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo40.png"></Image>-->
-                    </Grid>
+        <!-- System Button Area -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}" x:Key="WinTitleBarBtnStyle">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Width" Value="35"/>
+                    <Setter Property="Height" Value="25"/>
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="VerticalAlignment" Value="Top"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="Button.IsMouseOver" Value="True">
+                            <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
 
-                    <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1Foreground}">
-                        <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
-                    </Label>
-                </StackPanel>
-            </Grid>
-
-            <!-- System Button Area -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1}">
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type Button}" x:Key="WinTitleBarBtnStyle">
-                        <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Width" Value="35"/>
-                        <Setter Property="Height" Value="25"/>
-                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                        <Setter Property="VerticalAlignment" Value="Top"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColor}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Resources>
-
-                <Grid Height="25" VerticalAlignment="Top" Width="150">
-                    <TextBox Name="TbFilter" Width="140" Height="20" 
+            <Grid Height="25" VerticalAlignment="Top" Width="150">
+                <TextBox Name="TbFilter" Width="140" Height="20" 
                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
                         KeyUp="TbFilter_OnKeyUp"
                         VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left">
-                        <TextBox.Resources>
-                            <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
-                                <VisualBrush.Visual>
-                                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}"/>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </TextBox.Resources>
-                        <TextBox.Style>
-                            <Style TargetType="{x:Type TextBox}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type TextBox}">
+                    <TextBox.Resources>
+                        <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
+                            <VisualBrush.Visual>
+                                <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </TextBox.Resources>
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type TextBox}">
 
-                                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                                                <Grid>
-                                                    <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}">
-                                                    </Grid>
-                                                    <Grid x:Name="grid1" Background="{TemplateBinding Background}" Opacity="{TemplateBinding Opacity}">
-                                                        <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                                                    </Grid>
+                                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}">
                                                 </Grid>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Opacity" Value="0.5"></Setter>
-                                <Setter Property="Background" Value="Transparent"></Setter>
+                                                <Grid x:Name="grid1" Background="{TemplateBinding Background}" Opacity="{TemplateBinding Opacity}">
+                                                    <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Opacity" Value="0.5"></Setter>
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainBgColorBrush}"/>
+                                    <Setter Property="Opacity" Value="0.6"></Setter>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"/>
+                                    <Setter Property="Opacity" Value="0.6"></Setter>
+                                </Trigger>
+                                <Trigger Property="Text" Value="{x:Null}">
+                                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                                </Trigger>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+            <Button Name="BtnSetting" Click="BtnSetting_OnClick">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Canvas Height="25" Width="35" >
+                    <Line X1="12" Y1="8" X2="22" Y2="8" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
+                    <Line X1="12" Y1="13" X2="22" Y2="13" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
+                    <Line X1="12" Y1="18" X2="22" Y2="18" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
+                </Canvas>
+            </Button>
+
+            <Button Name="BtnMinimize">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Rectangle Width="11" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+            </Button>
+
+            <Button Name="BtnMaximize">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Grid>
+                    <Rectangle Width="11" Height="11" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75">
+                        <Rectangle.Style>
+                            <Style TargetType="Rectangle">
                                 <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource MainBgColor}"/>
-                                        <Setter Property="Opacity" Value="0.6"></Setter>
-                                    </Trigger>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"/>
-                                        <Setter Property="Opacity" Value="0.6"></Setter>
-                                    </Trigger>
-                                    <Trigger Property="Text" Value="{x:Null}">
-                                        <Setter Property="Background" Value="{StaticResource HintText}"/>
-                                    </Trigger>
-                                    <Trigger Property="Text" Value="">
-                                        <Setter Property="Background" Value="{StaticResource HintText}"/>
-                                    </Trigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                        </Rectangle.Style>
+                    </Rectangle>
+
+                    <Canvas>
+                        <Canvas.Style>
+                            <Style TargetType="Canvas">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Canvas.Style>
+                        <Polyline Points="2.375,2 2.375,0.375 10.625,0.375 10.625,8.625 9,8.625" StrokeThickness="0.75" Stroke="{DynamicResource MainColor1ForegroundBrush}"/>
+                        <Rectangle Width="9" Height="9" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Margin="0,2,2,0"/>
+                    </Canvas>
                 </Grid>
-                <Button Name="BtnSetting" Click="BtnSetting_OnClick">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Button.IsMouseOver" Value="True">
-                                    <Setter Property="Button.Background" Value="{DynamicResource MainBgColor}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <Canvas Height="25" Width="35" >
-                        <Line X1="12" Y1="8" X2="22" Y2="8" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="1"/>
-                        <Line X1="12" Y1="13" X2="22" Y2="13" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="1"/>
-                        <Line X1="12" Y1="18" X2="22" Y2="18" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="1"/>
-                    </Canvas>
-                </Button>
+            </Button>
 
-                <Button Name="BtnMinimize">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Button.IsMouseOver" Value="True">
-                                    <Setter Property="Button.Background" Value="{DynamicResource MainBgColor}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <Rectangle Width="11" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75"/>
-                </Button>
+            <Button Name="BtnClose">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                <Setter Property="Button.Background" Value="Red" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Canvas Height="25" Width="35" >
+                    <Line X1="12" Y1="8" X2="22" Y2="18" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+                    <Line X1="12" Y1="18" X2="22" Y2="8" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+                </Canvas>
+            </Button>
+        </StackPanel>
 
-                <Button Name="BtnMaximize">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Button.IsMouseOver" Value="True">
-                                    <Setter Property="Button.Background" Value="{DynamicResource MainBgColor}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <Grid>
-                        <Rectangle Width="11" Height="11" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75">
-                            <Rectangle.Style>
-                                <Style TargetType="Rectangle">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                                            <Setter Property="Visibility" Value="Hidden"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Rectangle.Style>
-                        </Rectangle>
-
-                        <Canvas>
-                            <Canvas.Style>
-                                <Style TargetType="Canvas">
-                                    <Setter Property="Visibility" Value="Hidden"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Canvas.Style>
-                            <Polyline Points="2.375,2 2.375,0.375 10.625,0.375 10.625,8.625 9,8.625" StrokeThickness="0.75" Stroke="{DynamicResource MainColor1Foreground}"/>
-                            <Rectangle Width="9" Height="9" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75" Margin="0,2,2,0"/>
-                        </Canvas>
-                    </Grid>
-                </Button>
-
-                <Button Name="BtnClose">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Button.IsMouseOver" Value="True">
-                                    <Setter Property="Button.Background" Value="Red" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <Canvas Height="25" Width="35" >
-                        <Line X1="12" Y1="8" X2="22" Y2="18" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75"/>
-                        <Line X1="12" Y1="18" X2="22" Y2="8" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75"/>
-                    </Canvas>
-                </Button>
-            </StackPanel>
-
-            <Grid Grid.Row="1">
-                <ContentControl Content="{Binding PageServerList}"></ContentControl>
-                <pageHost1:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
-            </Grid>
+        <Grid Grid.Row="1">
+            <ContentControl Content="{Binding PageServerList}"></ContentControl>
+            <pageHost1:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
+        </Grid>
 
 
 
-            <!--<Grid Grid.Row="2">
+        <!--<Grid Grid.Row="2">
                 <StackPanel>
                     <controls:LogoSelector Width="180" Height="180" Name="LogoSelector"></controls:LogoSelector>
                     <Button Click="ButtonBase_OnClick">test</Button>
@@ -266,7 +253,6 @@
                 </StackPanel>
             </Grid>-->
 
-        </Grid>
-    </Border>
+    </Grid>
 
 </Window>

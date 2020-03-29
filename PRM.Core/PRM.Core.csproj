@@ -63,6 +63,9 @@
   <ItemGroup>
     <Compile Include="Model\Global.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protocol\RDP\ServerRDPEditForm.xaml.cs">
+      <DependentUpon>ServerRDPEditForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Protocol\RDP\ServerRDPEditForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Controls\LogoSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -128,6 +135,10 @@
     <Page Include="Resources\Skins\Default.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Style\ServerEditorStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ulits\PageHost\PageHost.xaml">
       <Generator>MSBuild:Compile</Generator>

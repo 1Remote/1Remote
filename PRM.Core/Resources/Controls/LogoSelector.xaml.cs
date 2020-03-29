@@ -97,7 +97,6 @@ namespace PRM.Core.Resources.Controls
             }
         }
 
-
         public LogoSelector()
         {
             InitializeComponent();
@@ -132,19 +131,6 @@ namespace PRM.Core.Resources.Controls
             }
         }
 
-
-        public static Bitmap Roi(Bitmap image, Rectangle section)
-        {
-            var roiBit = new Bitmap(section.Width, section.Height);
-            using (var g = Graphics.FromImage(roiBit))
-            {
-                g.InterpolationMode = InterpolationMode.HighQualityBilinear;
-                g.SmoothingMode = SmoothingMode.HighSpeed;
-                g.PixelOffsetMode = PixelOffsetMode.HighSpeed;
-                g.DrawImage(image, 0, 0, section, GraphicsUnit.Pixel);
-                return roiBit;
-            }
-        }
 
         public BitmapSource Logo
         {
@@ -415,6 +401,28 @@ namespace PRM.Core.Resources.Controls
             }
         }
 
+
+        public static bool? Show(Microsoft.Win32.FileDialog fileDialog)
+        {
+            Window win = new Window
+            {
+                ResizeMode = System.Windows.ResizeMode.NoResize,
+                WindowStyle = System.Windows.WindowStyle.None,
+                Topmost = true,
+                Visibility = System.Windows.Visibility.Hidden,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Content = fileDialog
+            };
+            bool? result = false;
+            win.Loaded += (s, e) =>
+            {
+                result = fileDialog.ShowDialog();
+            };
+            win.ShowDialog();
+            win.Close();
+            return result;
+
+        }
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -423,7 +431,7 @@ namespace PRM.Core.Resources.Controls
             ofd.Filter = "jpg|*.jpg|png|*.png|bmp|*.bmp|所有文件|*.*";
             //ofd.FilterIndex = 2;
             ofd.RestoreDirectory = true;
-            if (ofd.ShowDialog() == true)
+            if (Show(ofd) == true)
             {
                 SetImg(GetBitmapSource(ofd.FileName));
             }

@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
-        Title="{DynamicResource server_rdp}" Height="600" Width="800" MinWidth="520" MinHeight="300">
+        Title="{DynamicResource server_editor_rdp}" Height="600" Width="800" MinWidth="520" MinHeight="300">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
@@ -46,7 +46,7 @@
 
 
 
-            <Grid Background="{DynamicResource MainBgColor}" Grid.Row="1">
+            <Grid Background="{DynamicResource MainBgColorBrush}" Grid.Row="1">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <ScrollViewer.Resources>
                         <Style x:Key="StyleRow" TargetType="Grid">
@@ -76,7 +76,7 @@
                         <StackPanel Orientation="Vertical">
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_display_name}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding DispName}"></TextBox>
                                     </Grid>
@@ -84,7 +84,7 @@
                             </Grid>
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_group}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding GroupName}"></TextBox>
                                     </Grid>
@@ -92,21 +92,21 @@
                             </Grid>
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_icon}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                     </Grid>
                                 </StackPanel>
                             </Grid>
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_color_mark}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                     </Grid>
                                 </StackPanel>
                             </Grid>
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_address}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_address}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding Address}"></TextBox>
                                     </Grid>
@@ -115,7 +115,7 @@
 
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_port}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_port}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding Port}"></TextBox>
                                     </Grid>
@@ -124,7 +124,7 @@
 
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_username}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_username}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding UserName}"></TextBox>
                                     </Grid>
@@ -133,7 +133,7 @@
 
                             <Grid Style="{StaticResource StyleRow}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_password}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_password}"></TextBlock>
                                     <Grid Style="{StaticResource StyleInput}">
                                         <TextBox Text="{Binding Password}"></TextBox>
                                     </Grid>
@@ -142,7 +142,7 @@
 
                             <Grid Style="{StaticResource StyleRow}" Height="175">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_password}"></TextBlock>
+                                    <TextBlock Style="{StaticResource StyleTitle}" Text="{DynamicResource server_editor_password}"></TextBlock>
                                     <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
                                 </StackPanel>
                             </Grid>
@@ -163,23 +163,23 @@
 
 
             <Grid Grid.Row="0" Grid.RowSpan="2">
-                <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor1Foreground}" Background="{DynamicResource MainColor1Foreground}" Height="30" VerticalAlignment="Top">
+                <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor1BrushBrushForeground}" Background="{DynamicResource MainColor1BrushBrushForeground}" Height="30" VerticalAlignment="Top">
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
                     </Border.Effect>
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="0" Background="{DynamicResource MainColor1}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown" PreviewMouseMove="System_MouseMove">
+            <Grid Grid.Row="0" Background="{DynamicResource MainColor1BrushBrush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown" PreviewMouseMove="System_MouseMove">
                 <StackPanel Orientation="Horizontal">
-                    <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1Foreground}">
+                    <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1BrushBrushForeground}">
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                     </Label>
                 </StackPanel>
             </Grid>
 
             <!-- System Button Area -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1}">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1BrushBrush}">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}" x:Key="systemButton">
                         <Setter Property="Padding" Value="0"/>
@@ -209,7 +209,7 @@
                 <Button Name="BtnMinimize">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource systemButton}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
+                            <Setter Property="Background" Value="{DynamicResource MainColor1BrushBrush}"></Setter>
                             <Style.Triggers>
                                 <Trigger Property="Button.IsMouseOver" Value="True">
                                     <Setter Property="Button.Background" Value="Gray" />
@@ -217,13 +217,13 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <Rectangle Width="11" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75"/>
+                    <Rectangle Width="11" Stroke="{DynamicResource MainColor1BrushBrushForeground}" StrokeThickness="0.75"/>
                 </Button>
 
                 <Button Name="BtnMaximize">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource systemButton}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
+                            <Setter Property="Background" Value="{DynamicResource MainColor1BrushBrush}"></Setter>
                             <Style.Triggers>
                                 <Trigger Property="Button.IsMouseOver" Value="True">
                                     <Setter Property="Button.Background" Value="Gray" />
@@ -232,7 +232,7 @@
                         </Style>
                     </Button.Style>
                     <Grid>
-                        <Rectangle Width="11" Height="11" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75">
+                        <Rectangle Width="11" Height="11" Stroke="{DynamicResource MainColor1BrushBrushForeground}" StrokeThickness="0.75">
                             <Rectangle.Style>
                                 <Style TargetType="Rectangle">
                                     <Style.Triggers>
@@ -255,8 +255,8 @@
                                     </Style.Triggers>
                                 </Style>
                             </Canvas.Style>
-                            <Polyline Points="2.375,2 2.375,0.375 10.625,0.375 10.625,8.625 9,8.625" StrokeThickness="0.75" Stroke="{DynamicResource MainColor1Foreground}"/>
-                            <Rectangle Width="9" Height="9" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75" Margin="0,2,2,0"/>
+                            <Polyline Points="2.375,2 2.375,0.375 10.625,0.375 10.625,8.625 9,8.625" StrokeThickness="0.75" Stroke="{DynamicResource MainColor1BrushBrushForeground}"/>
+                            <Rectangle Width="9" Height="9" Stroke="{DynamicResource MainColor1BrushBrushForeground}" StrokeThickness="0.75" Margin="0,2,2,0"/>
                         </Canvas>
                     </Grid>
                 </Button>
@@ -264,7 +264,7 @@
                 <Button Name="BtnClose">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource systemButton}">
-                            <Setter Property="Background" Value="{DynamicResource MainColor1}"></Setter>
+                            <Setter Property="Background" Value="{DynamicResource MainColor1BrushBrush}"></Setter>
                             <Style.Triggers>
                                 <Trigger Property="Button.IsMouseOver" Value="True">
                                     <Setter Property="Button.Background" Value="Red" />
@@ -273,8 +273,8 @@
                         </Style>
                     </Button.Style>
                     <Canvas Height="25" Width="35" >
-                        <Line X1="12" Y1="8" X2="22" Y2="18" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75"/>
-                        <Line X1="12" Y1="18" X2="22" Y2="8" Stroke="{DynamicResource MainColor1Foreground}" StrokeThickness="0.75"/>
+                        <Line X1="12" Y1="8" X2="22" Y2="18" Stroke="{DynamicResource MainColor1BrushBrushForeground}" StrokeThickness="0.75"/>
+                        <Line X1="12" Y1="18" X2="22" Y2="8" Stroke="{DynamicResource MainColor1BrushBrushForeground}" StrokeThickness="0.75"/>
                     </Canvas>
                 </Button>
             </StackPanel>

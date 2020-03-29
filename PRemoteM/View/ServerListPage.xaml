@@ -82,13 +82,13 @@
         </Grid>
 
         <Grid VerticalAlignment="Top">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1Foreground}" Height="20">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="20">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2}" Background="{DynamicResource MainColor1}">
+            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80"></ColumnDefinition>
@@ -100,8 +100,8 @@
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                <Setter Property="Background" Value="{DynamicResource MainColor1}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource MainColor1Foreground}"/>
+                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -113,15 +113,15 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource MainBgColor}"></Setter>
+                                        <Setter Property="Background" Value="{StaticResource MainBgColorBrush}"></Setter>
                                     </Trigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="">
-                                        <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
-                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
-                                        <Setter Property="Background" Value="{StaticResource MainColor2}"></Setter>
-                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2Foreground}"/>
+                                        <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -134,9 +134,9 @@
                         <StackPanel Orientation="Horizontal">
                             <ListBox 
                                     IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding ServerGroups}" 
+                                    ItemsSource="{Binding ServerGroupList}" 
                                     SelectedValue="{Binding SelectedGroup}"
-                                    Background="{StaticResource MainColor1}"
+                                    Background="{StaticResource MainColor1Brush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -176,20 +176,20 @@
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="Selector.IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
-                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2}"></Setter>
+                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2Brush}"></Setter>
                                                         </Trigger>
                                                         <Trigger Property="UIElement.IsMouseOver" Value="True">
-                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainBgColor}"></Setter>
+                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainBgColorBrush}"></Setter>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
 
-                                        <Setter Property="Foreground" Value="{StaticResource MainColor1Foreground}"></Setter>
+                                        <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource MainColor2Foreground}"></Setter>
+                                                <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>

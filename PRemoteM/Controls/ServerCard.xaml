@@ -27,7 +27,7 @@
             </Grid.Style>
 
             <!-- Card Bottom Layer - with shadow effect -->
-            <Border CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColor}" BorderBrush="{DynamicResource MainBgColor}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+            <Border CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
                 </Border.Effect>
@@ -39,7 +39,7 @@
                     <RectangleGeometry RadiusX="5" RadiusY="5" Rect="0 0 144 144"></RectangleGeometry>
                 </Grid.Clip>
                 <!-- Card Content Middle Layer - with icon -->
-                <Grid Name="CardContent" Background="{DynamicResource MainColor1}">
+                <Grid Name="CardContent" Background="{DynamicResource MainColor1Brush}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
@@ -126,10 +126,10 @@
                             <Setter Property="BorderBrush" Value="Transparent"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"></Setter>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </DataTrigger>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2}"></Setter>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -150,7 +150,7 @@
                                             <Path Margin="5"
                                               Name="Symbol"
                                               Data="M 50.864 62.832 L 41.888 62.832 L 25.256 35.552 L 8.360001 62.832 L 0 62.832 L 20.856 30.096 L 1.320002 0 L 10.12 0 L 25.52 24.64 L 41.008 0 L 49.368 0 L 29.92 29.92 Z"
-                                              Fill="{DynamicResource MainColor1}"
+                                              Fill="{DynamicResource MainColor1Brush}"
                                               Stretch="Fill" />
                                             <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
                                         </Border>
@@ -181,7 +181,7 @@
                                                 <Path Margin="5 6 5 3"
                                               Name="Symbol"
                                               Data="M 2.707031 0 L 49.97266 0 L 49.97266 5 L 2.707031 5 Z M 2.707031 20 L 49.97266 20 L 49.97266 25 L 2.707031 25 Z M 2.707031 40 L 49.97266 40 L 49.97266 45 L 2.707031 45 Z"
-                                              Fill="{DynamicResource MainColor1}"
+                                              Fill="{DynamicResource MainColor1Brush}"
                                               Stretch="Fill" />
                                                 <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
                                             </Border>
@@ -222,7 +222,7 @@
 
         <Grid Name="AddServerContext">
             <Grid.InputBindings>
-                <MouseBinding MouseAction="LeftClick" Command="{Binding AddServer}"></MouseBinding>
+                <MouseBinding MouseAction="LeftClick" Command="{Binding EditServer}"></MouseBinding>
             </Grid.InputBindings>
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -236,7 +236,7 @@
             </Grid.Style>
 
             <!-- Card Bottom Layer - with shadow effect -->
-            <Border Opacity="0.2" CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColor}" BorderBrush="{DynamicResource MainBgColor}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+            <Border Opacity="0.2" CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
                 </Border.Effect>
@@ -247,7 +247,7 @@
                 </Grid.Clip>
 
                 <!-- Card Mask Layer -->
-                <Grid Background="{DynamicResource MainColor1}">
+                <Grid Background="{DynamicResource MainColor1Brush}">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Setter Property="Opacity" Value="0.2"></Setter>
@@ -259,7 +259,7 @@
                         </Style>
                     </Grid.Style>
                     <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                          Fill="{DynamicResource MainBgColor}"
+                          Fill="{DynamicResource MainBgColorBrush}"
                           Stretch="Fill">
                         <Path.Style>
                             <Style TargetType="Path">

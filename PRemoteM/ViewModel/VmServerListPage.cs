@@ -14,37 +14,35 @@ namespace PRM.ViewModel
         {
             Host = vmMain;
 
-
-            foreach (var serverAbstract in Global.GetInstance().ServerDict.Values)
+            RebuildVmServerCardList();
+            Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
             {
-                DispServerList.Add(new VmServerCard(serverAbstract, this));
-                //DispServerList.Last().OnAction += VmServerCardOnAction;
-            }
-            OnDispServerListChangeHandle();
+                RebuildVmServerCardList();
+            };
         }
 
 
-        private ObservableCollection<VmServerCard> _dispServerlist = new ObservableCollection<VmServerCard>();
+        private ObservableCollection<VmServerCard> _dispServerList = new ObservableCollection<VmServerCard>();
         /// <summary>
         /// AllServerList data source for list view
         /// </summary>
         public ObservableCollection<VmServerCard> DispServerList
         {
-            get => _dispServerlist;
+            get => _dispServerList;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispServerList), ref _dispServerlist, value);
+                SetAndNotifyIfChanged(nameof(DispServerList), ref _dispServerList, value);
                 OrderServerList();
                 DispServerList.CollectionChanged += (sender, args) => { OrderServerList(); };
             }
         }
 
 
-        private ObservableCollection<string> _serverGroups = new ObservableCollection<string>();
-        public ObservableCollection<string> ServerGroups
+        private ObservableCollection<string> _serverGroupList = new ObservableCollection<string>();
+        public ObservableCollection<string> ServerGroupList
         {
-            get => _serverGroups;
-            set => SetAndNotifyIfChanged(nameof(ServerGroups), ref _serverGroups, value);
+            get => _serverGroupList;
+            set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
 
         private string _selectedGroup = "";
@@ -68,78 +66,64 @@ namespace PRM.ViewModel
 
 
 
-        private void OnDispServerListChangeHandle()
+        private void RebuildVmServerCardList()
         {
-            ServerGroups.Clear();
+            _dispServerList.Clear();
+            foreach (var serverAbstract in Global.GetInstance().ServerList)
+            {
+                serverAbstract.PropertyChanged += (sender, args) =>
+                {
+                    switch (args.PropertyName)
+                    {
+                        case nameof(ServerAbstract.GroupName):
+                            RebuildGroupList();
+                            break;
+                    }
+                };
+                DispServerList.Add(new VmServerCard(serverAbstract, this));
+            }
+            OrderServerList();
+            RebuildGroupList();
+        }
+
+        private void RebuildGroupList()
+        {
+            var selectedGroup = _selectedGroup;
+
+            ServerGroupList.Clear();
             foreach (var serverAbstract in DispServerList.Select(x => x.Server))
             {
                 if (!string.IsNullOrEmpty(serverAbstract.GroupName) &&
-                    !ServerGroups.Contains(serverAbstract.GroupName))
+                    !ServerGroupList.Contains(serverAbstract.GroupName))
                 {
-                    ServerGroups.Add(serverAbstract.GroupName);
+                    ServerGroupList.Add(serverAbstract.GroupName);
                 }
             }
-            OrderServerList();
+            if (ServerGroupList.Contains(selectedGroup))
+                SelectedGroup = selectedGroup;
+            else
+                SelectedGroup = "";
         }
 
-
-        public void OnVmServerCardEditHandle(VmServerCard sender, VmServerCard.EServerAction action)
-        {
-            switch (action)
-            {
-                case VmServerCard.EServerAction.Delete:
-                    {
-                        var id = ((VmServerCard)sender).Server.Id;
-                        var groupName = ((VmServerCard)sender).Server.GroupName;
-                        PRM_DAO.GetInstance().DeleteServer(id);
-                        DispServerList.Remove(((VmServerCard)sender));
-                        if (DispServerList.All(s => s.Server.GroupName != groupName))
-                        {
-                            ServerGroups.Remove(groupName);
-                        }
-                        break;
-                    }
-                case VmServerCard.EServerAction.Add:
-                    {
-                        var serverOrm = ServerOrm.ConvertFrom(sender.Server);
-                        if (PRM_DAO.GetInstance().Insert(serverOrm))
-                        {
-                            var newCard = new VmServerCard(ServerFactory.GetInstance().CreateFromDb(serverOrm), this);
-                            DispServerList.Add(newCard);
-                            //DispServerList.Last().OnAction += VmServerCardOnAction;
-                            if (!string.IsNullOrEmpty(newCard.Server.GroupName) && DispServerList.All(s => s.Server.GroupName != newCard.Server.GroupName))
-                            {
-                                ServerGroups.Add(newCard.Server.GroupName);
-                            }
-                        }
-                        break;
-                    }
-                case VmServerCard.EServerAction.Edit:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
-            }
-            OrderServerList();
-        }
 
 
         private void OrderServerList()
         {
             // Delete NoneServer
-            var noneServers = _dispServerlist.Where(s => s.GetType() == typeof(NoneServer) || s.Server == null || s.Server.Id == 0).ToArray();
+            var noneServers = _dispServerList.Where(s => s.GetType() == typeof(NoneServer) || s.Server == null || s.Server.Id == 0).ToArray();
             foreach (var s in noneServers)
             {
-                _dispServerlist.Remove(s);
+                _dispServerList.Remove(s);
             }
 
             // TODO flag to order by LassConnTime
-            _dispServerlist = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.LassConnTime));
+            _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.LassConnTime));
 
             // add a 'NoneServer' so that 'add server' button will be shown
             var addServerCard = new VmServerCard(new NoneServer(), this);
             addServerCard.Server.GroupName = SelectedGroup;
             //addServerCard.OnAction += VmServerCardOnAction;
-            _dispServerlist.Add(addServerCard);
+            _dispServerList.Add(addServerCard);
 
 
             base.RaisePropertyChanged(nameof(DispServerList));
