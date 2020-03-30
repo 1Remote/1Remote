@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
 using PRM.Core.Annotations;
 using PRM.Core.Base;
 
-namespace PRM.RDP
+namespace PRM.Core.Protocol.RDP
 {
     public enum ERdpResizeMode
     {

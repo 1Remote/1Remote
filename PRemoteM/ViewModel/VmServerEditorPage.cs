@@ -6,7 +6,6 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
-using PRM.RDP;
 using PRM.View;
 using Shawn.Ulits.PageHost;
 
@@ -39,7 +38,7 @@ namespace PRM.ViewModel
                 if (_connServer == null)
                     _connServer = new RelayCommand((o) =>
                     {
-                        
+
                         this.Server.Conn();
                     });
                 return _connServer;
@@ -57,7 +56,7 @@ namespace PRM.ViewModel
                     _cmdSave = new RelayCommand((o) =>
                     {
                         // edit
-                        if (Server?.Id > 0 && Global.GetInstance().ServerList.Any(x=>x.Id == Server.Id))
+                        if (Server?.Id > 0 && Global.GetInstance().ServerList.Any(x => x.Id == Server.Id))
                         {
                             Global.GetInstance().ServerList.First(x => x.Id == Server.Id).Update(Server);
                         }

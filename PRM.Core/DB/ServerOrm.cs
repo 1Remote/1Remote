@@ -4,7 +4,8 @@ using System.ComponentModel;
 using System.Data.SQLite;
 using System.Windows.Media.Animation;
 using PRM.Core.Base;
-using PRM.RDP;
+using PRM.Core.Protocol.RDP;
+using Shawn.Ulits.RDP;
 
 namespace PRM.Core.DB
 {

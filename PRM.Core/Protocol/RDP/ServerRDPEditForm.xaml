@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PRM.Core.Protocol.RDP"
-             xmlns:rdp="clr-namespace:PRM.RDP"
+             xmlns:rdp="clr-namespace:Shawn.Ulits.RDP"
              mc:Ignorable="d" 
              d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
@@ -90,10 +90,10 @@
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static rdp:ERdpResizeMode.Stretch}">
+                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static local:ERdpResizeMode.Stretch}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static rdp:ERdpResizeMode.Fixed}">
+                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static local:ERdpResizeMode.Fixed}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>

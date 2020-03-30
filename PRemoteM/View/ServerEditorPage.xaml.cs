@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -16,7 +17,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.Core.Base;
 using PRM.Core.Protocol.RDP;
-using PRM.RDP;
 using PRM.ViewModel;
 
 namespace PRM.View
@@ -38,6 +38,7 @@ namespace PRM.View
             {
                 LogoSelector.SetImg(vm?.Server?.IconImg);
             }
+            else
             // add mode
             {
                 // TODO 研究子类之间的互相转换
@@ -45,9 +46,15 @@ namespace PRM.View
                 vm.Server = new ServerRDP();
             }
 
-
-            // TODO 反射创建对象
-            ContentDetail.Content = new ServerRDPEditForm(_vmServerEditorPage.Server);
+            var serverType = _vmServerEditorPage.Server.GetType();
+            if (serverType == typeof(ServerRDP))
+            {
+                ContentDetail.Content = new ServerRDPEditForm(_vmServerEditorPage.Server);
+            }
+            else
+            {
+                
+            }
         }
 
 
