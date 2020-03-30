@@ -5,7 +5,6 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
-using PRM.RDP;
 using PRM.View;
 using Shawn.Ulits.PageHost;
 
@@ -38,7 +37,7 @@ namespace PRM.ViewModel
                 if (_connServer == null)
                     _connServer = new RelayCommand((o) =>
                     {
-                        
+
                         this.Server.Conn();
                     });
                 return _connServer;
@@ -77,7 +76,6 @@ namespace PRM.ViewModel
                 if (_deleteServer == null)
                     _deleteServer = new RelayCommand((o) =>
                     {
-                        
                         if (MessageBox.Show("TXT:确定要删除？", "TXT:提示", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {

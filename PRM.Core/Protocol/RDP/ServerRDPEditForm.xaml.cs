@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.Core.Base;
-using PRM.RDP;
 
 namespace PRM.Core.Protocol.RDP
 {

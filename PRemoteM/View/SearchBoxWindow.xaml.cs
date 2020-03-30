@@ -100,10 +100,18 @@ namespace PRM.View
                     break;
                 case Key.Enter:
                     {
-                        // TODO open conn
-                        if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count
-                            && _vmSearchBox.SelectedServerTextIndex >= 0)
-                            MessageBox.Show(_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].DispName);
+                        lock (_closeLocker)
+                        {
+                            var i = _vmSearchBox.SelectedServerTextIndex;
+                            var j = _vmSearchBox.DispServerList.Count;
+                            if (i < j && i >= 0)
+                            {
+                                // TODO open conn
+                                MessageBox.Show(_vmSearchBox.DispServerList[i].DispName);
+
+                                //_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].Conn();
+                            }
+                        }
                         HideMe();
                         break;
                     }
