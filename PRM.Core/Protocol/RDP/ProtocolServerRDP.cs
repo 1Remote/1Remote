@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Security;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
 using PRM.Core.Annotations;
-using PRM.Core.Base;
 
 namespace PRM.Core.Protocol.RDP
 {
@@ -24,13 +24,14 @@ namespace PRM.Core.Protocol.RDP
     {
         Auto = 0,
         Low = 1,
-        FullAllScreens = 2,
+        Middle = 2,
+        High = 3,
     }
 
 
-    public class ServerRDP : ServerAbstract
+    public class ProtocolServerRDP : ProtocolServerBase
     {
-        public ServerRDP() : base("RDP", "RDP.V1")
+        public ProtocolServerRDP() : base("RDP", "RDP.V1")
         {
         }
 
@@ -63,7 +64,7 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(UserName), ref _userName, value);
         }
 
-
+        // todo 使用 SecureString 保护密码
         private string _password;
         public string Password
         {
@@ -71,6 +72,7 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
         }
         #endregion
+
 
         #region Display
 
@@ -152,7 +154,8 @@ namespace PRM.Core.Protocol.RDP
             get => _enableSounds;
             set
             {
-                EnableClipboard = true;
+                if(value == true)
+                    EnableClipboard = true;
                 SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, value);
             }
         }
@@ -228,11 +231,11 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
-        public override ServerAbstract CreateFromJsonString(string jsonString)
+        public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
             {
-                return JsonConvert.DeserializeObject<ServerRDP>(jsonString);
+                return JsonConvert.DeserializeObject<ProtocolServerRDP>(jsonString);
             }
             catch (Exception e)
             {

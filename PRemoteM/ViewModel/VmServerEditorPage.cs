@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using PRM.Core.Base;
+using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
 using PRM.View;
@@ -13,8 +14,8 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        private ServerAbstract _server = null;
-        public ServerAbstract Server
+        private ProtocolServerBase _server = null;
+        public ProtocolServerBase Server
         {
             get => _server;
             set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
@@ -22,7 +23,7 @@ namespace PRM.ViewModel
 
         public readonly VmServerListPage Host;
 
-        public VmServerEditorPage(ServerAbstract server, VmServerListPage host)
+        public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host)
         {
             Server = server;
             Host = host;

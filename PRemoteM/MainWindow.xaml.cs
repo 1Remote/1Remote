@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PRM.Core.Base;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.View;
 using PRM.ViewModel;
 using Shawn.Ulits;
-using Shawn.Ulits.PageHost;
 
 //添加引用，必须用到的
 
@@ -23,7 +21,7 @@ namespace PRM
         public MainWindow()
         {
             InitializeComponent();
-
+            
             var vm = new VmMain();
             this.DataContext = vm;
 
@@ -115,7 +113,7 @@ namespace PRM
                 _notifyIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = "TXT:XXXX系统",
-                    Icon = NetImageProcessHelper.ToIcon(NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(ServerAbstract.Base64Icon4))),
+                    Icon = NetImageProcessHelper.ToIcon(NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(ProtocolServerBase.Base64Icon4))),
                     ContextMenu = new System.Windows.Forms.ContextMenu(child),
                     BalloonTipText = "TXT:正在后台运行...",
                     Visible = true

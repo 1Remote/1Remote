@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PRM.Core.Base;
+using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 
 namespace PRM.ViewModel
 {
@@ -75,7 +76,7 @@ namespace PRM.ViewModel
                 {
                     switch (args.PropertyName)
                     {
-                        case nameof(ServerAbstract.GroupName):
+                        case nameof(ProtocolServerBase.GroupName):
                             RebuildGroupList();
                             break;
                     }
@@ -109,8 +110,8 @@ namespace PRM.ViewModel
 
         private void OrderServerList()
         {
-            // Delete NoneServer
-            var noneServers = _dispServerList.Where(s => s.GetType() == typeof(NoneServer) || s.Server == null || s.Server.Id == 0).ToArray();
+            // Delete ProtocolServerNone
+            var noneServers = _dispServerList.Where(s => s.GetType() == typeof(ProtocolServerNone) || s.Server == null || s.Server.Id == 0).ToArray();
             foreach (var s in noneServers)
             {
                 _dispServerList.Remove(s);
@@ -119,8 +120,8 @@ namespace PRM.ViewModel
             // TODO flag to order by LassConnTime
             _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.LassConnTime));
 
-            // add a 'NoneServer' so that 'add server' button will be shown
-            var addServerCard = new VmServerCard(new NoneServer(), this);
+            // add a 'ProtocolServerNone' so that 'add server' button will be shown
+            var addServerCard = new VmServerCard(new ProtocolServerNone(), this);
             addServerCard.Server.GroupName = SelectedGroup;
             //addServerCard.OnAction += VmServerCardOnAction;
             _dispServerList.Add(addServerCard);

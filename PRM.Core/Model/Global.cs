@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.Core.Base;
 using PRM.Core.DB;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits;
 using static System.Diagnostics.Debug;
@@ -110,7 +111,7 @@ namespace PRM.Core.Model
 
         #region Server Data
 
-        public ObservableCollection<ServerAbstract> ServerList = new ObservableCollection<ServerAbstract>();
+        public ObservableCollection<ProtocolServerBase> ServerList = new ObservableCollection<ProtocolServerBase>();
 
         private void ReadServerDataFromDb()
         {
@@ -126,7 +127,7 @@ namespace PRM.Core.Model
                 {
                     // read from jsonfile 
                     var fis = di.GetFiles("*.rdpjson", SearchOption.AllDirectories);
-                    var rdp = new ServerRDP();
+                    var rdp = new ProtocolServerRDP();
                     foreach (var fi in fis)
                     {
                         var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));

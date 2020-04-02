@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using PRM.Core.Base;
+using PRM.Core;
+using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 using Shawn.Ulits;
 
 namespace PRM.ViewModel
@@ -16,11 +18,11 @@ namespace PRM.ViewModel
 
 
 
-        private ObservableCollection<ServerAbstract> _dispServerlist = new ObservableCollection<ServerAbstract>();
+        private ObservableCollection<ProtocolServerBase> _dispServerlist = new ObservableCollection<ProtocolServerBase>();
         /// <summary>
         /// ServerList data source for listbox
         /// </summary>
-        public ObservableCollection<ServerAbstract> DispServerList
+        public ObservableCollection<ProtocolServerBase> DispServerList
         {
             get => _dispServerlist;
             set
@@ -75,7 +77,7 @@ namespace PRM.ViewModel
             DispServerList.Clear();
 
             // 高级搜索
-            foreach (var item in Global.GetInstance().ServerList.Where(x => x.GetType() != typeof(NoneServer)))
+            foreach (var item in Global.GetInstance().ServerList.Where(x => x.GetType() != typeof(ProtocolServerNone)))
             {
                 var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.DispName, keyWord, out var m1);
                 var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(item.SubTitle, keyWord, out var m2);

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using Shawn.Ulits;
 
-namespace PRM.Core.Base
+namespace PRM.Core.Protocol
 {
-    public abstract class ServerAbstract : NotifyPropertyChangedBase
+    public abstract class ProtocolServerBase : NotifyPropertyChangedBase
     {
-        protected ServerAbstract(string serverType, string classVersion)
+        protected ProtocolServerBase(string serverType, string classVersion)
         {
             ServerType = serverType;
             ClassVersion = classVersion;
@@ -127,13 +125,13 @@ namespace PRM.Core.Base
         /// <summary>
         /// copy all value type fields
         /// </summary>
-        public bool Update(ServerAbstract org)
+        public bool Update(ProtocolServerBase org)
         {
             var myType = this.GetType();
             var yourType = org.GetType();
             if (myType == yourType)
             {
-                ServerAbstract copyObject = this;
+                ProtocolServerBase copyObject = this;
                 while (yourType != null)
                 {
                     var fields = myType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
@@ -163,7 +161,7 @@ namespace PRM.Core.Base
 
 
         public abstract string GetConfigJsonString();
-        public abstract ServerAbstract CreateFromJsonString(string jsonString);
+        public abstract ProtocolServerBase CreateFromJsonString(string jsonString);
 
 
 
@@ -265,36 +263,6 @@ namespace PRM.Core.Base
         public object Clone()
         {
             return MemberwiseClone();
-        }
-    }
-
-    /// <summary>
-    /// not a real server model, just a placeholder model to add a 'add server' button on list
-    /// </summary>
-    public class NoneServer : ServerAbstract
-    {
-        public override void Conn()
-        {
-            // do nothing
-        }
-
-        public override string GetConfigJsonString()
-        {
-            return "";
-        }
-
-        public override ServerAbstract CreateFromJsonString(string jsonString)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override string GetSubTitle()
-        {
-            return  "";
-        }
-
-        public NoneServer() : base("", "")
-        {
         }
     }
 }

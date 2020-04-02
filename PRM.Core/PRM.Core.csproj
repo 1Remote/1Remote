@@ -75,14 +75,16 @@
   <ItemGroup>
     <Compile Include="Model\Global.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protocol\ProtocolHostBase.cs" />
+    <Compile Include="Protocol\ProtocolServerNone.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
     </Compile>
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09NotSafeForScriptingEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Protocol\RDP\ServerRDPEditForm.xaml.cs">
-      <DependentUpon>ServerRDPEditForm.xaml</DependentUpon>
+    <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
+      <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
@@ -91,13 +93,12 @@
     <Compile Include="Ulits\KeyWordMatchHelper.cs" />
     <Compile Include="Ulits\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
-    <Compile Include="Protocol\RDP\ServerRDP.cs" />
-    <Compile Include="DB\NotifyPropertyChangedBase.cs" />
+    <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
     <Compile Include="DB\PRM_DAO.cs" />
     <Compile Include="DB\ServerFactory.cs" />
     <Compile Include="DB\ServerOrm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\ServerAbstract.cs" />
+    <Compile Include="Protocol\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Ulits\AutoCompleteBehavior.cs" />
     <Compile Include="Ulits\NetImageProcessHelper.cs" />
@@ -138,7 +139,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Protocol\RDP\ServerRDPEditForm.xaml">
+    <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
