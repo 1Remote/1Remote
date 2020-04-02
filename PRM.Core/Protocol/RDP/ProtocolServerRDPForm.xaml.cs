@@ -13,24 +13,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Core.Base;
+
 
 namespace PRM.Core.Protocol.RDP
 {
     /// <summary>
     /// ServerRDPEditForm.xaml 的交互逻辑
     /// </summary>
-    public partial class ServerRDPEditForm : UserControl
+    public partial class ProtocolServerRDPForm : UserControl
     {
-        private ServerAbstract _vm;
-        public ServerRDPEditForm(ServerAbstract vm)
+        private ProtocolServerBase _vm;
+        public ProtocolServerRDPForm(ProtocolServerBase vm)
         {
             InitializeComponent();
             _vm = vm;
             DataContext = vm;
         }
     }
-
     public class ConverterEStartupDisplaySize : IValueConverter
     {
         #region IValueConverter 成员  

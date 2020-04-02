@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using PRM.Core.Base;
+using PRM.Core.Protocol;
 using Shawn.Ulits;
 
 namespace PRM.Resources.Converter
@@ -137,11 +137,11 @@ namespace PRM.Resources.Converter
         {
             try
             {
-                var server = (ServerAbstract)values[0];
+                var server = (ProtocolServerBase)values[0];
                 string keyWord = values[1].ToString();
                 string selectedGroup = values[2].ToString();
 
-                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup || server.GetType() == typeof(NoneServer);
+                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup || server.GetType() == typeof(ProtocolServerNone);
                 if (!bGroupMatched)
                     return false;
 

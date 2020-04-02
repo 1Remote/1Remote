@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using PRM.Core.Base;
+using PRM.Core.Protocol;
 
 namespace PRM.Core.DB
 {
@@ -30,17 +31,18 @@ namespace PRM.Core.DB
         #endregion
 
         private static readonly object Locker = new object();
-        List<ServerAbstract> _baseList = new List<ServerAbstract>();
-        public ServerAbstract CreateFromDb(ServerOrm serverOrm)
+        List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
+        public ProtocolServerBase CreateFromDb(ServerOrm serverOrm)
         {
             // reflect all the child class
             lock (Locker)
             {
                 if (_baseList.Count == 0)
                 {
-                    _baseList = Assembly.GetExecutingAssembly().GetTypes()
-                        .Where(item => item.IsSubclassOf(typeof(ServerAbstract)))
-                        .Select(type => (ServerAbstract)Activator.CreateInstance(type)).ToList();
+                    var assembly = Assembly.GetExecutingAssembly();
+                    var types = assembly.GetTypes();
+                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)))
+                        .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
             }
 

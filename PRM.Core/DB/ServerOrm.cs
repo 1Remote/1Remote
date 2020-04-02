@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.Windows.Media.Animation;
-using PRM.Core.Base;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits.RDP;
 
@@ -37,10 +37,10 @@ namespace PRM.Core.DB
         public string JsonConfigString { get; set; } = "";
 
 
-        public static ServerOrm ConvertFrom(ServerAbstract org)
+        public static ServerOrm ConvertFrom(ProtocolServerBase org)
         {
             var ret = new ServerOrm();
-            var rdp = (ServerRDP)Convert.ChangeType(org, typeof(ServerRDP));
+            var rdp = (ProtocolServerRDP)Convert.ChangeType(org, typeof(ProtocolServerRDP));
             ret.Id = rdp.Id;
             ret.ServerType = rdp.ServerType;
             ret.ClassVersion = rdp.ClassVersion;

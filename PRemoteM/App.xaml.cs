@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
@@ -14,6 +15,8 @@ using PRM;
 using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
+using PRM.Core.Protocol.RDP;
 using Shawn.Ulits.RDP;
 using PRM.View;
 using Shawn.Ulits;
@@ -44,13 +47,6 @@ namespace PersonalRemoteManager
         {
             try
             {
-                //var vm = new VmMain();
-                //var sb = new SearchBoxWindow(vm);
-                //sb.ShowDialog();
-                //Environment.Exit(0);
-
-
-
                 _singleAppMutex = new Mutex(true, "PersonalRemoteManager", out var isFirst);
                 if (!isFirst)
                 {
@@ -81,6 +77,12 @@ namespace PersonalRemoteManager
                     MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
 
 
+                    var nw = new Window();
+                    var rdp = (Global.GetInstance().ServerList[1] as ProtocolServerRDP);
+                    rdp.RdpStartupDisplaySize = EStartupDisplaySize.FullCurrentScreen;
+                    rdp.RdpResizeMode = ERdpResizeMode.AutoResize;
+                    nw.Content = new AxMsRdpClient09Host(rdp, nw);
+                    nw.ShowDialog();
 
 
 

@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Core.Base;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using PRM.ViewModel;
 
@@ -34,7 +34,7 @@ namespace PRM.View
             _vmServerEditorPage = vm;
             DataContext = vm;
             // edit mode
-            if (vm.Server.Id > 0 && vm.Server.GetType() != typeof(NoneServer))
+            if (vm.Server.Id > 0 && vm.Server.GetType() != typeof(ProtocolServerNone))
             {
                 LogoSelector.SetImg(vm?.Server?.IconImg);
             }
@@ -43,13 +43,13 @@ namespace PRM.View
             {
                 // TODO 研究子类之间的互相转换
                 // TODO 随机选择LOGO
-                vm.Server = new ServerRDP();
+                vm.Server = new ProtocolServerRDP();
             }
 
             var serverType = _vmServerEditorPage.Server.GetType();
-            if (serverType == typeof(ServerRDP))
+            if (serverType == typeof(ProtocolServerRDP))
             {
-                ContentDetail.Content = new ServerRDPEditForm(_vmServerEditorPage.Server);
+                ContentDetail.Content = new ProtocolServerRDPForm(_vmServerEditorPage.Server);
             }
             else
             {
@@ -71,7 +71,7 @@ namespace PRM.View
 
         private void ButtonLogoSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vmServerEditorPage?.Server != null && _vmServerEditorPage.Server.GetType() != typeof(NoneServer))
+            if (_vmServerEditorPage?.Server != null && _vmServerEditorPage.Server.GetType() != typeof(ProtocolServerNone))
             {
                 _vmServerEditorPage.Server.IconImg = LogoSelector.Logo;
             }
