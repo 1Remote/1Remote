@@ -30,32 +30,32 @@ namespace PRM.Core.Protocol.RDP
             DataContext = vm;
         }
     }
-    public class ConverterEStartupDisplaySize : IValueConverter
+    public class ConverterERdpFullScreenFlag : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((int) ((EStartupDisplaySize) value)).ToString();
+            return ((int) ((ERdpFullScreenFlag) value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (EStartupDisplaySize)(int.Parse(value.ToString()));
+            return (ERdpFullScreenFlag)(int.Parse(value.ToString()));
         }
         #endregion
     }
 
-    public class ConverterERdpResizeMode : IValueConverter
+    public class ConverterERdpWindowResizeMode : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((int) ((ERdpResizeMode) value)).ToString();
+            return ((int) ((ERdpWindowResizeMode) value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (ERdpResizeMode)(int.Parse(value.ToString()));
+            return (ERdpWindowResizeMode)(int.Parse(value.ToString()));
         }
         #endregion
     }

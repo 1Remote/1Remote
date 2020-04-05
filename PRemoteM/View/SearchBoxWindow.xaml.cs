@@ -103,12 +103,12 @@ namespace PRM.View
                         {
                             var i = _vmSearchBox.SelectedServerTextIndex;
                             var j = _vmSearchBox.DispServerList.Count;
+                            var s = _vmSearchBox.DispServerList[i];
                             if (i < j && i >= 0)
                             {
                                 // TODO open conn
-                                MessageBox.Show(_vmSearchBox.DispServerList[i].DispName);
-
-                                //_vmSearchBox.DispServerList[_vmSearchBox.SelectedServerTextIndex].Conn();
+                                MessageBox.Show(s.DispName);
+                                s.Conn();
                             }
                         }
                         HideMe();

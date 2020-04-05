@@ -100,8 +100,8 @@ namespace PRM.Core.Protocol
             get => _iconImg;
             set
             {
-                _iconBase64 = Convert.ToBase64String(value.ToBytes());
-                Icon = value.ToIcon();
+                //_iconBase64 = Convert.ToBase64String(value.ToBytes());
+                //Icon = value.ToIcon();
                 SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
             }
         }

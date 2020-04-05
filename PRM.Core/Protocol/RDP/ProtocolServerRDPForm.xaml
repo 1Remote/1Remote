@@ -57,15 +57,15 @@
             <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_display}"></TextBlock>
             <Grid Style="{StaticResource ServerEditorRow}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_start_with}"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_full_screen_flag}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
-                            <local:ConverterEStartupDisplaySize x:Key="ConverterEStartupDisplaySize"/>
+                            <local:ConverterERdpFullScreenFlag x:Key="ConverterERdpFullScreenFlag"/>
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding RdpStartupDisplaySize, Converter={StaticResource ConverterEStartupDisplaySize}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_start_with_window}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_start_with_full_screen}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_start_with_all_screens}"/>
+                        <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}"/>
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -73,15 +73,15 @@
 
             <Grid Style="{StaticResource ServerEditorRow}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_resolution}"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_window_resize_mode}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
-                            <local:ConverterERdpResizeMode x:Key="ConverterERdpResizeMode"/>
+                            <local:ConverterERdpWindowResizeMode x:Key="ConverterERdpWindowResizeMode"/>
                         </Grid.Resources>
-                        <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpResizeMode, Converter={StaticResource ConverterERdpResizeMode}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_resolution_auto}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_resolution_stretch}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_resolution_fixed}"/>
+                        <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_auto}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}"/>
                         </ComboBox>
                     </Grid>
 
@@ -90,10 +90,10 @@
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static local:ERdpResizeMode.Stretch}">
+                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static local:ERdpWindowResizeMode.Stretch}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RdpResizeMode}" Value="{x:Static local:ERdpResizeMode.Fixed}">
+                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static local:ERdpWindowResizeMode.Fixed}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
