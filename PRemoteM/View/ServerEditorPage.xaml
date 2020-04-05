@@ -3,13 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PRM.View"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-    <Grid Background="#ced8e1">
+    <Grid Background="{DynamicResource MainBgColorBrush}">
         <Grid.Resources>
             <system:Double x:Key="TopHeight">20</system:Double>
             <system:Double x:Key="BottomHeight">30</system:Double>
@@ -22,7 +28,11 @@
             </Grid.Margin>
 
 
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer 
+                Margin="0 3 0 4"
+                HorizontalScrollBarVisibility="Hidden" 
+                VerticalScrollBarVisibility="Auto" 
+                Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
                 <ScrollViewer.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
@@ -33,7 +43,6 @@
 
 
                 <Grid>
-
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
                         <StackPanel>

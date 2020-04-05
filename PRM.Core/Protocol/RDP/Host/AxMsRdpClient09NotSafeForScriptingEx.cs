@@ -3,9 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using MSTSCLib;
 
 namespace Shawn.Ulits.RDP
 {
+    public static class AxMsRdpClient9NotSafeForScriptingExAdd
+    {
+        public static void SetExtendedProperty(this AxHost axHost, string propertyName, object value)
+        {
+            try
+            {
+                ((IMsRdpExtendedSettings)axHost.GetOcx()).set_Property(propertyName, ref value);
+            }
+            catch (Exception ex)
+            {
+                // TODO LOG
+            }
+        }
+    }
     public class AxMsRdpClient9NotSafeForScriptingEx : AxMSTSCLib.AxMsRdpClient9NotSafeForScripting
     {
         public AxMsRdpClient9NotSafeForScriptingEx() : base()

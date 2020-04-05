@@ -3,21 +3,21 @@ using System.Security;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
-using PRM.Core.Annotations;
+using Shawn.Ulits.RDP;
 
 namespace PRM.Core.Protocol.RDP
 {
-    public enum ERdpResizeMode
+    public enum ERdpWindowResizeMode
     {
         AutoResize = 0,
         Stretch = 1,
         Fixed = 2,
     }
-    public enum EStartupDisplaySize
+    public enum ERdpFullScreenFlag
     {
-        Window = 0,
-        FullCurrentScreen = 1,
-        FullAllScreens = 2,
+        Disable = 0,
+        EnableFullScreen = 1,
+        EnableFullAllScreens = 2,
     }
 
     public enum EDisplayPerformance
@@ -31,6 +31,23 @@ namespace PRM.Core.Protocol.RDP
 
     public class ProtocolServerRDP : ProtocolServerBase
     {
+        public class LocalSetting : NotifyPropertyChangedBase
+        {
+            private bool _fullScreenLastSessionIsFullScreen = true;
+            public bool FullScreen_LastSessionIsFullScreen
+            {
+                get => _fullScreenLastSessionIsFullScreen;
+                set => SetAndNotifyIfChanged(nameof(FullScreen_LastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
+            }
+
+            private int _fullScreenLastSessionScreenIndex = -1;
+            public int FullScreen_LastSessionScreenIndex
+            {
+                get => _fullScreenLastSessionScreenIndex;
+                set => SetAndNotifyIfChanged(nameof(FullScreen_LastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
+            }
+        }
+
         public ProtocolServerRDP() : base("RDP", "RDP.V1")
         {
         }
@@ -38,7 +55,6 @@ namespace PRM.Core.Protocol.RDP
         #region Conn
         private string _address;
 
-        [NotNull]
         public string Address
         {
             get => _address;
@@ -76,19 +92,19 @@ namespace PRM.Core.Protocol.RDP
 
         #region Display
 
-        private EStartupDisplaySize _rdpStartupDisplaySize;
-        public EStartupDisplaySize RdpStartupDisplaySize
+        private ERdpFullScreenFlag _rdpFullScreenFlag;
+        public ERdpFullScreenFlag RdpFullScreenFlag
         {
-            get => _rdpStartupDisplaySize;
-            set => SetAndNotifyIfChanged(nameof(RdpStartupDisplaySize), ref _rdpStartupDisplaySize, value);
+            get => _rdpFullScreenFlag;
+            set => SetAndNotifyIfChanged(nameof(RdpFullScreenFlag), ref _rdpFullScreenFlag, value);
         }
 
 
-        private ERdpResizeMode _rdpResizeMode;
-        public ERdpResizeMode RdpResizeMode
+        private ERdpWindowResizeMode _rdpWindowResizeMode;
+        public ERdpWindowResizeMode RdpWindowResizeMode
         {
-            get => _rdpResizeMode;
-            set => SetAndNotifyIfChanged(nameof(RdpResizeMode), ref _rdpResizeMode, value);
+            get => _rdpWindowResizeMode;
+            set => SetAndNotifyIfChanged(nameof(RdpWindowResizeMode), ref _rdpWindowResizeMode, value);
         }
 
 
@@ -126,9 +142,15 @@ namespace PRM.Core.Protocol.RDP
         public bool EnableClipboard
         {
             get => _enableClipboard;
-            set => SetAndNotifyIfChanged(nameof(EnableClipboard), ref _enableClipboard, value);
+            set
+            {
+                if (!value && _enableSounds)
+                {
+                    SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, false);
+                }
+                SetAndNotifyIfChanged(nameof(EnableClipboard), ref _enableClipboard, value);
+            }
         }
-
 
 
         private bool _enableDiskDrives = true;
@@ -154,8 +176,10 @@ namespace PRM.Core.Protocol.RDP
             get => _enableSounds;
             set
             {
-                if(value == true)
-                    EnableClipboard = true;
+                if (value && !_enableClipboard)
+                {
+                    SetAndNotifyIfChanged(nameof(EnableClipboard), ref _enableClipboard, true);
+                }
                 SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, value);
             }
         }
@@ -193,6 +217,7 @@ namespace PRM.Core.Protocol.RDP
 
 
         private bool _enableSmartCardsAndWinHello = false;
+
         public bool EnableSmartCardsAndWinHello
         {
             get => _enableSmartCardsAndWinHello;
@@ -201,6 +226,12 @@ namespace PRM.Core.Protocol.RDP
 
         #endregion
 
+        private LocalSetting _autoSetting = new LocalSetting();
+        public LocalSetting AutoSetting
+        {
+            get => _autoSetting;
+            set => SetAndNotifyIfChanged(nameof(AutoSetting), ref _autoSetting, value);
+        }
 
 
         public override void Conn()
@@ -214,14 +245,24 @@ namespace PRM.Core.Protocol.RDP
 
             LassConnTime = DateTime.Now;
 
-            var jsonstr = GetConfigJsonString();
-            var jsonstrbase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonstr));
-            System.Diagnostics.Process exep = new System.Diagnostics.Process();
-            exep.StartInfo.FileName = "RdpRunner.exe";
-            exep.StartInfo.Arguments = jsonstrbase64;
-            exep.StartInfo.CreateNoWindow = true;
-            exep.StartInfo.UseShellExecute = false;
-            exep.Start();
+            // TODO add conn win to tab, add to global remote host
+            var nw = new Window();
+            var rdp = this;
+            rdp.RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
+            rdp.RdpWindowResizeMode = ERdpWindowResizeMode.Fixed;
+            nw.Content = new AxMsRdpClient09Host(this, nw);
+            nw.ShowDialog();
+
+
+
+            //var jsonstr = GetConfigJsonString();
+            //var jsonstrbase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonstr));
+            //System.Diagnostics.Process exep = new System.Diagnostics.Process();
+            //exep.StartInfo.FileName = "RdpRunner.exe";
+            //exep.StartInfo.Arguments = jsonstrbase64;
+            //exep.StartInfo.CreateNoWindow = true;
+            //exep.StartInfo.UseShellExecute = false;
+            //exep.Start();
         }
 
 

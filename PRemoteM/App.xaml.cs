@@ -77,12 +77,12 @@ namespace PersonalRemoteManager
                     MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
 
 
-                    var nw = new Window();
-                    var rdp = (Global.GetInstance().ServerList[1] as ProtocolServerRDP);
-                    rdp.RdpStartupDisplaySize = EStartupDisplaySize.FullCurrentScreen;
-                    rdp.RdpResizeMode = ERdpResizeMode.AutoResize;
-                    nw.Content = new AxMsRdpClient09Host(rdp, nw);
-                    nw.ShowDialog();
+                    //var nw = new Window();
+                    //var rdp = (Global.GetInstance().ServerList[1] as ProtocolServerRDP);
+                    //rdp.RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
+                    //rdp.RdpWindowResizeMode = ERdpWindowResizeMode.Fixed;
+                    //nw.Content = new AxMsRdpClient09Host(rdp, nw);
+                    //nw.ShowDialog();
 
 
 

@@ -80,9 +80,7 @@
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Protocol\RDP\Host\AxMsRdpClient09NotSafeForScriptingEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Protocol\RDP\Host\AxMsRdpClient09NotSafeForScriptingEx.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
