@@ -1,4 +1,5 @@
 ﻿{
+  "messagebox_title_warning": "警告",
   "confirm": "确定",
   "save": "保存",
   "cancel": "取消",
@@ -8,6 +9,9 @@
   "info_filter": "搜索远程目标",
   "info_hotkey_already_registered": "快捷键已被占用",
   "info_hotkey_registered_fail": "快捷键注册失败",
+
+  // server operate
+  "server_operate_confirm_delete": "确定要删除该服务器配置吗？",
 
 
   "server_editor_group_title_common": "常规",

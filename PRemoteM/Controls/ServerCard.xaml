@@ -46,8 +46,11 @@
                         <RowDefinition Height="20"></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <Grid Width="100" Height="100" Grid.Row="0" Grid.RowSpan="2">
-                        <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}">
+                    <Grid Grid.Row="0" Grid.RowSpan="3">
+                        <Image Source="{Binding Server.IconImg}" 
+                               Margin="0 0 0 10"
+                               Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}" 
+                               Stretch="UniformToFill">
                             <Image.Style>
                                 <Style TargetType="Image">
                                     <Setter Property="RenderTransform">
@@ -118,7 +121,7 @@
                     </Grid>
                 </Grid>
 
-                <!-- Card Border: Top Layer - with button -->
+                <!-- Card Border: Hover Button Layer -->
                 <Border Name="CardRealBorder" CornerRadius="4" BorderThickness="2">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -142,8 +145,7 @@
                         </Grid.RowDefinitions>
                         <Grid>
                             <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource ConverterBool2Visible}}"
-                                Command="{Binding DeleteServer}"
-                                >
+                                Command="{Binding DeleteServer}">
                                 <Button.Template>
                                     <ControlTemplate TargetType="{x:Type Button}">
                                         <Border BorderBrush="{TemplateBinding Control.BorderBrush}" Background="{TemplateBinding Control.Background}" BorderThickness="0" CornerRadius="0,2,0,0" Name="PART_Background">
@@ -199,7 +201,7 @@
                     </Grid>
                 </Border>
 
-                <!-- Card Mask Layer -->
+                <!-- Card Title Mask Layer -->
                 <Grid Name="CardNameBarMask" VerticalAlignment="Bottom" Height="20" Background="Black">
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -215,7 +217,6 @@
                         </Style>
                     </Grid.Style>
                 </Grid>
-
             </Grid>
         </Grid>
 

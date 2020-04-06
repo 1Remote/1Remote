@@ -11,6 +11,7 @@ namespace PRM.Core.DB
 {
     public class ServerOrm : SimpleOrmBase
     {
+
         public ServerOrm() : base(tableName: "Server")
         {
         }
@@ -51,11 +52,6 @@ namespace PRM.Core.DB
             ret.JsonConfigString = rdp.GetConfigJsonString();
             return ret;
         }
-
-
-
-
-
 
 
         public override string SQLCreateTable()

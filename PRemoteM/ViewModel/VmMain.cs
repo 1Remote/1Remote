@@ -12,7 +12,12 @@ namespace PRM.ViewModel
         public string DispNameFilter
         {
             get => _dispNameFilter;
-            set => SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
+                if (PageServerList?.VmDataContext?.DispNameFilter != null)
+                    PageServerList.VmDataContext.DispNameFilter = value;
+            }
         }
 
         private AnimationPage _dispPage = null;
