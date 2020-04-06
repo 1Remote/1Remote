@@ -30,6 +30,13 @@ namespace PRM.View
             InitializeComponent();
             DataContext = VmDataContext;
         }
+        public ServerListPage(VmServerListPage vmDataContext)
+        {
+            Host = vmDataContext.Host;
+            VmDataContext = vmDataContext;
+            InitializeComponent();
+            DataContext = VmDataContext;
+        }
 
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)

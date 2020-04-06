@@ -68,9 +68,14 @@
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                         <StackPanel Orientation="Horizontal">
-                                            <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" 
-                                                   Cursor="Hand"
-                                                   Margin="0 0 30 0" MouseLeftButtonDown="ImgLogo_OnMouseLeftButtonDown"></Image>
+                                            <Grid Width="64" Height="64" 
+                                                  MouseLeftButtonDown="ImgLogo_OnMouseLeftButtonDown" 
+                                                  Background="Transparent" 
+                                                  Cursor="Hand"
+                                                  Margin="0 0 30 0">
+                                                <Border BorderThickness="1" BorderBrush="Black"></Border>
+                                                <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                            </Grid>
                                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                             <Grid Width="32" Height="32" 
                                                   Cursor="Hand"
@@ -86,7 +91,6 @@
                                             <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
                                                 <StackPanel>
                                                     <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
-
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>

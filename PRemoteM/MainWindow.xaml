@@ -110,7 +110,6 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type TextBox}">
-
                                         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                                             <Grid>
                                                 <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}">
@@ -125,6 +124,7 @@
                             </Setter>
                             <Setter Property="Opacity" Value="0.5"></Setter>
                             <Setter Property="Background" Value="Transparent"></Setter>
+                            <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainBgColorBrush}"/>
@@ -140,6 +140,9 @@
                                 <Trigger Property="Text" Value="">
                                     <Setter Property="Background" Value="{StaticResource HintText}"/>
                                 </Trigger>
+                                <DataTrigger Binding="{Binding DispPage}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
@@ -162,6 +165,21 @@
                     <Line X1="12" Y1="18" X2="22" Y2="18" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
                 </Canvas>
             </Button>
+            <Popup Name="PopupSettingMenu" 
+                   PlacementTarget="{Binding ElementName=BtnSetting}"
+                   StaysOpen="False"
+                   >
+                <Grid Background="{DynamicResource MainColor1Brush}">
+                    <Border BorderBrush="#ccc" BorderThickness="1" Width="100"></Border>
+                    <StackPanel>
+                        <Button></Button>
+                        <TextBlock>TXT:设置</TextBlock>
+                        <TextBlock>TXT:BUG/意见反馈</TextBlock>
+                        <TextBlock>TXT:</TextBlock>
+                        <TextBlock>TXT:about</TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Popup>
 
             <Button Name="BtnMinimize">
                 <Button.Style>

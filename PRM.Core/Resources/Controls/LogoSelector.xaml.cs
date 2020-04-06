@@ -425,12 +425,14 @@ namespace PRM.Core.Resources.Controls
         }
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            var ofd = new OpenFileDialog
+            {
+                Title = "TXT:select image",
+                Filter = "image|*.jpg;*.png;*.bmp|all files|*.*",
+                RestoreDirectory = true
+            };
             //ofd.InitialDirectory = Application.StartupPath;
-            ofd.Title = "TXT:select image";
-            ofd.Filter = "jpg|*.jpg|png|*.png|bmp|*.bmp|所有文件|*.*";
             //ofd.FilterIndex = 2;
-            ofd.RestoreDirectory = true;
             if (Show(ofd) == true)
             {
                 SetImg(GetBitmapSource(ofd.FileName));

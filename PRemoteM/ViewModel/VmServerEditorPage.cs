@@ -56,21 +56,7 @@ namespace PRM.ViewModel
                 if (_cmdSave == null)
                     _cmdSave = new RelayCommand((o) =>
                     {
-                        // edit
-                        if (Server?.Id > 0 && Global.GetInstance().ServerList.Any(x => x.Id == Server.Id))
-                        {
-                            Global.GetInstance().ServerList.First(x => x.Id == Server.Id).Update(Server);
-                        }
-                        // add
-                        else
-                        {
-                            var serverOrm = ServerOrm.ConvertFrom(Server);
-                            if (PRM_DAO.GetInstance().Insert(serverOrm))
-                            {
-                                var newServer = ServerFactory.GetInstance().CreateFromDb(serverOrm);
-                                Global.GetInstance().ServerList.Add(newServer);
-                            }
-                        }
+                        Global.GetInstance().ServerListUpdate(Server);
                         Host.Host.DispPage = null;
                     }, o => (this.Server.DispName != ""));
                 return _cmdSave;

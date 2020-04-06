@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PRM.Core.DB
 {
@@ -115,6 +110,21 @@ namespace PRM.Core.DB
                 Close();
             }
         }
+
+        
+        public bool Update<T>(T data) where T : SimpleOrmBase
+        {
+            try
+            {
+                Open();
+                return data?.Update(_connection) ?? false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
 
         public List<ServerOrm> ListAllServer()
         {

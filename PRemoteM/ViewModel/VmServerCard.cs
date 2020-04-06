@@ -77,31 +77,17 @@ namespace PRM.ViewModel
                 if (_deleteServer == null)
                     _deleteServer = new RelayCommand((o) =>
                     {
-                        if (MessageBox.Show("TXT:确定要删除？", "TXT:提示", MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+                        if (MessageBox.Show(
+                                Global.GetInstance().GetText("server_operate_confirm_delete"), 
+                                Global.GetInstance().GetText("messagebox_title_warning"), 
+                                MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {
-                            var id = this.Server.Id;
-                            var groupName = this.Server.GroupName;
-                            PRM_DAO.GetInstance().DeleteServer(id);
-                            Global.GetInstance().ServerList.Remove(this.Server);
+                            Global.GetInstance().ServerListRemove(Server);
                         }
                     });
                 return _deleteServer;
             }
         }
-
-
-
-
-        public enum EServerAction
-        {
-            Add,
-            Edit,
-            Delete
-        }
-
-        //public delegate void OnActionEventDelegate(VmServerCard sender, EServerAction action);
-
-        //public OnActionEventDelegate OnAction;
     }
 }

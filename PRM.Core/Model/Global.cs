@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -152,7 +153,33 @@ namespace PRM.Core.Model
                 ServerList.Add(serverAbstract);
             }
         }
-
+        
+        public void ServerListUpdate(ProtocolServerBase server)
+        {
+            // edit
+            if (server.Id > 0 && ServerList.First(x => x.Id == server.Id) != null)
+            {
+                ServerList.First(x => x.Id == server.Id).Update(server);
+                var serverOrm = ServerOrm.ConvertFrom(server);
+                PRM_DAO.GetInstance().Update(serverOrm);
+            }
+            // add
+            else
+            {
+                var serverOrm = ServerOrm.ConvertFrom(server);
+                if (PRM_DAO.GetInstance().Insert(serverOrm))
+                {
+                    var newServer = ServerFactory.GetInstance().CreateFromDb(serverOrm);
+                    Global.GetInstance().ServerList.Add(newServer);
+                }
+            }
+        }
+        public void ServerListRemove(ProtocolServerBase server)
+        {
+            Debug.Assert(server.Id > 0);
+            PRM_DAO.GetInstance().DeleteServer(server.Id);
+            Global.GetInstance().ServerList.Remove(server);
+        }
 
         #endregion
 
