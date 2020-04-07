@@ -255,7 +255,7 @@ namespace PRM.Core.Protocol.RDP
 
 
 
-            //var jsonstr = GetConfigJsonString();
+            //var jsonstr = ToJsonString();
             //var jsonstrbase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonstr));
             //System.Diagnostics.Process exep = new System.Diagnostics.Process();
             //exep.StartInfo.FileName = "RdpRunner.exe";
@@ -266,7 +266,7 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
-        public override string GetConfigJsonString()
+        public override string ToJsonString()
         {
             return JsonConvert.SerializeObject(this);
         }

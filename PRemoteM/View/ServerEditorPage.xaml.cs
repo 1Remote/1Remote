@@ -36,7 +36,8 @@ namespace PRM.View
             // edit mode
             if (vm.Server.Id > 0 && vm.Server.GetType() != typeof(ProtocolServerNone))
             {
-                LogoSelector.SetImg(vm?.Server?.IconImg);
+                LogoSelector.SetImg(vm.Server.IconImg);
+                ColorPick.Color = vm.Server.MarkColor;
             }
             else
             // add mode
@@ -44,6 +45,7 @@ namespace PRM.View
                 // TODO 研究子类之间的互相转换
                 // TODO 随机选择LOGO
                 vm.Server = new ProtocolServerRDP();
+                ColorPick.Color = Colors.White;
             }
 
             var serverType = _vmServerEditorPage.Server.GetType();
@@ -60,11 +62,14 @@ namespace PRM.View
 
         private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_vmServerEditorPage != null && _vmServerEditorPage.CmdSave.CanExecute(null))
-                _vmServerEditorPage.CmdSave.Execute(null);
+            if (_vmServerEditorPage != null && _vmServerEditorPage.CmdSave.CanExecute())
+            {
+                _vmServerEditorPage.Server.MarkColor = ColorPick.Color;
+                _vmServerEditorPage.CmdSave.Execute();
+            }
         }
 
-        private void ImgLogo_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             PopupLogoSelector.IsOpen = true;
         }

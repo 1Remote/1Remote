@@ -2,9 +2,12 @@
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ColorPickerWPF.Code;
 using Newtonsoft.Json;
 using Shawn.Ulits;
+using Color = System.Windows.Media.Color;
 
 namespace PRM.Core.Protocol
 {
@@ -100,8 +103,8 @@ namespace PRM.Core.Protocol
             get => _iconImg;
             set
             {
-                //_iconBase64 = Convert.ToBase64String(value.ToBytes());
-                //Icon = value.ToIcon();
+                _iconBase64 = Convert.ToBase64String(value.ToBytes());
+                Icon = value.ToIcon();
                 SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
             }
         }
@@ -116,8 +119,37 @@ namespace PRM.Core.Protocol
         }
 
 
-        //public bool AutoConnWhenStartup { get; set; } = false;
+        private string _markColorHex = "#FFFFFF";
+        public string MarkColorHex
+        {
+            get => _markColorHex;
+            set
+            {
+                try
+                {
+                    var color = (Color)System.Windows.Media.ColorConverter.ConvertFromString(value);
+                    SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value);
+                    SetAndNotifyIfChanged(nameof(MarkColor), ref _markColor, color);
+                }
+                catch (Exception)
+                {
 
+                    throw;
+                }
+            }
+        }
+
+        private Color _markColor = Colors.White;
+        [JsonIgnore]
+        public Color MarkColor
+        {
+            get => _markColor;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value.ToHexString());
+                SetAndNotifyIfChanged(nameof(MarkColor), ref _markColor, value);
+            }
+        }
 
 
         public abstract void Conn();
@@ -160,7 +192,7 @@ namespace PRM.Core.Protocol
 
 
 
-        public abstract string GetConfigJsonString();
+        public abstract string ToJsonString();
         public abstract ProtocolServerBase CreateFromJsonString(string jsonString);
 
 
@@ -171,7 +203,7 @@ namespace PRM.Core.Protocol
 
 
 
-
+        
 
 
 
@@ -255,7 +287,7 @@ namespace PRM.Core.Protocol
 
         #endregion
 
-        
+
 
         /// <summary>
         /// cation: it is a shallow

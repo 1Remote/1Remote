@@ -169,10 +169,9 @@
                    PlacementTarget="{Binding ElementName=BtnSetting}"
                    StaysOpen="False"
                    >
-                <Grid Background="{DynamicResource MainColor1Brush}">
-                    <Border BorderBrush="#ccc" BorderThickness="1" Width="100"></Border>
-                    <StackPanel>
-                        <Button></Button>
+                <Grid Background="{DynamicResource MainColor1Brush}" Width="100">
+                    <Border BorderBrush="#ccc" BorderThickness="1"></Border>
+                    <StackPanel Margin="3">
                         <TextBlock>TXT:设置</TextBlock>
                         <TextBlock>TXT:BUG/意见反馈</TextBlock>
                         <TextBlock>TXT:</TextBlock>

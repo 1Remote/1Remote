@@ -46,7 +46,7 @@ namespace PRM.ViewModel
         }
 
         private RelayCommand _editServer;
-        public RelayCommand EditServer
+        public RelayCommand CmdEditServer
         {
             get
             {
@@ -78,7 +78,7 @@ namespace PRM.ViewModel
                     _deleteServer = new RelayCommand((o) =>
                     {
                         if (MessageBox.Show(
-                                Global.GetInstance().GetText("server_operate_confirm_delete"), 
+                                Global.GetInstance().GetText("server_card_operate_confirm_delete"), 
                                 Global.GetInstance().GetText("messagebox_title_warning"), 
                                 MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)

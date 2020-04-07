@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="ColorPickerWPF.ColorPickRowPopup"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="28" d:DesignWidth="188"
+             Height="28" VerticalContentAlignment="Center">
+    <Grid>
+        <Grid Name="GridPickerRow" Cursor="Hand" MouseLeftButtonUp="PickColorButton_OnClick">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="28"  />
+                <ColumnDefinition Width="*" MinWidth="76" />
+                <ColumnDefinition Width="84"  />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Border BorderBrush="Black" BorderThickness="1" Background="White">
+                    <Grid x:Name="ColorDisplayGrid" Background="{Binding Color}" />
+                </Border>
+            </Grid>
+            <TextBlock x:Name="HexLabel" Grid.Column="1" Text="#FFFFFFFF" HorizontalAlignment="Left" Margin="8,0,4,0" VerticalAlignment="Center"></TextBlock>
+        </Grid>
+        <Popup Name="PopupPicker" 
+               StaysOpen="False" 
+               PlacementTarget="{Binding ElementName=GridPickerRow}">
+            <Grid Background="White">
+                <Border BorderBrush="Black" BorderThickness="1">
+                </Border>
+                <colorPickerWpf:ColorPickerControl x:Name="ColorPicker"  DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" MinHeight="372"/>
+            </Grid>
+        </Popup>
+    </Grid>
+</UserControl>

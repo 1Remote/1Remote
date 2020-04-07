@@ -11,7 +11,9 @@
   "info_hotkey_registered_fail": "快捷键注册失败",
 
   // server operate
-  "server_operate_confirm_delete": "确定要删除该服务器配置吗？",
+  "server_card_operate_confirm_delete": "确定要删除该服务器配置吗？",
+  "server_card_operate_edit": "编辑",
+  "server_card_operate_export_to_prmj": "导出配置",
 
 
   "server_editor_group_title_common": "常规",
@@ -55,5 +57,6 @@
 
 
 
-  "server_editor_rdp": "RDP连接"
+  "server_editor_type_rdp": "RDP连接",
+  "server_editor_type_import_from_prmj": "导入"
 }

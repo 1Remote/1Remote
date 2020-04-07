@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -69,7 +70,7 @@
                                     <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                         <StackPanel Orientation="Horizontal">
                                             <Grid Width="64" Height="64" 
-                                                  MouseLeftButtonDown="ImgLogo_OnMouseLeftButtonDown" 
+                                                  MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp" 
                                                   Background="Transparent" 
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
@@ -77,9 +78,7 @@
                                                 <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                             </Grid>
                                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
-                                            <Grid Width="32" Height="32" 
-                                                  Cursor="Hand"
-                                                  Background="Aqua" HorizontalAlignment="Left"></Grid>
+                                            <colorPickerWpf:ColorPickRowPopup Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                         </StackPanel>
 
 
@@ -177,24 +176,28 @@
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource TopHeight}">
                     <StackPanel Orientation="Horizontal">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </StackPanel.Resources>
                         <Button Padding="0 1 0 0" Width="80"
-                                BorderThickness="0" Content="{DynamicResource server_editor_rdp}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
+                                BorderThickness="0" Content="{DynamicResource server_editor_type_rdp}">
+                        </Button>
+
+                        <Button Padding="0 1 0 0" Width="80"
+                                BorderThickness="0" Content="{DynamicResource server_editor_type_import_from_prmj}">
                         </Button>
                     </StackPanel>
                 </Grid>
