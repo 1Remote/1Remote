@@ -1,0 +1,65 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF"
+    x:Class="ColorPickerWPF.ColorPickerControl"
+             mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="350" MinHeight="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="326"  />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="245" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Image x:Name="SampleImage" Source="colorpicker1.png" 
+                   HorizontalAlignment="Center" Margin="0" 
+                   VerticalAlignment="Center"
+                   Width="320" Height="240"
+                   MouseDown="SampleImage_OnMouseDown"/>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <colorPickerWpf:SliderRow x:Name="RSlider" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Top"
+                             OnValueChanged="RSlider_OnOnValueChanged" FormatString="F0" />
+            <colorPickerWpf:SliderRow x:Name="GSlider" HorizontalAlignment="Stretch" Margin="0,26,0,0" VerticalAlignment="Top"
+                             OnValueChanged="GSlider_OnOnValueChanged" FormatString="F0"/>
+            <colorPickerWpf:SliderRow x:Name="BSlider" HorizontalAlignment="Stretch" Margin="0,54,0,0" VerticalAlignment="Top"
+                             OnValueChanged="BSlider_OnOnValueChanged" FormatString="F0"/>
+            <colorPickerWpf:SliderRow x:Name="ASlider" HorizontalAlignment="Stretch" Margin="0,82,0,0" VerticalAlignment="Top"
+                                       OnValueChanged="ASlider_OnOnValueChanged" FormatString="F0"/>
+
+            <colorPickerWpf:SliderRow x:Name="HSlider" HorizontalAlignment="Stretch" Margin="0,143,0,0" VerticalAlignment="Top"
+                             OnValueChanged="HSlider_OnOnValueChanged" FormatString="F0"/>
+            <colorPickerWpf:SliderRow x:Name="SSlider" HorizontalAlignment="Stretch" Margin="0,169,0,0" VerticalAlignment="Top"
+                             OnValueChanged="SSlider_OnOnValueChanged"/>
+            <colorPickerWpf:SliderRow x:Name="LSlider" HorizontalAlignment="Stretch" Margin="0,197,0,0" VerticalAlignment="Top"
+                             OnValueChanged="LSlider_OnOnValueChanged"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0" Margin="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Border x:Name="ColorDisplayBorder" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                    BorderBrush="Black" Background="White" BorderThickness="2"  Width="58" Height="58" Margin="0,0,0,0"/>
+
+                <colorPickerWpf:ColorPickerSwatch x:Name="Swatch1" HorizontalAlignment="Left" Height="60" Margin="60,0,0,0" VerticalAlignment="Top" Width="260"
+                                           OnPickColor="Swatch_OnOnPickColor"/>
+            </Grid>
+            <colorPickerWpf:ColorPickerSwatch x:Name="Swatch2" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Stretch"
+                                           OnPickColor="Swatch_OnOnPickColor"/>
+
+        </Grid>
+
+
+    </Grid>
+</UserControl>

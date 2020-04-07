@@ -127,7 +127,7 @@ namespace PRM.Core.Model
                 if (di.Exists)
                 {
                     // read from jsonfile 
-                    var fis = di.GetFiles("*.rdpjson", SearchOption.AllDirectories);
+                    var fis = di.GetFiles("*.prmj", SearchOption.AllDirectories);
                     var rdp = new ProtocolServerRDP();
                     foreach (var fi in fis)
                     {

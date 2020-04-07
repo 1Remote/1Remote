@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol
             // do nothing
         }
 
-        public override string GetConfigJsonString()
+        public override string ToJsonString()
         {
             return "";
         }

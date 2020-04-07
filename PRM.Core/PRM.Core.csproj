@@ -87,6 +87,22 @@
     <Compile Include="Resources\Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ulits\ColorPickerWPF\Code\ColorPalette.cs" />
+    <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
+    <Compile Include="Ulits\ColorPickerWPF\Code\ColorSwatchItem.cs" />
+    <Compile Include="Ulits\ColorPickerWPF\Code\Util.cs" />
+    <Compile Include="Ulits\ColorPickerWPF\ColorPickerControl.xaml.cs">
+      <DependentUpon>ColorPickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ulits\ColorPickerWPF\ColorPickerSwatch.xaml.cs">
+      <DependentUpon>ColorPickerSwatch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ulits\ColorPickerWPF\ColorPickRowPopup.xaml.cs">
+      <DependentUpon>ColorPickRowPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ulits\ColorPickerWPF\SliderRow.xaml.cs">
+      <DependentUpon>SliderRow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ulits\GlobalHotkeyHooker.cs" />
     <Compile Include="Ulits\KeyWordMatchHelper.cs" />
     <Compile Include="Ulits\MultiLangHelper.cs" />
@@ -118,6 +134,7 @@
   <ItemGroup>
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
+    <Resource Include="Ulits\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Languages\en-us.json">
@@ -157,6 +174,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ulits\ColorPickerWPF\ColorPickerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ulits\ColorPickerWPF\ColorPickerSwatch.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ulits\ColorPickerWPF\ColorPickRowPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ulits\ColorPickerWPF\SliderRow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Ulits\PageHost\PageHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -165,6 +198,7 @@
   <ItemGroup>
     <Resource Include="Ulits\TinyPinyin.Net\RefInfo.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

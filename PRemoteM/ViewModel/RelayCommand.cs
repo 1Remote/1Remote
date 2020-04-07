@@ -60,7 +60,7 @@ namespace PRM.Core.UI.VM
         /// </summary>
         /// <param name="parameter">命令传入的参数</param>
         /// <returns>是否可以执行</returns>
-        public bool CanExecute(object parameter)
+        public bool CanExecute(object parameter = null)
         {
             return _canExecute?.Invoke(parameter) ?? true;
         }
@@ -69,7 +69,7 @@ namespace PRM.Core.UI.VM
         /// 执行命令
         /// </summary>
         /// <param name="parameter"></param>
-        public void Execute(object parameter)
+        public void Execute(object parameter = null)
         {
             if (_execute != null && CanExecute(parameter))
             {

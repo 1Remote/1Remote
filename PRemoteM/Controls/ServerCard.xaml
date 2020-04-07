@@ -48,7 +48,6 @@
 
                     <Grid Grid.Row="0" Grid.RowSpan="3">
                         <Image Source="{Binding Server.IconImg}" 
-                               Margin="0 0 0 10"
                                Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}" 
                                Stretch="UniformToFill">
                             <Image.Style>
@@ -131,6 +130,9 @@
                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=PopupMenu,Path=IsOpen}" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                </DataTrigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </Trigger>
@@ -173,9 +175,11 @@
                             </Grid>
                             <Grid>
                                 <!-- setting button -->
-                                <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
+                                <Button 
+                                    x:Name="BtnSettingMenu"
+                                    Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
                                     BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource ConverterBool2Visible}}"
-                                    Command="{Binding EditServer}"
+                                    Click="BtnSettingMenu_OnClick"
                                     >
                                     <Button.Template>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -196,6 +200,52 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
+                                <Popup 
+                                    Name="PopupMenu"
+                                    PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
+                                    <Popup.Resources>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                            <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border x:Name="border" 
+                                                                Padding="20 2 5 2"
+                                                                Opacity="0.4"
+                                                                Background="{DynamicResource MainColor1Brush}" 
+                                                                BorderThickness="0"
+                                                                SnapsToDevicePixels="true">
+                                                            <ContentPresenter x:Name="contentPresenter" Focusable="False" 
+                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                                                              Margin="{TemplateBinding Padding}" 
+                                                                              RecognizesAccessKey="True" 
+                                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="true">
+                                                                <Setter Property="Background" TargetName="border" Value="{DynamicResource MainColor2Brush}"/>
+                                                                <Setter Property="Opacity" TargetName="border" Value="1"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsPressed" Value="true">
+                                                                <Setter Property="Opacity" TargetName="border" Value="0.9"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Popup.Resources>
+                                    <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="2">
+                                        <Grid MinWidth="80" Background="{DynamicResource MainColor1Brush}">
+                                            <StackPanel>
+                                                <Button Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></Button>
+                                                <Button Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Popup>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -213,6 +263,9 @@
                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"></Setter>
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=PopupMenu,Path=IsOpen}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
@@ -223,7 +276,7 @@
 
         <Grid Name="AddServerContext">
             <Grid.InputBindings>
-                <MouseBinding MouseAction="LeftClick" Command="{Binding EditServer}"></MouseBinding>
+                <MouseBinding MouseAction="LeftClick" Command="{Binding CmdEditServer}"></MouseBinding>
             </Grid.InputBindings>
             <Grid.Style>
                 <Style TargetType="Grid">
