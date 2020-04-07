@@ -134,6 +134,8 @@
   <ItemGroup>
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
+    <Resource Include="Resources\Logo\logo256.png" />
+    <Resource Include="Resources\Logo\logo64.png" />
     <Resource Include="Ulits\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>

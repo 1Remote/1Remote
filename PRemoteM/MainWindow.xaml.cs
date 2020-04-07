@@ -108,13 +108,13 @@ namespace PRM
                 link.Click += NotifyIconMenuBtnLinkOnClick;
                 System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("TXT:退出");
                 exit.Click += new EventHandler(NotifyIconMenuBtnExitOnClick);
-                System.Windows.Forms.MenuItem[] child = new System.Windows.Forms.MenuItem[] {link, exit};
+                System.Windows.Forms.MenuItem[] child = new System.Windows.Forms.MenuItem[] { link, exit };
 
                 // 设置托盘
                 _notifyIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = "TXT:XXXX系统",
-                    Icon = NetImageProcessHelper.ToIcon(NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(ProtocolServerBase.Base64Icon4))),
+                    Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name),
                     ContextMenu = new System.Windows.Forms.ContextMenu(child),
                     BalloonTipText = "TXT:正在后台运行...",
                     Visible = true
@@ -171,6 +171,12 @@ namespace PRM
             {
                 (sender as TextBox).Text = "";
             }
+        }
+
+        private void GridAbout_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            PopupSettingMenu.IsOpen = false;
+            //TODO ADD about page
         }
     }
 }

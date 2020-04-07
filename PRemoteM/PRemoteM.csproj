@@ -41,8 +41,7 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>LOGO.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -167,6 +166,12 @@
       <Project>{bb2390fe-00dc-4650-a856-ddb69fd92bbc}</Project>
       <Name>PRM.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="prm.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LOGO.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -49,30 +49,31 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
 
         <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
             <StackPanel Orientation="Horizontal">
-                <Grid Background="Aquamarine" Width="25" Height="25" Margin="2">
-                    <!--<Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo40.png"></Image>-->
+                <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
+                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>
                 </Grid>
 
-                <Label VerticalContentAlignment="Center" Margin="5,0,105,0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
+                <Label VerticalContentAlignment="Center" Margin="0,0,105,0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
                     <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                 </Label>
             </StackPanel>
         </Grid>
 
         <!-- System Button Area -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
+        <StackPanel Grid.Row="0" 
+                    Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}" x:Key="WinTitleBarBtnStyle">
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Width" Value="35"/>
-                    <Setter Property="Height" Value="25"/>
+                    <Setter Property="Height" Value="35"/>
                     <Setter Property="HorizontalAlignment" Value="Right"/>
                     <Setter Property="VerticalAlignment" Value="Top"/>
                     <Setter Property="Background" Value="Transparent"/>
@@ -93,11 +94,11 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Grid Height="25" VerticalAlignment="Top" Width="150">
-                <TextBox Name="TbFilter" Width="140" Height="20" 
+            <Grid Height="{Binding ElementName=BtnSetting,Path=Height}" VerticalAlignment="Top" Margin="0 0 4 0">
+                <TextBox Name="TbFilter" Width="150" Height="20" 
                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
                         KeyUp="TbFilter_OnKeyUp"
-                        VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left">
+                        VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>
@@ -156,6 +157,9 @@
                             <Trigger Property="Button.IsMouseOver" Value="True">
                                 <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
                             </Trigger>
+                            <DataTrigger Binding="{Binding ElementName=PopupSettingMenu,Path=IsOpen}" Value="True">
+                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1DarkerBrush}" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -169,13 +173,62 @@
                    PlacementTarget="{Binding ElementName=BtnSetting}"
                    StaysOpen="False"
                    >
-                <Grid Background="{DynamicResource MainColor1Brush}" Width="100">
-                    <Border BorderBrush="#ccc" BorderThickness="1"></Border>
-                    <StackPanel Margin="3">
+                <Grid Background="{DynamicResource MainColor1DarkerBrush}" MinWidth="100">
+                    <StackPanel>
                         <TextBlock>TXT:设置</TextBlock>
                         <TextBlock>TXT:BUG/意见反馈</TextBlock>
                         <TextBlock>TXT:</TextBlock>
-                        <TextBlock>TXT:about</TextBlock>
+                        <Grid Name="GridAbout" MouseLeftButtonUp="GridAbout_OnMouseLeftButtonUp">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <StackPanel>
+                                <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="100"></Image>
+                                <StackPanel Name="GridAboutTitleDefault" Orientation="Horizontal">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0">About</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor2Brush}">P</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor2Brush}">R</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">emote</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor2Brush}">M</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
+                                </StackPanel>
+                                <StackPanel Name="GridAboutTitleHover" Orientation="Horizontal">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0">About</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">P</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">R</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">emote</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">M</TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </Grid>
             </Popup>
