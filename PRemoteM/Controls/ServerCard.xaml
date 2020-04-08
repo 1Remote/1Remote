@@ -13,7 +13,7 @@
 
         <Grid Name="DispServerContext">
             <Grid.InputBindings>
-                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ConnServer}"></MouseBinding>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
             </Grid.InputBindings>
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -27,7 +27,7 @@
             </Grid.Style>
 
             <!-- Card Bottom Layer - with shadow effect -->
-            <Border CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+            <Border CornerRadius="5" BorderThickness="1" Background="Black" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
                 </Border.Effect>
@@ -130,7 +130,7 @@
                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding ElementName=PopupMenu,Path=IsOpen}" Value="True">
+                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </DataTrigger>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -146,26 +146,45 @@
                             <RowDefinition Height="20"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid>
-                            <Button Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource ConverterBool2Visible}}"
-                                Command="{Binding DeleteServer}">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border BorderBrush="{TemplateBinding Control.BorderBrush}" Background="{TemplateBinding Control.Background}" BorderThickness="0" CornerRadius="0,2,0,0" Name="PART_Background">
-                                            <Path Margin="5"
-                                              Name="Symbol"
-                                              Data="M 50.864 62.832 L 41.888 62.832 L 25.256 35.552 L 8.360001 62.832 L 0 62.832 L 20.856 30.096 L 1.320002 0 L 10.12 0 L 25.52 24.64 L 41.008 0 L 49.368 0 L 29.92 29.92 Z"
-                                              Fill="{DynamicResource MainColor1Brush}"
-                                              Stretch="Fill" />
-                                            <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
-                                        </Border>
-                                        <ControlTemplate.Triggers>
+                            <Button Width="20" HorizontalAlignment="Right" 
+                                    Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
+                                    BorderThickness="0" 
+                                    Command="{Binding CmdDeleteServer}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                    <Border BorderBrush="{TemplateBinding Control.BorderBrush}" Background="{TemplateBinding Control.Background}" BorderThickness="0" CornerRadius="0,2,0,0" Name="PART_Background">
+                                                        <Path Margin="5"
+                                                              Name="Symbol"
+                                                              Data="M 50.864 62.832 L 41.888 62.832 L 25.256 35.552 L 8.360001 62.832 L 0 62.832 L 20.856 30.096 L 1.320002 0 L 10.12 0 L 25.52 24.64 L 41.008 0 L 49.368 0 L 29.92 29.92 Z"
+                                                              Fill="{DynamicResource MainColor1Brush}"
+                                                              Stretch="Fill" />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Symbol" Property="Margin" Value="4"></Setter>
+                                                            <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Symbol" Property="Margin" Value="4"></Setter>
-                                                <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
                                             </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
                             </Button>
                         </Grid>
 
@@ -177,68 +196,88 @@
                                 <!-- setting button -->
                                 <Button 
                                     x:Name="BtnSettingMenu"
-                                    Width="20" HorizontalAlignment="Right" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
-                                    BorderThickness="0" Visibility="{Binding ElementName=CardRealBorder, Path=IsMouseOver,Converter={StaticResource ConverterBool2Visible}}"
-                                    Click="BtnSettingMenu_OnClick"
-                                    >
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="{x:Type Button}">
-                                            <Border BorderBrush="{TemplateBinding Control.BorderBrush}" Background="{TemplateBinding Control.Background}" BorderThickness="0" CornerRadius="0,2,0,0" Name="PART_Background">
-                                                <Path Margin="5 6 5 3"
-                                              Name="Symbol"
-                                              Data="M 2.707031 0 L 49.97266 0 L 49.97266 5 L 2.707031 5 Z M 2.707031 20 L 49.97266 20 L 49.97266 25 L 2.707031 25 Z M 2.707031 40 L 49.97266 40 L 49.97266 45 L 2.707031 45 Z"
-                                              Fill="{DynamicResource MainColor1Brush}"
-                                              Stretch="Fill" />
-                                                <!--<ContentPresenter Content="{TemplateBinding ContentControl.Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
-                                                    <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Button.Template>
+                                    Width="20" HorizontalAlignment="Right" 
+                                    BorderThickness="0"
+                                    Click="BtnSettingMenu_OnClick">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                            <Setter Property="Background" Value="{Binding ElementName=CardRealBorder,Path=BorderBrush}"></Setter>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border BorderBrush="{TemplateBinding Control.BorderBrush}" 
+                                                                Background="{TemplateBinding Control.Background}" 
+                                                                BorderThickness="0" 
+                                                                Name="PART_Background">
+                                                            <Path Margin="5 6 5 3"
+                                                                  Name="Symbol"
+                                                                  Data="M 2.707031 0 L 49.97266 0 L 49.97266 5 L 2.707031 5 Z M 2.707031 20 L 49.97266 20 L 49.97266 25 L 2.707031 25 Z M 2.707031 40 L 49.97266 40 L 49.97266 45 L 2.707031 45 Z"
+                                                                  Fill="{TemplateBinding Foreground}"
+                                                                  Stretch="Fill" />
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
+                                                                <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
+                                                            </Trigger>
+                                                            <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                                <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
+                                                                <Setter TargetName="PART_Background" Property="Button.Background" Value="{DynamicResource MainColor1DarkerBrush}" />
+                                                                <Setter TargetName="Symbol" Property="Path.Fill" Value="{DynamicResource MainColor1ForegroundBrush}" />
+                                                            </DataTrigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
                                 </Button>
                                 <Popup 
-                                    Name="PopupMenu"
+                                    AllowsTransparency="True"
+                                    Name="PopupCardSettingMenu"
                                     PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
                                     <Popup.Resources>
-                                        <Style TargetType="Button">
+                                        <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                            <Setter Property="Opacity" Value="0.6"></Setter>
+                                            <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                                             <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type Button}">
                                                         <Border x:Name="border" 
-                                                                Padding="20 2 5 2"
-                                                                Opacity="0.4"
-                                                                Background="{DynamicResource MainColor1Brush}" 
+                                                                Background="{TemplateBinding Background}"
+                                                                Opacity="{TemplateBinding Opacity}"
+                                                                Padding="20 0 0 0"
                                                                 BorderThickness="0"
                                                                 SnapsToDevicePixels="true">
                                                             <ContentPresenter x:Name="contentPresenter" Focusable="False" 
                                                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                                              Margin="{TemplateBinding Padding}" 
+                                                                              Margin="3" 
                                                                               RecognizesAccessKey="True" 
                                                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
                                                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                                         </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="true">
-                                                                <Setter Property="Background" TargetName="border" Value="{DynamicResource MainColor2Brush}"/>
-                                                                <Setter Property="Opacity" TargetName="border" Value="1"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsPressed" Value="true">
-                                                                <Setter Property="Opacity" TargetName="border" Value="0.9"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="Button.IsMouseOver" Value="true">
+                                                    <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </Trigger>
+                                                <Trigger Property="Button.IsPressed" Value="true">
+                                                    <Setter Property="Opacity" Value="0.9"/>
+                                                </Trigger>
+                                            </Style.Triggers>
                                         </Style>
                                     </Popup.Resources>
-                                    <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="2">
-                                        <Grid MinWidth="80" Background="{DynamicResource MainColor1Brush}">
+                                    <Border Padding="0 0 4 4">
+                                        <Border.Effect>
+                                            <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                                        </Border.Effect>
+                                        <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
                                             <StackPanel>
                                                 <Button Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></Button>
                                                 <Button Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></Button>
@@ -263,7 +302,7 @@
                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"></Setter>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding ElementName=PopupMenu,Path=IsOpen}" Value="True">
+                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -313,7 +352,7 @@
                         </Style>
                     </Grid.Style>
                     <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                          Fill="{DynamicResource MainBgColorBrush}"
+                          Fill="{DynamicResource MainColor1LighterBrush}"
                           Stretch="Fill">
                         <Path.Style>
                             <Style TargetType="Path">

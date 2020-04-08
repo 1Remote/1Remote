@@ -16,7 +16,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid Background="#ced8e1" Margin="0 20 0 0 ">
+        <Grid Margin="0 20 0 0 ">
             <ListView ItemsSource="{Binding DispServerList}" 
                       Padding="10"
                       BorderThickness="0"
@@ -91,15 +91,15 @@
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="20">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button Padding="0 1 0 0"
+                                MinWidth="80"
                                 Click="BtnAllServer_Click"
                                 BorderThickness="0" Content="{DynamicResource tab_all}">
                         <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                            <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
                                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                 <Setter Property="Template">
@@ -113,7 +113,7 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource MainBgColorBrush}"></Setter>
+                                        <Setter Property="Background" Value="{StaticResource MainColor2LighterBrush}"></Setter>
                                     </Trigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="">
                                         <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
@@ -178,9 +178,15 @@
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
                                                             <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2Brush}"></Setter>
                                                         </Trigger>
-                                                        <Trigger Property="UIElement.IsMouseOver" Value="True">
-                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainBgColorBrush}"></Setter>
-                                                        </Trigger>
+                                                        <MultiTrigger>
+                                                            <MultiTrigger.Conditions>
+                                                                <Condition Property="Selector.IsSelected" Value="False"></Condition>
+                                                                <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
+                                                            </MultiTrigger.Conditions>
+                                                            <MultiTrigger.Setters>
+                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                            </MultiTrigger.Setters>
+                                                        </MultiTrigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Setter.Value>

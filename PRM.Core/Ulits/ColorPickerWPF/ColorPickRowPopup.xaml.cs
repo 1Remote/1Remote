@@ -21,6 +21,7 @@ namespace ColorPickerWPF
         }
         #endregion
 
+        public Action<Color> OnColorSelected;
 
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Color), typeof(ColorPickRowPopup),
           new PropertyMetadata(Colors.White, OnDataChanged));
@@ -40,6 +41,7 @@ namespace ColorPickerWPF
             {
                 SetValue(ColorProperty, value);
                 OnPropertyChanged(nameof(Color));
+                OnColorSelected?.Invoke(value);
             }
         }
 

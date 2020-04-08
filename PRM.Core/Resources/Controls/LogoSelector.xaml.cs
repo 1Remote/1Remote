@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Microsoft.Win32;
 using PRM.Core.Annotations;
+using PRM.Core.Model;
 using Shawn.Ulits;
 
 namespace PRM.Core.Resources.Controls
@@ -427,7 +428,7 @@ namespace PRM.Core.Resources.Controls
         {
             var ofd = new OpenFileDialog
             {
-                Title = "TXT:select image",
+                Title = Global.GetInstance().GetText("logo_selecter_open_file_dialog_title"),
                 Filter = "image|*.jpg;*.png;*.bmp|all files|*.*",
                 RestoreDirectory = true
             };

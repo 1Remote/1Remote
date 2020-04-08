@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 
 namespace PRM.Core.Protocol.RDP
@@ -20,22 +14,35 @@ namespace PRM.Core.Protocol.RDP
     /// <summary>
     /// ServerRDPEditForm.xaml 的交互逻辑
     /// </summary>
-    public partial class ProtocolServerRDPForm : UserControl
+    public partial class ProtocolServerRDPForm : ProtocolServerFormBase
     {
-        private ProtocolServerBase _vm;
-        public ProtocolServerRDPForm(ProtocolServerBase vm)
+        private ProtocolServerRDP _vm;
+        public ProtocolServerRDPForm(ProtocolServerBase vm): base()
         {
             InitializeComponent();
-            _vm = vm;
+            _vm = (ProtocolServerRDP)vm;
             DataContext = vm;
         }
+
+        public override bool CanSave()
+        {
+            if (!string.IsNullOrEmpty(_vm.Address?.Trim())
+                && !string.IsNullOrEmpty(_vm.UserName?.Trim())
+                && !string.IsNullOrEmpty(_vm.Password?.Trim())
+                && _vm.Port > 0)
+                return true;
+            return false;
+        }
     }
+
+
+
     public class ConverterERdpFullScreenFlag : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((int) ((ERdpFullScreenFlag) value)).ToString();
+            return ((int)((ERdpFullScreenFlag)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -50,7 +57,7 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((int) ((ERdpWindowResizeMode) value)).ToString();
+            return ((int)((ERdpWindowResizeMode)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AxMSTSCLib;
 using MSTSCLib;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using MessageBox = System.Windows.MessageBox;
@@ -327,8 +328,8 @@ namespace Shawn.Ulits.RDP
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
-                string disconnectedText = $"TXT:远程桌面 {_rdp.Server} 连接已断开！{reason}";
-                System.Windows.MessageBox.Show(disconnectedText, "TXT:远程连接");
+                string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
+                System.Windows.MessageBox.Show(disconnectedText, Global.GetInstance().GetText("messagebox_title_info"));
             }
 
             _parentWindow.Close();

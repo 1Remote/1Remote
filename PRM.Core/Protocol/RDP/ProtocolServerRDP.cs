@@ -48,7 +48,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        public ProtocolServerRDP() : base("RDP", "RDP.V1")
+        public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
         }
 
@@ -284,7 +284,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        protected override string GetSubTitle()
+        public override string GetSubTitle()
         {
             return Address + " @ " + UserName;
         }

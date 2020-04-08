@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="Control" x:Key="ControlBaseStyle">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+    </Style>
+</ResourceDictionary>

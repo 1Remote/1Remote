@@ -44,29 +44,11 @@ namespace PRM.View
             {
                 // TODO 研究子类之间的互相转换
                 // TODO 随机选择LOGO
-                vm.Server = new ProtocolServerRDP();
+                //vm.Server = new ProtocolServerRDP();
                 ColorPick.Color = Colors.White;
             }
 
-            var serverType = _vmServerEditorPage.Server.GetType();
-            if (serverType == typeof(ProtocolServerRDP))
-            {
-                ContentDetail.Content = new ProtocolServerRDPForm(_vmServerEditorPage.Server);
-            }
-            else
-            {
-                
-            }
-        }
-
-
-        private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (_vmServerEditorPage != null && _vmServerEditorPage.CmdSave.CanExecute())
-            {
-                _vmServerEditorPage.Server.MarkColor = ColorPick.Color;
-                _vmServerEditorPage.CmdSave.Execute();
-            }
+            ColorPick.OnColorSelected += color => _vmServerEditorPage.Server.MarkColor = ColorPick.Color;
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
