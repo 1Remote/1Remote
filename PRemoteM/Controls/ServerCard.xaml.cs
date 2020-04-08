@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -35,12 +36,12 @@ namespace PRM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupMenu.IsOpen = true;
+            PopupCardSettingMenu.IsOpen = true;
         }
 
         private void ButtonEditServer_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupMenu.IsOpen = false;
+            PopupCardSettingMenu.IsOpen = false;
             if (VmServerCard != null && VmServerCard.CmdEditServer.CanExecute())
             {
                 VmServerCard.CmdEditServer.Execute();
@@ -49,7 +50,7 @@ namespace PRM.Controls
 
         private void ButtonExportToFile_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupMenu.IsOpen = false;
+            PopupCardSettingMenu.IsOpen = false;
             var dlg = new SaveFileDialog
             {
                 Filter = "PRM json|*.prmj",
@@ -57,7 +58,7 @@ namespace PRM.Controls
             };
             if (dlg.ShowDialog() == true)
             {
-                File.WriteAllText(dlg.FileName, VmServerCard.Server.ToJsonString());
+                File.WriteAllText(dlg.FileName, VmServerCard.Server.ToJsonString(), Encoding.UTF8);
             }
         }
     }

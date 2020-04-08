@@ -149,7 +149,7 @@ namespace PRM.Core.Model
             var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
             foreach (var serverOrm in serverOrmList)
             {
-                var serverAbstract = ServerFactory.GetInstance().CreateFromDb(serverOrm);
+                var serverAbstract = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(serverOrm);
                 ServerList.Add(serverAbstract);
             }
         }
@@ -169,7 +169,7 @@ namespace PRM.Core.Model
                 var serverOrm = ServerOrm.ConvertFrom(server);
                 if (PRM_DAO.GetInstance().Insert(serverOrm))
                 {
-                    var newServer = ServerFactory.GetInstance().CreateFromDb(serverOrm);
+                    var newServer = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(serverOrm);
                     Global.GetInstance().ServerList.Add(newServer);
                 }
             }

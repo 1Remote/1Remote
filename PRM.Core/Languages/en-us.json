@@ -1,36 +1,48 @@
 ﻿{
   "messagebox_title_warning": "Warning",
+  "messagebox_title_error": "Error",
+  "messagebox_title_info": "Info",
   "confirm": "Confirm",
   "save": "Save",
   "cancel": "Cancel",
   "open": "Open",
   "close": "Close",
   "tab_all": "All",
-  "info_filter": "Search by server name / ip",
+  "info_filter": "Search (Ctrl+F)",
   "info_hotkey_already_registered": "Hotkey already registered",
   "info_hotkey_registered_fail": "Failed to register hotkey",
 
-  // server operate
+  // sys menu
+  "sys_menu_options_title": "Options",
+  "sys_menu_about_title": "About",
+
+  // sys options
+
+
+
+
+  // server card operate
   "server_card_operate_confirm_delete": "Sure to delete this server?",
   "server_card_operate_edit": "Edit",
   "server_card_operate_export_to_prmj": "Export config",
 
 
+  // server editor
   "server_editor_group_title_common": "Common",
   "server_editor_group_title_connection": "Connection",
   "server_editor_group_title_display": "Display",
   "server_editor_group_title_advantage": "Advantage",
-  // common group items
+  // server editor - common group items
   "server_editor_display_name": "Name",
   "server_editor_group": "Group",
   "server_editor_icon": "Logo",
   "server_editor_color_mark": "Color",
-  // connection group items
+  // server editor - connection group items
   "server_editor_connection_address": "Address",
   "server_editor_connection_port": "Port",
   "server_editor_connection_username": "User",
   "server_editor_connection_password": "Password",
-  // display group items
+  // server editor - display group items
   "server_editor_display_full_screen_flag": "Full screen",
   "server_editor_display_full_screen_flag_window": "Disable",
   "server_editor_display_full_screen_flag_full_screen": "Enable(single monitor)",
@@ -44,7 +56,7 @@
   "server_editor_display_performance_high": "High(32bit color with full features support)",
   "server_editor_display_performance_middle": "Mdiddle(16bit color with only font smoothing and desktop composition)",
   "server_editor_display_performance_low": "Low(8bit color with no feature support)",
-  // Advantage group items
+  // server editor - Advantage group items
   "server_editor_advantage_resources": "Resources",
   "server_editor_advantage_clipboard": "Clipboard",
   "server_editor_advantage_key_combinations": "Key Combinations",
@@ -58,5 +70,10 @@
 
 
   "server_editor_type_rdp": "RDP",
-  "server_editor_type_import_from_prmj": "Import"
+  "server_editor_type_import_from_prmj": "Import",
+
+
+
+  // other
+  "logo_selecter_open_file_dialog_title": "select a picture"
 }

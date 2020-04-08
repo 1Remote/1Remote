@@ -13,10 +13,11 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase
     {
-        protected ProtocolServerBase(string serverType, string classVersion)
+        protected ProtocolServerBase(string serverType, string classVersion, string protocolFullName)
         {
             ServerType = serverType;
             ClassVersion = classVersion;
+            ProtocolFullName = protocolFullName;
         }
 
 
@@ -44,7 +45,12 @@ namespace PRM.Core.Protocol
             protected set => SetAndNotifyIfChanged(nameof(ClassVersion), ref _classVersion, value);
         }
 
-
+        private string _protocolFullName = "";
+        public string ProtocolFullName
+        {
+            get => _protocolFullName;
+            protected set => SetAndNotifyIfChanged(nameof(ProtocolFullName), ref _protocolFullName, value);
+        }
 
         private string _dispName = "";
         public string DispName
@@ -133,8 +139,6 @@ namespace PRM.Core.Protocol
                 }
                 catch (Exception)
                 {
-
-                    throw;
                 }
             }
         }
@@ -199,7 +203,7 @@ namespace PRM.Core.Protocol
 
 
 
-        protected abstract string GetSubTitle();
+        public abstract string GetSubTitle();
 
 
 

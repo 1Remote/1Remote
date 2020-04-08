@@ -12,6 +12,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -97,7 +98,7 @@
                                                         </Grid.ColumnDefinitions>
                                                         <Button Content="{DynamicResource save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
                                                             <Button.Style>
-                                                                <Style TargetType="Button">
+                                                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
                                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                                                                     <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
@@ -121,7 +122,7 @@
 
                                                         <Button Content="{DynamicResource cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                             <Button.Style>
-                                                                <Style TargetType="Button">
+                                                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
                                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                                                                     <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
@@ -156,7 +157,7 @@
                             </Grid>
                         </StackPanel>
 
-                        <ContentControl Name="ContentDetail"></ContentControl>
+                        <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
 
 
                     </StackPanel>
@@ -175,31 +176,150 @@
 
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource TopHeight}">
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel.Resources>
-                            <Style TargetType="Button">
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <!--<Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                            <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Grid.Resources>-->
+
+                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" 
+                                  Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
+                                  Style="{StaticResource MinHorizontalScrollViewerStyle}">
+                        <StackPanel Orientation="Horizontal">
+                            <ListBox 
+                                    IsSynchronizedWithCurrentItem="True"
+                                    ItemsSource="{Binding ProtocolList}" 
+                                    SelectedValue="{Binding ProtocolSelected}"
+                                    Background="{StaticResource MainColor1Brush}"
+                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
+                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                    BorderThickness="0"
+                                    Margin="0"
+                                    Padding="0">
+                                <ListBox.Style>
+                                    <Style TargetType="ListBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBox">
+                                                    <ItemsPresenter/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.Style>
+                                <ListBox.Resources>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border BorderThickness="0" Margin="{TemplateBinding Margin}"
+                                                        Padding="{TemplateBinding Control.Padding}" 
+                                                        Background="{TemplateBinding Panel.Background}" 
+                                                        Name="Bd" 
+                                                        SnapsToDevicePixels="True">
+                                                        <ContentPresenter 
+                                                                Content="{TemplateBinding ContentControl.Content}" 
+                                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" 
+                                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" 
+                                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" 
+                                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" 
+                                                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="Selector.IsSelected" Value="True">
+                                                            <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
+                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                        </Trigger>
+                                                        <MultiTrigger>
+                                                            <MultiTrigger.Conditions>
+                                                                <Condition Property="Selector.IsSelected" Value="False"></Condition>
+                                                                <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
+                                                            </MultiTrigger.Conditions>
+                                                            <MultiTrigger.Setters>
+                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                            </MultiTrigger.Setters>
+                                                        </MultiTrigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                        <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListBox.Resources>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"></StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBlock Margin="15 0" 
+                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" 
+                                                           FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
+                                                           Text="{Binding ProtocolFullName}"></TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Button Grid.Column="1" Padding="0 1 0 0" MinWidth="80" 
+                            Command="{Binding CmdImportFromFile}"
+                            Content="{DynamicResource server_editor_type_import_from_prmj}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
                                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
-                                            <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0">
                                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
+                                <Style.Triggers>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsMouseOver" Value="True"></Condition>
+                                            <Condition Property="IsEnabled" Value="True"></Condition>
+                                        </MultiTrigger.Conditions>
+                                        <MultiTrigger.Setters>
+                                            <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
+                                        </MultiTrigger.Setters>
+                                    </MultiTrigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.7" ></Setter>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
-                        </StackPanel.Resources>
-                        <Button Padding="0 1 0 0" Width="80"
-                                BorderThickness="0" Content="{DynamicResource server_editor_type_rdp}">
-                        </Button>
-
-                        <Button Padding="0 1 0 0" Width="80"
-                                BorderThickness="0" Content="{DynamicResource server_editor_type_import_from_prmj}">
-                        </Button>
-                    </StackPanel>
+                        </Button.Style>
+                    </Button>
                 </Grid>
             </Border>
         </Grid>
@@ -219,14 +339,12 @@
                     <Grid Width="300">
                         <Button Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
-                                Click="ButtonSave_OnClick"
+                                Command="{Binding CmdSave}"
                                 BorderThickness="0" Content="{DynamicResource save}">
                             <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
                                     <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
                                     <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                                    <Setter Property="Opacity" Value="1"></Setter>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type Button}">
@@ -237,8 +355,17 @@
                                         </Setter.Value>
                                     </Setter>
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Opacity" Value="0.9"></Setter>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="True"></Condition>
+                                                <Condition Property="IsEnabled" Value="True"></Condition>
+                                            </MultiTrigger.Conditions>
+                                            <MultiTrigger.Setters>
+                                                <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                            </MultiTrigger.Setters>
+                                        </MultiTrigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.7" ></Setter>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -250,15 +377,13 @@
                                 Command="{Binding CmdCancel}"
                                 BorderThickness="0" Content="{DynamicResource cancel}">
                             <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Background" Value="{DynamicResource MainBgColorBrush}"/>
+                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                    <Setter Property="Opacity" Value="1"></Setter>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
                                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
@@ -266,7 +391,7 @@
                                     </Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Opacity" Value="0.9"></Setter>
+                                            <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>

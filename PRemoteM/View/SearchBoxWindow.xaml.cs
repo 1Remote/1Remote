@@ -107,8 +107,8 @@ namespace PRM.View
                             if (i < j && i >= 0)
                             {
                                 // TODO open conn
-                                MessageBox.Show(s.DispName);
-                                s.Conn();
+                                MessageBox.Show(s.Server.DispName);
+                                s.Server.Conn();
                             }
                         }
                         HideMe();

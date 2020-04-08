@@ -1,36 +1,48 @@
 ﻿{
   "messagebox_title_warning": "警告",
+  "messagebox_title_error": "错误",
+  "messagebox_title_info": "提示",
   "confirm": "确定",
   "save": "保存",
   "cancel": "取消",
   "open": "打开",
   "close": "关闭",
   "tab_all": "全部",
-  "info_filter": "搜索远程目标",
+  "info_filter": "搜索 (Ctrl+F)",
   "info_hotkey_already_registered": "快捷键已被占用",
   "info_hotkey_registered_fail": "快捷键注册失败",
 
-  // server operate
+  // sys menu
+  "sys_menu_options_title": "设置",
+  "sys_menu_about_title": "关于",
+
+  // sys options
+
+
+
+
+  // server card operate
   "server_card_operate_confirm_delete": "确定要删除该服务器配置吗？",
   "server_card_operate_edit": "编辑",
   "server_card_operate_export_to_prmj": "导出配置",
 
 
+  // server editor
   "server_editor_group_title_common": "常规",
   "server_editor_group_title_connection": "连接",
   "server_editor_group_title_display": "显示",
   "server_editor_group_title_advantage": "高级",
-  // common group items
+  // server editor - common group items
   "server_editor_display_name": "名称",
   "server_editor_group": "分组",
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
-  // connection group items
+  // server editor - connection group items
   "server_editor_connection_address": "地址",
   "server_editor_connection_port": "端口",
   "server_editor_connection_username": "用户名",
   "server_editor_connection_password": "密码",
-  // display group items
+  // server editor - display group items
   "server_editor_display_full_screen_flag": "全屏模式",
   "server_editor_display_full_screen_flag_window": "禁用",
   "server_editor_display_full_screen_flag_full_screen": "允许（单显示器）",
@@ -44,7 +56,7 @@
   "server_editor_display_performance_high": "高（32位色彩与所有特性）",
   "server_editor_display_performance_middle": "中（16位色彩与字体平滑、桌面合成）",
   "server_editor_display_performance_low": "低（8位色彩无任何显示增强）",
-  // Advantage group items
+  // server editor - Advantage group items
   "server_editor_advantage_resources": "资源",
   "server_editor_advantage_clipboard": "剪贴板",
   "server_editor_advantage_key_combinations": "组合键",
@@ -58,5 +70,10 @@
 
 
   "server_editor_type_rdp": "RDP连接",
-  "server_editor_type_import_from_prmj": "导入"
+  "server_editor_type_import_from_prmj": "导入",
+
+
+
+  // other
+  "logo_selecter_open_file_dialog_title": "选择图片"
 }

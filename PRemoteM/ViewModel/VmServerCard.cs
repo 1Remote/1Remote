@@ -29,19 +29,18 @@ namespace PRM.ViewModel
         }
 
 
-
-        private RelayCommand _connServer;
-        public RelayCommand ConnServer
+        private RelayCommand _cmdConnServer;
+        public RelayCommand CmdConnServer
         {
             get
             {
-                if (_connServer == null)
-                    _connServer = new RelayCommand((o) =>
+                if (_cmdConnServer == null)
+                    _cmdConnServer = new RelayCommand((o) =>
                     {
 
                         this.Server.Conn();
                     });
-                return _connServer;
+                return _cmdConnServer;
             }
         }
 
@@ -69,13 +68,13 @@ namespace PRM.ViewModel
         }
 
 
-        private RelayCommand _deleteServer;
-        public RelayCommand DeleteServer
+        private RelayCommand _cmdDeleteServer;
+        public RelayCommand CmdDeleteServer
         {
             get
             {
-                if (_deleteServer == null)
-                    _deleteServer = new RelayCommand((o) =>
+                if (_cmdDeleteServer == null)
+                    _cmdDeleteServer = new RelayCommand((o) =>
                     {
                         if (MessageBox.Show(
                                 Global.GetInstance().GetText("server_card_operate_confirm_delete"), 
@@ -86,7 +85,7 @@ namespace PRM.ViewModel
                             Global.GetInstance().ServerListRemove(Server);
                         }
                     });
-                return _deleteServer;
+                return _cmdDeleteServer;
             }
         }
     }

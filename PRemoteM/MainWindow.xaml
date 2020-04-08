@@ -8,6 +8,7 @@
         BorderThickness="0"
         BorderBrush="Transparent"
         x:Name="Window"
+        WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="500" Width="680" MinWidth="520" MinHeight="300">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
@@ -47,7 +48,7 @@
         <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
     </Window.InputBindings>
 
-    <Grid>
+    <Grid Background="{DynamicResource MainBgColorBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -88,7 +89,7 @@
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                            <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -128,7 +129,7 @@
                             <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainBgColorBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor1LighterBrush}"/>
                                     <Setter Property="Opacity" Value="0.6"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsFocused" Value="True">
@@ -155,7 +156,7 @@
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                         <Style.Triggers>
                             <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
                             </Trigger>
                             <DataTrigger Binding="{Binding ElementName=PopupSettingMenu,Path=IsOpen}" Value="True">
                                 <Setter Property="Button.Background" Value="{DynamicResource MainColor1DarkerBrush}" />
@@ -170,67 +171,108 @@
                 </Canvas>
             </Button>
             <Popup Name="PopupSettingMenu" 
+                   AllowsTransparency="True"
                    PlacementTarget="{Binding ElementName=BtnSetting}"
-                   StaysOpen="False"
-                   >
-                <Grid Background="{DynamicResource MainColor1DarkerBrush}" MinWidth="100">
-                    <StackPanel>
-                        <TextBlock>TXT:设置</TextBlock>
-                        <TextBlock>TXT:BUG/意见反馈</TextBlock>
-                        <TextBlock>TXT:</TextBlock>
-                        <Grid Name="GridAbout" MouseLeftButtonUp="GridAbout_OnMouseLeftButtonUp">
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <StackPanel>
-                                <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="100"></Image>
-                                <StackPanel Name="GridAboutTitleDefault" Orientation="Horizontal">
-                                    <StackPanel.Style>
-                                        <Style TargetType="StackPanel">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </StackPanel.Style>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0">About</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor2Brush}">P</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor2Brush}">R</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">emote</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor2Brush}">M</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
+                   StaysOpen="False">
+                <Popup.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                        <Setter Property="Opacity" Value="0.6"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                        <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border x:Name="border" 
+                                                                Background="{TemplateBinding Background}"
+                                                                Opacity="{TemplateBinding Opacity}"
+                                                                Padding="20 0 0 0"
+                                                                BorderThickness="0"
+                                                                SnapsToDevicePixels="true">
+                                        <ContentPresenter x:Name="contentPresenter" Focusable="False" 
+                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                                                              Margin="3" 
+                                                                              RecognizesAccessKey="True" 
+                                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Button.IsMouseOver" Value="true">
+                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
+                                <Setter Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="Button.IsPressed" Value="true">
+                                <Setter Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Popup.Resources>
+                <Border Padding="0 0 4 4">
+                    <Border.Effect>
+                        <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                    </Border.Effect>
+                    <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
+                        <StackPanel>
+                            <Button Content="{DynamicResource sys_menu_options_title}"></Button>
+                            <Button>TXT:BUG/意见反馈</Button>
+                            <Border Name="GridAbout" MouseLeftButtonUp="GridAbout_OnMouseLeftButtonUp" Padding="3">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="100"></Image>
+                                    <StackPanel Name="GridAboutTitleDefault" Orientation="Horizontal">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0">About</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor2Brush}">P</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor2Brush}">R</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">emote</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor2Brush}">M</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Name="GridAboutTitleHover" Orientation="Horizontal">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0" Text="{DynamicResource sys_menu_about_title}"></TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">P</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">R</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">emote</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">M</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
+                                    </StackPanel>
                                 </StackPanel>
-                                <StackPanel Name="GridAboutTitleHover" Orientation="Horizontal">
-                                    <StackPanel.Style>
-                                        <Style TargetType="StackPanel">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </StackPanel.Style>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0">About</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">P</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">R</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">emote</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">M</TextBlock>
-                                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
-                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </Popup>
 
             <Button Name="BtnMinimize">
@@ -239,7 +281,7 @@
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                         <Style.Triggers>
                             <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -253,7 +295,7 @@
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                         <Style.Triggers>
                             <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainBgColorBrush}" />
+                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
