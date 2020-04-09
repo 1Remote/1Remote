@@ -247,9 +247,6 @@ namespace PRM.Core.Protocol.RDP
 
             // TODO add conn win to tab, add to global remote host
             var nw = new Window();
-            var rdp = this;
-            rdp.RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
-            rdp.RdpWindowResizeMode = ERdpWindowResizeMode.Fixed;
             nw.Content = new AxMsRdpClient09Host(this, nw);
             nw.ShowDialog();
 
