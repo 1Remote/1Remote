@@ -29,6 +29,7 @@ namespace PRM.ViewModel
         }
 
 
+        #region CMD
         private RelayCommand _cmdConnServer;
         public RelayCommand CmdConnServer
         {
@@ -44,14 +45,14 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _editServer;
+        private RelayCommand _cmdEditServer;
         public RelayCommand CmdEditServer
         {
             get
             {
-                if (_editServer == null)
+                if (_cmdEditServer == null)
                 {
-                    _editServer = new RelayCommand((o) =>
+                    _cmdEditServer = new RelayCommand((o) =>
                     {
                         Host.Host.DispPage = new AnimationPage()
                         {
@@ -63,7 +64,7 @@ namespace PRM.ViewModel
                     });
                 }
 
-                return _editServer;
+                return _cmdEditServer;
             }
         }
 
@@ -77,8 +78,8 @@ namespace PRM.ViewModel
                     _cmdDeleteServer = new RelayCommand((o) =>
                     {
                         if (MessageBox.Show(
-                                Global.GetInstance().GetText("server_card_operate_confirm_delete"), 
-                                Global.GetInstance().GetText("messagebox_title_warning"), 
+                                Global.GetInstance().GetText("server_card_operate_confirm_delete"),
+                                Global.GetInstance().GetText("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {
@@ -87,6 +88,7 @@ namespace PRM.ViewModel
                     });
                 return _cmdDeleteServer;
             }
-        }
+        } 
+        #endregion
     }
 }

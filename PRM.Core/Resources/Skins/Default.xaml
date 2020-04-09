@@ -12,6 +12,7 @@
     <Color x:Key="MainColor2Foreground">White</Color>
 
     <Color x:Key="MainBgColor">#ced8e1</Color>
+    <Brush x:Key="MainBgColorForeground">#000</Brush>
 
     <Brush x:Key="MainColor1Brush">#102b3e</Brush>
     <Brush x:Key="MainColor1LighterBrush">#445a68</Brush>
@@ -24,5 +25,6 @@
     <Brush x:Key="MainColor2ForegroundBrush">White</Brush>
 
     <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
+    <Brush x:Key="MainBgColorForegroundBrush">#000</Brush>
 
 </ResourceDictionary>
