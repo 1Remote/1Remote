@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
+using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
@@ -15,8 +16,8 @@ namespace PRM.ViewModel
         public VmSystemConfigPage(VmMain vmMain)
         {
             Host = vmMain;
-            //LanguageCode2Name = SystemConfig.GetInstance().Language.LanguageCode2Name;
             SelectedLanguageCode = SystemConfig.GetInstance().Language.CurrentLanguageCode;
+            General = new SystemConfigGeneral(SystemConfig.GetInstance().Ini);
         }
 
 
@@ -26,13 +27,20 @@ namespace PRM.ViewModel
             get => _selectedLanguageCode;
             set => SetAndNotifyIfChanged(nameof(SelectedLanguageCode), ref _selectedLanguageCode, value);
         }
-
-        private Dictionary<string, string> _languageCode2Name;
         public Dictionary<string, string> LanguageCode2Name => SystemConfig.GetInstance().Language.LanguageCode2Name;
-        //{
-        //    get => _languageCode2Name;
-        //    set => SetAndNotifyIfChanged(nameof(LanguageCode2Name), ref _languageCode2Name, value);
-        //}
+
+
+
+        private SystemConfigGeneral _general;
+        public SystemConfigGeneral General
+        {
+            get => _general;
+            set => SetAndNotifyIfChanged(nameof(General), ref _general, value);
+        }
+
+
+
+
         #region CMD
 
         private RelayCommand _cmdSaveAndGoBack;
@@ -48,7 +56,14 @@ namespace PRM.ViewModel
 
                         /***                update config                ***/
                         // General 
-                        SystemConfig.GetInstance().Language.CurrentLanguageCode = SelectedLanguageCode;
+                        if (SystemConfig.GetInstance().Language.CurrentLanguageCode != SelectedLanguageCode)
+                        {
+                            SystemConfig.GetInstance().Language.CurrentLanguageCode = SelectedLanguageCode;
+                            SystemConfig.GetInstance().Language.Save();
+                            App.ReloadTaskTrayContextMenu();
+                        }
+                        SystemConfig.GetInstance().General.Update(General);
+                        SystemConfig.GetInstance().General.Save();
                     });
                 }
                 return _cmdSaveAndGoBack;

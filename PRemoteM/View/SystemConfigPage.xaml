@@ -14,13 +14,11 @@
             </ResourceDictionary.MergedDictionaries>
             
             <SolidColorBrush x:Key="TabItem.Selected.Background" Color="{DynamicResource MainColor1Lighter}"/>
-            <SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC"/>
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Padding" Value="2"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource TabItem.Selected.Border}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                 <Setter Property="Template">
@@ -59,7 +57,7 @@
                                                   VerticalAlignment="Center"
                                                   HorizontalAlignment="Center"
                                                   ContentSource="Header"
-                                                  Margin="10,10"/>
+                                                  Margin="10"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
@@ -70,6 +68,15 @@
                                 <Trigger Property="IsSelected" Value="False">
                                     <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor1Brush}" />
                                 </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="False"></Condition>
+                                        <Condition Property="IsMouseOver" Value="True"></Condition>
+                                    </MultiTrigger.Conditions>
+                                    <MultiTrigger.Setters>
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor2Brush}" />
+                                    </MultiTrigger.Setters>
+                                </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -100,8 +107,7 @@
                                 <ComboBox ItemsSource="{Binding LanguageCode2Name}" 
                                           SelectedValue="{Binding SelectedLanguageCode}"
                                           SelectedValuePath="Key"
-                                          DisplayMemberPath="Value"
-                                          />
+                                          DisplayMemberPath="Value"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -109,16 +115,29 @@
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_db_path}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <TextBox Text="{Binding Server.DispName}"></TextBox>
+                                <TextBox Text="./PRemoteM.db" VerticalContentAlignment="Center"></TextBox>
+                            </Grid>
+                            <Button Content="{DynamicResource button_open}"></Button>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_start}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <CheckBox IsChecked="{Binding General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_minimized}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
+
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Security" />
-            <TabItem Header="Details" />
+            <TabItem Header="TXT:Quick Connect" />
+            <TabItem Header="TXT:Security" />
+            <TabItem Header="TXT:Theme" />
         </TabControl>
 
 
@@ -132,7 +151,7 @@
                 <Style TargetType="Button">
                     <Setter Property="Height" Value="40"></Setter>
                     <Setter Property="Opacity" Value="1"></Setter>
-                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                    <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                     <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
                     <Setter Property="Template">

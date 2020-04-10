@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Global.cs" />
+    <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -113,6 +114,7 @@
       <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ulits\GlobalHotkeyHooker.cs" />
+    <Compile Include="Ulits\Ini.cs" />
     <Compile Include="Ulits\KeyWordMatchHelper.cs" />
     <Compile Include="Ulits\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
