@@ -7,4 +7,7 @@
     <Style TargetType="Button">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
     </Style>
+    <Style TargetType="TextBox">
+        <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+    </Style>
 </ResourceDictionary>

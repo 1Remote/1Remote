@@ -124,7 +124,7 @@ namespace Shawn.Ulits
             {
                 var win = new System.Windows.Interop.WindowInteropHelper(window);
                 var hWnd = win.Handle;
-                if (!_hookedhWnd.Contains(hWnd))
+                if (!_hookedhWnd.Contains(hWnd) && hWnd != IntPtr.Zero)
                 {
                     var source = System.Windows.Interop.HwndSource.FromHwnd(hWnd);
                     source.AddHook(HookHandel);

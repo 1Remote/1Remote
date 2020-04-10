@@ -6,6 +6,7 @@
   "messagebox_title_error": "Error",
   "messagebox_title_info": "Info",
 
+  "button_exit": "Exit",
   "button_save": "Save",
   "button_cancel": "Cancel",
   "button_open": "Open",
@@ -21,6 +22,9 @@
   // system options
   "system_options_general_title": "General",
   "system_options_general_item_language": "Language",
+  "system_options_general_item_db_path": "Database path",
+  "system_options_general_item_start": "Start",
+  "system_options_general_item_start_minimized": "Start minimized",
 
 
 

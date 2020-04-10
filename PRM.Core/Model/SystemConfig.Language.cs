@@ -11,13 +11,14 @@ using Shawn.Ulits;
 
 namespace PRM.Core.Model
 {
-    public class ConfigLanguage : NotifyPropertyChangedBase
+    public sealed class SystemConfigLanguage : SystemConfigBase
     {
-        public ConfigLanguage(ResourceDictionary appResourceDictionary)
+        public SystemConfigLanguage(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
         {
             Debug.Assert(appResourceDictionary != null);
             AppResourceDictionary = appResourceDictionary;
-            InitLanguages();
+            ReadLanguageFiles();
+            Load();
         }
 
 
@@ -35,7 +36,6 @@ namespace PRM.Core.Model
             {
                 var newVal = value?.Trim()?.ToLower();
                 if (!string.IsNullOrEmpty(newVal)
-                    && newVal != _currentLanguageCode
                     && LanguageCode2Name.ContainsKey(newVal))
                 {
                     SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
@@ -106,10 +106,10 @@ namespace PRM.Core.Model
             protected set => SetAndNotifyIfChanged(nameof(LanguageCode2Name), ref _languageCode2Name, value);
         }
 
-        private Dictionary<string, string> _languageCode2ResourcePath = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _languageCode2ResourcePath = new Dictionary<string, string>();
 
         
-        private void InitLanguages()
+        private void ReadLanguageFiles()
         {
             LanguageCode2Name.Clear();
             _languageCode2ResourcePath.Clear();
@@ -166,8 +166,6 @@ namespace PRM.Core.Model
                 }
             }
         }
-
-
 
         private ResourceDictionary GetResourceDictionaryByPath(string path)
         {
@@ -229,5 +227,29 @@ namespace PRM.Core.Model
 
             throw new NotImplementedException("can't find any string by '" + textKey + "'!");
         }
+
+
+
+
+
+        #region Interface
+        private const string _sectionName = "General";
+        public override void Save()
+        {
+            _ini.WriteValue("lang", _sectionName, CurrentLanguageCode);
+            _ini.Save();
+        }
+
+        public override void Load()
+        {
+            CurrentLanguageCode = _ini.GetValue("lang", _sectionName, CurrentLanguageCode);
+        }
+
+        public override void Update(SystemConfigBase newConfig)
+        {
+            UpdateBase(this, newConfig, typeof(SystemConfigLanguage));
+        }
+
+        #endregion
     }
 }
