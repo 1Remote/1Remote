@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -39,9 +40,11 @@ namespace Shawn.Ulits
             if (!fi.Exists) return null;
             var rd = LangDictFromJsonString(File.ReadAllText(fi.FullName));
 #if DEBUG
-            // TODO 调试用
+            // TODO 删除：调试时根据json生成一份xaml资源文件
             if (jsonPath.IndexOf("zh-cn") >= 0)
-                SaveLangResourceDictionary(rd, "zh-cn.xaml");
+                SaveToLangResourceDictionary(rd, "zh-cn.xaml");
+            if (jsonPath.IndexOf("en-us") >= 0)
+                SaveToLangResourceDictionary(rd, "en-us.xaml");
 #endif
             SetKey(rd, LangFilePathKey, fi.FullName);
             SetKey(rd, ResourceTypeKey, ResourceTypeValue);
@@ -97,7 +100,7 @@ namespace Shawn.Ulits
             return JsonConvert.SerializeObject(kvs);
         }
 
-        public static void SaveLangResourceDictionary(ResourceDictionary lang, string path)
+        public static void SaveToLangResourceDictionary(ResourceDictionary lang, string path)
         {
             try
             {
@@ -115,20 +118,19 @@ namespace Shawn.Ulits
 
         public static void ChangeLanguage(this ResourceDictionary resources, ResourceDictionary lang)
         {
-            if (lang != null)
+            Debug.Assert(resources != null);
+            Debug.Assert(lang != null);
+            var rs1 = resources.MergedDictionaries.Where(o => o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Languages/zh-cn.xaml".ToLower()) >= 0).ToArray();
+            foreach (var r in rs1)
             {
-                var rs1 = resources.MergedDictionaries.Where(o => o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Languages/zh-cn.xaml".ToLower()) >= 0).ToArray();
-                foreach (var r in rs1)
-                {
-                    resources.MergedDictionaries.Remove(r);
-                }
-                var rs2 = resources.MergedDictionaries.Where(o => o.Contains(ResourceTypeKey) && o[ResourceTypeKey].ToString() == ResourceTypeValue).ToArray();
-                foreach (var r in rs2)
-                {
-                    resources.MergedDictionaries.Remove(r);
-                }
-                resources.MergedDictionaries.Add(lang);
+                resources.MergedDictionaries.Remove(r);
             }
+            var rs2 = resources.MergedDictionaries.Where(o => o.Contains(ResourceTypeKey) && o[ResourceTypeKey].ToString() == ResourceTypeValue).ToArray();
+            foreach (var r in rs2)
+            {
+                resources.MergedDictionaries.Remove(r);
+            }
+            resources.MergedDictionaries.Add(lang);
         }
     }
 }

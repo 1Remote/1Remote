@@ -72,11 +72,11 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SysOptionsPage(),
+                            Page = new SystemConfigPage(this),
                         };
                         SysOptionsMenuIsOpen = false;
 
-                    }, o => DispPage?.Page?.GetType() != typeof(SysOptionsPage));
+                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
             }

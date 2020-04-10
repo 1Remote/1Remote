@@ -176,7 +176,7 @@
                    IsOpen="{Binding SysOptionsMenuIsOpen}"
                    StaysOpen="False">
                 <Popup.Resources>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                    <Style TargetType="Button">
                         <Setter Property="Opacity" Value="0.7"></Setter>
                         <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
@@ -217,7 +217,7 @@
                     </Border.Effect>
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
-                            <Button Content="{DynamicResource sys_menu_options_title}" Command="{Binding CmdGoSysOptionsPage}"></Button>
+                            <Button Content="{DynamicResource system_menu_options_title}" Command="{Binding CmdGoSysOptionsPage}"></Button>
                             <Button>TXT:BUG/意见反馈</Button>
                             <Border Name="GridAbout" MouseLeftButtonUp="GridAbout_OnMouseLeftButtonUp" Padding="3">
                                 <Border.Style>
@@ -242,7 +242,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </StackPanel.Style>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0">About</TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0" Text="{DynamicResource system_menu_about_title}"></TextBlock>
                                         <TextBlock Foreground="{DynamicResource MainColor2Brush}">P</TextBlock>
                                         <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
                                         <TextBlock Foreground="{DynamicResource MainColor2Brush}">R</TextBlock>
@@ -261,7 +261,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </StackPanel.Style>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0" Text="{DynamicResource sys_menu_about_title}"></TextBlock>
+                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0" Text="{DynamicResource system_menu_about_title}"></TextBlock>
                                         <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">P</TextBlock>
                                         <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">ersonal</TextBlock>
                                         <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">R</TextBlock>

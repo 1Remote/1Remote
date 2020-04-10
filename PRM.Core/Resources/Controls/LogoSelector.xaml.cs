@@ -428,7 +428,7 @@ namespace PRM.Core.Resources.Controls
         {
             var ofd = new OpenFileDialog
             {
-                Title = Global.GetInstance().GetText("logo_selecter_open_file_dialog_title"),
+                Title = SystemConfig.GetInstance().Language.GetText("logo_selecter_open_file_dialog_title"),
                 Filter = "image|*.jpg;*.png;*.bmp|all files|*.*",
                 RestoreDirectory = true
             };

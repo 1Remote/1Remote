@@ -50,10 +50,10 @@ namespace PRM
                     case GlobalHotkeyHooker.RetCode.Success:
                         break;
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                        MessageBox.Show(Global.GetInstance().GetText("info_hotkey_registered_fail"));
+                        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail"));
                         break;
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                        MessageBox.Show(Global.GetInstance().GetText("info_hotkey_already_registered"));
+                        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered"));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

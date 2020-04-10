@@ -329,7 +329,7 @@ namespace Shawn.Ulits.RDP
                 && reason != "")
             {
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
-                System.Windows.MessageBox.Show(disconnectedText, Global.GetInstance().GetText("messagebox_title_info"));
+                System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"));
             }
 
             _parentWindow.Close();
