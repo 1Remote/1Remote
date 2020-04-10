@@ -151,7 +151,7 @@
                                     BorderThickness="0" 
                                     Command="{Binding CmdDeleteServer}">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                    <Style TargetType="Button">
                                         <Setter Property="Visibility" Value="Hidden"></Setter>
                                         <Setter Property="Template">
                                             <Setter.Value>
@@ -200,7 +200,7 @@
                                     BorderThickness="0"
                                     Click="BtnSettingMenu_OnClick">
                                     <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                        <Style TargetType="Button">
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
                                             <Setter Property="Background" Value="{Binding ElementName=CardRealBorder,Path=BorderBrush}"></Setter>
                                             <Setter Property="Template">
@@ -238,7 +238,7 @@
                                     Name="PopupCardSettingMenu"
                                     PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
                                     <Popup.Resources>
-                                        <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                        <Style TargetType="Button">
                                             <Setter Property="Opacity" Value="0.6"></Setter>
                                             <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
@@ -249,7 +249,7 @@
                                                         <Border x:Name="border" 
                                                                 Background="{TemplateBinding Background}"
                                                                 Opacity="{TemplateBinding Opacity}"
-                                                                Padding="20 0 0 0"
+                                                                Padding="20 2 10 2"
                                                                 BorderThickness="0"
                                                                 SnapsToDevicePixels="true">
                                                             <ContentPresenter x:Name="contentPresenter" Focusable="False" 

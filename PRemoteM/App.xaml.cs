@@ -65,16 +65,11 @@ namespace PersonalRemoteManager
 
 
 
-
+                    SystemConfig.Init(this.Resources);
                     
-                    Global.GetInstance().CurrentLanguage = "xxxx";
-                    MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
-
-                    Global.GetInstance().CurrentLanguage = "zh-cn";
-                    MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
-
-                    Global.GetInstance().CurrentLanguage = "en-us";
-                    MultiLangHelper.ChangeLanguage(this.Resources, Global.GetInstance().CurrentLanguageResourceDictionary);
+                    SystemConfig.GetInstance().Language.CurrentLanguageCode = "xxxx";
+                    SystemConfig.GetInstance().Language.CurrentLanguageCode = "zh-cn";
+                    SystemConfig.GetInstance().Language.CurrentLanguageCode = "en-us";
 
 
                     //var nw = new Window();

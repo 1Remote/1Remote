@@ -1,22 +1,26 @@
 ﻿{
+  "language_name": "中文(简体)",
+
+
   "messagebox_title_warning": "警告",
   "messagebox_title_error": "错误",
   "messagebox_title_info": "提示",
-  "confirm": "确定",
-  "save": "保存",
-  "cancel": "取消",
-  "open": "打开",
-  "close": "关闭",
+
+  "button_save": "保存",
+  "button_cancel": "取消",
+  "button_open": "打开",
   "tab_all": "全部",
   "info_filter": "搜索 (Ctrl+F)",
   "info_hotkey_already_registered": "快捷键已被占用",
   "info_hotkey_registered_fail": "快捷键注册失败",
 
   // sys menu
-  "sys_menu_options_title": "设置",
-  "sys_menu_about_title": "关于",
+  "system_menu_options_title": "设置",
+  "system_menu_about_title": "关于",
 
-  // sys options
+  // system options
+  "system_options_general_title": "常规",
+  "system_options_general_item_language": "语言",
 
 
 

@@ -1,22 +1,26 @@
 ﻿{
+  "language_name": "English(US)",
+
+
   "messagebox_title_warning": "Warning",
   "messagebox_title_error": "Error",
   "messagebox_title_info": "Info",
-  "confirm": "Confirm",
-  "save": "Save",
-  "cancel": "Cancel",
-  "open": "Open",
-  "close": "Close",
+
+  "button_save": "Save",
+  "button_cancel": "Cancel",
+  "button_open": "Open",
   "tab_all": "All",
   "info_filter": "Search (Ctrl+F)",
   "info_hotkey_already_registered": "Hotkey already registered",
   "info_hotkey_registered_fail": "Failed to register hotkey",
 
   // sys menu
-  "sys_menu_options_title": "Options",
-  "sys_menu_about_title": "About",
+  "system_menu_options_title": "Options",
+  "system_menu_about_title": "About",
 
-  // sys options
+  // system options
+  "system_options_general_title": "General",
+  "system_options_general_item_language": "Language",
 
 
 

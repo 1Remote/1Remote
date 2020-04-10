@@ -13,6 +13,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -35,15 +36,6 @@
                 HorizontalScrollBarVisibility="Hidden" 
                 VerticalScrollBarVisibility="Auto" 
                 Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
-                <ScrollViewer.Resources>
-                    <ResourceDictionary>
-                        <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
-                        </ResourceDictionary.MergedDictionaries>
-                    </ResourceDictionary>
-                </ScrollViewer.Resources>
-
-
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
@@ -96,9 +88,9 @@
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
-                                                        <Button Content="{DynamicResource save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                        <Button Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
                                                             <Button.Style>
-                                                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                                                <Style TargetType="Button" >
                                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                                                                     <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
@@ -120,9 +112,9 @@
                                                             </Button.Style>
                                                         </Button>
 
-                                                        <Button Content="{DynamicResource cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                        <Button Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                             <Button.Style>
-                                                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                                                <Style TargetType="Button" >
                                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                                                                     <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
@@ -181,7 +173,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <!--<Grid.Resources>
-                        <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                        <Style TargetType="Button" >
                             <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                             <Setter Property="Template">
@@ -291,7 +283,7 @@
                             Command="{Binding CmdImportFromFile}"
                             Content="{DynamicResource server_editor_type_import_from_prmj}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                            <Style TargetType="Button" >
                                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                 <Setter Property="Template">
@@ -340,9 +332,9 @@
                         <Button Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
-                                BorderThickness="0" Content="{DynamicResource save}">
+                                BorderThickness="0" Content="{DynamicResource button_save}">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                <Style TargetType="Button" >
                                     <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
                                     <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     <Setter Property="Template">
@@ -375,9 +367,9 @@
                         <Button Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
-                                BorderThickness="0" Content="{DynamicResource cancel}">
+                                BorderThickness="0" Content="{DynamicResource button_cancel}">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ControlBaseStyle}">
+                                <Style TargetType="Button" >
                                     <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                     <Setter Property="Template">

@@ -78,8 +78,8 @@ namespace PRM.ViewModel
                     _cmdDeleteServer = new RelayCommand((o) =>
                     {
                         if (MessageBox.Show(
-                                Global.GetInstance().GetText("server_card_operate_confirm_delete"),
-                                Global.GetInstance().GetText("messagebox_title_warning"),
+                                SystemConfig.GetInstance().Language.GetText("server_card_operate_confirm_delete"),
+                                SystemConfig.GetInstance().Language.GetText("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {

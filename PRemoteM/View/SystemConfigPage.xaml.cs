@@ -12,17 +12,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PRM.ViewModel;
 
 namespace PRM.View
 {
     /// <summary>
-    /// SysOptionsPage.xaml 的交互逻辑
+    /// SystemConfigPage.xaml 的交互逻辑
     /// </summary>
-    public partial class SysOptionsPage : UserControl
+    public partial class SystemConfigPage : UserControl
     {
-        public SysOptionsPage()
+        public VmMain Host;
+        public VmSystemConfigPage VmSystemConfigPage;
+        public SystemConfigPage(VmMain host)
         {
+            Host = host;
+            VmSystemConfigPage = new VmSystemConfigPage(host);
             InitializeComponent();
+            DataContext = VmSystemConfigPage;
         }
     }
 }

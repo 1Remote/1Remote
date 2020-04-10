@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
+    <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
     <Compile Include="ViewModel\VmServerEditorPage.cs" />
@@ -90,8 +91,8 @@
     <Compile Include="View\ServerListPage.xaml.cs">
       <DependentUpon>ServerListPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SysOptionsPage.xaml.cs">
-      <DependentUpon>SysOptionsPage.xaml</DependentUpon>
+    <Compile Include="View\SystemConfigPage.xaml.cs">
+      <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\ServerCard.xaml">
       <SubType>Designer</SubType>
@@ -137,7 +138,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SysOptionsPage.xaml">
+    <Page Include="View\SystemConfigPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,6 +185,9 @@
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)zh-cn.xaml (
 xcopy /y $(TargetDir)zh-cn.xaml $(SolutionDir)\PRM.Core\Languages\zh-cn.xaml*  /C /E /Q
+)
+if exist $(TargetDir)en-us.xaml (
+xcopy /y $(TargetDir)en-us.xaml $(SolutionDir)\PRM.Core\Languages\en-us.xaml*  /C /E /Q
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>
