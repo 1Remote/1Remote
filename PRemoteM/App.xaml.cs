@@ -100,6 +100,7 @@ namespace PersonalRemoteManager
             }
             catch (Exception ex)
             {
+                AppOnClose();
                 MessageBox.Show(ex.Message);
                 MessageBox.Show(ex.StackTrace);
                 Environment.Exit(-1);
@@ -156,25 +157,7 @@ namespace PersonalRemoteManager
         private static void InitQuickSearch()
         {
             SearchBoxWindow = new SearchBoxWindow();
-            SearchBoxWindow.Show();
-            var r = GlobalHotkeyHooker.GetInstance().Regist(
-                SearchBoxWindow,
-                GlobalHotkeyHooker.HotkeyModifiers.MOD_CONTROL,
-                Key.M,
-                () => { SearchBoxWindow.ShowMe(); });
-            switch (r)
-            {
-                case GlobalHotkeyHooker.RetCode.Success:
-                    break;
-                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail"));
-                    break;
-                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered"));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            SearchBoxWindow.SetHotKey();
         }
 
         private static void AppOnClose()

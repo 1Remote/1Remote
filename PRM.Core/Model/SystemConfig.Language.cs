@@ -17,7 +17,7 @@ namespace PRM.Core.Model
         {
             Debug.Assert(appResourceDictionary != null);
             AppResourceDictionary = appResourceDictionary;
-            ReadLanguageFiles();
+            InitLanguageCode2Name();
             Load();
         }
 
@@ -41,11 +41,11 @@ namespace PRM.Core.Model
                     SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
                     // reload ResourceDictionary
                     _currentLanguageResourceDictionary = null;
-                    var tmp = CurrentLanguageResourceDictionary;
-                    Debug.Assert(tmp != null);
-                    RaisePropertyChanged(nameof(CurrentLanguageResourceDictionary));
-                    AppResourceDictionary?.ChangeLanguage(tmp);// 修改语言配置
                 }
+                var tmp = CurrentLanguageResourceDictionary;
+                Debug.Assert(tmp != null);
+                RaisePropertyChanged(nameof(CurrentLanguageResourceDictionary));
+                AppResourceDictionary?.ChangeLanguage(CurrentLanguageResourceDictionary);// 修改语言配置
             }
         }
 
@@ -73,7 +73,7 @@ namespace PRM.Core.Model
             {
                 if (_currentLanguageResourceDictionary == null)
                 {
-                    _currentLanguageResourceDictionary = MultiLangHelper.LangDictFromJsonFile($@"{LanguageJsonDir}\{CurrentLanguageCode}.json");
+                    _currentLanguageResourceDictionary = GetResourceDictionaryByCode(_currentLanguageCode);
                     if (_currentLanguageResourceDictionary != null)
                     {
                         // add lost key from default language
@@ -109,7 +109,7 @@ namespace PRM.Core.Model
         private readonly Dictionary<string, string> _languageCode2ResourcePath = new Dictionary<string, string>();
 
         
-        private void ReadLanguageFiles()
+        public void InitLanguageCode2Name()
         {
             LanguageCode2Name.Clear();
             _languageCode2ResourcePath.Clear();
@@ -167,6 +167,12 @@ namespace PRM.Core.Model
             }
         }
 
+
+        /// <summary>
+        /// may return null
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         private ResourceDictionary GetResourceDictionaryByPath(string path)
         {
             if (path.ToLower().EndsWith(".xaml"))
@@ -195,6 +201,11 @@ namespace PRM.Core.Model
             return null;
         }
 
+        /// <summary>
+        /// may return null
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         private ResourceDictionary GetResourceDictionaryByCode(string code)
         {
             if (LanguageCode2Name.ContainsKey(code)

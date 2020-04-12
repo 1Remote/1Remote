@@ -1,10 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PRM.Core.Model;
 using PRM.ViewModel;
+using Shawn.Ulits;
 
 namespace PRM.View
 {
@@ -31,6 +34,7 @@ namespace PRM.View
                     if (args1.Key == Key.Escape) HideMe();
                 };
             };
+            Show();
         }
 
         private readonly object _closeLocker = new object();
@@ -51,22 +55,21 @@ namespace PRM.View
 
         public void ShowMe()
         {
-            if (_isHidden == true)
-                lock (_closeLocker)
-                {
-                    if (_isHidden == true)
+            if (SystemConfig.GetInstance().QuickConnect.Enable)
+                if (_isHidden == true)
+                    lock (_closeLocker)
                     {
-                        this.Visibility = Visibility.Visible;
-
-                        this.Activate();
-                        this.Topmost = true;  // important
-                        this.Topmost = false; // important
-                        this.Focus();         // important
-                        TbKeyWord.Focus();
-
-                        _isHidden = false;
+                        if (_isHidden == true)
+                        {
+                            this.Visibility = Visibility.Visible;
+                            this.Activate();
+                            this.Topmost = true;  // important
+                            this.Topmost = false; // important
+                            this.Focus();         // important
+                            TbKeyWord.Focus();
+                            _isHidden = false;
+                        }
                     }
-                }
         }
 
 
@@ -170,6 +173,32 @@ namespace PRM.View
 
                         break;
                     }
+            }
+        }
+
+        /// <summary>
+        /// use it after Show() has been called
+        /// </summary>
+        public void SetHotKey()
+        {
+            uint hotkeyModifiers = (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt;
+            var key = Key.N;
+
+            GlobalHotkeyHooker.GetInstance().Unregist(this);
+            var r = GlobalHotkeyHooker.GetInstance().Regist(this, ModifierKeys.Windows, key, this.ShowMe);
+            //var r = GlobalHotkeyHooker.GetInstance().Regist(this, GlobalHotkeyHooker.HotkeyModifiers.Alt | GlobalHotkeyHooker.HotkeyModifiers.Ctrl, key, this.ShowMe);
+            switch (r.Item1)
+            {
+                case GlobalHotkeyHooker.RetCode.Success:
+                    break;
+                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
+                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
+                    break;
+                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
+                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

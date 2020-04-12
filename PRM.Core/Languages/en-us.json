@@ -22,10 +22,19 @@
   // system options
   "system_options_general_title": "General",
   "system_options_general_item_language": "Language",
-  "system_options_general_item_db_path": "Database path",
+  "system_options_general_item_database": "Database",
+  "system_options_general_item_database_can_not_open": "File is not a database or file is a encrypted database!",
   "system_options_general_item_start": "Start",
   "system_options_general_item_start_minimized": "Start minimized",
+  "system_options_general_item_server_order_by": "Server order by",
+  "system_options_general_item_server_order_by_name": "Server name",
+  "system_options_general_item_server_order_by_protocol": "Protocol",
+  "system_options_general_item_server_order_by_add_time_asc": "Add time asc",
+  "system_options_general_item_server_order_by_add_time_desc": "Add time desc",
 
+  "system_options_quick_title": "Quick connect",
+  "system_options_quick_title_enable": "Enable",
+  "system_options_quick_title_hot_key": "Hot key",
 
 
 

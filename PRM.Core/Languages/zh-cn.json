@@ -22,10 +22,19 @@
   // system options
   "system_options_general_title": "常规",
   "system_options_general_item_language": "语言",
-  "system_options_general_item_db_path": "数据库路径",
+  "system_options_general_item_database": "数据库",
+  "system_options_general_item_database_can_not_open": "所选文件不是数据库或该数据库已被加密！",
   "system_options_general_item_start": "启动",
   "system_options_general_item_start_minimized": "启动时最小化到托盘",
+  "system_options_general_item_server_order_by": "服务器排序",
+  "system_options_general_item_server_order_by_name": "按名称",
+  "system_options_general_item_server_order_by_protocol": "按协议",
+  "system_options_general_item_server_order_by_add_time_asc": "按添加顺序",
+  "system_options_general_item_server_order_by_add_time_desc": "按添加顺序（倒序）",
 
+  "system_options_quick_title": "快速启动",
+  "system_options_quick_title_enable": "启用",
+  "system_options_quick_title_hot_key": "快捷键",
 
 
 

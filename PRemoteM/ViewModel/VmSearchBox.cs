@@ -12,9 +12,6 @@ namespace PRM.ViewModel
 {
     public class ProtocolServerBaseInSearchBox : NotifyPropertyChangedBase
     {
-        private ProtocolServerBase _base;
-
-
         private ProtocolServerBase _server = null;
         public ProtocolServerBase Server
         {
@@ -62,6 +59,9 @@ namespace PRM.ViewModel
         }
 
     }
+
+
+
 
     public class VmSearchBox : NotifyPropertyChangedBase
     {
@@ -145,7 +145,7 @@ namespace PRM.ViewModel
                     {
                         if (f1)
                         {
-                            var sp = new StackPanel() {Orientation = System.Windows.Controls.Orientation.Horizontal};
+                            var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
                             var dispName = item.DispName;
                             for (int i = 0; i < m1.Count; i++)
                             {
@@ -167,7 +167,7 @@ namespace PRM.ViewModel
 
                         if (f2)
                         {
-                            var sp = new StackPanel() {Orientation = System.Windows.Controls.Orientation.Horizontal};
+                            var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
                             var subtitle = item.SubTitle;
                             for (int i = 0; i < m2.Count; i++)
                             {

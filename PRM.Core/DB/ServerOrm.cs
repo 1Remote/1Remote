@@ -59,7 +59,7 @@ namespace PRM.Core.DB
             return $@"
 CREATE TABLE IF NOT EXISTS {TableName}(
     Id                       INTEGER     PRIMARY KEY AUTOINCREMENT,
-    ServerType               CHAR(50)    NOT NULL,
+    Protocol               CHAR(50)    NOT NULL,
     ClassVersion             CHAR(50)    NOT NULL,
     DispName                 CHAR(250)   NOT NULL,
     GroupName                CHAR(250)   NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS {TableName}(
                         command.CommandText = $@"
 INSERT INTO 
 {TableName}(
-    ServerType      ,
+    Protocol      ,
     ClassVersion    ,
     DispName        ,
     GroupName       ,
@@ -90,7 +90,7 @@ INSERT INTO
     JsonConfigString
 ) 
 VALUES(
-    @ServerType,
+    @Protocol,
     @ClassVersion,
     @DispName,
     @GroupName,
@@ -99,7 +99,7 @@ VALUES(
     @JsonConfigString
 )
             ";
-                        command.Parameters.AddWithValue("@ServerType", this.ServerType);
+                        command.Parameters.AddWithValue("@Protocol", this.ServerType);
                         command.Parameters.AddWithValue("@ClassVersion", this.ClassVersion);
                         command.Parameters.AddWithValue("@DispName", this.DispName);
                         command.Parameters.AddWithValue("@GroupName", this.GroupName);
@@ -139,7 +139,7 @@ VALUES(
                     {
                         command.CommandText = $@"
 UPDATE {TableName} SET
-    ServerType        = @ServerType      ,
+    Protocol        = @Protocol      ,
     ClassVersion      = @ClassVersion    ,
     DispName          = @DispName        ,
     GroupName          = @GroupName        ,
@@ -149,7 +149,7 @@ UPDATE {TableName} SET
 WHERE Id = @Id
             ";
                         command.Parameters.AddWithValue("@Id", id);
-                        command.Parameters.AddWithValue("@ServerType", this.ServerType);
+                        command.Parameters.AddWithValue("@Protocol", this.ServerType);
                         command.Parameters.AddWithValue("@ClassVersion", this.ClassVersion);
                         command.Parameters.AddWithValue("@DispName", this.DispName);
                         command.Parameters.AddWithValue("@GroupName", this.GroupName);
@@ -206,17 +206,11 @@ WHERE Id = @Id
                 {
                     command.CommandText = $@"SELECT * FROM Server";
                     var reader = command.ExecuteReader();
-
                     while (reader.Read())
                     {
                         var obj = new ServerOrm();
-                        //var r4 = reader[4];
-                        ////var tmp = reader.GetString(4);
-                        //object tmp = reader.GetStream(4);
                         for (int i = 0; i < ps.Length; i++)
                         {
-                            var field = reader[ps[i].Name];
-                            //var value = ps[i].PropertyType
                             try
                             {
                                 object v = Convert.ChangeType(reader[i], ps[i].PropertyType);
