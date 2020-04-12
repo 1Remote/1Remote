@@ -28,7 +28,7 @@
             <Grid Background="White">
                 <Border BorderBrush="Black" BorderThickness="1">
                 </Border>
-                <colorPickerWpf:ColorPickerControl x:Name="ColorPicker"  DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" MinHeight="372"/>
+                <colorPickerWpf:ColorPickerControl x:Name="ColorPicker"  DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch"/>
             </Grid>
         </Popup>
     </Grid>
