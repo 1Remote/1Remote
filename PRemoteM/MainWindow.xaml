@@ -40,7 +40,6 @@
         </ResourceDictionary>
     </Window.Resources>
     <Window.CommandBindings>
-        <!--  TODO 添加 CanExecute 当不在主页时禁止命令 -->
         <CommandBinding Command="{StaticResource CommandFocusFilter}" Executed="CommandFocusFilter_OnExecuted"></CommandBinding>
     </Window.CommandBindings>
     <Window.InputBindings>
