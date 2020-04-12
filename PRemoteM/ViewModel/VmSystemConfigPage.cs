@@ -17,7 +17,10 @@ namespace PRM.ViewModel
         {
             Host = vmMain;
             SelectedLanguageCode = SystemConfig.GetInstance().Language.CurrentLanguageCode;
+            SystemConfig.GetInstance().Language.InitLanguageCode2Name();
+            // create new SystemConfigGeneral object
             General = new SystemConfigGeneral(SystemConfig.GetInstance().Ini);
+            QuickConnect = new SystemConfigQuickConnect(SystemConfig.GetInstance().Ini);
         }
 
 
@@ -27,6 +30,8 @@ namespace PRM.ViewModel
             get => _selectedLanguageCode;
             set => SetAndNotifyIfChanged(nameof(SelectedLanguageCode), ref _selectedLanguageCode, value);
         }
+
+
         public Dictionary<string, string> LanguageCode2Name => SystemConfig.GetInstance().Language.LanguageCode2Name;
 
 
@@ -39,6 +44,14 @@ namespace PRM.ViewModel
         }
 
 
+
+
+        private SystemConfigQuickConnect _quickConnect;
+        public SystemConfigQuickConnect QuickConnect
+        {
+            get => _quickConnect;
+            set => SetAndNotifyIfChanged(nameof(QuickConnect), ref _quickConnect, value);
+        }
 
 
         #region CMD

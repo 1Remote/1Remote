@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using PRM.Core.Model;
 
 namespace PRM.Core.DB
 {
@@ -39,25 +40,59 @@ namespace PRM.Core.DB
         }
 
         private SQLiteConnection _connection = null;
-        private static string databasePath = @"test.db";
         //private string password = @"123456";
         private string password = @"";
 
 
         private PRM_DAO()
         {
-            InitAndOpenDb();
         }
 
-        public static string DbPath => databasePath;
+        private static string DbPath => SystemConfig.GetInstance().General.DbPath;
+        
 
-        public bool InitAndOpenDb()
+        public static bool TestDb(string path, string psw)
+        {
+            SQLiteConnection connection = null;
+            try
+            {
+                connection = new SQLiteConnection($"Data Source={path};Password={psw};Version=3;New=True;Compress=True");
+                connection.Open();
+
+                // Create Table
+                using (var tr = connection.BeginTransaction())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = (new ServerOrm()).SQLCreateTable();
+                        command.ExecuteNonQuery();
+                    }
+
+                    tr.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+            finally
+            {
+                connection?.Dispose();
+            }
+        }
+
+
+        private void Open()
         {
             try
             {
+                _connection?.Dispose();
+                _connection = new SQLiteConnection($"Data Source={DbPath};Password={password};Version=3;New=True;Compress=True");
                 // Create Db
-                _connection = new SQLiteConnection($"Data Source={databasePath};Password={password};Version=3;New=True;Compress=True");
-                Open();
+                _connection?.Open();
 
                 // Create Table
                 using (var tr = _connection.BeginTransaction())
@@ -74,20 +109,6 @@ namespace PRM.Core.DB
             {
                 Console.WriteLine(e);
                 throw;
-            }
-            finally
-            {
-                Close();
-            }
-
-            return true;
-        }
-
-        private void Open()
-        {
-            if (_connection?.State == System.Data.ConnectionState.Closed)
-            {
-                _connection?.Open();
             }
         }
         private void Close()

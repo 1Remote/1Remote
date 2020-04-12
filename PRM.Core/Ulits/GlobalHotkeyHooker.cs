@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Shawn.Ulits
 {
@@ -15,17 +16,17 @@ namespace Shawn.Ulits
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                var r = GlobalHotkeyHooker.GetInstance().Regist(this, GlobalHotkeyHooker.HotkeyModifiers.MOD_CONTROL, Key.M, 
+                var r = GlobalHotkeyHooker.GetInstance().Regist(this,(uint)GlobalHotkeyHooker.HotkeyModifiers.Ctrl | (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt, Key.M, 
                     () => { MessageBox.Show("hook"); });
-                switch (r)
+                switch (r.Item1)
                 {
                     case GlobalHotkeyHooker.RetCode.Success:
                         break;
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                        MessageBox.Show("快捷键注册失败"); 
+                        MessageBox.Show("快捷键注册失败" + ": " + r.Item2);
                         break;
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                        MessageBox.Show("快捷键已被占用"); 
+                        MessageBox.Show("快捷键已被占用" + ": " + r.Item2);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -47,7 +48,7 @@ namespace Shawn.Ulits
         const int WM_HOTKEY = 0x312;
 
         [DllImport("user32.dll")]
-        private static extern bool RegisterHotKey(IntPtr hWnd, int id, HotkeyModifiers hotkeyModifiers, uint vk);
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint hotkeyModifiers, uint vk);
 
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
@@ -84,7 +85,7 @@ namespace Shawn.Ulits
         }
 
         public delegate void HotKeyCallBackHandler();
-        private int _hotKeyId = 9000;
+        private int _hotKeyId = 1000;
         private object _locker = new object();
         private HashSet<IntPtr> _hookedhWnd = new HashSet<IntPtr>();
         private Dictionary<int, IntPtr> _dictHotKeyId2hWnd = new Dictionary<int, IntPtr>();
@@ -98,10 +99,10 @@ namespace Shawn.Ulits
         /// </summary>
         public enum HotkeyModifiers
         {
-            MOD_ALT = 0x0001,
-            MOD_CONTROL = 0x0002,
-            MOD_SHIFT = 0x0004,
-            MOD_WIN = 0x0008
+            Alt = 0x0001,
+            Ctrl = 0x0002,
+            Shift = 0x0004,
+            Win = 0x0008
         }
 
         public enum RetCode
@@ -111,40 +112,67 @@ namespace Shawn.Ulits
             ERROR_HOTKEY_ALREADY_REGISTERED = 1409,
         }
 
+
         /// <summary>
-        /// Regist a hotkey. If the function fails, the return value is *false*
+        /// Regist a hotkey, it will return: status code + hot key in string + hot key id
+        /// </summary>
+        public Tuple<RetCode, string, int> Regist(Window window, ModifierKeys hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
+        {
+            return Regist(window, (uint)hotkeyModifiers, key, callBack);
+        }
+
+        /// <summary>
+        /// Regist a hotkey, it will return: status code + hot key in string + hot key id
+        /// </summary>
+        public Tuple<RetCode, string, int> Regist(Window window, HotkeyModifiers hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
+        {
+            return Regist(window, (uint) hotkeyModifiers, key, callBack);
+        }
+
+
+        /// <summary>
+        /// Regist a hotkey, it will return: status code + hot key in string + hot key id
         /// </summary>
         /// <param name="window">wpf window</param>
         /// <param name="hotkeyModifiers"></param>
         /// <param name="key"></param>
         /// <param name="callBack"></param>
-        public RetCode Regist(Window window, HotkeyModifiers hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
+        public Tuple<RetCode, string, int> Regist(Window window, uint hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
         {
             lock (_locker)
             {
-                var win = new System.Windows.Interop.WindowInteropHelper(window);
-                var hWnd = win.Handle;
-                if (!_hookedhWnd.Contains(hWnd) && hWnd != IntPtr.Zero)
+                var hotKeyString = GetHotKeyString(hotkeyModifiers, key);
+                var hWnd = IntPtr.Zero;
+                if (window != null)
                 {
-                    var source = System.Windows.Interop.HwndSource.FromHwnd(hWnd);
-                    source.AddHook(HookHandel);
+                    var win = new System.Windows.Interop.WindowInteropHelper(window);
+                    hWnd = win.Handle;
+                    if (!_hookedhWnd.Contains(hWnd) && hWnd != IntPtr.Zero)
+                    {
+                        var source = System.Windows.Interop.HwndSource.FromHwnd(hWnd);
+                        source.AddHook(HookHandel);
+                    }
                 }
 
-                ++_hotKeyId;
+                while (_dictHotKeyId2hWnd.ContainsKey(_hotKeyId))
+                {
+                    ++_hotKeyId;
+                }
 
                 // ref https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerhotkey
                 var vk = System.Windows.Input.KeyInterop.VirtualKeyFromKey(key);
                 if (!RegisterHotKey(hWnd, _hotKeyId, hotkeyModifiers, (uint)vk))    // If the function succeeds, the return value is nonzero.
                 {
                     var errorCode = GetLastError();
-                    return errorCode == (int)RetCode.ERROR_HOTKEY_ALREADY_REGISTERED ? RetCode.ERROR_HOTKEY_ALREADY_REGISTERED : RetCode.ERROR_HOTKEY_NOT_REGISTERED;
+                    var code = errorCode == (int)RetCode.ERROR_HOTKEY_ALREADY_REGISTERED ? RetCode.ERROR_HOTKEY_ALREADY_REGISTERED : RetCode.ERROR_HOTKEY_NOT_REGISTERED;
+                    return new Tuple<RetCode, string, int>(code, hotKeyString, 0);
                 }
 
                 _hookedhWnd.Add(hWnd);
                 _dictHotKeyId2hWnd[_hotKeyId] = hWnd;
                 _dictHotKeyId2CallBack[_hotKeyId] = callBack;
 
-                return RetCode.Success;
+                return new Tuple<RetCode, string, int>(RetCode.Success, hotKeyString, _hotKeyId);
             }
         }
 
@@ -204,6 +232,7 @@ namespace Shawn.Ulits
                                 _dictHotKeyId2hWnd.Remove(hotKeyId);
                             if (_dictHotKeyId2CallBack.ContainsKey(hotKeyId))
                                 _dictHotKeyId2CallBack.Remove(hotKeyId);
+                            _hotKeyId = 1000;
                         }
                     }
                 }
@@ -223,6 +252,39 @@ namespace Shawn.Ulits
                     Unregist(id);
                 }
             }
+        }
+
+        public static string GetHotKeyString(uint hotkeyModifiers, System.Windows.Input.Key key)
+        {
+            var hotKeyString = "";
+            if ((hotkeyModifiers & (uint)GlobalHotkeyHooker.HotkeyModifiers.Shift) > 0)
+                hotKeyString += GlobalHotkeyHooker.HotkeyModifiers.Shift.ToString() + " + ";
+            if ((hotkeyModifiers & (uint)GlobalHotkeyHooker.HotkeyModifiers.Ctrl) > 0)
+                hotKeyString += GlobalHotkeyHooker.HotkeyModifiers.Ctrl.ToString() + " + ";
+            if ((hotkeyModifiers & (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt) > 0)
+                hotKeyString += GlobalHotkeyHooker.HotkeyModifiers.Alt.ToString() + " + ";
+            if ((hotkeyModifiers & (uint)GlobalHotkeyHooker.HotkeyModifiers.Win) > 0)
+                hotKeyString += GlobalHotkeyHooker.HotkeyModifiers.Win.ToString() + " + ";
+
+
+            if (
+                key == Key.LeftCtrl ||
+                key == Key.RightCtrl ||
+                key == Key.LeftAlt ||
+                key == Key.RightAlt ||
+                key == Key.LeftShift ||
+                key == Key.RightShift ||
+                key == Key.LWin ||
+                key == Key.RWin ||
+                key == Key.Clear ||
+                key == Key.OemClear ||
+                key == Key.Escape ||
+                key == Key.Apps)
+            {
+            }
+            else
+                hotKeyString += key.ToString();
+            return hotKeyString;
         }
     }
 }

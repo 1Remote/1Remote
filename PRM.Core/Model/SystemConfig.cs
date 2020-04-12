@@ -52,6 +52,7 @@ namespace PRM.Core.Model
             Ini = new Ini(AppName + ".ini");
             Language = new SystemConfigLanguage(appResourceDictionary, Ini);
             General = new SystemConfigGeneral(Ini);
+            QuickConnect = new SystemConfigQuickConnect(Ini);
         }
 
 
@@ -72,6 +73,16 @@ namespace PRM.Core.Model
         {
             get => _general;
             set => SetAndNotifyIfChanged(nameof(General), ref _general, value);
+        }
+
+
+
+
+        private SystemConfigQuickConnect _quickConnect;
+        public SystemConfigQuickConnect QuickConnect
+        {
+            get => _quickConnect;
+            set => SetAndNotifyIfChanged(nameof(QuickConnect), ref _quickConnect, value);
         }
     }
 

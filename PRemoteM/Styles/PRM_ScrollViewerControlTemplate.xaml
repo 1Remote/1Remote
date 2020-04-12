@@ -63,10 +63,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}"/>
+                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor1LighterBrush}"/>
                         </Trigger>
                         <Trigger Property="IsDragging" Value="true">
-                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}"/>
+                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor1DarkerBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

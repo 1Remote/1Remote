@@ -20,6 +20,12 @@ namespace PRM.ViewModel
             {
                 RebuildVmServerCardList();
             };
+
+            SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
+                    RebuildVmServerCardList();
+            };
         }
 
 
@@ -118,7 +124,23 @@ namespace PRM.ViewModel
             }
 
             // TODO flag to order by LassConnTime
-            _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.LassConnTime));
+            switch (SystemConfig.GetInstance().General.ServerOrderBy)
+            {
+                case EnumServerOrderBy.Name:
+                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderBy(s => s.Server.DispName).ThenBy(s => s.Server.Id));
+                    break;
+                case EnumServerOrderBy.AddTimeAsc:
+                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderBy(s => s.Server.Id));
+                    break;
+                case EnumServerOrderBy.AddTimeDesc:
+                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.Id));
+                    break;
+                case EnumServerOrderBy.Protocol:
+                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.ServerType).ThenBy(s => s.Server.DispName));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             // add a 'ProtocolServerNone' so that 'add server' button will be shown
             var addServerCard = new VmServerCard(new ProtocolServerNone(), this);

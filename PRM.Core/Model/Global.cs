@@ -21,10 +21,7 @@ namespace PRM.Core.Model
         #region singleton
         private static Global uniqueInstance;
         private static readonly object InstanceLock = new object();
-        private Global()
-        {
-            ReadServerDataFromDb();
-        }
+
         public static Global GetInstance()
         {
             lock (InstanceLock)
@@ -38,7 +35,15 @@ namespace PRM.Core.Model
         }
         #endregion
 
-
+        private Global()
+        {
+            ReadServerDataFromDb();
+            SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SystemConfig.General.DbPath))
+                    ReadServerDataFromDb();
+            };
+        }
 
         #region Server Data
 
@@ -49,8 +54,8 @@ namespace PRM.Core.Model
 
 #if DEBUG
             // TODO 测试用删除数据库
-            if (File.Exists(PRM_DAO.DbPath))
-                File.Delete(PRM_DAO.DbPath);
+            if (File.Exists(SystemConfig.GetInstance().General.DbPath))
+                File.Delete(SystemConfig.GetInstance().General.DbPath);
             if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
             {
                 var di = new DirectoryInfo(@"D:\rdpjson");
