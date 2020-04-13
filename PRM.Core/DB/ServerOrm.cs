@@ -48,7 +48,6 @@ namespace PRM.Core.DB
             ret.DispName = rdp.DispName;
             ret.GroupName = rdp.GroupName;
             ret.Address = rdp.Address;
-            ret.SetLastConnTime(rdp.LassConnTime);
             ret.JsonConfigString = rdp.ToJsonString();
             return ret;
         }

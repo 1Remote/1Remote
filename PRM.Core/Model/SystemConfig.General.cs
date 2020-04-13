@@ -22,7 +22,13 @@ namespace PRM.Core.Model
         {
             Load();
         }
-
+        
+        private bool _AppStartAutomatically = false;
+        public bool AppStartAutomatically
+        {
+            get => _AppStartAutomatically;
+            set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _AppStartAutomatically, value);
+        }
 
         private bool _appStartMinimized = false;
         public bool AppStartMinimized
@@ -53,6 +59,7 @@ namespace PRM.Core.Model
         private const string _sectionName = "General";
         public override void Save()
         {
+            _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(DbPath).ToLower(), _sectionName, DbPath);
@@ -61,6 +68,7 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            AppStartAutomatically = _ini.GetValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically);
             AppStartMinimized = _ini.GetValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString()), out var so))
             {

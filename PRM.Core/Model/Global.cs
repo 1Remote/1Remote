@@ -51,34 +51,33 @@ namespace PRM.Core.Model
 
         private void ReadServerDataFromDb()
         {
-
-#if DEBUG
-            // TODO 测试用删除数据库
-            if (File.Exists(SystemConfig.GetInstance().General.DbPath))
-                File.Delete(SystemConfig.GetInstance().General.DbPath);
-            if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
-            {
-                var di = new DirectoryInfo(@"D:\rdpjson");
-                if (di.Exists)
-                {
-                    // read from jsonfile 
-                    var fis = di.GetFiles("*.prmj", SearchOption.AllDirectories);
-                    var rdp = new ProtocolServerRDP();
-                    foreach (var fi in fis)
-                    {
-                        var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
-                        if (newRdp != null)
-                        {
-                            PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
-                        }
-                    }
-                }
-                else
-                {
-                    di.Create();
-                }
-            }
-#endif
+//#if DEBUG
+//            // TODO 测试用删除数据库
+//            if (File.Exists(SystemConfig.GetInstance().General.DbPath))
+//                File.Delete(SystemConfig.GetInstance().General.DbPath);
+//            if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
+//            {
+//                var di = new DirectoryInfo(@"D:\rdpjson");
+//                if (di.Exists)
+//                {
+//                    // read from jsonfile 
+//                    var fis = di.GetFiles("*.prmj", SearchOption.AllDirectories);
+//                    var rdp = new ProtocolServerRDP();
+//                    foreach (var fi in fis)
+//                    {
+//                        var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
+//                        if (newRdp != null)
+//                        {
+//                            PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
+//                        }
+//                    }
+//                }
+//                else
+//                {
+//                    di.Create();
+//                }
+//            }
+//#endif
 
             ServerList.Clear();
             var serverOrmList = PRM_DAO.GetInstance().ListAllServer();

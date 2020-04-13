@@ -4,6 +4,7 @@ using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
+using PRM.Core.Ulits;
 using PRM.View;
 using Shawn.Ulits.PageHost;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
@@ -77,6 +78,19 @@ namespace PRM.ViewModel
                         }
                         SystemConfig.GetInstance().General.Update(General);
                         SystemConfig.GetInstance().General.Save();
+                        
+                        SystemConfig.GetInstance().QuickConnect.Update(QuickConnect);
+                        SystemConfig.GetInstance().QuickConnect.Save();
+
+
+                        if (SystemConfig.GetInstance().General.AppStartAutomatically == true)
+                        {
+                            SetSelfStartingHelper.SetSelfStart();
+                        }
+                        else
+                        {
+                            SetSelfStartingHelper.UnsetSelfStart();
+                        }
                     });
                 }
                 return _cmdSaveAndGoBack;

@@ -17,7 +17,6 @@ namespace PRM.Core.Model
         private static readonly object InstanceLock = new object();
         public static SystemConfig GetInstance()
         {
-
             if (uniqueInstance == null)
             {
                 throw new NullReferenceException("SystemConfig has not been inited!");
@@ -45,7 +44,7 @@ namespace PRM.Core.Model
 
 
 
-        public readonly string AppName = "PRemoteM";
+        public const string AppName = "PRemoteM";
         public readonly Ini Ini;
         private SystemConfig(ResourceDictionary appResourceDictionary)
         {

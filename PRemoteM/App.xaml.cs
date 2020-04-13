@@ -11,16 +11,10 @@ using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using PRM;
-using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.RDP;
-using Shawn.Ulits.RDP;
+using PRM.Core.Ulits;
 using PRM.View;
-using Shawn.Ulits;
 
 namespace PersonalRemoteManager
 {
@@ -52,6 +46,22 @@ namespace PersonalRemoteManager
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
+            var startupMode = PRM.Core.Ulits.StartupMode.Normal;
+            if (e.Args.Length > 0)
+            {
+                System.Enum.TryParse(e.Args[0], out startupMode);
+            }
+            if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
+            {
+                SetSelfStartingHelper.SetSelfStart();
+                Environment.Exit(0);
+            }
+            if (startupMode == PRM.Core.Ulits.StartupMode.UnsetSelfStart)
+            {
+                SetSelfStartingHelper.UnsetSelfStart();
+                Environment.Exit(0);
+            }
+
             try
             {
                 _singleAppMutex = new Mutex(true, "PersonalRemoteManager", out var isFirst);
@@ -72,10 +82,8 @@ namespace PersonalRemoteManager
 
                 // app start
                 {
-
                     // config init
                     SystemConfig.Init(this.Resources);
-
 
                     // main window init
                     {

@@ -35,6 +35,15 @@ namespace PRM.View
                 };
             };
             Show();
+
+            SystemConfig.GetInstance().QuickConnect.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(SystemConfigQuickConnect.HotKeyKey) ||
+                    args.PropertyName == nameof(SystemConfigQuickConnect.HotKeyModifiers))
+                {
+                    SetHotKey();
+                }
+            };
         }
 
         private readonly object _closeLocker = new object();
@@ -106,11 +115,9 @@ namespace PRM.View
                         {
                             var i = _vmSearchBox.SelectedServerTextIndex;
                             var j = _vmSearchBox.DispServerList.Count;
-                            var s = _vmSearchBox.DispServerList[i];
                             if (i < j && i >= 0)
                             {
-                                // TODO open conn
-                                MessageBox.Show(s.Server.DispName);
+                                var s = _vmSearchBox.DispServerList[i];
                                 s.Server.Conn();
                             }
                         }
@@ -181,12 +188,8 @@ namespace PRM.View
         /// </summary>
         public void SetHotKey()
         {
-            uint hotkeyModifiers = (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt;
-            var key = Key.N;
-
             GlobalHotkeyHooker.GetInstance().Unregist(this);
-            var r = GlobalHotkeyHooker.GetInstance().Regist(this, ModifierKeys.Windows, key, this.ShowMe);
-            //var r = GlobalHotkeyHooker.GetInstance().Regist(this, GlobalHotkeyHooker.HotkeyModifiers.Alt | GlobalHotkeyHooker.HotkeyModifiers.Ctrl, key, this.ShowMe);
+            var r = GlobalHotkeyHooker.GetInstance().Regist(this, SystemConfig.GetInstance().QuickConnect.HotKeyModifiers, SystemConfig.GetInstance().QuickConnect.HotKeyKey, this.ShowMe);
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
