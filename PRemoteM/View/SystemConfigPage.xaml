@@ -15,7 +15,7 @@
                 <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            
+
             <SolidColorBrush x:Key="TabItem.Selected.Background" Color="{DynamicResource MainColor1Lighter}"/>
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Padding" Value="2"/>
@@ -127,10 +127,20 @@
                     </Grid>
 
 
-                    <Grid Style="{StaticResource ServerEditorRow}">
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_start}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                <CheckBox IsChecked="{Binding General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                 <CheckBox IsChecked="{Binding General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_minimized}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
@@ -185,16 +195,32 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_quick_title_hot_key}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <TextBox 
-                                    Name="TextBoxHotKey"
-                                    VerticalContentAlignment="Center" IsEnabled="{Binding QuickConnect.Enable, Mode=OneWay}" 
-                                         IsReadOnly="True"
-                                         IsReadOnlyCaretVisible="False"
-                                         IsUndoEnabled="False"
-                                         PreviewKeyDown="TextBox_HotKey_KeyDown"
-                                         KeyUp="TextBox_HotKey_KeyUp"
-                                         ></TextBox>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <StackPanel.Resources>
+                                        <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
+                                    </StackPanel.Resources>
+                                    <ComboBox Width="100" SelectedValuePath="Tag"  SelectedValue="{Binding QuickConnect.HotKeyModifiers}">
+                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Control}">Ctrl</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Alt}">Alt</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Windows}">Win</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Shift}">Shift</ComboBoxItem>
+                                    </ComboBox>
+                                    <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
+                                    <TextBox Width="100" 
+                                             IsReadOnly="True"
+                                             IsReadOnlyCaretVisible="False"
+                                             IsUndoEnabled="False"
+                                             PreviewKeyDown="TextBoxKey_OnPreviewKeyDown" 
+                                             Text="{Binding QuickConnect.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
+                                </StackPanel>
                             </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="60 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

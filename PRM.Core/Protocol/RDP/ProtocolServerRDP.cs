@@ -3,6 +3,7 @@ using System.Security;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using Shawn.Ulits.RDP;
 
 namespace PRM.Core.Protocol.RDP
@@ -243,23 +244,12 @@ namespace PRM.Core.Protocol.RDP
                 return;
             }
 
-            LassConnTime = DateTime.Now;
+            Global.GetInstance().ServerListUpdate(this);
 
             // TODO add conn win to tab, add to global remote host
             var nw = new Window();
             nw.Content = new AxMsRdpClient09Host(this, nw);
             nw.ShowDialog();
-
-
-
-            //var jsonstr = ToJsonString();
-            //var jsonstrbase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonstr));
-            //System.Diagnostics.Process exep = new System.Diagnostics.Process();
-            //exep.StartInfo.FileName = "RdpRunner.exe";
-            //exep.StartInfo.Arguments = jsonstrbase64;
-            //exep.StartInfo.CreateNoWindow = true;
-            //exep.StartInfo.UseShellExecute = false;
-            //exep.Start();
         }
 
 

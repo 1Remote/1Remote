@@ -61,6 +61,7 @@ namespace PRM.View
             if (_vmServerEditorPage?.Server != null && _vmServerEditorPage.Server.GetType() != typeof(ProtocolServerNone))
             {
                 _vmServerEditorPage.Server.IconImg = LogoSelector.Logo;
+                File.WriteAllText("img.txt",_vmServerEditorPage.Server.IconBase64);
             }
             PopupLogoSelector.IsOpen = false;
         }

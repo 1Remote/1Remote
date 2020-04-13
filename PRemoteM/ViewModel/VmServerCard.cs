@@ -38,7 +38,6 @@ namespace PRM.ViewModel
                 if (_cmdConnServer == null)
                     _cmdConnServer = new RelayCommand((o) =>
                     {
-
                         this.Server.Conn();
                     });
                 return _cmdConnServer;

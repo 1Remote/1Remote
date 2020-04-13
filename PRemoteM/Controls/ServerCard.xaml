@@ -65,7 +65,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="50" CenterY="50"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="72" CenterY="72"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>
@@ -74,7 +74,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.3" ScaleY="1.3"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="72" CenterY="72"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>

@@ -26,32 +26,40 @@ namespace PRM.Core.Model
         }
 
 
-        private uint _modifiers = (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt;
-        public uint Modifiers
+        private ModifierKeys _hotKeyModifiers = ModifierKeys.Alt;
+        public ModifierKeys HotKeyModifiers
         {
-            get => _modifiers;
-            set => SetAndNotifyIfChanged(nameof(Modifiers), ref _modifiers, value);
+            get => _hotKeyModifiers;
+            set => SetAndNotifyIfChanged(nameof(HotKeyModifiers), ref _hotKeyModifiers, value);
         }
 
-        private Key _hotKey = Key.M;
-        public Key HotKey
+        private Key _hotKeyKey = Key.M;
+        public Key HotKeyKey
         {
-            get => _hotKey;
-            set => SetAndNotifyIfChanged(nameof(HotKey), ref _hotKey, value);
+            get => _hotKeyKey;
+            set => SetAndNotifyIfChanged(nameof(HotKeyKey), ref _hotKeyKey, value);
         }
 
 
         #region Interface
-        private const string _sectionName = "General";
+        private const string _sectionName = "QuickConnect";
         public override void Save()
         {
             _ini.WriteValue(nameof(Enable).ToLower(), _sectionName, Enable.ToString());
+            _ini.WriteValue(nameof(HotKeyModifiers).ToLower(), _sectionName, ((uint)HotKeyModifiers).ToString());
+            _ini.WriteValue(nameof(HotKeyKey).ToLower(), _sectionName, ((uint)HotKeyKey).ToString());
             _ini.Save();
         }
 
         public override void Load()
         {
             Enable = _ini.GetValue(nameof(Enable).ToLower(), _sectionName, Enable);
+            uint modifiers = 0;
+            uint key = 0;
+            modifiers = _ini.GetValue(nameof(HotKeyModifiers).ToLower(), _sectionName, modifiers);
+            key = _ini.GetValue(nameof(HotKeyKey).ToLower(), _sectionName, key);
+            HotKeyModifiers = (ModifierKeys)modifiers;
+            HotKeyKey = (Key)key;
         }
 
         public override void Update(SystemConfigBase newConfig)
