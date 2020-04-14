@@ -135,6 +135,7 @@ namespace PRM.Core.Resources.Controls
 
         public BitmapSource Logo
         {
+            set => SetImg(value);
             get
             {
                 if (Img.Source == null)

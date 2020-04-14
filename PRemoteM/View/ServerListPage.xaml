@@ -103,7 +103,7 @@
                                 Click="BtnAllServer_Click"
                                 BorderThickness="0" Content="{DynamicResource tab_all}">
                         <Button.Style>
-                            <Style TargetType="Button"> <!-->-->
+                            <Style TargetType="Button">
                                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                 <Setter Property="Template">

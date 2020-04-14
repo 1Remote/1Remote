@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Model\Global.cs" />
     <Compile Include="Model\SystemConfig.QuickConnect.cs" />
+    <Compile Include="Model\SystemConfig.Locality.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.cs" />

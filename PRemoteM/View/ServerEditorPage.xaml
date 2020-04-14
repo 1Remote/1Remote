@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
+             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -32,6 +33,7 @@
 
 
             <ScrollViewer 
+                x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
                 HorizontalScrollBarVisibility="Hidden" 
                 VerticalScrollBarVisibility="Auto" 
@@ -77,66 +79,103 @@
 
                                         <Popup Name="PopupLogoSelector" StaysOpen="True" 
                                                AllowsTransparency="False"
-                                               Width="144"
+                                               Width="270"
                                                PlacementTarget="{Binding ElementName=ImgLogo}"
                                                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                                             <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
-                                                <StackPanel>
-                                                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Button Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
-                                                            <Button.Style>
-                                                                <Style TargetType="Button" >
-                                                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                                                    <Setter Property="Template">
-                                                                        <Setter.Value>
-                                                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
-                                                                                </Border>
-                                                                            </ControlTemplate>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                    <Style.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
-                                                                        </Trigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Button.Style>
-                                                        </Button>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel PreviewMouseWheel="UIElement_DisabledOnMouseWheel" Background="{DynamicResource MainBgColorBrush}">
+                                                        <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                                <Button.Style>
+                                                                    <Style TargetType="Button" >
+                                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                                                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                        <Setter Property="Template">
+                                                                            <Setter.Value>
+                                                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                                                    <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
+                                                                                    </Border>
+                                                                                </ControlTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
 
-                                                        <Button Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
-                                                            <Button.Style>
-                                                                <Style TargetType="Button" >
-                                                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                                                    <Setter Property="Template">
-                                                                        <Setter.Value>
-                                                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
-                                                                                </Border>
-                                                                            </ControlTemplate>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                    <Style.Triggers>
-                                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
-                                                                        </Trigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Button.Style>
-                                                        </Button>
+                                                            <Button Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                                <Button.Style>
+                                                                    <Style TargetType="Button" >
+                                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                                                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                        <Setter Property="Template">
+                                                                            <Setter.Value>
+                                                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                                                    <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
+                                                                                    </Border>
+                                                                                </ControlTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                    <Grid Grid.Column="1">
+                                                        <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
+                                                        <ScrollViewer Height="190"
+                                                                      Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                                                            <StackPanel >
+                                                                <ListView BorderThickness="0"
+                                                                          SelectionChanged="Selector_OnSelectionChanged"
+                                                                          ItemsSource="{Binding Source={x:Static protocol:ProtocolServerIcons.Instance}, Path=Icons}" 
+                                                                          Background="Transparent"
+                                                                          ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                                                                    <ListView.Resources>
+                                                                        <Style TargetType="ScrollViewer">
+                                                                            <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
+                                                                        </Style>
+                                                                    </ListView.Resources>
+                                                                    <ListView.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
+                                                                        </ItemsPanelTemplate>
+                                                                    </ListView.ItemsPanel>
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Grid Margin="5">
+                                                                                <Image Source="{Binding}" Height="30"></Image>
+                                                                            </Grid>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ListView>
+                                                            </StackPanel>
+                                                        </ScrollViewer>
                                                     </Grid>
-                                                </StackPanel>
+                                                </Grid>
                                             </Border>
                                         </Popup>
                                     </Grid>
@@ -329,7 +368,8 @@
                 <Grid Height="{StaticResource BottomHeight}">
 
                     <Grid Width="300">
-                        <Button Padding="0 1 0 0" Width="80" Height="20"
+                        <Button Name="ButtonSave"
+                                Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
                                 BorderThickness="0" Content="{DynamicResource button_save}">

@@ -9,19 +9,22 @@ using PRM.View;
 using PRM.ViewModel;
 using Shawn.Ulits;
 
-//添加引用，必须用到的
-
 namespace PRM
 {
     public partial class MainWindow : Window
     {
-
+        public readonly VmMain VmMain;
         public MainWindow()
         {
             InitializeComponent();
-            
-            var vm = new VmMain();
-            this.DataContext = vm;
+            VmMain = new VmMain();
+            this.DataContext = VmMain;
+            Title = SystemConfig.AppName;
+
+
+            this.Width = SystemConfig.GetInstance().Locality.MainWindowWidth;
+            this.Height = SystemConfig.GetInstance().Locality.MainWindowHeight;
+
 
 
 
@@ -30,12 +33,7 @@ namespace PRM
             BtnMinimize.Click += (sender, args) =>
             {
                 HideMe();
-                //托盘中显示的图标
                 App.TaskTrayIcon?.ShowBalloonTip(1000);
-            };
-
-            Loaded += (sender, args) =>
-            {
             };
         }
 
@@ -77,8 +75,10 @@ namespace PRM
             });
         }
 
-
-
+        private void GridAbout_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            VmMain.CmdGoAboutPage.Execute();
+        }
 
 
 
@@ -95,10 +95,14 @@ namespace PRM
             }
         }
 
-        private void GridAbout_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            PopupSettingMenu.IsOpen = false;
-            //TODO ADD about page
+            if (this.WindowState == WindowState.Normal)
+            {
+                SystemConfig.GetInstance().Locality.MainWindowHeight = this.Height;
+                SystemConfig.GetInstance().Locality.MainWindowWidth = this.Width;
+                SystemConfig.GetInstance().Locality.Save();
+            }
         }
     }
 }

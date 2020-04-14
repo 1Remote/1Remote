@@ -81,6 +81,31 @@ namespace PRM.ViewModel
                 return _cmdGoSysOptionsPage;
             }
         }
+
+        
+        private RelayCommand _cmdGoAboutPage;
+        public RelayCommand CmdGoAboutPage
+        {
+            get
+            {
+                if (_cmdGoAboutPage == null)
+                {
+                    _cmdGoAboutPage = new RelayCommand((o) =>
+                    {
+                        // TODO open about
+                        //DispPage = new AnimationPage()
+                        //{
+                        //    InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                        //    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                        //    Page = new AboutPage(),
+                        //};
+                        //SysOptionsMenuIsOpen = false;
+
+                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                }
+                return _cmdGoAboutPage;
+            }
+        }
         #endregion
     }
 }

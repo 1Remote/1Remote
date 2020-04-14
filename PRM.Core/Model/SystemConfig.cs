@@ -42,9 +42,9 @@ namespace PRM.Core.Model
                 }
         }
 
-
-
         public const string AppName = "PRemoteM";
+        public const string AppFullName = "PersonalRemoteManager";
+
         public readonly Ini Ini;
         private SystemConfig(ResourceDictionary appResourceDictionary)
         {
@@ -55,7 +55,7 @@ namespace PRM.Core.Model
         }
 
 
-
+        public SystemConfigLocality Locality = new SystemConfigLocality();
 
 
         private SystemConfigLanguage _language = null;
@@ -92,7 +92,6 @@ namespace PRM.Core.Model
 
         protected SystemConfigBase(Ini ini)
         {
-            Debug.Assert(ini != null);
             _ini = ini;
         }
 

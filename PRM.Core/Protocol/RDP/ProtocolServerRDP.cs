@@ -51,6 +51,7 @@ namespace PRM.Core.Protocol.RDP
 
         public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
+            UserName = "Administrator";
         }
 
         #region Conn
@@ -81,13 +82,17 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(UserName), ref _userName, value);
         }
 
-        // todo 使用 SecureString 保护密码
         private string _password;
         public string Password
         {
             get => _password;
-            set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
+            set
+            {
+                // TODO 当输入为明文时，执行加密
+                SetAndNotifyIfChanged(nameof(Password), ref _password, value);
+            }
         }
+
         #endregion
 
 
@@ -249,7 +254,7 @@ namespace PRM.Core.Protocol.RDP
             // TODO add conn win to tab, add to global remote host
             var nw = new Window();
             nw.Content = new AxMsRdpClient09Host(this, nw);
-            nw.ShowDialog();
+            nw.Show();
         }
 
 

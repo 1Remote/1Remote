@@ -47,6 +47,15 @@ namespace PRM.Controls
                 VmServerCard.CmdEditServer.Execute();
             }
         }
+        
+        private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
+        {
+            PopupCardSettingMenu.IsOpen = false;
+            if (VmServerCard != null && VmServerCard.CmdDuplicateServer.CanExecute())
+            {
+                VmServerCard.CmdDuplicateServer.Execute();
+            }
+        }
 
         private void ButtonExportToFile_OnClick(object sender, RoutedEventArgs e)
         {

@@ -199,7 +199,7 @@
                                     <StackPanel.Resources>
                                         <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
                                     </StackPanel.Resources>
-                                    <ComboBox Width="100" SelectedValuePath="Tag"  SelectedValue="{Binding QuickConnect.HotKeyModifiers}">
+                                    <ComboBox Width="100" SelectedValuePath="Tag"  SelectedValue="{Binding QuickConnect.HotKeyModifiers}" SelectionChanged="Modifiers_OnSelectionChanged">
                                         <ComboBoxItem Tag="{x:Static ModifierKeys.Control}">Ctrl</ComboBoxItem>
                                         <ComboBoxItem Tag="{x:Static ModifierKeys.Alt}">Alt</ComboBoxItem>
                                         <ComboBoxItem Tag="{x:Static ModifierKeys.Windows}">Win</ComboBoxItem>
