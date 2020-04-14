@@ -10,7 +10,6 @@
         <s:Double x:Key="CardWidth">144</s:Double>
     </UserControl.Resources>
     <Grid>
-
         <Grid Name="DispServerContext">
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
@@ -280,6 +279,7 @@
                                         <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
                                             <StackPanel>
                                                 <Button Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></Button>
+                                                <Button Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                                                 <Button Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></Button>
                                             </StackPanel>
                                         </Grid>

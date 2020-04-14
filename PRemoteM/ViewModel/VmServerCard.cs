@@ -57,16 +57,37 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new ServerEditorPage(new VmServerEditorPage((ProtocolServerBase)this.Server.Clone(),
-                                this.Host)),
+                            Page = new ServerEditorPage(new VmServerEditorPage((ProtocolServerBase)this.Server.Clone(), this.Host)),
                         };
                     });
                 }
-
                 return _cmdEditServer;
             }
         }
 
+
+        private RelayCommand _cmdDuplicateServer;
+        public RelayCommand CmdDuplicateServer
+        {
+            get
+            {
+                if (_cmdDuplicateServer == null)
+                {
+                    _cmdDuplicateServer = new RelayCommand((o) =>
+                    {
+                        var s = (ProtocolServerBase) this.Server.Clone();
+                        s.Id = 0;
+                        Host.Host.DispPage = new AnimationPage()
+                        {
+                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                            Page = new ServerEditorPage(new VmServerEditorPage(s, this.Host)),
+                        };
+                    });
+                }
+                return _cmdDuplicateServer;
+            }
+        }
 
         private RelayCommand _cmdDeleteServer;
         public RelayCommand CmdDeleteServer

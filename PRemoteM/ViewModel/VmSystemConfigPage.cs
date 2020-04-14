@@ -78,7 +78,7 @@ namespace PRM.ViewModel
                         }
                         SystemConfig.GetInstance().General.Update(General);
                         SystemConfig.GetInstance().General.Save();
-                        
+
                         SystemConfig.GetInstance().QuickConnect.Update(QuickConnect);
                         SystemConfig.GetInstance().QuickConnect.Save();
 

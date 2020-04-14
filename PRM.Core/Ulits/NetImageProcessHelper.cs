@@ -120,8 +120,45 @@ namespace Shawn.Ulits
             var ret = new Bitmap(ms);
             return ret;
         }
+        public static Bitmap BitmapFromBase64(string base64)
+        {
+            return BitmapFromBytes(Convert.FromBase64String(base64));
+        }
 
-
+        public static byte[] ToBytes(this Image img)
+        {
+            using (var ms = new MemoryStream())
+            {
+                img.Save(ms, img.RawFormat);
+                return ms.ToArray();
+            }
+        }
+        public static byte[] ToBytes(this Bitmap bitmap)
+        {
+            using (var ms = new MemoryStream())
+            {
+                bitmap.Save(ms, ImageFormat.Png);
+                byte[] byteImage = ms.ToArray();
+                return byteImage;
+            }
+        }
+        public static byte[] ToBytes<T>(this T source) where T : BitmapSource
+        {
+            return source.ToBitmap().ToBytes();
+        }
+        
+        public static string ToBase64(this Image img)
+        {
+            return Convert.ToBase64String(img.ToBytes());
+        }
+        public static string ToBase64(this Bitmap bitmap)
+        {            
+            return Convert.ToBase64String(bitmap.ToBytes());
+        }
+        public static string ToBase64<T>(this T source) where T : BitmapSource
+        {
+            return Convert.ToBase64String(source.ToBytes());
+        }
 
 
         public static BitmapImage ToBitmapImage(this System.Drawing.Bitmap src)
@@ -195,7 +232,16 @@ namespace Shawn.Ulits
 
         public static Icon ToIcon(this Image img)
         {
-            // TODO 尺寸超过256时压缩
+            if (img.Size.Width > 256 || img.Size.Height > 256)
+            {
+                double k1 = 256.0 / img.Size.Width;
+                double k2 = 256.0 / img.Size.Height;
+                double k = Math.Max(k1, k2);
+                int nw = Math.Min((int)(img.Size.Width * k),256);
+                int nh = Math.Min((int)(img.Size.Height * k),256);
+                img = img.ToBitmap().ToThumbnail(nw, nh);
+            }
+
             var ms = new System.IO.MemoryStream();
             var bw = new System.IO.BinaryWriter(ms);
             // Header
@@ -229,13 +275,22 @@ namespace Shawn.Ulits
         }
         public static Icon ToIcon(this Bitmap bitmap)
         {
-            // TODO 尺寸超过256时压缩
-            return Icon.FromHandle(bitmap.GetHicon());
+            var src = bitmap;
+            if (src.Width > 256 || src.Height > 256)
+            {
+                double k1 = 256.0 / src.Width;
+                double k2 = 256.0 / src.Height;
+                double k = Math.Max(k1, k2);
+                int nw = Math.Min((int)(src.Width * k),256);
+                int nh = Math.Min((int)(src.Height * k),256);
+                src = src.ToThumbnail(nw, nh).ToBitmap();
+            }
+            return Icon.FromHandle(src.GetHicon());
         }
         public static Icon ToIcon<T>(this T source) where T : BitmapSource
         {
-            // TODO 尺寸超过256时压缩
-            return Icon.FromHandle(source.ToBitmap().GetHicon());
+            var src = source.ToBitmap();
+            return src.ToIcon();
         }
 
         
@@ -309,29 +364,6 @@ namespace Shawn.Ulits
             return null;
         }
 
-
-
-        public static byte[] ToBytes(this Image img)
-        {
-            using (var ms = new MemoryStream())
-            {
-                img.Save(ms, img.RawFormat);
-                return ms.ToArray();
-            }
-        }
-        public static byte[] ToBytes(this Bitmap bitmap)
-        {
-            using (var ms = new MemoryStream())
-            {
-                bitmap.Save(ms, ImageFormat.Png);
-                byte[] byteImage = ms.ToArray();
-                return byteImage;
-            }
-        }
-        public static byte[] ToBytes<T>(this T source) where T : BitmapSource
-        {
-            return source.ToBitmap().ToBytes();
-        }
 
         #endregion
 

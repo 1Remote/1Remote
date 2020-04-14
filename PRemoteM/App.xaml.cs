@@ -146,6 +146,7 @@ namespace PersonalRemoteManager
 
         public static void ReloadTaskTrayContextMenu()
         {
+            // rebuild TaskTrayContextMenu while language changed
             if (TaskTrayIcon != null)
             {
                 //System.Windows.Forms.MenuItem version = new System.Windows.Forms.MenuItem("Ver:" + Version);

@@ -115,6 +115,28 @@ namespace PRM.View
                 VmSystemConfigPage.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
             }
         }
+
+        private void Modifiers_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // check if HOTKEY_ALREADY_REGISTERED
+            var r = GlobalHotkeyHooker.GetInstance().Regist(null, VmSystemConfigPage.QuickConnect.HotKeyModifiers, VmSystemConfigPage.QuickConnect.HotKeyKey, () => { });
+            switch (r.Item1)
+            {
+                case GlobalHotkeyHooker.RetCode.Success:
+                    GlobalHotkeyHooker.GetInstance().Unregist(r.Item3);
+                    return;
+                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
+                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
+                    break;
+                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
+                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            VmSystemConfigPage.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
+            VmSystemConfigPage.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
+        }
     }
 
 
@@ -130,9 +152,9 @@ namespace PRM.View
             return ((bool)value) ? parameter : Binding.DoNothing;
         }
     }
-    
 
-    
+
+
     public class Key2KeyStringConverter : IValueConverter
     {
         // 实现接口的两个方法  

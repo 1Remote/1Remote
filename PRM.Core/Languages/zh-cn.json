@@ -7,6 +7,7 @@
   "messagebox_title_info": "提示",
 
   "button_exit": "退出",
+  "button_add": "添加",
   "button_save": "保存",
   "button_cancel": "取消",
   "button_open": "打开",
@@ -43,6 +44,7 @@
   // server card operate
   "server_card_operate_confirm_delete": "确定要删除该服务器配置吗？",
   "server_card_operate_edit": "编辑",
+  "server_card_operate_duplicate": "创建副本",
   "server_card_operate_export_to_prmj": "导出配置",
 
 

@@ -7,6 +7,7 @@
   "messagebox_title_info": "Info",
 
   "button_exit": "Exit",
+  "button_add": "Add",
   "button_save": "Save",
   "button_cancel": "Cancel",
   "button_open": "Open",
@@ -43,6 +44,7 @@
   // server card operate
   "server_card_operate_confirm_delete": "Sure to delete this server?",
   "server_card_operate_edit": "Edit",
+  "server_card_operate_duplicate": "Duplicate",
   "server_card_operate_export_to_prmj": "Export config",
 
 
