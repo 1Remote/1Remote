@@ -27,4 +27,4 @@ jobs:
 
     - name: MSBuild
       working-directory: src
-      run: msbuild MyProject.csproj
+      run: msbuild PRemoteM/PRemoteM.csproj
