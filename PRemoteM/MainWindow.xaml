@@ -217,7 +217,6 @@
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
                             <Button Content="{DynamicResource system_menu_options_title}" Command="{Binding CmdGoSysOptionsPage}"></Button>
-                            <Button>TXT:BUG/意见反馈</Button>
                             <Border Name="GridAbout" MouseLeftButtonUp="GridAbout_OnMouseLeftButtonUp" Padding="3">
                                 <Border.Style>
                                     <Style TargetType="Border">
@@ -266,6 +265,7 @@
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
+                            <Button Content="{DynamicResource button_exit}" Click="ButtonExit_OnClick"></Button>
                         </StackPanel>
                     </Grid>
                 </Border>
