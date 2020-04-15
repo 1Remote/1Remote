@@ -24,7 +24,7 @@ jobs:
       uses: warrenbuckley/Setup-Nuget@v1
 
     - name: Nuget restore
-      run: nuget restore PRemoteM.sln
+      run: nuget restore PRM.sln
       
     - name: Build
       working-directory: PRemoteM
