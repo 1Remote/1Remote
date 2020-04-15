@@ -57,7 +57,9 @@ namespace PRM.View
                     {
                         this.Visibility = Visibility.Hidden;
                         _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.PopupIsOpen = false;
                         _isHidden = true;
+                        this.Hide();
                     }
                 }
         }
@@ -70,6 +72,7 @@ namespace PRM.View
                     {
                         if (_isHidden == true)
                         {
+                            this.Show();
                             this.Visibility = Visibility.Visible;
                             this.Activate();
                             this.Topmost = true;  // important
@@ -109,6 +112,7 @@ namespace PRM.View
                 case Key.Escape:
                     HideMe();
                     break;
+
                 case Key.Enter:
                     {
                         lock (_closeLocker)
@@ -135,7 +139,6 @@ namespace PRM.View
                                 ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                             }
                         }
-
                         break;
                     }
 
@@ -149,7 +152,6 @@ namespace PRM.View
                                 ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                             }
                         }
-
                         break;
                     }
 
@@ -163,7 +165,6 @@ namespace PRM.View
                             _vmSearchBox.SelectedServerTextIndex = i;
                             ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                         }
-
                         break;
                     }
 
@@ -177,7 +178,6 @@ namespace PRM.View
                             _vmSearchBox.SelectedServerTextIndex = i;
                             ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                         }
-
                         break;
                     }
             }

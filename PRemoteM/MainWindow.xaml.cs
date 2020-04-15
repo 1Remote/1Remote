@@ -28,13 +28,13 @@ namespace PRM
 
 
 
-            BtnClose.Click += (sender, args) => Close();
-            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-            BtnMinimize.Click += (sender, args) =>
+            BtnClose.Click += (sender, args) =>
             {
                 HideMe();
                 App.TaskTrayIcon?.ShowBalloonTip(1000);
             };
+            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
 
         /// <summary>
@@ -103,6 +103,11 @@ namespace PRM
                 SystemConfig.GetInstance().Locality.MainWindowWidth = this.Width;
                 SystemConfig.GetInstance().Locality.Save();
             }
+        }
+
+        private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
