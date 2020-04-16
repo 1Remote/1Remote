@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
 using Shawn.Ulits;
+using Brush = System.Drawing.Brush;
 using Color = System.Windows.Media.Color;
 
 namespace PRM.Core.Protocol

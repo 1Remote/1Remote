@@ -28,7 +28,7 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="4"/>
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="6"/>
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
             </ControlTemplate.Triggers>
@@ -163,11 +163,11 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-                <Canvas Height="25" Width="35" >
-                    <Line X1="12" Y1="8" X2="22" Y2="8" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
-                    <Line X1="12" Y1="13" X2="22" Y2="13" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
-                    <Line X1="12" Y1="18" X2="22" Y2="18" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
-                </Canvas>
+                <Grid Width="15" Height="15">
+                    <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
+                          -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
+                          Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="0.75" Stretch="Fill" />
+                </Grid>
             </Button>
             <Popup Name="PopupSettingMenu" 
                    AllowsTransparency="True"
@@ -271,33 +271,13 @@
                 </Border>
             </Popup>
 
-            <Button Name="BtnMinimize">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
-                        <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                <Rectangle Width="11" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}">
+                <Rectangle Width="15"  Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
             </Button>
 
-            <Button Name="BtnMaximize">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
-                        <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
+            <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}">
                 <Grid>
-                    <Rectangle Width="11" Height="11" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75">
+                    <Rectangle Height="15" Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75">
                         <Rectangle.Style>
                             <Style TargetType="Rectangle">
                                 <Style.Triggers>
@@ -337,10 +317,12 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-                <Canvas Height="25" Width="35" >
-                    <Line X1="12" Y1="8" X2="22" Y2="18" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
-                    <Line X1="12" Y1="18" X2="22" Y2="8" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
-                </Canvas>
+
+                <Grid Height="15" Width="15" >
+                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
+                          L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
+                          Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
+                </Grid>
             </Button>
         </StackPanel>
 

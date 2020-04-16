@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:prm="clr-namespace:PRM"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
              mc:Ignorable="d" 
@@ -16,12 +15,11 @@
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
-            <SolidColorBrush x:Key="TabItem.Selected.Background" Color="{DynamicResource MainColor1Lighter}"/>
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Padding" Value="2"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}"/>
+                <Setter Property="Background" Value="{DynamicResource MainColor1Lighter}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                 <Setter Property="Template">

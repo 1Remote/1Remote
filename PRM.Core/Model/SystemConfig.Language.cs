@@ -22,7 +22,7 @@ namespace PRM.Core.Model
         }
 
 
-        public const string DefaultLanguage = "zh-cn";
+        public const string DefaultLanguage = "en-us";
         public const string LanguageJsonDir = "Languages";
         public readonly ResourceDictionary AppResourceDictionary;
 
@@ -57,7 +57,6 @@ namespace PRM.Core.Model
             {
                 if (_defaultLanguageResourceDictionary == null)
                 {
-                    // TODO 修改 zh-cn 为 en-us
                     _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguage);
                     Debug.Assert(_defaultLanguageResourceDictionary != null);
                 }
@@ -103,12 +102,12 @@ namespace PRM.Core.Model
         public Dictionary<string, string> LanguageCode2Name
         {
             get => _languageCode2Name;
-            protected set => SetAndNotifyIfChanged(nameof(LanguageCode2Name), ref _languageCode2Name, value);
+            private set => SetAndNotifyIfChanged(nameof(LanguageCode2Name), ref _languageCode2Name, value);
         }
 
         private readonly Dictionary<string, string> _languageCode2ResourcePath = new Dictionary<string, string>();
 
-        
+
         public void InitLanguageCode2Name()
         {
             LanguageCode2Name.Clear();
@@ -139,30 +138,29 @@ namespace PRM.Core.Model
                         continue;
                     }
                 }
+            }
 
-
-                // add static language resources
+            // add static language resources
+            {
+                var code = "zh-cn";
+                var path = "pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml";
+                if (!LanguageCode2Name.ContainsKey(code))
                 {
-                    var code = "zh-cn";
-                    var path = "pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml";
-                    if (!LanguageCode2Name.ContainsKey(code))
-                    {
-                        var r = GetResourceDictionaryByPath(path);
-                        Debug.Assert(r != null);
-                        Debug.Assert(r.Contains("language_name"));
-                        AddOrUpdateLanguage(code, r["language_name"].ToString(), path);
-                    }
+                    var r = GetResourceDictionaryByPath(path);
+                    Debug.Assert(r != null);
+                    Debug.Assert(r.Contains("language_name"));
+                    AddOrUpdateLanguage(code, r["language_name"].ToString(), path);
                 }
+            }
+            {
+                var code = "en-us";
+                var path = "pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml";
+                if (!LanguageCode2Name.ContainsKey(code))
                 {
-                    var code = "en-us";
-                    var path = "pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml";
-                    if (!LanguageCode2Name.ContainsKey(code))
-                    {
-                        var r = GetResourceDictionaryByPath(path);
-                        Debug.Assert(r != null);
-                        Debug.Assert(r.Contains("language_name"));
-                        AddOrUpdateLanguage(code, r["language_name"].ToString(), path);
-                    }
+                    var r = GetResourceDictionaryByPath(path);
+                    Debug.Assert(r != null);
+                    Debug.Assert(r.Contains("language_name"));
+                    AddOrUpdateLanguage(code, r["language_name"].ToString(), path);
                 }
             }
         }

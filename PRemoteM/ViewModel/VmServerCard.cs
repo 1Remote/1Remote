@@ -108,7 +108,7 @@ namespace PRM.ViewModel
                     });
                 return _cmdDeleteServer;
             }
-        } 
+        }
         #endregion
     }
 }
