@@ -9,12 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Win32;
-using PersonalRemoteManager;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
-using Binding = System.Windows.Data.Binding;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace PRM.View

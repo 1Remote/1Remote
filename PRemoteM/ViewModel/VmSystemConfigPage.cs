@@ -18,7 +18,6 @@ namespace PRM.ViewModel
         {
             Host = vmMain;
             SelectedLanguageCode = SystemConfig.GetInstance().Language.CurrentLanguageCode;
-            SystemConfig.GetInstance().Language.InitLanguageCode2Name();
             // create new SystemConfigGeneral object
             General = new SystemConfigGeneral(SystemConfig.GetInstance().Ini);
             QuickConnect = new SystemConfigQuickConnect(SystemConfig.GetInstance().Ini);

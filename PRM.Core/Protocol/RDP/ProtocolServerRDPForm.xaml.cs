@@ -17,7 +17,7 @@ namespace PRM.Core.Protocol.RDP
     public partial class ProtocolServerRDPForm : ProtocolServerFormBase
     {
         private ProtocolServerRDP _vm;
-        public ProtocolServerRDPForm(ProtocolServerBase vm): base()
+        public ProtocolServerRDPForm(ProtocolServerBase vm) : base()
         {
             InitializeComponent();
             _vm = (ProtocolServerRDP)vm;
@@ -28,7 +28,7 @@ namespace PRM.Core.Protocol.RDP
         {
             if (!string.IsNullOrEmpty(_vm.Address?.Trim())
                 && !string.IsNullOrEmpty(_vm.UserName?.Trim())
-                && !string.IsNullOrEmpty(_vm.Password.ToString()?.Trim())
+                && !string.IsNullOrEmpty(_vm.Password?.Trim())
                 && _vm.Port > 0)
                 return true;
             return false;
