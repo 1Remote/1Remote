@@ -44,6 +44,9 @@
     <ApplicationIcon>LOGO.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -73,6 +76,7 @@
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
+    <Compile Include="ViewModel\VmHostWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
@@ -81,6 +85,9 @@
     <Compile Include="ViewModel\VmServerListPage.cs" />
     <Compile Include="View\DesktopWindow.xaml.cs">
       <DependentUpon>DesktopWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\HostWindow.xaml.cs">
+      <DependentUpon>HostWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SearchBoxWindow.xaml.cs">
       <DependentUpon>SearchBoxWindow.xaml</DependentUpon>
@@ -94,6 +101,7 @@
     <Compile Include="View\SystemConfigPage.xaml.cs">
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TabItemViewModel.cs" />
     <Page Include="Controls\ServerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -125,6 +133,10 @@
     <Page Include="View\DesktopWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\HostWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\SearchBoxWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -161,6 +173,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
