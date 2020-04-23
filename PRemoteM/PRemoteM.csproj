@@ -71,12 +71,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\LogoSelector.xaml.cs">
+      <DependentUpon>LogoSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\Global.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
-    <Compile Include="ViewModel\VmHostWindow.cs" />
+    <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
@@ -86,8 +90,9 @@
     <Compile Include="View\DesktopWindow.xaml.cs">
       <DependentUpon>DesktopWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\HostWindow.xaml.cs">
-      <DependentUpon>HostWindow.xaml</DependentUpon>
+    <Compile Include="View\FullScreenWindow.cs" />
+    <Compile Include="View\TabWindow.xaml.cs">
+      <DependentUpon>TabWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SearchBoxWindow.xaml.cs">
       <DependentUpon>SearchBoxWindow.xaml</DependentUpon>
@@ -101,7 +106,11 @@
     <Compile Include="View\SystemConfigPage.xaml.cs">
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TabItemViewModel.cs" />
+    <Compile Include="ViewModel\TabItemViewModel.cs" />
+    <Page Include="Controls\LogoSelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\ServerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -134,7 +143,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\HostWindow.xaml">
+    <Page Include="View\TabWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

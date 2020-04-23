@@ -1,4 +1,4 @@
-﻿<Window x:Class="PRM.View.HostWindow"
+﻿<Window x:Class="PRM.View.TabWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -36,7 +36,7 @@
     <Window.Resources>
         <ResourceDictionary>
 
-            <Color x:Key="MainColor1">#102b3e</Color>
+            <!--<Color x:Key="MainColor1">#102b3e</Color>
             <Color x:Key="MainColor1Lighter">#445a68</Color>
             <Color x:Key="MainColor1Darker">#0c2230</Color>
             <Color x:Key="MainColor1Foreground">White</Color>
@@ -60,10 +60,8 @@
             <Brush x:Key="MainColor2ForegroundBrush">White</Brush>
 
             <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
-            <Brush x:Key="MainBgColorForegroundBrush">#000</Brush>
+            <Brush x:Key="MainBgColorForegroundBrush">#000</Brush>-->
 
-
-            <view:Hex2Brush x:Key="Hex2Brush"></view:Hex2Brush>
 
             <Style TargetType="{x:Type Thumb}" x:Key="MahAppsInvisibleThumbStyle">
                 <Setter Property="Background" Value="Transparent" />
@@ -89,7 +87,10 @@
 
 
             <DataTemplate DataType="{x:Type dragablzTab:TabItemViewModel}">
-                <ContentControl Content="{Binding Content}"/>
+                <!--leave some border of remote desktop-->
+                <Grid Margin="2 0 2 2">
+                    <ContentControl Content="{Binding Content}" Background="Transparent"/>
+                </Grid>
             </DataTemplate>
 
             <Style x:Key="MahAppsTrapezoidDragableTabItemStyle"  TargetType="{x:Type dragablz:DragablzItem}">
@@ -238,7 +239,7 @@
             </Button>
 
 
-            <Button Command="{Binding CmdGoFullScreen}" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Command="{Binding CmdGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" Style="{StaticResource WinTitleBarBtnStyle}">
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
@@ -292,7 +293,7 @@
             <dragablz:TabablzControl x:Name="TabablzControl"
                                      BorderThickness="0"
                                      Margin="0" Padding="0"
-                                     Background="{Binding SelectedItem.MarkColorHex,Converter={StaticResource Hex2Brush}, Mode=OneWay}"
+                                     Background="Transparent"
                                      SelectionChanged="TabablzControl_OnSelectionChanged"
                                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                      ItemsSource="{Binding Items}"

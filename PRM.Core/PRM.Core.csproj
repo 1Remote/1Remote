@@ -79,13 +79,13 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Global.cs" />
-    <Compile Include="Model\SystemConfig.QuickConnect.cs" />
-    <Compile Include="Model\SystemConfig.Locality.cs" />
+    <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
-    <Compile Include="Model\SystemConfig.cs" />
+    <Compile Include="Model\SystemConfig.Locality.cs" />
+    <Compile Include="Model\SystemConfig.QuickConnect.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
     <Compile Include="Protocol\ProtocolServerIcons.cs" />
@@ -96,9 +96,6 @@
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09NotSafeForScriptingEx.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Controls\LogoSelector.xaml.cs">
-      <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPalette.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
@@ -176,10 +173,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Controls\LogoSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

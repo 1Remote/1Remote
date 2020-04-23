@@ -17,7 +17,7 @@ namespace PRM.Core.Protocol.RDP
     public partial class ProtocolServerRDPForm : ProtocolServerFormBase
     {
         private ProtocolServerRDP _vm;
-        public ProtocolServerRDPForm(ProtocolServerBase vm) : base()
+        public ProtocolServerRDPForm(ProtocolServerBase vm): base()
         {
             InitializeComponent();
             _vm = (ProtocolServerRDP)vm;

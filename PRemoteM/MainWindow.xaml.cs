@@ -30,6 +30,10 @@ namespace PRM
 
             BtnClose.Click += (sender, args) =>
             {
+#if DEBUG
+                Close();
+                return;
+#endif
                 HideMe();
                 App.TaskTrayIcon?.ShowBalloonTip(1000);
             };
