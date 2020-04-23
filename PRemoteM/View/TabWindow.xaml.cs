@@ -5,29 +5,28 @@ using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using PRM.Core.Protocol;
-using PRM.Core.Ulits.DragablzTab;
 using PRM.ViewModel;
-using Shawn.Ulits.RDP;
+using Size = System.Windows.Size;
 
 namespace PRM.View
 {
     /// <summary>
-    /// HostWindow.xaml 的交互逻辑
+    /// TabWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class HostWindow : Window
+    public partial class TabWindow : Window
     {
-        private VmHostWindow _vm;
-        public HostWindow()
+        public VmTabWindow Vm;
+        public TabWindow(string token)
         {
             InitializeComponent();
+            Vm = new VmTabWindow(token);
+            DataContext = Vm;
 
             //Closed += (sender, args) => { MessageBox.Show("Tab win close"); };
             BtnClose.Click += (sender, args) =>
             {
-                var _vm = ((VmHostWindow) this.DataContext);
+                var _vm = ((VmTabWindow) this.DataContext);
                 if (_vm?.Items.Count > 1)
                 {
                     // TODO 销毁 SelectedItem
@@ -59,29 +58,22 @@ namespace PRM.View
 
         private void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.DataContext is VmHostWindow _vm
+            if (this.DataContext is VmTabWindow _vm
                 && _vm?.SelectedItem != null)
             {
                 // TODO set ICOm
                 this.Title = _vm.SelectedItem.Header.ToString() + " - " + "PRemoteM";
             }
         }
-    }
 
-    public class Hex2Brush : IValueConverter
-    {
-        #region IValueConverter
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public Thickness TabContentBorder { get; } = new Thickness(2 ,0 ,2 ,2);
+        public Size GetTabContentSize()
         {
-            string hex = value.ToString();
-            var brush = (System.Windows.Media.Brush)(new System.Windows.Media.BrushConverter().ConvertFrom(hex));
-            return brush;
+            return new Size()
+            {
+                Width = TabablzControl.ActualWidth - TabContentBorder.Left - TabContentBorder.Right,
+                Height = TabablzControl.ActualHeight - 30 - 2 - 1,
+            };
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return "#FFFFFF";
-        }
-        #endregion
     }
 }

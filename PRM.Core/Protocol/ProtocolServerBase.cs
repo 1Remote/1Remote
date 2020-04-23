@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -147,8 +148,15 @@ namespace PRM.Core.Protocol
             }
         }
 
+        [JsonIgnore]
+        public Action<uint> OnCmdConn = null;
 
-        public abstract void Conn();
+        public void Conn()
+        {
+            Debug.Assert(this.Id > 0);
+            OnCmdConn?.Invoke(this.Id);
+        }
+
 
         /// <summary>
         /// copy all value type fields

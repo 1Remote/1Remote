@@ -1,8 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
 using PRM.Core.Ulits.DragablzTab;
@@ -12,8 +14,9 @@ using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
 {
-    public class VmHostWindow : NotifyPropertyChangedBase
+    public class VmTabWindow : NotifyPropertyChangedBase
     {
+        public readonly string Token;
 
         private ObservableCollection<TabItemViewModel> _items = new ObservableCollection<TabItemViewModel>();
         public ObservableCollection<TabItemViewModel> Items
@@ -34,8 +37,9 @@ namespace PRM.ViewModel
         private readonly IInterTabClient _interTabClient = new InterTabClient();
         public IInterTabClient InterTabClient => _interTabClient;
 
-        public VmHostWindow()
+        public VmTabWindow(string token)
         {
+            Token = token;
         }
 
 
@@ -54,16 +58,20 @@ namespace PRM.ViewModel
                         // TODO 开启全屏
                         if (this.SelectedItem != null)
                         {
-                            var nw = new Window();
-                            (this.SelectedItem.Content as AxMsRdpClient09Host)?.SetHostWindow4FulScreen(nw);
-                            nw.Loaded += (o1, eventArgs) =>
-                            {
-                                nw.Content = this.SelectedItem.Content as ProtocolHostBase;
-                                (this.SelectedItem.Content as ProtocolHostBase)?.GoFullScreen();
-                            };
+                            var nw = new FullScreenWindow((this.SelectedItem.Content as AxMsRdpClient09Host));
                             nw.Show();
+                            (this.SelectedItem.Content as ProtocolHostBase)?.GoFullScreen();
                             Items.Remove(this.SelectedItem);
-                            this.SelectedItem = Items.First();
+                            if (Items.Count > 0)
+                                this.SelectedItem = Items.First();
+                            else
+                            {
+                                // TODO CloseWindow
+                                var w = Global.GetInstance().TabWindows[Token];
+                                w.Close();
+                                Global.GetInstance().TabWindows.Remove(Token);
+                                //((Window)o).Close();
+                            }
                         }
                     }, o => this.SelectedItem != null);
                 }
@@ -78,9 +86,10 @@ namespace PRM.ViewModel
     {
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
-            var v = new HostWindow();
-            var vm = new VmHostWindow();
-            v.DataContext = vm;
+            string token = DateTime.Now.Ticks.ToString();
+            var v = new TabWindow(token);
+            var vm = v.Vm;
+            Global.GetInstance().TabWindows.Add(token, v);
             return new NewTabHost<Window>(v, v.TabablzControl);            
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)

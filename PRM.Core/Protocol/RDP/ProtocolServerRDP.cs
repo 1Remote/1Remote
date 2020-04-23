@@ -240,22 +240,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
-        public override void Conn()
-        {
-            if (string.IsNullOrEmpty(this.Address)
-                || string.IsNullOrEmpty(this.UserName))
-            {
-                MessageBox.Show("Conn config err");
-                return;
-            }
-
-            Global.GetInstance().ServerListUpdate(this);
-
-            // TODO add conn win to tab, add to global remote host
-            var nw = new Window();
-            nw.Content = new AxMsRdpClient09Host(this, nw);
-            nw.Show();
-        }
 
 
         public override string ToJsonString()
@@ -280,5 +264,6 @@ namespace PRM.Core.Protocol.RDP
         {
             return Address + " @ " + UserName;
         }
+
     }
 }

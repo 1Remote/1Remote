@@ -11,11 +11,6 @@ namespace PRM.Core.Protocol
     /// </summary>
     public class ProtocolServerNone : ProtocolServerBase
     {
-        public override void Conn()
-        {
-            // do nothing
-        }
-
         public override string ToJsonString()
         {
             return "";

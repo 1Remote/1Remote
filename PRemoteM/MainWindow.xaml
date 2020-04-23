@@ -277,21 +277,24 @@
 
             <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}">
                 <Grid>
-                    <Rectangle Height="15" Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75">
-                        <Rectangle.Style>
-                            <Style TargetType="Rectangle">
+                    <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
+                          Stretch="Uniform" >
+                        <Path.Style>
+                            <Style TargetType="Path">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
                                         <Setter Property="Visibility" Value="Hidden"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Rectangle.Style>
-                    </Rectangle>
+                        </Path.Style>
+                    </Path>
 
-                    <Canvas>
-                        <Canvas.Style>
-                            <Style TargetType="Canvas">
+                    <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" 
+                          Data="F1 M 0.000000 -77.000000 L 88.000000 -77.000000 L 88.000000 -11.000000 L 0.000000 -11.000000 Z M 82.500000 -16.500000 L 82.500000 -71.500000 L 5.500000 -71.500000 L 5.500000 -16.500000 Z M 77.000000 -66.000000 L 77.000000 -22.000000 L 11.000000 -22.000000 L 11.000000 -66.000000 Z M 71.500000 -27.500000 L 71.500000 -60.500000 L 16.500000 -60.500000 L 16.500000 -27.500000 Z "
+                          Stretch="Uniform" >
+                        <Path.Style>
+                            <Style TargetType="Path">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
@@ -299,10 +302,8 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Canvas.Style>
-                        <Polyline Points="2.375,2 2.375,0.375 10.625,0.375 10.625,8.625 9,8.625" StrokeThickness="0.75" Stroke="{DynamicResource MainColor1ForegroundBrush}"/>
-                        <Rectangle Width="9" Height="9" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Margin="0,2,2,0"/>
-                    </Canvas>
+                        </Path.Style>
+                    </Path>
                 </Grid>
             </Button>
 
