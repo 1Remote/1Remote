@@ -35,7 +35,7 @@ namespace Shawn.Ulits.RDP
         private readonly AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
         private uint _scaleFactor = 100;
-
+        private bool _isDisconned = false;
 
         /*
         public void SetParent(Window win)
@@ -220,8 +220,9 @@ namespace Shawn.Ulits.RDP
 
 
         #region Base Interface
-        public sealed override void Conn()
+        public override void Conn()
         {
+            _isDisconned = false;
             GridLoading.Visibility = Visibility.Visible;
             RdpHost.Visibility = Visibility.Collapsed;
             _rdp?.Connect();
@@ -229,7 +230,13 @@ namespace Shawn.Ulits.RDP
 
         public override void DisConn()
         {
-            _rdp?.Disconnect();
+            if (!_isDisconned)
+            {
+                _isDisconned = true;
+                if (_rdp != null
+                    && _rdp.Connected > 0)
+                    _rdp.Disconnect();
+            }
         }
 
         public override void GoFullScreen()
@@ -270,7 +277,7 @@ namespace Shawn.Ulits.RDP
             }
         }
 
-        #region Disconnect Reason
+        #region Disconn Reason
         enum EDiscReason
         {
             // https://docs.microsoft.com/en-us/windows/win32/termserv/extendeddisconnectreasoncode
@@ -330,7 +337,8 @@ namespace Shawn.Ulits.RDP
 
         private void RdpOnOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
         {
-            _rdp?.Disconnect();
+            DisConn();
+            Parent?.Close();
         }
 
         #endregion

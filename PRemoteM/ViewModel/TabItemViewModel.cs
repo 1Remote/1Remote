@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows;
 using System.Windows.Media;
+using PRM.Core.Protocol;
 using Color = System.Drawing.Color;
 
 namespace PRM.Core.Ulits.DragablzTab
@@ -15,8 +16,8 @@ namespace PRM.Core.Ulits.DragablzTab
             set => SetAndNotifyIfChanged(nameof(Header), ref _header, value);
         }
 
-        private object _content;
-        public object Content
+        private ProtocolHostBase _content;
+        public ProtocolHostBase Content
         {
             get => _content;
             set => SetAndNotifyIfChanged(nameof(Content), ref _content, value);

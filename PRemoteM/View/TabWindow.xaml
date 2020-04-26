@@ -246,7 +246,7 @@
             </Button>
 
 
-            <Button Name="BtnCloseAll">
+            <Button Name="BtnCloseAll" Command="{Binding CmdClose}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Style.Triggers>

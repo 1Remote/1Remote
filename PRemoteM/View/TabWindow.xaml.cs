@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PRM.Core.Model;
 using PRM.ViewModel;
 using Size = System.Windows.Size;
 
@@ -29,7 +30,7 @@ namespace PRM.View
                 var _vm = ((VmTabWindow) this.DataContext);
                 if (_vm?.Items.Count > 1)
                 {
-                    // TODO 销毁 SelectedItem
+                    Global.GetInstance().DelProtocolHost(_vm.SelectedItem.Content.ProtocolServer.Id);
                     _vm.Items.Remove(_vm.SelectedItem);
                 }
                 else
@@ -37,7 +38,6 @@ namespace PRM.View
                     Close();
                 }
             };
-            BtnCloseAll.Click += (sender, args) => Close();
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -130,7 +129,8 @@ namespace PRM.Core.Model
         public string lastTabToken = null;
         public Dictionary<string, TabWindow> TabWindows = new Dictionary<string, TabWindow>();
         public Dictionary<uint, ProtocolHostBase> ProtocolHosts = new Dictionary<uint, ProtocolHostBase>();
-        
+        public Dictionary<uint, FullScreenWindow> FullScreenWindows = new Dictionary<uint, FullScreenWindow>();
+
         private void OnCmdConn(uint id)
         {
             Debug.Assert(id > 0);
@@ -156,6 +156,8 @@ namespace PRM.Core.Model
                 host.GoFullScreen();
                 nw.Show();
                 host.Conn();
+                ProtocolHosts.Add(server.Id, host);
+                host.Parent = nw;
             }
             else
             {
@@ -170,10 +172,12 @@ namespace PRM.Core.Model
                     tab = TabWindows[token];
                     //tab.Loaded += (sender, args) => host.Conn();
                     tab.Show();
+                    lastTabToken = token;
                 }
                 tab.Activate();
                 var size = tab.GetTabContentSize();
                 var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
+                host.Parent = tab;
                 tab.Vm.Items.Add(new TabItemViewModel()
                 {
                     Content = host,
@@ -181,11 +185,114 @@ namespace PRM.Core.Model
                 });
                 tab.Vm.SelectedItem = tab.Vm.Items.Last();
                 host.Conn();
+                ProtocolHosts.Add(server.Id, host);
             }
         }
-        public void MoveFullScreenToTab(uint id)
-        {
 
+        public void MoveProtocolHostFromTabToFullScreen(uint id)
+        {
+            if (ProtocolHosts.ContainsKey(id))
+            {
+                var host = ProtocolHosts[id];
+                var tab = (TabWindow) host.Parent;
+                var nw = new FullScreenWindow(tab.Vm.SelectedItem.Content);
+                nw.Loaded += (sender, args) =>
+                {
+                    tab.Vm.SelectedItem.Content.GoFullScreen();
+                };
+                nw.Show();
+                FullScreenWindows.Add(id, nw);
+                tab.Vm.Items.Remove(tab.Vm.SelectedItem);
+                if (tab.Vm.Items.Count > 0)
+                    tab.Vm.SelectedItem = tab.Vm.Items.First();
+                else
+                {
+                    CloseTabWindow(tab.Vm.Token);
+                }
+                host.Parent = nw;
+            }
+        }
+        public void MoveProtocolHostFromFullScreenToTab(uint id)
+        {
+            CloseFullScreenWindow(id);
+            if (ProtocolHosts.ContainsKey(id))
+            {
+                var host = ProtocolHosts[id];
+                TabWindow tab = null;
+                if (!string.IsNullOrEmpty(lastTabToken) && TabWindows.ContainsKey(lastTabToken))
+                    tab = TabWindows[lastTabToken];
+                else
+                {
+                    string token = DateTime.Now.Ticks.ToString();
+                    TabWindows.Add(token, new TabWindow(token));
+                    tab = TabWindows[token];
+                    //tab.Loaded += (sender, args) => host.Conn();
+                    tab.Show();
+                    lastTabToken = token;
+                }
+                tab.Activate();
+                var size = tab.GetTabContentSize();
+                tab.Vm.Items.Add(new TabItemViewModel()
+                {
+                    Content = host,
+                    Header = host.ProtocolServer.DispName,
+                });
+                tab.Vm.SelectedItem = tab.Vm.Items.Last();
+                host.Parent = tab;
+            }
+        }
+
+        public void DelProtocolHost(uint id)
+        {
+            if (ProtocolHosts.ContainsKey(id))
+            {
+                var host = ProtocolHosts[id];
+                ProtocolHosts.Remove(id);
+                host.DisConn();
+            }
+        }
+        public void DelFullScreenWindow(uint id)
+        {
+            CloseFullScreenWindow(id);
+            DelProtocolHost(id);
+        }
+        public void DelTabWindow(string token)
+        {
+            if (TabWindows.ContainsKey(token))
+            {
+                var tab = TabWindows[token];
+                foreach (var tabItemViewModel in tab.Vm.Items)
+                {
+                    DelProtocolHost(tabItemViewModel.Content.ProtocolServer.Id);
+                }
+                CloseTabWindow(token);
+            }
+        }
+        public void CloseFullScreenWindow(uint id)
+        {
+            if (FullScreenWindows.ContainsKey(id))
+            {
+                try
+                {
+                    FullScreenWindows[id].ProtocolHostBase.OnFullScreen2Window -= FullScreenWindows[id].OnFullScreen2Window;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                FullScreenWindows[id].ProtocolHostBase = null;
+                FullScreenWindows[id].Close();
+                FullScreenWindows.Remove(id);
+            }
+        }
+        public void CloseTabWindow(string token)
+        {
+            if (TabWindows.ContainsKey(token))
+            {
+                var tab = TabWindows[token];
+                TabWindows.Remove(token);
+                tab.Close();
+            }
         }
     }
 }

@@ -43,8 +43,6 @@ namespace PRM.ViewModel
         }
 
 
-
-
         #region CMD
         private RelayCommand _cmdGoFullScreen;
         public RelayCommand CmdGoFullScreen
@@ -55,27 +53,27 @@ namespace PRM.ViewModel
                 {
                     _cmdGoFullScreen = new RelayCommand((o) =>
                     {
-                        // TODO 开启全屏
-                        if (this.SelectedItem != null)
-                        {
-                            var nw = new FullScreenWindow((this.SelectedItem.Content as AxMsRdpClient09Host));
-                            nw.Show();
-                            (this.SelectedItem.Content as ProtocolHostBase)?.GoFullScreen();
-                            Items.Remove(this.SelectedItem);
-                            if (Items.Count > 0)
-                                this.SelectedItem = Items.First();
-                            else
-                            {
-                                // TODO CloseWindow
-                                var w = Global.GetInstance().TabWindows[Token];
-                                w.Close();
-                                Global.GetInstance().TabWindows.Remove(Token);
-                                //((Window)o).Close();
-                            }
-                        }
+                        Global.GetInstance().MoveProtocolHostFromTabToFullScreen(SelectedItem.Content.ProtocolServer.Id);
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdGoFullScreen;
+            }
+        }
+
+        
+        private RelayCommand _cmdClose;
+        public RelayCommand CmdClose
+        {
+            get
+            {
+                if (_cmdClose == null)
+                {
+                    _cmdClose = new RelayCommand((o) =>
+                    {
+                        Global.GetInstance().DelTabWindow(Token);
+                    }, o => this.SelectedItem != null);
+                }
+                return _cmdClose;
             }
         }
         #endregion
