@@ -126,10 +126,10 @@ namespace PRM.Core.Model
 
         #endregion
 
-        public string lastTabToken = null;
+        private string _lastTabToken = null;
         public Dictionary<string, TabWindow> TabWindows = new Dictionary<string, TabWindow>();
-        public Dictionary<uint, ProtocolHostBase> ProtocolHosts = new Dictionary<uint, ProtocolHostBase>();
-        public Dictionary<uint, FullScreenWindow> FullScreenWindows = new Dictionary<uint, FullScreenWindow>();
+        private Dictionary<uint, ProtocolHostBase> ProtocolHosts = new Dictionary<uint, ProtocolHostBase>();
+        private readonly Dictionary<uint, FullScreenWindow> _host2FullScreenWindows = new Dictionary<uint, FullScreenWindow>();
 
         private void OnCmdConn(uint id)
         {
@@ -152,94 +152,107 @@ namespace PRM.Core.Model
             if (server.IsConnWithFullScreen())
             {
                 var host = ProtocolHostFactory.Get(server);
-                var nw = new FullScreenWindow(host);
+                var parent = new FullScreenWindow(host);
                 host.GoFullScreen();
-                nw.Show();
+                parent.Show();
                 host.Conn();
                 ProtocolHosts.Add(server.Id, host);
-                host.Parent = nw;
+                _host2FullScreenWindows.Add(id, parent);
+                host.Parent = parent;
+                SimpleLogHelper.Log($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with FullWin({parent.GetHashCode()})");
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
             }
             else
             {
-                // TODO 通过委托，创建 RDP HOST，并指派到 TAB
-                TabWindow tab = null;
-                if (!string.IsNullOrEmpty(lastTabToken) && TabWindows.ContainsKey(lastTabToken))
-                    tab = TabWindows[lastTabToken];
+                TabWindow parent = null;
+                if (!string.IsNullOrEmpty(_lastTabToken) && TabWindows.ContainsKey(_lastTabToken))
+                    parent = TabWindows[_lastTabToken];
                 else
                 {
                     string token = DateTime.Now.Ticks.ToString();
                     TabWindows.Add(token, new TabWindow(token));
-                    tab = TabWindows[token];
+                    parent = TabWindows[token];
                     //tab.Loaded += (sender, args) => host.Conn();
-                    tab.Show();
-                    lastTabToken = token;
+                    parent.Show();
+                    _lastTabToken = token;
                 }
-                tab.Activate();
-                var size = tab.GetTabContentSize();
+                parent.Activate();
+                var size = parent.GetTabContentSize();
                 var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
-                host.Parent = tab;
-                tab.Vm.Items.Add(new TabItemViewModel()
+                host.Parent = parent;
+                parent.Vm.Items.Add(new TabItemViewModel()
                 {
                     Content = host,
                     Header = server.DispName,
                 });
-                tab.Vm.SelectedItem = tab.Vm.Items.Last();
+                parent.Vm.SelectedItem = parent.Vm.Items.Last();
                 host.Conn();
                 ProtocolHosts.Add(server.Id, host);
+                SimpleLogHelper.Log($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({parent.GetHashCode()})");
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
             }
         }
 
-        public void MoveProtocolHostFromTabToFullScreen(uint id)
+        public FullScreenWindow MoveProtocolToFullScreen(uint id)
         {
             if (ProtocolHosts.ContainsKey(id))
             {
                 var host = ProtocolHosts[id];
                 var tab = (TabWindow) host.Parent;
-                var nw = new FullScreenWindow(tab.Vm.SelectedItem.Content);
-                nw.Loaded += (sender, args) =>
+                var parent = new FullScreenWindow(tab.Vm.SelectedItem.Content);
+                parent.Loaded += (sender, args) =>
                 {
                     tab.Vm.SelectedItem.Content.GoFullScreen();
                 };
-                nw.Show();
-                FullScreenWindows.Add(id, nw);
+                parent.Show();
+                SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) from tab({tab.GetHashCode()}) to full({parent.GetHashCode()})");
+                _host2FullScreenWindows.Add(id, parent);
                 tab.Vm.Items.Remove(tab.Vm.SelectedItem);
                 if (tab.Vm.Items.Count > 0)
                     tab.Vm.SelectedItem = tab.Vm.Items.First();
                 else
                 {
+                    SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) Close");
                     CloseTabWindow(tab.Vm.Token);
                 }
-                host.Parent = nw;
+                host.Parent = parent;
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
+                return parent;
             }
+            return null;
         }
-        public void MoveProtocolHostFromFullScreenToTab(uint id)
+        public TabWindow MoveProtocolToTab(uint id)
         {
             CloseFullScreenWindow(id);
             if (ProtocolHosts.ContainsKey(id))
             {
                 var host = ProtocolHosts[id];
-                TabWindow tab = null;
-                if (!string.IsNullOrEmpty(lastTabToken) && TabWindows.ContainsKey(lastTabToken))
-                    tab = TabWindows[lastTabToken];
+                TabWindow parent = null;
+                if (!string.IsNullOrEmpty(_lastTabToken) && TabWindows.ContainsKey(_lastTabToken))
+                    parent = TabWindows[_lastTabToken];
                 else
                 {
                     string token = DateTime.Now.Ticks.ToString();
                     TabWindows.Add(token, new TabWindow(token));
-                    tab = TabWindows[token];
+                    parent = TabWindows[token];
                     //tab.Loaded += (sender, args) => host.Conn();
-                    tab.Show();
-                    lastTabToken = token;
+                    parent.Show();
+                    _lastTabToken = token;
                 }
-                tab.Activate();
-                var size = tab.GetTabContentSize();
-                tab.Vm.Items.Add(new TabItemViewModel()
+                parent.Activate();
+                var size = parent.GetTabContentSize();
+                parent.Vm.Items.Add(new TabItemViewModel()
                 {
                     Content = host,
                     Header = host.ProtocolServer.DispName,
                 });
-                tab.Vm.SelectedItem = tab.Vm.Items.Last();
-                host.Parent = tab;
+                parent.Vm.SelectedItem = parent.Vm.Items.Last();
+                host.Parent = parent;
+                SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) to tab({parent.GetHashCode()})");
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
+                return parent;
             }
+            return null;
         }
 
         public void DelProtocolHost(uint id)
@@ -247,8 +260,10 @@ namespace PRM.Core.Model
             if (ProtocolHosts.ContainsKey(id))
             {
                 var host = ProtocolHosts[id];
+                SimpleLogHelper.Log($@"Del host({host.GetHashCode()})");
                 ProtocolHosts.Remove(id);
                 host.DisConn();
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
             }
         }
         public void DelFullScreenWindow(uint id)
@@ -261,28 +276,33 @@ namespace PRM.Core.Model
             if (TabWindows.ContainsKey(token))
             {
                 var tab = TabWindows[token];
+                SimpleLogHelper.Log($@"Del tab({tab.GetHashCode()})");
                 foreach (var tabItemViewModel in tab.Vm.Items)
                 {
                     DelProtocolHost(tabItemViewModel.Content.ProtocolServer.Id);
                 }
                 CloseTabWindow(token);
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
             }
         }
         public void CloseFullScreenWindow(uint id)
         {
-            if (FullScreenWindows.ContainsKey(id))
+            if (_host2FullScreenWindows.ContainsKey(id))
             {
+                var parent = _host2FullScreenWindows[id];
+                SimpleLogHelper.Log($@"Close full win({parent.GetHashCode()})");
                 try
                 {
-                    FullScreenWindows[id].ProtocolHostBase.OnFullScreen2Window -= FullScreenWindows[id].OnFullScreen2Window;
+                    _host2FullScreenWindows[id].ProtocolHostBase.OnFullScreen2Window -= _host2FullScreenWindows[id].OnFullScreen2Window;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                 }
-                FullScreenWindows[id].ProtocolHostBase = null;
-                FullScreenWindows[id].Close();
-                FullScreenWindows.Remove(id);
+                parent.ProtocolHostBase = null;
+                parent.Close();
+                _host2FullScreenWindows.Remove(id);
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
             }
         }
         public void CloseTabWindow(string token)
@@ -290,8 +310,10 @@ namespace PRM.Core.Model
             if (TabWindows.ContainsKey(token))
             {
                 var tab = TabWindows[token];
+                SimpleLogHelper.Log($@"Close tab({tab.GetHashCode()})");
                 TabWindows.Remove(token);
                 tab.Close();
+                SimpleLogHelper.Log($@"ProtocolHosts.Count = {ProtocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, TabWindows.Count = {TabWindows.Count}");
             }
         }
     }

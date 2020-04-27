@@ -22,9 +22,17 @@ namespace PRM.ViewModel
         public ObservableCollection<TabItemViewModel> Items
         {
             get => _items;
-            set => SetAndNotifyIfChanged(nameof(Items), ref _items, value);
+            //set
+            //{
+            //    SetAndNotifyIfChanged(nameof(Items), ref _items, value);
+            //    RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+            //    Items.CollectionChanged += (sender, args) => 
+            //        RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+            //}
         }
-        
+
+        public Visibility BtnCloseAllVisibility => 
+            Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
         
         private TabItemViewModel _selectedItem = new TabItemViewModel();
         public TabItemViewModel SelectedItem
@@ -37,30 +45,59 @@ namespace PRM.ViewModel
         private readonly IInterTabClient _interTabClient = new InterTabClient();
         public IInterTabClient InterTabClient => _interTabClient;
 
+
+        
+        private WindowState _windowState = new WindowState();
+        public WindowState WindowState
+        {
+            get => _windowState;
+            set => SetAndNotifyIfChanged(nameof(WindowState), ref _windowState, value);
+        }
+
+
         public VmTabWindow(string token)
         {
             Token = token;
+            Items.CollectionChanged += (sender, args) =>
+                RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
+
 
 
         #region CMD
-        private RelayCommand _cmdGoFullScreen;
-        public RelayCommand CmdGoFullScreen
+        private RelayCommand _cmdHostGoFullScreen;
+        public RelayCommand CmdHostGoFullScreen
         {
             get
             {
-                if (_cmdGoFullScreen == null)
+                if (_cmdHostGoFullScreen == null)
                 {
-                    _cmdGoFullScreen = new RelayCommand((o) =>
+                    _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        Global.GetInstance().MoveProtocolHostFromTabToFullScreen(SelectedItem.Content.ProtocolServer.Id);
-                    }, o => this.SelectedItem != null);
+                        Global.GetInstance().MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
+                    }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
-                return _cmdGoFullScreen;
+                return _cmdHostGoFullScreen;
             }
         }
 
-        
+
+        private RelayCommand _cmdSwitchFullScreenNormal;
+        public RelayCommand CmdSwitchFullScreenNormal
+        {
+            get
+            {
+                if (_cmdSwitchFullScreenNormal == null)
+                {
+                    _cmdSwitchFullScreenNormal = new RelayCommand((o) =>
+                    {
+                        this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                    }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
+                }
+                return _cmdSwitchFullScreenNormal;
+            }
+        }
+
         private RelayCommand _cmdClose;
         public RelayCommand CmdClose
         {

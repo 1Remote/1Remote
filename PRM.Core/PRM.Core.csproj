@@ -113,6 +113,7 @@
     <Compile Include="Ulits\ColorPickerWPF\SliderRow.xaml.cs">
       <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ulits\ConsoleManager.cs" />
     <Compile Include="Ulits\GlobalHotkeyHooker.cs" />
     <Compile Include="Ulits\Ini.cs" />
     <Compile Include="Ulits\KeyWordMatchHelper.cs" />
