@@ -8,6 +8,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
 using PRM.Core.Ulits.DragablzTab;
+using PRM.Model;
 using PRM.View;
 using Shawn.Ulits.RDP;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
@@ -74,7 +75,7 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        Global.GetInstance().MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
+                        WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;
@@ -107,7 +108,7 @@ namespace PRM.ViewModel
                 {
                     _cmdClose = new RelayCommand((o) =>
                     {
-                        Global.GetInstance().DelTabWindow(Token);
+                        WindowPool.DelTabWindow(Token);
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdClose;
@@ -124,7 +125,7 @@ namespace PRM.ViewModel
             string token = DateTime.Now.Ticks.ToString();
             var v = new TabWindow(token);
             var vm = v.Vm;
-            Global.GetInstance().AddTab(v);
+            WindowPool.AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);            
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
