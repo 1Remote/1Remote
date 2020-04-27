@@ -124,7 +124,7 @@ namespace PRM.ViewModel
             string token = DateTime.Now.Ticks.ToString();
             var v = new TabWindow(token);
             var vm = v.Vm;
-            Global.GetInstance().TabWindows.Add(token, v);
+            Global.GetInstance().AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);            
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)

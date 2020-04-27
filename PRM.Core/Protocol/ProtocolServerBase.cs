@@ -202,8 +202,7 @@ namespace PRM.Core.Protocol
 
 
 
-        public abstract string GetSubTitle();
-
+        protected abstract string GetSubTitle();
 
 
 

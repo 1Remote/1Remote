@@ -27,11 +27,18 @@ namespace PRM.View
             //Closed += (sender, args) => { MessageBox.Show("Tab win close"); };
             BtnClose.Click += (sender, args) =>
             {
-                Global.GetInstance().DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
-                Vm.Items.Remove(Vm.SelectedItem);
-                if (Vm?.Items.Count == 0)
+                if (Vm.SelectedItem != null)
                 {
-                    Global.GetInstance().DelTabWindow(Vm.Token);
+                    Global.GetInstance().DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
+                    Vm.Items.Remove(Vm.SelectedItem);
+                    if (Vm?.Items.Count == 0)
+                    {
+                        Global.GetInstance().DelTabWindow(Vm.Token);
+                    }
+                }
+                else
+                {
+                    Vm.CmdClose.Execute();
                 }
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
@@ -60,7 +67,7 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                this.Title = Vm.SelectedItem.Header.ToString() + " - " + "PRemoteM";
+                this.Title = Vm.SelectedItem.Header + " - " + "PRemoteM";
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
             }
