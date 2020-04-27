@@ -1,23 +1,32 @@
-﻿using System;
+﻿using PRM.Core.Model;
+using PRM.Core.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Serialization;
-using PRM.Core.Model;
-using PRM.Core.Protocol;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace PRM.View
 {
-    public class FullScreenWindow : Window
+    /// <summary>
+    /// FullScreenWindow.xaml 的交互逻辑
+    /// </summary>
+    public partial class FullScreenWindow : Window
     {
+
         public ProtocolHostBase ProtocolHostBase;
         public FullScreenWindow(ProtocolHostBase content)
         {
-            this.WindowStyle = WindowStyle.None;
-            this.Background = Brushes.Black;
+            this.Title = content.ProtocolServer.DispName + " - " + content.ProtocolServer.SubTitle;
+            this.Icon = content.ProtocolServer.IconImg;
             ProtocolHostBase = content;
             ProtocolHostBase.Parent = this;
             ProtocolHostBase.OnFullScreen2Window += OnFullScreen2Window;

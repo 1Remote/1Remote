@@ -138,7 +138,7 @@ namespace Shawn.Ulits.RDP
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
             // TODO 密钥的 RSA 解密
             secured.ClearTextPassword = _rdpServer.Password;
-            _rdp.FullScreenTitle = _rdpServer.DispName;
+            _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
             #endregion
 
 
@@ -164,7 +164,7 @@ namespace Shawn.Ulits.RDP
             #endregion
 
             #region Redirect
-            
+
             _rdp.AdvancedSettings9.RedirectDrives = _rdpServer.EnableDiskDrives;
             _rdp.AdvancedSettings9.RedirectClipboard = _rdpServer.EnableClipboard;
             _rdp.AdvancedSettings9.RedirectPrinters = _rdpServer.EnablePrinters;
@@ -208,51 +208,6 @@ namespace Shawn.Ulits.RDP
                 _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = false;
             }
             #endregion
-
-            
-
-            #region DisplayPerformance
-            // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
-            int nDisplayPerformanceFlag = 0;
-            switch (_rdpServer.DisplayPerformance)
-            {
-                case EDisplayPerformance.Auto:
-                    break;
-                case EDisplayPerformance.Low:
-                    // 8,16,24,32
-                    _rdp.ColorDepth = 8;
-                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
-                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
-                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
-                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
-                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
-                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
-                    break;
-                case EDisplayPerformance.Middle:
-                    _rdp.ColorDepth = 16;
-                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
-                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
-                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
-                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
-                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
-                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
-                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
-                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
-
-                    break;
-                case EDisplayPerformance.High:
-                    _rdp.ColorDepth = 32;
-                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
-                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            SimpleLogHelper.Log("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
-            _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
-
-            #endregion
-
 
             #region Others
 
@@ -333,6 +288,47 @@ namespace Shawn.Ulits.RDP
 
             #endregion
 
+            #region DisplayPerformance
+            // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
+            int nDisplayPerformanceFlag = 0;
+            switch (_rdpServer.DisplayPerformance)
+            {
+                case EDisplayPerformance.Auto:
+                    break;
+                case EDisplayPerformance.Low:
+                    // 8,16,24,32
+                    _rdp.ColorDepth = 8;
+                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
+                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
+                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
+                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
+                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
+                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
+                    break;
+                case EDisplayPerformance.Middle:
+                    _rdp.ColorDepth = 16;
+                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
+                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
+                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
+                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
+                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
+                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
+                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
+                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+
+                    break;
+                case EDisplayPerformance.High:
+                    _rdp.ColorDepth = 32;
+                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
+                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            SimpleLogHelper.Log("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
+            _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
+
+            #endregion
         }
 
 
@@ -488,6 +484,7 @@ namespace Shawn.Ulits.RDP
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                Console.WriteLine(e.StackTrace);
             }
         }
 

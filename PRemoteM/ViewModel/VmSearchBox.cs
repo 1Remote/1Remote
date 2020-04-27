@@ -33,7 +33,7 @@ namespace PRM.ViewModel
             });
             SubTitleControl = (new TextBlock()
             {
-                Text = psb.GetSubTitle(),
+                Text = psb.SubTitle,
             });
         }
 
@@ -148,7 +148,7 @@ namespace PRM.ViewModel
                     var mDispName = new List<List<bool>>();
                     var mSubTitle = new List<List<bool>>();
                     var dispName = item.DispName;
-                    var subTitle = item.GetSubTitle();
+                    var subTitle = item.SubTitle;
                     for (var i = 0; i < keyWordIsMatch.Count; i++)
                     {
                         var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(dispName, keyWords[i], out var m1);

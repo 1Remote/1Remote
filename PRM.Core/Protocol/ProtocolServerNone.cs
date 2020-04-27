@@ -21,9 +21,9 @@ namespace PRM.Core.Protocol
             throw new NotImplementedException();
         }
 
-        public override string GetSubTitle()
+        protected override string GetSubTitle()
         {
-            return  "";
+            throw new NotImplementedException();
         }
 
         public ProtocolServerNone() : base("", "", "")
