@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.Model;
 using PRM.ViewModel;
 using Size = System.Windows.Size;
 
@@ -24,16 +25,15 @@ namespace PRM.View
             Vm = new VmTabWindow(token);
             DataContext = Vm;
 
-            //Closed += (sender, args) => { MessageBox.Show("Tab win close"); };
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm.SelectedItem != null)
                 {
-                    Global.GetInstance().DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
+                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
                     Vm.Items.Remove(Vm.SelectedItem);
                     if (Vm?.Items.Count == 0)
                     {
-                        Global.GetInstance().DelTabWindow(Vm.Token);
+                        WindowPool.DelTabWindow(Vm.Token);
                     }
                 }
                 else
@@ -73,7 +73,7 @@ namespace PRM.View
             }
         }
 
-        public Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
+        protected Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
         public Size GetTabContentSize()
         {
             return new Size()

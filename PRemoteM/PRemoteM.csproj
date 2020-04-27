@@ -78,6 +78,7 @@
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Global.cs" />
+    <Compile Include="Model\WindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
@@ -209,6 +210,7 @@
   <ItemGroup>
     <Resource Include="LOGO.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)zh-cn.xaml (

@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using PRM.Model;
 
 namespace PRM.View
 {
@@ -39,13 +40,13 @@ namespace PRM.View
             {
                 if (ProtocolHostBase != null)
                 {
-                    Global.GetInstance().DelFullScreenWindow(ProtocolHostBase.ProtocolServer.Id);
+                    WindowPool.DelFullScreenWindow(ProtocolHostBase.ProtocolServer.Id);
                 }
             };
         }
         public void OnFullScreen2Window()
         {
-            Global.GetInstance().MoveProtocolToTab(ProtocolHostBase.ProtocolServer.Id);
+            WindowPool.MoveProtocolToTab(ProtocolHostBase.ProtocolServer.Id);
         }
     }
 }
