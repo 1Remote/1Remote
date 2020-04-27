@@ -36,6 +36,7 @@ namespace Shawn.Ulits.RDP
         private readonly ProtocolServerRDP _rdpServer = null;
         private uint _scaleFactor = 100;
         private bool _isDisconned = false;
+        private bool _isConnecting = false;
 
         /*
         public void SetParent(Window win)
@@ -115,7 +116,6 @@ namespace Shawn.Ulits.RDP
                     MakeFullScreen2Normal();
                 };
                 _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
-                _rdp.OnConnected += RdpOnConnected;
                 _rdp.OnDisconnected += RdpcOnDisconnected;
                 _rdp.OnConfirmClose += RdpOnOnConfirmClose;
                 _rdp.OnLoginComplete += RdpOnOnLoginComplete;
@@ -157,12 +157,125 @@ namespace Shawn.Ulits.RDP
             #region conn bar
             _rdp.AdvancedSettings6.DisplayConnectionBar = true;
             _rdp.AdvancedSettings6.ConnectionBarShowPinButton = true;
+            _rdp.AdvancedSettings6.PinConnectionBar = false;
             _rdp.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
             _rdp.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             _rdp.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;
             #endregion
 
+            #region Redirect
+            
+            _rdp.AdvancedSettings9.RedirectDrives = _rdpServer.EnableDiskDrives;
+            _rdp.AdvancedSettings9.RedirectClipboard = _rdpServer.EnableClipboard;
+            _rdp.AdvancedSettings9.RedirectPrinters = _rdpServer.EnablePrinters;
+            _rdp.AdvancedSettings9.RedirectPOSDevices = _rdpServer.EnablePorts;
+            _rdp.AdvancedSettings9.RedirectSmartCards = _rdpServer.EnableSmartCardsAndWinHello;
 
+            if (_rdpServer.EnableKeyCombinations)
+            {
+                // - 0 Apply key combinations only locally at the client computer.
+                // - 1 Apply key combinations at the remote server.
+                // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
+                _rdp.SecuredSettings3.KeyboardHookMode = 2;
+            }
+
+            if (_rdpServer.EnableSounds)
+            {
+                // - 0 Redirect sounds to the client. This is the default value.
+                // - 1 Play sounds at the remote computer.
+                // - 2 Disable sound redirection; do not play sounds at the server.
+                _rdp.SecuredSettings3.AudioRedirectionMode = 0;
+                // - 0 (Audio redirection is enabled and the option for redirection is "Bring to this computer". This is the default mode.)
+                // - 1 (Audio redirection is enabled and the option is "Leave at remote computer". The "Leave at remote computer" option is supported only when connecting remotely to a host computer that is running Windows Vista. If the connection is to a host computer that is running Windows Server 2008, the option "Leave at remote computer" is changed to "Do not play".)
+                // - 2 (Audio redirection is enabled and the mode is "Do not play".)
+                _rdp.AdvancedSettings6.AudioRedirectionMode = 0;
+
+                // - 0 Dynamic audio quality. This is the default audio quality setting. The server dynamically adjusts audio output quality in response to network conditions and the client and server capabilities.
+                // - 1 Medium audio quality. The server uses a fixed but compressed format for audio output.
+                // - 2 High audio quality. The server provides audio output in uncompressed PCM format with lower processing overhead for latency.
+                _rdp.AdvancedSettings8.AudioQualityMode = 0;
+            }
+            else
+            {
+                // - 2 Disable sound redirection; do not play sounds at the server.
+                _rdp.SecuredSettings3.AudioRedirectionMode = 2;
+                _rdp.AdvancedSettings6.AudioRedirectionMode = 2;
+            }
+
+            if (_rdpServer.EnableAudioCapture)
+            {
+                // indicates whether the default audio input device is redirected from the client to the remote session
+                _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = false;
+            }
+            #endregion
+
+            
+
+            #region DisplayPerformance
+            // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
+            int nDisplayPerformanceFlag = 0;
+            switch (_rdpServer.DisplayPerformance)
+            {
+                case EDisplayPerformance.Auto:
+                    break;
+                case EDisplayPerformance.Low:
+                    // 8,16,24,32
+                    _rdp.ColorDepth = 8;
+                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
+                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
+                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
+                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
+                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
+                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
+                    break;
+                case EDisplayPerformance.Middle:
+                    _rdp.ColorDepth = 16;
+                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
+                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
+                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
+                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
+                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
+                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
+                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
+                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+
+                    break;
+                case EDisplayPerformance.High:
+                    _rdp.ColorDepth = 32;
+                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
+                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            SimpleLogHelper.Log("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
+            _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
+
+            #endregion
+
+
+            #region Others
+
+            // enable CredSSP, will use CredSsp if the client supports.
+            _rdp.AdvancedSettings9.EnableCredSspSupport = true;
+
+            //- 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
+            //- 1: If server authentication fails, don't establish a connection (Don't connect)
+            //- 2: If server authentication fails, show a warning and allow me to connect or refuse the connection (Warn me)
+            //- 3: No authentication requirement specified.
+            _rdp.AdvancedSettings9.AuthenticationLevel = 0;
+
+            // setting PublicMode to false allows the saving of credentials, which prevents
+            _rdp.AdvancedSettings9.PublicMode = false;
+            _rdp.AdvancedSettings9.EnableAutoReconnect = true;
+
+
+            // - 0 Apply key combinations only locally at the client computer.
+            // - 1 Apply key combinations at the remote server.
+            // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
+            _rdp.SecuredSettings3.KeyboardHookMode = 2;
+
+            #endregion
 
             #region Display
 
@@ -170,6 +283,7 @@ namespace Shawn.Ulits.RDP
             _rdp.SetExtendedProperty("DesktopScaleFactor", _scaleFactor);
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
             _rdp.AdvancedSettings2.SmartSizing = _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch;
+            // to enhance user experience, i let the form handled full screen
             _rdp.AdvancedSettings6.ContainerHandledFullScreen = 1;
 
             if (width > 100 && height > 100)
@@ -187,6 +301,7 @@ namespace Shawn.Ulits.RDP
             switch (_rdpServer.RdpFullScreenFlag)
             {
                 case ERdpFullScreenFlag.Disable:
+                    base.CanFullScreen = false;
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
                     // depends on window status of last session
@@ -206,9 +321,11 @@ namespace Shawn.Ulits.RDP
                         }
                         _rdp.FullScreen = true;
                     }
+                    base.CanFullScreen = true;
                     break;
                 case ERdpFullScreenFlag.EnableFullAllScreens:
                     ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
+                    base.CanFullScreen = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -222,6 +339,7 @@ namespace Shawn.Ulits.RDP
         #region Base Interface
         public override void Conn()
         {
+            _isConnecting = true;
             _isDisconned = false;
             GridLoading.Visibility = Visibility.Visible;
             RdpHost.Visibility = Visibility.Collapsed;
@@ -230,6 +348,7 @@ namespace Shawn.Ulits.RDP
 
         public override void DisConn()
         {
+            _isConnecting = false;
             if (!_isDisconned)
             {
                 _isDisconned = true;
@@ -250,9 +369,13 @@ namespace Shawn.Ulits.RDP
 
         public override bool IsConnected()
         {
-            return _rdp?.Connected > 0;
+            return this._isDisconned == false && _rdp?.Connected > 0;
         }
 
+        public override bool IsConnecting()
+        {
+            return _isConnecting;
+        }
 
         #endregion
 
@@ -261,21 +384,6 @@ namespace Shawn.Ulits.RDP
         #region event handler
 
         #region connection
-
-        private void RdpOnConnected(object sender, EventArgs e)
-        {
-            if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
-            {
-                ResizeEndStartFireDelegate();
-                if (this.OnResizeEnd == null)
-                    this.OnResizeEnd += ReSizeRdp;
-            }
-
-            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen && _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen)
-            {
-                _rdp.FullScreen = true;
-            }
-        }
 
         #region Disconn Reason
         enum EDiscReason
@@ -331,6 +439,20 @@ namespace Shawn.Ulits.RDP
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
         {
+            _isConnecting = false;
+
+            if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
+            {
+                ResizeEndStartFireDelegate();
+                if (this.OnResizeEnd == null)
+                    this.OnResizeEnd += ReSizeRdp;
+            }
+
+            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen && _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen)
+            {
+                _rdp.FullScreen = true;
+            }
+
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
         }

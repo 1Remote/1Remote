@@ -121,9 +121,9 @@
                         </Grid.Resources>
                         <ComboBox SelectedIndex="{Binding DisplayPerformance,Converter={StaticResource ConverterEDisplayPerformance}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_performance_auto}" ToolTip="{DynamicResource server_editor_display_performance_auto}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_high}" ToolTip="{DynamicResource server_editor_display_performance_high}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_middle}" ToolTip="{DynamicResource server_editor_display_performance_middle}"/>
                             <ComboBoxItem Content="{DynamicResource server_editor_display_performance_low}" ToolTip="{DynamicResource server_editor_display_performance_low}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_middle}" ToolTip="{DynamicResource server_editor_display_performance_middle}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_high}" ToolTip="{DynamicResource server_editor_display_performance_high}"/>
                         </ComboBox>
                     </Grid>
                 </StackPanel>

@@ -27,15 +27,11 @@ namespace PRM.View
             //Closed += (sender, args) => { MessageBox.Show("Tab win close"); };
             BtnClose.Click += (sender, args) =>
             {
-                var _vm = ((VmTabWindow) this.DataContext);
-                if (_vm?.Items.Count > 1)
+                Global.GetInstance().DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
+                Vm.Items.Remove(Vm.SelectedItem);
+                if (Vm?.Items.Count == 0)
                 {
-                    Global.GetInstance().DelProtocolHost(_vm.SelectedItem.Content.ProtocolServer.Id);
-                    _vm.Items.Remove(_vm.SelectedItem);
-                }
-                else
-                {
-                    Close();
+                    Global.GetInstance().DelTabWindow(Vm.Token);
                 }
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
@@ -49,6 +45,10 @@ namespace PRM.View
         /// <param name="e"></param>
         private void System_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            }
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 this.DragMove();
@@ -58,15 +58,15 @@ namespace PRM.View
 
         private void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.DataContext is VmTabWindow _vm
-                && _vm?.SelectedItem != null)
+            if (Vm?.SelectedItem != null)
             {
-                // TODO set ICOm
-                this.Title = _vm.SelectedItem.Header.ToString() + " - " + "PRemoteM";
+                this.Title = Vm.SelectedItem.Header.ToString() + " - " + "PRemoteM";
+                this.Icon =
+                this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
             }
         }
 
-        public Thickness TabContentBorder { get; } = new Thickness(2 ,0 ,2 ,2);
+        public Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
         public Size GetTabContentSize()
         {
             return new Size()

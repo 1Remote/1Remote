@@ -7,6 +7,7 @@
         xmlns:dragablzTab="clr-namespace:PRM.Core.Ulits.DragablzTab" 
         xmlns:view="clr-namespace:PRM.View"
         mc:Ignorable="d"
+        WindowState="{Binding WindowState}"
         Title="Host - PRemoteM" Height="450" Width="800">
 
     <WindowChrome.WindowChrome>
@@ -167,7 +168,7 @@
         <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
-                    <!--<Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>-->
+                    <Image Name="IconTitleBar"></Image>
                 </Grid>
                 <Label VerticalContentAlignment="Center" Margin="0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
                     <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
@@ -198,6 +199,9 @@
                     <Style.Triggers>
                         <Trigger Property="Button.IsMouseOver" Value="True">
                             <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Button.Visibility" Value="Collapsed" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -239,14 +243,14 @@
             </Button>
 
 
-            <Button Command="{Binding CmdGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Command="{Binding CmdHostGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" Style="{StaticResource WinTitleBarBtnStyle}">
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
             </Button>
 
 
-            <Button Name="BtnCloseAll" Command="{Binding CmdClose}">
+            <Button Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Style.Triggers>

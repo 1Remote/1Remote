@@ -79,7 +79,9 @@ namespace PersonalRemoteManager
                     ChannelServices.RegisterChannel(new IpcChannel(ServiceIpcPortName), false);
                 }
 
-
+#if DEBUG
+                Shawn.Ulits.ConsoleManager.Show();
+#endif
                 // app start
                 {
                     // config init

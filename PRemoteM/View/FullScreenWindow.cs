@@ -36,7 +36,7 @@ namespace PRM.View
         }
         public void OnFullScreen2Window()
         {
-            Global.GetInstance().MoveProtocolHostFromFullScreenToTab(ProtocolHostBase.ProtocolServer.Id);
+            Global.GetInstance().MoveProtocolToTab(ProtocolHostBase.ProtocolServer.Id);
         }
     }
 }

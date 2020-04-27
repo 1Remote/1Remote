@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +11,9 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolHostBase : UserControl
     {
+        public uint Id => ProtocolServer.Id;
         public readonly ProtocolServerBase ProtocolServer;
-        public readonly bool CanFullScreen;
+        public bool CanFullScreen { get; protected set; }
         private Window _parent = null;
         public Window Parent
         {
@@ -25,6 +27,7 @@ namespace PRM.Core.Protocol
 
         protected ProtocolHostBase(ProtocolServerBase protocolServer, bool canFullScreen = false)
         {
+            Debug.Assert(protocolServer != null);
             ProtocolServer = protocolServer;
             CanFullScreen = canFullScreen;
         }
@@ -33,6 +36,7 @@ namespace PRM.Core.Protocol
         public abstract void DisConn();
         public abstract void GoFullScreen();
         public abstract bool IsConnected();
+        public abstract bool IsConnecting();
 
         public Action OnFullScreen2Window = null;
         public Action OnWindow2FullScreen = null;

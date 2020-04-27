@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shawn.Ulits
 {
-    static class SimpleLogHelper
+    public static class SimpleLogHelper
     {
         public static string LogFileName = "simple.log.md";
 
