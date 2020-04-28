@@ -63,7 +63,7 @@
             <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
             <Brush x:Key="MainBgColorForegroundBrush">#000</Brush>-->
 
-
+            <view:Hex2Brush x:Key="Hex2Brush"></view:Hex2Brush>
             <Style TargetType="{x:Type Thumb}" x:Key="MahAppsInvisibleThumbStyle">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Template">
@@ -108,15 +108,31 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" 
-                                  Background="{DynamicResource MainColor1Brush}"
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
+                                <Grid.Background>
+                                    <LinearGradientBrush>
+                                        <GradientStop Color="{Binding MarkColorHex}" Offset="0"></GradientStop>
+                                        <GradientStop Color="{DynamicResource MainColor1}" Offset="1"></GradientStop>
+                                    </LinearGradientBrush>
+                                </Grid.Background>
                                 <Grid Name="Trapezoid" Height="30" VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="20" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="10" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Padding="10 0 10 0">
+                                    <Grid Width="5" Name="ColorMark" Visibility="Hidden" HorizontalAlignment="Left" Background="{Binding MarkColorHex,Converter={StaticResource Hex2Brush}, Mode=OneWay}"></Grid>
+                                    <Border  Grid.Column="1" Padding="0 0 4 0">
+                                        <Grid Width="16" Height="16"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center">
+                                            <Image Source="{Binding IconImg}" Stretch="Uniform"></Image>
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Column="2" Padding="0">
                                         <ContentPresenter Content="{TemplateBinding ContentControl.Content}" 
                                                   ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" 
                                                   ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" 
@@ -126,7 +142,7 @@
                                                   Margin="{TemplateBinding Control.Padding }"
                                                   x:Name="contentPresenter" />
                                     </Border>
-                                    <Thumb Grid.Column="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" 
+                                    <Thumb Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" 
                                        x:Name="PART_Thumb"
                                        Style="{StaticResource MahAppsInvisibleThumbStyle}" />
                                 </Grid>
@@ -140,6 +156,7 @@
                                     <!--<Setter Property="LongBasePenBrush" Value="{DynamicResource AccentColorBrush3}" TargetName="Trapezoid"/>-->
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" TargetName="ColorMark"/>
                                     <Setter Property="Margin" Value="0 -1 0 1" TargetName="templateRoot"/>
                                     <Setter Property="Background" Value="{DynamicResource MainColor2Brush}" TargetName="Trapezoid"/>
                                     <!--<Setter Property="LongBasePenBrush" Value="{DynamicResource AccentColorBrush}" TargetName="Trapezoid"/>-->

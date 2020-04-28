@@ -206,6 +206,7 @@ namespace PRM.Model
                 }
             }
         }
+
         /// <summary>
         /// terminate remote connection
         /// </summary>
@@ -220,7 +221,14 @@ namespace PRM.Model
                 SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
 
                 // close full
-                CloseFullScreenWindow(id);
+                if (_host2FullScreenWindows.ContainsKey(id))
+                {
+                    var full = _host2FullScreenWindows[id];
+                    SimpleLogHelper.Log($@"Close full({full.GetHashCode()})");
+                    full.Close();
+                    _host2FullScreenWindows.Remove(id);
+                    SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                }
 
                 // close tab
                 var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Any(y => y.Content.ProtocolServer.Id == id));
@@ -242,7 +250,7 @@ namespace PRM.Model
             {
                 var tab = _tabWindows[token];
                 SimpleLogHelper.Log($@"Del tab({tab.GetHashCode()})");
-                foreach (var tabItemViewModel in tab.Vm.Items)
+                foreach (var tabItemViewModel in tab.Vm.Items.ToArray())
                 {
                     DelProtocolHost(tabItemViewModel.Content.ProtocolServer.Id);
                 }
@@ -251,17 +259,6 @@ namespace PRM.Model
             }
         }
 
-        public static void CloseFullScreenWindow(uint id)
-        {
-            if (_host2FullScreenWindows.ContainsKey(id))
-            {
-                var parent = _host2FullScreenWindows[id];
-                SimpleLogHelper.Log($@"Close full({parent.GetHashCode()})");
-                parent.Close();
-                _host2FullScreenWindows.Remove(id);
-                SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-            }
-        }
         public static void CloseTabWindow(string token)
         {
             if (_tabWindows.ContainsKey(token))

@@ -23,7 +23,7 @@ namespace PRM.View
     public partial class FullScreenWindow : Window
     {
 
-        public ProtocolHostBase ProtocolHostBase;
+        public ProtocolHostBase ProtocolHostBase { get; private set; }= null;
         public FullScreenWindow(ProtocolHostBase content)
         {
             InitializeComponent();
@@ -32,7 +32,15 @@ namespace PRM.View
             {
                 this.Content = ProtocolHostBase;
             };
+            Closed += (sender, args) =>
+            {
+                if (ProtocolHostBase != null)
+                {
+                    WindowPool.DelProtocolHost(ProtocolHostBase.ProtocolServer.Id);
+                }
+            };
         }
+
         public void SetProtocolHost(ProtocolHostBase content)
         {
             this.Content = null;

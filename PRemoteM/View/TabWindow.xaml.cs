@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.Model;
@@ -77,5 +78,23 @@ namespace PRM.View
                 Height = TabablzControl.ActualHeight - 30 - 2 - 1,
             };
         }
+    }
+
+
+    public class Hex2Brush : IValueConverter
+    {
+        #region IValueConverter
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string hex = value.ToString();
+            var brush = (System.Windows.Media.Brush)(new System.Windows.Media.BrushConverter().ConvertFrom(hex));
+            return brush;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return "#FFFFFF";
+        }
+        #endregion
     }
 }

@@ -9,6 +9,13 @@ namespace PRM.Core.Ulits.DragablzTab
 {
     public class TabItemViewModel : NotifyPropertyChangedBase
     {
+        public TabItemViewModel()
+        {
+            // todo use dynamic resource
+            _markColorHex = "#102b3e";
+        }
+
+
         private object _header;
         public object Header
         {
@@ -20,10 +27,14 @@ namespace PRM.Core.Ulits.DragablzTab
         public ProtocolHostBase Content
         {
             get => _content;
-            set => SetAndNotifyIfChanged(nameof(Content), ref _content, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(Content), ref _content, value);
+                MarkColorHex = Content.ProtocolServer.MarkColorHex;
+                IconImg = Content.ProtocolServer.IconImg;
+            }
         }
 
-        
 
         private bool _isSelected;
         public bool IsSelected
@@ -33,12 +44,12 @@ namespace PRM.Core.Ulits.DragablzTab
         }
 
 
-        
-        private string _markColorHex = "#FFFFFF";
+
+        private string _markColorHex;
         public string MarkColorHex
         {
             get => _markColorHex;
-            set
+            private set
             {
                 try
                 {
@@ -47,6 +58,17 @@ namespace PRM.Core.Ulits.DragablzTab
                 catch (Exception)
                 {
                 }
+            }
+        }
+
+        
+        private System.Windows.Media.Imaging.BitmapSource _iconImg;
+        public System.Windows.Media.Imaging.BitmapSource IconImg
+        {
+            get => _iconImg;
+            private set
+            {
+                SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
             }
         }
     }
