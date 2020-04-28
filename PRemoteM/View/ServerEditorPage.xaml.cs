@@ -50,7 +50,8 @@ namespace PRM.View
                     LogoSelector.Logo =
                     vm.Server.IconImg = ProtocolServerIcons.Instance.Icons[r.Next(0, ProtocolServerIcons.Instance.Icons.Count)];
                 }
-                ColorPick.Color = Colors.White;
+                // todo use dynamic resource
+                ColorPick.Color = (Color)ColorConverter.ConvertFromString("#102b3e");
             }
             ColorPick.OnColorSelected += color => _vmServerEditorPage.Server.MarkColor = ColorPick.Color;
         }
