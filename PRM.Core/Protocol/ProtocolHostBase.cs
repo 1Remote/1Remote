@@ -39,7 +39,7 @@ namespace PRM.Core.Protocol
         public abstract bool IsConnecting();
 
         //public Action OnDisconnected = null;
-        public Action<uint> OnClose = null;
+        public Action<uint> OnClosed = null;
         public Action<uint> OnFullScreen2Window = null;
         //public Action OnWindow2FullScreen = null;
     }
