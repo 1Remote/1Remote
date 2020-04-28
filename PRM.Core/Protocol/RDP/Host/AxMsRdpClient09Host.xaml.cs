@@ -456,7 +456,7 @@ namespace Shawn.Ulits.RDP
         private void RdpOnOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
         {
             DisConn();
-            Parent?.Close();
+            base.OnClose?.Invoke(ProtocolServer.Id);
         }
 
         #endregion
@@ -547,9 +547,9 @@ namespace Shawn.Ulits.RDP
         }
         private void MakeFullScreen2Normal()
         {
-            // TODO 关闭Parent，返回到 TAB window
             Debug.Assert(Parent != null);
             _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = false;
+            Parent.Topmost = false;
             Parent.ResizeMode = ResizeMode.CanResize;
             Parent.Topmost = false;
             Parent.WindowStyle = WindowStyle.SingleBorderWindow;
@@ -559,7 +559,7 @@ namespace Shawn.Ulits.RDP
             Parent.Top = _normalTop;
             Parent.Left = _normalLeft;
             SetRdpResolution((uint)_rdp.Width, (uint)_rdp.Height);
-            base.OnFullScreen2Window?.Invoke();
+            base.OnFullScreen2Window?.Invoke(_rdpServer.Id);
         }
         private void MakeForm2Minimize()
         {
