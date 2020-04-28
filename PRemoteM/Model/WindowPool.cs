@@ -42,6 +42,8 @@ namespace PRM.Model
             if (server.IsConnWithFullScreen())
             {
                 var host = ProtocolHostFactory.Get(server);
+                host.OnClose += OnProtocolClose;
+                host.OnFullScreen2Window += OnFullScreen2Window;
                 WindowPool.AddProtocolHost(host);
                 WindowPool.MoveProtocolToFullScreen(server.Id);
                 host.Conn();
@@ -63,6 +65,8 @@ namespace PRM.Model
                 tab.Activate();
                 var size = tab.GetTabContentSize();
                 var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
+                host.OnClose += OnProtocolClose;
+                host.OnFullScreen2Window += OnFullScreen2Window;
                 host.Parent = tab;
                 tab.Vm.Items.Add(new TabItemViewModel()
                 {
@@ -75,6 +79,16 @@ namespace PRM.Model
                 SimpleLogHelper.Log($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
                 SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
+        }
+
+        private static void OnFullScreen2Window(uint id)
+        {
+            MoveProtocolToTab(id);
+        }
+
+        private static void OnProtocolClose(uint id)
+        {
+            DelProtocolHost(id);
         }
 
 
@@ -120,15 +134,25 @@ namespace PRM.Model
                     }
                 }
 
-                // move to full
-                var full = new FullScreenWindow(host);
-                AddFull(full);
-                full.Loaded += (sender, args) =>
+
+                FullScreenWindow full;
+                if (_host2FullScreenWindows.ContainsKey(id))
                 {
+                    full = _host2FullScreenWindows[id];
+                    full.SetProtocolHost(host);
+                    host.Parent = full;
                     host.GoFullScreen();
-                };
+                }
+                else
+                {
+                    // move to full
+                    full = new FullScreenWindow(host);
+                    AddFull(full);
+                    host.Parent = full;
+                    full.Loaded += (sender, args) => { host.GoFullScreen(); };
+                }
                 full.Show();
-                host.Parent = full;
+
                 SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
                 SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
@@ -143,20 +167,13 @@ namespace PRM.Model
                 {
                     if (host.Parent is TabWindow tab)
                     {
-                        SimpleLogHelper.Log($@"Remove host({host.GetHashCode()}) from tab({tab.GetHashCode()})");
-                        tab.Vm.Items.Remove(tab.Vm.SelectedItem);
-                        if (tab.Vm.Items.Count > 0)
-                            tab.Vm.SelectedItem = tab.Vm.Items.First();
-                        else
-                        {
-                            SimpleLogHelper.Log($@"Move tab({tab.GetHashCode()}) Close");
-                            CloseTabWindow(tab.Vm.Token);
-                        }
+                        tab.Activate();
+                        return;
                     }
                     else if (host.Parent is FullScreenWindow full)
                     {
-                        SimpleLogHelper.Log($@"Move full({full.GetHashCode()}) Close");
-                        CloseFullScreenWindow(id);
+                        SimpleLogHelper.Log($@"Hide full({full.GetHashCode()})");
+                        full.Hide();
                     }
                     else
                         throw new ArgumentOutOfRangeException(host.Parent + " type is wrong!");
@@ -201,16 +218,21 @@ namespace PRM.Model
                 _protocolHosts.Remove(id);
                 host.DisConn();
                 SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+
+                // close full
+                CloseFullScreenWindow(id);
+
+                // close tab
+                var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Any(y => y.Content.ProtocolServer.Id == id));
+                foreach (var tab in tabs.ToArray())
+                {
+                    tab.Vm.Items.Remove(tab.Vm.Items.First(x => x.Content.ProtocolServer.Id == id));
+                    if (tab.Vm.Items.Count == 0)
+                        CloseTabWindow(tab.Vm.Token);
+                }
             }
         }
-        /// <summary>
-        /// del window terminate remote connection
-        /// </summary>
-        public static void DelFullScreenWindow(uint id)
-        {
-            CloseFullScreenWindow(id);
-            DelProtocolHost(id);
-        }
+
         /// <summary>
         /// del window terminate remote connection
         /// </summary>
@@ -228,22 +250,13 @@ namespace PRM.Model
                 SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
+
         public static void CloseFullScreenWindow(uint id)
         {
             if (_host2FullScreenWindows.ContainsKey(id))
             {
                 var parent = _host2FullScreenWindows[id];
-                SimpleLogHelper.Log($@"Close full win({parent.GetHashCode()})");
-                try
-                {
-                    _host2FullScreenWindows[id].ProtocolHostBase.OnFullScreen2Window -= _host2FullScreenWindows[id].OnFullScreen2Window;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-                // !important, "parent.ProtocolHostBase" = null; should be behind "parent.Close();"
-                parent.ProtocolHostBase = null;
+                SimpleLogHelper.Log($@"Close full({parent.GetHashCode()})");
                 parent.Close();
                 _host2FullScreenWindows.Remove(id);
                 SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");

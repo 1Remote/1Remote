@@ -30,11 +30,6 @@ namespace PRM.View
                 if (Vm.SelectedItem != null)
                 {
                     WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
-                    Vm.Items.Remove(Vm.SelectedItem);
-                    if (Vm?.Items.Count == 0)
-                    {
-                        WindowPool.DelTabWindow(Vm.Token);
-                    }
                 }
                 else
                 {

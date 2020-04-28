@@ -26,27 +26,25 @@ namespace PRM.View
         public ProtocolHostBase ProtocolHostBase;
         public FullScreenWindow(ProtocolHostBase content)
         {
-            this.Title = content.ProtocolServer.DispName + " - " + content.ProtocolServer.SubTitle;
-            this.Icon = content.ProtocolServer.IconImg;
-            ProtocolHostBase = content;
-            ProtocolHostBase.Parent = this;
-            ProtocolHostBase.OnFullScreen2Window += OnFullScreen2Window;
+            InitializeComponent();
+            SetProtocolHost(content);
             Loaded += (sender, args) =>
             {
-                this.Background = Brushes.Black;
                 this.Content = ProtocolHostBase;
             };
-            Closed += (sender, args) =>
-            {
-                if (ProtocolHostBase != null)
-                {
-                    WindowPool.DelFullScreenWindow(ProtocolHostBase.ProtocolServer.Id);
-                }
-            };
         }
-        public void OnFullScreen2Window()
+        public void SetProtocolHost(ProtocolHostBase content)
         {
-            WindowPool.MoveProtocolToTab(ProtocolHostBase.ProtocolServer.Id);
+            this.Content = null;
+            ProtocolHostBase = content;
+            if (content != null)
+            {
+                this.Title = ProtocolHostBase.ProtocolServer.DispName + " - " + ProtocolHostBase.ProtocolServer.SubTitle;
+                this.Icon = ProtocolHostBase.ProtocolServer.IconImg;
+                ProtocolHostBase.Parent = this;
+            }
+            if (IsLoaded)
+                this.Content = content;
         }
     }
 }
