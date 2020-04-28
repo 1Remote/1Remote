@@ -38,61 +38,6 @@ namespace Shawn.Ulits.RDP
         private bool _isDisconned = false;
         private bool _isConnecting = false;
 
-        /*
-        public void SetParent(Window win)
-        {
-            if (_host4WindowMode != win && _host4WindowMode != null && !_host4WindowMode.IsLoaded)
-            {
-                try
-                {
-                    _host4WindowMode.Loaded -= ParentWindowOnLoaded;
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-
-                try
-                {
-                    _host4WindowMode.StateChanged -= ParentWindowOnStateChanged;
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-            }
-
-            _host4WindowMode = win;
-            if (_isFirstTimeParentBind)
-            {
-                _isFirstTimeParentBind = false;
-                if (_host4WindowMode.IsLoaded)
-                {
-                    InitRdp();
-                    Conn();
-                }
-                else
-                {
-                    _host4WindowMode.Loaded += ParentWindowOnLoaded;
-                }
-            }
-            _host4WindowMode.StateChanged += ParentWindowOnStateChanged;
-            _host4WindowMode.Closed += (sender, args) =>
-            {
-                try
-                {
-                    _rdp?.Dispose();
-                }
-                catch (Exception)
-                {
-                }
-            };
-            _host4WindowMode.Icon = _rdpServer.IconImg;
-            _host4WindowMode.Title = _rdpServer.DispName + " @ " + _rdpServer.Address;
-        }
-        */
-
-
 
         public AxMsRdpClient09Host(ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(protocolServer, true)
         {
@@ -288,42 +233,52 @@ namespace Shawn.Ulits.RDP
 
             #endregion
 
-            #region DisplayPerformance
+            #region Performance
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
             int nDisplayPerformanceFlag = 0;
-            switch (_rdpServer.DisplayPerformance)
+            if (_rdpServer.DisplayPerformance != EDisplayPerformance.Auto)
             {
-                case EDisplayPerformance.Auto:
-                    break;
-                case EDisplayPerformance.Low:
-                    // 8,16,24,32
-                    _rdp.ColorDepth = 8;
-                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
-                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
-                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
-                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
-                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
-                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
-                    break;
-                case EDisplayPerformance.Middle:
-                    _rdp.ColorDepth = 16;
-                    nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
-                    nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
-                    nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
-                    nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
-                    nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
-                    nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
-                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
-                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+                _rdp.AdvancedSettings9.BandwidthDetection = false;
+                // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings7-networkconnectiontype
+                // CONNECTION_TYPE_MODEM (1 (0x1)) Modem (56 Kbps)
+                // CONNECTION_TYPE_BROADBAND_LOW (2 (0x2)) Low-speed broadband (256 Kbps to 2 Mbps) CONNECTION_TYPE_SATELLITE (3 (0x3)) Satellite (2 Mbps to 16 Mbps, with high latency)
+                // CONNECTION_TYPE_BROADBAND_HIGH (4 (0x4)) High-speed broadband (2 Mbps to 10 Mbps) CONNECTION_TYPE_WAN (5 (0x5)) Wide area network (WAN) (10 Mbps or higher, with high latency)
+                // CONNECTION_TYPE_LAN (6 (0x6)) Local area network (LAN) (10 Mbps or higher)
+                _rdp.AdvancedSettings8.NetworkConnectionType = 1;
+                switch (_rdpServer.DisplayPerformance)
+                {
+                    case EDisplayPerformance.Auto:
+                        break;
+                    case EDisplayPerformance.Low:
+                        // 8,16,24,32
+                        _rdp.ColorDepth = 8;
+                        nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
+                        nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
+                        nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
+                        nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
+                        nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
+                        nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
+                        break;
+                    case EDisplayPerformance.Middle:
+                        _rdp.ColorDepth = 16;
+                        nDisplayPerformanceFlag += 0x00000001;//TS_PERF_DISABLE_WALLPAPER;      Wallpaper on the desktop is not displayed.
+                        nDisplayPerformanceFlag += 0x00000002;//TS_PERF_DISABLE_FULLWINDOWDRAG; Full-window drag is disabled; only the window outline is displayed when the window is moved.
+                        nDisplayPerformanceFlag += 0x00000004;//TS_PERF_DISABLE_MENUANIMATIONS; Menu animations are disabled.
+                        nDisplayPerformanceFlag += 0x00000008;//TS_PERF_DISABLE_THEMING ;       Themes are disabled.
+                        nDisplayPerformanceFlag += 0x00000020;//TS_PERF_DISABLE_CURSOR_SHADOW;  No shadow is displayed for the cursor.
+                        nDisplayPerformanceFlag += 0x00000040;//TS_PERF_DISABLE_CURSORSETTINGS; Cursor blinking is disabled.
+                        nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
+                        nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
 
-                    break;
-                case EDisplayPerformance.High:
-                    _rdp.ColorDepth = 32;
-                    nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
-                    nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                        break;
+                    case EDisplayPerformance.High:
+                        _rdp.ColorDepth = 32;
+                        nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
+                        nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
             SimpleLogHelper.Log("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
             _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
@@ -417,6 +372,7 @@ namespace Shawn.Ulits.RDP
         #endregion
         private void RdpcOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
+            _isDisconned = true;
             ResizeEndStopFireDelegate();
             if (this.OnResizeEnd != null)
                 this.OnResizeEnd -= ReSizeRdp;
@@ -429,8 +385,9 @@ namespace Shawn.Ulits.RDP
                 && reason != "")
             {
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
-                System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"));
+                System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            base.OnClosed.Invoke(_rdpServer.Id);
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
@@ -456,7 +413,6 @@ namespace Shawn.Ulits.RDP
         private void RdpOnOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
         {
             DisConn();
-            base.OnClose?.Invoke(ProtocolServer.Id);
         }
 
         #endregion
@@ -568,6 +524,7 @@ namespace Shawn.Ulits.RDP
         }
 
         #endregion
+
 
         private void SetScaleFactor()
         {

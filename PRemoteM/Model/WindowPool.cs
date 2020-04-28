@@ -42,7 +42,7 @@ namespace PRM.Model
             if (server.IsConnWithFullScreen())
             {
                 var host = ProtocolHostFactory.Get(server);
-                host.OnClose += OnProtocolClose;
+                host.OnClosed += OnProtocolClose;
                 host.OnFullScreen2Window += OnFullScreen2Window;
                 WindowPool.AddProtocolHost(host);
                 WindowPool.MoveProtocolToFullScreen(server.Id);
@@ -65,7 +65,7 @@ namespace PRM.Model
                 tab.Activate();
                 var size = tab.GetTabContentSize();
                 var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
-                host.OnClose += OnProtocolClose;
+                host.OnClosed += OnProtocolClose;
                 host.OnFullScreen2Window += OnFullScreen2Window;
                 host.Parent = tab;
                 tab.Vm.Items.Add(new TabItemViewModel()
