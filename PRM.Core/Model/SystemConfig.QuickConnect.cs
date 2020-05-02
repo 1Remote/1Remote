@@ -60,6 +60,11 @@ namespace PRM.Core.Model
             key = _ini.GetValue(nameof(HotKeyKey).ToLower(), _sectionName, key);
             HotKeyModifiers = (ModifierKeys)modifiers;
             HotKeyKey = (Key)key;
+            if (HotKeyModifiers == ModifierKeys.None || HotKeyKey == Key.None)
+            {
+                HotKeyModifiers = ModifierKeys.Alt;
+                HotKeyKey = Key.M;
+            }
         }
 
         public override void Update(SystemConfigBase newConfig)

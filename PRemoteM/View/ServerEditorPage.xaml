@@ -187,10 +187,7 @@
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
-
                         <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
-
-
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
