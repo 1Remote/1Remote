@@ -35,6 +35,23 @@
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="Margin" Value="0 10 0 10"></Setter>
             </Style>
+
+            <Style TargetType="{x:Type Hyperlink}">
+                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                        <Setter Property="TextBlock.TextDecorations">
+                            <Setter.Value>
+                                <TextDecorationCollection>
+                                    <TextDecoration Location="Underline"/>
+                                </TextDecorationCollection>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </Grid.Resources>
         <Grid>
             <Grid.Margin>
@@ -65,17 +82,20 @@
                                 <Grid Style="{StaticResource ServerEditorRow}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="Version"></TextBlock>
-                                        <TextBlock Text="0.0.2.20200502"></TextBlock>
+                                        <TextBlock Name="TbVersion" Text="0.0.0.0"></TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Vertical">
                             <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Author"></TextBlock>
-                            <Grid Width="32" Height="32" Background="Aqua"></Grid>
-                            <Grid Style="{StaticResource ServerEditorRow}">
-                                <TextBlock Text="Shawn works(singlex@foxmail.com)"></TextBlock>
-                            </Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Grid Width="32" Height="32" Background="Aqua"></Grid>
+                                <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
+                                    <TextBlock Text="Shawn"></TextBlock>
+                                    <TextBlock Text="(singlex@foxmail.com)"></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
                     <Grid Grid.Column="1">
@@ -104,10 +124,26 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Included Components"></TextBlock>
                                 <StackPanel>
-                                    <TextBlock Text="https://www.chiark.greenend.org.uk/~sgtatham/putty/"></TextBlock>
-                                    <TextBlock Text="https://github.com/ButchersBoy/Dragablz"></TextBlock>
-                                    <TextBlock Text="https://github.com/drogoganor/ColorPickerWPF"></TextBlock>
-                                    <TextBlock Text="https://github.com/hstarorg/TinyPinyin.Net"></TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://www.chiark.greenend.org.uk/~sgtatham/putty/" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://www.chiark.greenend.org.uk/~sgtatham/putty/
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/ButchersBoy/Dragablz" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://github.com/ButchersBoy/Dragablz
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/drogoganor/ColorPickerWPF" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://github.com/drogoganor/ColorPickerWPF
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/hstarorg/TinyPinyin.Net" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://github.com/hstarorg/TinyPinyin.Net
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
