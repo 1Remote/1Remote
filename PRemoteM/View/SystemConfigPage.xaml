@@ -175,6 +175,23 @@
                         </StackPanel>
                     </Grid>
 
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding General.IconFolderPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>
+                            <TextBlock Opacity="0.3" Text="{DynamicResource }"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_item_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </TabItem>
             <TabItem Header="{DynamicResource system_options_quick_title}">
@@ -218,9 +235,9 @@
                     </Grid>
 
 
-                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.2">
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="60 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
+                            <TextBlock Margin="64 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

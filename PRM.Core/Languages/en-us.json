@@ -33,6 +33,8 @@
   "system_options_general_item_server_order_by_protocol": "Protocol",
   "system_options_general_item_server_order_by_add_time_asc": "Add time asc",
   "system_options_general_item_server_order_by_add_time_desc": "Add time desc",
+  "system_options_general_item_icons_folder_path": "Custom icons",
+  "system_options_general_item_icons_folder_path_description": "Put your own server icons here",
 
   "system_options_quick_title": "Quick connect",
   "system_options_quick_description": "Quick connect allow you hang up a quick connect bar by hot key, then you can type the keyword and start connection by press enter key",

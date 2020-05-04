@@ -7,12 +7,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
-using Microsoft.Win32;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
+using Binding = System.Windows.Data.Binding;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace PRM.View

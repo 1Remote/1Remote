@@ -386,7 +386,7 @@ namespace PRM.Core.Resources.Controls
         }
 
 
-        public static BitmapSource GetBitmapSource(string filePath)
+        public BitmapSource GetBitmapSource(string filePath)
         {
             try
             {
@@ -404,7 +404,7 @@ namespace PRM.Core.Resources.Controls
         }
 
 
-        public static bool? Show(Microsoft.Win32.FileDialog fileDialog)
+        public bool? Show(Microsoft.Win32.FileDialog fileDialog)
         {
             Window win = new Window
             {
@@ -423,7 +423,6 @@ namespace PRM.Core.Resources.Controls
             win.ShowDialog();
             win.Close();
             return result;
-
         }
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
