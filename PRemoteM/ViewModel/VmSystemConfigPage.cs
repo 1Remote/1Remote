@@ -73,7 +73,6 @@ namespace PRM.ViewModel
                         {
                             SystemConfig.GetInstance().Language.CurrentLanguageCode = SelectedLanguageCode;
                             SystemConfig.GetInstance().Language.Save();
-                            App.ReloadTaskTrayContextMenu();
                         }
                         SystemConfig.GetInstance().General.Update(General);
                         SystemConfig.GetInstance().General.Save();

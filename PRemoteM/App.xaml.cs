@@ -38,9 +38,9 @@ namespace PersonalRemoteManager
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
-        public static MainWindow Window = null;
-        public static SearchBoxWindow SearchBoxWindow = null;
-        public static System.Windows.Forms.NotifyIcon TaskTrayIcon = null;
+        public static MainWindow Window  { get; private set; } = null;
+        public static SearchBoxWindow SearchBoxWindow { get; private set; }  = null;
+        public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
         private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com"; // 定义一个 IPC 端口
         private const string ServiceIpcRoute = "PRemoteM";
 
@@ -135,6 +135,7 @@ namespace PersonalRemoteManager
                     Visible = true
                 };
                 ReloadTaskTrayContextMenu();
+                SystemConfig.GetInstance().Language.OnLanguageChanged += ReloadTaskTrayContextMenu;
 
                 TaskTrayIcon.MouseDoubleClick += (sender, e) =>
                 {

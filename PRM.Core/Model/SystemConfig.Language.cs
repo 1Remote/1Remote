@@ -18,15 +18,13 @@ namespace PRM.Core.Model
             Debug.Assert(appResourceDictionary != null);
             AppResourceDictionary = appResourceDictionary;
             InitLanguageCode2Name();
+            _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguageCode);
             Load();
         }
-
-
-        public const string DefaultLanguage = "en-us";
+        public const string DefaultLanguageCode = "en-us";
         public const string LanguageJsonDir = "Languages";
-        public readonly ResourceDictionary AppResourceDictionary;
-
-        private ResourceDictionary _lastMainResourceDictionary = null;
+        public readonly ResourceDictionary AppResourceDictionary = null;
+        public Action OnLanguageChanged = null;
 
         private string _currentLanguageCode = "en-us";
         public string CurrentLanguageCode
@@ -38,66 +36,31 @@ namespace PRM.Core.Model
                 if (!string.IsNullOrEmpty(newVal)
                     && LanguageCode2Name.ContainsKey(newVal))
                 {
-                    SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
-                    // reload ResourceDictionary
-                    _currentLanguageResourceDictionary = null;
-                }
-                var tmp = CurrentLanguageResourceDictionary;
-                Debug.Assert(tmp != null);
-                RaisePropertyChanged(nameof(CurrentLanguageResourceDictionary));
-                AppResourceDictionary?.ChangeLanguage(CurrentLanguageResourceDictionary);// 修改语言配置
-            }
-        }
-
-
-        private ResourceDictionary _defaultLanguageResourceDictionary = null;
-        private ResourceDictionary DefaultLanguageResourceDictionary
-        {
-            get
-            {
-                if (_defaultLanguageResourceDictionary == null)
-                {
-                    _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguage);
-                    Debug.Assert(_defaultLanguageResourceDictionary != null);
-                }
-                return _defaultLanguageResourceDictionary;
-            }
-        }
-
-
-        private ResourceDictionary _currentLanguageResourceDictionary = null;
-        private ResourceDictionary CurrentLanguageResourceDictionary
-        {
-            get
-            {
-                if (_currentLanguageResourceDictionary == null)
-                {
-                    _currentLanguageResourceDictionary = GetResourceDictionaryByCode(_currentLanguageCode);
-                    if (_currentLanguageResourceDictionary != null)
+                    if (_currentLanguageCode != value)
                     {
-                        // add lost key from default language
-                        foreach (var key in DefaultLanguageResourceDictionary.Keys)
+                        SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
+                        // reload ResourceDictionary
+                        _currentLanguageResourceDictionary = GetResourceDictionaryByCode(_currentLanguageCode);
+                        if (_currentLanguageResourceDictionary == null)
                         {
-                            if (!_currentLanguageResourceDictionary.Contains(key))
-                                _currentLanguageResourceDictionary.Add(key, DefaultLanguageResourceDictionary[key]);
+                            // use default
+                            CurrentLanguageCode = DefaultLanguageCode;
+                            _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
                         }
+                        AppResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
+                        OnLanguageChanged?.Invoke();
                     }
-                    else
-                    {
-                        // use default
-                        _currentLanguageCode = DefaultLanguage;
-                        _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
-                    }
-
                 }
-                return _currentLanguageResourceDictionary;
             }
         }
+
+        private ResourceDictionary _defaultLanguageResourceDictionary { get; set; }= null;
+        private ResourceDictionary _currentLanguageResourceDictionary { get; set; }= null;
 
 
         private Dictionary<string,string> _languageCode2Name = new Dictionary<string,string>();
         /// <summary>
-        /// code = language file name, all in small cases, ref https://en.wikipedia.org/wiki/Language_code
+        /// code => language file name, all codes leave in small cases, ref https://en.wikipedia.org/wiki/Language_code
         /// </summary>
         public Dictionary<string, string> LanguageCode2Name
         {
@@ -229,10 +192,12 @@ namespace PRM.Core.Model
 
         public string GetText(string textKey)
         {
-            if (CurrentLanguageResourceDictionary.Contains(textKey))
-                return CurrentLanguageResourceDictionary[textKey].ToString();
-            if (DefaultLanguageResourceDictionary.Contains(textKey))
-                return DefaultLanguageResourceDictionary[textKey].ToString();
+            Debug.Assert(_currentLanguageResourceDictionary != null);
+            Debug.Assert(_defaultLanguageResourceDictionary != null);
+            if (_currentLanguageResourceDictionary.Contains(textKey))
+                return _currentLanguageResourceDictionary[textKey].ToString();
+            if (_defaultLanguageResourceDictionary.Contains(textKey))
+                return _defaultLanguageResourceDictionary[textKey].ToString();
 
             throw new NotImplementedException("can't find any string by '" + textKey + "'!");
         }
