@@ -262,7 +262,7 @@ namespace PRM.Core.Protocol.RDP
 
         protected override string GetSubTitle()
         {
-            return Address + " @ " + UserName;
+            return $"@{Address} ({UserName})";
         }
     }
 }

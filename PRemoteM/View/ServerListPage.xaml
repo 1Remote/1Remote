@@ -18,7 +18,10 @@
 
     <Grid>
         <Grid Margin="0 20 0 0 ">
-            <ListView ItemsSource="{Binding DispServerList}" 
+            <ListView 
+                Name="LvServerCards"
+                SelectedItem="{Binding SelectedServerCard}"
+                ItemsSource="{Binding ServerCards}" 
                       Padding="10"
                       BorderThickness="0"
                       Background="Transparent"
@@ -40,6 +43,14 @@
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="IsSelected" Value="True"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="False">
+                                <Setter Property="IsSelected" Value="False"/>
+                            </Trigger>
+                        </Style.Triggers>
                     </Style>
                     <Style TargetType="ScrollViewer">
                         <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
@@ -225,6 +236,32 @@
                     </ScrollViewer>
                 </Grid>
             </Border>
+        </Grid>
+
+        <Grid VerticalAlignment="Bottom" Height="30" Opacity="0.3" Background="{DynamicResource MainColor1Brush}">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                        <Setter Property="Margin" Value="0 0 5 0"></Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="{Binding SelectedServerCard.Server.DispName}"></TextBlock>
+                <TextBlock Text="{Binding SelectedServerCard.Server.SubTitle}"></TextBlock>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>
