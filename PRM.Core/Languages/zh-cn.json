@@ -95,6 +95,12 @@
 
 
 
+  // about page
+  "about_page_how_to_use": "帮助",
+  "about_page_feedback": "提意见/需求",
+
+
+
   // other
   "logo_selecter_open_file_dialog_title": "选择图片"
 }

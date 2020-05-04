@@ -95,6 +95,12 @@
 
 
 
+  // about page
+  "about_page_how_to_use": "How to use",
+  "about_page_feedback": "Feedback",
+
+
+
   // other
   "logo_selecter_open_file_dialog_title": "select a picture"
 }
