@@ -57,7 +57,7 @@ namespace PRM
 
         private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupSettingMenu.IsOpen = true;
+            VmMain.SysOptionsMenuIsOpen = true;
         }
 
 

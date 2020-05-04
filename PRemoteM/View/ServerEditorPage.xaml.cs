@@ -12,13 +12,17 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using PRM.ViewModel;
+using Shawn.Ulits;
 
 namespace PRM.View
 {
@@ -58,9 +62,10 @@ namespace PRM.View
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            PopupLogoSelector.IsOpen = true;
-            ScrollViewerMain.IsEnabled = false;
-            ScrollViewerMain.CanContentScroll = false;
+            if (PopupLogoSelector.Height > 0)
+                PopupLogoSelectorClose();
+            else
+                PopupLogoSelectorOpen();
         }
 
         private void ButtonLogoSave_OnClick(object sender, RoutedEventArgs e)
@@ -70,23 +75,45 @@ namespace PRM.View
                 _vmServerEditorPage.Server.IconImg = LogoSelector.Logo;
                 //File.WriteAllText("img.txt",_vmServerEditorPage.Server.IconBase64);
             }
-            PopupLogoSelector.IsOpen = false;
-            ScrollViewerMain.CanContentScroll = true;
-            ScrollViewerMain.IsEnabled = true;
+            PopupLogoSelectorClose();
         }
 
         private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupLogoSelector.IsOpen = false;
-            ScrollViewerMain.CanContentScroll = true;
-            ScrollViewerMain.IsEnabled = true;
+            PopupLogoSelectorClose();
         }
-
-        private void UIElement_DisabledOnMouseWheel(object sender, MouseWheelEventArgs e)
+        
+        private void PopupLogoSelectorOpen()
         {
-            e.Handled = true;
+            if (Math.Abs(PopupLogoSelector.Height) < 1)
+            {
+                var animation = new DoubleAnimation
+                {
+                    From = PopupLogoSelector.Height,
+                    To = 197,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(350)),
+                    AccelerationRatio = 0.9,
+                };
+                PopupLogoSelector.BeginAnimation(HeightProperty, null);
+                PopupLogoSelector.BeginAnimation(HeightProperty, animation);
+            }
         }
 
+        private void PopupLogoSelectorClose()
+        {
+            if (PopupLogoSelector.Height > 0.5)
+            {
+                var animation = new DoubleAnimation
+                {
+                    From = PopupLogoSelector.Height,
+                    To = 0,
+                    Duration = new Duration(TimeSpan.FromMilliseconds(350)),
+                    DecelerationRatio = 0.9,
+                };
+                PopupLogoSelector.BeginAnimation(HeightProperty, null);
+                PopupLogoSelector.BeginAnimation(HeightProperty, animation);
+            }
+        }
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LogoSelector.Logo = (BitmapSource) (((ListView) sender).SelectedItem);

@@ -368,7 +368,23 @@ namespace Shawn.Ulits
         #endregion
 
 
-
+        
+        public static BitmapSource ReadImgFile(string filePath)
+        {
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = File.OpenRead(filePath);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                return bitmap;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
 
         public static bool WriteTransformedBitmapToFile<T>(BitmapSource bitmapSource, string fileName)
             where T : BitmapEncoder, new()
