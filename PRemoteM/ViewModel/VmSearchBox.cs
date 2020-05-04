@@ -74,26 +74,26 @@ namespace PRM.ViewModel
 
 
 
-        private ObservableCollection<ProtocolServerBaseInSearchBox> _dispServerlist = new ObservableCollection<ProtocolServerBaseInSearchBox>();
+        private ObservableCollection<ProtocolServerBaseInSearchBox> _servers = new ObservableCollection<ProtocolServerBaseInSearchBox>();
         /// <summary>
         /// ServerList data source for listbox
         /// </summary>
-        public ObservableCollection<ProtocolServerBaseInSearchBox> DispServerList
+        public ObservableCollection<ProtocolServerBaseInSearchBox> Servers
         {
-            get => _dispServerlist;
+            get => _servers;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispServerList), ref _dispServerlist, value);
+                SetAndNotifyIfChanged(nameof(Servers), ref _servers, value);
             }
         }
 
 
 
-        private int _selectedServerTextIndex;
-        public int SelectedServerTextIndex
+        private int _selectedServerIndex;
+        public int SelectedServerIndex
         {
-            get => _selectedServerTextIndex;
-            set => SetAndNotifyIfChanged(nameof(SelectedServerTextIndex), ref _selectedServerTextIndex, value);
+            get => _selectedServerIndex;
+            set => SetAndNotifyIfChanged(nameof(SelectedServerIndex), ref _selectedServerIndex, value);
         }
 
 
@@ -130,7 +130,7 @@ namespace PRM.ViewModel
 
         private void UpdateDispList(string keyWord)
         {
-            DispServerList.Clear();
+            Servers.Clear();
 
             if (!string.IsNullOrEmpty(keyWord))
             {
@@ -226,16 +226,16 @@ namespace PRM.ViewModel
                             }
                         }
 
-                        DispServerList.Add(semite);
+                        Servers.Add(semite);
                     }
                 }
             }
 
-            if (!DispServerList.Any())
+            if (!Servers.Any())
                 PopupIsOpen = false;
             else
             {
-                SelectedServerTextIndex = 0;
+                SelectedServerIndex = 0;
                 PopupIsOpen = true;
             }
         }
