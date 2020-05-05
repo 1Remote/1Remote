@@ -8,7 +8,7 @@ using PRM.Core.Protocol.RDP;
 
 namespace PRM.Core.Protocol.Putty.SSH
 {
-    public class ProtocolServerSSH : ProtocolPutttyBase
+    public class ProtocolServerSSH : ProtocolServerWithAddrBase, IPuttyConnectable
     {
         public enum ESshVersion
         {
@@ -18,55 +18,16 @@ namespace PRM.Core.Protocol.Putty.SSH
         public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
         {
         }
+        
+        private ESshVersion _sshVersion = ESshVersion.V2;
 
-        #region Conn
-
-        private string _address;
-
-        public string Address
-        {
-            get => _address;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(Address), ref _address, value);
-            }
-        }
-
-
-        private int _port = 22;
-        public int Port
-        {
-            get => _port > 0 ? _port : 22;
-            set => SetAndNotifyIfChanged(nameof(Port), ref _port, value);
-        }
-
-
-        private string _userName = "";
-        public string UserName
-        {
-            get => _userName;
-            set => SetAndNotifyIfChanged(nameof(UserName), ref _userName, value);
-        }
-
-        private string _password;
-        public string Password
-        {
-            get => _password;
-            set
-            {
-                // TODO 当输入为明文时，执行加密
-                SetAndNotifyIfChanged(nameof(Password), ref _password, value);
-            }
-        }
-
-        private ESshVersion _sshVersion;
         public ESshVersion SshVersion
         {
             get => _sshVersion;
-            set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
+            set => 
+                SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
         }
 
-        #endregion
 
         public override string ToJsonString()
         {
@@ -77,7 +38,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         {
             try
             {
-                return JsonConvert.DeserializeObject<ProtocolServerRDP>(jsonString);
+                return JsonConvert.DeserializeObject<ProtocolServerSSH>(jsonString);
             }
             catch (Exception e)
             {
@@ -87,13 +48,16 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         protected override string GetSubTitle()
         {
-            return $"@{Address} ({UserName})";
+            return $"@{SshVersion} ({UserName})";
         }
 
-        public override string GetPuttyConnString()
+        public string GetPuttyConnString()
         {
-            var arg = $@" -load ""{base.SessionName}"" {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
+            var arg = $@" -load ""{this.GetSessionName()}"" {SshVersion} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
             return arg;
         }
+
+        [JsonIgnore]
+        public ProtocolServerBase ProtocolServerBase => this;
     }
 }

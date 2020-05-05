@@ -65,6 +65,8 @@
   "server_editor_connection_port": "端口",
   "server_editor_connection_username": "用户名",
   "server_editor_connection_password": "密码",
+  "server_editor_connection_private_key_checker": "使用私钥连接",
+  "server_editor_connection_private_key": "私钥",
   // server editor - display group items
   "server_editor_display_full_screen_flag": "全屏模式",
   "server_editor_display_full_screen_flag_window": "禁用",
@@ -90,6 +92,7 @@
   "server_editor_advantage_ports": "端口",
   "server_editor_advantage_printers": "打印机",
   "server_editor_advantage_smart_cards": "智能卡",
+  "server_editor_advantage_ssh_version": "SSH Verison",
 
 
 

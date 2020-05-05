@@ -88,11 +88,12 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
+    <Compile Include="Protocol\ProtocolServerWithAddrBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
     <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
       <DependentUpon>PuttyHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Protocol\Putty\ProtocolPutttyBase.cs" />
+    <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
     <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
       <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
     </Compile>

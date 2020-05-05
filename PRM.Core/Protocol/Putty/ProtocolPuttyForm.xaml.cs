@@ -17,8 +17,8 @@ namespace PRM.Core.Protocol.Putty
     /// </summary>
     public partial class ProtocolPuttyForm : ProtocolServerFormBase
     {
-        public readonly ProtocolPutttyBase Vm;
-        public ProtocolPuttyForm(ProtocolPutttyBase vm) : base()
+        public readonly ProtocolServerBase Vm;
+        public ProtocolPuttyForm(ProtocolServerBase vm) : base()
         {
             InitializeComponent();
             Vm = vm;
@@ -27,7 +27,8 @@ namespace PRM.Core.Protocol.Putty
             GridUserName.Visibility = Visibility.Collapsed;
             GridPwd.Visibility = Visibility.Collapsed;
             SpSsh.Visibility = Visibility.Collapsed;
-            if (Vm.GetType() == typeof(ProtocolServerSSH))
+            if (Vm.GetType() == typeof(ProtocolServerSSH)
+             || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrBase))
             {
                 GridUserName.Visibility =
                 GridPwd.Visibility =
@@ -41,21 +42,27 @@ namespace PRM.Core.Protocol.Putty
             {
                 var protocol = (ProtocolServerSSH) Vm;
                 if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && !string.IsNullOrEmpty(protocol.UserName?.Trim())
-                    && !string.IsNullOrEmpty(protocol.Password?.Trim())
-                    && protocol.Port > 0)
+                    && !string.IsNullOrEmpty(protocol.UserName?.Trim()))
                     return true;
             }
-            else
-            {
-
-            }
-            //if (!string.IsNullOrEmpty(_vm.Address?.Trim())
-            //    && !string.IsNullOrEmpty(_vm.UserName?.Trim())
-            //    && !string.IsNullOrEmpty(_vm.Password?.Trim())
-            //    && _vm.Port > 0)
-            //    return true;
             return false;
         }
+    }
+
+
+
+    public class ConverterESshVersion : IValueConverter
+    {
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ((int)((ProtocolServerSSH.ESshVersion)value) - 1).ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return (ProtocolServerSSH.ESshVersion)(int.Parse(value.ToString()));
+        }
+        #endregion
     }
 }

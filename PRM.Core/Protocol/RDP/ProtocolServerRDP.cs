@@ -30,7 +30,7 @@ namespace PRM.Core.Protocol.RDP
     }
 
 
-    public class ProtocolServerRDP : ProtocolServerBase
+    public class ProtocolServerRDP : ProtocolServerWithAddrBase
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
@@ -51,48 +51,9 @@ namespace PRM.Core.Protocol.RDP
 
         public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
+            base.Port = 3389;
+            base.UserName = "Administrator";
         }
-
-        #region Conn
-        private string _address;
-
-        public string Address
-        {
-            get => _address;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(Address), ref _address, value);
-            }
-        }
-
-
-        private int _port = 3389;
-        public int Port
-        {
-            get => _port > 0 ? _port : 3389;
-            set => SetAndNotifyIfChanged(nameof(Port), ref _port, value);
-        }
-
-
-        private string _userName = "Administrator";
-        public string UserName
-        {
-            get => _userName;
-            set => SetAndNotifyIfChanged(nameof(UserName), ref _userName, value);
-        }
-
-        private string _password;
-        public string Password
-        {
-            get => _password;
-            set
-            {
-                // TODO 当输入为明文时，执行加密
-                SetAndNotifyIfChanged(nameof(Password), ref _password, value);
-            }
-        }
-
-        #endregion
 
 
         #region Display
@@ -128,7 +89,7 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
         }
 
-        private ERdpWindowResizeMode _rdpWindowResizeMode;
+        private ERdpWindowResizeMode _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
         public ERdpWindowResizeMode RdpWindowResizeMode
         {
             get => _rdpWindowResizeMode;

@@ -32,7 +32,7 @@ namespace PRM.Core.Protocol
         }
 
 
-        
+
         private readonly string _serverType;
         private readonly string _classVersion;
         private readonly string _protocolDisplayName;
@@ -83,7 +83,7 @@ namespace PRM.Core.Protocol
         }
 
 
-        private Icon _icon;
+        private Icon _icon = null;
         [JsonIgnore]
         public Icon Icon
         {
@@ -173,7 +173,7 @@ namespace PRM.Core.Protocol
             {
                 yourType = yourType.BaseType;
             }
-            if(myType != null && myType == yourType)
+            if (myType != null && myType == yourType)
             {
                 ProtocolServerBase copyObject = this;
                 while (yourType != null)

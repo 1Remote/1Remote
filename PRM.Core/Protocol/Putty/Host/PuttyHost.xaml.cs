@@ -55,19 +55,19 @@ namespace PRM.Core.Protocol.Putty.Host
         private System.Windows.Forms.Panel panel1 = null;
         private PuttyOptions PuttyOption = null;
         private Window _parentWindow = null;
-        private readonly ProtocolPutttyBase _protocolPutttyBase = null;
+        private readonly IPuttyConnectable _protocolPutttyBase = null;
 
-        public PuttyHost(ProtocolPutttyBase protocolServer, Window parentWindow) : base(protocolServer, false)
+        public PuttyHost(IPuttyConnectable iPuttyConnectable, Window parentWindow) : base(iPuttyConnectable.ProtocolServerBase, false)
         {
-            _protocolPutttyBase = protocolServer;
+            _protocolPutttyBase = iPuttyConnectable;
             _parentWindow = parentWindow;
             InitializeComponent();
         }
 
         public override void Conn()
         {
-            Debug.Assert(_protocolPutttyBase.Id > 0);
-            PuttyOption = new PuttyOptions(_protocolPutttyBase.SessionName);
+            Debug.Assert(_protocolPutttyBase.ProtocolServerBase.Id > 0);
+            PuttyOption = new PuttyOptions(_protocolPutttyBase.GetSessionName());
             
             PuttyHandle = IntPtr.Zero;           
             //FormBorderStyle = FormBorderStyle.None;
