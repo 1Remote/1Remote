@@ -144,7 +144,7 @@ namespace Shawn.Ulits
         }
         public static byte[] ToBytes<T>(this T source) where T : BitmapSource
         {
-            return source.ToBitmap().ToBytes();
+            return source?.ToBitmap()?.ToBytes();
         }
         
         public static string ToBase64(this Image img)

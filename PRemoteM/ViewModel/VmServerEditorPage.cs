@@ -21,26 +21,20 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        private ProtocolServerBase _server = null;
-        public ProtocolServerBase Server
-        {
-            get => _server;
-            set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
-        }
-
         public readonly VmServerListPage Host;
 
         public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host)
         {
             Server = server;
             Host = host;
+            IsAddMode = server.GetType() == typeof(ProtocolServerNone);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
             // reflect remote protocols 
             {
                 ProtocolList.Clear();
-                ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)))
+                ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                     .Where(x => x.FullName != typeof(ProtocolServerNone).FullName)
                     .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
             }
@@ -56,20 +50,37 @@ namespace PRM.ViewModel
                 Server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
             }
 
-            Debug.Assert(Server.GetType() != typeof(ProtocolServerNone));
+            if (!IsAddMode)
+            {
+                ProtocolList.Clear();
+                ProtocolList.Add(ProtocolSelected);
+            }
 
-            // reflect create remote protocols form
-            ReflectProtocolEditControl();
+            Debug.Assert(Server.GetType() != typeof(ProtocolServerNone));
         }
 
 
 
+        
+        private ProtocolServerBase _server = null;
+        public ProtocolServerBase Server
+        {
+            get => _server;
+            set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
+        }
 
         private ProtocolServerBase _protocolSelected = null;
         public ProtocolServerBase ProtocolSelected
         {
             get => _protocolSelected;
-            set => SetAndNotifyIfChanged(nameof(ProtocolSelected), ref _protocolSelected, value);
+            set
+            {
+                if (value != _protocolSelected)
+                {
+                    SetAndNotifyIfChanged(nameof(ProtocolSelected), ref _protocolSelected, value);
+                    ReflectProtocolEditControl();
+                }
+            }
         }
 
         private List<ProtocolServerBase> _protocolList = new List<ProtocolServerBase>();
@@ -77,6 +88,14 @@ namespace PRM.ViewModel
         {
             get => _protocolList;
             set => SetAndNotifyIfChanged(nameof(ProtocolList), ref _protocolList, value);
+        }
+
+
+        private bool _isAddMode = true;
+        public bool IsAddMode
+        {
+            get => _isAddMode;
+            set => SetAndNotifyIfChanged(nameof(IsAddMode), ref _isAddMode, value);
         }
 
 
@@ -100,7 +119,7 @@ namespace PRM.ViewModel
                     {
                         Global.GetInstance().ServerListUpdate(Server);
                         Host.Host.DispPage = null;
-                    }, o => (this.Server.DispName.Trim() != "" && _protocolEditControl.CanSave()));
+                    }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
         }
@@ -159,16 +178,25 @@ namespace PRM.ViewModel
 
         private void ReflectProtocolEditControl()
         {
+            Debug.Assert(ProtocolSelected != null);
+            Debug.Assert(ProtocolSelected.GetType().FullName != null);
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
-            var formNmae = typeof(ProtocolServerRDP).Name + "Form";
+            var server = Server;
+            if (IsAddMode)
+            {
+                server = (ProtocolServerBase) assembly.CreateInstance(ProtocolSelected.GetType().FullName);
+                server.Update(Server, typeof(ProtocolServerBase));
+            }
+            var formNmae = ProtocolSelected.GetType().Name + "Form";
             var forms = types.Where(x => x.Name == formNmae).ToList();
             if (forms.Count == 1)
             {
                 var t = forms[0];
                 object[] parameters = new object[1];
-                parameters[0] = Server;
+                parameters[0] = server;
                 ProtocolEditControl = (ProtocolServerFormBase)assembly.CreateInstance(t.FullName, true, System.Reflection.BindingFlags.Default, null, parameters, null, null);
+                Server = server;
             }
             else
             {

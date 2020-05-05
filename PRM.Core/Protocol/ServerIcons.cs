@@ -12,13 +12,13 @@ using Shawn.Ulits;
 
 namespace PRM.Core.Protocol
 {
-    public class ProtocolServerIcons
+    public class ServerIcons
     {
         #region singleton
-        private static ProtocolServerIcons uniqueInstance;
+        private static ServerIcons uniqueInstance;
         private static readonly object InstanceLock = new object();
 
-        public static ProtocolServerIcons Instance
+        public static ServerIcons Instance
         {
             get
             {
@@ -26,7 +26,7 @@ namespace PRM.Core.Protocol
                 {
                     if (uniqueInstance == null)
                     {
-                        uniqueInstance = new ProtocolServerIcons();
+                        uniqueInstance = new ServerIcons();
                     }
                 }
                 return uniqueInstance;
@@ -35,9 +35,9 @@ namespace PRM.Core.Protocol
 
         #endregion
 
-        private ProtocolServerIcons()
+        private ServerIcons()
         {
-            var type = typeof(ProtocolServerIcons);
+            var type = typeof(ServerIcons);
             var fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var field in fields)
             {

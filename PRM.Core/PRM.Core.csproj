@@ -89,7 +89,17 @@
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
-    <Compile Include="Protocol\ProtocolServerIcons.cs" />
+    <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
+      <DependentUpon>PuttyHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\Putty\ProtocolPutttyBase.cs" />
+    <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
+      <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\Putty\PuttyOptions.cs" />
+    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
+    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
+    <Compile Include="Protocol\ServerIcons.cs" />
     <Compile Include="Protocol\ProtocolServerNone.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
@@ -170,6 +180,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Protocol\Putty\ProtocolPuttyForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -177,6 +191,10 @@
     <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Protocol\Putty\Host\PuttyHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\Converter\Converter.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -229,6 +247,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
