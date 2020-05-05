@@ -43,7 +43,17 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource ServerEditorRow}" Name="GridPwd">
+            <Grid Name="GridPwd">
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
@@ -53,12 +63,31 @@
             </Grid>
 
 
-            <Grid Style="{StaticResource ServerEditorRow}" Name="GridPrivateKey">
+            <Grid Style="{StaticResource ServerEditorRow}" Name="GridPrivateKey" Height="Auto">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Password}"></TextBox>
-                    </Grid>
+                    <StackPanel>
+                        <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource server_editor_connection_private_key_checker}" 
+                                  Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <StackPanel>
+                                <Button Content="{DynamicResource button_open}" Click="ButtonOpenPrivateKey_OnClick"></Button>
+                                <TextBox Text="{Binding PrivateKey}" Height="100" Width="300" 
+                                         HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+                                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden"></TextBox>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>

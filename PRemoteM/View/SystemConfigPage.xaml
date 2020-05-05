@@ -180,9 +180,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <TextBox Text="{Binding General.IconFolderPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                                <TextBox Text="{Binding General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <TextBlock Opacity="0.3" Text="{DynamicResource }"></TextBlock>
                         </StackPanel>
                     </Grid>
 

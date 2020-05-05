@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Shawn.Ulits;
 
 namespace PRM.Core.Protocol.Putty.Host
 {
@@ -54,18 +55,17 @@ namespace PRM.Core.Protocol.Putty.Host
         private IntPtr PuttyHandle = IntPtr.Zero;
         private System.Windows.Forms.Panel panel1 = null;
         private PuttyOptions PuttyOption = null;
-        private Window _parentWindow = null;
         private readonly IPuttyConnectable _protocolPutttyBase = null;
 
-        public PuttyHost(IPuttyConnectable iPuttyConnectable, Window parentWindow) : base(iPuttyConnectable.ProtocolServerBase, false)
+        public PuttyHost(IPuttyConnectable iPuttyConnectable) : base(iPuttyConnectable.ProtocolServerBase, false)
         {
             _protocolPutttyBase = iPuttyConnectable;
-            _parentWindow = parentWindow;
             InitializeComponent();
         }
 
         public override void Conn()
         {
+            Debug.Assert(Parent != null);
             Debug.Assert(_protocolPutttyBase.ProtocolServerBase.Id > 0);
             PuttyOption = new PuttyOptions(_protocolPutttyBase.GetSessionName());
             
@@ -97,10 +97,17 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public void Close()
         {
-            //PostMessage(AppWindow, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-            PuttyProcess?.Kill();
-            PuttyProcess = null;
             DeletePuttySession();
+            //PostMessage(AppWindow, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+            try
+            {
+                PuttyProcess?.Kill();
+                PuttyProcess = null;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+            }
             //MessageBox.Show("PostMessage Close");
         }
 
@@ -124,7 +131,7 @@ namespace PRM.Core.Protocol.Putty.Host
             Dispatcher.Invoke(() =>
             {
                 SetParent(PuttyHandle, panel1.Handle);
-                var wih = new WindowInteropHelper(_parentWindow);
+                var wih = new WindowInteropHelper(Parent);
                 IntPtr hWnd = wih.Handle;
                 SetForegroundWindow(hWnd);
                 ShowWindow(PuttyHandle, 3); //SW_SHOWMAXIMIZED

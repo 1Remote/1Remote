@@ -34,10 +34,13 @@ namespace PRM.Model
 
 
             // TODO 删掉测试代码
-            ((ProtocolServerRDP)server).AutoSetting = new ProtocolServerRDP.LocalSetting()
+            if (server is ProtocolServerRDP)
             {
-                FullScreen_LastSessionIsFullScreen = false,
-            };
+                ((ProtocolServerRDP) server).AutoSetting = new ProtocolServerRDP.LocalSetting()
+                {
+                    FullScreen_LastSessionIsFullScreen = false,
+                };
+            }
 
             if (server.IsConnWithFullScreen())
             {
