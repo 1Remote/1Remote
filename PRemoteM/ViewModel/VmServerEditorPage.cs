@@ -185,8 +185,12 @@ namespace PRM.ViewModel
             var server = Server;
             if (IsAddMode)
             {
-                server = (ProtocolServerBase) assembly.CreateInstance(ProtocolSelected.GetType().FullName);
-                server.Update(Server, typeof(ProtocolServerBase));
+                server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrBase))
+                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrBase)))
+                    server.Update(Server, typeof(ProtocolServerWithAddrBase));
+                else
+                    server.Update(Server, typeof(ProtocolServerBase));
             }
             var formNmae = ProtocolSelected.GetType().Name + "Form";
             var forms = types.Where(x => x.Name == formNmae).ToList();
@@ -202,14 +206,6 @@ namespace PRM.ViewModel
             {
                 throw new ArgumentException("反射服务器编辑表单时，表单类不存在或存在重复项目！");
             }
-
-            //if (ProtocolSelected.GetType() == typeof(ProtocolServerRDP))
-            //{
-            //    ProtocolEditControl = new ProtocolServerRDPForm(Server);
-            //}
-            //else
-            //{
-            //}
         }
     }
 }

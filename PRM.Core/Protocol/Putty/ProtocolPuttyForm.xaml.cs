@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Microsoft.Win32;
 using PRM.Core.Protocol.Putty.SSH;
 
 
@@ -27,8 +29,19 @@ namespace PRM.Core.Protocol.Putty
             GridUserName.Visibility = Visibility.Collapsed;
             GridPwd.Visibility = Visibility.Collapsed;
             SpSsh.Visibility = Visibility.Collapsed;
+
+
+            if (Vm.GetType() == typeof(ProtocolServerSSH))
+            {
+                CbUsePrivateKey.IsChecked = false;
+                if (!string.IsNullOrEmpty(((ProtocolServerSSH)Vm).PrivateKey))
+                {
+                    CbUsePrivateKey.IsChecked = true;
+                }
+            }
+
             if (Vm.GetType() == typeof(ProtocolServerSSH)
-             || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrBase))
+                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrBase))
             {
                 GridUserName.Visibility =
                 GridPwd.Visibility =
@@ -46,6 +59,28 @@ namespace PRM.Core.Protocol.Putty
                     return true;
             }
             return false;
+        }
+
+        private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Vm.GetType() == typeof(ProtocolServerSSH))
+            {
+                var dlg = new OpenFileDialog();
+                dlg.Filter = "ppk|*.*";
+                if (dlg.ShowDialog() == true)
+                {
+                    ((ProtocolServerSSH)Vm).PrivateKey = File.ReadAllText(dlg.FileName);
+                }
+            }
+        }
+
+        private void CbUsePrivateKey_OnChecked(object sender, RoutedEventArgs e)
+        {
+            if (CbUsePrivateKey.IsChecked == false)
+            {
+                if (Vm.GetType() == typeof(ProtocolServerSSH))
+                    ((ProtocolServerSSH)Vm).PrivateKey = "";
+            }
         }
     }
 

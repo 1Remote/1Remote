@@ -19,6 +19,14 @@ namespace PRM.Core.Protocol.Putty.SSH
         {
         }
         
+
+        private string _privateKey = "";
+        public string PrivateKey
+        {
+            get => _privateKey;
+            set => SetAndNotifyIfChanged(nameof(PrivateKey), ref _privateKey, value);
+        }
+
         private ESshVersion _sshVersion = ESshVersion.V2;
 
         public ESshVersion SshVersion
@@ -53,7 +61,8 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         public string GetPuttyConnString()
         {
-            var arg = $@" -load ""{this.GetSessionName()}"" {SshVersion} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
+            // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
+            var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
             return arg;
         }
 
