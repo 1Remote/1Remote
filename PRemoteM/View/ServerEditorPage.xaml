@@ -153,7 +153,7 @@
                                                         <StackPanel >
                                                             <ListView BorderThickness="0"
                                                                           SelectionChanged="Selector_OnSelectionChanged"
-                                                                          ItemsSource="{Binding Source={x:Static protocol:ProtocolServerIcons.Instance}, Path=Icons}" 
+                                                                          ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
                                                                           Background="Transparent"
                                                                           ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                                                                 <ListView.Resources>
@@ -304,7 +304,7 @@
                                             <TextBlock Margin="15 0" 
                                                            Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" 
                                                            FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           Text="{Binding ProtocolFullName}"></TextBlock>
+                                                           Text="{Binding ProtocolDisplayName}"></TextBlock>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

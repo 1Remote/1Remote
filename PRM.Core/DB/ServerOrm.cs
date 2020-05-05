@@ -26,7 +26,6 @@ namespace PRM.Core.DB
 
         public string GroupName { get; set; } = "";
 
-        public string Address { get; set; } = "";
 
         public void SetLastConnTime(DateTime dt)
         {
@@ -41,14 +40,12 @@ namespace PRM.Core.DB
         public static ServerOrm ConvertFrom(ProtocolServerBase org)
         {
             var ret = new ServerOrm();
-            var rdp = (ProtocolServerRDP)Convert.ChangeType(org, typeof(ProtocolServerRDP));
-            ret.Id = rdp.Id;
-            ret.ServerType = rdp.ServerType;
-            ret.ClassVersion = rdp.ClassVersion;
-            ret.DispName = rdp.DispName;
-            ret.GroupName = rdp.GroupName;
-            ret.Address = rdp.Address;
-            ret.JsonConfigString = rdp.ToJsonString();
+            ret.Id = org.Id;
+            ret.ServerType = org.ServerType;
+            ret.ClassVersion = org.ClassVersion;
+            ret.DispName = org.DispName;
+            ret.GroupName = org.GroupName;
+            ret.JsonConfigString = org.ToJsonString();
             return ret;
         }
 
@@ -62,7 +59,6 @@ CREATE TABLE IF NOT EXISTS {TableName}(
     ClassVersion             CHAR(50)    NOT NULL,
     DispName                 CHAR(250)   NOT NULL,
     GroupName                CHAR(250)   NOT NULL,
-    Address                  CHAR(250)   NOT NULL,
     LastConnTime             CHAR(50)    NOT NULL,
     JsonConfigString         TEXT   NOT NULL
 )
@@ -84,7 +80,6 @@ INSERT INTO
     ClassVersion    ,
     DispName        ,
     GroupName       ,
-    Address         ,
     LastConnTime    ,
     JsonConfigString
 ) 
@@ -93,7 +88,6 @@ VALUES(
     @ClassVersion,
     @DispName,
     @GroupName,
-    @Address,
     @LastConnTime,
     @JsonConfigString
 )
@@ -102,7 +96,6 @@ VALUES(
                         command.Parameters.AddWithValue("@ClassVersion", this.ClassVersion);
                         command.Parameters.AddWithValue("@DispName", this.DispName);
                         command.Parameters.AddWithValue("@GroupName", this.GroupName);
-                        command.Parameters.AddWithValue("@Address", this.Address);
                         command.Parameters.AddWithValue("@LastConnTime", this.LastConnTime);
                         command.Parameters.AddWithValue("@JsonConfigString", this.JsonConfigString);
                         command.ExecuteNonQuery();
@@ -142,7 +135,6 @@ UPDATE {TableName} SET
     ClassVersion      = @ClassVersion    ,
     DispName          = @DispName        ,
     GroupName          = @GroupName        ,
-    Address           = @Address        ,
     LastConnTime      = @LastConnTime    ,
     JsonConfigString  = @JsonConfigString
 WHERE Id = @Id
@@ -152,7 +144,6 @@ WHERE Id = @Id
                         command.Parameters.AddWithValue("@ClassVersion", this.ClassVersion);
                         command.Parameters.AddWithValue("@DispName", this.DispName);
                         command.Parameters.AddWithValue("@GroupName", this.GroupName);
-                        command.Parameters.AddWithValue("@Address", this.Address);
                         command.Parameters.AddWithValue("@LastConnTime", this.LastConnTime);
                         command.Parameters.AddWithValue("@JsonConfigString", this.JsonConfigString);
                         command.ExecuteNonQuery();

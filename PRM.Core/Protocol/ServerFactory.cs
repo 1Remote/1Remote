@@ -29,7 +29,7 @@ namespace PRM.Core.DB
         #endregion
 
         private static readonly object Locker = new object();
-        List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
+        private List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
         public ProtocolServerBase CreateFromDbObjectServerOrm(ServerOrm serverOrm)
         {
             // reflect all the child class
@@ -39,7 +39,7 @@ namespace PRM.Core.DB
                 {
                     var assembly = typeof(ProtocolServerBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)))
+                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
             }
@@ -76,7 +76,7 @@ namespace PRM.Core.DB
                 {
                     var assembly = typeof(ProtocolServerBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)))
+                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
             }

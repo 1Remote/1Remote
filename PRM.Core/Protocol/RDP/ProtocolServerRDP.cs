@@ -51,7 +51,6 @@ namespace PRM.Core.Protocol.RDP
 
         public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
-            UserName = "Administrator";
         }
 
         #region Conn
@@ -67,7 +66,7 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
-        private int _port = 0;
+        private int _port = 3389;
         public int Port
         {
             get => _port > 0 ? _port : 3389;
@@ -75,7 +74,7 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
-        private string _userName;
+        private string _userName = "Administrator";
         public string UserName
         {
             get => _userName;
@@ -255,14 +254,14 @@ namespace PRM.Core.Protocol.RDP
 
         #endregion
 
+
+
         private LocalSetting _autoSetting = new LocalSetting();
         public LocalSetting AutoSetting
         {
             get => _autoSetting;
             set => SetAndNotifyIfChanged(nameof(AutoSetting), ref _autoSetting, value);
         }
-
-
 
 
         public override string ToJsonString()
