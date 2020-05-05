@@ -8,7 +8,7 @@ namespace PRM.Core.Protocol.Putty.SSH
 {
     public class ProtocolServerSSHForm : ProtocolPuttyForm
     {
-        public ProtocolServerSSHForm(ProtocolPutttyBase vm) : base(vm)
+        public ProtocolServerSSHForm(ProtocolServerBase vm) : base(vm)
         {
         }
     }

@@ -3,7 +3,8 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                        xmlns:local="clr-namespace:PRM.Core.Protocol.RDP"
+                        xmlns:putty="clr-namespace:PRM.Core.Protocol.Putty"
+                        xmlns:ssh="clr-namespace:PRM.Core.Protocol.Putty.SSH"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
                         mc:Ignorable="d" 
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -51,55 +52,31 @@
                 </StackPanel>
             </Grid>
 
+
+            <Grid Style="{StaticResource ServerEditorRow}" Name="GridPrivateKey">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding Password}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </StackPanel>
 
         <StackPanel Name="SpSsh">
-            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="TXT:SSH"></TextBlock>
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
             <Grid Style="{StaticResource ServerEditorRow}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:协议"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_advantage_ssh_version}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
-                            <local:ConverterERdpFullScreenFlag x:Key="ConverterERdpFullScreenFlag"/>
+                            <putty:ConverterESshVersion x:Key="ConverterESshVersion"/>
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}"/>
+                        <ComboBox SelectedIndex="{Binding SshVersion, Converter={StaticResource ConverterESshVersion}}">
+                            <ComboBoxItem Content="V1"/>
+                            <ComboBoxItem Content="V2"/>
                         </ComboBox>
                     </Grid>
-
-                    <StackPanel Orientation="Horizontal" Margin="20 0 0 0" VerticalAlignment="Center">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullScreen}">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
-                            <CheckBox Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
-                                <CheckBox.Style>
-                                    <Style TargetType="CheckBox">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
-                                                <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
-                                                <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </CheckBox.Style>
-                            </CheckBox>
-                        </Grid>
-                    </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>
