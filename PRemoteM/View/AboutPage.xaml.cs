@@ -29,7 +29,7 @@ namespace PRM.View
             InitializeComponent();
             Vm = vm;
             DataContext = Vm;
-            //TbVersion.Text = PRMVersion.Version;
+            TbVersion.Text = PRMVersion.Version;
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

@@ -98,13 +98,36 @@ namespace PRM.Core.Protocol.RDP
 
         #region Display
 
-        private ERdpFullScreenFlag _rdpFullScreenFlag;
+        private ERdpFullScreenFlag _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
         public ERdpFullScreenFlag RdpFullScreenFlag
         {
             get => _rdpFullScreenFlag;
-            set => SetAndNotifyIfChanged(nameof(RdpFullScreenFlag), ref _rdpFullScreenFlag, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(RdpFullScreenFlag), ref _rdpFullScreenFlag, value);
+                switch (value)
+                {
+                    case ERdpFullScreenFlag.EnableFullAllScreens:
+                        IsConnWithFullScreen = true;
+                        break;
+                    case ERdpFullScreenFlag.Disable:
+                        IsConnWithFullScreen = false;
+                        break;
+                    case ERdpFullScreenFlag.EnableFullScreen:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                }
+            }
         }
 
+
+        private bool _isConnWithFullScreen = false;
+        public bool IsConnWithFullScreen
+        {
+            get => _isConnWithFullScreen;
+            set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
+        }
 
         private ERdpWindowResizeMode _rdpWindowResizeMode;
         public ERdpWindowResizeMode RdpWindowResizeMode
@@ -131,7 +154,7 @@ namespace PRM.Core.Protocol.RDP
 
 
 
-        private EDisplayPerformance _displayPerformance;
+        private EDisplayPerformance _displayPerformance = EDisplayPerformance.Auto;
         public EDisplayPerformance DisplayPerformance
         {
             get => _displayPerformance;

@@ -55,8 +55,9 @@ namespace PRM.Core.Protocol
             {
                 var jpgs = di.GetFiles("*.jpg");
                 var pngs = di.GetFiles("*.png");
+                var bmps = di.GetFiles("*.bmp");
                 var icons = di.GetFiles("*.icon");
-                var imgs = jpgs.Union(pngs).Union(icons);
+                var imgs = jpgs.Union(pngs).Union(icons).Union(bmps);
                 foreach (var fileInfo in imgs)
                 {
                     var bs = NetImageProcessHelper.ReadImgFile(fileInfo.FullName);

@@ -46,12 +46,7 @@ namespace PRM.Core.Model
         }
 
 
-        private string _iconFolderPath = "./Icons";
-        public string IconFolderPath
-        {
-            get => _iconFolderPath;
-            set => SetAndNotifyIfChanged(nameof(IconFolderPath), ref _iconFolderPath, value);
-        }
+        public string IconFolderPath => "./Icons";
 
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;

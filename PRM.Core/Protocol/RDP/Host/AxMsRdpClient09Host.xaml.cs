@@ -205,7 +205,7 @@ namespace Shawn.Ulits.RDP
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
                     // depends on window status of last session
-                    if (_rdpServer.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false)
+                    if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false))
                     {
                         var screen = GetScreen(_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex);
                         if (screen == null)
@@ -399,11 +399,6 @@ namespace Shawn.Ulits.RDP
                 ResizeEndStartFireDelegate();
                 if (this.OnResizeEnd == null)
                     this.OnResizeEnd += ReSizeRdp;
-            }
-
-            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen && _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen)
-            {
-                _rdp.FullScreen = true;
             }
 
             RdpHost.Visibility = Visibility.Visible;

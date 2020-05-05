@@ -56,7 +56,7 @@ namespace PRM.Model
                     tab = _tabWindows[_lastTabToken];
                 else
                 {
-                    string token = DateTime.Now.Ticks.ToString();
+                    var token = DateTime.Now.Ticks.ToString();
                     AddTab(new TabWindow(token));
                     tab = _tabWindows[token];
                     tab.Show();
@@ -186,7 +186,7 @@ namespace PRM.Model
                         tab = _tabWindows[_lastTabToken];
                     else
                     {
-                        string token = DateTime.Now.Ticks.ToString();
+                        var token = DateTime.Now.Ticks.ToString();
                         AddTab(new TabWindow(token));
                         tab = _tabWindows[token];
                         tab.Show();

@@ -68,6 +68,38 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}"/>
                         </ComboBox>
                     </Grid>
+
+                    <StackPanel Orientation="Horizontal" Margin="20 0 0 0" VerticalAlignment="Center">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullScreen}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <CheckBox Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
+                                                <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
@@ -114,16 +146,16 @@
 
             <Grid Style="{StaticResource ServerEditorRow}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_performance}"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_rdp_performance}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
                             <local:ConverterEDisplayPerformance x:Key="ConverterEDisplayPerformance"/>
                         </Grid.Resources>
                         <ComboBox SelectedIndex="{Binding DisplayPerformance,Converter={StaticResource ConverterEDisplayPerformance}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_auto}" ToolTip="{DynamicResource server_editor_display_performance_auto}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_low}" ToolTip="{DynamicResource server_editor_display_performance_low}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_middle}" ToolTip="{DynamicResource server_editor_display_performance_middle}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_high}" ToolTip="{DynamicResource server_editor_display_performance_high}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_auto}" ToolTip="{DynamicResource server_editor_display_rdp_performance_auto}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_low}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_middle}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_high}" ToolTip="{DynamicResource server_editor_display_rdp_performance_high}"/>
                         </ComboBox>
                     </Grid>
                 </StackPanel>
