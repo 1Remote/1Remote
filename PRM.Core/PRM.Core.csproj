@@ -84,6 +84,7 @@
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.Locality.cs" />
     <Compile Include="Model\SystemConfig.QuickConnect.cs" />
+    <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
