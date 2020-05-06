@@ -14,16 +14,6 @@ namespace PRM.Core.Model
 {
     public sealed class SystemConfigLocality : SystemConfigBase
     {
-        //protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
-        //{
-        //    if (oldValue == null && newValue == null) return;
-        //    if (oldValue != null && oldValue.Equals(newValue)) return;
-        //    if (newValue != null && newValue.Equals(oldValue)) return;
-        //    oldValue = newValue;
-        //    RaisePropertyChanged(propertyName);
-        //    Save();
-        //}
-
         private new readonly Ini _ini;
 
         public SystemConfigLocality():base(null)
@@ -53,6 +43,24 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(MainWindowHeight), ref _mainWindowHeight, value);
         }
 
+        
+
+        private double _mainWindowTop = -1;
+        public double MainWindowTop
+        {
+            get => _mainWindowTop;
+            set => SetAndNotifyIfChanged(nameof(MainWindowTop), ref _mainWindowTop, value);
+        }
+
+        
+        private double _mainWindowLeft = -1;
+        public double MainWindowLeft
+        {
+            get => _mainWindowLeft;
+            set => SetAndNotifyIfChanged(nameof(MainWindowLeft), ref _mainWindowLeft, value);
+        }
+
+
 
         #region Interface
         private const string _sectionName = "Locality";
@@ -60,6 +68,8 @@ namespace PRM.Core.Model
         {
             _ini.WriteValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth.ToString());
             _ini.WriteValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight.ToString());
+            _ini.WriteValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop.ToString());
+            _ini.WriteValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft.ToString());
             _ini.Save();
         }
 
@@ -67,6 +77,8 @@ namespace PRM.Core.Model
         {
             MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
             MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
+            MainWindowTop = _ini.GetValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop);
+            MainWindowLeft = _ini.GetValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft);
         }
 
         public override void Update(SystemConfigBase newConfig)

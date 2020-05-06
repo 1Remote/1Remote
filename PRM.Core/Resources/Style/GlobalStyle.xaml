@@ -5,6 +5,7 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
     </Style>
     <Style TargetType="Button">
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
     </Style>
     <Style TargetType="TextBox">

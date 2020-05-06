@@ -49,7 +49,7 @@ namespace PRM.View
             {
                 this.Title = ProtocolHostBase.ProtocolServer.DispName + " - " + ProtocolHostBase.ProtocolServer.SubTitle;
                 this.Icon = ProtocolHostBase.ProtocolServer.IconImg;
-                ProtocolHostBase.Parent = this;
+                ProtocolHostBase.ParentWindow = this;
             }
             if (IsLoaded)
                 this.Content = content;

@@ -22,12 +22,12 @@ namespace PRM.Core.Model
         {
             Load();
         }
-        
-        private bool _AppStartAutomatically = false;
+
+        private bool _appStartAutomatically = false;
         public bool AppStartAutomatically
         {
-            get => _AppStartAutomatically;
-            set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _AppStartAutomatically, value);
+            get => _appStartAutomatically;
+            set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
         }
 
         private bool _appStartMinimized = false;

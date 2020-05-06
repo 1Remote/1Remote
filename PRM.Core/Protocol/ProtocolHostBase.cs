@@ -14,20 +14,11 @@ namespace PRM.Core.Protocol
         public uint Id => ProtocolServer.Id;
         public readonly ProtocolServerBase ProtocolServer;
         public bool CanFullScreen { get; protected set; }
-        private Window _parent = null;
-        public Window Parent
-        {
-            get => _parent;
-            set
-            {
-                _parent = value;
-            }
-        }
+        public Window ParentWindow { get; set; } = null;
 
 
         protected ProtocolHostBase(ProtocolServerBase protocolServer, bool canFullScreen = false)
         {
-            Debug.Assert(protocolServer != null);
             ProtocolServer = protocolServer;
             CanFullScreen = canFullScreen;
         }
