@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -50,10 +51,15 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int WS_VSCROLL = 0x00200000; // 创建一个有垂直滚动条的窗口。
 
 
-        private const int PuttyCmdWindowMargin = 0;
+        private const int SW_HIDE = 0;
+        private const int SW_SHOWNORMAL = 1;
+        private const int SW_SHOWMAXIMIZED = 3;
+
+
+        private const int PuttyWindowMargin = 0;
         private Process PuttyProcess = null;
         private IntPtr PuttyHandle = IntPtr.Zero;
-        private System.Windows.Forms.Panel panel1 = null;
+        private System.Windows.Forms.Panel panel = null;
         private PuttyOptions PuttyOption = null;
         private readonly IPuttyConnectable _protocolPutttyBase = null;
 
@@ -65,34 +71,46 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override void Conn()
         {
-            Debug.Assert(Parent != null);
+            Debug.Assert(ParentWindow != null);
             Debug.Assert(_protocolPutttyBase.ProtocolServerBase.Id > 0);
-            PuttyOption = new PuttyOptions(_protocolPutttyBase.GetSessionName());
             
-            PuttyHandle = IntPtr.Zero;           
+            // TODO set to putty bg color
+            GridBg.Background = new SolidColorBrush(new Color()
+            {
+                A = 255,
+                R = 0,
+                G = 0,
+                B = 0,
+            });
+
+            PuttyOption = new PuttyOptions(_protocolPutttyBase.GetSessionName());
+
+            PuttyHandle = IntPtr.Zero;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
-            Task tsk = new Task(InitPutty);
+            var tsk = new Task(InitPutty);
             tsk.Start();
 
 
-            panel1 = new System.Windows.Forms.Panel();
-            panel1.BackColor = System.Drawing.Color.Transparent;
-            panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            //panel1.Parent = FormsHost.;
-            panel1.SizeChanged += Panel1OnSizeChanged;
-            FormsHost.Child = panel1;
+            panel = new System.Windows.Forms.Panel
+            {
+                BackColor = System.Drawing.Color.Transparent,
+                Dock = System.Windows.Forms.DockStyle.Fill,
+                BorderStyle = BorderStyle.None
+            };
+            panel.SizeChanged += PanelOnSizeChanged;
+            FormsHost.Child = panel;
         }
 
         public override void DisConn()
         {
-                Close();
+            Close();
         }
-        
-        private void Panel1OnSizeChanged(object sender, EventArgs e)
+
+        private void PanelOnSizeChanged(object sender, EventArgs e)
         {
             if (PuttyHandle != IntPtr.Zero)
-                MoveWindow(PuttyHandle, -PuttyCmdWindowMargin, -PuttyCmdWindowMargin, panel1.Width + PuttyCmdWindowMargin, panel1.Height + PuttyCmdWindowMargin, true);
+                MoveWindow(PuttyHandle, PuttyWindowMargin, PuttyWindowMargin, panel.Width - PuttyWindowMargin * 2, panel.Height - PuttyWindowMargin * 2, true);
         }
 
         public void Close()
@@ -101,14 +119,16 @@ namespace PRM.Core.Protocol.Putty.Host
             //PostMessage(AppWindow, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
             try
             {
-                PuttyProcess?.Kill();
+                if (PuttyProcess?.HasExited == false)
+                {
+                    PuttyProcess?.Kill();
+                }
                 PuttyProcess = null;
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
             }
-            //MessageBox.Show("PostMessage Close");
         }
 
         private void InitPutty()
@@ -130,46 +150,50 @@ namespace PRM.Core.Protocol.Putty.Host
 
             Dispatcher.Invoke(() =>
             {
-                SetParent(PuttyHandle, panel1.Handle);
-                var wih = new WindowInteropHelper(Parent);
+                SetParent(PuttyHandle, panel.Handle);
+                var wih = new WindowInteropHelper(ParentWindow);
                 IntPtr hWnd = wih.Handle;
                 SetForegroundWindow(hWnd);
-                ShowWindow(PuttyHandle, 3); //SW_SHOWMAXIMIZED
+                ShowWindow(PuttyHandle, SW_SHOWMAXIMIZED);
                 int lStyle = GetWindowLong(PuttyHandle, GWL_STYLE);
-                lStyle &= ~(WS_CAPTION | WS_BORDER | WS_THICKFRAME);
+                //lStyle &= ~(WS_CAPTION | WS_BORDER | WS_THICKFRAME);
+                lStyle &= ~WS_CAPTION; // no title
+                lStyle &= ~WS_BORDER;  // no border
+                lStyle &= ~WS_THICKFRAME;
                 SetWindowLong(PuttyHandle, GWL_STYLE, lStyle); // make putty "WindowStyle=None"
-                MoveWindow(PuttyHandle, -PuttyCmdWindowMargin, -PuttyCmdWindowMargin, panel1.Width + PuttyCmdWindowMargin, panel1.Height + PuttyCmdWindowMargin, true);
+                //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
+                MoveWindow(PuttyHandle, PuttyWindowMargin, PuttyWindowMargin, panel.Width - PuttyWindowMargin * 2, panel.Height - PuttyWindowMargin * 2, true);
                 DeletePuttySession();
             });
         }
-        
+
 
 
         private void CreatePuttySession()
         {
-            PuttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
-            PuttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
-            PuttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            PuttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
-            PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            PuttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
-            PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            PuttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
-            PuttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            PuttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
-            PuttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
-            PuttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
-            PuttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
-            PuttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
-            PuttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
-            PuttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
-            PuttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
-            PuttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
-            PuttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
-            PuttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
-            PuttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
+            //PuttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
+            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
+            //PuttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
 
 
             //PuttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
@@ -237,7 +261,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override void GoFullScreen()
         {
-            throw new NotSupportedException("putty session can not go to full-screen mode!");
+            //throw new NotSupportedException("putty session can not go to full-screen mode!");
         }
 
         public override bool IsConnected()

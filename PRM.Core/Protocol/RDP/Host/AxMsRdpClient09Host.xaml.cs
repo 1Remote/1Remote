@@ -431,30 +431,30 @@ namespace Shawn.Ulits.RDP
         private double _normalLeft = 0;
         private void MakeNormal2FullScreen(bool saveSize = true)
         {
-            Debug.Assert(Parent != null);
+            Debug.Assert(ParentWindow != null);
             _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = true;
 
             if (saveSize)
             {
-                _normalWidth = Parent.Width;
-                _normalHeight = Parent.Height;
-                _normalTop = Parent.Top;
-                _normalLeft = Parent.Left;
+                _normalWidth = ParentWindow.Width;
+                _normalHeight = ParentWindow.Height;
+                _normalTop = ParentWindow.Top;
+                _normalLeft = ParentWindow.Left;
             }
 
-            Parent.WindowState = WindowState.Normal;
-            Parent.WindowStyle = WindowStyle.None;
-            Parent.ResizeMode = ResizeMode.NoResize;
+            ParentWindow.WindowState = WindowState.Normal;
+            ParentWindow.WindowStyle = WindowStyle.None;
+            ParentWindow.ResizeMode = ResizeMode.NoResize;
 
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
                 System.Drawing.Rectangle entireSize = System.Drawing.Rectangle.Empty;
                 foreach (var screen in System.Windows.Forms.Screen.AllScreens)
                     entireSize = System.Drawing.Rectangle.Union(entireSize, screen.Bounds);
-                Parent.Width = entireSize.Width / (_scaleFactor / 100.0); ;
-                Parent.Height = entireSize.Height / (_scaleFactor / 100.0); ;
-                Parent.Left = entireSize.Left / (_scaleFactor / 100.0); ;
-                Parent.Top = entireSize.Top / (_scaleFactor / 100.0); ;
+                ParentWindow.Width = entireSize.Width / (_scaleFactor / 100.0); ;
+                ParentWindow.Height = entireSize.Height / (_scaleFactor / 100.0); ;
+                ParentWindow.Left = entireSize.Left / (_scaleFactor / 100.0); ;
+                ParentWindow.Top = entireSize.Top / (_scaleFactor / 100.0); ;
             }
             else
             {
@@ -471,36 +471,36 @@ namespace Shawn.Ulits.RDP
                     }
                 }
 
-                Parent.Width = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Width / (_scaleFactor / 100.0);
-                Parent.Height = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Height / (_scaleFactor / 100.0);
-                Parent.Left = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Left / (_scaleFactor / 100.0);
-                Parent.Top = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Top / (_scaleFactor / 100.0);
+                ParentWindow.Width = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Width / (_scaleFactor / 100.0);
+                ParentWindow.Height = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Height / (_scaleFactor / 100.0);
+                ParentWindow.Left = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Left / (_scaleFactor / 100.0);
+                ParentWindow.Top = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Top / (_scaleFactor / 100.0);
                 _rdp.Width = (int)System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Width;
                 _rdp.Height = (int)System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Height;
                 SetRdpResolution((uint)_rdp.Width, (uint)_rdp.Height);
             }
-            Parent.Topmost = true;
+            ParentWindow.Topmost = true;
         }
         private void MakeFullScreen2Normal()
         {
-            Debug.Assert(Parent != null);
+            Debug.Assert(ParentWindow != null);
             _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = false;
-            Parent.Topmost = false;
-            Parent.ResizeMode = ResizeMode.CanResize;
-            Parent.Topmost = false;
-            Parent.WindowStyle = WindowStyle.SingleBorderWindow;
-            Parent.WindowState = WindowState.Normal;
-            Parent.Width = _normalWidth;
-            Parent.Height = _normalHeight;
-            Parent.Top = _normalTop;
-            Parent.Left = _normalLeft;
+            ParentWindow.Topmost = false;
+            ParentWindow.ResizeMode = ResizeMode.CanResize;
+            ParentWindow.Topmost = false;
+            ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
+            ParentWindow.WindowState = WindowState.Normal;
+            ParentWindow.Width = _normalWidth;
+            ParentWindow.Height = _normalHeight;
+            ParentWindow.Top = _normalTop;
+            ParentWindow.Left = _normalLeft;
             SetRdpResolution((uint)_rdp.Width, (uint)_rdp.Height);
             base.OnFullScreen2Window?.Invoke(_rdpServer.Id);
         }
         private void MakeForm2Minimize()
         {
-            Debug.Assert(Parent != null);
-            Parent.WindowState = WindowState.Minimized;
+            Debug.Assert(ParentWindow != null);
+            ParentWindow.WindowState = WindowState.Minimized;
         }
 
         #endregion

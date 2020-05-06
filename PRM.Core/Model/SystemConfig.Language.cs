@@ -36,7 +36,7 @@ namespace PRM.Core.Model
                 if (!string.IsNullOrEmpty(newVal)
                     && LanguageCode2Name.ContainsKey(newVal))
                 {
-                    if (_currentLanguageCode != value)
+                    if (_currentLanguageCode != value || _currentLanguageResourceDictionary == null)
                     {
                         SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
                         // reload ResourceDictionary
@@ -216,7 +216,7 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
-            CurrentLanguageCode = _ini.GetValue("lang", _sectionName, CurrentLanguageCode);
+            CurrentLanguageCode = _ini.GetValue("lang", _sectionName, DefaultLanguageCode);
         }
 
         public override void Update(SystemConfigBase newConfig)

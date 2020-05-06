@@ -41,8 +41,13 @@ namespace PersonalRemoteManager
         public static MainWindow Window  { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; }  = null;
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
-        private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com"; // 定义一个 IPC 端口
+#if DEBUG
+        private const string ServiceIpcPortName = "Ipc_DEBUG_VShawn_present_singlex@foxmail.com";
+        private const string ServiceIpcRoute = "PRemoteM_DEBUG";
+#else
+        private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com";
         private const string ServiceIpcRoute = "PRemoteM";
+#endif
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
@@ -64,7 +69,11 @@ namespace PersonalRemoteManager
 
             try
             {
-                _singleAppMutex = new Mutex(true, "PersonalRemoteManager", out var isFirst);
+#if DEBUG
+                _singleAppMutex = new Mutex(true, "PRemoteM_DEBUG", out var isFirst);
+#else
+                _singleAppMutex = new Mutex(true, "PRemoteM", out var isFirst);
+#endif
                 if (!isFirst)
                 {
                     var oneRemoteProvider = (OneServiceRemoteProvider)Activator.GetObject(typeof(OneServiceRemoteProvider), $"ipc://{ServiceIpcPortName}/{ServiceIpcRoute}");
@@ -129,14 +138,13 @@ namespace PersonalRemoteManager
                 // 设置托盘
                 TaskTrayIcon = new System.Windows.Forms.NotifyIcon
                 {
-                    Text = "TXT:XXXX系统",
+                    Text = SystemConfig.AppName,
                     Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name),
-                    BalloonTipText = "TXT:正在后台运行...",
+                    //BalloonTipText = "TXT:正在后台运行...",
                     Visible = true
                 };
                 ReloadTaskTrayContextMenu();
                 SystemConfig.GetInstance().Language.OnLanguageChanged += ReloadTaskTrayContextMenu;
-
                 TaskTrayIcon.MouseDoubleClick += (sender, e) =>
                 {
                     if (e.Button == System.Windows.Forms.MouseButtons.Left)

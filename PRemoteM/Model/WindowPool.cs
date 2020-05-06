@@ -28,7 +28,7 @@ namespace PRM.Model
             Debug.Assert(id > 0);
             if (_protocolHosts.ContainsKey(id))
             {
-                _protocolHosts[id].Parent?.Activate();
+                _protocolHosts[id].ParentWindow?.Activate();
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace PRM.Model
                 var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
                 host.OnClosed += OnProtocolClose;
                 host.OnFullScreen2Window += OnFullScreen2Window;
-                host.Parent = tab;
+                host.ParentWindow = tab;
                 tab.Vm.Items.Add(new TabItemViewModel()
                 {
                     Content = host,
@@ -123,9 +123,9 @@ namespace PRM.Model
                 var host = _protocolHosts[id];
 
                 // remove from old parent
-                if (host.Parent != null)
+                if (host.ParentWindow != null)
                 {
-                    var tab = (TabWindow) host.Parent;
+                    var tab = (TabWindow) host.ParentWindow;
                     SimpleLogHelper.Log($@"Remove host({host.GetHashCode()}) from tab({tab.GetHashCode()})");
                     tab.Vm.Items.Remove(tab.Vm.SelectedItem);
                     if (tab.Vm.Items.Count > 0)
@@ -143,7 +143,7 @@ namespace PRM.Model
                 {
                     full = _host2FullScreenWindows[id];
                     full.SetProtocolHost(host);
-                    host.Parent = full;
+                    host.ParentWindow = full;
                     host.GoFullScreen();
                 }
                 else
@@ -151,7 +151,7 @@ namespace PRM.Model
                     // move to full
                     full = new FullScreenWindow(host);
                     AddFull(full);
-                    host.Parent = full;
+                    host.ParentWindow = full;
                     full.Loaded += (sender, args) => { host.GoFullScreen(); };
                 }
                 full.Show();
@@ -166,20 +166,20 @@ namespace PRM.Model
             {
                 var host = _protocolHosts[id];
                 // remove from old parent
-                if (host.Parent != null)
+                if (host.ParentWindow != null)
                 {
-                    if (host.Parent is TabWindow tab)
+                    if (host.ParentWindow is TabWindow tab)
                     {
                         tab.Activate();
                         return;
                     }
-                    else if (host.Parent is FullScreenWindow full)
+                    else if (host.ParentWindow is FullScreenWindow full)
                     {
                         SimpleLogHelper.Log($@"Hide full({full.GetHashCode()})");
                         full.Hide();
                     }
                     else
-                        throw new ArgumentOutOfRangeException(host.Parent + " type is wrong!");
+                        throw new ArgumentOutOfRangeException(host.ParentWindow + " type is wrong!");
                 }
 
 
@@ -203,7 +203,7 @@ namespace PRM.Model
                         Header = host.ProtocolServer.DispName,
                     });
                     tab.Vm.SelectedItem = tab.Vm.Items.Last();
-                    host.Parent = tab;
+                    host.ParentWindow = tab;
                     SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
                     SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
