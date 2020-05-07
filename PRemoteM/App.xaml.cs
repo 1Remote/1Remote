@@ -122,6 +122,10 @@ namespace PersonalRemoteManager
                 AppOnClose();
                 SimpleLogHelper.Error(ex.Message);
                 SimpleLogHelper.Error(ex.StackTrace);
+#if DEBUG
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
+#endif
                 Environment.Exit(-1);
             }
         }

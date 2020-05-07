@@ -177,26 +177,26 @@ namespace Shawn.Ulits.RDP
                 {
                     case ERdpWindowResizeMode.Stretch:
                     case ERdpWindowResizeMode.Fixed:
-                        _rdp.Width = _rdp.DesktopWidth = (int)_rdpServer.RdpWidth;
-                        _rdp.Height = _rdp.DesktopHeight = (int)_rdpServer.RdpHeight;
+                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth / (_scaleFactor / 100.0));
+                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight / (_scaleFactor / 100.0));
                         break;
                     case ERdpWindowResizeMode.StretchFullScreen:
                     case ERdpWindowResizeMode.FixedFullScreen:
-                        var screenSize = GetScreenAreaWithScaling();
-                        _rdp.Width = _rdp.DesktopWidth = screenSize.Width;
-                        _rdp.Height = _rdp.DesktopHeight = screenSize.Height;
+                        var screenSize = GetScreenSize();
+                        _rdp.DesktopWidth = (int)(screenSize.Width);
+                        _rdp.DesktopHeight = (int)(screenSize.Height);
                         break;
                     case ERdpWindowResizeMode.AutoResize:
                     default:
                         if (width > 100 && height > 100)
                         {
-                            _rdp.Width = _rdp.DesktopWidth = (int)width;
-                            _rdp.Height = _rdp.DesktopHeight = (int)height;
+                            _rdp.DesktopWidth = (int)(width * (_scaleFactor / 100.0));
+                            _rdp.DesktopHeight = (int)(height * (_scaleFactor / 100.0));
                         }
                         else
                         {
-                            _rdp.Width = _rdp.DesktopWidth = 800;
-                            _rdp.Height = _rdp.DesktopHeight = 600;
+                            _rdp.DesktopWidth = (int)(800 * (_scaleFactor / 100.0));
+                            _rdp.DesktopHeight = (int)(600 * (_scaleFactor / 100.0));
                         }
                         break;
                 }
@@ -212,11 +212,20 @@ namespace Shawn.Ulits.RDP
                     base.CanFullScreen = true;
                     if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false))
                     {
+                        var screenSize = GetScreenSize();
+                        _rdp.DesktopWidth = (int)(screenSize.Width);
+                        _rdp.DesktopHeight = (int)(screenSize.Height);
                         _rdp.FullScreen = true;
                     }
                     break;
                 case ERdpFullScreenFlag.EnableFullAllScreens:
                     base.CanFullScreen = true;
+                    if (Screen.AllScreens.Length == 1)
+                    {
+                        var screenSize = GetScreenSize();
+                        _rdp.DesktopWidth = (int)(screenSize.Width);
+                        _rdp.DesktopHeight = (int)(screenSize.Height);
+                    }
                     ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
                     break;
                 default:
@@ -332,34 +341,34 @@ namespace Shawn.Ulits.RDP
         enum EDiscReason
         {
             // https://docs.microsoft.com/en-us/windows/win32/termserv/extendeddisconnectreasoncode
-            exDiscReasonNoInfo                            = 0,
-            exDiscReasonAPIInitiatedDisconnect            = 1,
-            exDiscReasonAPIInitiatedLogoff                = 2,
-            exDiscReasonServerIdleTimeout                 = 3,
-            exDiscReasonServerLogonTimeout                = 4,
-            exDiscReasonReplacedByOtherConnection         = 5,
-            exDiscReasonOutOfMemory                       = 6,
-            exDiscReasonServerDeniedConnection            = 7,
-            exDiscReasonServerDeniedConnectionFips        = 8,
-            exDiscReasonServerInsufficientPrivileges      = 9,
-            exDiscReasonServerFreshCredsRequired          = 10,
-            exDiscReasonRpcInitiatedDisconnectByUser      = 11,
-            exDiscReasonLogoffByUser                      = 2,
-            exDiscReasonLicenseInternal                   = 256,
-            exDiscReasonLicenseNoLicenseServer            = 257,
-            exDiscReasonLicenseNoLicense                  = 258,
-            exDiscReasonLicenseErrClientMsg               = 259,
-            exDiscReasonLicenseHwidDoesntMatchLicense     = 260,
-            exDiscReasonLicenseErrClientLicense           = 261,
-            exDiscReasonLicenseCantFinishProtocol         = 262,
-            exDiscReasonLicenseClientEndedProtocol        = 263,
-            exDiscReasonLicenseErrClientEncryption        = 264,
-            exDiscReasonLicenseCantUpgradeLicense         = 265,
-            exDiscReasonLicenseNoRemoteConnections        = 266,
-            exDiscReasonLicenseCreatingLicStoreAccDenied  = 267,
-            exDiscReasonRdpEncInvalidCredentials          = 768,
-            exDiscReasonProtocolRangeStart                = 4096,
-            exDiscReasonProtocolRangeEnd                  = 32767
+            exDiscReasonNoInfo = 0,
+            exDiscReasonAPIInitiatedDisconnect = 1,
+            exDiscReasonAPIInitiatedLogoff = 2,
+            exDiscReasonServerIdleTimeout = 3,
+            exDiscReasonServerLogonTimeout = 4,
+            exDiscReasonReplacedByOtherConnection = 5,
+            exDiscReasonOutOfMemory = 6,
+            exDiscReasonServerDeniedConnection = 7,
+            exDiscReasonServerDeniedConnectionFips = 8,
+            exDiscReasonServerInsufficientPrivileges = 9,
+            exDiscReasonServerFreshCredsRequired = 10,
+            exDiscReasonRpcInitiatedDisconnectByUser = 11,
+            exDiscReasonLogoffByUser = 2,
+            exDiscReasonLicenseInternal = 256,
+            exDiscReasonLicenseNoLicenseServer = 257,
+            exDiscReasonLicenseNoLicense = 258,
+            exDiscReasonLicenseErrClientMsg = 259,
+            exDiscReasonLicenseHwidDoesntMatchLicense = 260,
+            exDiscReasonLicenseErrClientLicense = 261,
+            exDiscReasonLicenseCantFinishProtocol = 262,
+            exDiscReasonLicenseClientEndedProtocol = 263,
+            exDiscReasonLicenseErrClientEncryption = 264,
+            exDiscReasonLicenseCantUpgradeLicense = 265,
+            exDiscReasonLicenseNoRemoteConnections = 266,
+            exDiscReasonLicenseCreatingLicStoreAccDenied = 267,
+            exDiscReasonRdpEncInvalidCredentials = 768,
+            exDiscReasonProtocolRangeStart = 4096,
+            exDiscReasonProtocolRangeEnd = 32767
         }
         #endregion
         private void RdpcOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
@@ -452,11 +461,11 @@ namespace Shawn.Ulits.RDP
             ParentWindow.ResizeMode = ResizeMode.NoResize;
 
 
-            var screenSize = GetScreenAreaWithScaling();
-            ParentWindow.Width = screenSize.Width;
-            ParentWindow.Height = screenSize.Height;
-            ParentWindow.Left = screenSize.Left;
-            ParentWindow.Top = screenSize.Top;
+            var screenSize = GetScreenSize();
+            ParentWindow.Width = screenSize.Width / (_scaleFactor / 100.0);
+            ParentWindow.Height = screenSize.Height / (_scaleFactor / 100.0);
+            ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
+            ParentWindow.Top = screenSize.Top / (_scaleFactor / 100.0);
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
@@ -465,7 +474,7 @@ namespace Shawn.Ulits.RDP
         }
 
 
-        private System.Drawing.Rectangle GetScreenAreaWithScaling()
+        private System.Drawing.Rectangle GetScreenSize()
         {
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
