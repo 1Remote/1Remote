@@ -8,7 +8,6 @@
         BorderThickness="0"
         BorderBrush="Transparent"
         x:Name="Window"
-        Closing="Window_Closing"
         Title="PRemoteM" Height="500" Width="680" MinWidth="530" MinHeight="300">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
@@ -54,7 +53,7 @@
         </Grid.RowDefinitions>
 
 
-        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
+        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>

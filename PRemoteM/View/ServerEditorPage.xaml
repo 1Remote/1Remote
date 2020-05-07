@@ -46,7 +46,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <TextBox Text="{Binding Server.DispName}"></TextBox>
+                                        <TextBox Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -54,7 +54,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <TextBox Text="{Binding Server.GroupName}"></TextBox>
+                                        <TextBox Text="{Binding Server.GroupName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     </Grid>
                                 </StackPanel>
                             </Grid>

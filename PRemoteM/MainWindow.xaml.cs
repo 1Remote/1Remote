@@ -28,13 +28,38 @@ namespace PRM
 
             this.Width = SystemConfig.GetInstance().Locality.MainWindowWidth;
             this.Height = SystemConfig.GetInstance().Locality.MainWindowHeight;
+            WinTitleBar.PreviewMouseDown += (sender, e) =>
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    this.DragMove();
+                }
+                if (e.LeftButton == MouseButtonState.Released)
+                {
+                    if (this.WindowState == WindowState.Normal)
+                    {
+                        SystemConfig.GetInstance().Locality.MainWindowTop = this.Top;
+                        SystemConfig.GetInstance().Locality.MainWindowLeft = this.Left;
+                        SystemConfig.GetInstance().Locality.Save();
+                        Console.WriteLine($"main window Top = {this.Top}, Left = {this.Left}");
+                    }
+                }
+            };
+            this.SizeChanged += (sender, args) =>
+            {
+                if (this.WindowState == WindowState.Normal)
+                {
+                    SystemConfig.GetInstance().Locality.MainWindowHeight = this.Height;
+                    SystemConfig.GetInstance().Locality.MainWindowWidth = this.Width;
+                    SystemConfig.GetInstance().Locality.Save();
+                    Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
+                }
+            };
 
             // Startup Location
             {
                 var top = SystemConfig.GetInstance().Locality.MainWindowTop;
                 var left = SystemConfig.GetInstance().Locality.MainWindowLeft;
-                
-                
 
                 if (top >= 0 && top < Screen.PrimaryScreen.Bounds.Height
                     && left >= 0 && left < Screen.PrimaryScreen.Bounds.Width
@@ -61,19 +86,6 @@ namespace PRM
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
-        }
-
-        /// <summary>
-        /// DragMove
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void System_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                this.DragMove();
-            }
         }
 
 
@@ -118,18 +130,6 @@ namespace PRM
             if (e.Key == Key.Escape)
             {
                 (sender as TextBox).Text = "";
-            }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (this.WindowState == WindowState.Normal)
-            {
-                SystemConfig.GetInstance().Locality.MainWindowHeight = this.Height;
-                SystemConfig.GetInstance().Locality.MainWindowWidth = this.Width;
-                SystemConfig.GetInstance().Locality.MainWindowTop = this.Top;
-                SystemConfig.GetInstance().Locality.MainWindowLeft = this.Left;
-                SystemConfig.GetInstance().Locality.Save();
             }
         }
 

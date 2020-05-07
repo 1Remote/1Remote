@@ -32,7 +32,6 @@ namespace Shawn.Ulits.RDP
                 _rdpServer = (ProtocolServerRDP)protocolServer;
                 _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
                 ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
-                // set fill to make rdp widow, so that we can enable RDP SmartSizing
                 _rdp.Dock = DockStyle.Fill;
                 _rdp.Enabled = true;
                 _rdp.BackColor = Color.Black;
@@ -164,24 +163,45 @@ namespace Shawn.Ulits.RDP
 
             #region Display
 
-            SetScaleFactor();
+            ReadScaleFactor();
             _rdp.SetExtendedProperty("DesktopScaleFactor", _scaleFactor);
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
-            _rdp.AdvancedSettings2.SmartSizing = _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch;
+            if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch
+            || _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
+                _rdp.AdvancedSettings2.SmartSizing = true;
             // to enhance user experience, i let the form handled full screen
             _rdp.AdvancedSettings6.ContainerHandledFullScreen = 1;
 
-            if (width > 100 && height > 100)
-            {
-                _rdp.Width = (int)width;
-                _rdp.Height = (int)height;
-            }
+            if (_rdpServer.RdpFullScreenFlag != ERdpFullScreenFlag.EnableFullAllScreens)
+                switch (_rdpServer.RdpWindowResizeMode)
+                {
+                    case ERdpWindowResizeMode.Stretch:
+                    case ERdpWindowResizeMode.Fixed:
+                        _rdp.Width = _rdp.DesktopWidth = (int)_rdpServer.RdpWidth;
+                        _rdp.Height = _rdp.DesktopHeight = (int)_rdpServer.RdpHeight;
+                        break;
+                    case ERdpWindowResizeMode.StretchFullScreen:
+                    case ERdpWindowResizeMode.FixedFullScreen:
+                        var screenSize = GetScreenAreaWithScaling();
+                        _rdp.Width = _rdp.DesktopWidth = screenSize.Width;
+                        _rdp.Height = _rdp.DesktopHeight = screenSize.Height;
+                        break;
+                    case ERdpWindowResizeMode.AutoResize:
+                    default:
+                        if (width > 100 && height > 100)
+                        {
+                            _rdp.Width = _rdp.DesktopWidth = (int)width;
+                            _rdp.Height = _rdp.DesktopHeight = (int)height;
+                        }
+                        else
+                        {
+                            _rdp.Width = _rdp.DesktopWidth = 800;
+                            _rdp.Height = _rdp.DesktopHeight = 600;
+                        }
+                        break;
+                }
 
-            //if (Parent != null)
-            //{ 
-            //    _rdp.Width  = (int)Parent.Width;
-            //    _rdp.Height = (int)Parent.Height;
-            //}
+
 
             switch (_rdpServer.RdpFullScreenFlag)
             {
@@ -189,28 +209,15 @@ namespace Shawn.Ulits.RDP
                     base.CanFullScreen = false;
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
-                    // depends on window status of last session
+                    base.CanFullScreen = true;
                     if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false))
                     {
-                        var screen = GetScreen(_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex);
-                        if (screen == null)
-                        {
-                            var t = GetCurrentScreen();
-                            _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = t.Item1;
-                            screen = GetScreen(_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex);
-                        }
-                        if (screen != null)
-                        {
-                            _rdp.DesktopWidth = screen.Bounds.Width;
-                            _rdp.DesktopHeight = screen.Bounds.Height;
-                        }
                         _rdp.FullScreen = true;
                     }
-                    base.CanFullScreen = true;
                     break;
                 case ERdpFullScreenFlag.EnableFullAllScreens:
-                    ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
                     base.CanFullScreen = true;
+                    ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -359,8 +366,8 @@ namespace Shawn.Ulits.RDP
         {
             _isDisconned = true;
             ResizeEndStopFireDelegate();
-            if (this.OnResizeEnd != null)
-                this.OnResizeEnd -= ReSizeRdp;
+            if (this._onResizeEnd != null)
+                this._onResizeEnd -= ReSizeRdp;
 
             const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
             string reason = _rdp.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
@@ -370,6 +377,7 @@ namespace Shawn.Ulits.RDP
                 && reason != "")
             {
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
+                // TODO 弹出非模态对话框，然后关闭 RDP 窗体
                 System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             base.OnClosed.Invoke(_rdpServer.Id);
@@ -379,12 +387,9 @@ namespace Shawn.Ulits.RDP
         {
             _isConnecting = false;
 
-            if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
-            {
-                ResizeEndStartFireDelegate();
-                if (this.OnResizeEnd == null)
-                    this.OnResizeEnd += ReSizeRdp;
-            }
+            ResizeEndStartFireDelegate();
+            if (this._onResizeEnd == null)
+                this._onResizeEnd += ReSizeRdp;
 
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
@@ -414,7 +419,7 @@ namespace Shawn.Ulits.RDP
             try
             {
                 //_rdp.Reconnect(nw, nh);
-                SetScaleFactor();
+                ReadScaleFactor();
                 _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _scaleFactor, 100);
             }
             catch (Exception e)
@@ -446,15 +451,28 @@ namespace Shawn.Ulits.RDP
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
 
+
+            var screenSize = GetScreenAreaWithScaling();
+            ParentWindow.Width = screenSize.Width;
+            ParentWindow.Height = screenSize.Height;
+            ParentWindow.Left = screenSize.Left;
+            ParentWindow.Top = screenSize.Top;
+            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
+            {
+                SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
+            }
+            ParentWindow.Topmost = true;
+        }
+
+
+        private System.Drawing.Rectangle GetScreenAreaWithScaling()
+        {
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
-                System.Drawing.Rectangle entireSize = System.Drawing.Rectangle.Empty;
+                var entireSize = System.Drawing.Rectangle.Empty;
                 foreach (var screen in System.Windows.Forms.Screen.AllScreens)
                     entireSize = System.Drawing.Rectangle.Union(entireSize, screen.Bounds);
-                ParentWindow.Width = entireSize.Width / (_scaleFactor / 100.0); ;
-                ParentWindow.Height = entireSize.Height / (_scaleFactor / 100.0); ;
-                ParentWindow.Left = entireSize.Left / (_scaleFactor / 100.0); ;
-                ParentWindow.Top = entireSize.Top / (_scaleFactor / 100.0); ;
+                return entireSize;
             }
             else
             {
@@ -466,35 +484,26 @@ namespace Shawn.Ulits.RDP
                         if (Equals(System.Windows.Forms.Screen.PrimaryScreen, System.Windows.Forms.Screen.AllScreens[i]))
                         {
                             _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = i;
-                            break;
+                            return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds;
                         }
                     }
                 }
-
-                ParentWindow.Width = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Width / (_scaleFactor / 100.0);
-                ParentWindow.Height = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Height / (_scaleFactor / 100.0);
-                ParentWindow.Left = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Left / (_scaleFactor / 100.0);
-                ParentWindow.Top = System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Top / (_scaleFactor / 100.0);
-                _rdp.Width = (int)System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Width;
-                _rdp.Height = (int)System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds.Height;
-                SetRdpResolution((uint)_rdp.Width, (uint)_rdp.Height);
             }
-            ParentWindow.Topmost = true;
+            return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
         }
+
         private void MakeFullScreen2Normal()
         {
             Debug.Assert(ParentWindow != null);
             _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = false;
             ParentWindow.Topmost = false;
             ParentWindow.ResizeMode = ResizeMode.CanResize;
-            ParentWindow.Topmost = false;
             ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
             ParentWindow.WindowState = WindowState.Normal;
             ParentWindow.Width = _normalWidth;
             ParentWindow.Height = _normalHeight;
             ParentWindow.Top = _normalTop;
             ParentWindow.Left = _normalLeft;
-            SetRdpResolution((uint)_rdp.Width, (uint)_rdp.Height);
             base.OnFullScreen2Window?.Invoke(_rdpServer.Id);
         }
         private void MakeForm2Minimize()
@@ -506,7 +515,7 @@ namespace Shawn.Ulits.RDP
         #endregion
 
 
-        private void SetScaleFactor()
+        private void ReadScaleFactor()
         {
             try
             {
@@ -528,38 +537,36 @@ namespace Shawn.Ulits.RDP
         #region WindowOnResizeEnd
 
         public delegate void ResizeEndDelegage();
-
-        public ResizeEndDelegage OnResizeEnd;
-
-        private readonly System.Timers.Timer __resizeEndTimer = new System.Timers.Timer(500) { Enabled = false };
-        private object __resizeEndLocker = new object();
-        private bool __resizeEndStartFire = false;
+        private ResizeEndDelegage _onResizeEnd;
+        private readonly System.Timers.Timer _resizeEndTimer = new System.Timers.Timer(500) { Enabled = false };
+        private readonly object _resizeEndLocker = new object();
+        private bool _resizeEndStartFire = false;
 
         private void ResizeEndStartFireDelegate()
         {
-            if (__resizeEndStartFire == false)
-                lock (__resizeEndLocker)
+            if (_resizeEndStartFire == false)
+                lock (_resizeEndLocker)
                 {
-                    if (__resizeEndStartFire == false)
+                    if (_resizeEndStartFire == false)
                     {
-                        __resizeEndStartFire = true;
-                        __resizeEndTimer.Elapsed += _InvokeResizeEndEnd;
+                        _resizeEndStartFire = true;
+                        _resizeEndTimer.Elapsed += _InvokeResizeEndEnd;
                         base.SizeChanged += _ResizeEnd_WindowSizeChanged;
                     }
                 }
         }
         private void ResizeEndStopFireDelegate()
         {
-            if (__resizeEndStartFire == true)
-                lock (__resizeEndLocker)
+            if (_resizeEndStartFire == true)
+                lock (_resizeEndLocker)
                 {
-                    if (__resizeEndStartFire == true)
+                    if (_resizeEndStartFire == true)
                     {
-                        __resizeEndStartFire = false;
-                        __resizeEndTimer.Stop();
+                        _resizeEndStartFire = false;
+                        _resizeEndTimer.Stop();
                         try
                         {
-                            __resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
+                            _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                         }
                         catch (Exception e)
                         {
@@ -581,13 +588,13 @@ namespace Shawn.Ulits.RDP
         /// <param name="e"></param>
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            __resizeEndTimer.Stop();
-            __resizeEndTimer.Start();
+            _resizeEndTimer.Stop();
+            _resizeEndTimer.Start();
         }
         private void _InvokeResizeEndEnd(object sender, ElapsedEventArgs e)
         {
-            __resizeEndTimer.Stop();
-            OnResizeEnd?.Invoke();
+            _resizeEndTimer.Stop();
+            _onResizeEnd?.Invoke();
         }
         #endregion
 

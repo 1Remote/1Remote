@@ -13,6 +13,8 @@ namespace PRM.Core.Protocol.RDP
         AutoResize = 0,
         Stretch = 1,
         Fixed = 2,
+        StretchFullScreen = 3,
+        FixedFullScreen = 4,
     }
     public enum ERdpFullScreenFlag
     {
@@ -70,10 +72,14 @@ namespace PRM.Core.Protocol.RDP
                     case ERdpFullScreenFlag.EnableFullAllScreens:
                         IsConnWithFullScreen = true;
                         break;
+                    case ERdpFullScreenFlag.EnableFullScreen:
+                        break;
                     case ERdpFullScreenFlag.Disable:
                         IsConnWithFullScreen = false;
-                        break;
-                    case ERdpFullScreenFlag.EnableFullScreen:
+                        if(RdpWindowResizeMode == ERdpWindowResizeMode.FixedFullScreen)
+                            RdpWindowResizeMode = ERdpWindowResizeMode.Fixed;
+                        if(RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
+                            RdpWindowResizeMode = ERdpWindowResizeMode.Stretch;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -93,7 +99,19 @@ namespace PRM.Core.Protocol.RDP
         public ERdpWindowResizeMode RdpWindowResizeMode
         {
             get => _rdpWindowResizeMode;
-            set => SetAndNotifyIfChanged(nameof(RdpWindowResizeMode), ref _rdpWindowResizeMode, value);
+            set
+            {
+                var tmp = value;
+                if (RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
+                {
+                    if (tmp == ERdpWindowResizeMode.FixedFullScreen)
+                        tmp = ERdpWindowResizeMode.Fixed;
+                    if (tmp == ERdpWindowResizeMode.StretchFullScreen)
+                        tmp = ERdpWindowResizeMode.Stretch;
+                }
+                _rdpWindowResizeMode = tmp;
+                RaisePropertyChanged(nameof(RdpWindowResizeMode));
+            }
         }
 
 
