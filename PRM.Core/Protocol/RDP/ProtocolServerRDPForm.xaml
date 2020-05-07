@@ -24,11 +24,11 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Address}"></TextBox>
+                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Port}" Width="50" HorizontalAlignment="Left"></TextBox>
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -37,7 +37,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding UserName}"></TextBox>
+                        <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -46,7 +46,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Password}"></TextBox>
+                        <TextBox Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -109,11 +109,14 @@
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
                             <local:ConverterERdpWindowResizeMode x:Key="ConverterERdpWindowResizeMode"/>
+                            <local:ConverterTrueWhenERdpFullScreen x:Key="ConverterTrueWhenERdpFullScreen"/>
                         </Grid.Resources>
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_auto}"/>
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}"/>
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}"/>
+                            <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}"/>
+                            <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}"/>
                         </ComboBox>
                     </Grid>
 

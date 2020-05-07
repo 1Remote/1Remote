@@ -25,11 +25,11 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Address}"></TextBox>
+                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Port}" Width="50" HorizontalAlignment="Left"></TextBox>
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -38,7 +38,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding UserName}"></TextBox>
+                        <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -57,7 +57,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Password}"></TextBox>
+                        <TextBox Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
