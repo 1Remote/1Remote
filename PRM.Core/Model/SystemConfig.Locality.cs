@@ -61,6 +61,23 @@ namespace PRM.Core.Model
         }
 
 
+        
+
+        private double _tabWindowWidth = 800;
+        public double TabWindowWidth
+        {
+            get => _tabWindowWidth;
+            set => SetAndNotifyIfChanged(nameof(TabWindowWidth), ref _tabWindowWidth, value);
+        }
+
+
+        private double _tabWindowHeight = 600;
+        public double TabWindowHeight
+        {
+            get => _tabWindowHeight;
+            set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
+        }
+
 
         #region Interface
         private const string _sectionName = "Locality";
@@ -70,6 +87,8 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight.ToString());
             _ini.WriteValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop.ToString());
             _ini.WriteValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft.ToString());
+            _ini.WriteValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth.ToString());
+            _ini.WriteValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight.ToString());
             _ini.Save();
         }
 
@@ -79,6 +98,8 @@ namespace PRM.Core.Model
             MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
             MainWindowTop = _ini.GetValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop);
             MainWindowLeft = _ini.GetValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft);
+            TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
+            TabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
         }
 
         public override void Update(SystemConfigBase newConfig)
