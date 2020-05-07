@@ -8,7 +8,7 @@
         xmlns:view="clr-namespace:PRM.View"
         mc:Ignorable="d"
         WindowState="{Binding WindowState}"
-        Title="Host - PRemoteM" Height="450" Width="800">
+        Title="Host - PRemoteM" Height="600" Width="800">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>

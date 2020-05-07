@@ -26,6 +26,19 @@ namespace PRM.View
             Vm = new VmTabWindow(token);
             DataContext = Vm;
 
+
+            this.Width = SystemConfig.GetInstance().Locality.TabWindowWidth;
+            this.Height = SystemConfig.GetInstance().Locality.TabWindowHeight;
+            this.SizeChanged += (sender, args) =>
+            {
+                if (this.WindowState == WindowState.Normal)
+                {
+                    SystemConfig.GetInstance().Locality.TabWindowHeight = this.Height;
+                    SystemConfig.GetInstance().Locality.TabWindowWidth = this.Width;
+                    SystemConfig.GetInstance().Locality.Save();
+                }
+            };
+
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm.SelectedItem != null)

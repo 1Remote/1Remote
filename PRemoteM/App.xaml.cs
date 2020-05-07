@@ -15,6 +15,7 @@ using PRM;
 using PRM.Core.Model;
 using PRM.Core.Ulits;
 using PRM.View;
+using Shawn.Ulits;
 
 namespace PersonalRemoteManager
 {
@@ -51,24 +52,23 @@ namespace PersonalRemoteManager
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-            var startupMode = PRM.Core.Ulits.StartupMode.Normal;
-            if (e.Args.Length > 0)
-            {
-                System.Enum.TryParse(e.Args[0], out startupMode);
-            }
-            if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
-            {
-                SetSelfStartingHelper.SetSelfStart();
-                Environment.Exit(0);
-            }
-            if (startupMode == PRM.Core.Ulits.StartupMode.UnsetSelfStart)
-            {
-                SetSelfStartingHelper.UnsetSelfStart();
-                Environment.Exit(0);
-            }
-
             try
             {
+                var startupMode = PRM.Core.Ulits.StartupMode.Normal;
+                if (e.Args.Length > 0)
+                {
+                    System.Enum.TryParse(e.Args[0], out startupMode);
+                }
+                if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
+                {
+                    SetSelfStartingHelper.SetSelfStart();
+                    Environment.Exit(0);
+                }
+                if (startupMode == PRM.Core.Ulits.StartupMode.UnsetSelfStart)
+                {
+                    SetSelfStartingHelper.UnsetSelfStart();
+                    Environment.Exit(0);
+                }
 #if DEBUG
                 _singleAppMutex = new Mutex(true, "PRemoteM_DEBUG", out var isFirst);
 #else
@@ -120,8 +120,8 @@ namespace PersonalRemoteManager
             catch (Exception ex)
             {
                 AppOnClose();
-                MessageBox.Show(ex.Message);
-                MessageBox.Show(ex.StackTrace);
+                SimpleLogHelper.Error(ex.Message);
+                SimpleLogHelper.Error(ex.StackTrace);
                 Environment.Exit(-1);
             }
         }

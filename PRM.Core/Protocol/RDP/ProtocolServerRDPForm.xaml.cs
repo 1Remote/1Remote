@@ -16,25 +16,25 @@ namespace PRM.Core.Protocol.RDP
     /// </summary>
     public partial class ProtocolServerRDPForm : ProtocolServerFormBase
     {
-        private ProtocolServerRDP _vm;
+        public ProtocolServerRDP Vm;
         public ProtocolServerRDPForm(ProtocolServerBase vm): base()
         {
             InitializeComponent();
-            _vm = (ProtocolServerRDP)vm;
+            Vm = (ProtocolServerRDP)vm;
             DataContext = vm;
         }
 
         public override bool CanSave()
         {
-            if (!string.IsNullOrEmpty(_vm.Address?.Trim())
-                && !string.IsNullOrEmpty(_vm.UserName?.Trim())
-                && !string.IsNullOrEmpty(_vm.Password?.Trim())
-                && _vm.Port > 0)
+            if (!string.IsNullOrEmpty(Vm.Address?.Trim())
+                && !string.IsNullOrEmpty(Vm.UserName?.Trim())
+                && !string.IsNullOrEmpty(Vm.Password?.Trim())
+                && Vm.Port > 0)
                 return true;
             return false;
         }
     }
-
+    
 
 
     public class ConverterERdpFullScreenFlag : IValueConverter
@@ -51,6 +51,27 @@ namespace PRM.Core.Protocol.RDP
         }
         #endregion
     }
+
+    
+
+
+    public class ConverterTrueWhenERdpFullScreen : IValueConverter
+    {
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if ((ERdpFullScreenFlag) value == ERdpFullScreenFlag.Disable)
+                return false;
+            return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return 0;
+        }
+        #endregion
+    }
+
 
     public class ConverterERdpWindowResizeMode : IValueConverter
     {
