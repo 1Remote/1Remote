@@ -12,10 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Ulits;
 using PRM.View;
 using Shawn.Ulits;
+using SQLite;
 
 namespace PersonalRemoteManager
 {
@@ -54,6 +56,7 @@ namespace PersonalRemoteManager
         {
             try
             {
+                #region single-instance app
                 var startupMode = PRM.Core.Ulits.StartupMode.Normal;
                 if (e.Args.Length > 0)
                 {
@@ -87,46 +90,57 @@ namespace PersonalRemoteManager
                     RemotingServices.Marshal(remoteProvider, ServiceIpcRoute);
                     ChannelServices.RegisterChannel(new IpcChannel(ServiceIpcPortName), false);
                 }
+                #endregion
 
+                
 #if DEBUG
                 Shawn.Ulits.ConsoleManager.Show();
 #endif
-                // app start
+
+                #region system check & init
+                
+                // config init (settings & langs)
+                SystemConfig.Init(this.Resources);
+
+
+                // db init
+                Server.Init();
+                Config.Init();
+
+                #endregion
+
+
+                #region app start
+                // main window init
                 {
-                    // config init
-                    SystemConfig.Init(this.Resources);
-
-                    // main window init
+                    Window = new MainWindow();
+                    ShutdownMode = ShutdownMode.OnMainWindowClose;
+                    MainWindow = Window;
+                    Window.Closed += (o, args) => { AppOnClose(); };
+                    if (!SystemConfig.GetInstance().General.AppStartMinimized)
                     {
-                        Window = new MainWindow();
-                        ShutdownMode = ShutdownMode.OnMainWindowClose;
-                        MainWindow = Window;
-                        Window.Closed += (o, args) => { AppOnClose(); };
-                        if (!SystemConfig.GetInstance().General.AppStartMinimized)
-                        {
-                            ActivateWindow();
-                        }
+                        ActivateWindow();
                     }
-
-
-                    // task tray init
-                    InitTaskTray();
-
-
-                    // quick search init 
-                    InitQuickSearch();
                 }
+
+
+                // task tray init
+                InitTaskTray();
+
+
+                // quick search init 
+                InitQuickSearch();
+                #endregion
             }
             catch (Exception ex)
             {
-                AppOnClose();
                 SimpleLogHelper.Error(ex.Message);
                 SimpleLogHelper.Error(ex.StackTrace);
 #if DEBUG
                 MessageBox.Show(ex.Message);
                 MessageBox.Show(ex.StackTrace);
 #endif
-                Environment.Exit(-1);
+                AppOnClose(-1);
             }
         }
 
@@ -139,7 +153,6 @@ namespace PersonalRemoteManager
         {
             if (TaskTrayIcon == null)
             {
-                // 设置托盘
                 TaskTrayIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = SystemConfig.AppName,
@@ -195,7 +208,7 @@ namespace PersonalRemoteManager
             SearchBoxWindow.SetHotKey();
         }
 
-        private static void AppOnClose()
+        private static void AppOnClose(int exitCode = 0)
         {
             if (App.SearchBoxWindow != null)
             {
@@ -209,7 +222,7 @@ namespace PersonalRemoteManager
                 App.TaskTrayIcon.Dispose();
             }
 
-            Environment.Exit(0);
+            Environment.Exit(exitCode);
         }
     }
 }

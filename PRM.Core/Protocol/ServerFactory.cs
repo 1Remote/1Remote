@@ -30,7 +30,7 @@ namespace PRM.Core.DB
 
         private static readonly object Locker = new object();
         private List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public ProtocolServerBase CreateFromDbObjectServerOrm(ServerOrm serverOrm)
+        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
         {
             // reflect all the child class
             lock (Locker)
@@ -47,13 +47,13 @@ namespace PRM.Core.DB
             // get instance form json string
             foreach (var serverAbstract in _baseList)
             {
-                if (serverOrm.ServerType == serverAbstract.ServerType &&
-                    serverOrm.ClassVersion == serverAbstract.ClassVersion)
+                if (server.Protocol == serverAbstract.Protocol &&
+                    server.ClassVersion == serverAbstract.ClassVersion)
                 {
-                    var ret = serverAbstract.CreateFromJsonString(serverOrm.JsonConfigString);
+                    var ret = serverAbstract.CreateFromJsonString(server.JsonConfigString);
                     if (ret != null)
                     {
-                        ret.Id = serverOrm.Id;
+                        ret.Id = server.Id;
                         return ret;
                     }
                 }
@@ -84,7 +84,7 @@ namespace PRM.Core.DB
             // get instance form json string
             foreach (var serverAbstract in _baseList)
             {
-                if (jObj.ServerType.ToString() == serverAbstract.ServerType &&
+                if (jObj.ServerType.ToString() == serverAbstract.Protocol &&
                     jObj.ClassVersion.ToString() == serverAbstract.ClassVersion)
                 {
                     var ret = serverAbstract.CreateFromJsonString(jsonString);
