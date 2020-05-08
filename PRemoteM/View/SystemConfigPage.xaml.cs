@@ -44,7 +44,7 @@ namespace PRM.View
             {
                 if (PRM_DAO.TestDb(dlg.FileName, ""))
                 {
-                    VmSystemConfigPage.General.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
+                    VmSystemConfigPage.DataSecurity.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
                 }
                 else
                 {
@@ -144,6 +144,15 @@ namespace PRM.View
             VmSystemConfigPage.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
 
             return false;
+        }
+
+        private void ButtonGenKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
+            VmSystemConfigPage.DataSecurity.RsaPublicKey = rsa.ToPEM_PKCS1(true);
+            // todo Save ppk
+
+            // todo 更新数据库，重新读取数据库
         }
     }
 

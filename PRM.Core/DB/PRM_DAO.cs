@@ -48,7 +48,7 @@ namespace PRM.Core.DB
         {
         }
 
-        private static string DbPath => SystemConfig.GetInstance().General.DbPath;
+        private static string DbPath => SystemConfig.GetInstance().DataSecurity.DbPath;
         
 
         public static bool TestDb(string path, string psw)

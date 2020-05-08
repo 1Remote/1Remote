@@ -21,6 +21,7 @@ namespace PRM.ViewModel
             // create new SystemConfigGeneral object
             General = new SystemConfigGeneral(SystemConfig.GetInstance().Ini);
             QuickConnect = new SystemConfigQuickConnect(SystemConfig.GetInstance().Ini);
+            DataSecurity = new SystemConfigDataSecurity(SystemConfig.GetInstance().Ini);
         }
 
 
@@ -53,7 +54,13 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(QuickConnect), ref _quickConnect, value);
         }
 
-
+        
+        private SystemConfigDataSecurity _dataSecurity;
+        public SystemConfigDataSecurity DataSecurity
+        {
+            get => _dataSecurity;
+            set => SetAndNotifyIfChanged(nameof(DataSecurity), ref _dataSecurity, value);
+        }
         #region CMD
 
         private RelayCommand _cmdSaveAndGoBack;
@@ -79,7 +86,9 @@ namespace PRM.ViewModel
 
                         SystemConfig.GetInstance().QuickConnect.Update(QuickConnect);
                         SystemConfig.GetInstance().QuickConnect.Save();
-
+                        
+                        SystemConfig.GetInstance().DataSecurity.Update(DataSecurity);
+                        SystemConfig.GetInstance().DataSecurity.Save();
 
                         if (SystemConfig.GetInstance().General.AppStartAutomatically == true)
                         {

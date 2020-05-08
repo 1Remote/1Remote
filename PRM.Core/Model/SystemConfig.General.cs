@@ -38,14 +38,6 @@ namespace PRM.Core.Model
         }
 
 
-        private string _dbPath = "./PRemoteM.db";
-        public string DbPath
-        {
-            get => _dbPath;
-            set => SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value);
-        }
-
-
         public string IconFolderPath => "./Icons";
 
 
@@ -65,7 +57,6 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
-            _ini.WriteValue(nameof(DbPath).ToLower(), _sectionName, DbPath);
             _ini.Save();
         }
 
@@ -77,7 +68,6 @@ namespace PRM.Core.Model
             {
                 ServerOrderBy = so;
             }
-            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), _sectionName, DbPath);
         }
 
         public override void Update(SystemConfigBase newConfig)
