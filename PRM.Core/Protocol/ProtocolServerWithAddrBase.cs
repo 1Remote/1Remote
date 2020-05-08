@@ -15,7 +15,7 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerWithAddrBase : ProtocolServerBase
     {
-        protected ProtocolServerWithAddrBase(string serverType, string classVersion, string protocolDisplayName) : base(serverType, classVersion, protocolDisplayName)
+        protected ProtocolServerWithAddrBase(string protocol, string classVersion, string protocolDisplayName) : base(protocol, classVersion, protocolDisplayName)
         {
         }
 

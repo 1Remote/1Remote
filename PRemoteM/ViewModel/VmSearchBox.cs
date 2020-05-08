@@ -143,7 +143,7 @@ namespace PRM.ViewModel
                 foreach (var item in Global.GetInstance().ServerList.Where(x => x.GetType() != typeof(ProtocolServerNone)))
                 {
                     Debug.Assert(!string.IsNullOrEmpty(item.ClassVersion));
-                    Debug.Assert(!string.IsNullOrEmpty(item.ServerType));
+                    Debug.Assert(!string.IsNullOrEmpty(item.Protocol));
 
                     var mDispName = new List<List<bool>>();
                     var mSubTitle = new List<List<bool>>();

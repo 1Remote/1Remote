@@ -84,7 +84,7 @@ namespace PRM.Core.Model
             //#endif
 
             ServerList.Clear();
-            var serverOrmList = PRM_DAO.GetInstance().ListAllServer();
+            var serverOrmList = OrmTableBase.ListAll<Server>();
             foreach (var serverOrm in serverOrmList)
             {
                 var serverAbstract = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(serverOrm);
@@ -102,24 +102,24 @@ namespace PRM.Core.Model
             WindowPool.ShowRemoteHost(server);
         }
 
-        public void ServerListUpdate(ProtocolServerBase server)
+        public void ServerListUpdate(ProtocolServerBase protocolServer)
         {
             // edit
-            if (server.Id > 0 && ServerList.First(x => x.Id == server.Id) != null)
+            if (protocolServer.Id > 0 && ServerList.First(x => x.Id == protocolServer.Id) != null)
             {
-                ServerList.First(x => x.Id == server.Id).Update(server);
-                var serverOrm = ServerOrm.ConvertFrom(server);
-                if (ServerList.First(x => x.Id == server.Id) == null)
-                    ServerList.First(x => x.Id == server.Id).OnCmdConn += OnCmdConn;
-                PRM_DAO.GetInstance().Update(serverOrm);
+                ServerList.First(x => x.Id == protocolServer.Id).Update(protocolServer);
+                var server = Server.FromProtocolServerBase(protocolServer);
+                if (ServerList.First(x => x.Id == protocolServer.Id) == null)
+                    ServerList.First(x => x.Id == protocolServer.Id).OnCmdConn += OnCmdConn;
+                server.Update();
             }
             // add
             else
             {
-                var serverOrm = ServerOrm.ConvertFrom(server);
-                if (PRM_DAO.GetInstance().Insert(serverOrm))
+                var server = Server.FromProtocolServerBase(protocolServer);
+                if (server.Insert() > 0)
                 {
-                    var newServer = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(serverOrm);
+                    var newServer = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server);
                     newServer.OnCmdConn += OnCmdConn;
                     Global.GetInstance().ServerList.Add(newServer);
                 }
@@ -130,7 +130,7 @@ namespace PRM.Core.Model
         public void ServerListRemove(ProtocolServerBase server)
         {
             Debug.Assert(server.Id > 0);
-            PRM_DAO.GetInstance().DeleteServer(server.Id);
+            Server.FromProtocolServerBase(server).Delete();
             Global.GetInstance().ServerList.Remove(server);
         }
 

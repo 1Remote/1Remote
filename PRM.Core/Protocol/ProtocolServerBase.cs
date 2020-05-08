@@ -15,9 +15,9 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase
     {
-        protected ProtocolServerBase(string serverType, string classVersion, string protocolDisplayName)
+        protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName)
         {
-            _serverType = serverType;
+            _protocol = protocol;
             _classVersion = classVersion;
             _protocolDisplayName = protocolDisplayName;
         }
@@ -33,10 +33,10 @@ namespace PRM.Core.Protocol
 
 
 
-        private readonly string _serverType;
+        private readonly string _protocol;
         private readonly string _classVersion;
         private readonly string _protocolDisplayName;
-        public string ServerType => _serverType;
+        public string Protocol => _protocol;
         public string ClassVersion => _classVersion;
         public string ProtocolDisplayName => _protocolDisplayName;
 

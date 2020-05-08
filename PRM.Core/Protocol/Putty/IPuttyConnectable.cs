@@ -20,7 +20,7 @@ namespace PRM.Core.Protocol.Putty
         {
             if (item is ProtocolServerBase protocolServer)
             {
-                return $"{SystemConfig.AppName}_{protocolServer.ServerType}_{protocolServer.Id}";
+                return $"{SystemConfig.AppName}_{protocolServer.Protocol}_{protocolServer.Id}";
             }
             throw new NotSupportedException("you should not access here! something goes wrong");
         }

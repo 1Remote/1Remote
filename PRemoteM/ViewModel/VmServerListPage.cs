@@ -147,7 +147,7 @@ namespace PRM.ViewModel
                     _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderByDescending(s => s.Server.Id));
                     break;
                 case EnumServerOrderBy.Protocol:
-                    _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderByDescending(s => s.Server.ServerType).ThenBy(s => s.Server.DispName));
+                    _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderByDescending(s => s.Server.Protocol).ThenBy(s => s.Server.DispName));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

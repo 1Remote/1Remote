@@ -13,6 +13,7 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
+using SQLite;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -42,11 +43,14 @@ namespace PRM.View
             dlg.Filter = "Sqlite Database|*.db";
             if (dlg.ShowDialog() == true)
             {
-                if (PRM_DAO.TestDb(dlg.FileName, ""))
+                try
                 {
+                    using (var db = new SQLiteConnection(dlg.FileName))
+                    {
+                    }
                     VmSystemConfigPage.DataSecurity.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
                 }
-                else
+                catch (Exception ee)
                 {
                     MessageBox.Show(SystemConfig.GetInstance().Language
                         .GetText("system_options_general_item_database_can_not_open"));
