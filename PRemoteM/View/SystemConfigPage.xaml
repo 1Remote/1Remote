@@ -114,16 +114,6 @@
                     </Grid>
 
 
-                    <Grid Style="{StaticResource ServerEditorRow}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_database}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <TextBox Text="{Binding General.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
-                            </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
-                        </StackPanel>
-                    </Grid>
-
 
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
@@ -241,7 +231,69 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="TXT:Security" />
+            <TabItem Header="TXT:Data and Security">
+
+                <StackPanel Margin="20 20 0 0">
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_database}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding DataSecurity.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>
+                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:数据加密"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Background="Red" Margin="0 0 0 0" Click="ButtonGenKey_OnClick">TXT：生成RSA密钥</Button>
+                                    <Button Background="Red" Margin="20 0 0 0">TXT：清除加密</Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0" Height="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:公钥"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                                <TextBox Text="{Binding DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="100" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="TXT:若要修改密钥，请先取消加密。" TextWrapping="WrapWithOverflow"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:私钥"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                                <TextBox Text="{Binding DataSecurity.RsaPrivateKeyPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>
+                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="TXT:请妥善保管私钥，丢失后数据将无法找回！" TextWrapping="WrapWithOverflow"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="TXT:Theme" />
         </TabControl>
 

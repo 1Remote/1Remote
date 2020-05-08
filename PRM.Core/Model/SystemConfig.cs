@@ -52,6 +52,7 @@ namespace PRM.Core.Model
             Language = new SystemConfigLanguage(appResourceDictionary, Ini);
             General = new SystemConfigGeneral(Ini);
             QuickConnect = new SystemConfigQuickConnect(Ini);
+            DataSecurity = new SystemConfigDataSecurity(Ini);
         }
 
 
@@ -77,11 +78,21 @@ namespace PRM.Core.Model
 
 
 
-        private SystemConfigQuickConnect _quickConnect;
+        private SystemConfigQuickConnect _quickConnect = null;
         public SystemConfigQuickConnect QuickConnect
         {
             get => _quickConnect;
             set => SetAndNotifyIfChanged(nameof(QuickConnect), ref _quickConnect, value);
+        }
+
+
+
+
+        private SystemConfigDataSecurity _dataSecurity = null;
+        public SystemConfigDataSecurity DataSecurity
+        {
+            get => _dataSecurity;
+            set => SetAndNotifyIfChanged(nameof(DataSecurity), ref _dataSecurity, value);
         }
     }
 

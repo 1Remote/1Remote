@@ -67,6 +67,7 @@
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.112.0\lib\net451\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -79,7 +80,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\SQLite.cs" />
     <Compile Include="Model\SystemConfig.cs" />
+    <Compile Include="Model\SystemConfig.DataSecurity.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.Locality.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ulits\AES256.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPalette.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorSwatchItem.cs" />
@@ -145,6 +149,8 @@
       <DependentUpon>PageHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ulits\PageHost\StoryboardHelpers.cs" />
+    <Compile Include="Ulits\RSA\RSA.cs" />
+    <Compile Include="Ulits\RSA\RSA_PEM.cs" />
     <Compile Include="Ulits\SetSelfStartingHelper.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode1.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode2.cs" />
@@ -157,6 +163,9 @@
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DB\sqlite3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
     <Resource Include="Resources\Logo\logo256.png" />

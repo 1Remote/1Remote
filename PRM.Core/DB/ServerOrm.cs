@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.SQLite;
 using System.Windows.Media.Animation;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits.RDP;
+using SQLite;
+using SQLiteConnection = System.Data.SQLite.SQLiteConnection;
 
 namespace PRM.Core.DB
 {
     public class ServerOrm : SimpleOrmBase
     {
-
         public ServerOrm() : base(tableName: "Server")
         {
         }
 
+        [PrimaryKey, AutoIncrement]
         public uint Id { get; set; }
 
         public string ServerType { get; set; } = "";

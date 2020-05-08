@@ -44,7 +44,7 @@ namespace PRM.Core.Model
             ReadServerDataFromDb();
             SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(SystemConfig.General.DbPath))
+                if (args.PropertyName == nameof(SystemConfig.DataSecurity.DbPath))
                     ReadServerDataFromDb();
             };
         }
@@ -57,8 +57,8 @@ namespace PRM.Core.Model
         {
             //#if DEBUG
             //            // TODO 测试用删除数据库
-            //            if (File.Exists(SystemConfig.GetInstance().General.DbPath))
-            //                File.Delete(SystemConfig.GetInstance().General.DbPath);
+            //            if (File.Exists(SystemConfig.GetInstance().DataSecurity.DbPath))
+            //                File.Delete(SystemConfig.GetInstance().DataSecurity.DbPath);
             //            if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
             //            {
             //                var di = new DirectoryInfo(@"D:\rdpjson");
