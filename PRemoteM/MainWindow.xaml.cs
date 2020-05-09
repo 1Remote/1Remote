@@ -82,7 +82,6 @@ namespace PRM
                 return;
 #endif
                 HideMe();
-                App.TaskTrayIcon?.ShowBalloonTip(1000);
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
@@ -110,6 +109,8 @@ namespace PRM
             {
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
+                if (!string.IsNullOrEmpty(App.TaskTrayIcon.BalloonTipText))
+                    App.TaskTrayIcon?.ShowBalloonTip(1000);
             });
         }
 

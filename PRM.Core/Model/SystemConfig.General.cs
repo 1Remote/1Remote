@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core.Ulits;
 using Shawn.Ulits;
 
 namespace PRM.Core.Model
@@ -27,7 +28,18 @@ namespace PRM.Core.Model
         public bool AppStartAutomatically
         {
             get => _appStartAutomatically;
-            set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
+                if (value == true)
+                {
+                    SetSelfStartingHelper.SetSelfStart();
+                }
+                else
+                {
+                    SetSelfStartingHelper.UnsetSelfStart();
+                }
+            }
         }
 
         private bool _appStartMinimized = false;

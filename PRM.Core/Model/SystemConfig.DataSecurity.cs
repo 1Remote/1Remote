@@ -60,12 +60,16 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            //TODO thread not safe
+            StopAutoSave = true;
             DbPath = _ini.GetValue(nameof(DbPath).ToLower(), _sectionName, DbPath);
+            StopAutoSave = false;
         }
 
         public override void Update(SystemConfigBase newConfig)
         {
             UpdateBase(this, newConfig, typeof(SystemConfigDataSecurity));
+            Save();
         }
 
         #endregion
