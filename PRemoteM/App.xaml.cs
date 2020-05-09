@@ -158,6 +158,7 @@ namespace PersonalRemoteManager
                     Text = SystemConfig.AppName,
                     Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name),
                     //BalloonTipText = "TXT:正在后台运行...",
+                    BalloonTipText = "",
                     Visible = true
                 };
                 ReloadTaskTrayContextMenu();

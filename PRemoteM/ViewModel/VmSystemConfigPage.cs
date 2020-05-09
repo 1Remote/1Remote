@@ -17,25 +17,11 @@ namespace PRM.ViewModel
         public VmSystemConfigPage(VmMain vmMain)
         {
             Host = vmMain;
-            SelectedLanguageCode = SystemConfig.GetInstance().Language.CurrentLanguageCode;
             // create new SystemConfigGeneral object
-            General = new SystemConfigGeneral(SystemConfig.GetInstance().Ini);
-            QuickConnect = new SystemConfigQuickConnect(SystemConfig.GetInstance().Ini);
-            DataSecurity = new SystemConfigDataSecurity(SystemConfig.GetInstance().Ini);
+            SystemConfig = SystemConfig.GetInstance();
         }
 
-
-        private string _selectedLanguageCode = "en-us";
-        public string SelectedLanguageCode
-        {
-            get => _selectedLanguageCode;
-            set => SetAndNotifyIfChanged(nameof(SelectedLanguageCode), ref _selectedLanguageCode, value);
-        }
-
-
-        public Dictionary<string, string> LanguageCode2Name => SystemConfig.GetInstance().Language.LanguageCode2Name;
-
-
+        public SystemConfig SystemConfig { get; set; }
 
         private SystemConfigGeneral _general;
         public SystemConfigGeneral General
@@ -44,23 +30,6 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(General), ref _general, value);
         }
 
-
-
-
-        private SystemConfigQuickConnect _quickConnect;
-        public SystemConfigQuickConnect QuickConnect
-        {
-            get => _quickConnect;
-            set => SetAndNotifyIfChanged(nameof(QuickConnect), ref _quickConnect, value);
-        }
-
-        
-        private SystemConfigDataSecurity _dataSecurity;
-        public SystemConfigDataSecurity DataSecurity
-        {
-            get => _dataSecurity;
-            set => SetAndNotifyIfChanged(nameof(DataSecurity), ref _dataSecurity, value);
-        }
         #region CMD
 
         private RelayCommand _cmdSaveAndGoBack;
@@ -75,29 +44,11 @@ namespace PRM.ViewModel
                         Host.DispPage = null;
 
                         /***                update config                ***/
-                        // General 
-                        if (SystemConfig.GetInstance().Language.CurrentLanguageCode != SelectedLanguageCode)
-                        {
-                            SystemConfig.GetInstance().Language.CurrentLanguageCode = SelectedLanguageCode;
-                            SystemConfig.GetInstance().Language.Save();
-                        }
-                        SystemConfig.GetInstance().General.Update(General);
+                        SystemConfig.GetInstance().Language.Save();
                         SystemConfig.GetInstance().General.Save();
-
-                        SystemConfig.GetInstance().QuickConnect.Update(QuickConnect);
                         SystemConfig.GetInstance().QuickConnect.Save();
-                        
-                        SystemConfig.GetInstance().DataSecurity.Update(DataSecurity);
                         SystemConfig.GetInstance().DataSecurity.Save();
 
-                        if (SystemConfig.GetInstance().General.AppStartAutomatically == true)
-                        {
-                            SetSelfStartingHelper.SetSelfStart();
-                        }
-                        else
-                        {
-                            SetSelfStartingHelper.UnsetSelfStart();
-                        }
                     });
                 }
                 return _cmdSaveAndGoBack;

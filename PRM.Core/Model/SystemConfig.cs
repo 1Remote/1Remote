@@ -99,7 +99,26 @@ namespace PRM.Core.Model
 
     public abstract class SystemConfigBase : NotifyPropertyChangedBase
     {
+        private object locker = new object();
+        protected bool StopAutoSave
+        {
+            get => _stopAutoSave;
+            set => _stopAutoSave = value;
+        }
+
+        protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
+        {
+            if (oldValue == null && newValue == null) return;
+            if (oldValue != null && oldValue.Equals(newValue)) return;
+            if (newValue != null && newValue.Equals(oldValue)) return;
+            oldValue = newValue;
+            RaisePropertyChanged(propertyName);
+            if (!StopAutoSave)
+                Save();
+        }
+
         protected Ini _ini = null;
+        private bool _stopAutoSave = false;
 
         protected SystemConfigBase(Ini ini)
         {

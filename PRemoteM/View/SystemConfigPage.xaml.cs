@@ -48,7 +48,7 @@ namespace PRM.View
                     using (var db = new SQLiteConnection(dlg.FileName))
                     {
                     }
-                    VmSystemConfigPage.DataSecurity.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
+                    VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
                 }
                 catch (Exception ee)
                 {
@@ -102,7 +102,7 @@ namespace PRM.View
             {
                 if (this.IsLoaded)
                 {
-                    SetHotkeyIsRegistered(VmSystemConfigPage.QuickConnect.HotKeyModifiers, key);
+                    SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers, key);
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace PRM.View
         {
             if (this.IsLoaded)
             {
-                SetHotkeyIsRegistered(VmSystemConfigPage.QuickConnect.HotKeyModifiers, VmSystemConfigPage.QuickConnect.HotKeyKey);
+                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers, VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey);
             }
         }
 
@@ -120,8 +120,8 @@ namespace PRM.View
             if (modifier == SystemConfig.GetInstance().QuickConnect.HotKeyModifiers
                 && key == SystemConfig.GetInstance().QuickConnect.HotKeyKey)
             {
-                VmSystemConfigPage.QuickConnect.HotKeyModifiers = modifier;
-                VmSystemConfigPage.QuickConnect.HotKeyKey = key;
+                VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
+                VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                 return false;
             }
 
@@ -132,8 +132,8 @@ namespace PRM.View
             {
                 case GlobalHotkeyHooker.RetCode.Success:
                     GlobalHotkeyHooker.GetInstance().Unregist(r.Item3);
-                    VmSystemConfigPage.QuickConnect.HotKeyModifiers = modifier;
-                    VmSystemConfigPage.QuickConnect.HotKeyKey = key;
+                    VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
+                    VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
@@ -144,8 +144,8 @@ namespace PRM.View
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            VmSystemConfigPage.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
-            VmSystemConfigPage.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
 
             return false;
         }
@@ -153,7 +153,7 @@ namespace PRM.View
         private void ButtonGenKey_OnClick(object sender, RoutedEventArgs e)
         {
             var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
-            VmSystemConfigPage.DataSecurity.RsaPublicKey = rsa.ToPEM_PKCS1(true);
+            VmSystemConfigPage.SystemConfig.DataSecurity.RsaPublicKey = rsa.ToPEM_PKCS1(true);
             // todo Save ppk
 
             // todo 更新数据库，重新读取数据库
