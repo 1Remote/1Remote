@@ -12,14 +12,13 @@ using Shawn.Ulits;
 
 namespace PRM.Core.Model
 {
-    public sealed class SystemConfigLocality : SystemConfigBase
+    public sealed class SystemConfigLocality : NotifyPropertyChangedBase
     {
         private new readonly Ini _ini;
 
-        public SystemConfigLocality():base(null)
+        public SystemConfigLocality()
         {
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                Process.GetCurrentProcess().MainModule.ModuleName.Replace(".", "_"));
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             if (!Directory.Exists(appDateFolder))
                 Directory.CreateDirectory(appDateFolder);
             var fileName = Path.Combine(appDateFolder, "locality.ini");
@@ -27,6 +26,13 @@ namespace PRM.Core.Model
             Load();
         }
 
+
+        private string _mainWindowTabSelected = "";
+        public string MainWindowTabSelected
+        {
+            get => _mainWindowTabSelected;
+            set => SetAndNotifyIfChanged(nameof(MainWindowTabSelected), ref _mainWindowTabSelected, value);
+        }
 
         private double _mainWindowWidth = 680;
         public double MainWindowWidth
@@ -43,7 +49,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(MainWindowHeight), ref _mainWindowHeight, value);
         }
 
-        
+
 
         private double _mainWindowTop = -1;
         public double MainWindowTop
@@ -52,7 +58,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(MainWindowTop), ref _mainWindowTop, value);
         }
 
-        
+
         private double _mainWindowLeft = -1;
         public double MainWindowLeft
         {
@@ -61,7 +67,7 @@ namespace PRM.Core.Model
         }
 
 
-        
+
 
         private double _tabWindowWidth = 800;
         public double TabWindowWidth
@@ -77,11 +83,9 @@ namespace PRM.Core.Model
             get => _tabWindowHeight;
             set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
         }
-
-
         #region Interface
         private const string _sectionName = "Locality";
-        public override void Save()
+        public void Save()
         {
             _ini.WriteValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth.ToString());
             _ini.WriteValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight.ToString());
@@ -92,21 +96,15 @@ namespace PRM.Core.Model
             _ini.Save();
         }
 
-        public override void Load()
+        public void Load()
         {
-            MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
-            MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
-            MainWindowTop = _ini.GetValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop);
-            MainWindowLeft = _ini.GetValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft);
-            TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
-            TabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
+            _mainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
+            _mainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
+            _mainWindowTop = _ini.GetValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop);
+            _mainWindowLeft = _ini.GetValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft);
+            _tabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
+            _tabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
         }
-
-        public override void Update(SystemConfigBase newConfig)
-        {
-            UpdateBase(this, newConfig, typeof(SystemConfigLocality));
-        }
-
         #endregion
     }
 }

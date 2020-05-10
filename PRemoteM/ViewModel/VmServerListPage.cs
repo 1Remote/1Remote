@@ -26,6 +26,12 @@ namespace PRM.ViewModel
                 if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
                     RebuildVmServerCardList();
             };
+
+            if (!string.IsNullOrEmpty(SystemConfig.GetInstance().Locality.MainWindowTabSelected)
+                && ServerGroupList.Contains(SystemConfig.GetInstance().Locality.MainWindowTabSelected))
+            {
+                SelectedGroup = SystemConfig.GetInstance().Locality.MainWindowTabSelected;
+            }
         }
 
         
@@ -71,6 +77,8 @@ namespace PRM.ViewModel
             {
                 DispNameFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
+                SystemConfig.GetInstance().Locality.MainWindowTabSelected = value;
+                SystemConfig.GetInstance().Locality.Save();
             }
         }
 

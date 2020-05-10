@@ -168,7 +168,6 @@ namespace Shawn.Ulits
 
             using (var ms = new MemoryStream())
             {
-                // TODO 适配GIF？
                 src.Save(ms, ImageFormat.Png);
                 ms.Seek(0, SeekOrigin.Begin);
                 BitmapImage bitmapImage = new BitmapImage();
