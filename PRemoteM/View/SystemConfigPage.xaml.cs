@@ -48,7 +48,7 @@ namespace PRM.View
                     using (var db = new SQLiteConnection(dlg.FileName))
                     {
                     }
-                    VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
+                    VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName;
                 }
                 catch (Exception ee)
                 {
@@ -58,6 +58,28 @@ namespace PRM.View
             }
         }
 
+
+
+        private void ButtonSelectRsaKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
+                InitialDirectory = VmSystemConfigPage.SystemConfig.DataSecurity.RsaPrivateKeyPath,
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    // TODO 验证私钥正确性
+                }
+                catch (Exception ee)
+                {
+                    //MessageBox.Show(SystemConfig.GetInstance().Language
+                    //    .GetText("system_options_general_item_database_can_not_open"));
+                }
+            }
+        }
 
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -148,15 +170,6 @@ namespace PRM.View
             VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
 
             return false;
-        }
-
-        private void ButtonGenKey_OnClick(object sender, RoutedEventArgs e)
-        {
-            var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
-            VmSystemConfigPage.SystemConfig.DataSecurity.RsaPublicKey = rsa.ToPEM_PKCS1(true);
-            // todo Save ppk
-
-            // todo 更新数据库，重新读取数据库
         }
     }
 

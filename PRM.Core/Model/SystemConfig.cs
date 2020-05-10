@@ -30,7 +30,7 @@ namespace PRM.Core.Model
         /// <summary>
         /// Must init before app start in app.cs
         /// </summary>
-        public static void Init(ResourceDictionary appResourceDictionary)
+        public static void Create(ResourceDictionary appResourceDictionary)
         {
             if (uniqueInstance == null)
                 lock (InstanceLock)

@@ -99,13 +99,35 @@ namespace PersonalRemoteManager
 
                 #region system check & init
                 
-                // config init (settings & langs)
-                SystemConfig.Init(this.Resources);
-
+                // config create instance (settings & langs)
+                SystemConfig.Create(this.Resources);
 
                 // db init
                 Server.Init();
                 Config.Init();
+
+                // config init
+                //SystemConfig.Init();
+
+                // global init
+                Global.GetInstance();
+
+                // run check
+                var rsa = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
+                switch (rsa)
+                {
+                    case SystemConfigDataSecurity.ERsaStatues.Ok:
+                        break;
+                    // TODO 提示密钥有问题
+                    case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
+                        break;
+                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
+                        break;
+                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
                 #endregion
 

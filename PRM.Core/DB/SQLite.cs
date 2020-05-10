@@ -230,7 +230,7 @@ namespace SQLite
 #if USE_SQLITEPCL_RAW && !NO_SQLITEPCL_RAW_BATTERIES
 		static SQLiteConnection ()
 		{
-			SQLitePCL.Batteries_V2.Init ();
+			SQLitePCL.Batteries_V2.Create ();
 		}
 #endif
 
@@ -2003,7 +2003,7 @@ namespace SQLite
 				throw SQLiteException.New (r, "Failed to open destination database");
 			}
 
-			// Init the backup
+			// Create the backup
 			var backup = SQLite3.BackupInit (destHandle, databaseName, Handle, databaseName);
 			if (backup == NullBackupHandle) {
 				SQLite3.Close (destHandle);

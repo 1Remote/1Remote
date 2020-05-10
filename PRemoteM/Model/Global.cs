@@ -84,10 +84,8 @@ namespace PRM.Core.Model
             //#endif
 
             ServerList.Clear();
-            var serverOrmList = OrmTableBase.ListAll<Server>();
-            foreach (var serverOrm in serverOrmList)
+            foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
             {
-                var serverAbstract = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(serverOrm);
                 if (serverAbstract.OnCmdConn == null)
                     serverAbstract.OnCmdConn += OnCmdConn;
                 ServerList.Add(serverAbstract);

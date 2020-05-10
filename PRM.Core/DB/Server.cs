@@ -55,5 +55,22 @@ namespace PRM.Core.DB
             ret.JsonConfigString = org.ToJsonString();
             return ret;
         }
+
+
+        public static List<Server> ListAll()
+        {
+            return OrmTableBase.ListAll<Server>();
+        }
+
+
+        public static IEnumerable<ProtocolServerBase> ListAllProtocolServerBase()
+        {
+            var servers = ListAll();
+            foreach (var server in servers)
+            {
+                var objectServerOrm = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server);
+                yield return objectServerOrm;
+            }
+        }
     }
 }

@@ -18,7 +18,9 @@ namespace PRM.Core.DB
                 db.CreateTable<Config>();
             }
             IsInit = true;
-            GetRSA_SHA1();
+            var sha1 = RSA_SHA1;
+            var pk = RSA_PublicKey;
+            var ppkp = RSA_PrivateKeyPath;
         }
 
         [PrimaryKey, AutoIncrement]
@@ -31,49 +33,142 @@ namespace PRM.Core.DB
         public string Value { get; set; } = "";
 
 
-
-
-        public static string GetRSA_SHA1()
+        public static string RSA_SHA1
         {
-            Debug.Assert(IsInit == true);
-            using (var db = GetDb())
+            get
             {
-                if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
+                Debug.Assert(IsInit == true);
+                using (var db = GetDb())
                 {
-                    var c = new Config()
+                    if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
                     {
-                        Key = "RSA_SHA1",
-                        Value = "",
-                    };
-                    c.Insert();
+                        var c = new Config()
+                        {
+                            Key = "RSA_SHA1",
+                            Value = "",
+                        };
+                        c.Insert();
+                    }
+                    {
+                        var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
+                        return c.Value;
+                    }
                 }
+            }
+            set
+            {
+                Debug.Assert(IsInit == true);
+                using (var db = GetDb())
                 {
-                    var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
-                    return c.Value;
+                    if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
+                    {
+                        var c = new Config()
+                        {
+                            Key = "RSA_SHA1",
+                            Value = "",
+                        };
+                        c.Insert();
+                    }
+                    if (value != null)
+                    {
+                        var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
+                        c.Value = value;
+                        c.Update();
+                    }
                 }
             }
         }
 
-        public static void SetRSA_SHA1(string sha1)
+        public static string RSA_PublicKey
         {
-            Debug.Assert(IsInit == true);
-            using (var db = GetDb())
+            get
             {
-                if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
+                Debug.Assert(IsInit == true);
+                using (var db = GetDb())
                 {
-                    var c = new Config()
+                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
                     {
-                        Key = "RSA_SHA1",
-                        Value = "",
-                    };
-                    c.Insert();
+                        var c = new Config()
+                        {
+                            Key = nameof(RSA_PublicKey),
+                            Value = "",
+                        };
+                        c.Insert();
+                    }
+                    {
+                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PublicKey));
+                        return c.Value;
+                    }
                 }
-
-                if (sha1 != null)
+            }
+            set
+            {
+                Debug.Assert(IsInit == true);
+                using (var db = GetDb())
                 {
-                    var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
-                    c.Value = sha1;
-                    c.Update();
+                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
+                    {
+                        var c = new Config()
+                        {
+                            Key = nameof(RSA_PublicKey),
+                            Value = "",
+                        };
+                        c.Insert();
+                    }
+                    if (value != null)
+                    {
+                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PublicKey));
+                        c.Value = value;
+                        c.Update();
+                    }
+                }
+            }
+        }
+
+
+
+        public static string RSA_PrivateKeyPath
+        {
+            get
+            {
+                Debug.Assert(IsInit == true);
+                using (var db = GetDb())
+                {
+                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
+                    {
+                        var c = new Config()
+                        {
+                            Key = nameof(RSA_PrivateKeyPath),
+                            Value = "",
+                        };
+                        c.Insert();
+                    }
+                    {
+                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PrivateKeyPath));
+                        return c.Value;
+                    }
+                }
+            }
+            set
+            {
+                Debug.Assert(IsInit == true);
+                using (var db = GetDb())
+                {
+                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
+                    {
+                        var c = new Config()
+                        {
+                            Key = nameof(RSA_PrivateKeyPath),
+                            Value = "",
+                        };
+                        c.Insert();
+                    }
+                    if (value != null)
+                    {
+                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PrivateKeyPath));
+                        c.Value = value;
+                        c.Update();
+                    }
                 }
             }
         }

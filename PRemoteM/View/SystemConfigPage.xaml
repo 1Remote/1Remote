@@ -97,7 +97,7 @@
 
     <Grid Background="{DynamicResource MainBgColorBrush}">
 
-        <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}">
+        <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}" IsEnabled="{Binding TabIsEnabled}">
             <TabItem Header="{DynamicResource system_options_general_title}">
                 <StackPanel Margin="20 20 0 0">
 
@@ -252,8 +252,8 @@
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:数据加密"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Background="Red" Margin="0 0 0 0" Click="ButtonGenKey_OnClick">TXT：生成RSA密钥</Button>
-                                    <Button Background="Red" Margin="20 0 0 0">TXT：清除加密</Button>
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdGenRsaKey}">TXT：生成RSA密钥</Button>
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="20 0 0 0" Command="{Binding CmdClearRsaKey}">TXT：清除加密</Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -263,8 +263,8 @@
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0" Height="Auto">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:公钥"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="100" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="200" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -280,10 +280,10 @@
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:私钥"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
+                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectRsaKey_OnClick"></Button>
                         </StackPanel>
                     </Grid>
                     <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
@@ -302,6 +302,7 @@
                 Width="200" 
                 HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
+                IsEnabled="{Binding TabIsEnabled}"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource button_back}">
             <Button.Style>
@@ -342,5 +343,16 @@
                 </Style>
             </Button.Style>
         </Button>
+
+
+        <Grid Visibility="{Binding ProgressBarVisibility}">
+            <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
+            <Grid>
+                <StackPanel VerticalAlignment="Center">
+                    <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
+                    <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="TXT:正在处理数据，请勿关闭程序，否则数据丢失。" TextWrapping="Wrap"></TextBlock>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>
