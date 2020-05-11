@@ -53,15 +53,15 @@ namespace PRM.Core.DB
             ret.DispName = org.DispName;
             ret.GroupName = org.GroupName;
             
-            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-            {
-                var tmp = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(org.ToJsonString());
-                if (tmp == null)
-                {
-                    ret.JsonConfigString = SystemConfig.GetInstance().DataSecurity.Rsa.Encode(org.ToJsonString());
-                }
-            }
-            else
+            //if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
+            //{
+            //    var tmp = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(org.ToJsonString());
+            //    if (tmp == null)
+            //    {
+            //        ret.JsonConfigString = SystemConfig.GetInstance().DataSecurity.Rsa.Encode(org.ToJsonString());
+            //    }
+            //}
+            //else
                 ret.JsonConfigString = org.ToJsonString();
             return ret;
         }

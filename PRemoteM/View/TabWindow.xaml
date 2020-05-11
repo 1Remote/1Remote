@@ -28,7 +28,7 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="6"/>
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 6 8 8"/>
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
             </ControlTemplate.Triggers>

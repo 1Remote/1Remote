@@ -109,17 +109,23 @@ namespace PRM.Core.Model
 
         public string RsaPrivateKeyPath => DB.Config.RSA_PrivateKeyPath;
 
+        private com.github.xiangyuecn.rsacsharp.RSA _rsa = null;
         public com.github.xiangyuecn.rsacsharp.RSA Rsa
         {
+            set => _rsa = value;
             get
             {
-                if (ValidateRsa() != ERsaStatues.Ok)
+                if (_rsa == null)
                 {
-                    throw new Exception("TXT:Rsa key is not match!");
+                    if (ValidateRsa() != ERsaStatues.Ok)
+                    {
+                        throw new Exception("TXT:Rsa key is not match!");
+                    }
+                    if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
+                        return null;
+                    _rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
                 }
-                if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
-                    return null;
-                return new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                return _rsa;
             }
         }
 
@@ -171,6 +177,7 @@ namespace PRM.Core.Model
                                 // gen rsa
                                 var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
                                 OnRsaProgress?.Invoke(++val, max);
+                                Rsa = null;
 
                                 // save key
                                 DB.Config.RSA_SHA1 = rsa.Sign("SHA1", SystemConfig.AppName);
@@ -252,6 +259,7 @@ namespace PRM.Core.Model
                             // gen rsa
                             var ppkPath = DB.Config.RSA_PrivateKeyPath;
                             var rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                            Rsa = null;
 
                             // remove rsa keys from db
                             DB.Config.RSA_SHA1 = "";

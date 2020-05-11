@@ -40,8 +40,13 @@ namespace PRM.Core.Protocol.Putty.Host
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
-        [DllImport("User32")]
+        [DllImport("user32.dll")]
         private static extern int SetForegroundWindow(IntPtr hwnd);
+
+
+        [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true)] 
+        public static extern IntPtr SetFocus(HandleRef hWnd);
+
 
         private const int GWL_STYLE = (-16);
         private const int WM_CLOSE = 0x10;
@@ -115,7 +120,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public void Close()
         {
-            DeletePuttySession();
+            DeletePuttySessionInRegTable();
             //PostMessage(AppWindow, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
             try
             {
@@ -163,7 +168,7 @@ namespace PRM.Core.Protocol.Putty.Host
                 SetWindowLong(PuttyHandle, GWL_STYLE, lStyle); // make putty "WindowStyle=None"
                 //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
                 MoveWindow(PuttyHandle, PuttyWindowMargin, PuttyWindowMargin, panel.Width - PuttyWindowMargin * 2, panel.Height - PuttyWindowMargin * 2, true);
-                DeletePuttySession();
+                DeletePuttySessionInRegTable();
             });
         }
 
@@ -253,7 +258,7 @@ namespace PRM.Core.Protocol.Putty.Host
             PuttyOption.Save();
         }
 
-        private void DeletePuttySession()
+        private void DeletePuttySessionInRegTable()
         {
             PuttyOption?.Del();
             PuttyOption = null;
@@ -266,12 +271,12 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override bool IsConnected()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override bool IsConnecting()
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }
