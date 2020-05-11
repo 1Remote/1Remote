@@ -41,7 +41,7 @@ namespace PRM.Core.Protocol.Putty
             }
 
             if (Vm.GetType() == typeof(ProtocolServerSSH)
-                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrBase))
+                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
             {
                 GridUserName.Visibility =
                 GridPwd.Visibility =

@@ -15,6 +15,7 @@ using PRM;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Ulits;
+using PRM.Model;
 using PRM.View;
 using Shawn.Ulits;
 using SQLite;
@@ -110,7 +111,7 @@ namespace PersonalRemoteManager
                 //SystemConfig.Init();
 
                 // global init
-                Global.GetInstance();
+                Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
 
                 // run check
                 var rsa = SystemConfig.GetInstance().DataSecurity.ValidateRsa();

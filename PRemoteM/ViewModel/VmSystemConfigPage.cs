@@ -139,10 +139,6 @@ namespace PRM.ViewModel
                 {
                     _cmdClearRsaKey = new RelayCommand((o) =>
                     {
-                        if (SystemConfig.DataSecurity.ValidateRsa() != SystemConfigDataSecurity.ERsaStatues.Ok)
-                        {
-                            // TODO 提示
-                        }
                         SystemConfig.DataSecurity.CleanRsa();
                     });
                 }

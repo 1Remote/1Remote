@@ -11,6 +11,10 @@ using System.IO;
 using System.Threading;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
+using PRM.Core.DB;
+using PRM.Core.Protocol;
+using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.RDP;
 using Shawn.Ulits;
 
 namespace PRM.Core.Model
@@ -25,15 +29,8 @@ namespace PRM.Core.Model
             if (File.Exists(_dbPath + ".back"))
             {
                 File.Copy(_dbPath + ".back", _dbPath, true);
-                // TODO 删除 back 文件
+                File.Delete(_dbPath + ".back");
             }
-
-            //// validate rsa key
-            //if (ValidateRsa() == false)
-            //{
-            //    // TODO 提示公钥/私钥不匹配，弹出选择界面重新选择
-            //    //SimpleLogHelper.Error("Your ");
-            //}
         }
 
         public enum ERsaStatues
@@ -94,8 +91,6 @@ namespace PRM.Core.Model
             }
             catch (Exception e)
             {
-                // TODO 提示公钥/私钥不匹配，弹出选择界面重新选择
-                SimpleLogHelper.Error("Your ");
                 SimpleLogHelper.Error(e);
                 return ERsaStatues.PrivateKeyIsNotMatch;
             }
@@ -120,7 +115,7 @@ namespace PRM.Core.Model
             {
                 if (ValidateRsa() != ERsaStatues.Ok)
                 {
-                    throw new Exception("Rsa key is not match!");
+                    throw new Exception("TXT:Rsa key is not match!");
                 }
                 if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                     return null;
@@ -136,15 +131,25 @@ namespace PRM.Core.Model
         public const string PrivateKeyFileExt = ".prpk";
         public void GenRsa()
         {
-            var t = new Task(() =>
+            if (ValidateRsa() != ERsaStatues.Ok)
             {
-                if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
+                throw new Exception("TXT:Rsa key is not match!");
+            }
+
+            if(!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
+                return;
+
+            if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
+            {
+                var t = new Task(() =>
+                {
                     lock (_lockerForRsa)
                     {
                         if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            var servers = PRM.Core.DB.Server.ListAll();
-                            int max = servers.Count * 2 + 2;
+                            var psbs = PRM.Core.DB.Server.ListAllProtocolServerBase();
+                            var protocolServerBases = psbs as ProtocolServerBase[] ?? psbs.ToArray();
+                            int max = protocolServerBases.Count() * 3 + 2;
                             int val = 0;
 
                             var dlg = new SaveFileDialog
@@ -167,27 +172,42 @@ namespace PRM.Core.Model
                                 var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
                                 OnRsaProgress?.Invoke(++val, max);
 
-                                //// encrypt old data & show process bar
-                                //foreach (var server in servers)
-                                //{
-                                //    // todo encrypt pwd
-                                //    server.JsonConfigString = rsa.Encode(server.JsonConfigString);
-                                //    OnRsaProgress?.Invoke(++val, max);
-                                //}
-                                //foreach (var server in servers)
-                                //{
-                                //    server.Update();
-                                //    OnRsaProgress?.Invoke(++val, max);
-                                //}
-
+                                // save key
                                 DB.Config.RSA_SHA1 = rsa.Sign("SHA1", SystemConfig.AppName);
                                 DB.Config.RSA_PublicKey = rsa.ToPEM_PKCS1(true);
                                 DB.Config.RSA_PrivateKeyPath = dlg.FileName;
+                                File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
                                 RaisePropertyChanged(nameof(RsaPublicKey));
                                 RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
-                                // save key
-                                File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
+
+                                // encrypt old data
+                                foreach (var psb in protocolServerBases)
+                                {
+                                    // encrypt pwd
+                                    switch (psb)
+                                    {
+                                        case ProtocolServerNone _:
+                                            break;
+                                        case ProtocolServerRDP rdp:
+                                            rdp.Password = rsa.Encode(rdp.Password);
+                                            break;
+                                        case ProtocolServerSSH ssh:
+                                            ssh.Password = rsa.Encode(ssh.Password);
+                                            break;
+                                        default:
+                                            throw new ArgumentOutOfRangeException($"Protocol not support");
+                                    }
+                                    OnRsaProgress?.Invoke(++val, max);
+
+                                    // encrypt json
+                                    var server = Server.FromProtocolServerBase(psb);
+                                    OnRsaProgress?.Invoke(++val, max);
+
+                                    // update db
+                                    server.Update();
+                                    OnRsaProgress?.Invoke(++val, max);
+                                }
 
                                 // del back up
                                 File.Delete(_dbPath + ".back");
@@ -197,28 +217,31 @@ namespace PRM.Core.Model
                             }
                         }
                     }
-            });
-            t.Start();
+                });
+                t.Start();
+            }
         }
         public void CleanRsa()
         {
             // validate rsa key
-            if (ValidateRsa() == ERsaStatues.Ok)
+            if (ValidateRsa() != ERsaStatues.Ok)
             {
-                // TODO 提示公钥/私钥不匹配，弹出选择界面重新选择
-                //SimpleLogHelper.Error("Your ");
+                throw new Exception("TXT:Rsa key is not match!");
             }
 
-            var t = new Task(() =>
+            if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
             {
-                if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
+                var t = new Task(() =>
+                {
                     lock (_lockerForRsa)
                     {
                         if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            var servers = PRM.Core.DB.Server.ListAll();
-                            int max = servers.Count * 2 + 2;
-                            int val = 0;
+                            OnRsaProgress?.Invoke(0, 1);
+                            var psbs = PRM.Core.DB.Server.ListAllProtocolServerBase();
+                            var protocolServerBases = psbs as ProtocolServerBase[] ?? psbs.ToArray();
+                            int max = protocolServerBases.Count() * 3 + 2 + 1;
+                            int val = 1;
                             OnRsaProgress?.Invoke(val, max);
 
                             // database back up
@@ -228,21 +251,40 @@ namespace PRM.Core.Model
 
                             // gen rsa
                             var ppkPath = DB.Config.RSA_PrivateKeyPath;
-                            var rsa = Rsa;
+                            var rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
 
-                            OnRsaProgress?.Invoke(++val, max);
+                            // remove rsa keys from db
+                            DB.Config.RSA_SHA1 = "";
+                            DB.Config.RSA_PublicKey = "";
+                            DB.Config.RSA_PrivateKeyPath = "";
 
-                            Thread.Sleep(200);
-                            OnRsaProgress?.Invoke(++val, max);
-                            Thread.Sleep(200);
-                            OnRsaProgress?.Invoke(++val, max);
-                            Thread.Sleep(200);
-                            OnRsaProgress?.Invoke(++val, max);
-                            Thread.Sleep(200);
-                            OnRsaProgress?.Invoke(++val, max);
+                            // decrypt old data
+                            foreach (var psb in protocolServerBases)
+                            {
+                                // decrypt pwd
+                                switch (psb)
+                                {
+                                    case ProtocolServerRDP rdp:
+                                        rdp.Password = rsa.DecodeOrNull(rdp.Password);
+                                        break;
+                                    case ProtocolServerSSH ssh:
+                                        ssh.Password = rsa.DecodeOrNull(ssh.Password);
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException($"Protocol not support");
+                                }
+                                OnRsaProgress?.Invoke(++val, max);
+
+                                // decrypt json
+                                var server = Server.FromProtocolServerBase(psb);
+                                OnRsaProgress?.Invoke(++val, max);
+
+                                // update db
+                                server.Update();
+                                OnRsaProgress?.Invoke(++val, max);
+                            }
 
 
-                            // decrypt old data &show process bar
                             //foreach (var server in servers)
                             //{
                             //    // todo decrypt pwd
@@ -255,11 +297,6 @@ namespace PRM.Core.Model
                             //    server.Update();
                             //    OnRsaProgress?.Invoke(++val, max);
                             //}
-
-
-                            DB.Config.RSA_SHA1 = "";
-                            DB.Config.RSA_PublicKey = "";
-                            DB.Config.RSA_PrivateKeyPath = "";
                             RaisePropertyChanged(nameof(RsaPublicKey));
                             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
@@ -273,8 +310,9 @@ namespace PRM.Core.Model
                             OnRsaProgress?.Invoke(0, 0);
                         }
                     }
-            });
-            t.Start();
+                });
+                t.Start();
+            }
         }
 
 

@@ -92,7 +92,6 @@
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\Global.cs" />
     <Compile Include="Model\WindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />

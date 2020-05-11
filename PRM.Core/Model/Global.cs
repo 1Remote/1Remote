@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.Ulits.DragablzTab;
-using PRM.Model;
-using PRM.View;
-using Shawn.Ulits;
-using Shawn.Ulits.RDP;
-using static System.Diagnostics.Debug;
 
 namespace PRM.Core.Model
 {
@@ -92,12 +79,14 @@ namespace PRM.Core.Model
             }
         }
 
+        public Action<ProtocolServerBase> OnServerConn = null;
         private void OnCmdConn(uint id)
         {
             Debug.Assert(id > 0);
             Debug.Assert(ServerList.Any(x => x.Id == id));
             var server = ServerList.First(x => x.Id == id);
-            WindowPool.ShowRemoteHost(server);
+            //WindowPool.ShowRemoteHost(server);
+            OnServerConn?.Invoke(server);
         }
 
         public void ServerListUpdate(ProtocolServerBase protocolServer)
