@@ -54,14 +54,14 @@ namespace PRM.Core.DB
                         server.ClassVersion == serverAbstract.ClassVersion)
                     {
                         var jsonStr = server.JsonConfigString;
-                        if (rsa != null)
-                        {
-                            var tmp = rsa.DecodeOrNull(jsonStr);
-                            if (tmp != null)
-                            {
-                                jsonStr = tmp;
-                            }
-                        }
+                        //if (rsa != null)
+                        //{
+                        //    var tmp = rsa.DecodeOrNull(jsonStr);
+                        //    if (tmp != null)
+                        //    {
+                        //        jsonStr = tmp;
+                        //    }
+                        //}
                         var ret = serverAbstract.CreateFromJsonString(jsonStr);
                         if (ret != null)
                         {
@@ -78,7 +78,7 @@ namespace PRM.Core.DB
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||
-                jObj.ServerType == null ||
+                jObj.Protocol == null ||
                 jObj.ClassVersion == null)
                 return null;
 
