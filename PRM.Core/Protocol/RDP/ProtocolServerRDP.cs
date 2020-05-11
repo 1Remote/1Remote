@@ -32,7 +32,7 @@ namespace PRM.Core.Protocol.RDP
     }
 
 
-    public class ProtocolServerRDP : ProtocolServerWithAddrBase
+    public class ProtocolServerRDP : ProtocolServerWithAddrPortUserPwdBase
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
@@ -259,11 +259,6 @@ namespace PRM.Core.Protocol.RDP
             {
                 return null;
             }
-        }
-
-        protected override string GetSubTitle()
-        {
-            return $"@{Address} ({UserName})";
         }
     }
 }

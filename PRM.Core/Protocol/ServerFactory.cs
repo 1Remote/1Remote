@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
 
 namespace PRM.Core.DB
@@ -30,7 +31,7 @@ namespace PRM.Core.DB
 
         private static readonly object Locker = new object();
         private List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
+        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server, com.github.xiangyuecn.rsacsharp.RSA rsa = null)
         {
             // reflect all the child class
             lock (Locker)
@@ -42,19 +43,31 @@ namespace PRM.Core.DB
                     _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
-            }
+                
+                if (rsa == null)
+                    rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
 
-            // get instance form json string
-            foreach (var serverAbstract in _baseList)
-            {
-                if (server.Protocol == serverAbstract.Protocol &&
-                    server.ClassVersion == serverAbstract.ClassVersion)
+                // get instance form json string
+                foreach (var serverAbstract in _baseList)
                 {
-                    var ret = serverAbstract.CreateFromJsonString(server.JsonConfigString);
-                    if (ret != null)
+                    if (server.Protocol == serverAbstract.Protocol &&
+                        server.ClassVersion == serverAbstract.ClassVersion)
                     {
-                        ret.Id = server.Id;
-                        return ret;
+                        var jsonStr = server.JsonConfigString;
+                        if (rsa != null)
+                        {
+                            var tmp = rsa.DecodeOrNull(jsonStr);
+                            if (tmp != null)
+                            {
+                                jsonStr = tmp;
+                            }
+                        }
+                        var ret = serverAbstract.CreateFromJsonString(jsonStr);
+                        if (ret != null)
+                        {
+                            ret.Id = server.Id;
+                            return ret;
+                        }
                     }
                 }
             }

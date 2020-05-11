@@ -186,9 +186,9 @@ namespace PRM.ViewModel
             if (IsAddMode)
             {
                 server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrBase))
-                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrBase)))
-                    server.Update(Server, typeof(ProtocolServerWithAddrBase));
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
+                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+                    server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
                 else
                     server.Update(Server, typeof(ProtocolServerBase));
             }

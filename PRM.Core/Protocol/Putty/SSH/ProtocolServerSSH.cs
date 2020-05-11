@@ -8,7 +8,7 @@ using PRM.Core.Protocol.RDP;
 
 namespace PRM.Core.Protocol.Putty.SSH
 {
-    public class ProtocolServerSSH : ProtocolServerWithAddrBase, IPuttyConnectable
+    public class ProtocolServerSSH : ProtocolServerWithAddrPortUserPwdBase, IPuttyConnectable
     {
         public enum ESshVersion
         {
@@ -54,10 +54,6 @@ namespace PRM.Core.Protocol.Putty.SSH
             }
         }
 
-        protected override string GetSubTitle()
-        {
-            return $"@{SshVersion} ({UserName})";
-        }
 
         public string GetPuttyConnString()
         {

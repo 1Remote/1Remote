@@ -79,6 +79,7 @@
     <Compile Include="DB\Config.cs" />
     <Compile Include="DB\OrmTableBase.cs" />
     <Compile Include="DB\SQLite.cs" />
+    <Compile Include="Model\Global.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.DataSecurity.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
-    <Compile Include="Protocol\ProtocolServerWithAddrBase.cs" />
+    <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
     <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
       <DependentUpon>PuttyHost.xaml</DependentUpon>

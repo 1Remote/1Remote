@@ -52,7 +52,17 @@ namespace PRM.Core.DB
             ret.ClassVersion = org.ClassVersion;
             ret.DispName = org.DispName;
             ret.GroupName = org.GroupName;
-            ret.JsonConfigString = org.ToJsonString();
+            
+            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
+            {
+                var tmp = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(org.ToJsonString());
+                if (tmp == null)
+                {
+                    ret.JsonConfigString = SystemConfig.GetInstance().DataSecurity.Rsa.Encode(org.ToJsonString());
+                }
+            }
+            else
+                ret.JsonConfigString = org.ToJsonString();
             return ret;
         }
 
@@ -66,9 +76,10 @@ namespace PRM.Core.DB
         public static IEnumerable<ProtocolServerBase> ListAllProtocolServerBase()
         {
             var servers = ListAll();
+            var rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
             foreach (var server in servers)
             {
-                var objectServerOrm = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server);
+                var objectServerOrm = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server, rsa);
                 yield return objectServerOrm;
             }
         }
