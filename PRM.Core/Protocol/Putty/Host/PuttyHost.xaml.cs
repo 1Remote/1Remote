@@ -27,10 +27,13 @@ namespace PRM.Core.Protocol.Putty.Host
     {
         [DllImport("User32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
         [DllImport("user32.dll")]
         public static extern int ShowWindow(IntPtr hwnd, int nCmdShow);
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
@@ -43,8 +46,7 @@ namespace PRM.Core.Protocol.Putty.Host
         [DllImport("user32.dll")]
         private static extern int SetForegroundWindow(IntPtr hwnd);
 
-
-        [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true)] 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr SetFocus(HandleRef hWnd);
 
 
@@ -62,28 +64,29 @@ namespace PRM.Core.Protocol.Putty.Host
 
 
         private const int PuttyWindowMargin = 0;
-        private Process PuttyProcess = null;
-        private IntPtr PuttyHandle = IntPtr.Zero;
-        private System.Windows.Forms.Panel panel = null;
-        private PuttyOptions PuttyOption = null;
-        private readonly IPuttyConnectable _protocolPutttyBase = null;
+        private Process _puttyProcess = null;
+        private IntPtr _puttyHandle = IntPtr.Zero;
+        private System.Windows.Forms.Panel _puttyMasterPanel = null;
+        private TransparentPanel _topTransparentPanel = null;
+        private PuttyOptions _puttyOption = null;
+        private readonly IPuttyConnectable _protocolPuttyBase = null;
 
         public PuttyHost(IPuttyConnectable iPuttyConnectable) : base(iPuttyConnectable.ProtocolServerBase, false)
         {
-            _protocolPutttyBase = iPuttyConnectable;
+            _protocolPuttyBase = iPuttyConnectable;
             InitializeComponent();
         }
 
         ~PuttyHost()
         {
-            Close();
+            ClosePutty();
         }
 
         public override void Conn()
         {
             Debug.Assert(ParentWindow != null);
-            Debug.Assert(_protocolPutttyBase.ProtocolServerBase.Id > 0);
-            
+            Debug.Assert(_protocolPuttyBase.ProtocolServerBase.Id > 0);
+
             // TODO set to putty bg color
             GridBg.Background = new SolidColorBrush(new Color()
             {
@@ -93,47 +96,97 @@ namespace PRM.Core.Protocol.Putty.Host
                 B = 0,
             });
 
-            PuttyOption = new PuttyOptions(_protocolPutttyBase.GetSessionName());
+            _puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
 
-            PuttyHandle = IntPtr.Zero;
+            _puttyHandle = IntPtr.Zero;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
             var tsk = new Task(InitPutty);
             tsk.Start();
 
 
-            panel = new System.Windows.Forms.Panel
+            _puttyMasterPanel = new System.Windows.Forms.Panel
             {
                 BackColor = System.Drawing.Color.Transparent,
                 Dock = System.Windows.Forms.DockStyle.Fill,
                 BorderStyle = BorderStyle.None
             };
-            panel.SizeChanged += PanelOnSizeChanged;
-            FormsHost.Child = panel;
+            _puttyMasterPanel.SizeChanged += PuttyMasterPanelOnSizeChanged;
+            FormsHost.Child = _puttyMasterPanel;
         }
 
         public override void DisConn()
         {
-            Close();
+            ClosePutty();
         }
 
-        private void PanelOnSizeChanged(object sender, EventArgs e)
+        private void PuttyMasterPanelOnSizeChanged(object sender, EventArgs e)
         {
-            if (PuttyHandle != IntPtr.Zero)
-                MoveWindow(PuttyHandle, PuttyWindowMargin, PuttyWindowMargin, panel.Width - PuttyWindowMargin * 2, panel.Height - PuttyWindowMargin * 2, true);
+            if (_puttyHandle != IntPtr.Zero)
+            {
+                MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2,
+                    _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
+
+                _topTransparentPanel.Width = _puttyMasterPanel.Width;
+                _topTransparentPanel.Height = _puttyMasterPanel.Height;
+                _topTransparentPanel.BringToFront();
+                _topTransparentPanel.Focus();
+            }
         }
 
-        public void Close()
+        private void InitPutty()
+        {
+            CreatePuttySessionInRegTable();
+            _puttyProcess = new Process();
+            var ps = new ProcessStartInfo();
+            ps.FileName = @"C:\putty60.exe";
+            // var arg = $"-ssh {port} {user} {pw} {server}";
+            // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
+            ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
+            ps.WindowStyle = ProcessWindowStyle.Minimized;
+            _puttyProcess.StartInfo = ps;
+            _puttyProcess.Start();
+            _puttyProcess.Exited += (sender, args) => _puttyProcess = null;
+            _puttyProcess.Refresh();
+            _puttyProcess.WaitForInputIdle();
+            _puttyHandle = _puttyProcess.MainWindowHandle;
+
+            Dispatcher.Invoke(() =>
+            {
+                SetParent(_puttyHandle, _puttyMasterPanel.Handle);
+                var wih = new WindowInteropHelper(ParentWindow);
+                IntPtr hWnd = wih.Handle;
+                SetForegroundWindow(hWnd);
+                ShowWindow(_puttyHandle, SW_SHOWMAXIMIZED);
+                int lStyle = GetWindowLong(_puttyHandle, GWL_STYLE);
+                lStyle &= ~WS_CAPTION; // no title
+                lStyle &= ~WS_BORDER;  // no border
+                lStyle &= ~WS_THICKFRAME;
+                SetWindowLong(_puttyHandle, GWL_STYLE, lStyle);
+                //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
+                MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2, _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
+                DeletePuttySessionInRegTable();
+
+                _topTransparentPanel = new TransparentPanel
+                {
+                    Parent = _puttyMasterPanel,
+                    PuttyHandle = _puttyHandle
+                };
+                _topTransparentPanel.BringToFront();
+                _topTransparentPanel.Focus();
+            });
+        }
+        
+        public void ClosePutty()
         {
             DeletePuttySessionInRegTable();
-            //PostMessage(AppWindow, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
             try
             {
-                if (PuttyProcess?.HasExited == false)
+                if (_puttyProcess?.HasExited == false)
                 {
-                    PuttyProcess?.Kill();
+                    _puttyProcess?.Kill();
                 }
-                PuttyProcess = null;
+                _puttyProcess = null;
             }
             catch (Exception e)
             {
@@ -141,45 +194,8 @@ namespace PRM.Core.Protocol.Putty.Host
             }
         }
 
-        private void InitPutty()
-        {
-            CreatePuttySession();
-            PuttyProcess = new Process();
-            var ps = new ProcessStartInfo();
-            ps.FileName = @"C:\putty60.exe";
-            // var arg = $"-ssh {port} {user} {pw} {server}";
-            // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
-            ps.Arguments = _protocolPutttyBase.GetPuttyConnString();
-            ps.WindowStyle = ProcessWindowStyle.Minimized;
-            PuttyProcess.StartInfo = ps;
-            PuttyProcess.Start();
-            PuttyProcess.Exited += (sender, args) => PuttyProcess = null;
-            PuttyProcess.Refresh();
-            PuttyProcess.WaitForInputIdle();
-            PuttyHandle = PuttyProcess.MainWindowHandle;
 
-            Dispatcher.Invoke(() =>
-            {
-                SetParent(PuttyHandle, panel.Handle);
-                var wih = new WindowInteropHelper(ParentWindow);
-                IntPtr hWnd = wih.Handle;
-                SetForegroundWindow(hWnd);
-                ShowWindow(PuttyHandle, SW_SHOWMAXIMIZED);
-                int lStyle = GetWindowLong(PuttyHandle, GWL_STYLE);
-                //lStyle &= ~(WS_CAPTION | WS_BORDER | WS_THICKFRAME);
-                lStyle &= ~WS_CAPTION; // no title
-                lStyle &= ~WS_BORDER;  // no border
-                lStyle &= ~WS_THICKFRAME;
-                SetWindowLong(PuttyHandle, GWL_STYLE, lStyle); // make putty "WindowStyle=None"
-                //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
-                MoveWindow(PuttyHandle, PuttyWindowMargin, PuttyWindowMargin, panel.Width - PuttyWindowMargin * 2, panel.Height - PuttyWindowMargin * 2, true);
-                DeletePuttySessionInRegTable();
-            });
-        }
-
-
-
-        private void CreatePuttySession()
+        private void CreatePuttySessionInRegTable()
         {
             //PuttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
             //PuttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
@@ -260,13 +276,13 @@ namespace PRM.Core.Protocol.Putty.Host
             //PuttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
 
 
-            PuttyOption.Save();
+            _puttyOption.Save();
         }
 
         private void DeletePuttySessionInRegTable()
         {
-            PuttyOption?.Del();
-            PuttyOption = null;
+            _puttyOption?.Del();
+            _puttyOption = null;
         }
 
         public override void GoFullScreen()
@@ -282,6 +298,82 @@ namespace PRM.Core.Protocol.Putty.Host
         public override bool IsConnecting()
         {
             return false;
+        }
+    }
+
+    public sealed class TransparentPanel : System.Windows.Forms.Panel
+    {
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        public IntPtr PuttyHandle = IntPtr.Zero;
+        public TransparentPanel()
+        {
+            BackColor = System.Drawing.Color.Transparent;
+            Dock = System.Windows.Forms.DockStyle.Fill;
+            SetStyle(ControlStyles.Selectable, true);
+            TabStop = true;
+        }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x00000020; // WS_EX_TRANSPARENT
+                return cp;
+            }
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            // Do not paint background.
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (PuttyHandle != IntPtr.Zero)
+                PostMessage(PuttyHandle, (uint)msg.Msg, msg.WParam, msg.LParam);
+            return true;
+        }
+
+        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
+        protected override void WndProc(ref Message m)
+        {
+            // Ignore Ctrl+RightClick to prevent Putty context menu
+            if (m.Msg == 516 && ((int)m.WParam & 0x0008) == 0x0008)
+                return;
+
+            switch (m.Msg)
+            {
+                case 33: //WM_MOUSEACTIVATE
+                case 160: //WM_NCMOUSEMOVE
+                case 512: //WM_MOUSEMOVE
+                case 513: //WM_LBUTTONDOWN
+                case 514: //WM_LBUTTONUP
+                case 515: //WM_LBUTTONDBLCLK
+                case 516: //WM_RBUTTONDOWN
+                case 517: //WM_RBUTTONUP
+                case 518: //WM_RBUTTONDBLCLK
+                case 519: //WM_MBUTTONDOWN
+                case 520: //WM_MBUTTONUP
+                case 521: //WM_MBUTTONDBLCLK
+                case 522: //WM_MOUSEWHEEL
+                case 526: //WM_MOUSEHWHEEL
+                case 672: //WM_NCMOUSEHOVER
+                case 673: //WM_MOUSEHOVER
+                case 674: //WM_NCMOUSELEAVE
+                case 675: //WM_MOUSELEAVE
+                    {
+                        if (PuttyHandle != IntPtr.Zero)
+                        {
+                            PostMessage(PuttyHandle, (uint)m.Msg, m.WParam, m.LParam);
+                        }
+                    }
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
         }
     }
 }
