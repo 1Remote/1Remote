@@ -74,6 +74,11 @@ namespace PRM.Core.Protocol.Putty.Host
             InitializeComponent();
         }
 
+        ~PuttyHost()
+        {
+            Close();
+        }
+
         public override void Conn()
         {
             Debug.Assert(ParentWindow != null);
