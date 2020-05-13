@@ -55,8 +55,10 @@ namespace PRM.Core.Protocol.Putty
             {
                 var protocol = (ProtocolServerSSH) Vm;
                 if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && !string.IsNullOrEmpty(protocol.UserName?.Trim()))
+                    && !string.IsNullOrEmpty(protocol.UserName?.Trim())
+                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
                     return true;
+                return false;
             }
             return false;
         }

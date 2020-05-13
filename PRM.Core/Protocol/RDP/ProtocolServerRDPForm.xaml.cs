@@ -28,8 +28,7 @@ namespace PRM.Core.Protocol.RDP
         {
             if (!string.IsNullOrEmpty(Vm.Address?.Trim())
                 && !string.IsNullOrEmpty(Vm.UserName?.Trim())
-                && !string.IsNullOrEmpty(Vm.Password?.Trim())
-                && Vm.Port > 0)
+                && Vm.GetPort() > 0 && Vm.GetPort() < 65536)
                 return true;
             return false;
         }

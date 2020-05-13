@@ -17,9 +17,9 @@ namespace PRM.Core.Protocol
     {
         protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName)
         {
-            _protocol = protocol;
-            _classVersion = classVersion;
-            _protocolDisplayName = protocolDisplayName;
+            Protocol = protocol;
+            ClassVersion = classVersion;
+            ProtocolDisplayName = protocolDisplayName;
         }
 
 
@@ -32,13 +32,11 @@ namespace PRM.Core.Protocol
         }
 
 
+        public string Protocol { get; }
 
-        private readonly string _protocol;
-        private readonly string _classVersion;
-        private readonly string _protocolDisplayName;
-        public string Protocol => _protocol;
-        public string ClassVersion => _classVersion;
-        public string ProtocolDisplayName => _protocolDisplayName;
+        public string ClassVersion { get; }
+
+        public string ProtocolDisplayName { get; }
 
 
         private string _dispName = "";

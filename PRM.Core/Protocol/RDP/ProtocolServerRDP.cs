@@ -53,7 +53,7 @@ namespace PRM.Core.Protocol.RDP
 
         public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
-            base.Port = 3389;
+            base.Port = "3389";
             base.UserName = "Administrator";
         }
 

@@ -63,7 +63,7 @@ namespace Shawn.Ulits.RDP
             // server info
             _rdp.Server = _rdpServer.Address;
             _rdp.UserName = _rdpServer.UserName;
-            _rdp.AdvancedSettings2.RDPPort = _rdpServer.Port;
+            _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
             // TODO 密钥的 RSA 解密
             secured.ClearTextPassword = _rdpServer.Password;

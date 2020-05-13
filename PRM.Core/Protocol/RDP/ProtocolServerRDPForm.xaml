@@ -28,7 +28,10 @@
                     </Grid>
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Left"></TextBox>
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                                 Width="50" HorizontalAlignment="Left"
+                                 InputMethod.IsInputMethodEnabled="False"
+                                 InputScope="Number"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
