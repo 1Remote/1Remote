@@ -13,19 +13,40 @@
                 <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            <ControlTemplate x:Key="ListBoxControlTemplate" TargetType="{x:Type ListBox}">
+                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="True">
+                    <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </ScrollViewer>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" TargetName="Bd" Value="White"/>
+                        <Setter Property="BorderBrush" TargetName="Bd" Value="#FFD9D9D9"/>
+                    </Trigger>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsGrouping" Value="True"/>
+                            <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
+                        </MultiTrigger.Conditions>
+                        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                    </MultiTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
-        <Grid Margin="0 20 0 0 ">
+        <Grid Margin="0 0 0 0">
             <ListView 
                 Name="LvServerCards"
                 SelectedItem="{Binding SelectedServerCard}"
                 ItemsSource="{Binding ServerCards}" 
-                      Padding="10"
+                      Padding="10 0 0 0" Margin="0 23 0 0"
                       BorderThickness="0"
                       Background="Transparent"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Grid.ColumnSpan="2" Margin="0,0,0,0.5"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Grid.ColumnSpan="2" 
+                      Template="{DynamicResource ListBoxControlTemplate}"
                       >
                 <ListView.Resources>
                     <Style TargetType="ListViewItem">
@@ -238,6 +259,23 @@
             </Border>
         </Grid>
 
+
+
+        <Grid Name="BottomMask" VerticalAlignment="Bottom" Height="30" Opacity="0.9">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
+                            <Setter Property="Background" Value="Transparent"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+        </Grid>
         <Grid VerticalAlignment="Bottom" Height="30" Opacity="0.3" Background="{DynamicResource MainColor1Brush}">
             <Grid.Style>
                 <Style TargetType="Grid">
