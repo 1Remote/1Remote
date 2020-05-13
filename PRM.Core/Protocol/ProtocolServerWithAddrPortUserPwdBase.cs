@@ -51,37 +51,8 @@ namespace PRM.Core.Protocol
         private string _password = "";
         public string Password
         {
-            get
-            {
-                var rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
-                if (rsa != null)
-                {
-                    var tmp = rsa.DecodeOrNull(_password);
-                    if (tmp != null)
-                    {
-                        return tmp;
-                    }
-                }
-                return _password;
-            }
-            set
-            {
-                Debug.Assert(value != null);
-                if (_password != value)
-                {
-                    var rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
-                    var pwd = value;
-                    if (rsa != null)
-                    {
-                        var tmp = rsa.DecodeOrNull(value);
-                        if (tmp == null)
-                        {
-                            pwd = rsa.Encode(value);
-                        }
-                    }
-                    SetAndNotifyIfChanged(nameof(Password), ref _password, pwd);
-                }
-            }
+            get => _password;
+            set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
         }
 
 

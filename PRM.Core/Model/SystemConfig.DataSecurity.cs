@@ -142,7 +142,7 @@ namespace PRM.Core.Model
                 throw new Exception("TXT:Rsa key is not match!");
             }
 
-            if(!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
+            if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                 return;
 
             if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -153,8 +153,7 @@ namespace PRM.Core.Model
                     {
                         if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            var psbs = PRM.Core.DB.Server.ListAllProtocolServerBase();
-                            var protocolServerBases = psbs as ProtocolServerBase[] ?? psbs.ToArray();
+                            var protocolServerBases = Global.GetInstance().ServerList;
                             int max = protocolServerBases.Count() * 3 + 2;
                             int val = 0;
 
@@ -207,12 +206,7 @@ namespace PRM.Core.Model
                                     }
                                     OnRsaProgress?.Invoke(++val, max);
 
-                                    // encrypt json
-                                    var server = Server.FromProtocolServerBase(psb);
-                                    OnRsaProgress?.Invoke(++val, max);
-
-                                    // update db
-                                    server.Update();
+                                    Server.AddOrUpdate(psb);
                                     OnRsaProgress?.Invoke(++val, max);
                                 }
 
@@ -245,8 +239,7 @@ namespace PRM.Core.Model
                         if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
                             OnRsaProgress?.Invoke(0, 1);
-                            var psbs = PRM.Core.DB.Server.ListAllProtocolServerBase();
-                            var protocolServerBases = psbs as ProtocolServerBase[] ?? psbs.ToArray();
+                            var protocolServerBases = Global.GetInstance().ServerList;
                             int max = protocolServerBases.Count() * 3 + 2 + 1;
                             int val = 1;
                             OnRsaProgress?.Invoke(val, max);
@@ -284,11 +277,7 @@ namespace PRM.Core.Model
                                 OnRsaProgress?.Invoke(++val, max);
 
                                 // decrypt json
-                                var server = Server.FromProtocolServerBase(psb);
-                                OnRsaProgress?.Invoke(++val, max);
-
-                                // update db
-                                server.Update();
+                                Server.AddOrUpdate(psb);
                                 OnRsaProgress?.Invoke(++val, max);
                             }
 

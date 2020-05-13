@@ -28,11 +28,11 @@ namespace PRM.Core.Model
 
         private Global()
         {
-            ReadServerDataFromDb();
+            ReloadServers();
             SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(SystemConfig.DataSecurity.DbPath))
-                    ReadServerDataFromDb();
+                    ReloadServers();
             };
         }
 
@@ -40,7 +40,7 @@ namespace PRM.Core.Model
 
         public ObservableCollection<ProtocolServerBase> ServerList { get; set; }= new ObservableCollection<ProtocolServerBase>();
 
-        private void ReadServerDataFromDb()
+        public void ReloadServers()
         {
             //#if DEBUG
             //            // TODO 测试用删除数据库
@@ -95,20 +95,18 @@ namespace PRM.Core.Model
             if (protocolServer.Id > 0 && ServerList.First(x => x.Id == protocolServer.Id) != null)
             {
                 ServerList.First(x => x.Id == protocolServer.Id).Update(protocolServer);
-                var server = Server.FromProtocolServerBase(protocolServer);
                 if (ServerList.First(x => x.Id == protocolServer.Id) == null)
                     ServerList.First(x => x.Id == protocolServer.Id).OnCmdConn += OnCmdConn;
-                server.Update();
+                Server.AddOrUpdate(protocolServer);
             }
             // add
             else
             {
-                var server = Server.FromProtocolServerBase(protocolServer);
-                if (server.Insert() > 0)
+                var id = Server.AddOrUpdate(protocolServer, true);
+                if (id > 0)
                 {
-                    var newServer = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server);
-                    newServer.OnCmdConn += OnCmdConn;
-                    Global.GetInstance().ServerList.Add(newServer);
+                    protocolServer.OnCmdConn += OnCmdConn;
+                    Global.GetInstance().ServerList.Add(protocolServer);
                 }
             }
         }
@@ -117,8 +115,8 @@ namespace PRM.Core.Model
         public void ServerListRemove(ProtocolServerBase server)
         {
             Debug.Assert(server.Id > 0);
-            Server.FromProtocolServerBase(server).Delete();
-            Global.GetInstance().ServerList.Remove(server);
+            if (Server.Delete(server.Id))
+                ServerList.Remove(server);
         }
 
         #endregion

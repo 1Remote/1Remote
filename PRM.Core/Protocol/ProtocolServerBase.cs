@@ -13,7 +13,7 @@ using Color = System.Windows.Media.Color;
 
 namespace PRM.Core.Protocol
 {
-    public abstract class ProtocolServerBase : NotifyPropertyChangedBase
+    public abstract class ProtocolServerBase : NotifyPropertyChangedBase, ICloneable
     {
         protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName)
         {
@@ -51,7 +51,9 @@ namespace PRM.Core.Protocol
             }
         }
 
+        [JsonIgnore]
         public string SubTitle => GetSubTitle();
+
 
         private string _groupName = "";
         public string GroupName
@@ -59,6 +61,7 @@ namespace PRM.Core.Protocol
             get => _groupName;
             set => SetAndNotifyIfChanged(nameof(GroupName), ref _groupName, value);
         }
+
 
         private string _iconBase64 = "";
         public string IconBase64
@@ -133,6 +136,7 @@ namespace PRM.Core.Protocol
             }
         }
 
+
         private Color _markColor = Colors.White;
         [JsonIgnore]
         public Color MarkColor
@@ -144,6 +148,15 @@ namespace PRM.Core.Protocol
                 SetAndNotifyIfChanged(nameof(MarkColor), ref _markColor, value);
             }
         }
+
+        private DateTime _lastConnTime = DateTime.MinValue;
+        [JsonIgnore]
+        public DateTime LastConnTime
+        {
+            get => _lastConnTime;
+            set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
+        }
+
 
         [JsonIgnore]
         public Action<uint> OnCmdConn = null;
