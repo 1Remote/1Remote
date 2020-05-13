@@ -292,19 +292,6 @@ namespace PRM.Core.Model
                                 OnRsaProgress?.Invoke(++val, max);
                             }
 
-
-                            //foreach (var server in servers)
-                            //{
-                            //    // todo decrypt pwd
-                            //    server.JsonConfigString = rsa.DecodeOrNull(server.JsonConfigString);
-                            //    Debug.Assert(server.JsonConfigString != null);
-                            //    OnRsaProgress?.Invoke(++val, max);
-                            //}
-                            //foreach (var server in servers)
-                            //{
-                            //    server.Update();
-                            //    OnRsaProgress?.Invoke(++val, max);
-                            //}
                             RaisePropertyChanged(nameof(RsaPublicKey));
                             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 

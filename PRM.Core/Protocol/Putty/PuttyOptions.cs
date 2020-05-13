@@ -403,7 +403,7 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.BellOverloadN, 0x00000005));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.BellOverloadT, 0x000007d0));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.BellOverloadS, 0x00001388));
-            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ScrollbackLines, 0x000000c8));
+            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ScrollbackLines, 0x00002000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.DECOriginMode, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.AutoWrapMode, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.LFImpliesCR, 0x00000000));

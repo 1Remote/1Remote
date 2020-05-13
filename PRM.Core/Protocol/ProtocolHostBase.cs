@@ -33,5 +33,7 @@ namespace PRM.Core.Protocol
         public Action<uint> OnClosed = null;
         public Action<uint> OnFullScreen2Window = null;
         //public Action OnWindow2FullScreen = null;
+
+        public abstract void MakeItFocus();
     }
 }

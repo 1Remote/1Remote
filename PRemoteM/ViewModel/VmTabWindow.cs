@@ -19,7 +19,7 @@ namespace PRM.ViewModel
     {
         public readonly string Token;
 
-        private ObservableCollection<TabItemViewModel> _items = new ObservableCollection<TabItemViewModel>();
+        private readonly ObservableCollection<TabItemViewModel> _items = new ObservableCollection<TabItemViewModel>();
         public ObservableCollection<TabItemViewModel> Items
         {
             get => _items;
@@ -39,7 +39,11 @@ namespace PRM.ViewModel
         public TabItemViewModel SelectedItem
         {
             get => _selectedItem;
-            set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+                SelectedItem.Content.MakeItFocus();
+            }
         }
 
 

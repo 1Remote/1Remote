@@ -329,6 +329,11 @@ namespace Shawn.Ulits.RDP
             return _isConnecting;
         }
 
+        public override void MakeItFocus()
+        {
+            // noting to do
+        }
+
         #endregion
 
 

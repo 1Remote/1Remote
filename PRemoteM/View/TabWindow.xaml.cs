@@ -50,6 +50,11 @@ namespace PRM.View
                     Vm.CmdClose.Execute();
                 }
             };
+            this.Activated += (sender, args) =>
+            {
+                Vm?.SelectedItem?.Content?.MakeItFocus();
+            };
+
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
@@ -79,6 +84,7 @@ namespace PRM.View
                 this.Title = Vm.SelectedItem.Header + " - " + "PRemoteM";
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
+                Vm?.SelectedItem.Content?.MakeItFocus();
             }
         }
 

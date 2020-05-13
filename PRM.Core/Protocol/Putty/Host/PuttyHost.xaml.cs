@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -126,11 +127,9 @@ namespace PRM.Core.Protocol.Putty.Host
             {
                 MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2,
                     _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
-
                 _topTransparentPanel.Width = _puttyMasterPanel.Width;
                 _topTransparentPanel.Height = _puttyMasterPanel.Height;
-                _topTransparentPanel.BringToFront();
-                _topTransparentPanel.Focus();
+                MakeItFocus();
             }
         }
 
@@ -173,7 +172,27 @@ namespace PRM.Core.Protocol.Putty.Host
                     PuttyHandle = _puttyHandle
                 };
                 _topTransparentPanel.BringToFront();
-                _topTransparentPanel.Focus();
+
+//#if DEBUG
+//                _topTransparentPanel.LostFocus += (a, b) =>
+//                {
+//                    Console.WriteLine("_topTransparentPanel.LostFocus");
+//                };
+//                _topTransparentPanel.GotFocus += (a, b) =>
+//                {
+//                    Console.WriteLine("_puttyMasterPanel.Focus");
+//                };
+//                _puttyMasterPanel.LostFocus += (a, b) =>
+//                {
+//                    Console.WriteLine("_puttyMasterPanel.LostFocus");
+//                };
+//                _puttyMasterPanel.GotFocus += (a, b) =>
+//                {
+//                    Console.WriteLine("_puttyMasterPanel.Focus");
+//                    MakeItFocus();
+//                };
+//#endif
+                MakeItFocus();
             });
         }
         
@@ -299,6 +318,31 @@ namespace PRM.Core.Protocol.Putty.Host
         {
             return false;
         }
+
+        public override void MakeItFocus()
+        {
+            if (_topTransparentPanel != null)
+            {
+                // hack technology:
+                // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
+                // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
+                var t = new Task(() =>
+                {
+                    bool flag = false;
+                    int nCount = 1000; // don't let it runs forever.
+                    while (!flag && nCount > 0)
+                    {
+                        --nCount;
+                        Dispatcher.Invoke(() =>
+                        {
+                            flag = _topTransparentPanel.Focus();
+                        });
+                        Thread.Sleep(20);
+                    }
+                });
+                t.Start();
+            }
+        }
     }
 
     public sealed class TransparentPanel : System.Windows.Forms.Panel
@@ -332,7 +376,10 @@ namespace PRM.Core.Protocol.Putty.Host
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (PuttyHandle != IntPtr.Zero)
-                PostMessage(PuttyHandle, (uint)msg.Msg, msg.WParam, msg.LParam);
+            {
+                PostMessage(PuttyHandle, (uint) msg.Msg, msg.WParam, msg.LParam);
+            }
+
             return true;
         }
 
