@@ -42,7 +42,7 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
-                SelectedItem.Content.MakeItFocus();
+                SelectedItem?.Content?.MakeItFocus();
             }
         }
 

@@ -14,7 +14,6 @@ namespace PRM.ViewModel
         public VmServerListPage(VmMain vmMain)
         {
             Host = vmMain;
-
             RebuildVmServerCardList();
             Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
             {
