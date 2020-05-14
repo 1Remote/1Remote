@@ -50,6 +50,7 @@ namespace PRM.Core.DB
 
         public static int AddOrUpdate(ProtocolServerBase org, bool isAdd = false)
         {
+            Init();
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             SystemConfig.GetInstance().DataSecurity.EncryptInfo(tmp);
@@ -68,12 +69,14 @@ namespace PRM.Core.DB
 
         public static bool Delete(uint id)
         {
+            Init();
             var s = new Server(){Id = id};
             return s.Delete();
         }
 
         public static IEnumerable<ProtocolServerBase> ListAllProtocolServerBase()
         {
+            Init();
             var servers = ListAll<Server>();
             foreach (var server in servers)
             {

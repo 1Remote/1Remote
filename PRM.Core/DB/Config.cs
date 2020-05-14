@@ -18,9 +18,6 @@ namespace PRM.Core.DB
                 db.CreateTable<Config>();
             }
             IsInit = true;
-            var sha1 = RSA_SHA1;
-            var pk = RSA_PublicKey;
-            var ppkp = RSA_PrivateKeyPath;
         }
 
         [PrimaryKey, AutoIncrement]
@@ -37,7 +34,7 @@ namespace PRM.Core.DB
         {
             get
             {
-                Debug.Assert(IsInit == true);
+                Init();
                 using (var db = GetDb())
                 {
                     if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
@@ -57,7 +54,7 @@ namespace PRM.Core.DB
             }
             set
             {
-                Debug.Assert(IsInit == true);
+                Init();
                 using (var db = GetDb())
                 {
                     if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
@@ -83,7 +80,7 @@ namespace PRM.Core.DB
         {
             get
             {
-                Debug.Assert(IsInit == true);
+                Init();
                 using (var db = GetDb())
                 {
                     if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
@@ -103,7 +100,7 @@ namespace PRM.Core.DB
             }
             set
             {
-                Debug.Assert(IsInit == true);
+                Init();
                 using (var db = GetDb())
                 {
                     if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
@@ -131,7 +128,7 @@ namespace PRM.Core.DB
         {
             get
             {
-                Debug.Assert(IsInit == true);
+                Init();
                 using (var db = GetDb())
                 {
                     if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
@@ -151,7 +148,7 @@ namespace PRM.Core.DB
             }
             set
             {
-                Debug.Assert(IsInit == true);
+                Init();
                 using (var db = GetDb())
                 {
                     if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))

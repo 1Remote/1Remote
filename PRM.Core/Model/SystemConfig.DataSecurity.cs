@@ -40,15 +40,19 @@ namespace PRM.Core.Model
             PrivateKeyContentError,
             PrivateKeyIsNotMatch,
         }
-        public ERsaStatues ValidateRsa()
+        public ERsaStatues ValidateRsa(string privateKeyPath = "")
         {
+            var _privateKeyPath = DB.Config.RSA_PrivateKeyPath;
+            if (!string.IsNullOrEmpty(privateKeyPath))
+                _privateKeyPath = privateKeyPath;
+
             // NO RSA
             if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey)
-                && string.IsNullOrEmpty(DB.Config.RSA_PrivateKeyPath)
+                && string.IsNullOrEmpty(_privateKeyPath)
                 && string.IsNullOrEmpty(DB.Config.RSA_SHA1))
                 return ERsaStatues.Ok;
 
-            if (!File.Exists(DB.Config.RSA_PrivateKeyPath))
+            if (!File.Exists(_privateKeyPath))
                 return ERsaStatues.CanNotFindPrivateKey;
 
             com.github.xiangyuecn.rsacsharp.RSA rsaPk = null;
@@ -56,7 +60,7 @@ namespace PRM.Core.Model
 
             try
             {
-                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
             }
             catch (Exception)
             {
@@ -74,14 +78,14 @@ namespace PRM.Core.Model
                 if (rsaPpk.Verify("SHA1", DB.Config.RSA_SHA1, SystemConfig.AppName))
                 {
                     DB.Config.RSA_PublicKey = rsaPpk.ToPEM_PKCS1(true);
-                    rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                    rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
                     return ERsaStatues.Ok;
                 }
             }
             // RSA private key is match public key?
             try
             {
-                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
                 var sha1 = rsaPpk.Sign("SHA1", SystemConfig.AppName);
                 if (!rsaPk.Verify("SHA1", sha1, SystemConfig.AppName))
                 {
@@ -102,12 +106,26 @@ namespace PRM.Core.Model
         public string DbPath
         {
             get => _dbPath;
-            set => SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
+            set
+            {
+                SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
+                Rsa = null;
+                RaisePropertyChanged(nameof(RsaPublicKey));
+                RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+            }
         }
 
         public string RsaPublicKey => DB.Config.RSA_PublicKey;
 
-        public string RsaPrivateKeyPath => DB.Config.RSA_PrivateKeyPath;
+        public string RsaPrivateKeyPath
+        {
+            get => DB.Config.RSA_PrivateKeyPath;
+            set
+            {
+                DB.Config.RSA_PrivateKeyPath = value;
+                Rsa = null;
+            }
+        }
 
         private com.github.xiangyuecn.rsacsharp.RSA _rsa = null;
         public com.github.xiangyuecn.rsacsharp.RSA Rsa
@@ -117,9 +135,22 @@ namespace PRM.Core.Model
             {
                 if (_rsa == null)
                 {
-                    if (ValidateRsa() != ERsaStatues.Ok)
+                    var ret = ValidateRsa();
+                    switch (ret)
                     {
-                        throw new Exception("TXT:Rsa key is not match!");
+                        case ERsaStatues.Ok:
+                            break;
+                        case ERsaStatues.CanNotFindPrivateKey:
+                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                            break;
+                        case ERsaStatues.PrivateKeyContentError:
+                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                            break;
+                        case ERsaStatues.PrivateKeyIsNotMatch:
+                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                     if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         return null;
@@ -139,7 +170,7 @@ namespace PRM.Core.Model
         {
             if (ValidateRsa() != ERsaStatues.Ok)
             {
-                throw new Exception("TXT:Rsa key is not match!");
+                throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
 
             if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -211,9 +242,22 @@ namespace PRM.Core.Model
         public void CleanRsa()
         {
             // validate rsa key
-            if (ValidateRsa() != ERsaStatues.Ok)
+            var ret = ValidateRsa();
+            switch (ret)
             {
-                throw new Exception("TXT:Rsa key is not match!");
+                case ERsaStatues.Ok:
+                    break;
+                case ERsaStatues.CanNotFindPrivateKey:
+                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                    break;
+                case ERsaStatues.PrivateKeyContentError:
+                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                    break;
+                case ERsaStatues.PrivateKeyIsNotMatch:
+                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -235,27 +279,32 @@ namespace PRM.Core.Model
                             File.Copy(_dbPath, _dbPath + ".back", true);
                             OnRsaProgress?.Invoke(++val, max);
 
-                            // gen rsa
+                            // keep pld rsa
                             var ppkPath = DB.Config.RSA_PrivateKeyPath;
-                            var rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
-                            Rsa = null;
+                            //var rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+
+
+                            // decrypt pwd
+                            Debug.Assert(Rsa != null);
+                            foreach (var psb in protocolServerBases)
+                            {
+                                DecryptPwd(psb);
+                                OnRsaProgress?.Invoke(++val, max);
+                            }
 
                             // remove rsa keys from db
+                            Rsa = null;
                             DB.Config.RSA_SHA1 = "";
                             DB.Config.RSA_PublicKey = "";
                             DB.Config.RSA_PrivateKeyPath = "";
-
-                            // decrypt old data
+                            
+                            // update
                             foreach (var psb in protocolServerBases)
                             {
-                                // decrypt pwd
-                                DecryptPwd(psb);
-                                OnRsaProgress?.Invoke(++val, max);
-
-                                // decrypt json
                                 Server.AddOrUpdate(psb);
                                 OnRsaProgress?.Invoke(++val, max);
                             }
+
 
                             RaisePropertyChanged(nameof(RsaPublicKey));
                             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
@@ -293,7 +342,7 @@ namespace PRM.Core.Model
                         throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
                 }
         }
-        
+
         public void DecryptPwd(ProtocolServerBase server)
         {
             var rsa = Rsa;

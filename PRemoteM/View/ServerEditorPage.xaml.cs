@@ -39,7 +39,7 @@ namespace PRM.View
             Vm = vm;
             DataContext = vm;
             // edit mode
-            if (vm.Server.Id > 0 && vm.Server.GetType() != typeof(ProtocolServerNone))
+            if (!vm.IsAddMode)
             {
                 LogoSelector.SetImg(vm.Server.IconImg);
                 ColorPick.Color = vm.Server.MarkColor;
@@ -51,8 +51,8 @@ namespace PRM.View
                 if (ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
-                    LogoSelector.Logo =
-                    vm.Server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                    LogoSelector.Logo = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                    vm.Server.IconImg = LogoSelector.Logo;
                 }
                 // todo use dynamic resource
                 ColorPick.Color = (Color)ColorConverter.ConvertFromString("#102b3e");

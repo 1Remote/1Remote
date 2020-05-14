@@ -24,8 +24,6 @@
   // system options
   "system_options_general_title": "常规",
   "system_options_general_item_language": "语言",
-  "system_options_general_item_database": "数据库",
-  "system_options_general_item_database_can_not_open": "所选文件不是数据库或该数据库已被加密！",
   "system_options_general_item_start": "启动",
   "system_options_general_item_start_when_win_login": "开机自启动",
   "system_options_general_item_start_minimized": "启动时最小化到托盘",
@@ -39,9 +37,21 @@
 
   "system_options_quick_title": "快速连接",
   "system_options_quick_description": "快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。",
-  "system_options_quick_title_enable": "启用",
-  "system_options_quick_title_hot_key": "快捷键",
+  "system_options_quick_enable": "启用",
+  "system_options_quick_hot_key": "快捷键",
 
+  "system_options_data_security_title": "数据与安全",
+  "system_options_data_security_database": "数据库",
+  "system_options_data_security_rsa_title": "RSA加密",
+  "system_options_data_security_rsa_encrypt": "生成加密",
+  "system_options_data_security_rsa_decrypt": "清除加密",
+  "system_options_data_security_rsa_public_key": "公钥",
+  "system_options_data_security_rsa_private_key_path": "私钥",
+  "system_options_data_security_info_data_processing": "数据处理中，请勿关闭程序。",
+  "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
+  "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
+  "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
+  "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
 
 
   // server card operate
