@@ -106,7 +106,7 @@ namespace PRM.Core.Model
                 if (id > 0)
                 {
                     protocolServer.OnCmdConn += OnCmdConn;
-                    Global.GetInstance().ServerList.Add(protocolServer);
+                    ServerList.Add(protocolServer);
                 }
             }
         }

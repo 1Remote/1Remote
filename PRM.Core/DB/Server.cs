@@ -52,30 +52,7 @@ namespace PRM.Core.DB
         {
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            var rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
-            if (rsa != null)
-            {
-                Debug.Assert(rsa.DecodeOrNull(tmp.DispName) == null);
-                tmp.DispName = rsa.Encode(tmp.DispName);
-                tmp.GroupName = rsa.Encode(tmp.GroupName);
-                switch (tmp)
-                {
-                    case ProtocolServerNone _:
-                        break;
-                    case ProtocolServerRDP _:
-                    case ProtocolServerSSH _:
-                        var p = (ProtocolServerWithAddrPortUserPwdBase) tmp;
-                        if (!string.IsNullOrEmpty(p.UserName))
-                            p.UserName = rsa.Encode(p.UserName);
-                        if (!string.IsNullOrEmpty(p.Address))
-                            p.Address = rsa.Encode(p.Address);
-                        if (!string.IsNullOrEmpty(p.Password))
-                            p.Password = rsa.Encode(p.Password);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support");
-                }
-            }
+            SystemConfig.GetInstance().DataSecurity.EncryptInfo(tmp);
 
             if (isAdd == false)
             {
@@ -98,33 +75,10 @@ namespace PRM.Core.DB
         public static IEnumerable<ProtocolServerBase> ListAllProtocolServerBase()
         {
             var servers = ListAll<Server>();
-            var rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
             foreach (var server in servers)
             {
-                var tmp = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server, rsa);
-                if (rsa != null)
-                {
-                    Debug.Assert(rsa.DecodeOrNull(tmp.DispName) != null);
-                    tmp.DispName = rsa.DecodeOrNull(tmp.DispName);
-                    tmp.GroupName = rsa.DecodeOrNull(tmp.GroupName);
-                    switch (tmp)
-                    {
-                        case ProtocolServerNone _:
-                            break;
-                        case ProtocolServerRDP _:
-                        case ProtocolServerSSH _:
-                            var p = (ProtocolServerWithAddrPortUserPwdBase) tmp;
-                            if (!string.IsNullOrEmpty(p.UserName))
-                                p.UserName = rsa.DecodeOrNull(p.UserName);
-                            if (!string.IsNullOrEmpty(p.Address))
-                                p.Address = rsa.DecodeOrNull(p.Address);
-                            if (!string.IsNullOrEmpty(p.Password))
-                                p.Password = rsa.DecodeOrNull(p.Password);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException($"Protocol not support");
-                    }
-                }
+                var tmp = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server);
+                SystemConfig.GetInstance().DataSecurity.DecryptInfo(tmp);
                 yield return tmp;
             }
         }

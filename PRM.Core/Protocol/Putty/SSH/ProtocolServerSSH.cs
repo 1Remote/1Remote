@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 
 namespace PRM.Core.Protocol.Putty.SSH
@@ -58,8 +59,9 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string GetPuttyConnString()
         {
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            return arg;
+            if(SystemConfig.GetInstance().DataSecurity.Rsa != null)
+                return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(Password) ?? ""} -{(int)SshVersion}";
+            return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
         }
 
         [JsonIgnore]

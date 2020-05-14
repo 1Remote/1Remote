@@ -31,7 +31,7 @@ namespace PRM.Core.DB
 
         private static readonly object Locker = new object();
         private List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server, com.github.xiangyuecn.rsacsharp.RSA rsa = null)
+        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
         {
             // reflect all the child class
             lock (Locker)
@@ -44,9 +44,6 @@ namespace PRM.Core.DB
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
                 
-                if (rsa == null)
-                    rsa = SystemConfig.GetInstance().DataSecurity.Rsa;
-
                 // get instance form json string
                 foreach (var serverAbstract in _baseList)
                 {

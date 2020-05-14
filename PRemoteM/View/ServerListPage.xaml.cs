@@ -32,7 +32,7 @@ namespace PRM.View
         }
         public ServerListPage(VmServerListPage vmDataContext)
         {
-            Host = vmDataContext.Host;
+            Host = vmDataContext.Vm;
             VmDataContext = vmDataContext;
             InitializeComponent();
             DataContext = VmDataContext;

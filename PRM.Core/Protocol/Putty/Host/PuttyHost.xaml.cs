@@ -173,29 +173,29 @@ namespace PRM.Core.Protocol.Putty.Host
                 };
                 _topTransparentPanel.BringToFront();
 
-//#if DEBUG
-//                _topTransparentPanel.LostFocus += (a, b) =>
-//                {
-//                    Console.WriteLine("_topTransparentPanel.LostFocus");
-//                };
-//                _topTransparentPanel.GotFocus += (a, b) =>
-//                {
-//                    Console.WriteLine("_puttyMasterPanel.Focus");
-//                };
-//                _puttyMasterPanel.LostFocus += (a, b) =>
-//                {
-//                    Console.WriteLine("_puttyMasterPanel.LostFocus");
-//                };
-//                _puttyMasterPanel.GotFocus += (a, b) =>
-//                {
-//                    Console.WriteLine("_puttyMasterPanel.Focus");
-//                    MakeItFocus();
-//                };
-//#endif
+                //#if DEBUG
+                //                _topTransparentPanel.LostFocus += (a, b) =>
+                //                {
+                //                    Console.WriteLine("_topTransparentPanel.LostFocus");
+                //                };
+                //                _topTransparentPanel.GotFocus += (a, b) =>
+                //                {
+                //                    Console.WriteLine("_puttyMasterPanel.Focus");
+                //                };
+                //                _puttyMasterPanel.LostFocus += (a, b) =>
+                //                {
+                //                    Console.WriteLine("_puttyMasterPanel.LostFocus");
+                //                };
+                //                _puttyMasterPanel.GotFocus += (a, b) =>
+                //                {
+                //                    Console.WriteLine("_puttyMasterPanel.Focus");
+                //                    MakeItFocus();
+                //                };
+                //#endif
                 MakeItFocus();
             });
         }
-        
+
         public void ClosePutty()
         {
             DeletePuttySessionInRegTable();
@@ -377,7 +377,7 @@ namespace PRM.Core.Protocol.Putty.Host
         {
             if (PuttyHandle != IntPtr.Zero)
             {
-                PostMessage(PuttyHandle, (uint) msg.Msg, msg.WParam, msg.LParam);
+                PostMessage(PuttyHandle, (uint)msg.Msg, msg.WParam, msg.LParam);
             }
 
             return true;

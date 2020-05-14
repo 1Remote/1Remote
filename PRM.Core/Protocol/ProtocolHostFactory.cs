@@ -23,9 +23,9 @@ namespace PRM.Core.Protocol
                         var host = new AxMsRdpClient09Host(server,width,height);
                         return host;
                     }
-                case ProtocolServerSSH _:
+                case ProtocolServerSSH ssh:
                     {
-                        var host = new PuttyHost((IPuttyConnectable)server);
+                        var host = new PuttyHost(ssh);
                         return host;
                     }
                 default:
@@ -37,19 +37,18 @@ namespace PRM.Core.Protocol
         {
             switch (server)
             {
-                case ProtocolServerRDP _:
-                {
-                    var rdp = ((ProtocolServerRDP) server);
-                    if (rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
-                        return true;
-                    if (rdp.IsConnWithFullScreen)
-                        return true;
-                    return rdp.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false;
-                }
+                case ProtocolServerRDP rdp:
+                    {
+                        if (rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
+                            return true;
+                        if (rdp.IsConnWithFullScreen)
+                            return true;
+                        return rdp.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false;
+                    }
                 case ProtocolServerSSH _:
-                {
-                    return false;
-                }
+                    {
+                        return false;
+                    }
                 default:
                     throw new NotImplementedException();
             }

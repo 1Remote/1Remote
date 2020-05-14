@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using PRM.Core;
 using PRM.Core.DB;
@@ -10,10 +11,11 @@ namespace PRM.ViewModel
 {
     public class VmServerListPage : NotifyPropertyChangedBase
     {
-        public readonly VmMain Host;
+        public readonly VmMain Vm;
         public VmServerListPage(VmMain vmMain)
         {
-            Host = vmMain;
+            Debug.Assert(vmMain != null);
+            Vm = vmMain;
             RebuildVmServerCardList();
             Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
             {
@@ -33,7 +35,6 @@ namespace PRM.ViewModel
             }
         }
 
-        
         private VmServerCard _selectedServerCard = null;
         public VmServerCard SelectedServerCard
         {
