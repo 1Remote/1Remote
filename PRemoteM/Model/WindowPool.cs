@@ -36,7 +36,7 @@ namespace PRM.Model
             // TODO 删掉测试代码
             if (server is ProtocolServerRDP)
             {
-                ((ProtocolServerRDP) server).AutoSetting = new ProtocolServerRDP.LocalSetting()
+                ((ProtocolServerRDP)server).AutoSetting = new ProtocolServerRDP.LocalSetting()
                 {
                     FullScreen_LastSessionIsFullScreen = false,
                 };
@@ -196,7 +196,6 @@ namespace PRM.Model
                         _lastTabToken = token;
                     }
                     tab.Activate();
-                    var size = tab.GetTabContentSize();
                     tab.Vm.Items.Add(new TabItemViewModel()
                     {
                         Content = host,

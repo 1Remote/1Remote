@@ -190,22 +190,8 @@ namespace PRM.Core.Model
                                 // encrypt old data
                                 foreach (var psb in protocolServerBases)
                                 {
-                                    // encrypt pwd
-                                    switch (psb)
-                                    {
-                                        case ProtocolServerNone _:
-                                            break;
-                                        case ProtocolServerRDP rdp:
-                                            rdp.Password = rsa.Encode(rdp.Password);
-                                            break;
-                                        case ProtocolServerSSH ssh:
-                                            ssh.Password = rsa.Encode(ssh.Password);
-                                            break;
-                                        default:
-                                            throw new ArgumentOutOfRangeException($"Protocol not support");
-                                    }
+                                    EncryptPwd(psb);
                                     OnRsaProgress?.Invoke(++val, max);
-
                                     Server.AddOrUpdate(psb);
                                     OnRsaProgress?.Invoke(++val, max);
                                 }
@@ -263,17 +249,7 @@ namespace PRM.Core.Model
                             foreach (var psb in protocolServerBases)
                             {
                                 // decrypt pwd
-                                switch (psb)
-                                {
-                                    case ProtocolServerRDP rdp:
-                                        rdp.Password = rsa.DecodeOrNull(rdp.Password);
-                                        break;
-                                    case ProtocolServerSSH ssh:
-                                        ssh.Password = rsa.DecodeOrNull(ssh.Password);
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException($"Protocol not support");
-                                }
+                                DecryptPwd(psb);
                                 OnRsaProgress?.Invoke(++val, max);
 
                                 // decrypt json
@@ -299,6 +275,101 @@ namespace PRM.Core.Model
             }
         }
 
+        public void EncryptPwd(ProtocolServerBase server)
+        {
+            var rsa = Rsa;
+            if (rsa != null)
+                switch (server)
+                {
+                    case ProtocolServerRDP rdp:
+                        Debug.Assert(rsa.DecodeOrNull(rdp.Password) == null);
+                        rdp.Password = rsa.Encode(rdp.Password);
+                        break;
+                    case ProtocolServerSSH ssh:
+                        Debug.Assert(rsa.DecodeOrNull(ssh.Password) == null);
+                        ssh.Password = rsa.Encode(ssh.Password);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                }
+        }
+        
+        public void DecryptPwd(ProtocolServerBase server)
+        {
+            var rsa = Rsa;
+            if (rsa != null)
+            {
+                switch (server)
+                {
+                    case ProtocolServerRDP rdp:
+                        Debug.Assert(rsa.DecodeOrNull(rdp.Password) != null);
+                        rdp.Password = rsa.DecodeOrNull(rdp.Password);
+                        break;
+                    case ProtocolServerSSH ssh:
+                        Debug.Assert(rsa.DecodeOrNull(ssh.Password) != null);
+                        ssh.Password = rsa.DecodeOrNull(ssh.Password);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                }
+            }
+        }
+
+        public void EncryptInfo(ProtocolServerBase server)
+        {
+            var rsa = Rsa;
+            if (rsa != null)
+            {
+                Debug.Assert(rsa.DecodeOrNull(server.DispName) == null);
+                server.DispName = rsa.Encode(server.DispName);
+                server.GroupName = rsa.Encode(server.GroupName);
+                switch (server)
+                {
+                    case ProtocolServerNone _:
+                        break;
+                    case ProtocolServerRDP _:
+                    case ProtocolServerSSH _:
+                        var p = (ProtocolServerWithAddrPortUserPwdBase) server;
+                        if (!string.IsNullOrEmpty(p.UserName))
+                            p.UserName = rsa.Encode(p.UserName);
+                        if (!string.IsNullOrEmpty(p.Address))
+                            p.Address = rsa.Encode(p.Address);
+                        if (!string.IsNullOrEmpty(p.Password))
+                            p.Password = rsa.Encode(p.Password);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                }
+            }
+        }
+
+        public void DecryptInfo(ProtocolServerBase server)
+        {
+            var rsa = Rsa;
+            if (rsa != null)
+            {
+                Debug.Assert(rsa.DecodeOrNull(server.DispName) != null);
+                server.DispName = rsa.DecodeOrNull(server.DispName);
+                server.GroupName = rsa.DecodeOrNull(server.GroupName);
+                switch (server)
+                {
+                    case ProtocolServerNone _:
+                        break;
+                    case ProtocolServerRDP _:
+                    case ProtocolServerSSH _:
+                        var p = (ProtocolServerWithAddrPortUserPwdBase) server;
+                        if (!string.IsNullOrEmpty(p.UserName))
+                            p.UserName = rsa.DecodeOrNull(p.UserName);
+                        if (!string.IsNullOrEmpty(p.Address))
+                            p.Address = rsa.DecodeOrNull(p.Address);
+                        if (!string.IsNullOrEmpty(p.Password))
+                            p.Password = rsa.DecodeOrNull(p.Password);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                }
+            }
+        }
 
         #region Interface
         private const string SectionName = "DataSecurity";

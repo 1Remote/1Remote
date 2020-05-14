@@ -7,7 +7,6 @@
         xmlns:dragablzTab="clr-namespace:PRM.Core.Ulits.DragablzTab" 
         xmlns:view="clr-namespace:PRM.View"
         mc:Ignorable="d"
-        WindowState="{Binding WindowState}"
         Title="Host - PRemoteM" Height="600" Width="800">
 
     <WindowChrome.WindowChrome>
@@ -89,6 +88,7 @@
 
             <DataTemplate DataType="{x:Type dragablzTab:TabItemViewModel}">
                 <!--leave some border of remote desktop-->
+                <!--TODO 从同一位置读取该值-->
                 <Grid Margin="2 0 2 2">
                     <ContentControl Content="{Binding Content}" Background="Transparent"/>
                 </Grid>

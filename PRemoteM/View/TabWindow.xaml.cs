@@ -76,7 +76,6 @@ namespace PRM.View
             }
         }
 
-
         private void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Vm?.SelectedItem != null)
@@ -88,6 +87,7 @@ namespace PRM.View
             }
         }
 
+        //<!--TODO 从同一位置读取该值-->
         protected Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
         public Size GetTabContentSize()
         {

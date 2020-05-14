@@ -65,8 +65,10 @@ namespace Shawn.Ulits.RDP
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            // TODO 密钥的 RSA 解密
-            secured.ClearTextPassword = _rdpServer.Password;
+            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
+                secured.ClearTextPassword = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(_rdpServer.Password) ?? "";
+            else
+                secured.ClearTextPassword = _rdpServer.Password;
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
             #endregion
 

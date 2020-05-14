@@ -12,6 +12,7 @@ using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
 using PRM.View;
@@ -28,6 +29,10 @@ namespace PRM.ViewModel
             Server = server;
             Host = host;
             IsAddMode = server.GetType() == typeof(ProtocolServerNone);
+
+            // decrypt pwd
+            if(server.GetType() != typeof(ProtocolServerNone))
+                SystemConfig.GetInstance().DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -61,7 +66,7 @@ namespace PRM.ViewModel
 
 
 
-        
+
         private ProtocolServerBase _server = null;
         public ProtocolServerBase Server
         {
@@ -117,8 +122,10 @@ namespace PRM.ViewModel
                 if (_cmdSave == null)
                     _cmdSave = new RelayCommand((o) =>
                     {
+                        // encrypt pwd
+                        SystemConfig.GetInstance().DataSecurity.EncryptPwd(Server);
                         Global.GetInstance().ServerListUpdate(Server);
-                        Host.Host.DispPage = null;
+                        Host.Vm.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -135,7 +142,7 @@ namespace PRM.ViewModel
                 if (_cmdCancel == null)
                     _cmdCancel = new RelayCommand((o) =>
                     {
-                        Host.Host.DispPage = null;
+                        Host.Vm.DispPage = null;
                     });
                 return _cmdCancel;
             }
@@ -186,14 +193,16 @@ namespace PRM.ViewModel
             if (IsAddMode)
             {
                 server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
+                // switch protocol and hold uname pwd.
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
                     && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                     server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
+                // switch just hold base info
                 else
                     server.Update(Server, typeof(ProtocolServerBase));
             }
-            var formNmae = ProtocolSelected.GetType().Name + "Form";
-            var forms = types.Where(x => x.Name == formNmae).ToList();
+            var formName = ProtocolSelected.GetType().Name + "Form";
+            var forms = types.Where(x => x.Name == formName).ToList();
             if (forms.Count == 1)
             {
                 var t = forms[0];

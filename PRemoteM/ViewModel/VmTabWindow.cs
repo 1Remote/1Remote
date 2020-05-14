@@ -18,23 +18,19 @@ namespace PRM.ViewModel
     public class VmTabWindow : NotifyPropertyChangedBase
     {
         public readonly string Token;
-
-        private readonly ObservableCollection<TabItemViewModel> _items = new ObservableCollection<TabItemViewModel>();
-        public ObservableCollection<TabItemViewModel> Items
+        public VmTabWindow(string token)
         {
-            get => _items;
-            //set
-            //{
-            //    SetAndNotifyIfChanged(nameof(Items), ref _items, value);
-            //    RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            //    Items.CollectionChanged += (sender, args) => 
-            //        RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            //}
+            Token = token;
+            Items.CollectionChanged += (sender, args) =>
+                RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
 
-        public Visibility BtnCloseAllVisibility => 
-            Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-        
+
+
+        public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
+
+        public Visibility BtnCloseAllVisibility => Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+
         private TabItemViewModel _selectedItem = new TabItemViewModel();
         public TabItemViewModel SelectedItem
         {
@@ -44,27 +40,6 @@ namespace PRM.ViewModel
                 SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
                 SelectedItem?.Content?.MakeItFocus();
             }
-        }
-
-
-        private readonly IInterTabClient _interTabClient = new InterTabClient();
-        public IInterTabClient InterTabClient => _interTabClient;
-
-
-        
-        private WindowState _windowState = new WindowState();
-        public WindowState WindowState
-        {
-            get => _windowState;
-            set => SetAndNotifyIfChanged(nameof(WindowState), ref _windowState, value);
-        }
-
-
-        public VmTabWindow(string token)
-        {
-            Token = token;
-            Items.CollectionChanged += (sender, args) =>
-                RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
 
 
@@ -79,7 +54,7 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        if(this.SelectedItem?.Content?.CanResizeNow() ?? false)
+                        if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
                             WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
@@ -114,7 +89,7 @@ namespace PRM.ViewModel
             var v = new TabWindow(token);
             var vm = v.Vm;
             WindowPool.AddTab(v);
-            return new NewTabHost<Window>(v, v.TabablzControl);            
+            return new NewTabHost<Window>(v, v.TabablzControl);
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
