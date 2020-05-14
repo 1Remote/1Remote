@@ -16,6 +16,13 @@ namespace PRM.ViewModel
         {
             Debug.Assert(vmMain != null);
             Vm = vmMain;
+
+            var lastSelectedGroup = "";
+            if (!string.IsNullOrEmpty(SystemConfig.GetInstance().Locality.MainWindowTabSelected))
+            {
+                lastSelectedGroup = SystemConfig.GetInstance().Locality.MainWindowTabSelected;
+            }
+
             RebuildVmServerCardList();
             Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
             {
@@ -28,10 +35,9 @@ namespace PRM.ViewModel
                     RebuildVmServerCardList();
             };
 
-            if (!string.IsNullOrEmpty(SystemConfig.GetInstance().Locality.MainWindowTabSelected)
-                && ServerGroupList.Contains(SystemConfig.GetInstance().Locality.MainWindowTabSelected))
+            if (!string.IsNullOrEmpty(lastSelectedGroup) && ServerGroupList.Contains(lastSelectedGroup))
             {
-                SelectedGroup = SystemConfig.GetInstance().Locality.MainWindowTabSelected;
+                SelectedGroup = lastSelectedGroup;
             }
         }
 

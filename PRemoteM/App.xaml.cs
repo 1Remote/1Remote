@@ -102,32 +102,46 @@ namespace PersonalRemoteManager
                 
                 // config create instance (settings & langs)
                 SystemConfig.Create(this.Resources);
-
-                // db init
-                Server.Init();
-                Config.Init();
-
-                // config init
-                //SystemConfig.Init();
-
                 // global init
                 Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
 
+
                 // run check
-                var rsa = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
-                switch (rsa)
+
+                // check if Db is ok
+                {
+                    try
+                    {
+                        Server.Init();
+                    }
+                    catch (Exception exception)
+                    {
+                        // todo 跳转到数据库配置页面
+                        throw;
+                    }
+                }
+
+                // check if Rsa is ok
+                var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
+                switch (ret)
                 {
                     case SystemConfigDataSecurity.ERsaStatues.Ok:
                         break;
-                    // TODO 提示密钥有问题
-                    case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                        break;
-                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                        break;
-                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                        break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        switch (ret)
+                        {
+                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                                break;
+                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                                break;
+                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                                break;
+                        }
+                        // todo 跳转到 RSA 配置页面
+                        break;
                 }
 
                 #endregion
@@ -154,6 +168,10 @@ namespace PersonalRemoteManager
                 // quick search init 
                 InitQuickSearch();
                 #endregion
+
+                
+                // load data
+                Global.GetInstance().ReloadServers();
             }
             catch (Exception ex)
             {

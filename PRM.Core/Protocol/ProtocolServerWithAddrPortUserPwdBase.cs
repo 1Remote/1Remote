@@ -21,18 +21,12 @@ namespace PRM.Core.Protocol
         }
 
         #region Conn
-        private string _address = "";
 
+        private string _address = "";
         public string Address
         {
             get => _address;
-            set
-            {
-                var v = value?.Trim();
-                if (string.IsNullOrEmpty(v))
-                    throw new ArgumentException("can't be empty!");
-                SetAndNotifyIfChanged(nameof(Address), ref _address, v);
-            }
+            set => SetAndNotifyIfChanged(nameof(Address), ref _address, value);
         }
 
 

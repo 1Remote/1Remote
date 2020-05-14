@@ -28,7 +28,6 @@ namespace PRM.Core.Model
 
         private Global()
         {
-            ReloadServers();
             SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(SystemConfig.DataSecurity.DbPath))
@@ -106,7 +105,7 @@ namespace PRM.Core.Model
                 if (id > 0)
                 {
                     protocolServer.OnCmdConn += OnCmdConn;
-                    ServerList.Add(protocolServer);
+                    ReloadServers();
                 }
             }
         }
@@ -116,7 +115,10 @@ namespace PRM.Core.Model
         {
             Debug.Assert(server.Id > 0);
             if (Server.Delete(server.Id))
+            {
                 ServerList.Remove(server);
+                ReloadServers();
+            }
         }
 
         #endregion

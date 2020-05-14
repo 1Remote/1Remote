@@ -259,33 +259,16 @@
             </Border>
         </Grid>
 
-
-
-        <Grid Name="BottomMask" VerticalAlignment="Bottom" Height="30" Opacity="0.9">
+        <Grid VerticalAlignment="Bottom" Height="30" Background="{DynamicResource MainColor1Brush}">
             <Grid.Style>
                 <Style TargetType="Grid">
-                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                    <Setter Property="Opacity" Value="0.8"></Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
-                            <Setter Property="Background" Value="Transparent"></Setter>
+                            <Setter Property="Opacity" Value="0.3"></Setter>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
-                            <Setter Property="Background" Value="Transparent"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-        </Grid>
-        <Grid VerticalAlignment="Bottom" Height="30" Opacity="0.3" Background="{DynamicResource MainColor1Brush}">
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Visible"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Hidden"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
-                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                            <Setter Property="Opacity" Value="0.3"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

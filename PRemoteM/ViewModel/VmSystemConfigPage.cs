@@ -5,12 +5,14 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using PersonalRemoteManager;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
 using PRM.Core.Ulits;
 using PRM.View;
 using Shawn.Ulits.PageHost;
+using SQLite;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
@@ -33,13 +35,6 @@ namespace PRM.ViewModel
         }
 
         public SystemConfig SystemConfig { get; set; }
-
-        private SystemConfigGeneral _general;
-        public SystemConfigGeneral General
-        {
-            get => _general;
-            set => SetAndNotifyIfChanged(nameof(General), ref _general, value);
-        }
 
         private bool _tabIsEnabled = true;
         public bool TabIsEnabled
@@ -98,6 +93,41 @@ namespace PRM.ViewModel
                 {
                     _cmdSaveAndGoBack = new RelayCommand((o) =>
                     {
+                        {
+                            try
+                            {
+                                Server.Init();
+                            }
+                            catch (Exception ee)
+                            {
+                                MessageBox.Show(
+                                    SystemConfig.GetInstance().Language
+                                        .GetText("system_options_data_security_error_can_not_open") + ": " +
+                                    SystemConfig.DataSecurity.DbPath);
+                                return;
+                            }
+                        }
+
+
+                        var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
+                        switch (ret)
+                        {
+                            case SystemConfigDataSecurity.ERsaStatues.Ok:
+                                break;
+                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                                return;
+                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                                return;
+                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                                return;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+
                         Host.DispPage = null;
 
                         /***                update config                ***/
@@ -106,6 +136,7 @@ namespace PRM.ViewModel
                         SystemConfig.GetInstance().QuickConnect.Save();
                         SystemConfig.GetInstance().DataSecurity.Save();
 
+                        Global.GetInstance().ReloadServers();
                     });
                 }
                 return _cmdSaveAndGoBack;

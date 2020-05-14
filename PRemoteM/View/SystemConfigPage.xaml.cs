@@ -47,13 +47,13 @@ namespace PRM.View
                 {
                     using (var db = new SQLiteConnection(dlg.FileName))
                     {
+                        db.CreateTable<Server>();
                     }
                     VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName;
                 }
                 catch (Exception ee)
                 {
-                    MessageBox.Show(SystemConfig.GetInstance().Language
-                        .GetText("system_options_general_item_database_can_not_open"));
+                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
                 }
             }
         }
@@ -69,14 +69,19 @@ namespace PRM.View
             };
             if (dlg.ShowDialog() == true)
             {
-                try
+                var res = SystemConfig.GetInstance().DataSecurity.ValidateRsa(dlg.FileName);
+                switch (res)
                 {
-                    // TODO 验证私钥正确性
-                }
-                catch (Exception ee)
-                {
-                    //MessageBox.Show(SystemConfig.GetInstance().Language
-                    //    .GetText("system_options_general_item_database_can_not_open"));
+                    case SystemConfigDataSecurity.ERsaStatues.Ok:
+                        SystemConfig.GetInstance().DataSecurity.RsaPrivateKeyPath = dlg.FileName;
+                        break;
+                    case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
+                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
+                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
+                        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -188,7 +193,9 @@ namespace PRM.View
     }
 
 
-
+    /// <summary>
+    /// key board key A -> string "A"
+    /// </summary>
     public class Key2KeyStringConverter : IValueConverter
     {
         // 实现接口的两个方法  
@@ -197,6 +204,25 @@ namespace PRM.View
         {
             Key k = (Key)value;
             return k.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+    }
+
+    
+
+    public class StringIsEmpty2BoolConverter : IValueConverter
+    {
+        // 实现接口的两个方法  
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string str = value?.ToString();
+            return string.IsNullOrEmpty(str);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

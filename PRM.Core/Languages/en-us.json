@@ -24,8 +24,6 @@
   // system options
   "system_options_general_title": "General",
   "system_options_general_item_language": "Language",
-  "system_options_general_item_database": "Database",
-  "system_options_general_item_database_can_not_open": "File is not a database or file is a encrypted database!",
   "system_options_general_item_start": "Startup",
   "system_options_general_item_start_when_win_login": "Run automatically at OS startup",
   "system_options_general_item_start_minimized": "Start minimized",
@@ -39,9 +37,21 @@
 
   "system_options_quick_title": "Quick connect",
   "system_options_quick_description": "Quick connect allow you hang up a quick connect bar by hot key, then you can type the keyword and start connection by press enter key",
-  "system_options_quick_title_enable": "Enable",
-  "system_options_quick_title_hot_key": "Hot key",
+  "system_options_quick_enable": "Enable",
+  "system_options_quick_hot_key": "Hot key",
 
+  "system_options_data_security_title": "Data & Security",
+  "system_options_data_security_database": "Database",
+  "system_options_data_security_rsa_title": "RSA encryption",
+  "system_options_data_security_rsa_encrypt": "Encrypt",
+  "system_options_data_security_rsa_decrypt": "Decrypt",
+  "system_options_data_security_rsa_public_key": "Public key",
+  "system_options_data_security_rsa_private_key_path": "Private key path",
+  "system_options_data_security_info_data_processing": "Data processing, do not close app.",
+  "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
+  "system_options_data_security_error_can_not_open": "File is not a database or file is a encrypted database!",
+  "system_options_data_security_error_rsa_private_key_not_found": "Can't find the RSA private key!",
+  "system_options_data_security_error_rsa_private_key_not_match": "RSA private key not match the public key!",
 
 
   // server card operate
