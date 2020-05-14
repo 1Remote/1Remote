@@ -26,6 +26,12 @@ namespace PRM.Core.Protocol
         public abstract void Conn();
         public abstract void DisConn();
         public abstract void GoFullScreen();
+        public virtual bool CanResizeNow()
+        {
+            return true;
+        }
+        public Action OnCanResizeNowChanged { get; set; }= null;
+
         public abstract bool IsConnected();
         public abstract bool IsConnecting();
 

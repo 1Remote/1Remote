@@ -319,6 +319,13 @@ namespace Shawn.Ulits.RDP
             _rdp.FullScreen = true;
         }
 
+        public override bool CanResizeNow()
+        {
+            if (IsConnecting() == true)
+                return false;
+            return IsConnected();
+        }
+
         public override bool IsConnected()
         {
             return this._isDisconned == false && _rdp?.Connected > 0;
@@ -394,7 +401,7 @@ namespace Shawn.Ulits.RDP
                 // TODO 弹出非模态对话框，然后关闭 RDP 窗体
                 System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            base.OnClosed.Invoke(_rdpServer.Id);
+            base.OnClosed?.Invoke(_rdpServer.Id);
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
@@ -407,6 +414,7 @@ namespace Shawn.Ulits.RDP
 
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
+            base.OnCanResizeNowChanged?.Invoke();
         }
 
         private void RdpOnOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
