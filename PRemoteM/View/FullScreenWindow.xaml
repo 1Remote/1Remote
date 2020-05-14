@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PRM.View"
         mc:Ignorable="d"
+        ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Title="FullScreenWindow" Height="480" Width="600">
     <Grid Background="{DynamicResource MainColor1Brush}">

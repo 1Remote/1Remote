@@ -174,7 +174,16 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="ResizeMode" Value="CanResize"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                    <Setter Property="ResizeMode" Value="NoResize"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
 
     <Grid Background="{DynamicResource MainBgColorBrush}">
         <Grid.RowDefinitions>
@@ -228,8 +237,19 @@
                 <Rectangle Width="15"  Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
             </Button>
 
-            <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
+            <Button Name="BtnMaximize" Focusable="False">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Grid>
+
                     <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
                           Stretch="Uniform" >
                         <Path.Style>
@@ -243,8 +263,8 @@
                         </Path.Style>
                     </Path>
 
-                    <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" 
-                          Data="F1 M 0.000000 -77.000000 L 88.000000 -77.000000 L 88.000000 -11.000000 L 0.000000 -11.000000 Z M 82.500000 -16.500000 L 82.500000 -71.500000 L 5.500000 -71.500000 L 5.500000 -16.500000 Z M 77.000000 -66.000000 L 77.000000 -22.000000 L 11.000000 -22.000000 L 11.000000 -66.000000 Z M 71.500000 -27.500000 L 71.500000 -60.500000 L 16.500000 -60.500000 L 16.500000 -27.500000 Z "
+                    <Path Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Height="15" Width="15" 
+                          Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
                           Stretch="Uniform" >
                         <Path.Style>
                             <Style TargetType="Path">
@@ -261,12 +281,23 @@
             </Button>
 
 
-            <Button Command="{Binding CmdHostGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Command="{Binding CmdHostGoFullScreen}" 
+                    CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
             </Button>
-
+            
 
             <Button Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
                 <Button.Style>

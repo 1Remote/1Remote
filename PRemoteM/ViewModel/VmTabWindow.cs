@@ -79,27 +79,11 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
+                        if(this.SelectedItem?.Content?.CanResizeNow() ?? false)
+                            WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;
-            }
-        }
-
-
-        private RelayCommand _cmdSwitchFullScreenNormal;
-        public RelayCommand CmdSwitchFullScreenNormal
-        {
-            get
-            {
-                if (_cmdSwitchFullScreenNormal == null)
-                {
-                    _cmdSwitchFullScreenNormal = new RelayCommand((o) =>
-                    {
-                        this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-                    }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
-                }
-                return _cmdSwitchFullScreenNormal;
             }
         }
 
