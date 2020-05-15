@@ -149,14 +149,14 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource MainColor2LighterBrush}"></Setter>
+                                        <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
                                     </Trigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="">
-                                        <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                        <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
-                                        <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                        <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -172,7 +172,7 @@
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding ServerGroupList}" 
                                     SelectedValue="{Binding SelectedGroup}"
-                                    Background="{StaticResource MainColor1Brush}"
+                                    Background="{DynamicResource MainColor1Brush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -228,10 +228,10 @@
                                             </Setter.Value>
                                         </Setter>
 
-                                        <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
+                                                <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>

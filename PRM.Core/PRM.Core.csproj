@@ -171,6 +171,7 @@
     <Resource Include="Ulits\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BuildVersionGenerator.ps1" />
     <None Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -263,6 +264,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>PowerShell.exe $(ProjectDir)BuildVersionGenerator.ps1</PreBuildEvent>
+    <PreBuildEvent>PowerShell  -ExecutionPolicy RemoteSigned -file "$(ProjectDir)BuildVersionGenerator.ps1"</PreBuildEvent>
   </PropertyGroup>
 </Project>
