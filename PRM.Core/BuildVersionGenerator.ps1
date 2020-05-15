@@ -3,7 +3,7 @@ $SolutionPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 echo $SolutionPath 
 #获取所有的 PRMVersion.cs 文件
 $FileList = Get-ChildItem $SolutionPath -Recurse PRMVersion.cs
-$time = Get-Date -Format 'yyyyMMddHHmmss'
+$time = Get-Date -Format 'yyMMddHHmm'
 $oldVersion = "public const string ReleaseDate = "".*"";"
 $newVersion = "public const string ReleaseDate = """ + $time + """;"
 echo $newVersion 
