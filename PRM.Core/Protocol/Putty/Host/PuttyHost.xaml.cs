@@ -69,6 +69,7 @@ namespace PRM.Core.Protocol.Putty.Host
         private IntPtr _puttyHandle = IntPtr.Zero;
         private System.Windows.Forms.Panel _puttyMasterPanel = null;
         private TransparentPanel _topTransparentPanel = null;
+        private Task _taksTopPanelFocus = null;
         private PuttyOptions _puttyOption = null;
         private readonly IPuttyConnectable _protocolPuttyBase = null;
 
@@ -172,6 +173,8 @@ namespace PRM.Core.Protocol.Putty.Host
                     PuttyHandle = _puttyHandle
                 };
                 _topTransparentPanel.BringToFront();
+
+
 
                 //#if DEBUG
                 //                _topTransparentPanel.LostFocus += (a, b) =>
@@ -319,28 +322,40 @@ namespace PRM.Core.Protocol.Putty.Host
             return false;
         }
 
+        private static readonly object Locker1 = new object();
+        private static readonly object Locker2 = new object();
         public override void MakeItFocus()
         {
             if (_topTransparentPanel != null)
             {
-                // hack technology:
-                // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
-                // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
-                var t = new Task(() =>
+                lock (Locker1)
                 {
-                    bool flag = false;
-                    int nCount = 1000; // don't let it runs forever.
-                    while (!flag && nCount > 0)
+                    // hack technology:
+                    // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
+                    // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
+
+                    if (_taksTopPanelFocus?.Status != TaskStatus.Running)
                     {
-                        --nCount;
-                        Dispatcher.Invoke(() =>
+                        _taksTopPanelFocus = new Task(() =>
                         {
-                            flag = _topTransparentPanel.Focus();
+                            lock (Locker2)
+                            {
+                                bool flag = false;
+                                int nCount = 50; // don't let it runs forever.
+                                while (!flag && nCount > 0)
+                                {
+                                    --nCount;
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        flag = _topTransparentPanel.Focus();
+                                    });
+                                    Thread.Sleep(10);
+                                }
+                            }
                         });
-                        Thread.Sleep(20);
+                        _taksTopPanelFocus.Start();
                     }
-                });
-                t.Start();
+                }
             }
         }
     }
