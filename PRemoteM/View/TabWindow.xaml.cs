@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -54,7 +56,6 @@ namespace PRM.View
             {
                 Vm?.SelectedItem?.Content?.MakeItFocus();
             };
-
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
@@ -83,7 +84,16 @@ namespace PRM.View
                 this.Title = Vm.SelectedItem.Header + " - " + "PRemoteM";
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
-                Vm?.SelectedItem.Content?.MakeItFocus();
+                var t = new Task(() =>
+                {
+                    Thread.Sleep(100);
+                    Dispatcher.Invoke(() =>
+                    {
+                        if(IsActive)
+                            Vm?.SelectedItem?.Content?.MakeItFocus();
+                    });
+                });
+                t.Start();
             }
         }
 
