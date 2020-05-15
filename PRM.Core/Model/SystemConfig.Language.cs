@@ -216,7 +216,9 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            StopAutoSave = true;
             CurrentLanguageCode = _ini.GetValue("lang", _sectionName, DefaultLanguageCode);
+            StopAutoSave = false;
         }
 
         public override void Update(SystemConfigBase newConfig)
