@@ -42,6 +42,10 @@ namespace PRM.ViewModel
             }
         }
 
+        #region drag drop tab
+        private readonly IInterTabClient _interTabClient = new InterTabClient();
+        public IInterTabClient InterTabClient => _interTabClient;
+        #endregion
 
 
         #region CMD

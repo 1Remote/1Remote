@@ -53,6 +53,7 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            StopAutoSave = true;
             Enable = _ini.GetValue(nameof(Enable).ToLower(), _sectionName, Enable);
             uint modifiers = 0;
             uint key = 0;
@@ -65,6 +66,7 @@ namespace PRM.Core.Model
                 HotKeyModifiers = ModifierKeys.Alt;
                 HotKeyKey = Key.M;
             }
+            StopAutoSave = false;
         }
 
         public override void Update(SystemConfigBase newConfig)

@@ -66,20 +66,24 @@ namespace PRM.Core.Model
         private const string _sectionName = "General";
         public override void Save()
         {
+            StopAutoSave = true;
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
+            StopAutoSave = false;
             _ini.Save();
         }
 
         public override void Load()
         {
+            StopAutoSave = true;
             AppStartAutomatically = _ini.GetValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically);
             AppStartMinimized = _ini.GetValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString()), out var so))
             {
                 ServerOrderBy = so;
             }
+            StopAutoSave = false;
         }
 
         public override void Update(SystemConfigBase newConfig)
