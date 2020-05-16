@@ -132,6 +132,7 @@ namespace PRM.ViewModel
         {
             Servers.Clear();
 
+            var tmp = new List<ProtocolServerBaseInSearchBox>();
             if (!string.IsNullOrEmpty(keyWord))
             {
                 var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
@@ -151,8 +152,8 @@ namespace PRM.ViewModel
                     var subTitle = item.SubTitle;
                     for (var i = 0; i < keyWordIsMatch.Count; i++)
                     {
-                        var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(dispName, keyWords[i], out var m1);
-                        var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(subTitle, keyWords[i], out var m2);
+                        var f1 = dispName.IsMatchPinyinKeyWords(keyWords[i], out var m1);
+                        var f2 = subTitle.IsMatchPinyinKeyWords(keyWords[i], out var m2);
                         mDispName.Add(m1);
                         mSubTitle.Add(m2);
                         keyWordIsMatch[i] = f1 || f2;
@@ -226,15 +227,21 @@ namespace PRM.ViewModel
                             }
                         }
 
-                        Servers.Add(semite);
+                        tmp.Add(semite);
                     }
                 }
             }
 
-            if (!Servers.Any())
+            var odometer = tmp.OrderByDescending(x => x.Server.LastConnTime);
+
+            if (!odometer.Any())
                 PopupIsOpen = false;
             else
             {
+                foreach (var searchBox in odometer)
+                {
+                    Servers.Add(searchBox);
+                }
                 SelectedServerIndex = 0;
                 PopupIsOpen = true;
             }
