@@ -46,6 +46,7 @@ namespace PRM.Core.Protocol.Putty
                 GridUserName.Visibility =
                 GridPwd.Visibility =
                 SpSsh.Visibility = Visibility.Visible;
+                PasswordBox.Password = ((ProtocolServerSSH)Vm).Password;
             }
         }
 
@@ -83,6 +84,12 @@ namespace PRM.Core.Protocol.Putty
                 if (Vm.GetType() == typeof(ProtocolServerSSH))
                     ((ProtocolServerSSH)Vm).PrivateKey = "";
             }
+        }
+
+        private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (Vm.GetType() == typeof(ProtocolServerSSH))
+                ((ProtocolServerSSH)Vm).Password = PasswordBox.Password;
         }
     }
 

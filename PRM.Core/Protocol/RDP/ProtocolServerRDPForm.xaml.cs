@@ -22,6 +22,7 @@ namespace PRM.Core.Protocol.RDP
             InitializeComponent();
             Vm = (ProtocolServerRDP)vm;
             DataContext = vm;
+            PasswordBox.Password = Vm.Password;
         }
 
         public override bool CanSave()
@@ -31,6 +32,11 @@ namespace PRM.Core.Protocol.RDP
                 && Vm.GetPort() > 0 && Vm.GetPort() < 65536)
                 return true;
             return false;
+        }
+
+        private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            Vm.Password = PasswordBox.Password;
         }
     }
     
