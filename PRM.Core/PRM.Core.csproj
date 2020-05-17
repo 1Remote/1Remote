@@ -88,7 +88,6 @@
     <Compile Include="Model\SystemConfig.QuickConnect.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Protocol\ControlAttachProperty.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
@@ -148,6 +147,7 @@
       <DependentUpon>PageHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ulits\PageHost\StoryboardHelpers.cs" />
+    <Compile Include="Ulits\PasswordEx\PasswordBoxEx.cs" />
     <Compile Include="Ulits\RSA\RSA.cs" />
     <Compile Include="Ulits\RSA\RSA_PEM.cs" />
     <Compile Include="Ulits\SetSelfStartingHelper.cs" />
@@ -242,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Ulits\PasswordEx\PasswordBoxEx.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Ulits\TinyPinyin.Net\RefInfo.txt" />
@@ -261,7 +265,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" />
+      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
