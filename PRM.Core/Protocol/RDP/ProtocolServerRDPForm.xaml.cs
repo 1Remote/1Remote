@@ -22,7 +22,6 @@ namespace PRM.Core.Protocol.RDP
             InitializeComponent();
             Vm = (ProtocolServerRDP)vm;
             DataContext = vm;
-            PasswordBox.Password = Vm.Password;
         }
 
         public override bool CanSave()
@@ -33,13 +32,8 @@ namespace PRM.Core.Protocol.RDP
                 return true;
             return false;
         }
-
-        private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
-        {
-            Vm.Password = PasswordBox.Password;
-        }
     }
-    
+
 
 
     public class ConverterERdpFullScreenFlag : IValueConverter
@@ -57,7 +51,7 @@ namespace PRM.Core.Protocol.RDP
         #endregion
     }
 
-    
+
 
 
     public class ConverterTrueWhenERdpFullScreen : IValueConverter
@@ -65,7 +59,7 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if ((ERdpFullScreenFlag) value == ERdpFullScreenFlag.Disable)
+            if ((ERdpFullScreenFlag)value == ERdpFullScreenFlag.Disable)
                 return false;
             return true;
         }
