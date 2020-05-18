@@ -11,7 +11,6 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolHostBase : UserControl
     {
-        public string ConnectionId => ProtocolServer.ConnectionId;
         public readonly ProtocolServerBase ProtocolServer;
         public Window ParentWindow { get; set; } = null;
 
@@ -21,6 +20,17 @@ namespace PRM.Core.Protocol
             CanFullScreen = canFullScreen;
         }
 
+
+        public string ConnectionId
+        {
+            get
+            {
+                if (ProtocolServer.OnlyOneInstance)
+                    return ProtocolServer.Id.ToString();
+                else
+                    return ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
+            }
+        }
 
         public bool CanFullScreen { get; protected set; }
 

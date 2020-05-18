@@ -59,7 +59,7 @@ namespace PRM.ViewModel
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                            WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.ConnectionId);
+                            WindowPool.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;

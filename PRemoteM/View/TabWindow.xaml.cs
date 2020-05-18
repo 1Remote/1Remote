@@ -49,7 +49,7 @@ namespace PRM.View
             {
                 if (Vm.SelectedItem != null)
                 {
-                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.ConnectionId);
+                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ConnectionId);
                 }
                 else
                 {
