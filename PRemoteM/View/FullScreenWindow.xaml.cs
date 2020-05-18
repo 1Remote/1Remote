@@ -37,7 +37,7 @@ namespace PRM.View
             {
                 if (ProtocolHostBase != null)
                 {
-                    WindowPool.DelProtocolHost(ProtocolHostBase.ProtocolServer.Id);
+                    WindowPool.DelProtocolHost(ProtocolHostBase.ProtocolServer.ConnectionId);
                 }
             };
         }

@@ -403,7 +403,7 @@ namespace Shawn.Ulits.RDP
                 // TODO 弹出非模态对话框，然后关闭 RDP 窗体
                 System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            base.OnClosed?.Invoke(_rdpServer.Id);
+            base.OnClosed?.Invoke(_rdpServer.ConnectionId);
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
@@ -528,7 +528,7 @@ namespace Shawn.Ulits.RDP
             ParentWindow.Height = _normalHeight;
             ParentWindow.Top = _normalTop;
             ParentWindow.Left = _normalLeft;
-            base.OnFullScreen2Window?.Invoke(_rdpServer.Id);
+            base.OnFullScreen2Window?.Invoke(_rdpServer.ConnectionId);
         }
         private void MakeForm2Minimize()
         {

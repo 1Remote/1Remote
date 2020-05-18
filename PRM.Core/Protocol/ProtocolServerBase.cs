@@ -16,11 +16,31 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase, ICloneable
     {
-        protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName)
+        protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName, bool onlyOneInstance = true)
         {
             Protocol = protocol;
             ClassVersion = classVersion;
             ProtocolDisplayName = protocolDisplayName;
+            OnlyOneInstance = true;
+        }
+
+        [JsonIgnore]
+        public string ConnectionId
+        {
+            get
+            {
+                if (OnlyOneInstance)
+                    return Id.ToString();
+                else
+                    return Id.ToString() + "_" + this.GetHashCode().ToString();
+            }
+        }
+        
+        private bool _OnlyOneInstance = true;
+        public bool OnlyOneInstance
+        {
+            get => _OnlyOneInstance;
+            private set => SetAndNotifyIfChanged(nameof(OnlyOneInstance), ref _OnlyOneInstance, value);
         }
 
 
@@ -31,7 +51,6 @@ namespace PRM.Core.Protocol
             get => _id;
             set => SetAndNotifyIfChanged(nameof(Id), ref _id, value);
         }
-
 
         public string Protocol { get; }
 

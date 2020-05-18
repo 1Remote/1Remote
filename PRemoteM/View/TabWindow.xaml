@@ -191,7 +191,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
+        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
                     <Image Name="IconTitleBar"></Image>
@@ -297,7 +297,7 @@
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
             </Button>
-            
+
 
             <Button Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
                 <Button.Style>

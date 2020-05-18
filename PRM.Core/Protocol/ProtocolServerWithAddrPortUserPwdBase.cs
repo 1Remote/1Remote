@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerWithAddrPortUserPwdBase : ProtocolServerBase
     {
-        protected ProtocolServerWithAddrPortUserPwdBase(string protocol, string classVersion, string protocolDisplayName) : base(protocol, classVersion, protocolDisplayName)
+        protected ProtocolServerWithAddrPortUserPwdBase(string protocol, string classVersion, string protocolDisplayName, bool onlyOneInstance = true) : base(protocol, classVersion, protocolDisplayName, onlyOneInstance)
         {
         }
 
