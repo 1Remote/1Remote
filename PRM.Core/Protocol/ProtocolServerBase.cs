@@ -21,19 +21,7 @@ namespace PRM.Core.Protocol
             Protocol = protocol;
             ClassVersion = classVersion;
             ProtocolDisplayName = protocolDisplayName;
-            OnlyOneInstance = true;
-        }
-
-        [JsonIgnore]
-        public string ConnectionId
-        {
-            get
-            {
-                if (OnlyOneInstance)
-                    return Id.ToString();
-                else
-                    return Id.ToString() + "_" + this.GetHashCode().ToString();
-            }
+            OnlyOneInstance = onlyOneInstance;
         }
         
         private bool _OnlyOneInstance = true;

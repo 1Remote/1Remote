@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using AxMSTSCLib;
 using MSTSCLib;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
@@ -318,6 +321,7 @@ namespace Shawn.Ulits.RDP
             var t = GetCurrentScreen();
             if (t != null)
                 _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = t.Item1;
+            Server.AddOrUpdate(_rdpServer);
             _rdp.FullScreen = true;
         }
 
@@ -403,7 +407,7 @@ namespace Shawn.Ulits.RDP
                 // TODO 弹出非模态对话框，然后关闭 RDP 窗体
                 System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            base.OnClosed?.Invoke(_rdpServer.ConnectionId);
+            base.OnClosed?.Invoke(base.ConnectionId);
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
@@ -463,6 +467,9 @@ namespace Shawn.Ulits.RDP
             Debug.Assert(ParentWindow != null);
             _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = true;
 
+            var screenSize = GetScreenSize();
+            ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
+            ParentWindow.Top = screenSize.Top / (_scaleFactor / 100.0);
             if (saveSize)
             {
                 _normalWidth = ParentWindow.Width;
@@ -475,8 +482,7 @@ namespace Shawn.Ulits.RDP
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
 
-
-            var screenSize = GetScreenSize();
+            
             ParentWindow.Width = screenSize.Width / (_scaleFactor / 100.0);
             ParentWindow.Height = screenSize.Height / (_scaleFactor / 100.0);
             ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
@@ -500,17 +506,10 @@ namespace Shawn.Ulits.RDP
             }
             else
             {
-                if (_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex < 0
-                    || _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
+                if (_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex >= 0
+                    && _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
                 {
-                    for (int i = 0; i < System.Windows.Forms.Screen.AllScreens.Length; i++)
-                    {
-                        if (Equals(System.Windows.Forms.Screen.PrimaryScreen, System.Windows.Forms.Screen.AllScreens[i]))
-                        {
-                            _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = i;
-                            return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds;
-                        }
-                    }
+                    return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds;
                 }
             }
             return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
@@ -528,7 +527,7 @@ namespace Shawn.Ulits.RDP
             ParentWindow.Height = _normalHeight;
             ParentWindow.Top = _normalTop;
             ParentWindow.Left = _normalLeft;
-            base.OnFullScreen2Window?.Invoke(_rdpServer.ConnectionId);
+            base.OnFullScreen2Window?.Invoke(base.ConnectionId);
         }
         private void MakeForm2Minimize()
         {
@@ -636,7 +635,7 @@ namespace Shawn.Ulits.RDP
         }
         private Tuple<int, System.Windows.Forms.Screen> GetCurrentScreen()
         {
-            var screen = System.Windows.Forms.Screen.FromControl(_rdp);
+            var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(this.ParentWindow).Handle);
             for (int i = 0; i < System.Windows.Forms.Screen.AllScreens.Length; i++)
             {
                 if (Equals(screen, System.Windows.Forms.Screen.AllScreens[i]))

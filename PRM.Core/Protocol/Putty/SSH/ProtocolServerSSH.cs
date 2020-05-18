@@ -33,8 +33,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public ESshVersion SshVersion
         {
             get => _sshVersion;
-            set => 
-                SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
+            set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
         }
 
 
@@ -47,7 +46,8 @@ namespace PRM.Core.Protocol.Putty.SSH
         {
             try
             {
-                return JsonConvert.DeserializeObject<ProtocolServerSSH>(jsonString);
+                var ret = JsonConvert.DeserializeObject<ProtocolServerSSH>(jsonString);
+                return ret;
             }
             catch (Exception e)
             {
