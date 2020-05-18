@@ -162,6 +162,7 @@
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Logo\author_avatar.jpg" />
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -265,7 +266,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" />
+      <UserProperties languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>

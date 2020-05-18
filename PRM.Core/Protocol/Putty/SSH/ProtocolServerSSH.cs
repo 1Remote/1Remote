@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             V1 = 1,
             V2 = 2,
         }
-        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
+        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH", false)
         {
         }
         

@@ -74,10 +74,10 @@
                     <StackPanel>
                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="PRemoteM"></TextBlock>
                             <StackPanel>
+                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="PRemoteM" Margin="0 10 0 0"></TextBlock>
                                 <Grid Style="{StaticResource ServerEditorRow}">
-                                    <TextBlock Text="your personal remote manager"></TextBlock>
+                                    <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>
                                 <Grid Style="{StaticResource ServerEditorRow}">
                                     <StackPanel Orientation="Horizontal">
@@ -90,7 +90,9 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Author"></TextBlock>
                             <StackPanel Orientation="Horizontal">
-                                <Grid Width="32" Height="32" Background="Aqua"></Grid>
+                                <Grid Width="32" Height="32">
+                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/author_avatar.jpg" Width="32"></Image>
+                                </Grid>
                                 <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
                                     <TextBlock Text="Shawn"></TextBlock>
                                     <TextBlock Text="(singlex@foxmail.com)"></TextBlock>
@@ -142,6 +144,11 @@
                                     <TextBlock>
                                         <Hyperlink NavigateUri="https://github.com/hstarorg/TinyPinyin.Net" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
                                             https://github.com/hstarorg/TinyPinyin.Net
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://github.com/praeclarum/sqlite-net
                                         </Hyperlink>
                                     </TextBlock>
                                 </StackPanel>

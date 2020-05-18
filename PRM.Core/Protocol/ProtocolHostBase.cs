@@ -11,7 +11,7 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolHostBase : UserControl
     {
-        public uint Id => ProtocolServer.Id;
+        public string ConnectionId => ProtocolServer.ConnectionId;
         public readonly ProtocolServerBase ProtocolServer;
         public Window ParentWindow { get; set; } = null;
 
@@ -48,7 +48,7 @@ namespace PRM.Core.Protocol
 
 
 
-        public Action<uint> OnClosed = null;
-        public Action<uint> OnFullScreen2Window = null;
+        public Action<string> OnClosed = null;
+        public Action<string> OnFullScreen2Window = null;
     }
 }

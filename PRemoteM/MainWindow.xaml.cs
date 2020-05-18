@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ using PRM.View;
 using PRM.ViewModel;
 using Shawn.Ulits;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Point = System.Windows.Point;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -28,12 +30,8 @@ namespace PRM
 
             this.Width = SystemConfig.GetInstance().Locality.MainWindowWidth;
             this.Height = SystemConfig.GetInstance().Locality.MainWindowHeight;
-            WinTitleBar.PreviewMouseDown += (sender, e) =>
+            WinTitleBar.MouseUp += (sender, e) =>
             {
-                if (e.LeftButton == MouseButtonState.Pressed)
-                {
-                    this.DragMove();
-                }
                 if (e.LeftButton == MouseButtonState.Released)
                 {
                     if (this.WindowState == WindowState.Normal)
@@ -55,6 +53,13 @@ namespace PRM
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };
+
+            WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
+            WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
+
+
+
 
             // Startup Location
             {
@@ -87,6 +92,60 @@ namespace PRM
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
 
+        #region DragMove
+        private bool _isLeftMouseDown = false;
+        private bool _isDraging = false;
+        private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _isDraging = false;
+            _isLeftMouseDown = false;
+
+            if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                _isLeftMouseDown = true;
+                var th = new Thread(new ThreadStart(() =>
+                {
+                    Thread.Sleep(50);
+                    if (_isLeftMouseDown)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            _isDraging = true;
+                        });
+                    }
+                }));
+                th.Start();
+            }
+        }
+        private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _isLeftMouseDown = false;
+            _isDraging = false;
+        }
+        private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && _isDraging)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    var top = Mouse.GetPosition(this).Y;
+                    var left = Mouse.GetPosition(this).X;
+                    this.Top = 0;
+                    this.Left = 0;
+                    this.WindowState = WindowState.Normal;
+                    this.Top = top - 15;
+                    this.Left = left - this.Width / 2;
+                }
+                this.DragMove();
+            }
+        }
+        #endregion
 
         private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
         {
@@ -103,6 +162,7 @@ namespace PRM
                 this.Activate();
             });
         }
+
         public void HideMe()
         {
             Dispatcher.Invoke(() =>
@@ -113,13 +173,6 @@ namespace PRM
                     App.TaskTrayIcon?.ShowBalloonTip(1000);
             });
         }
-
-        private void GridAbout_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            VmMain.CmdGoAboutPage.Execute();
-        }
-
-
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {

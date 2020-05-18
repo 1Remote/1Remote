@@ -41,11 +41,15 @@ namespace PRM.View
                 }
             };
 
+            WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
+            WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
+
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm.SelectedItem != null)
                 {
-                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
+                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.ConnectionId);
                 }
                 else
                 {
@@ -60,22 +64,60 @@ namespace PRM.View
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
 
-        /// <summary>
-        /// DragMove
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void System_MouseDown(object sender, MouseButtonEventArgs e)
+        #region DragMove
+        private bool _isLeftMouseDown = false;
+        private bool _isDraging = false;
+        private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            _isDraging = false;
+            _isLeftMouseDown = false;
+
             if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
             {
                 this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                return;
             }
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                _isLeftMouseDown = true;
+                var th = new Thread(new ThreadStart(() =>
+                {
+                    Thread.Sleep(50);
+                    if (_isLeftMouseDown)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            _isDraging = true;
+                        });
+                    }
+                }));
+                th.Start();
+            }
+        }
+        private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _isLeftMouseDown = false;
+            _isDraging = false;
+        }
+        private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && _isDraging)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    var top = Mouse.GetPosition(this).Y;
+                    var left = Mouse.GetPosition(this).X;
+                    this.Top = 0;
+                    this.Left = 0;
+                    this.WindowState = WindowState.Normal;
+                    this.Top = top - 15;
+                    this.Left = left - this.Width / 2;
+                }
                 this.DragMove();
             }
         }
+        #endregion
 
         private void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
