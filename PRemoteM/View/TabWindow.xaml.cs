@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -26,6 +28,19 @@ namespace PRM.View
             Vm = new VmTabWindow(token);
             DataContext = Vm;
 
+
+            this.Width = SystemConfig.GetInstance().Locality.TabWindowWidth;
+            this.Height = SystemConfig.GetInstance().Locality.TabWindowHeight;
+            this.SizeChanged += (sender, args) =>
+            {
+                if (this.WindowState == WindowState.Normal)
+                {
+                    SystemConfig.GetInstance().Locality.TabWindowHeight = this.Height;
+                    SystemConfig.GetInstance().Locality.TabWindowWidth = this.Width;
+                    SystemConfig.GetInstance().Locality.Save();
+                }
+            };
+
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm.SelectedItem != null)
@@ -36,6 +51,10 @@ namespace PRM.View
                 {
                     Vm.CmdClose.Execute();
                 }
+            };
+            this.Activated += (sender, args) =>
+            {
+                Vm?.SelectedItem?.Content?.MakeItFocus();
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
@@ -58,7 +77,6 @@ namespace PRM.View
             }
         }
 
-
         private void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Vm?.SelectedItem != null)
@@ -66,9 +84,20 @@ namespace PRM.View
                 this.Title = Vm.SelectedItem.Header + " - " + "PRemoteM";
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
+                var t = new Task(() =>
+                {
+                    Thread.Sleep(100);
+                    Dispatcher.Invoke(() =>
+                    {
+                        if(IsActive)
+                            Vm?.SelectedItem?.Content?.MakeItFocus();
+                    });
+                });
+                t.Start();
             }
         }
 
+        //<!--TODO 从同一位置读取该值-->
         protected Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
         public Size GetTabContentSize()
         {

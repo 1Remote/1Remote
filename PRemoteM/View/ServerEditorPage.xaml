@@ -46,7 +46,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <TextBox Text="{Binding Server.DispName}"></TextBox>
+                                        <TextBox Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -54,143 +54,136 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <TextBox Text="{Binding Server.GroupName}"></TextBox>
+                                        <TextBox Text="{Binding Server.GroupName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
 
-                            <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
-                                    <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Grid Width="64" Height="64" 
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0" Height="Auto">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
+                                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Grid Width="64" Height="64" 
                                                   MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp" 
                                                   Background="Transparent" 
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
-                                                <Border BorderThickness="1" BorderBrush="Black"></Border>
-                                                <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
-                                            </Grid>
-                                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
-                                            <colorPickerWpf:ColorPickRowPopup Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                        </StackPanel>
+                                                    <Border BorderThickness="1" BorderBrush="Black"></Border>
+                                                    <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                </Grid>
+                                                <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
+                                                <colorPickerWpf:ColorPickRowPopup Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
 
+                            <Grid Name="PopupLogoSelector" Height="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
+                                    <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                        <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
+                                            <Grid Width="362">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Background="{DynamicResource MainBgColorBrush}">
+                                                    <controls1:LogoSelector x:Name="LogoSelector"></controls1:LogoSelector>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button" >
+                                                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                        </Button>
 
-                                        <Popup Name="PopupLogoSelector" StaysOpen="True" 
-                                               AllowsTransparency="False"
-                                               Width="270"
-                                               PlacementTarget="{Binding ElementName=ImgLogo}"
-                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-                                            <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                                        <ColumnDefinition></ColumnDefinition>
-                                                    </Grid.ColumnDefinitions>
-                                                    <StackPanel PreviewMouseWheel="UIElement_DisabledOnMouseWheel" Background="{DynamicResource MainBgColorBrush}">
-                                                        <controls1:LogoSelector x:Name="LogoSelector"></controls1:LogoSelector>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Button Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
-                                                                <Button.Style>
-                                                                    <Style TargetType="Button" >
-                                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                                                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                                                        <Setter Property="Template">
-                                                                            <Setter.Value>
-                                                                                <ControlTemplate TargetType="{x:Type Button}">
-                                                                                    <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
-                                                                                    </Border>
-                                                                                </ControlTemplate>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                        <Style.Triggers>
-                                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
-                                                                            </Trigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Button.Style>
-                                                            </Button>
-
-                                                            <Button Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
-                                                                <Button.Style>
-                                                                    <Style TargetType="Button" >
-                                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                                                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                                                        <Setter Property="Template">
-                                                                            <Setter.Value>
-                                                                                <ControlTemplate TargetType="{x:Type Button}">
-                                                                                    <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
-                                                                                    </Border>
-                                                                                </ControlTemplate>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                        <Style.Triggers>
-                                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
-                                                                            </Trigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Button.Style>
-                                                            </Button>
-                                                        </Grid>
-                                                    </StackPanel>
-                                                    <Grid Grid.Column="1">
-                                                        <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
-                                                        <ScrollViewer Height="190"
-                                                                      Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
-                                                            <StackPanel >
-                                                                <ListView BorderThickness="0"
+                                                        <Button Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button" >
+                                                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 0 0 0"/>
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                    <Style.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                        </Trigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                        </Button>
+                                                    </Grid>
+                                                </StackPanel>
+                                                <Grid Grid.Column="1">
+                                                    <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
+                                                    <ScrollViewer Height="190" Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                                                        <StackPanel >
+                                                            <ListView BorderThickness="0"
                                                                           SelectionChanged="Selector_OnSelectionChanged"
-                                                                          ItemsSource="{Binding Source={x:Static protocol:ProtocolServerIcons.Instance}, Path=Icons}" 
+                                                                          ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
                                                                           Background="Transparent"
                                                                           ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                                                                    <ListView.Resources>
-                                                                        <Style TargetType="ScrollViewer">
-                                                                            <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-                                                                        </Style>
-                                                                    </ListView.Resources>
-                                                                    <ListView.ItemsPanel>
-                                                                        <ItemsPanelTemplate>
-                                                                            <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
-                                                                        </ItemsPanelTemplate>
-                                                                    </ListView.ItemsPanel>
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate>
-                                                                            <Grid Margin="5">
-                                                                                <Image Source="{Binding}" Height="30"></Image>
-                                                                            </Grid>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ListView>
-                                                            </StackPanel>
-                                                        </ScrollViewer>
-                                                    </Grid>
+                                                                <ListView.Resources>
+                                                                    <Style TargetType="ScrollViewer">
+                                                                        <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
+                                                                    </Style>
+                                                                </ListView.Resources>
+                                                                <ListView.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
+                                                                    </ItemsPanelTemplate>
+                                                                </ListView.ItemsPanel>
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Grid Margin="5">
+                                                                            <Image Source="{Binding}" Height="30"></Image>
+                                                                        </Grid>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ListView>
+                                                        </StackPanel>
+                                                    </ScrollViewer>
                                                 </Grid>
-                                            </Border>
-                                        </Popup>
+                                            </Grid>
+                                        </Border>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
-
-                            <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
-                                <StackPanel Orientation="Horizontal">
-                                </StackPanel>
-                            </Grid>
                         </StackPanel>
-
                         <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
-
-
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
@@ -311,7 +304,7 @@
                                             <TextBlock Margin="15 0" 
                                                            Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" 
                                                            FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           Text="{Binding ProtocolFullName}"></TextBlock>
+                                                           Text="{Binding ProtocolDisplayName}"></TextBlock>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

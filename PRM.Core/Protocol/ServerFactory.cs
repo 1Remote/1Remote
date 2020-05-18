@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
 
 namespace PRM.Core.DB
@@ -29,8 +30,8 @@ namespace PRM.Core.DB
         #endregion
 
         private static readonly object Locker = new object();
-        List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public ProtocolServerBase CreateFromDbObjectServerOrm(ServerOrm serverOrm)
+        private List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
+        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
         {
             // reflect all the child class
             lock (Locker)
@@ -39,22 +40,31 @@ namespace PRM.Core.DB
                 {
                     var assembly = typeof(ProtocolServerBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)))
+                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
-            }
-
-            // get instance form json string
-            foreach (var serverAbstract in _baseList)
-            {
-                if (serverOrm.ServerType == serverAbstract.ServerType &&
-                    serverOrm.ClassVersion == serverAbstract.ClassVersion)
+                
+                // get instance form json string
+                foreach (var serverAbstract in _baseList)
                 {
-                    var ret = serverAbstract.CreateFromJsonString(serverOrm.JsonConfigString);
-                    if (ret != null)
+                    if (server.Protocol == serverAbstract.Protocol &&
+                        server.ClassVersion == serverAbstract.ClassVersion)
                     {
-                        ret.Id = serverOrm.Id;
-                        return ret;
+                        var jsonStr = server.JsonConfigString;
+                        //if (rsa != null)
+                        //{
+                        //    var tmp = rsa.DecodeOrNull(jsonStr);
+                        //    if (tmp != null)
+                        //    {
+                        //        jsonStr = tmp;
+                        //    }
+                        //}
+                        var ret = serverAbstract.CreateFromJsonString(jsonStr);
+                        if (ret != null)
+                        {
+                            ret.Id = server.Id;
+                            return ret;
+                        }
                     }
                 }
             }
@@ -65,7 +75,7 @@ namespace PRM.Core.DB
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||
-                jObj.ServerType == null ||
+                jObj.Protocol == null ||
                 jObj.ClassVersion == null)
                 return null;
 
@@ -76,7 +86,7 @@ namespace PRM.Core.DB
                 {
                     var assembly = typeof(ProtocolServerBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)))
+                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
             }
@@ -84,7 +94,7 @@ namespace PRM.Core.DB
             // get instance form json string
             foreach (var serverAbstract in _baseList)
             {
-                if (jObj.ServerType.ToString() == serverAbstract.ServerType &&
+                if (jObj.ServerType.ToString() == serverAbstract.Protocol &&
                     jObj.ClassVersion.ToString() == serverAbstract.ClassVersion)
                 {
                     var ret = serverAbstract.CreateFromJsonString(jsonString);

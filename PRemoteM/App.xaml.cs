@@ -12,9 +12,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Ulits;
+using PRM.Model;
 using PRM.View;
+using Shawn.Ulits;
+using SQLite;
 
 namespace PersonalRemoteManager
 {
@@ -38,33 +42,42 @@ namespace PersonalRemoteManager
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
-        public static MainWindow Window = null;
-        public static SearchBoxWindow SearchBoxWindow = null;
-        public static System.Windows.Forms.NotifyIcon TaskTrayIcon = null;
-        private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com"; // 定义一个 IPC 端口
+        public static MainWindow Window  { get; private set; } = null;
+        public static SearchBoxWindow SearchBoxWindow { get; private set; }  = null;
+        public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
+#if DEBUG
+        private const string ServiceIpcPortName = "Ipc_DEBUG_VShawn_present_singlex@foxmail.com";
+        private const string ServiceIpcRoute = "PRemoteM_DEBUG";
+#else
+        private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com";
         private const string ServiceIpcRoute = "PRemoteM";
+#endif
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-            var startupMode = PRM.Core.Ulits.StartupMode.Normal;
-            if (e.Args.Length > 0)
-            {
-                System.Enum.TryParse(e.Args[0], out startupMode);
-            }
-            if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
-            {
-                SetSelfStartingHelper.SetSelfStart();
-                Environment.Exit(0);
-            }
-            if (startupMode == PRM.Core.Ulits.StartupMode.UnsetSelfStart)
-            {
-                SetSelfStartingHelper.UnsetSelfStart();
-                Environment.Exit(0);
-            }
-
             try
             {
-                _singleAppMutex = new Mutex(true, "PersonalRemoteManager", out var isFirst);
+                #region single-instance app
+                var startupMode = PRM.Core.Ulits.StartupMode.Normal;
+                if (e.Args.Length > 0)
+                {
+                    System.Enum.TryParse(e.Args[0], out startupMode);
+                }
+                if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
+                {
+                    SetSelfStartingHelper.SetSelfStart();
+                    Environment.Exit(0);
+                }
+                if (startupMode == PRM.Core.Ulits.StartupMode.UnsetSelfStart)
+                {
+                    SetSelfStartingHelper.UnsetSelfStart();
+                    Environment.Exit(0);
+                }
+#if DEBUG
+                _singleAppMutex = new Mutex(true, "PRemoteM_DEBUG", out var isFirst);
+#else
+                _singleAppMutex = new Mutex(true, "PRemoteM", out var isFirst);
+#endif
                 if (!isFirst)
                 {
                     var oneRemoteProvider = (OneServiceRemoteProvider)Activator.GetObject(typeof(OneServiceRemoteProvider), $"ipc://{ServiceIpcPortName}/{ServiceIpcRoute}");
@@ -78,42 +91,97 @@ namespace PersonalRemoteManager
                     RemotingServices.Marshal(remoteProvider, ServiceIpcRoute);
                     ChannelServices.RegisterChannel(new IpcChannel(ServiceIpcPortName), false);
                 }
+                #endregion
 
+                
 #if DEBUG
                 Shawn.Ulits.ConsoleManager.Show();
 #endif
-                // app start
+
+                #region system check & init
+                
+                // config create instance (settings & langs)
+                SystemConfig.Create(this.Resources);
+                // global init
+                Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
+
+
+                // run check
+
+                // check if Db is ok
                 {
-                    // config init
-                    SystemConfig.Init(this.Resources);
-
-                    // main window init
+                    try
                     {
-                        Window = new MainWindow();
-                        ShutdownMode = ShutdownMode.OnMainWindowClose;
-                        MainWindow = Window;
-                        Window.Closed += (o, args) => { AppOnClose(); };
-                        if (!SystemConfig.GetInstance().General.AppStartMinimized)
-                        {
-                            ActivateWindow();
-                        }
+                        Server.Init();
                     }
-
-
-                    // task tray init
-                    InitTaskTray();
-
-
-                    // quick search init 
-                    InitQuickSearch();
+                    catch (Exception exception)
+                    {
+                        // todo 跳转到数据库配置页面
+                        throw;
+                    }
                 }
+
+                // check if Rsa is ok
+                var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
+                switch (ret)
+                {
+                    case SystemConfigDataSecurity.ERsaStatues.Ok:
+                        break;
+                    default:
+                        switch (ret)
+                        {
+                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                                break;
+                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                                break;
+                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                                break;
+                        }
+                        // todo 跳转到 RSA 配置页面
+                        break;
+                }
+
+                #endregion
+
+
+                #region app start
+                // main window init
+                {
+                    Window = new MainWindow();
+                    ShutdownMode = ShutdownMode.OnMainWindowClose;
+                    MainWindow = Window;
+                    Window.Closed += (o, args) => { AppOnClose(); };
+                    if (!SystemConfig.GetInstance().General.AppStartMinimized)
+                    {
+                        ActivateWindow();
+                    }
+                }
+
+
+                // task tray init
+                InitTaskTray();
+
+
+                // quick search init 
+                InitQuickSearch();
+                #endregion
+
+                
+                // load data
+                Global.GetInstance().ReloadServers();
             }
             catch (Exception ex)
             {
-                AppOnClose();
+                SimpleLogHelper.Error(ex.Message);
+                SimpleLogHelper.Error(ex.StackTrace);
+#if DEBUG
                 MessageBox.Show(ex.Message);
                 MessageBox.Show(ex.StackTrace);
-                Environment.Exit(-1);
+#endif
+                AppOnClose(-1);
             }
         }
 
@@ -126,16 +194,16 @@ namespace PersonalRemoteManager
         {
             if (TaskTrayIcon == null)
             {
-                // 设置托盘
                 TaskTrayIcon = new System.Windows.Forms.NotifyIcon
                 {
-                    Text = "TXT:XXXX系统",
+                    Text = SystemConfig.AppName,
                     Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name),
-                    BalloonTipText = "TXT:正在后台运行...",
+                    //BalloonTipText = "TXT:正在后台运行...",
+                    BalloonTipText = "",
                     Visible = true
                 };
                 ReloadTaskTrayContextMenu();
-
+                SystemConfig.GetInstance().Language.OnLanguageChanged += ReloadTaskTrayContextMenu;
                 TaskTrayIcon.MouseDoubleClick += (sender, e) =>
                 {
                     if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -152,15 +220,26 @@ namespace PersonalRemoteManager
             if (TaskTrayIcon != null)
             {
                 //System.Windows.Forms.MenuItem version = new System.Windows.Forms.MenuItem("Ver:" + Version);
-                System.Windows.Forms.MenuItem link = new System.Windows.Forms.MenuItem("TXT:主页");
-                link.Click += (sender, args) =>
+                var title = new System.Windows.Forms.MenuItem(SystemConfig.AppName);
+                title.Click += (sender, args) =>
                 {
-                    string home_uri = "http://172.20.65.78:3300/";
-                    System.Diagnostics.Process.Start(home_uri);
+                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
                 };
-                System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("button_exit"));
+                var @break = new System.Windows.Forms.MenuItem("-");
+                var link_how_to_use = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("about_page_how_to_use"));
+                link_how_to_use.Click += (sender, args) =>
+                {
+                    // TODO WIKI
+                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+                };
+                var link_feedback = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("about_page_feedback"));
+                link_feedback.Click += (sender, args) =>
+                {
+                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
+                };
+                var exit = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("button_exit"));
                 exit.Click += (sender, args) => Window.Close();
-                System.Windows.Forms.MenuItem[] child = new System.Windows.Forms.MenuItem[] { link, exit };
+                var child = new System.Windows.Forms.MenuItem[] { title,@break,link_how_to_use,link_feedback, exit };
                 TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
             }
         }
@@ -171,7 +250,7 @@ namespace PersonalRemoteManager
             SearchBoxWindow.SetHotKey();
         }
 
-        private static void AppOnClose()
+        private static void AppOnClose(int exitCode = 0)
         {
             if (App.SearchBoxWindow != null)
             {
@@ -185,7 +264,7 @@ namespace PersonalRemoteManager
                 App.TaskTrayIcon.Dispose();
             }
 
-            Environment.Exit(0);
+            Environment.Exit(exitCode);
         }
     }
 }

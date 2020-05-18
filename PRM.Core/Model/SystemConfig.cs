@@ -30,7 +30,7 @@ namespace PRM.Core.Model
         /// <summary>
         /// Must init before app start in app.cs
         /// </summary>
-        public static void Init(ResourceDictionary appResourceDictionary)
+        public static void Create(ResourceDictionary appResourceDictionary)
         {
             if (uniqueInstance == null)
                 lock (InstanceLock)
@@ -52,6 +52,7 @@ namespace PRM.Core.Model
             Language = new SystemConfigLanguage(appResourceDictionary, Ini);
             General = new SystemConfigGeneral(Ini);
             QuickConnect = new SystemConfigQuickConnect(Ini);
+            DataSecurity = new SystemConfigDataSecurity(Ini);
         }
 
 
@@ -77,18 +78,47 @@ namespace PRM.Core.Model
 
 
 
-        private SystemConfigQuickConnect _quickConnect;
+        private SystemConfigQuickConnect _quickConnect = null;
         public SystemConfigQuickConnect QuickConnect
         {
             get => _quickConnect;
             set => SetAndNotifyIfChanged(nameof(QuickConnect), ref _quickConnect, value);
+        }
+
+
+
+
+        private SystemConfigDataSecurity _dataSecurity = null;
+        public SystemConfigDataSecurity DataSecurity
+        {
+            get => _dataSecurity;
+            set => SetAndNotifyIfChanged(nameof(DataSecurity), ref _dataSecurity, value);
         }
     }
 
 
     public abstract class SystemConfigBase : NotifyPropertyChangedBase
     {
+        private object locker = new object();
+        protected bool StopAutoSave
+        {
+            get => _stopAutoSave;
+            set => _stopAutoSave = value;
+        }
+
+        protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
+        {
+            if (oldValue == null && newValue == null) return;
+            if (oldValue != null && oldValue.Equals(newValue)) return;
+            if (newValue != null && newValue.Equals(oldValue)) return;
+            oldValue = newValue;
+            RaisePropertyChanged(propertyName);
+            if (!StopAutoSave)
+                Save();
+        }
+
         protected Ini _ini = null;
+        private bool _stopAutoSave = false;
 
         protected SystemConfigBase(Ini ini)
         {

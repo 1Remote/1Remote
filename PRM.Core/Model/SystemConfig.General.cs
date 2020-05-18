@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core.Ulits;
 using Shawn.Ulits;
 
 namespace PRM.Core.Model
@@ -22,12 +23,23 @@ namespace PRM.Core.Model
         {
             Load();
         }
-        
-        private bool _AppStartAutomatically = false;
+
+        private bool _appStartAutomatically = false;
         public bool AppStartAutomatically
         {
-            get => _AppStartAutomatically;
-            set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _AppStartAutomatically, value);
+            get => _appStartAutomatically;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
+                if (value == true)
+                {
+                    SetSelfStartingHelper.SetSelfStart();
+                }
+                else
+                {
+                    SetSelfStartingHelper.UnsetSelfStart();
+                }
+            }
         }
 
         private bool _appStartMinimized = false;
@@ -38,12 +50,7 @@ namespace PRM.Core.Model
         }
 
 
-        private string _dbPath = "./PRemoteM.db";
-        public string DbPath
-        {
-            get => _dbPath;
-            set => SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value);
-        }
+        public string IconFolderPath => "./Icons";
 
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;
@@ -59,22 +66,24 @@ namespace PRM.Core.Model
         private const string _sectionName = "General";
         public override void Save()
         {
+            StopAutoSave = true;
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
-            _ini.WriteValue(nameof(DbPath).ToLower(), _sectionName, DbPath);
+            StopAutoSave = false;
             _ini.Save();
         }
 
         public override void Load()
         {
+            StopAutoSave = true;
             AppStartAutomatically = _ini.GetValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically);
             AppStartMinimized = _ini.GetValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString()), out var so))
             {
                 ServerOrderBy = so;
             }
-            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), _sectionName, DbPath);
+            StopAutoSave = false;
         }
 
         public override void Update(SystemConfigBase newConfig)

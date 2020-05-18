@@ -23,7 +23,7 @@ namespace PRM.Core.Protocol
 
         protected override string GetSubTitle()
         {
-            throw new NotImplementedException();
+            return "";
         }
 
         public ProtocolServerNone() : base("", "", "")

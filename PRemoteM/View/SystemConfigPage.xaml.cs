@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
-using Microsoft.Win32;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
+using SQLite;
+using Binding = System.Windows.Data.Binding;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace PRM.View
@@ -38,18 +43,48 @@ namespace PRM.View
             dlg.Filter = "Sqlite Database|*.db";
             if (dlg.ShowDialog() == true)
             {
-                if (PRM_DAO.TestDb(dlg.FileName, ""))
+                try
                 {
-                    VmSystemConfigPage.General.DbPath = dlg.FileName.Replace(Environment.CurrentDirectory, ".");
+                    using (var db = new SQLiteConnection(dlg.FileName))
+                    {
+                        db.CreateTable<Server>();
+                    }
+                    VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName;
                 }
-                else
+                catch (Exception ee)
                 {
-                    MessageBox.Show(SystemConfig.GetInstance().Language
-                        .GetText("system_options_general_item_database_can_not_open"));
+                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
                 }
             }
         }
 
+
+
+        private void ButtonSelectRsaKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
+                InitialDirectory = VmSystemConfigPage.SystemConfig.DataSecurity.RsaPrivateKeyPath,
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                var res = SystemConfig.GetInstance().DataSecurity.ValidateRsa(dlg.FileName);
+                switch (res)
+                {
+                    case SystemConfigDataSecurity.ERsaStatues.Ok:
+                        SystemConfig.GetInstance().DataSecurity.RsaPrivateKeyPath = dlg.FileName;
+                        break;
+                    case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
+                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
+                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
+                        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
 
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -94,7 +129,7 @@ namespace PRM.View
             {
                 if (this.IsLoaded)
                 {
-                    SetHotkeyIsRegistered(VmSystemConfigPage.QuickConnect.HotKeyModifiers, key);
+                    SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers, key);
                 }
             }
         }
@@ -103,7 +138,7 @@ namespace PRM.View
         {
             if (this.IsLoaded)
             {
-                SetHotkeyIsRegistered(VmSystemConfigPage.QuickConnect.HotKeyModifiers, VmSystemConfigPage.QuickConnect.HotKeyKey);
+                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers, VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey);
             }
         }
 
@@ -112,8 +147,8 @@ namespace PRM.View
             if (modifier == SystemConfig.GetInstance().QuickConnect.HotKeyModifiers
                 && key == SystemConfig.GetInstance().QuickConnect.HotKeyKey)
             {
-                VmSystemConfigPage.QuickConnect.HotKeyModifiers = modifier;
-                VmSystemConfigPage.QuickConnect.HotKeyKey = key;
+                VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
+                VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                 return false;
             }
 
@@ -124,8 +159,8 @@ namespace PRM.View
             {
                 case GlobalHotkeyHooker.RetCode.Success:
                     GlobalHotkeyHooker.GetInstance().Unregist(r.Item3);
-                    VmSystemConfigPage.QuickConnect.HotKeyModifiers = modifier;
-                    VmSystemConfigPage.QuickConnect.HotKeyKey = key;
+                    VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
+                    VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
@@ -136,8 +171,8 @@ namespace PRM.View
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            VmSystemConfigPage.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
-            VmSystemConfigPage.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
 
             return false;
         }
@@ -158,7 +193,9 @@ namespace PRM.View
     }
 
 
-
+    /// <summary>
+    /// key board key A -> string "A"
+    /// </summary>
     public class Key2KeyStringConverter : IValueConverter
     {
         // 实现接口的两个方法  
@@ -167,6 +204,25 @@ namespace PRM.View
         {
             Key k = (Key)value;
             return k.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+    }
+
+    
+
+    public class StringIsEmpty2BoolConverter : IValueConverter
+    {
+        // 实现接口的两个方法  
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string str = value?.ToString();
+            return string.IsNullOrEmpty(str);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

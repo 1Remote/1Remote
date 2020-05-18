@@ -1,0 +1,119 @@
+﻿<protocol:ProtocolServerFormBase x:Class="PRM.Core.Protocol.Putty.ProtocolPuttyForm"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:putty="clr-namespace:PRM.Core.Protocol.Putty"
+                        xmlns:protocol="clr-namespace:PRM.Core.Protocol"
+                        xmlns:ulits="clr-namespace:Shawn.Ulits"
+                        mc:Ignorable="d" 
+                        d:DesignHeight="1450" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
+                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Ulits/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </StackPanel.Resources>
+
+        <StackPanel>
+
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
+
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                                 Width="50" HorizontalAlignment="Left"
+                                 InputMethod.IsInputMethodEnabled="False"
+                                 InputScope="Number"
+                                 ></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource ServerEditorRow}" Name="GridUserName">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Name="GridPwd">
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource PasswordBoxEx}"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+
+            <Grid Style="{StaticResource ServerEditorRow}" Name="GridPrivateKey" Height="Auto">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
+                    <StackPanel>
+                        <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource server_editor_connection_private_key_checker}" 
+                                  Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <StackPanel>
+                                <Button Content="{DynamicResource button_open}" Click="ButtonOpenPrivateKey_OnClick"></Button>
+                                <TextBox Text="{Binding PrivateKey}" Height="100" Width="300" 
+                                         HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+                                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden"></TextBox>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Name="SpSsh">
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_advantage_ssh_version}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <Grid.Resources>
+                            <putty:ConverterESshVersion x:Key="ConverterESshVersion"/>
+                        </Grid.Resources>
+                        <ComboBox SelectedIndex="{Binding SshVersion, Converter={StaticResource ConverterESshVersion}}">
+                            <ComboBoxItem Content="V1"/>
+                            <ComboBoxItem Content="V2"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </StackPanel>
+</protocol:ProtocolServerFormBase>

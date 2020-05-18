@@ -8,7 +8,6 @@
         BorderThickness="0"
         BorderBrush="Transparent"
         x:Name="Window"
-        Closing="Window_Closing"
         Title="PRemoteM" Height="500" Width="680" MinWidth="530" MinHeight="300">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
@@ -28,7 +27,7 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="6"/>
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 6 8 8"/>
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
             </ControlTemplate.Triggers>
@@ -54,7 +53,7 @@
         </Grid.RowDefinitions>
 
 
-        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
+        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>
@@ -149,7 +148,7 @@
                     </TextBox.Style>
                 </TextBox>
             </Grid>
-            <Button Name="BtnSetting" Click="BtnSetting_OnClick">
+            <Button Name="BtnSetting" Click="BtnSetting_OnClick" Focusable="False">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
@@ -176,7 +175,7 @@
                    StaysOpen="False">
                 <Popup.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Opacity" Value="0.7"></Setter>
+                        <Setter Property="Opacity" Value="0.8"></Setter>
                         <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                         <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
@@ -217,65 +216,23 @@
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
                             <Button Content="{DynamicResource system_menu_options_title}" Command="{Binding CmdGoSysOptionsPage}"></Button>
-                            <Border Name="GridAbout" MouseLeftButtonUp="GridAbout_OnMouseLeftButtonUp" Padding="3">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <StackPanel>
-                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="100"></Image>
-                                    <StackPanel Name="GridAboutTitleDefault" Orientation="Horizontal">
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
-                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </StackPanel.Style>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0" Text="{DynamicResource system_menu_about_title}"></TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor2Brush}">P</TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 3 0">ersonal</TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor2Brush}" Margin="0 0 3 0">Remote</TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor2Brush}">M</TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">anager</TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Name="GridAboutTitleHover" Orientation="Horizontal">
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ElementName=GridAbout,Path=IsMouseOver}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </StackPanel.Style>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 5 0" Text="{DynamicResource system_menu_about_title}"></TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 3 0">Personal</TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="0 0 3 0">Remote</TextBlock>
-                                        <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}">Manager</TextBlock>
-                                    </StackPanel>
+                            <Button Command="{Binding CmdGoAboutPage}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{DynamicResource system_menu_about_title}"></TextBlock>
+                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="16" Margin="10 0 0 0"></Image>
                                 </StackPanel>
-                            </Border>
+                            </Button>
                             <Button Content="{DynamicResource button_exit}" Click="ButtonExit_OnClick"></Button>
                         </StackPanel>
                     </Grid>
                 </Border>
             </Popup>
 
-            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
                 <Rectangle Width="15"  Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
             </Button>
 
-            <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
                 <Grid>
                     <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
                           Stretch="Uniform" >
@@ -290,8 +247,8 @@
                         </Path.Style>
                     </Path>
 
-                    <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" 
-                          Data="F1 M 0.000000 -77.000000 L 88.000000 -77.000000 L 88.000000 -11.000000 L 0.000000 -11.000000 Z M 82.500000 -16.500000 L 82.500000 -71.500000 L 5.500000 -71.500000 L 5.500000 -16.500000 Z M 77.000000 -66.000000 L 77.000000 -22.000000 L 11.000000 -22.000000 L 11.000000 -66.000000 Z M 71.500000 -27.500000 L 71.500000 -60.500000 L 16.500000 -60.500000 L 16.500000 -27.500000 Z "
+                    <Path Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Height="15" Width="15" 
+                          Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
                           Stretch="Uniform" >
                         <Path.Style>
                             <Style TargetType="Path">
@@ -307,7 +264,7 @@
                 </Grid>
             </Button>
 
-            <Button Name="BtnClose">
+            <Button Name="BtnClose" Focusable="False">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>

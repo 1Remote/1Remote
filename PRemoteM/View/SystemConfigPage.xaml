@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -13,6 +14,11 @@
                 <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary>
+                    <view:EnumServerOrderBy2IsCheckedConverter x:Key="EnumServerOrderBy2IsCheckedConverter"/>
+                    <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
+                    <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
@@ -97,7 +103,7 @@
 
     <Grid Background="{DynamicResource MainBgColorBrush}">
 
-        <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}">
+        <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}" IsEnabled="{Binding TabIsEnabled}">
             <TabItem Header="{DynamicResource system_options_general_title}">
                 <StackPanel Margin="20 20 0 0">
 
@@ -105,8 +111,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_language}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <ComboBox ItemsSource="{Binding LanguageCode2Name}" 
-                                          SelectedValue="{Binding SelectedLanguageCode}"
+                                <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
+                                          SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
                                           SelectedValuePath="Key"
                                           DisplayMemberPath="Value"/>
                             </Grid>
@@ -114,22 +120,12 @@
                     </Grid>
 
 
-                    <Grid Style="{StaticResource ServerEditorRow}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_database}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <TextBox Text="{Binding General.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
-                            </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
-                        </StackPanel>
-                    </Grid>
-
 
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_start}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
-                                <CheckBox IsChecked="{Binding General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -139,7 +135,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
-                                <CheckBox IsChecked="{Binding General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_minimized}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_minimized}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -154,11 +150,6 @@
                             </StackPanel.Resources>
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_server_order_by}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" VerticalAlignment="Center" Width="Auto">
-                                <Grid.Resources>
-                                    <ResourceDictionary>
-                                        <view:EnumServerOrderBy2IsCheckedConverter x:Key="EnumServerOrderBy2IsCheckedConverter"/>
-                                    </ResourceDictionary>
-                                </Grid.Resources>
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
@@ -167,14 +158,30 @@
                                     <ColumnDefinition></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <RadioButton Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path=General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.Name}}" Content="{DynamicResource system_options_general_item_server_order_by_name}"/>
-                                <RadioButton Grid.Column="1" Grid.Row="0" IsChecked="{Binding Path=General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.Protocol}}" Content="{DynamicResource system_options_general_item_server_order_by_protocol}"/>
-                                <RadioButton Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path=General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeDesc}}" Content="{DynamicResource system_options_general_item_server_order_by_add_time_asc}"/>
-                                <RadioButton Grid.Column="1" Grid.Row="1" IsChecked="{Binding Path=General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeAsc}}" Content="{DynamicResource system_options_general_item_server_order_by_add_time_desc}"/>
+                                <RadioButton Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.Name}}" Content="{DynamicResource system_options_general_item_server_order_by_name}"/>
+                                <RadioButton Grid.Column="1" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.Protocol}}" Content="{DynamicResource system_options_general_item_server_order_by_protocol}"/>
+                                <RadioButton Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeDesc}}" Content="{DynamicResource system_options_general_item_server_order_by_add_time_asc}"/>
+                                <RadioButton Grid.Column="1" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource EnumServerOrderBy2IsCheckedConverter}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeAsc}}" Content="{DynamicResource system_options_general_item_server_order_by_add_time_desc}"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
 
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_item_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </TabItem>
             <TabItem Header="{DynamicResource system_options_quick_title}">
@@ -182,23 +189,20 @@
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_quick_title_enable}"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_quick_enable}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <CheckBox IsChecked="{Binding QuickConnect.Enable, Mode=TwoWay}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.QuickConnect.Enable, Mode=TwoWay}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_quick_title_hot_key}"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_quick_hot_key}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <StackPanel.Resources>
-                                        <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
-                                    </StackPanel.Resources>
                                     <ComboBox Width="100" SelectedValuePath="Tag"
-                                              SelectedValue="{Binding QuickConnect.HotKeyModifiers}" 
+                                              SelectedValue="{Binding SystemConfig.QuickConnect.HotKeyModifiers}" 
                                               SelectionChanged="Modifiers_OnSelectionChanged">
                                         <ComboBoxItem Tag="{x:Static ModifierKeys.Control}">Ctrl</ComboBoxItem>
                                         <ComboBoxItem Tag="{x:Static ModifierKeys.Alt}">Alt</ComboBoxItem>
@@ -211,22 +215,117 @@
                                              IsReadOnlyCaretVisible="False"
                                              IsUndoEnabled="False"
                                              PreviewKeyDown="TextBoxKey_OnPreviewKeyDown" 
-                                             Text="{Binding QuickConnect.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
+                                             Text="{Binding SystemConfig.QuickConnect.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
                     </Grid>
 
 
-                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.2">
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="60 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
+                            <TextBlock Margin="64 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="TXT:Security" />
+            <TabItem Header="{DynamicResource system_options_data_security_title}">
+
+                <StackPanel Margin="20 20 0 0">
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>
+                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdGenRsaKey}" 
+                                            Content="{DynamicResource system_options_data_security_rsa_encrypt}">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="20 0 0 0" Command="{Binding CmdClearRsaKey}"
+                                            Content="{DynamicResource system_options_data_security_rsa_decrypt}">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="TbPublicKey" Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="200" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <!--<Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="TXT:若要修改密钥，请先取消加密。" TextWrapping="WrapWithOverflow"></TextBlock>
+                        </StackPanel>
+                    </Grid>-->
+
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>
+                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectRsaKey_OnClick">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_data_security_info_encrypt_private_key_warning}" TextWrapping="WrapWithOverflow"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+
             <TabItem Header="TXT:Theme" />
+
         </TabControl>
 
 
@@ -234,8 +333,9 @@
                 Width="200" 
                 HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
+                IsEnabled="{Binding TabIsEnabled}"
                 Command="{Binding CmdSaveAndGoBack}"
-                Content="{DynamicResource button_save}">
+                Content="{DynamicResource button_back}">
             <Button.Style>
                 <Style TargetType="Button">
                     <Setter Property="Height" Value="40"></Setter>
@@ -274,5 +374,16 @@
                 </Style>
             </Button.Style>
         </Button>
+
+
+        <Grid Visibility="{Binding ProgressBarVisibility}">
+            <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
+            <Grid>
+                <StackPanel VerticalAlignment="Center">
+                    <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
+                    <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_info_data_processing}" TextWrapping="Wrap"></TextBlock>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

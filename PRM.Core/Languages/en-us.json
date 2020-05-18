@@ -9,6 +9,7 @@
   "button_exit": "Exit",
   "button_add": "Add",
   "button_save": "Save",
+  "button_back": "Back",
   "button_cancel": "Cancel",
   "button_open": "Open",
   "tab_all": "All",
@@ -23,8 +24,6 @@
   // system options
   "system_options_general_title": "General",
   "system_options_general_item_language": "Language",
-  "system_options_general_item_database": "Database",
-  "system_options_general_item_database_can_not_open": "File is not a database or file is a encrypted database!",
   "system_options_general_item_start": "Startup",
   "system_options_general_item_start_when_win_login": "Run automatically at OS startup",
   "system_options_general_item_start_minimized": "Start minimized",
@@ -33,12 +32,26 @@
   "system_options_general_item_server_order_by_protocol": "Protocol",
   "system_options_general_item_server_order_by_add_time_asc": "Add time asc",
   "system_options_general_item_server_order_by_add_time_desc": "Add time desc",
+  "system_options_general_item_icons_folder_path": "Custom icons",
+  "system_options_general_item_icons_folder_path_description": "Put your own server icons here",
 
   "system_options_quick_title": "Quick connect",
   "system_options_quick_description": "Quick connect allow you hang up a quick connect bar by hot key, then you can type the keyword and start connection by press enter key",
-  "system_options_quick_title_enable": "Enable",
-  "system_options_quick_title_hot_key": "Hot key",
+  "system_options_quick_enable": "Enable",
+  "system_options_quick_hot_key": "Hot key",
 
+  "system_options_data_security_title": "Data & Security",
+  "system_options_data_security_database": "Database",
+  "system_options_data_security_rsa_title": "RSA encryption",
+  "system_options_data_security_rsa_encrypt": "Encrypt",
+  "system_options_data_security_rsa_decrypt": "Decrypt",
+  "system_options_data_security_rsa_public_key": "Public key",
+  "system_options_data_security_rsa_private_key_path": "Private key path",
+  "system_options_data_security_info_data_processing": "Data processing, do not close app.",
+  "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
+  "system_options_data_security_error_can_not_open": "File is not a database or file is a encrypted database!",
+  "system_options_data_security_error_rsa_private_key_not_found": "Can't find the RSA private key!",
+  "system_options_data_security_error_rsa_private_key_not_match": "RSA private key not match the public key!",
 
 
   // server card operate
@@ -63,20 +76,25 @@
   "server_editor_connection_port": "Port",
   "server_editor_connection_username": "User",
   "server_editor_connection_password": "Password",
+  "server_editor_connection_private_key_checker": "Private key instead of password",
+  "server_editor_connection_private_key": "Private key",
   // server editor - display group items
   "server_editor_display_full_screen_flag": "Full screen",
   "server_editor_display_full_screen_flag_window": "Disable",
   "server_editor_display_full_screen_flag_full_screen": "Enable(single monitor)",
   "server_editor_display_full_screen_flag_all_screens": "Enable(multi monitors)",
+  "server_editor_display_connect_with_full_screen": "Connect with full screen",
   "server_editor_display_window_resize_mode": "Resize mode",
   "server_editor_display_window_resize_mode_auto": "Auto adjust",
   "server_editor_display_window_resize_mode_stretch": "Stretch",
+  "server_editor_display_window_resize_mode_stretch_full_screen": "Stretch(full screen)",
   "server_editor_display_window_resize_mode_fixed": "Fixed",
-  "server_editor_display_performance": "Performance",
-  "server_editor_display_performance_auto": "Auto judge(by connection speed)",
-  "server_editor_display_performance_high": "High(32bit color with full features support)",
-  "server_editor_display_performance_middle": "Mdiddle(16bit color with only font smoothing and desktop composition)",
-  "server_editor_display_performance_low": "Low(8bit color with no feature support)",
+  "server_editor_display_window_resize_mode_fixed_full_screen": "Fixed(full screen)",
+  "server_editor_display_rdp_performance": "Performance",
+  "server_editor_display_rdp_performance_auto": "Auto judge(by connection speed)",
+  "server_editor_display_rdp_performance_high": "High(32bit color with full features support)",
+  "server_editor_display_rdp_performance_middle": "Mdiddle(16bit color with only font smoothing and desktop composition)",
+  "server_editor_display_rdp_performance_low": "Low(8bit color with no feature support)",
   // server editor - Advantage group items
   "server_editor_advantage_resources": "Resources",
   "server_editor_advantage_clipboard": "Clipboard",
@@ -87,11 +105,18 @@
   "server_editor_advantage_ports": "Ports",
   "server_editor_advantage_printers": "Printers",
   "server_editor_advantage_smart_cards": "Smart Cards",
+  "server_editor_advantage_ssh_version": "SSH Verison",
 
 
 
   "server_editor_type_rdp": "RDP",
   "server_editor_type_import_from_prmj": "Import",
+
+
+
+  // about page
+  "about_page_how_to_use": "How to use",
+  "about_page_feedback": "Feedback",
 
 
 

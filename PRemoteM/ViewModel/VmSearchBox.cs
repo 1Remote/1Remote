@@ -74,26 +74,26 @@ namespace PRM.ViewModel
 
 
 
-        private ObservableCollection<ProtocolServerBaseInSearchBox> _dispServerlist = new ObservableCollection<ProtocolServerBaseInSearchBox>();
+        private ObservableCollection<ProtocolServerBaseInSearchBox> _servers = new ObservableCollection<ProtocolServerBaseInSearchBox>();
         /// <summary>
         /// ServerList data source for listbox
         /// </summary>
-        public ObservableCollection<ProtocolServerBaseInSearchBox> DispServerList
+        public ObservableCollection<ProtocolServerBaseInSearchBox> Servers
         {
-            get => _dispServerlist;
+            get => _servers;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispServerList), ref _dispServerlist, value);
+                SetAndNotifyIfChanged(nameof(Servers), ref _servers, value);
             }
         }
 
 
 
-        private int _selectedServerTextIndex;
-        public int SelectedServerTextIndex
+        private int _selectedServerIndex;
+        public int SelectedServerIndex
         {
-            get => _selectedServerTextIndex;
-            set => SetAndNotifyIfChanged(nameof(SelectedServerTextIndex), ref _selectedServerTextIndex, value);
+            get => _selectedServerIndex;
+            set => SetAndNotifyIfChanged(nameof(SelectedServerIndex), ref _selectedServerIndex, value);
         }
 
 
@@ -130,8 +130,9 @@ namespace PRM.ViewModel
 
         private void UpdateDispList(string keyWord)
         {
-            DispServerList.Clear();
+            Servers.Clear();
 
+            var tmp = new List<ProtocolServerBaseInSearchBox>();
             if (!string.IsNullOrEmpty(keyWord))
             {
                 var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
@@ -143,7 +144,7 @@ namespace PRM.ViewModel
                 foreach (var item in Global.GetInstance().ServerList.Where(x => x.GetType() != typeof(ProtocolServerNone)))
                 {
                     Debug.Assert(!string.IsNullOrEmpty(item.ClassVersion));
-                    Debug.Assert(!string.IsNullOrEmpty(item.ServerType));
+                    Debug.Assert(!string.IsNullOrEmpty(item.Protocol));
 
                     var mDispName = new List<List<bool>>();
                     var mSubTitle = new List<List<bool>>();
@@ -151,8 +152,8 @@ namespace PRM.ViewModel
                     var subTitle = item.SubTitle;
                     for (var i = 0; i < keyWordIsMatch.Count; i++)
                     {
-                        var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(dispName, keyWords[i], out var m1);
-                        var f2 = KeyWordMatchHelper.IsMatchPinyinKeyWords(subTitle, keyWords[i], out var m2);
+                        var f1 = dispName.IsMatchPinyinKeyWords(keyWords[i], out var m1);
+                        var f2 = subTitle.IsMatchPinyinKeyWords(keyWords[i], out var m2);
                         mDispName.Add(m1);
                         mSubTitle.Add(m2);
                         keyWordIsMatch[i] = f1 || f2;
@@ -226,16 +227,22 @@ namespace PRM.ViewModel
                             }
                         }
 
-                        DispServerList.Add(semite);
+                        tmp.Add(semite);
                     }
                 }
             }
 
-            if (!DispServerList.Any())
+            var odometer = tmp.OrderByDescending(x => x.Server.LastConnTime);
+
+            if (!odometer.Any())
                 PopupIsOpen = false;
             else
             {
-                SelectedServerTextIndex = 0;
+                foreach (var searchBox in odometer)
+                {
+                    Servers.Add(searchBox);
+                }
+                SelectedServerIndex = 0;
                 PopupIsOpen = true;
             }
         }
