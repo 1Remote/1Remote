@@ -2,6 +2,7 @@
 using PRM.Core.Protocol;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,10 +23,10 @@ namespace PRM.View
     /// </summary>
     public partial class FullScreenWindow : Window
     {
-
         public ProtocolHostBase ProtocolHostBase { get; private set; }= null;
         public FullScreenWindow(ProtocolHostBase content)
         {
+            Debug.Assert(content != null);
             InitializeComponent();
             SetProtocolHost(content);
             Loaded += (sender, args) =>
@@ -45,12 +46,9 @@ namespace PRM.View
         {
             this.Content = null;
             ProtocolHostBase = content;
-            if (content != null)
-            {
-                this.Title = ProtocolHostBase.ProtocolServer.DispName + " - " + ProtocolHostBase.ProtocolServer.SubTitle;
-                this.Icon = ProtocolHostBase.ProtocolServer.IconImg;
-                ProtocolHostBase.Parent = this;
-            }
+            this.Title = ProtocolHostBase.ProtocolServer.DispName + " - " + ProtocolHostBase.ProtocolServer.SubTitle;
+            this.Icon = ProtocolHostBase.ProtocolServer.IconImg;
+            ProtocolHostBase.ParentWindow = this;
             if (IsLoaded)
                 this.Content = content;
         }

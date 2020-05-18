@@ -12,24 +12,13 @@ using Shawn.Ulits;
 
 namespace PRM.Core.Model
 {
-    public sealed class SystemConfigLocality : SystemConfigBase
+    public sealed class SystemConfigLocality : NotifyPropertyChangedBase
     {
-        //protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
-        //{
-        //    if (oldValue == null && newValue == null) return;
-        //    if (oldValue != null && oldValue.Equals(newValue)) return;
-        //    if (newValue != null && newValue.Equals(oldValue)) return;
-        //    oldValue = newValue;
-        //    RaisePropertyChanged(propertyName);
-        //    Save();
-        //}
-
         private new readonly Ini _ini;
 
-        public SystemConfigLocality():base(null)
+        public SystemConfigLocality()
         {
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                Process.GetCurrentProcess().MainModule.ModuleName.Replace(".", "_"));
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             if (!Directory.Exists(appDateFolder))
                 Directory.CreateDirectory(appDateFolder);
             var fileName = Path.Combine(appDateFolder, "locality.ini");
@@ -37,6 +26,13 @@ namespace PRM.Core.Model
             Load();
         }
 
+
+        private string _mainWindowTabSelected = "";
+        public string MainWindowTabSelected
+        {
+            get => _mainWindowTabSelected;
+            set => SetAndNotifyIfChanged(nameof(MainWindowTabSelected), ref _mainWindowTabSelected, value);
+        }
 
         private double _mainWindowWidth = 680;
         public double MainWindowWidth
@@ -54,26 +50,63 @@ namespace PRM.Core.Model
         }
 
 
+
+        private double _mainWindowTop = -1;
+        public double MainWindowTop
+        {
+            get => _mainWindowTop;
+            set => SetAndNotifyIfChanged(nameof(MainWindowTop), ref _mainWindowTop, value);
+        }
+
+
+        private double _mainWindowLeft = -1;
+        public double MainWindowLeft
+        {
+            get => _mainWindowLeft;
+            set => SetAndNotifyIfChanged(nameof(MainWindowLeft), ref _mainWindowLeft, value);
+        }
+
+
+
+
+        private double _tabWindowWidth = 800;
+        public double TabWindowWidth
+        {
+            get => _tabWindowWidth;
+            set => SetAndNotifyIfChanged(nameof(TabWindowWidth), ref _tabWindowWidth, value);
+        }
+
+
+        private double _tabWindowHeight = 600;
+        public double TabWindowHeight
+        {
+            get => _tabWindowHeight;
+            set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
+        }
         #region Interface
         private const string _sectionName = "Locality";
-        public override void Save()
+        public void Save()
         {
             _ini.WriteValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth.ToString());
             _ini.WriteValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight.ToString());
+            _ini.WriteValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop.ToString());
+            _ini.WriteValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft.ToString());
+            _ini.WriteValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth.ToString());
+            _ini.WriteValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight.ToString());
+            _ini.WriteValue(nameof(MainWindowTabSelected).ToLower(), _sectionName, MainWindowTabSelected);
             _ini.Save();
         }
 
-        public override void Load()
+        public void Load()
         {
-            MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
-            MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
+            _mainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
+            _mainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
+            _mainWindowTop = _ini.GetValue(nameof(MainWindowTop).ToLower(), _sectionName, MainWindowTop);
+            _mainWindowLeft = _ini.GetValue(nameof(MainWindowLeft).ToLower(), _sectionName, MainWindowLeft);
+            _tabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
+            _tabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
+            MainWindowTabSelected = _ini.GetValue(nameof(MainWindowTabSelected).ToLower(), _sectionName, MainWindowTabSelected);
         }
-
-        public override void Update(SystemConfigBase newConfig)
-        {
-            UpdateBase(this, newConfig, typeof(SystemConfigLocality));
-        }
-
         #endregion
     }
 }

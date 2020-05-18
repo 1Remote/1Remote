@@ -63,14 +63,11 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.112.0\lib\net451\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -79,16 +76,33 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\Config.cs" />
+    <Compile Include="DB\OrmTableBase.cs" />
+    <Compile Include="DB\SQLite.cs" />
+    <Compile Include="Model\Global.cs" />
     <Compile Include="Model\SystemConfig.cs" />
+    <Compile Include="Model\SystemConfig.DataSecurity.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.Locality.cs" />
     <Compile Include="Model\SystemConfig.QuickConnect.cs" />
+    <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
+    <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
-    <Compile Include="Protocol\ProtocolServerIcons.cs" />
+    <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
+      <DependentUpon>PuttyHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
+    <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
+      <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\Putty\PuttyOptions.cs" />
+    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
+    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
+    <Compile Include="Protocol\ServerIcons.cs" />
     <Compile Include="Protocol\ProtocolServerNone.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
@@ -97,6 +111,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ulits\AES256.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPalette.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorSwatchItem.cs" />
@@ -120,9 +135,8 @@
     <Compile Include="Ulits\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="DB\PRM_DAO.cs" />
     <Compile Include="Protocol\ServerFactory.cs" />
-    <Compile Include="DB\ServerOrm.cs" />
+    <Compile Include="DB\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
@@ -133,6 +147,9 @@
       <DependentUpon>PageHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ulits\PageHost\StoryboardHelpers.cs" />
+    <Compile Include="Ulits\PasswordEx\PasswordBoxEx.cs" />
+    <Compile Include="Ulits\RSA\RSA.cs" />
+    <Compile Include="Ulits\RSA\RSA_PEM.cs" />
     <Compile Include="Ulits\SetSelfStartingHelper.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode1.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode2.cs" />
@@ -145,6 +162,9 @@
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="sqlite3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
     <Resource Include="Resources\Logo\logo256.png" />
@@ -152,6 +172,7 @@
     <Resource Include="Ulits\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BuildVersionGenerator.ps1" />
     <None Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -169,6 +190,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Protocol\Putty\ProtocolPuttyForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -176,6 +201,10 @@
     <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Protocol\Putty\Host\PuttyHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\Converter\Converter.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -213,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Ulits\PasswordEx\PasswordBoxEx.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Ulits\TinyPinyin.Net\RefInfo.txt" />
@@ -228,12 +261,14 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets'))" />
-  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>PowerShell  -ExecutionPolicy RemoteSigned -file "$(ProjectDir)BuildVersionGenerator.ps1"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

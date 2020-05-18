@@ -180,7 +180,7 @@
                     </Grid>
 
                     <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
-                               Text="{Binding Server.ServerType}" 
+                               Text="{Binding Server.ProtocolDisplayName}" 
                                FontSize="18" FontWeight="Bold"
                                Opacity="0.1"
                                HorizontalAlignment="Right"
@@ -318,8 +318,8 @@
                 <Grid>
                     <ListBox x:Name="ListBoxSelections" MaxHeight="402"
                                  BorderThickness="0"
-                                 SelectedIndex="{Binding SelectedServerTextIndex}" 
-                                 ItemsSource="{Binding DispServerList}"
+                                 SelectedIndex="{Binding SelectedServerIndex}" 
+                                 ItemsSource="{Binding Servers}"
                                  Background="{DynamicResource MainColor1Brush}"
                                  Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                  Style="{DynamicResource SearchBoxSelectionList}">

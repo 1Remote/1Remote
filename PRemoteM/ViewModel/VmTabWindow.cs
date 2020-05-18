@@ -18,44 +18,6 @@ namespace PRM.ViewModel
     public class VmTabWindow : NotifyPropertyChangedBase
     {
         public readonly string Token;
-
-        private ObservableCollection<TabItemViewModel> _items = new ObservableCollection<TabItemViewModel>();
-        public ObservableCollection<TabItemViewModel> Items
-        {
-            get => _items;
-            //set
-            //{
-            //    SetAndNotifyIfChanged(nameof(Items), ref _items, value);
-            //    RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            //    Items.CollectionChanged += (sender, args) => 
-            //        RaisePropertyChanged(nameof(BtnCloseAllVisibility));
-            //}
-        }
-
-        public Visibility BtnCloseAllVisibility => 
-            Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-        
-        private TabItemViewModel _selectedItem = new TabItemViewModel();
-        public TabItemViewModel SelectedItem
-        {
-            get => _selectedItem;
-            set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
-        }
-
-
-        private readonly IInterTabClient _interTabClient = new InterTabClient();
-        public IInterTabClient InterTabClient => _interTabClient;
-
-
-        
-        private WindowState _windowState = new WindowState();
-        public WindowState WindowState
-        {
-            get => _windowState;
-            set => SetAndNotifyIfChanged(nameof(WindowState), ref _windowState, value);
-        }
-
-
         public VmTabWindow(string token)
         {
             Token = token;
@@ -63,6 +25,27 @@ namespace PRM.ViewModel
                 RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
 
+
+
+        public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
+
+        public Visibility BtnCloseAllVisibility => Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+
+        private TabItemViewModel _selectedItem = new TabItemViewModel();
+        public TabItemViewModel SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+                SelectedItem?.Content?.MakeItFocus();
+            }
+        }
+
+        #region drag drop tab
+        private readonly IInterTabClient _interTabClient = new InterTabClient();
+        public IInterTabClient InterTabClient => _interTabClient;
+        #endregion
 
 
         #region CMD
@@ -75,27 +58,11 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
+                        if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
+                            WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;
-            }
-        }
-
-
-        private RelayCommand _cmdSwitchFullScreenNormal;
-        public RelayCommand CmdSwitchFullScreenNormal
-        {
-            get
-            {
-                if (_cmdSwitchFullScreenNormal == null)
-                {
-                    _cmdSwitchFullScreenNormal = new RelayCommand((o) =>
-                    {
-                        this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-                    }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
-                }
-                return _cmdSwitchFullScreenNormal;
             }
         }
 
@@ -126,7 +93,7 @@ namespace PRM.ViewModel
             var v = new TabWindow(token);
             var vm = v.Vm;
             WindowPool.AddTab(v);
-            return new NewTabHost<Window>(v, v.TabablzControl);            
+            return new NewTabHost<Window>(v, v.TabablzControl);
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {

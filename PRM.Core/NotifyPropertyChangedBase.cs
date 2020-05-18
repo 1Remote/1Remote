@@ -1,9 +1,16 @@
 ﻿using System.ComponentModel;
+using System.Windows.Forms.VisualStyles;
 
 namespace PRM.Core
 {
     public class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
+        protected bool NotifyPropertyChangedEnabled = true;
+
+        public void SetNotifyPropertyChangedEnabled(bool isEnabled)
+        {
+            NotifyPropertyChangedEnabled = isEnabled;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -13,7 +20,8 @@ namespace PRM.Core
         /// <param name="propertyName">属性名称</param>
         public void RaisePropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (NotifyPropertyChangedEnabled)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

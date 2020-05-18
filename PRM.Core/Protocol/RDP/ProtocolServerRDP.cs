@@ -13,6 +13,8 @@ namespace PRM.Core.Protocol.RDP
         AutoResize = 0,
         Stretch = 1,
         Fixed = 2,
+        StretchFullScreen = 3,
+        FixedFullScreen = 4,
     }
     public enum ERdpFullScreenFlag
     {
@@ -30,7 +32,7 @@ namespace PRM.Core.Protocol.RDP
     }
 
 
-    public class ProtocolServerRDP : ProtocolServerBase
+    public class ProtocolServerRDP : ProtocolServerWithAddrPortUserPwdBase
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
@@ -51,66 +53,65 @@ namespace PRM.Core.Protocol.RDP
 
         public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
-            UserName = "Administrator";
+            base.Port = "3389";
+            base.UserName = "Administrator";
         }
-
-        #region Conn
-        private string _address;
-
-        public string Address
-        {
-            get => _address;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(Address), ref _address, value);
-            }
-        }
-
-
-        private int _port = 0;
-        public int Port
-        {
-            get => _port > 0 ? _port : 3389;
-            set => SetAndNotifyIfChanged(nameof(Port), ref _port, value);
-        }
-
-
-        private string _userName;
-        public string UserName
-        {
-            get => _userName;
-            set => SetAndNotifyIfChanged(nameof(UserName), ref _userName, value);
-        }
-
-        private string _password;
-        public string Password
-        {
-            get => _password;
-            set
-            {
-                // TODO 当输入为明文时，执行加密
-                SetAndNotifyIfChanged(nameof(Password), ref _password, value);
-            }
-        }
-
-        #endregion
 
 
         #region Display
 
-        private ERdpFullScreenFlag _rdpFullScreenFlag;
+        private ERdpFullScreenFlag _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
         public ERdpFullScreenFlag RdpFullScreenFlag
         {
             get => _rdpFullScreenFlag;
-            set => SetAndNotifyIfChanged(nameof(RdpFullScreenFlag), ref _rdpFullScreenFlag, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(RdpFullScreenFlag), ref _rdpFullScreenFlag, value);
+                switch (value)
+                {
+                    case ERdpFullScreenFlag.EnableFullAllScreens:
+                        IsConnWithFullScreen = true;
+                        break;
+                    case ERdpFullScreenFlag.EnableFullScreen:
+                        break;
+                    case ERdpFullScreenFlag.Disable:
+                        IsConnWithFullScreen = false;
+                        if(RdpWindowResizeMode == ERdpWindowResizeMode.FixedFullScreen)
+                            RdpWindowResizeMode = ERdpWindowResizeMode.Fixed;
+                        if(RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
+                            RdpWindowResizeMode = ERdpWindowResizeMode.Stretch;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                }
+            }
         }
 
 
-        private ERdpWindowResizeMode _rdpWindowResizeMode;
+        private bool _isConnWithFullScreen = false;
+        public bool IsConnWithFullScreen
+        {
+            get => _isConnWithFullScreen;
+            set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
+        }
+
+        private ERdpWindowResizeMode _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
         public ERdpWindowResizeMode RdpWindowResizeMode
         {
             get => _rdpWindowResizeMode;
-            set => SetAndNotifyIfChanged(nameof(RdpWindowResizeMode), ref _rdpWindowResizeMode, value);
+            set
+            {
+                var tmp = value;
+                if (RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
+                {
+                    if (tmp == ERdpWindowResizeMode.FixedFullScreen)
+                        tmp = ERdpWindowResizeMode.Fixed;
+                    if (tmp == ERdpWindowResizeMode.StretchFullScreen)
+                        tmp = ERdpWindowResizeMode.Stretch;
+                }
+                _rdpWindowResizeMode = tmp;
+                RaisePropertyChanged(nameof(RdpWindowResizeMode));
+            }
         }
 
 
@@ -131,7 +132,7 @@ namespace PRM.Core.Protocol.RDP
 
 
 
-        private EDisplayPerformance _displayPerformance;
+        private EDisplayPerformance _displayPerformance = EDisplayPerformance.Auto;
         public EDisplayPerformance DisplayPerformance
         {
             get => _displayPerformance;
@@ -232,14 +233,14 @@ namespace PRM.Core.Protocol.RDP
 
         #endregion
 
+
+
         private LocalSetting _autoSetting = new LocalSetting();
         public LocalSetting AutoSetting
         {
             get => _autoSetting;
             set => SetAndNotifyIfChanged(nameof(AutoSetting), ref _autoSetting, value);
         }
-
-
 
 
         public override string ToJsonString()
@@ -258,11 +259,6 @@ namespace PRM.Core.Protocol.RDP
             {
                 return null;
             }
-        }
-
-        protected override string GetSubTitle()
-        {
-            return Address + " @ " + UserName;
         }
     }
 }

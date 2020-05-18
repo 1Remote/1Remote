@@ -9,6 +9,7 @@
   "button_exit": "退出",
   "button_add": "添加",
   "button_save": "保存",
+  "button_back": "返回",
   "button_cancel": "取消",
   "button_open": "打开",
   "tab_all": "全部",
@@ -23,8 +24,6 @@
   // system options
   "system_options_general_title": "常规",
   "system_options_general_item_language": "语言",
-  "system_options_general_item_database": "数据库",
-  "system_options_general_item_database_can_not_open": "所选文件不是数据库或该数据库已被加密！",
   "system_options_general_item_start": "启动",
   "system_options_general_item_start_when_win_login": "开机自启动",
   "system_options_general_item_start_minimized": "启动时最小化到托盘",
@@ -33,12 +32,26 @@
   "system_options_general_item_server_order_by_protocol": "按协议",
   "system_options_general_item_server_order_by_add_time_asc": "按添加顺序",
   "system_options_general_item_server_order_by_add_time_desc": "按添加顺序（倒序）",
+  "system_options_general_item_icons_folder_path": "自定图标路径",
+  "system_options_general_item_icons_folder_path_description": "放置自定图标",
 
   "system_options_quick_title": "快速连接",
   "system_options_quick_description": "快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。",
-  "system_options_quick_title_enable": "启用",
-  "system_options_quick_title_hot_key": "快捷键",
+  "system_options_quick_enable": "启用",
+  "system_options_quick_hot_key": "快捷键",
 
+  "system_options_data_security_title": "数据与安全",
+  "system_options_data_security_database": "数据库",
+  "system_options_data_security_rsa_title": "RSA加密",
+  "system_options_data_security_rsa_encrypt": "生成加密",
+  "system_options_data_security_rsa_decrypt": "清除加密",
+  "system_options_data_security_rsa_public_key": "公钥",
+  "system_options_data_security_rsa_private_key_path": "私钥",
+  "system_options_data_security_info_data_processing": "数据处理中，请勿关闭程序。",
+  "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
+  "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
+  "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
+  "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
 
 
   // server card operate
@@ -63,20 +76,25 @@
   "server_editor_connection_port": "端口",
   "server_editor_connection_username": "用户名",
   "server_editor_connection_password": "密码",
+  "server_editor_connection_private_key_checker": "使用私钥连接",
+  "server_editor_connection_private_key": "私钥",
   // server editor - display group items
   "server_editor_display_full_screen_flag": "全屏模式",
   "server_editor_display_full_screen_flag_window": "禁用",
   "server_editor_display_full_screen_flag_full_screen": "允许（单显示器）",
   "server_editor_display_full_screen_flag_all_screens": "允许（所有显示器）",
+  "server_editor_display_connect_with_full_screen": "连接即全屏",
   "server_editor_display_window_resize_mode": "窗口尺寸",
   "server_editor_display_window_resize_mode_auto": "自动调整",
   "server_editor_display_window_resize_mode_stretch": "拉伸显示",
+  "server_editor_display_window_resize_mode_stretch_full_screen": "拉伸显示(全屏)",
   "server_editor_display_window_resize_mode_fixed": "固定分辨率",
-  "server_editor_display_performance": "桌面体验",
-  "server_editor_display_performance_auto": "自动（根据网速）",
-  "server_editor_display_performance_high": "高（32位色彩与所有特性）",
-  "server_editor_display_performance_middle": "中（16位色彩与字体平滑、桌面合成）",
-  "server_editor_display_performance_low": "低（8位色彩无任何显示增强）",
+  "server_editor_display_window_resize_mode_fixed_full_screen": "固定分辨率(全屏)",
+  "server_editor_display_rdp_performance": "桌面体验",
+  "server_editor_display_rdp_performance_auto": "自动（根据网速）",
+  "server_editor_display_rdp_performance_high": "高（32位色彩与所有特性）",
+  "server_editor_display_rdp_performance_middle": "中（16位色彩与字体平滑、桌面合成）",
+  "server_editor_display_rdp_performance_low": "低（8位色彩无任何显示增强）",
   // server editor - Advantage group items
   "server_editor_advantage_resources": "资源",
   "server_editor_advantage_clipboard": "剪贴板",
@@ -87,11 +105,18 @@
   "server_editor_advantage_ports": "端口",
   "server_editor_advantage_printers": "打印机",
   "server_editor_advantage_smart_cards": "智能卡",
+  "server_editor_advantage_ssh_version": "SSH Verison",
 
 
 
   "server_editor_type_rdp": "RDP连接",
   "server_editor_type_import_from_prmj": "导入",
+
+
+
+  // about page
+  "about_page_how_to_use": "帮助",
+  "about_page_feedback": "提意见/需求",
 
 
 

@@ -117,11 +117,11 @@ namespace PRM.View
                     {
                         lock (_closeLocker)
                         {
-                            var i = _vmSearchBox.SelectedServerTextIndex;
-                            var j = _vmSearchBox.DispServerList.Count;
+                            var i = _vmSearchBox.SelectedServerIndex;
+                            var j = _vmSearchBox.Servers.Count;
                             if (i < j && i >= 0)
                             {
-                                var s = _vmSearchBox.DispServerList[i];
+                                var s = _vmSearchBox.Servers[i];
                                 s.Server.Conn();
                             }
                         }
@@ -133,9 +133,9 @@ namespace PRM.View
                     {
                         lock (_keyDownLocker)
                         {
-                            if (_vmSearchBox.SelectedServerTextIndex < _vmSearchBox.DispServerList.Count - 1)
+                            if (_vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count - 1)
                             {
-                                ++_vmSearchBox.SelectedServerTextIndex;
+                                ++_vmSearchBox.SelectedServerIndex;
                                 ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                             }
                         }
@@ -146,9 +146,9 @@ namespace PRM.View
                     {
                         lock (_keyDownLocker)
                         {
-                            if (_vmSearchBox.SelectedServerTextIndex > 0)
+                            if (_vmSearchBox.SelectedServerIndex > 0)
                             {
-                                --_vmSearchBox.SelectedServerTextIndex;
+                                --_vmSearchBox.SelectedServerIndex;
                                 ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                             }
                         }
@@ -159,10 +159,10 @@ namespace PRM.View
                     {
                         lock (_keyDownLocker)
                         {
-                            var i = _vmSearchBox.SelectedServerTextIndex - 5;
+                            var i = _vmSearchBox.SelectedServerIndex - 5;
                             if (i < 0)
                                 i = 0;
-                            _vmSearchBox.SelectedServerTextIndex = i;
+                            _vmSearchBox.SelectedServerIndex = i;
                             ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                         }
                         break;
@@ -172,10 +172,10 @@ namespace PRM.View
                     {
                         lock (_keyDownLocker)
                         {
-                            var i = _vmSearchBox.SelectedServerTextIndex + 5;
-                            if (i > _vmSearchBox.DispServerList.Count - 1)
-                                i = _vmSearchBox.DispServerList.Count - 1;
-                            _vmSearchBox.SelectedServerTextIndex = i;
+                            var i = _vmSearchBox.SelectedServerIndex + 5;
+                            if (i > _vmSearchBox.Servers.Count - 1)
+                                i = _vmSearchBox.Servers.Count - 1;
+                            _vmSearchBox.SelectedServerIndex = i;
                             ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                         }
                         break;

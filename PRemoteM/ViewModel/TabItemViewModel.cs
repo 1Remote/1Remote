@@ -32,16 +32,24 @@ namespace PRM.Core.Ulits.DragablzTab
                 SetAndNotifyIfChanged(nameof(Content), ref _content, value);
                 MarkColorHex = Content.ProtocolServer.MarkColorHex;
                 IconImg = Content.ProtocolServer.IconImg;
+                CanResizeNow = value.CanResizeNow();
+                value.OnCanResizeNowChanged += () => CanResizeNow = value.CanResizeNow();
             }
         }
-
-
-        private bool _isSelected;
-        public bool IsSelected
+        
+        private bool _canResizeNow = true;
+        public bool CanResizeNow
         {
-            get => _isSelected;
-            set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
+            get => _canResizeNow;
+            set => SetAndNotifyIfChanged(nameof(CanResizeNow), ref _canResizeNow, value);
         }
+
+        //private bool _isSelected;
+        //public bool IsSelected
+        //{
+        //    get => _isSelected;
+        //    set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
+        //}
 
 
 
@@ -66,10 +74,7 @@ namespace PRM.Core.Ulits.DragablzTab
         public System.Windows.Media.Imaging.BitmapSource IconImg
         {
             get => _iconImg;
-            private set
-            {
-                SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
-            }
+            private set => SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
         }
     }
 }

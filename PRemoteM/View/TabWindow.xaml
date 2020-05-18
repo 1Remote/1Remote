@@ -7,8 +7,7 @@
         xmlns:dragablzTab="clr-namespace:PRM.Core.Ulits.DragablzTab" 
         xmlns:view="clr-namespace:PRM.View"
         mc:Ignorable="d"
-        WindowState="{Binding WindowState}"
-        Title="Host - PRemoteM" Height="450" Width="800">
+        Title="Host - PRemoteM" Height="600" Width="800">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
@@ -28,7 +27,7 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="6"/>
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 6 8 8"/>
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
             </ControlTemplate.Triggers>
@@ -89,6 +88,7 @@
 
             <DataTemplate DataType="{x:Type dragablzTab:TabItemViewModel}">
                 <!--leave some border of remote desktop-->
+                <!--TODO 从同一位置读取该值-->
                 <Grid Margin="2 0 2 2">
                     <ContentControl Content="{Binding Content}" Background="Transparent"/>
                 </Grid>
@@ -174,7 +174,16 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="ResizeMode" Value="CanResize"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                    <Setter Property="ResizeMode" Value="NoResize"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
 
     <Grid Background="{DynamicResource MainBgColorBrush}">
         <Grid.RowDefinitions>
@@ -224,27 +233,41 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}">
-                <Rectangle Width="11" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
+                <Rectangle Width="15"  Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
             </Button>
 
-            <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Name="BtnMaximize" Focusable="False">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Grid>
-                    <Rectangle Height="15" Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75">
-                        <Rectangle.Style>
-                            <Style TargetType="Rectangle">
+
+                    <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
+                          Stretch="Uniform" >
+                        <Path.Style>
+                            <Style TargetType="Path">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
                                         <Setter Property="Visibility" Value="Hidden"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Rectangle.Style>
-                    </Rectangle>
+                        </Path.Style>
+                    </Path>
 
-                    <Canvas>
-                        <Canvas.Style>
-                            <Style TargetType="Canvas">
+                    <Path Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Height="15" Width="15" 
+                          Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
+                          Stretch="Uniform" >
+                        <Path.Style>
+                            <Style TargetType="Path">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
@@ -252,20 +275,29 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Canvas.Style>
-                        <Polyline Points="2.375,2 2.375,0.375 10.625,0.375 10.625,8.625 9,8.625" StrokeThickness="0.75" Stroke="{DynamicResource MainColor1ForegroundBrush}"/>
-                        <Rectangle Width="9" Height="9" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Margin="0,2,2,0"/>
-                    </Canvas>
+                        </Path.Style>
+                    </Path>
                 </Grid>
             </Button>
 
 
-            <Button Command="{Binding CmdHostGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" Style="{StaticResource WinTitleBarBtnStyle}">
+            <Button Command="{Binding CmdHostGoFullScreen}" 
+                    CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
             </Button>
-
+            
 
             <Button Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
                 <Button.Style>
@@ -289,9 +321,10 @@
                 </Grid>
             </Button>
 
-            <Button Name="BtnClose" >
+            <Button Name="BtnClose" Focusable="False">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                         <Style.Triggers>
                             <Trigger Property="Button.IsMouseOver" Value="True">
                                 <Setter Property="Button.Background" Value="Red" />
@@ -299,8 +332,11 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-                <Grid Height="15" Width="15">
-                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
+
+                <Grid Height="15" Width="15" >
+                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
+                          L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
+                          Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
             </Button>
         </StackPanel>
@@ -314,7 +350,7 @@
             <dragablz:TabablzControl x:Name="TabablzControl"
                                      BorderThickness="0"
                                      Margin="0" Padding="0"
-                                     Background="Transparent"
+                                     Background="{DynamicResource MainColor1Brush}"
                                      SelectionChanged="TabablzControl_OnSelectionChanged"
                                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                      ItemsSource="{Binding Items}"

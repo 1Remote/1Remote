@@ -5,6 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                         xmlns:local="clr-namespace:PRM.Core.Protocol.RDP"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
+                        xmlns:ulits="clr-namespace:Shawn.Ulits"
                         mc:Ignorable="d" 
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
@@ -12,6 +13,7 @@
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
+                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Ulits/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </StackPanel.Resources>
@@ -24,11 +26,14 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Address}"></TextBox>
+                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Port}" Width="50" HorizontalAlignment="Left"></TextBox>
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                                 Width="50" HorizontalAlignment="Left"
+                                 InputMethod.IsInputMethodEnabled="False"
+                                 InputScope="Number"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -37,7 +42,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding UserName}"></TextBox>
+                        <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -46,7 +51,9 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <TextBox Text="{Binding Password}"></TextBox>
+                        <!--<TextBox Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}"></TextBox>-->
+                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource PasswordBoxEx}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -68,6 +75,38 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}"/>
                         </ComboBox>
                     </Grid>
+
+                    <StackPanel Orientation="Horizontal" Margin="20 0 0 0" VerticalAlignment="Center">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullScreen}">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <CheckBox Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
+                                                <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
@@ -77,11 +116,14 @@
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
                             <local:ConverterERdpWindowResizeMode x:Key="ConverterERdpWindowResizeMode"/>
+                            <local:ConverterTrueWhenERdpFullScreen x:Key="ConverterTrueWhenERdpFullScreen"/>
                         </Grid.Resources>
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_auto}"/>
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}"/>
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}"/>
+                            <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}"/>
+                            <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}"/>
                         </ComboBox>
                     </Grid>
 
@@ -114,16 +156,16 @@
 
             <Grid Style="{StaticResource ServerEditorRow}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_performance}"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_rdp_performance}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <Grid.Resources>
                             <local:ConverterEDisplayPerformance x:Key="ConverterEDisplayPerformance"/>
                         </Grid.Resources>
                         <ComboBox SelectedIndex="{Binding DisplayPerformance,Converter={StaticResource ConverterEDisplayPerformance}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_auto}" ToolTip="{DynamicResource server_editor_display_performance_auto}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_low}" ToolTip="{DynamicResource server_editor_display_performance_low}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_middle}" ToolTip="{DynamicResource server_editor_display_performance_middle}"/>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_performance_high}" ToolTip="{DynamicResource server_editor_display_performance_high}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_auto}" ToolTip="{DynamicResource server_editor_display_rdp_performance_auto}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_low}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_middle}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}"/>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_high}" ToolTip="{DynamicResource server_editor_display_rdp_performance_high}"/>
                         </ComboBox>
                     </Grid>
                 </StackPanel>

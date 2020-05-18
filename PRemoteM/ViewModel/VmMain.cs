@@ -9,7 +9,6 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-
         private string _dispNameFilter = "";
         public string DispNameFilter
         {
@@ -75,14 +74,13 @@ namespace PRM.ViewModel
                             Page = new SystemConfigPage(this),
                         };
                         SysOptionsMenuIsOpen = false;
-
                     }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
             }
         }
 
-        
+
         private RelayCommand _cmdGoAboutPage;
         public RelayCommand CmdGoAboutPage
         {
@@ -92,18 +90,37 @@ namespace PRM.ViewModel
                 {
                     _cmdGoAboutPage = new RelayCommand((o) =>
                     {
-                        // TODO open about
-                        //DispPage = new AnimationPage()
-                        //{
-                        //    InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                        //    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        //    Page = new AboutPage(),
-                        //};
-                        //SysOptionsMenuIsOpen = false;
+                        DispPage = new AnimationPage()
+                        {
+                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                            Page = new AboutPage(this),
+                        };
+                        SysOptionsMenuIsOpen = false;
 
-                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                    }, o => DispPage?.Page?.GetType() != typeof(AboutPage));
                 }
                 return _cmdGoAboutPage;
+            }
+        }
+
+
+
+
+        private RelayCommand _cmdGoServerListPage;
+        public RelayCommand CmdGoServerListPage
+        {
+            get
+            {
+                if (_cmdGoServerListPage == null)
+                {
+                    _cmdGoServerListPage = new RelayCommand((o) =>
+                    {
+                        if (DispPage?.Page?.GetType() != null)
+                            DispPage = null;
+                    }, o => DispPage?.Page?.GetType() != null && DispPage?.Page?.GetType() != typeof(ServerListPage));
+                }
+                return _cmdGoServerListPage;
             }
         }
         #endregion

@@ -144,7 +144,7 @@ namespace Shawn.Ulits
         }
         public static byte[] ToBytes<T>(this T source) where T : BitmapSource
         {
-            return source.ToBitmap().ToBytes();
+            return source?.ToBitmap()?.ToBytes();
         }
         
         public static string ToBase64(this Image img)
@@ -168,7 +168,6 @@ namespace Shawn.Ulits
 
             using (var ms = new MemoryStream())
             {
-                // TODO 适配GIF？
                 src.Save(ms, ImageFormat.Png);
                 ms.Seek(0, SeekOrigin.Begin);
                 BitmapImage bitmapImage = new BitmapImage();
@@ -368,7 +367,23 @@ namespace Shawn.Ulits
         #endregion
 
 
-
+        
+        public static BitmapSource ReadImgFile(string filePath)
+        {
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = File.OpenRead(filePath);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                return bitmap;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
 
         public static bool WriteTransformedBitmapToFile<T>(BitmapSource bitmapSource, string fileName)
             where T : BitmapEncoder, new()

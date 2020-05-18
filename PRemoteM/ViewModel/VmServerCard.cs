@@ -53,7 +53,7 @@ namespace PRM.ViewModel
                 {
                     _cmdEditServer = new RelayCommand((o) =>
                     {
-                        Host.Host.DispPage = new AnimationPage()
+                        Host.Vm.DispPage = new AnimationPage()
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
@@ -77,7 +77,7 @@ namespace PRM.ViewModel
                     {
                         var s = (ProtocolServerBase) this.Server.Clone();
                         s.Id = 0;
-                        Host.Host.DispPage = new AnimationPage()
+                        Host.Vm.DispPage = new AnimationPage()
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using PRM.Core;
 using PRM.Core.DB;
@@ -10,10 +11,17 @@ namespace PRM.ViewModel
 {
     public class VmServerListPage : NotifyPropertyChangedBase
     {
-        public readonly VmMain Host;
+        public readonly VmMain Vm;
         public VmServerListPage(VmMain vmMain)
         {
-            Host = vmMain;
+            Debug.Assert(vmMain != null);
+            Vm = vmMain;
+
+            var lastSelectedGroup = "";
+            if (!string.IsNullOrEmpty(SystemConfig.GetInstance().Locality.MainWindowTabSelected))
+            {
+                lastSelectedGroup = SystemConfig.GetInstance().Locality.MainWindowTabSelected;
+            }
 
             RebuildVmServerCardList();
             Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
@@ -26,21 +34,36 @@ namespace PRM.ViewModel
                 if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
                     RebuildVmServerCardList();
             };
+
+            if (!string.IsNullOrEmpty(lastSelectedGroup) && ServerGroupList.Contains(lastSelectedGroup))
+            {
+                SelectedGroup = lastSelectedGroup;
+            }
         }
 
+        private VmServerCard _selectedServerCard = null;
+        public VmServerCard SelectedServerCard
+        {
+            get => _selectedServerCard;
+            set
+            {
+                DispNameFilter = "";
+                SetAndNotifyIfChanged(nameof(SelectedServerCard), ref _selectedServerCard, value);
+            }
+        }
 
-        private ObservableCollection<VmServerCard> _dispServerList = new ObservableCollection<VmServerCard>();
+        private ObservableCollection<VmServerCard> _serverCards = new ObservableCollection<VmServerCard>();
         /// <summary>
         /// AllServerList data source for list view
         /// </summary>
-        public ObservableCollection<VmServerCard> DispServerList
+        public ObservableCollection<VmServerCard> ServerCards
         {
-            get => _dispServerList;
+            get => _serverCards;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispServerList), ref _dispServerList, value);
+                SetAndNotifyIfChanged(nameof(ServerCards), ref _serverCards, value);
                 OrderServerList();
-                DispServerList.CollectionChanged += (sender, args) => { OrderServerList(); };
+                ServerCards.CollectionChanged += (sender, args) => { OrderServerList(); };
             }
         }
 
@@ -60,6 +83,8 @@ namespace PRM.ViewModel
             {
                 DispNameFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
+                SystemConfig.GetInstance().Locality.MainWindowTabSelected = value;
+                SystemConfig.GetInstance().Locality.Save();
             }
         }
 
@@ -75,7 +100,7 @@ namespace PRM.ViewModel
 
         private void RebuildVmServerCardList()
         {
-            _dispServerList.Clear();
+            _serverCards.Clear();
             foreach (var serverAbstract in Global.GetInstance().ServerList)
             {
                 serverAbstract.PropertyChanged += (sender, args) =>
@@ -87,7 +112,7 @@ namespace PRM.ViewModel
                             break;
                     }
                 };
-                DispServerList.Add(new VmServerCard(serverAbstract, this));
+                ServerCards.Add(new VmServerCard(serverAbstract, this));
             }
             OrderServerList();
             RebuildGroupList();
@@ -98,7 +123,7 @@ namespace PRM.ViewModel
             var selectedGroup = _selectedGroup;
 
             ServerGroupList.Clear();
-            foreach (var serverAbstract in DispServerList.Select(x => x.Server))
+            foreach (var serverAbstract in ServerCards.Select(x => x.Server))
             {
                 if (!string.IsNullOrEmpty(serverAbstract.GroupName) &&
                     !ServerGroupList.Contains(serverAbstract.GroupName))
@@ -117,26 +142,26 @@ namespace PRM.ViewModel
         private void OrderServerList()
         {
             // Delete ProtocolServerNone
-            var noneServers = _dispServerList.Where(s => s.GetType() == typeof(ProtocolServerNone) || s.Server == null || s.Server.Id == 0).ToArray();
+            var noneServers = _serverCards.Where(s => s.GetType() == typeof(ProtocolServerNone) || s.Server == null || s.Server.Id == 0).ToArray();
             foreach (var s in noneServers)
             {
-                _dispServerList.Remove(s);
+                _serverCards.Remove(s);
             }
 
             // TODO flag to order by LassConnTime
             switch (SystemConfig.GetInstance().General.ServerOrderBy)
             {
                 case EnumServerOrderBy.Name:
-                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderBy(s => s.Server.DispName).ThenBy(s => s.Server.Id));
+                    _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderBy(s => s.Server.DispName).ThenBy(s => s.Server.Id));
                     break;
                 case EnumServerOrderBy.AddTimeAsc:
-                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderBy(s => s.Server.Id));
+                    _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderBy(s => s.Server.Id));
                     break;
                 case EnumServerOrderBy.AddTimeDesc:
-                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.Id));
+                    _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderByDescending(s => s.Server.Id));
                     break;
                 case EnumServerOrderBy.Protocol:
-                    _dispServerList = new ObservableCollection<VmServerCard>(DispServerList.OrderByDescending(s => s.Server.ServerType).ThenBy(s => s.Server.DispName));
+                    _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderByDescending(s => s.Server.Protocol).ThenBy(s => s.Server.DispName));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -146,10 +171,10 @@ namespace PRM.ViewModel
             var addServerCard = new VmServerCard(new ProtocolServerNone(), this);
             addServerCard.Server.GroupName = SelectedGroup;
             //addServerCard.OnAction += VmServerCardOnAction;
-            _dispServerList.Add(addServerCard);
+            _serverCards.Add(addServerCard);
 
 
-            base.RaisePropertyChanged(nameof(DispServerList));
+            base.RaisePropertyChanged(nameof(ServerCards));
         }
     }
 }
