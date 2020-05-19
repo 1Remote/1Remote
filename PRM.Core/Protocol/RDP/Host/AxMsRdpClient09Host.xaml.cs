@@ -433,7 +433,6 @@ namespace Shawn.Ulits.RDP
             string reason = _rdp.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedDisconnect
-                && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";

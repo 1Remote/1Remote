@@ -62,7 +62,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
+                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                      Style="{StaticResource PasswordBoxEx}"/>
                     </Grid>
                 </StackPanel>

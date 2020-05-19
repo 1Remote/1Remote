@@ -36,7 +36,7 @@ namespace PRM.Core.Protocol.RDP
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
-            private bool _fullScreenLastSessionIsFullScreen = true;
+            private bool _fullScreenLastSessionIsFullScreen = false;
             public bool FullScreenLastSessionIsFullScreen
             {
                 get => _fullScreenLastSessionIsFullScreen;
@@ -240,12 +240,6 @@ namespace PRM.Core.Protocol.RDP
         {
             get => _autoSetting;
             set => SetAndNotifyIfChanged(nameof(AutoSetting), ref _autoSetting, value);
-        }
-
-
-        public override string ToJsonString()
-        {
-            return JsonConvert.SerializeObject(this);
         }
 
 

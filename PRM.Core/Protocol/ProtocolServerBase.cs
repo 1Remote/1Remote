@@ -249,9 +249,12 @@ namespace PRM.Core.Protocol
         //    }
         //    return false;
         //}
+        public virtual string ToJsonString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
 
 
-        public abstract string ToJsonString();
         public abstract ProtocolServerBase CreateFromJsonString(string jsonString);
 
 

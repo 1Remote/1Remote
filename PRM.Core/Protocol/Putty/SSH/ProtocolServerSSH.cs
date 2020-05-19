@@ -36,12 +36,6 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
         }
 
-
-        public override string ToJsonString()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
-
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
