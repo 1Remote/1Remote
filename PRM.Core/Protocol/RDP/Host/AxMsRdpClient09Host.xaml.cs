@@ -348,37 +348,36 @@ namespace Shawn.Ulits.RDP
             return _isConnecting;
         }
 
-        private Task _taksTopPanelFocus = null;
+        // private Task _taksTopPanelFocus = null;
         public override void MakeItFocus()
         {
-            lock (MakeItFocusLocker1)
-            {
-                // hack technology:
-                // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
-                // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
-
-                if (_taksTopPanelFocus?.Status != TaskStatus.Running)
-                {
-                    _taksTopPanelFocus = new Task(() =>
-                    {
-                        lock (MakeItFocusLocker2)
-                        {
-                            bool flag = false;
-                            int nCount = 50; // don't let it runs forever.
-                                while (!flag && nCount > 0)
-                            {
-                                --nCount;
-                                Dispatcher.Invoke(() =>
-                                {
-                                    flag = _rdp.Focus();
-                                });
-                                Thread.Sleep(10);
-                            }
-                        }
-                    });
-                    _taksTopPanelFocus.Start();
-                }
-            }
+            //lock (MakeItFocusLocker1)
+            //{
+            //    // hack technology:
+            //    // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
+            //    // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
+            //    if (_taksTopPanelFocus?.Status != TaskStatus.Running)
+            //    {
+            //        _taksTopPanelFocus = new Task(() =>
+            //        {
+            //            lock (MakeItFocusLocker2)
+            //            {
+            //                bool flag = false;
+            //                int nCount = 50; // don't let it runs forever.
+            //                    while (!flag && nCount > 0)
+            //                {
+            //                    --nCount;
+            //                    Dispatcher.Invoke(() =>
+            //                    {
+            //                        flag = _rdp.Focus();
+            //                    });
+            //                    Thread.Sleep(10);
+            //                }
+            //            }
+            //        });
+            //        _taksTopPanelFocus.Start();
+            //    }
+            //}
         }
 
         #endregion

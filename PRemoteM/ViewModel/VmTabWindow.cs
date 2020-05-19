@@ -35,11 +35,7 @@ namespace PRM.ViewModel
         public TabItemViewModel SelectedItem
         {
             get => _selectedItem;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
-                SelectedItem?.Content?.MakeItFocus();
-            }
+            set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
         }
 
         #region drag drop tab
