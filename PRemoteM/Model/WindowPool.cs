@@ -146,6 +146,7 @@ namespace PRM.Model
                 {
                     full = _host2FullScreenWindows[connectionId];
                     full.LastTabToken = "";
+                    // full screen placement
                     if (tab != null)
                     {
                         var screenEx = ScreenInfoEx.GetCurrentScreen(tab);
@@ -165,25 +166,25 @@ namespace PRM.Model
 
                     // full screen placement
                     ScreenInfoEx screenEx;
-                    if (host.ProtocolServer is ProtocolServerRDP rdp
-                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
-                        && rdp.AutoSetting.FullScreenLastSessionScreenIndex >= 0
-                        && rdp.AutoSetting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
-                        screenEx = ScreenInfoEx.GetCurrentScreen(rdp.AutoSetting.FullScreenLastSessionScreenIndex);
-                    else if (tab != null)
+                    if (tab != null)
                     {
                         screenEx = ScreenInfoEx.GetCurrentScreen(tab);
                         full.LastTabToken = _lastTabToken;
                     }
+                    else if (host.ProtocolServer is ProtocolServerRDP rdp
+                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
+                        && rdp.AutoSetting.FullScreenLastSessionScreenIndex >= 0
+                        && rdp.AutoSetting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
+                        screenEx = ScreenInfoEx.GetCurrentScreen(rdp.AutoSetting.FullScreenLastSessionScreenIndex);
                     else
                         screenEx = ScreenInfoEx.GetCurrentScreen(App.Window);
                     full.WindowStartupLocation = WindowStartupLocation.Manual;
                     full.Top = screenEx.Center.Y - full.Height / 2;
                     full.Left = screenEx.Center.X - full.Width / 2;
-                    full.Show();
                     full.SetProtocolHost(host);
                     host.ParentWindow = full;
                     full.Loaded += (sender, args) => { host.GoFullScreen(); };
+                    full.Show();
                     AddFull(full);
                 }
 

@@ -40,7 +40,7 @@ namespace Shawn.Ulits
         }
 
         public static readonly DependencyProperty PasswordProperty = DependencyProperty.RegisterAttached("Password", typeof(string),
-                                                    typeof(PasswordBoxEx), new FrameworkPropertyMetadata("", OnPasswordPropertyChanged));
+                                                    typeof(PasswordBoxEx), new PropertyMetadata("", OnPasswordPropertyChanged));
         public static string GetPassword(DependencyObject dp)
         {
             return (string)dp.GetValue(PasswordProperty);

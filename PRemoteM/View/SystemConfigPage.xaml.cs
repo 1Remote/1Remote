@@ -37,55 +37,6 @@ namespace PRM.View
             DataContext = VmSystemConfigPage;
         }
 
-        private void ButtonSelectDb_OnClick(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "Sqlite Database|*.db";
-            if (dlg.ShowDialog() == true)
-            {
-                try
-                {
-                    using (var db = new SQLiteConnection(dlg.FileName))
-                    {
-                        db.CreateTable<Server>();
-                    }
-                    VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName;
-                }
-                catch (Exception ee)
-                {
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
-                }
-            }
-        }
-
-
-
-        private void ButtonSelectRsaKey_OnClick(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog
-            {
-                Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
-                InitialDirectory = VmSystemConfigPage.SystemConfig.DataSecurity.RsaPrivateKeyPath,
-            };
-            if (dlg.ShowDialog() == true)
-            {
-                var res = SystemConfig.GetInstance().DataSecurity.ValidateRsa(dlg.FileName);
-                switch (res)
-                {
-                    case SystemConfigDataSecurity.ERsaStatues.Ok:
-                        SystemConfig.GetInstance().DataSecurity.RsaPrivateKeyPath = dlg.FileName;
-                        break;
-                    case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {

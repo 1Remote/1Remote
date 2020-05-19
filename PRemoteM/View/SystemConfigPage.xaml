@@ -238,7 +238,7 @@
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
+                            <Button Content="{DynamicResource button_open}" Command="{Binding CmdSelectDbPath}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -302,7 +302,7 @@
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectRsaKey_OnClick">
+                            <Button Content="{DynamicResource button_open}" Command="{Binding CmdSelectRsaPrivateKey}">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Style.Triggers>
@@ -321,6 +321,72 @@
                             <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_data_security_info_encrypt_private_key_warning}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
+
+
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:数据导出"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdExportToJson}"
+                                            Content="TXT:到 json">
+                                        <!--<Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>-->
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:数据导入"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdImportFromJson}"
+                                            Content="TXT:从 json">
+                                        <!--<Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                        <Setter Property="IsEnabled" Value="True"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>-->
+                                    </Button>
+                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="20 0 0 0" Command="{Binding CmdImportFromMRemoteNgCsv}"
+                                            Content="TXT：从mRemoteNG csv">
+                                        <!--<Button.Style>
+                                            <Style TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>-->
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+
                 </StackPanel>
             </TabItem>
 

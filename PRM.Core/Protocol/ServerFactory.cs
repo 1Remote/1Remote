@@ -94,7 +94,7 @@ namespace PRM.Core.DB
             // get instance form json string
             foreach (var serverAbstract in _baseList)
             {
-                if (jObj.ServerType.ToString() == serverAbstract.Protocol &&
+                if (jObj.Protocol.ToString() == serverAbstract.Protocol &&
                     jObj.ClassVersion.ToString() == serverAbstract.ClassVersion)
                 {
                     var ret = serverAbstract.CreateFromJsonString(jsonString);
