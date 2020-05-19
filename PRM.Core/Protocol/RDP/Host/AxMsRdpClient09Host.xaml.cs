@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Mime;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
@@ -215,7 +217,7 @@ namespace Shawn.Ulits.RDP
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
                     base.CanFullScreen = true;
-                    if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false))
+                    if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false))
                     {
                         var screenSize = GetScreenSize();
                         _rdp.DesktopWidth = (int)(screenSize.Width);
@@ -317,10 +319,14 @@ namespace Shawn.Ulits.RDP
 
         public override void GoFullScreen()
         {
-            // full screen on current 
-            var t = GetCurrentScreen();
-            if (t != null)
-                _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = t.Item1;
+            Debug.Assert(this.ParentWindow != null);
+
+            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
+            {
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
+            }
+            else
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
             Server.AddOrUpdate(_rdpServer);
             _rdp.FullScreen = true;
         }
@@ -342,9 +348,37 @@ namespace Shawn.Ulits.RDP
             return _isConnecting;
         }
 
+        private Task _taksTopPanelFocus = null;
         public override void MakeItFocus()
         {
-            // noting to do
+            lock (MakeItFocusLocker1)
+            {
+                // hack technology:
+                // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
+                // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
+
+                if (_taksTopPanelFocus?.Status != TaskStatus.Running)
+                {
+                    _taksTopPanelFocus = new Task(() =>
+                    {
+                        lock (MakeItFocusLocker2)
+                        {
+                            bool flag = false;
+                            int nCount = 50; // don't let it runs forever.
+                                while (!flag && nCount > 0)
+                            {
+                                --nCount;
+                                Dispatcher.Invoke(() =>
+                                {
+                                    flag = _rdp.Focus();
+                                });
+                                Thread.Sleep(10);
+                            }
+                        }
+                    });
+                    _taksTopPanelFocus.Start();
+                }
+            }
         }
 
         #endregion
@@ -465,11 +499,9 @@ namespace Shawn.Ulits.RDP
         private void MakeNormal2FullScreen(bool saveSize = true)
         {
             Debug.Assert(ParentWindow != null);
-            _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = true;
+            _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
 
             var screenSize = GetScreenSize();
-            ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
-            ParentWindow.Top = screenSize.Top / (_scaleFactor / 100.0);
             if (saveSize)
             {
                 _normalWidth = ParentWindow.Width;
@@ -482,7 +514,7 @@ namespace Shawn.Ulits.RDP
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
 
-            
+
             ParentWindow.Width = screenSize.Width / (_scaleFactor / 100.0);
             ParentWindow.Height = screenSize.Height / (_scaleFactor / 100.0);
             ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
@@ -506,10 +538,10 @@ namespace Shawn.Ulits.RDP
             }
             else
             {
-                if (_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex >= 0
-                    && _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
+                if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
+                    && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
                 {
-                    return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds;
+                    return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
                 }
             }
             return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
@@ -518,7 +550,7 @@ namespace Shawn.Ulits.RDP
         private void MakeFullScreen2Normal()
         {
             Debug.Assert(ParentWindow != null);
-            _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = false;
+            _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             ParentWindow.Topmost = false;
             ParentWindow.ResizeMode = ResizeMode.CanResize;
             ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
@@ -620,30 +652,5 @@ namespace Shawn.Ulits.RDP
             _onResizeEnd?.Invoke();
         }
         #endregion
-
-
-
-        private static System.Windows.Forms.Screen GetScreen(int screenIndex)
-
-        {
-            if (screenIndex < 0
-                || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
-            {
-                return null;
-            }
-            return System.Windows.Forms.Screen.AllScreens[screenIndex];
-        }
-        private Tuple<int, System.Windows.Forms.Screen> GetCurrentScreen()
-        {
-            var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(this.ParentWindow).Handle);
-            for (int i = 0; i < System.Windows.Forms.Screen.AllScreens.Length; i++)
-            {
-                if (Equals(screen, System.Windows.Forms.Screen.AllScreens[i]))
-                {
-                    return new Tuple<int, Screen>(i, screen);
-                }
-            }
-            return null;
-        }
     }
 }

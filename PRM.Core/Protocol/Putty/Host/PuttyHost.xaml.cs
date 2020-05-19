@@ -322,13 +322,11 @@ namespace PRM.Core.Protocol.Putty.Host
             return false;
         }
 
-        private static readonly object Locker1 = new object();
-        private static readonly object Locker2 = new object();
         public override void MakeItFocus()
         {
             if (_topTransparentPanel != null)
             {
-                lock (Locker1)
+                lock (MakeItFocusLocker1)
                 {
                     // hack technology:
                     // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
@@ -338,7 +336,7 @@ namespace PRM.Core.Protocol.Putty.Host
                     {
                         _taksTopPanelFocus = new Task(() =>
                         {
-                            lock (Locker2)
+                            lock (MakeItFocusLocker2)
                             {
                                 bool flag = false;
                                 int nCount = 50; // don't let it runs forever.
