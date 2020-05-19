@@ -45,6 +45,8 @@ namespace PRM.View
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
+            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm.SelectedItem != null)
@@ -56,12 +58,14 @@ namespace PRM.View
                     Vm.CmdClose.Execute();
                 }
             };
-            this.Activated += (sender, args) =>
+
+            Activated += (sender, args) => { Vm?.SelectedItem?.Content?.MakeItFocus(); };
+
+            KeyDown += (sender, args) =>
             {
-                Vm?.SelectedItem?.Content?.MakeItFocus();
+                if (args.Key == Key.F11 && args.IsDown && Vm.CmdHostGoFullScreen.CanExecute())
+                    Vm.CmdHostGoFullScreen.Execute();
             };
-            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-            BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
         }
 
         #region DragMove

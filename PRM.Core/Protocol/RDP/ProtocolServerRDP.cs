@@ -37,17 +37,17 @@ namespace PRM.Core.Protocol.RDP
         public class LocalSetting : NotifyPropertyChangedBase
         {
             private bool _fullScreenLastSessionIsFullScreen = true;
-            public bool FullScreen_LastSessionIsFullScreen
+            public bool FullScreenLastSessionIsFullScreen
             {
                 get => _fullScreenLastSessionIsFullScreen;
-                set => SetAndNotifyIfChanged(nameof(FullScreen_LastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
+                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
             }
 
             private int _fullScreenLastSessionScreenIndex = -1;
-            public int FullScreen_LastSessionScreenIndex
+            public int FullScreenLastSessionScreenIndex
             {
                 get => _fullScreenLastSessionScreenIndex;
-                set => SetAndNotifyIfChanged(nameof(FullScreen_LastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
+                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
             }
         }
 

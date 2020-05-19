@@ -23,7 +23,7 @@ namespace PRM.View
     /// </summary>
     public partial class FullScreenWindow : Window
     {
-        public ProtocolHostBase ProtocolHostBase { get; private set; }= null;
+        public ProtocolHostBase ProtocolHostBase { get; private set; } = null;
         public FullScreenWindow()
         {
             InitializeComponent();
@@ -51,5 +51,7 @@ namespace PRM.View
             if (IsLoaded)
                 this.Content = content;
         }
+
+        public string LastTabToken = "";
     }
 }

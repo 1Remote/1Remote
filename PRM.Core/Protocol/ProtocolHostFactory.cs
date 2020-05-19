@@ -43,7 +43,7 @@ namespace PRM.Core.Protocol
                             return true;
                         if (rdp.IsConnWithFullScreen)
                             return true;
-                        return rdp.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false;
+                        return rdp.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false;
                     }
                 case ProtocolServerSSH _:
                     {
