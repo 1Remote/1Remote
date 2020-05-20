@@ -63,6 +63,7 @@ namespace Shawn.Ulits
         public double ScaleFactor => PhysicalPixWidth * 1.0 / this.Screen.Bounds.Width;
 
         public System.Drawing.Point Center => new System.Drawing.Point(Screen.Bounds.X + Screen.Bounds.Width / 2, Screen.Bounds.Y + Screen.Bounds.Height / 2);
+        public System.Drawing.Point WorkingAreaCenter => new System.Drawing.Point(Screen.WorkingArea.X + Screen.WorkingArea.Width / 2, Screen.WorkingArea.Y + Screen.WorkingArea.Height / 2);
 
         public Screen Screen
         {
@@ -127,6 +128,25 @@ namespace Shawn.Ulits
             public int dmReserved2;
             public int dmPanningWidth;
             public int dmPanningHeight;
+        }
+
+
+        
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetCursorPos(ref Win32Point pt);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Win32Point
+        {
+            public Int32 X;
+            public Int32 Y;
+        };
+        public static System.Drawing.Point GetMouseScreenPosition()
+        {
+            Win32Point w32Mouse = new Win32Point();
+            GetCursorPos(ref w32Mouse);
+            return new System.Drawing.Point(w32Mouse.X, w32Mouse.Y);
         }
     }
 }
