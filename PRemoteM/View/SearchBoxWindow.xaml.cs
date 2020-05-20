@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -64,6 +65,9 @@ namespace PRM.View
                 }
         }
 
+
+
+
         public void ShowMe()
         {
             if (SystemConfig.GetInstance().QuickConnect.Enable)
@@ -72,6 +76,10 @@ namespace PRM.View
                     {
                         if (_isHidden == true)
                         {
+                            var p = ScreenInfoEx.GetMouseScreenPosition();
+                            var screenEx = ScreenInfoEx.GetCurrentScreen(new System.Drawing.Point((int)p.X,(int)p.Y));
+                            this.Top = screenEx.WorkingAreaCenter.Y - this.Height / 2;
+                            this.Left = screenEx.WorkingAreaCenter.X - this.Width / 2;
                             this.Show();
                             this.Visibility = Visibility.Visible;
                             this.Activate();

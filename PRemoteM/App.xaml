@@ -1,7 +1,6 @@
-﻿<Application x:Class="PersonalRemoteManager.App"
+﻿<Application x:Class="PRM.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:PersonalRemoteManager"
              Startup="App_OnStartup">
     <Application.Resources>
         <ResourceDictionary>

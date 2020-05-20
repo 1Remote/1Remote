@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using PRM;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Ulits;
 using PRM.Model;
 using PRM.View;
 using Shawn.Ulits;
-using SQLite;
 
-namespace PersonalRemoteManager
+namespace PRM
 {
     // 服务端可以被代理调用的类
     internal class OneServiceRemoteProvider : MarshalByRefObject

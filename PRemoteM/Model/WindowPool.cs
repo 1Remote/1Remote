@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using PersonalRemoteManager;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Ulits.DragablzTab;
@@ -38,8 +41,63 @@ namespace PRM.Model
                 return;
             }
 
+
             if (server.IsConnWithFullScreen())
             {
+                // for those people using 2+ monitor which are in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+                if (Screen.AllScreens.Length > 1 
+                    && server is ProtocolServerRDP rdp
+                    && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
+                {
+                    int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+                    // check if screens are in different scale factors
+                    bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
+                    if (differentScaleFactorFlag)
+                    {
+                        var tmp = Path.GetTempPath();
+                        var dp = rdp.DispName;
+                        var invalid = new string(Path.GetInvalidFileNameChars()) +
+                                      new string(Path.GetInvalidPathChars());
+                        dp = invalid.Aggregate(dp, (current, c) => current.Replace(c.ToString(), ""));
+                        var rdpFile = Path.Combine(tmp, DateTime.Now.ToString(dp + "_yyyyMMddHHmmss") + ".rdp");
+                        try
+                        {
+                            File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
+                            var p = new Process
+                            {
+                                StartInfo =
+                                {
+                                    FileName = "cmd.exe",
+                                    UseShellExecute = false,
+                                    RedirectStandardInput = true,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                    CreateNoWindow = true
+                                }
+                            };
+                            p.Start();
+                            p.StandardInput.WriteLine("mstsc -admin " + rdpFile);
+                            p.StandardInput.WriteLine("exit");
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                        finally
+                        {
+                            var t = new Task(() =>
+                            {
+                                Thread.Sleep(1000 * 10);
+                                if (File.Exists(rdpFile))
+                                    File.Delete(rdpFile);
+                            });
+                            t.Start();
+                        }
+                        return;
+                    }
+                }
+
+
                 var host = ProtocolHostFactory.Get(server);
                 host.OnClosed += OnProtocolClose;
                 host.OnFullScreen2Window += OnFullScreen2Window;
@@ -150,8 +208,8 @@ namespace PRM.Model
                     if (tab != null)
                     {
                         var screenEx = ScreenInfoEx.GetCurrentScreen(tab);
-                        full.Top = screenEx.Center.Y - full.Height / 2;
-                        full.Left = screenEx.Center.X - full.Width / 2;
+                        full.Top = screenEx.WorkingAreaCenter.Y - full.Height / 2;
+                        full.Left = screenEx.WorkingAreaCenter.X - full.Width / 2;
                         full.LastTabToken = _lastTabToken;
                     }
                     full.Show();
@@ -179,8 +237,8 @@ namespace PRM.Model
                     else
                         screenEx = ScreenInfoEx.GetCurrentScreen(App.Window);
                     full.WindowStartupLocation = WindowStartupLocation.Manual;
-                    full.Top = screenEx.Center.Y - full.Height / 2;
-                    full.Left = screenEx.Center.X - full.Width / 2;
+                    full.Top = screenEx.WorkingAreaCenter.Y - full.Height / 2;
+                    full.Left = screenEx.WorkingAreaCenter.X - full.Width / 2;
                     full.SetProtocolHost(host);
                     host.ParentWindow = full;
                     full.Loaded += (sender, args) => { host.GoFullScreen(); };
@@ -245,8 +303,8 @@ namespace PRM.Model
                         if (full != null)
                         {
                             var screenEx = ScreenInfoEx.GetCurrentScreen(full);
-                            tab.Top = screenEx.Center.Y - tab.Height / 2;
-                            tab.Left = screenEx.Center.X - tab.Width / 2;
+                            tab.Top = screenEx.WorkingAreaCenter.Y - tab.Height / 2;
+                            tab.Left = screenEx.WorkingAreaCenter.X - tab.Width / 2;
                             tab.WindowStartupLocation = WindowStartupLocation.Manual;
                         }
                         tab.Show();
