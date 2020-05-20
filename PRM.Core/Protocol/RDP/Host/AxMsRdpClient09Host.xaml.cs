@@ -114,6 +114,8 @@ namespace Shawn.Ulits.RDP
                 // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
                 _rdp.SecuredSettings3.KeyboardHookMode = 2;
             }
+            else
+                _rdp.SecuredSettings3.KeyboardHookMode = 0;
 
             if (_rdpServer.EnableSounds)
             {
@@ -141,6 +143,10 @@ namespace Shawn.Ulits.RDP
             if (_rdpServer.EnableAudioCapture)
             {
                 // indicates whether the default audio input device is redirected from the client to the remote session
+                _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = true;
+            }
+            else
+            {
                 _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = false;
             }
             #endregion
