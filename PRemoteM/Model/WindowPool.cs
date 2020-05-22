@@ -51,7 +51,7 @@ namespace PRM.Model
                 {
                     int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                     // check if screens are in different scale factors
-                    bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
+                    bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
                     if (differentScaleFactorFlag)
                     {
                         var tmp = Path.GetTempPath();
@@ -208,8 +208,8 @@ namespace PRM.Model
                     if (tab != null)
                     {
                         var screenEx = ScreenInfoEx.GetCurrentScreen(tab);
-                        full.Top = screenEx.WorkingAreaCenter.Y - full.Height / 2;
-                        full.Left = screenEx.WorkingAreaCenter.X - full.Width / 2;
+                        full.Top = screenEx.VirtualWorkingAreaCenter.Y - full.Height / 2;
+                        full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
                         full.LastTabToken = _lastTabToken;
                     }
                     full.Show();
@@ -237,8 +237,8 @@ namespace PRM.Model
                     else
                         screenEx = ScreenInfoEx.GetCurrentScreen(App.Window);
                     full.WindowStartupLocation = WindowStartupLocation.Manual;
-                    full.Top = screenEx.WorkingAreaCenter.Y - full.Height / 2;
-                    full.Left = screenEx.WorkingAreaCenter.X - full.Width / 2;
+                    full.Top = screenEx.VirtualWorkingAreaCenter.Y - full.Height / 2;
+                    full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
                     full.SetProtocolHost(host);
                     host.ParentWindow = full;
                     full.Loaded += (sender, args) => { host.GoFullScreen(); };
@@ -303,8 +303,8 @@ namespace PRM.Model
                         if (full != null)
                         {
                             var screenEx = ScreenInfoEx.GetCurrentScreen(full);
-                            tab.Top = screenEx.WorkingAreaCenter.Y - tab.Height / 2;
-                            tab.Left = screenEx.WorkingAreaCenter.X - tab.Width / 2;
+                            tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
+                            tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
                             tab.WindowStartupLocation = WindowStartupLocation.Manual;
                         }
                         tab.Show();
