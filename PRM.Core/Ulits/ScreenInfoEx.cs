@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Interop;
+using System.Windows;
 
 namespace Shawn.Ulits
 {
@@ -16,11 +18,13 @@ namespace Shawn.Ulits
             foreach (var screen in Screen.AllScreens)
             {
                 var si = new ScreenInfoEx(screen);
-                Console.WriteLine($"Device: {si.Screen.DeviceName}");
-                Console.WriteLine($"Real Resolution: {si.PhysicalPixWidth}x{si.PhysicalPixHeigth}");
-                Console.WriteLine($"Virtual T: {si.Screen.Bounds.Top} L:{si.Screen.Bounds.Left}");
-                Console.WriteLine($"Virtual Resolution: {si.Screen.Bounds.Width}x{si.Screen.Bounds.Height}");
-                Console.WriteLine($"ScaleFactor: {si.ScaleFactor * 100}%");
+                Console.WriteLine($@"Device: {si.Screen.DeviceName}");
+                Console.WriteLine($@"Real Resolution: {si.PhysicalPixWidth}x{si.PhysicalPixHeight}");
+                Console.WriteLine($@"Screen.Bounds T: {si.Screen.Bounds.Top} L:{si.Screen.Bounds.Left}");
+                Console.WriteLine($@"Screen.Bounds Resolution: {si.Screen.Bounds.Width}x{si.Screen.Bounds.Height}");
+                Console.WriteLine($@"Virtual T: {si.VirtualBounds.Top} L:{si.VirtualBounds.Left}");
+                Console.WriteLine($@"Virtual Resolution: {si.VirtualBounds.Width}x{si.VirtualBounds.Height}");
+                Console.WriteLine($@"ScaleFactor: {si.ScaleFactor * 100}%");
                 Console.WriteLine();
             }
 */
@@ -50,25 +54,44 @@ namespace Shawn.Ulits
 
         public ScreenInfoEx(Screen screen)
         {
+            const int ENUM_CURRENT_SETTINGS = -1;
+            var mainRealScaleFactor = (100.0 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
+
+
+            var dmMain = new DEVMODE { dmSize = (short)Marshal.SizeOf(typeof(DEVMODE)) };
+            EnumDisplaySettings(Screen.PrimaryScreen.DeviceName, ENUM_CURRENT_SETTINGS, ref dmMain);
+            var mainLogicScaleFactor = 100.0 * dmMain.dmPelsWidth / Screen.PrimaryScreen.Bounds.Width;
+
+            double k = mainRealScaleFactor / mainLogicScaleFactor;
+
+
             Screen = screen;
             var dm = new DEVMODE { dmSize = (short)Marshal.SizeOf(typeof(DEVMODE)) };
-            const int ENUM_CURRENT_SETTINGS = -1;
             EnumDisplaySettings(screen.DeviceName, ENUM_CURRENT_SETTINGS, ref dm);
             DevMode = dm;
+
+            VirtualBounds = new Rectangle(
+                (int)(screen.Bounds.Left / k),
+                (int)(screen.Bounds.Top / k),
+                (int)(screen.Bounds.Width / k),
+                (int)(screen.Bounds.Height / k)
+                );
+            VirtualWorkingArea = new Rectangle(
+                (int)(screen.WorkingArea.Left / k),
+                (int)(screen.WorkingArea.Top / k),
+                (int)(screen.WorkingArea.Width / k),
+                (int)(screen.WorkingArea.Height / k)
+            );
         }
 
 
-        public int Index;
 
-        public double ScaleFactor => PhysicalPixWidth * 1.0 / this.Screen.Bounds.Width;
-
-        public System.Drawing.Point Center => new System.Drawing.Point(Screen.Bounds.X + Screen.Bounds.Width / 2, Screen.Bounds.Y + Screen.Bounds.Height / 2);
-        public System.Drawing.Point WorkingAreaCenter => new System.Drawing.Point(Screen.WorkingArea.X + Screen.WorkingArea.Width / 2, Screen.WorkingArea.Y + Screen.WorkingArea.Height / 2);
-
+        public double ScaleFactor => PhysicalPixWidth * 1.0 / VirtualBounds.Width;
+        public int Index { get; private set; }
         public Screen Screen
         {
             get => Screen.AllScreens[Index];
-            set
+            private set
             {
                 for (int i = 0; i < Screen.AllScreens.Length; i++)
                 {
@@ -83,7 +106,14 @@ namespace Shawn.Ulits
         }
 
         public int PhysicalPixWidth => DevMode.dmPelsWidth;
-        public int PhysicalPixHeigth => DevMode.dmPelsHeight;
+        public int PhysicalPixHeight => DevMode.dmPelsHeight;
+
+        public Rectangle VirtualBounds { get; }
+        public Rectangle VirtualWorkingArea { get; }
+        public System.Drawing.Point VirtualCenter => new System.Drawing.Point(VirtualBounds.X + VirtualBounds.Width / 2, VirtualBounds.Y + VirtualBounds.Height / 2);
+        public System.Drawing.Point VirtualWorkingAreaCenter => new System.Drawing.Point(VirtualWorkingArea.X + VirtualWorkingArea.Width / 2,
+            VirtualWorkingArea.Y + VirtualWorkingArea.Height / 2);
+
 
         public DEVMODE DevMode { get; private set; }
 
@@ -131,7 +161,7 @@ namespace Shawn.Ulits
         }
 
 
-        
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetCursorPos(ref Win32Point pt);

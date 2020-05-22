@@ -78,8 +78,8 @@ namespace PRM.View
                         {
                             var p = ScreenInfoEx.GetMouseScreenPosition();
                             var screenEx = ScreenInfoEx.GetCurrentScreen(new System.Drawing.Point((int)p.X,(int)p.Y));
-                            this.Top = screenEx.WorkingAreaCenter.Y - this.Height / 2;
-                            this.Left = screenEx.WorkingAreaCenter.X - this.Width / 2;
+                            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+                            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
                             this.Show();
                             this.Visibility = Visibility.Visible;
                             this.Activate();

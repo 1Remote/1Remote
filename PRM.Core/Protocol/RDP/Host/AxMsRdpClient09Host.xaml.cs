@@ -24,7 +24,7 @@ namespace Shawn.Ulits.RDP
     {
         private readonly AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
-        private uint _scaleFactor = 100;
+        private uint _primaryScaleFactor = 100;
         private bool _isDisconned = false;
         private bool _isConnecting = false;
 
@@ -177,7 +177,7 @@ namespace Shawn.Ulits.RDP
             #region Display
 
             ReadScaleFactor();
-            _rdp.SetExtendedProperty("DesktopScaleFactor", _scaleFactor);
+            _rdp.SetExtendedProperty("DesktopScaleFactor", _primaryScaleFactor);
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
             if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch
             || _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
@@ -190,8 +190,8 @@ namespace Shawn.Ulits.RDP
                 {
                     case ERdpWindowResizeMode.Stretch:
                     case ERdpWindowResizeMode.Fixed:
-                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth / (_scaleFactor / 100.0));
-                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight / (_scaleFactor / 100.0));
+                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth / (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight / (_primaryScaleFactor / 100.0));
                         break;
                     case ERdpWindowResizeMode.StretchFullScreen:
                     case ERdpWindowResizeMode.FixedFullScreen:
@@ -203,13 +203,13 @@ namespace Shawn.Ulits.RDP
                     default:
                         if (width > 100 && height > 100)
                         {
-                            _rdp.DesktopWidth = (int)(width * (_scaleFactor / 100.0));
-                            _rdp.DesktopHeight = (int)(height * (_scaleFactor / 100.0));
+                            _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
+                            _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
                         }
                         else
                         {
-                            _rdp.DesktopWidth = (int)(800 * (_scaleFactor / 100.0));
-                            _rdp.DesktopHeight = (int)(600 * (_scaleFactor / 100.0));
+                            _rdp.DesktopWidth = (int)(800 * (_primaryScaleFactor / 100.0));
+                            _rdp.DesktopHeight = (int)(600 * (_primaryScaleFactor / 100.0));
                         }
                         break;
                 }
@@ -486,7 +486,7 @@ namespace Shawn.Ulits.RDP
             {
                 //_rdp.Reconnect(nw, nh);
                 ReadScaleFactor();
-                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _scaleFactor, 100);
+                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _primaryScaleFactor, 100);
             }
             catch (Exception e)
             {
@@ -517,12 +517,12 @@ namespace Shawn.Ulits.RDP
             ParentWindow.WindowState = WindowState.Normal;
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
+            //ParentWindow.WindowState = WindowState.Maximized;
 
-
-            ParentWindow.Width = screenSize.Width / (_scaleFactor / 100.0);
-            ParentWindow.Height = screenSize.Height / (_scaleFactor / 100.0);
-            ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
-            ParentWindow.Top = screenSize.Top / (_scaleFactor / 100.0);
+            ParentWindow.Width = screenSize.Width / (_primaryScaleFactor / 100.0);
+            ParentWindow.Height = screenSize.Height / (_primaryScaleFactor / 100.0);
+            ParentWindow.Left = screenSize.Left / (_primaryScaleFactor / 100.0);
+            ParentWindow.Top = screenSize.Top / (_primaryScaleFactor / 100.0);
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
@@ -578,17 +578,18 @@ namespace Shawn.Ulits.RDP
         {
             try
             {
-                _scaleFactor = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width /
-                                       SystemParameters.PrimaryScreenWidth);
+                // !must use PrimaryScreen scale factor
+                _primaryScaleFactor = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
+                //_primaryScaleFactor = (uint)(100 * ScreenInfoEx.GetCurrentScreen(this.ParentWindow).ScaleFactor);
             }
             catch (Exception)
             {
-                _scaleFactor = 100;
+                _primaryScaleFactor = 100;
             }
             finally
             {
-                if (_scaleFactor < 100)
-                    _scaleFactor = 100;
+                if (_primaryScaleFactor < 100)
+                    _primaryScaleFactor = 100;
             }
         }
 
