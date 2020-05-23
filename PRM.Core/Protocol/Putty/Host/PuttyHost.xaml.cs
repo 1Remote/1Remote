@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PRM.Core.Protocol.Putty.SSH;
 using Shawn.Ulits;
 
 namespace PRM.Core.Protocol.Putty.Host
@@ -136,6 +138,12 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void InitPutty()
         {
+            if (_protocolPuttyBase is ProtocolServerSSH server
+                && !string.IsNullOrEmpty(server.PrivateKey)
+                && File.Exists(server.PrivateKey))
+            {
+                _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, server.PrivateKey);
+            }
             CreatePuttySessionInRegTable();
             _puttyProcess = new Process();
             var ps = new ProcessStartInfo();
@@ -219,83 +227,107 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void CreatePuttySessionInRegTable()
         {
-            //PuttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
-            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
+            _puttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
+            _puttyOption.Set(PuttyRegOptionKey.Colour0, "217,216,216");
+            _puttyOption.Set(PuttyRegOptionKey.Colour1, "217,216,216");
+            _puttyOption.Set(PuttyRegOptionKey.Colour2, "28,28,128");
+            _puttyOption.Set(PuttyRegOptionKey.Colour3, "28,63,149");
+            _puttyOption.Set(PuttyRegOptionKey.Colour4, "128,128,128");
+            _puttyOption.Set(PuttyRegOptionKey.Colour5, "231,231,232");
+            _puttyOption.Set(PuttyRegOptionKey.Colour6, "115,113,113");
+            _puttyOption.Set(PuttyRegOptionKey.Colour7, "115,113,113");
+            _puttyOption.Set(PuttyRegOptionKey.Colour8, "251,38,8");
+            _puttyOption.Set(PuttyRegOptionKey.Colour9, "251,38,8");
+            _puttyOption.Set(PuttyRegOptionKey.Colour10, "167,226,46");
+            _puttyOption.Set(PuttyRegOptionKey.Colour11, "167,226,46");
+            _puttyOption.Set(PuttyRegOptionKey.Colour12, "102,217,238");
+            _puttyOption.Set(PuttyRegOptionKey.Colour13, "102,217,238");
+            _puttyOption.Set(PuttyRegOptionKey.Colour14, "0,157,220");
+            _puttyOption.Set(PuttyRegOptionKey.Colour15, "0,157,220");
+            _puttyOption.Set(PuttyRegOptionKey.Colour16, "255,85,255");
+            _puttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
+            _puttyOption.Set(PuttyRegOptionKey.Colour18, "255,210,4");
+            _puttyOption.Set(PuttyRegOptionKey.Colour19, "255,210,4");
+            _puttyOption.Set(PuttyRegOptionKey.Colour20, "217,216,216");
+            _puttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
+
+            //_puttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
+            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
 
 
-            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "255,0,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour10,"0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour11,"85,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour12,"187,187,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour13,"255,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour14,"0,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour15,"0,0,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour16,"0,0,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour17,"255,85,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour18,"0,187,187");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour19,"85,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour20,"187,187,187");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour21,"255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "255,0,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour10,"0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour11,"85,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour12,"187,187,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour13,"255,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour14,"0,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour15,"0,0,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour16,"0,0,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour17,"255,85,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour18,"0,187,187");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour19,"85,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour20,"187,187,187");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour21,"255,255,255");
 
 
-            //PuttyOption.Set(PuttyRegOptionKey.UseSystemColours, 0);
-            //PuttyOption.Set(PuttyRegOptionKey.TryPalette, 0);
-            //PuttyOption.Set(PuttyRegOptionKey.ANSIColour, 1);
-            //PuttyOption.Set(PuttyRegOptionKey.Xterm256Colour, 1);
-            //PuttyOption.Set(PuttyRegOptionKey.BoldAsColour, 1);
+            //_puttyOption.Set(PuttyRegOptionKey.UseSystemColours, 0);
+            //_puttyOption.Set(PuttyRegOptionKey.TryPalette, 0);
+            //_puttyOption.Set(PuttyRegOptionKey.ANSIColour, 1);
+            //_puttyOption.Set(PuttyRegOptionKey.Xterm256Colour, 1);
+            //_puttyOption.Set(PuttyRegOptionKey.BoldAsColour, 1);
 
-            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "211,215,207");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "238,238,236");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "46,52,54");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,87,83");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "46,52,54");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,87,83");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "204,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "239,41,41");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour10,"78,154,6");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour11,"138,226,52");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour12,"196,160,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour13,"252,233,79");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour14,"52,101,164");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour15,"114,159,207");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour16,"117,80,123");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour17,"173,127,168");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour18,"6,152,154");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour19,"52,226,226");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "211,215,207");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "238,238,236");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "46,52,54");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,87,83");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "46,52,54");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,87,83");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "204,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "239,41,41");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour10,"78,154,6");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour11,"138,226,52");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour12,"196,160,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour13,"252,233,79");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour14,"52,101,164");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour15,"114,159,207");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour16,"117,80,123");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour17,"173,127,168");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour18,"6,152,154");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour19,"52,226,226");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
 
 
             _puttyOption.Save();

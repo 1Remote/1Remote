@@ -11,7 +11,7 @@ namespace PRM.Core.Protocol.Putty
     public class PuttyRegOptionItem
     {
 
-        protected PuttyRegOptionItem() { }
+        private PuttyRegOptionItem() { }
         public static PuttyRegOptionItem Create(PuttyRegOptionKey key, int value)
         {
             return new PuttyRegOptionItem
@@ -60,27 +60,93 @@ namespace PRM.Core.Protocol.Putty
         Answerback,
         BellWaveFile,
         WinTitle,
+        /// <summary>
+        /// Default Foreground
+        /// </summary>
         Colour0,
+        /// <summary>
+        /// Default Bold Foreground
+        /// </summary>
         Colour1,
+        /// <summary>
+        /// Default Background
+        /// </summary>
         Colour2,
+        /// <summary>
+        /// Default Bold Background
+        /// </summary>
         Colour3,
+        /// <summary>
+        /// Cursor Text
+        /// </summary>
         Colour4,
+        /// <summary>
+        /// Cursor Color
+        /// </summary>
         Colour5,
+        /// <summary>
+        ///  ANSI Black
+        /// </summary>
         Colour6,
+        /// <summary>
+        /// ANSI Black Bold
+        /// </summary>
         Colour7,
+        /// <summary>
+        /// ANSI Red
+        /// </summary>
         Colour8,
+        /// <summary>
+        /// ANSI Red Bold
+        /// </summary>
         Colour9,
+        /// <summary>
+        /// ANSI Green
+        /// </summary>
         Colour10,
+        /// <summary>
+        /// ANSI Green Bold
+        /// </summary>
         Colour11,
+        /// <summary>
+        /// ANSI Yellow
+        /// </summary>
         Colour12,
+        /// <summary>
+        /// ANSI Yellow Bold
+        /// </summary>
         Colour13,
+        /// <summary>
+        /// ANSI Blue
+        /// </summary>
         Colour14,
+        /// <summary>
+        /// ANSI Blue Bold
+        /// </summary>
         Colour15,
+        /// <summary>
+        /// ANSI Magenta
+        /// </summary>
         Colour16,
+        /// <summary>
+        /// ANSI Magenta Bold
+        /// </summary>
         Colour17,
+        /// <summary>
+        /// ANSI Cyan
+        /// </summary>
         Colour18,
+        /// <summary>
+        /// ANSI Cyan Bold
+        /// </summary>
         Colour19,
+        /// <summary>
+        /// ANSI White
+        /// </summary>
         Colour20,
+        /// <summary>
+        /// ANSI White Bold
+        /// </summary>
         Colour21,
         Wordness0,
         Wordness32,
@@ -415,9 +481,9 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TermHeight, 0x00000018));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.FontIsBold, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.FontCharSet, 0x00000000));
-            using (Font font = new Font("Consolas", 10))
+            using (var font = new Font("Consolas", 10))
             {
-                if (font.Name == "Consolas")
+                if (font?.Name == "Consolas")
                     Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Font, "Consolas"));
                 else
                     Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Font, "Courier New"));
@@ -491,6 +557,9 @@ namespace PRM.Core.Protocol.Putty
             item.Value = value;
         }
 
+        /// <summary>
+        /// save to reg table
+        /// </summary>
         public void Save()
         {
             string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
@@ -505,6 +574,9 @@ namespace PRM.Core.Protocol.Putty
                 }
             }
         }
+        /// <summary>
+        /// del from reg table
+        /// </summary>
         public void Del()
         {
             if (File.Exists(PuttyKeyFilePath))

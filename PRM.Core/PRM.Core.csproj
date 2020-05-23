@@ -85,6 +85,7 @@
     <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.Locality.cs" />
+    <Compile Include="Model\SystemConfig.Theme.cs" />
     <Compile Include="Model\SystemConfig.QuickConnect.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
+    <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
     <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
       <DependentUpon>PuttyHost.xaml</DependentUpon>
     </Compile>
@@ -269,7 +271,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" />
+      <UserProperties languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
