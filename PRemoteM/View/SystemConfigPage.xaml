@@ -184,6 +184,7 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
+
             <TabItem Header="{DynamicResource system_options_quick_title}">
                 <StackPanel Margin="20 20 0 0">
 
@@ -229,6 +230,7 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
+
             <TabItem Header="{DynamicResource system_options_data_security_title}">
 
                 <StackPanel Margin="20 20 0 0">
@@ -390,8 +392,46 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="TXT:Theme" />
+            <TabItem Header="{DynamicResource system_options_data_theme_title}">
+                <StackPanel Margin="20 20 0 0">
 
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="0" Height="30">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{DynamicResource system_options_data_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_putty_font_size}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="" VerticalContentAlignment="Center"></TextBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_putty_theme}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <ComboBox SelectedValuePath="Tag"
+                                          SelectedValue="{Binding SystemConfig.QuickConnect.HotKeyModifiers}" 
+                                          SelectionChanged="Modifiers_OnSelectionChanged">
+                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Control}">Ctrl</ComboBoxItem>
+                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Alt}">Alt</ComboBoxItem>
+                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Windows}">Win</ComboBoxItem>
+                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Shift}">Shift</ComboBoxItem>
+                                </ComboBox>
+                            </Grid>
+                            <TextBlock VerticalAlignment="Center" Margin="2 0">
+                                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                    (?)
+                                </Hyperlink>
+                            </TextBlock>
+
+                            <Button Content="Txt:Custom"></Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
         </TabControl>
 
 

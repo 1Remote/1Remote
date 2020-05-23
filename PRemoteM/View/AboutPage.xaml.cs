@@ -34,7 +34,7 @@ namespace PRM.View
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            Hyperlink link = sender as Hyperlink;
+            var link = sender as Hyperlink;
             Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
     }

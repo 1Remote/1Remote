@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using PRM.Core.DB;
@@ -126,6 +128,12 @@ namespace PRM.View
             VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
 
             return false;
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            var link = sender as Hyperlink;
+            Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
     }
 

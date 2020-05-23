@@ -71,7 +71,7 @@ namespace PRM.Core.Protocol.Putty
                 dlg.Filter = "ppk|*.*";
                 if (dlg.ShowDialog() == true)
                 {
-                    ((ProtocolServerSSH)Vm).PrivateKey = File.ReadAllText(dlg.FileName);
+                    ((ProtocolServerSSH)Vm).PrivateKey = dlg.FileName;
                 }
             }
         }

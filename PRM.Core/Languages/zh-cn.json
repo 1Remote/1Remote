@@ -53,6 +53,11 @@
   "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
   "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
 
+  "system_options_data_theme_title": "外观",
+  "system_options_data_theme_putty_title": "Putty",
+  "system_options_data_theme_putty_font_size": "字体大小",
+  "system_options_data_theme_putty_theme": "主题",
+
 
   // server card operate
   "server_card_operate_confirm_delete": "确定要删除该服务器配置吗？",
