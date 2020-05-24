@@ -18,8 +18,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using PRM.Core.Model;
 using PRM.Core.Protocol.Putty.SSH;
 using Shawn.Ulits;
+using Path = System.IO.Path;
 
 namespace PRM.Core.Protocol.Putty.Host
 {
@@ -65,6 +68,7 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int SW_SHOWNORMAL = 1;
         private const int SW_SHOWMAXIMIZED = 3;
 
+        public const string PuttyExeName = "PuTTY_PRM.exe";
 
         private const int PuttyWindowMargin = 0;
         private Process _puttyProcess = null;
@@ -91,7 +95,9 @@ namespace PRM.Core.Protocol.Putty.Host
             Debug.Assert(ParentWindow != null);
             Debug.Assert(_protocolPuttyBase.ProtocolServerBase.Id > 0);
 
-            // TODO set to putty bg color
+
+            // set putty bg color
+            var options = SystemConfig.GetInstance().Theme.SelectedPuttyTheme;
             GridBg.Background = new SolidColorBrush(new Color()
             {
                 A = 255,
@@ -99,8 +105,28 @@ namespace PRM.Core.Protocol.Putty.Host
                 G = 0,
                 B = 0,
             });
+            var bgOption = options?.First(x => x.Key == PuttyRegOptionKey.Colour2.ToString());
+            if (bgOption != null
+                && bgOption.Value.ToString().Split(',').Length == 3)
+            {
+                var color = bgOption.Value.ToString().Split(',');
+                if (byte.TryParse(color[0], out var r)
+                    && byte.TryParse(color[1], out var g)
+                    && byte.TryParse(color[2], out var b))
+                {
+                    GridBg.Background = new SolidColorBrush(new Color()
+                    {
+                        A = 255,
+                        R = r,
+                        G = g,
+                        B = b,
+                    });
+                }
+            }
+
 
             _puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
+            RegPuttySessionInRegTable();
 
             _puttyHandle = IntPtr.Zero;
             //FormBorderStyle = FormBorderStyle.None;
@@ -144,10 +170,9 @@ namespace PRM.Core.Protocol.Putty.Host
             {
                 _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, server.PrivateKey);
             }
-            CreatePuttySessionInRegTable();
             _puttyProcess = new Process();
             var ps = new ProcessStartInfo();
-            ps.FileName = @"C:\putty60.exe";
+            ps.FileName = Path.Combine(Environment.CurrentDirectory, PuttyExeName);
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
             ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
@@ -173,7 +198,7 @@ namespace PRM.Core.Protocol.Putty.Host
                 SetWindowLong(_puttyHandle, GWL_STYLE, lStyle);
                 //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
                 MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2, _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
-                DeletePuttySessionInRegTable();
+                DelPuttySessionInRegTable();
 
                 _topTransparentPanel = new TransparentPanel
                 {
@@ -209,7 +234,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public void ClosePutty()
         {
-            DeletePuttySessionInRegTable();
+            DelPuttySessionInRegTable();
             try
             {
                 if (_puttyProcess?.HasExited == false)
@@ -225,33 +250,31 @@ namespace PRM.Core.Protocol.Putty.Host
         }
 
 
-        private void CreatePuttySessionInRegTable()
+        private void RegPuttySessionInRegTable()
         {
-            _puttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
-            _puttyOption.Set(PuttyRegOptionKey.Colour0, "217,216,216");
-            _puttyOption.Set(PuttyRegOptionKey.Colour1, "217,216,216");
-            _puttyOption.Set(PuttyRegOptionKey.Colour2, "28,28,128");
-            _puttyOption.Set(PuttyRegOptionKey.Colour3, "28,63,149");
-            _puttyOption.Set(PuttyRegOptionKey.Colour4, "128,128,128");
-            _puttyOption.Set(PuttyRegOptionKey.Colour5, "231,231,232");
-            _puttyOption.Set(PuttyRegOptionKey.Colour6, "115,113,113");
-            _puttyOption.Set(PuttyRegOptionKey.Colour7, "115,113,113");
-            _puttyOption.Set(PuttyRegOptionKey.Colour8, "251,38,8");
-            _puttyOption.Set(PuttyRegOptionKey.Colour9, "251,38,8");
-            _puttyOption.Set(PuttyRegOptionKey.Colour10, "167,226,46");
-            _puttyOption.Set(PuttyRegOptionKey.Colour11, "167,226,46");
-            _puttyOption.Set(PuttyRegOptionKey.Colour12, "102,217,238");
-            _puttyOption.Set(PuttyRegOptionKey.Colour13, "102,217,238");
-            _puttyOption.Set(PuttyRegOptionKey.Colour14, "0,157,220");
-            _puttyOption.Set(PuttyRegOptionKey.Colour15, "0,157,220");
-            _puttyOption.Set(PuttyRegOptionKey.Colour16, "255,85,255");
-            _puttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
-            _puttyOption.Set(PuttyRegOptionKey.Colour18, "255,210,4");
-            _puttyOption.Set(PuttyRegOptionKey.Colour19, "255,210,4");
-            _puttyOption.Set(PuttyRegOptionKey.Colour20, "217,216,216");
-            _puttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
+            // Set color theme
+            _puttyOption.Set(PuttyRegOptionKey.FontHeight, SystemConfig.GetInstance().Theme.PuttyFontSize);
+            var options = SystemConfig.GetInstance().Theme.SelectedPuttyTheme;
+            if (options != null)
+                foreach (var option in options)
+                {
+                    try
+                    {
+                        if (Enum.TryParse(option.Key, out PuttyRegOptionKey key))
+                        {
+                            if (option.ValueKind == RegistryValueKind.DWord)
+                                _puttyOption.Set(key, (int)(option.Value));
+                            else
+                                _puttyOption.Set(key, (string)option.Value);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                    }
+                }
 
-            //_puttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
+
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
@@ -333,7 +356,7 @@ namespace PRM.Core.Protocol.Putty.Host
             _puttyOption.Save();
         }
 
-        private void DeletePuttySessionInRegTable()
+        private void DelPuttySessionInRegTable()
         {
             _puttyOption?.Del();
             _puttyOption = null;

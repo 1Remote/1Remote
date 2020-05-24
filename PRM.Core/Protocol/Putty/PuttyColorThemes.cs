@@ -2,14 +2,18 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Windows.Documents;
 
 namespace PRM.Core.Protocol.Putty
 {
     public static class PuttyColorThemes
     {
+        public const string ThemeRegFileFolder = "PuttyThemes";
+
         public static List<PuttyRegOptionItem> ColorThemesFromRegFile(string filePath)
         {
             if (!File.Exists(filePath))
@@ -34,11 +38,11 @@ namespace PRM.Core.Protocol.Putty
         }
 
 
-        public static void ToRegFile(this List<PuttyRegOptionItem> options, string filePath)
+        public static FileInfo ToRegFile(this List<PuttyRegOptionItem> options, string filePath)
         {
             if (options.Count == 0)
-                return;
-            if (!File.Exists(filePath))
+                return null;
+            if (File.Exists(filePath))
                 File.Delete(filePath);
             var sb = new StringBuilder(@"Windows Registry Editor Version 5.00
 
@@ -49,6 +53,9 @@ namespace PRM.Core.Protocol.Putty
             }
 
             File.WriteAllText(filePath, sb.ToString());
+            if (File.Exists(filePath))
+                return new FileInfo(filePath);
+            return null;
         }
 
 
@@ -61,8 +68,9 @@ namespace PRM.Core.Protocol.Putty
                 if (!themes.ContainsKey(theme.Item1))
                     themes.Add(theme.Item1, theme.Item2);
             }
+            var tmp = new Dictionary<string, List<PuttyRegOptionItem>>();
             // customize theme
-            var di = new DirectoryInfo("PuttyThemes");
+            var di = new DirectoryInfo(ThemeRegFileFolder);
             if (di.Exists)
             {
                 var regs = di.GetFiles("*.reg");
@@ -70,14 +78,21 @@ namespace PRM.Core.Protocol.Putty
                 {
                     var t = ColorThemesFromRegFile(reg.FullName);
                     if (t != null
-                    && !themes.ContainsKey(reg.Name.Replace(reg.Extension, "")))
+                    && !tmp.ContainsKey(reg.Name.Replace(reg.Extension, "")))
                     {
-                        themes.Add(reg.Name.Replace(reg.Extension, ""), t);
+                        tmp.Add(reg.Name.Replace(reg.Extension, ""), t);
                     }
                 }
             }
             // existed theme
-            AddStaticThemes(themes);
+            AddStaticThemes(tmp);
+
+            // Order
+            var ordered = tmp.OrderBy(x => x.Key);
+            foreach (var kv in ordered)
+            {
+                themes.Add(kv.Key, kv.Value);
+            }
             return themes;
         }
 
@@ -419,7 +434,7 @@ FUNC_CONTENT
 
 
 
-        private static Tuple<string, List<PuttyRegOptionItem>> Get00__Default()
+        public static Tuple<string, List<PuttyRegOptionItem>> Get00__Default()
         {
             var options = new List<PuttyRegOptionItem>();
             options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Colour0, "187,187,187"));
@@ -446,7 +461,6 @@ FUNC_CONTENT
             options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Colour21, "255,255,255"));
             return new Tuple<string, List<PuttyRegOptionItem>>("Default", options);
         }
-
 
 
         private static Tuple<string, List<PuttyRegOptionItem>> Get01__Apple_Terminal()

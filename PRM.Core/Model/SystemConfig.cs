@@ -53,6 +53,7 @@ namespace PRM.Core.Model
             General = new SystemConfigGeneral(Ini);
             QuickConnect = new SystemConfigQuickConnect(Ini);
             DataSecurity = new SystemConfigDataSecurity(Ini);
+            Theme = new SystemConfigTheme(Ini);
         }
 
 
@@ -93,6 +94,16 @@ namespace PRM.Core.Model
         {
             get => _dataSecurity;
             set => SetAndNotifyIfChanged(nameof(DataSecurity), ref _dataSecurity, value);
+        }
+
+
+
+
+        private SystemConfigTheme _theme = null;
+        public SystemConfigTheme Theme
+        {
+            get => _theme;
+            set => SetAndNotifyIfChanged(nameof(Theme), ref _theme, value);
         }
     }
 

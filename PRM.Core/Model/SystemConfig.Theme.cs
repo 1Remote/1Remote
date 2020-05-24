@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using PRM.Core.Protocol.Putty;
 using Shawn.Ulits;
 
 namespace PRM.Core.Model
@@ -26,19 +27,19 @@ namespace PRM.Core.Model
         }
 
 
-        private string _selectedPuttyTheme = "";
+        private string _selectedPuttyThemeName = "";
 
-        public string SelectedPuttyTheme
+        public string SelectedPuttyThemeName
         {
-            get => _selectedPuttyTheme;
-            set => SetAndNotifyIfChanged(nameof(SelectedPuttyTheme), ref _selectedPuttyTheme, value);
+            get => _selectedPuttyThemeName;
+            set => SetAndNotifyIfChanged(nameof(SelectedPuttyThemeName), ref _selectedPuttyThemeName, value);
         }
 
-        private ObservableCollection<string> _puttyThemes= new ObservableCollection<string>();
-        public ObservableCollection<string> PuttyThemes
+        private ObservableCollection<string> _puttyThemeNames= new ObservableCollection<string>();
+        public ObservableCollection<string> PuttyThemeNames
         {
-            get => _puttyThemes;
-            set => SetAndNotifyIfChanged(nameof(PuttyThemes), ref _puttyThemes, value);
+            get => _puttyThemeNames;
+            set => SetAndNotifyIfChanged(nameof(PuttyThemeNames), ref _puttyThemeNames, value);
         }
 
 
@@ -47,7 +48,7 @@ namespace PRM.Core.Model
         public override void Save()
         {
             _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
-            _ini.WriteValue(nameof(SelectedPuttyTheme).ToLower(), _sectionName, SelectedPuttyTheme.ToString());
+            _ini.WriteValue(nameof(SelectedPuttyThemeName).ToLower(), _sectionName, SelectedPuttyThemeName.ToString());
             _ini.Save();
         }
 
@@ -55,7 +56,10 @@ namespace PRM.Core.Model
         {
             StopAutoSave = true;
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
-            SelectedPuttyTheme = _ini.GetValue(nameof(SelectedPuttyTheme).ToLower(), _sectionName, SelectedPuttyTheme);
+            SelectedPuttyThemeName = _ini.GetValue(nameof(SelectedPuttyThemeName).ToLower(), _sectionName, SelectedPuttyThemeName);
+            ReloadThemes();
+            if (string.IsNullOrEmpty(SelectedPuttyThemeName))
+                SelectedPuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
             StopAutoSave = false;
         }
 
@@ -64,6 +68,24 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigTheme));
         }
 
+        private Dictionary<string, List<PuttyRegOptionItem>> _puttyThemes = new Dictionary<string, List<PuttyRegOptionItem>>();
+        public List<PuttyRegOptionItem> SelectedPuttyTheme
+        {
+            get
+            {
+                if (_puttyThemes.ContainsKey(SelectedPuttyThemeName))
+                    return _puttyThemes[SelectedPuttyThemeName];
+                return null;
+            }
+        }
+
+
+        public void ReloadThemes()
+        {
+            _puttyThemes = PuttyColorThemes.GetThemes();
+            var puttyThemeNames = new ObservableCollection<string>(_puttyThemes.Keys);
+            _puttyThemeNames = puttyThemeNames;
+        }
         #endregion
     }
 }
