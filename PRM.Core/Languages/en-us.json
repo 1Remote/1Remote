@@ -44,9 +44,19 @@
   "system_options_data_security_database": "Database",
   "system_options_data_security_rsa_title": "RSA encryption",
   "system_options_data_security_rsa_encrypt": "Encrypt",
+  "system_options_data_security_rsa_encrypt_dialog_title": "Select a path to place your key",
   "system_options_data_security_rsa_decrypt": "Decrypt",
   "system_options_data_security_rsa_public_key": "Public key",
   "system_options_data_security_rsa_private_key_path": "Private key path",
+  "system_options_data_security_export": "Export",
+  "system_options_data_security_export_dialog_title": "Caution: your data will be decrypted",
+  "system_options_data_security_export_to_json": "to json",
+  "system_options_data_security_import": "Import",
+  "system_options_data_security_import_dialog_title": "Select a file",
+  "system_options_data_security_import_from_json": "from json",
+  "system_options_data_security_import_from_csv": "from mRemoteNG csv",
+  "system_options_data_security_import_done": "The import has been successful.",
+  "system_options_data_security_import_error": "Error data format!",
   "system_options_data_security_info_data_processing": "Data processing, do not close app.",
   "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
   "system_options_data_security_error_can_not_open": "File is not a database or file is a encrypted database!",
@@ -57,6 +67,7 @@
   "system_options_data_theme_putty_title": "Putty",
   "system_options_data_theme_putty_font_size": "Font Size",
   "system_options_data_theme_putty_theme": "Color Themes",
+  "system_options_data_theme_putty_customize": "Customize",
 
 
   // server card operate

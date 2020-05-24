@@ -240,7 +240,7 @@
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_open}" Command="{Binding CmdSelectDbPath}"></Button>
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_open}" Command="{Binding CmdSelectDbPath}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -250,10 +250,10 @@
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdGenRsaKey}" 
+                                    <Button Margin="0" Command="{Binding CmdGenRsaKey}" 
                                             Content="{DynamicResource system_options_data_security_rsa_encrypt}">
                                         <Button.Style>
-                                            <Style TargetType="Button">
+                                            <Style TargetType="Button" BasedOn="{StaticResource ServerEditorCautionButton}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
@@ -263,10 +263,10 @@
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="20 0 0 0" Command="{Binding CmdClearRsaKey}"
+                                    <Button Margin="10 0 0 0" Command="{Binding CmdClearRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_decrypt}">
                                         <Button.Style>
-                                            <Style TargetType="Button">
+                                            <Style TargetType="Button" BasedOn="{StaticResource ServerEditorCautionButton}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                         <Setter Property="IsEnabled" Value="False"></Setter>
@@ -306,7 +306,7 @@
                             </Grid>
                             <Button Content="{DynamicResource button_open}" Command="{Binding CmdSelectRsaPrivateKey}">
                                 <Button.Style>
-                                    <Style TargetType="Button">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ServerEditorNormalButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
@@ -329,22 +329,11 @@
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:数据导出"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_export}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdExportToJson}"
-                                            Content="TXT:到 json">
-                                        <!--<Button.Style>
-                                            <Style TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="False"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
-                                                        <Setter Property="IsEnabled" Value="True"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>-->
-                                    </Button>
+                                    <Button Style="{StaticResource ServerEditorCautionButton}" Margin="0 0 0 0" Command="{Binding CmdExportToJson}"
+                                            Content="{DynamicResource system_options_data_security_export_to_json}"></Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -354,34 +343,13 @@
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:数据导入"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_import}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdImportFromJson}"
-                                            Content="TXT:从 json">
-                                        <!--<Button.Style>
-                                            <Style TargetType="Button">
-                                                <Setter Property="IsEnabled" Value="False"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
-                                                        <Setter Property="IsEnabled" Value="True"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>-->
-                                    </Button>
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="20 0 0 0" Command="{Binding CmdImportFromMRemoteNgCsv}"
-                                            Content="TXT：从mRemoteNG csv">
-                                        <!--<Button.Style>
-                                            <Style TargetType="Button">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
-                                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>-->
-                                    </Button>
+                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="0 0 0 0" Command="{Binding CmdImportFromJson}"
+                                            Content="{DynamicResource system_options_data_security_import_from_json}"></Button>
+                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="10 0 0 0" Command="{Binding CmdImportFromMRemoteNgCsv}"
+                                            Content="{DynamicResource system_options_data_security_import_from_csv}"></Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -404,7 +372,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_putty_font_size}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
-                                <TextBox Text="" VerticalContentAlignment="Center"></TextBox>
+                                <TextBox Text="{Binding SystemConfig.Theme.PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -413,12 +381,8 @@
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_putty_theme}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <ComboBox SelectedValuePath="Tag"
-                                          SelectedValue="{Binding SystemConfig.QuickConnect.HotKeyModifiers}" 
-                                          SelectionChanged="Modifiers_OnSelectionChanged">
-                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Control}">Ctrl</ComboBoxItem>
-                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Alt}">Alt</ComboBoxItem>
-                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Windows}">Win</ComboBoxItem>
-                                    <ComboBoxItem Tag="{x:Static ModifierKeys.Shift}">Shift</ComboBoxItem>
+                                          ItemsSource="{Binding SystemConfig.Theme.PuttyThemeNames}"
+                                          SelectedItem="{Binding SystemConfig.Theme.SelectedPuttyThemeName}">
                                 </ComboBox>
                             </Grid>
                             <TextBlock VerticalAlignment="Center" Margin="2 0">
@@ -427,7 +391,7 @@
                                 </Hyperlink>
                             </TextBlock>
 
-                            <Button Content="Txt:Custom"></Button>
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource system_options_data_theme_putty_customize}" Command="{Binding CmdPuttyThemeCustomize}"></Button>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

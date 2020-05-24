@@ -190,7 +190,7 @@ namespace PRM.Core.Model
 
                             var dlg = new SaveFileDialog
                             {
-                                Title = "TXT: 选择私钥放置位置",
+                                Title = SystemConfig.GetInstance().Language.GetText("system_options_data_security_rsa_encrypt_dialog_title"),
                                 Filter = $"PRM RSA private key|*{Core.Model.SystemConfigDataSecurity.PrivateKeyFileExt}",
                                 FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") +
                                            Core.Model.SystemConfigDataSecurity.PrivateKeyFileExt,

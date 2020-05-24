@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
@@ -6,6 +8,7 @@ using System.Threading;
 using System.Windows;
 using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Ulits;
 using PRM.Model;
 using PRM.View;
@@ -96,6 +99,17 @@ namespace PRM
                 // global init
                 Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
 
+                // kill putty process
+                foreach (var process in Process.GetProcessesByName(PuttyHost.PuttyExeName.ToLower().Replace(".exe", "")))
+                {
+                    try
+                    {
+                        process.Kill();
+                    }
+                    catch
+                    {
+                    }
+                }
 
                 // run check
 

@@ -11,6 +11,7 @@ using PersonalRemoteManager;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
@@ -140,6 +141,8 @@ namespace PRM.ViewModel
                         SystemConfig.GetInstance().General.Save();
                         SystemConfig.GetInstance().QuickConnect.Save();
                         SystemConfig.GetInstance().DataSecurity.Save();
+                        SystemConfig.GetInstance().Theme.Save();
+                        SystemConfig.GetInstance().Theme.ReloadThemes();
                     });
                 }
                 return _cmdSaveAndGoBack;
@@ -266,7 +269,7 @@ namespace PRM.ViewModel
                         var dlg = new SaveFileDialog
                         {
                             Filter = "PRM json array|*.prma",
-                            Title = "TXT:导出数据将以明文显示，请妥善保管！",
+                            Title = SystemConfig.Language.GetText("system_options_data_security_export_dialog_title"),
                             FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
                         };
                         if (dlg.ShowDialog() == true)
@@ -305,7 +308,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
-                            Title = "TXT:选择导入文件",
+                            Title = SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_dialog_title"),
                             FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
                         };
                         if (dlg.ShowDialog() == true)
@@ -338,11 +341,11 @@ namespace PRM.ViewModel
                                     }
                                 }
                                 Global.GetInstance().ReloadServers();
-                                MessageBox.Show("TXT:导入完成！");
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_done"));
                             }
                             catch (Exception e)
                             {
-                                MessageBox.Show("TXT:导入的数据文件格式有误");
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_error"));
                             }
                         }
                     });
@@ -365,7 +368,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "mRemoteNG csv|*.csv",
-                            Title = "TXT:选择导入文件",
+                            Title = SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -479,11 +482,11 @@ namespace PRM.ViewModel
                                     }
                                 }
                                 Global.GetInstance().ReloadServers();
-                                MessageBox.Show("TXT:导入完成！");
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_done"));
                             }
                             catch (Exception e)
                             {
-                                MessageBox.Show("TXT:导入的数据文件格式有误");
+                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_error"));
                             }
                         }
                     });
@@ -491,6 +494,29 @@ namespace PRM.ViewModel
                 return _cmdImportFromMRemoteNgCsv;
             }
         }
+        
+        
+
+        private RelayCommand _cmdPuttyThemeCustomize;
+        public RelayCommand CmdPuttyThemeCustomize
+        {
+            get
+            {
+                if (_cmdPuttyThemeCustomize == null)
+                {
+                    _cmdPuttyThemeCustomize = new RelayCommand((o) =>
+                    {
+                        var puttyTheme = SystemConfig.Theme.SelectedPuttyTheme;
+                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, SystemConfig.Theme.SelectedPuttyThemeName + ".reg"));
+                        if (fi != null)
+                            System.Diagnostics.Process.Start("notepad.exe", fi.FullName);
+                    });
+                }
+                return _cmdPuttyThemeCustomize;
+            }
+        }
+
+
 
         #endregion
     }

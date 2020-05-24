@@ -44,9 +44,19 @@
   "system_options_data_security_database": "数据库",
   "system_options_data_security_rsa_title": "RSA加密",
   "system_options_data_security_rsa_encrypt": "生成加密",
+  "system_options_data_security_rsa_encrypt_dialog_title": "选择私钥放置位置",
   "system_options_data_security_rsa_decrypt": "清除加密",
   "system_options_data_security_rsa_public_key": "公钥",
   "system_options_data_security_rsa_private_key_path": "私钥",
+  "system_options_data_security_export": "导出",
+  "system_options_data_security_export_dialog_title": "导出数据将以明文显示，请妥善保管！",
+  "system_options_data_security_export_to_json": "到 json",
+  "system_options_data_security_import": "导入",
+  "system_options_data_security_import_dialog_title": "选择导入文件",
+  "system_options_data_security_import_from_json": "从 json",
+  "system_options_data_security_import_from_csv": "从 mRemoteNG csv",
+  "system_options_data_security_import_done": "导入完成.",
+  "system_options_data_security_import_error": "导入的数据文件格式有误!",
   "system_options_data_security_info_data_processing": "数据处理中，请勿关闭程序。",
   "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
   "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
@@ -57,6 +67,7 @@
   "system_options_data_theme_putty_title": "Putty",
   "system_options_data_theme_putty_font_size": "字体大小",
   "system_options_data_theme_putty_theme": "主题",
+  "system_options_data_theme_putty_customize": "客制化",
 
 
   // server card operate
