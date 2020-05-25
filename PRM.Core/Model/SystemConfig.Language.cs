@@ -117,7 +117,7 @@ namespace PRM.Core.Model
             }
             {
                 var code = "en-us";
-                var path = "pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml";
+                var path = "pack://application:,,,/PRM.Core;component/Languages/en-us.xaml";
                 if (!LanguageCode2Name.ContainsKey(code))
                 {
                     var r = GetResourceDictionaryByPath(path);
