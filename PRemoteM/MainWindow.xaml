@@ -216,12 +216,13 @@
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
                             <Button Content="{DynamicResource system_menu_options_title}" Command="{Binding CmdGoSysOptionsPage}"></Button>
-                            <Button Command="{Binding CmdGoAboutPage}">
+                            <!--<Button Command="{Binding CmdGoAboutPage}">
+                                // TODO 测试版本不显示
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{DynamicResource system_menu_about_title}"></TextBlock>
                                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="16" Margin="10 0 0 0"></Image>
                                 </StackPanel>
-                            </Button>
+                            </Button>-->
                             <Button Content="{DynamicResource button_exit}" Click="ButtonExit_OnClick"></Button>
                         </StackPanel>
                     </Grid>
