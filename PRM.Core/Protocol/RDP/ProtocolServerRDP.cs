@@ -108,6 +108,14 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
         }
 
+        
+        private bool _isFullScreenWithConnectionBar = true;
+        public bool IsFullScreenWithConnectionBar
+        {
+            get => _isFullScreenWithConnectionBar;
+            set => SetAndNotifyIfChanged(nameof(IsFullScreenWithConnectionBar), ref _isFullScreenWithConnectionBar, value);
+        }
+
         private ERdpWindowResizeMode _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
         public ERdpWindowResizeMode RdpWindowResizeMode
         {

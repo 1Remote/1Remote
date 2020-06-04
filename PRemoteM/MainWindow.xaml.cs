@@ -19,7 +19,7 @@ namespace PRM
 {
     public partial class MainWindow : Window
     {
-        public readonly VmMain VmMain;
+        public VmMain VmMain { get; private set; }
         public MainWindow()
         {
             InitializeComponent();

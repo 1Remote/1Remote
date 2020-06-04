@@ -31,12 +31,24 @@ namespace PRM.View
     {
         public VmMain Host;
         public VmSystemConfigPage VmSystemConfigPage;
-        public SystemConfigPage(VmMain host)
+        public SystemConfigPage(VmMain host,Type t = null)
         {
             Host = host;
             VmSystemConfigPage = new VmSystemConfigPage(host);
             InitializeComponent();
             DataContext = VmSystemConfigPage;
+
+            
+            if (t == typeof(SystemConfigGeneral))
+                TabItemGeneral.IsSelected = true;
+            if (t == typeof(SystemConfigLanguage))
+                TabItemGeneral.IsSelected = true;
+            if (t == typeof(SystemConfigQuickConnect))
+                TabItemQuick.IsSelected = true;
+            if (t == typeof(SystemConfigDataSecurity))
+                TabItemDataBase.IsSelected = true;
+            if (t == typeof(SystemConfigTheme))
+                TabItemTheme.IsSelected = true;
         }
 
 

@@ -91,7 +91,7 @@ namespace Shawn.Ulits.RDP
 
 
             #region conn bar
-            _rdp.AdvancedSettings6.DisplayConnectionBar = true;
+            _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar;
             _rdp.AdvancedSettings6.ConnectionBarShowPinButton = true;
             _rdp.AdvancedSettings6.PinConnectionBar = false;
             _rdp.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
@@ -112,7 +112,7 @@ namespace Shawn.Ulits.RDP
                 // - 0 Apply key combinations only locally at the client computer.
                 // - 1 Apply key combinations at the remote server.
                 // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
-                _rdp.SecuredSettings3.KeyboardHookMode = 2;
+                _rdp.SecuredSettings3.KeyboardHookMode = 1;
             }
             else
                 _rdp.SecuredSettings3.KeyboardHookMode = 0;

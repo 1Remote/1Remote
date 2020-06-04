@@ -99,38 +99,22 @@ namespace PRM.ViewModel
                 {
                     _cmdSaveAndGoBack = new RelayCommand((o) =>
                     {
+                        // check if Db is ok
+                        if (!AppChecker.CheckDbExisted())
                         {
-                            try
-                            {
-                                Server.Init();
-                            }
-                            catch (Exception ee)
-                            {
-                                MessageBox.Show(
-                                    SystemConfig.GetInstance().Language
-                                        .GetText("system_options_data_security_error_can_not_open") + ": " +
-                                    SystemConfig.DataSecurity.DbPath);
-                                return;
-                            }
+                            MessageBox.Show(
+                                SystemConfig.GetInstance().Language
+                                    .GetText("system_options_data_security_error_can_not_open") + ": " +
+                                SystemConfig.DataSecurity.DbPath,
+                                SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            return;
                         }
 
-
-                        var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
-                        switch (ret)
+                        var dbEncrypted = AppChecker.CheckDbEncrypted();
+                        if (!dbEncrypted.Item1)
                         {
-                            case SystemConfigDataSecurity.ERsaStatues.Ok:
-                                break;
-                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                                return;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                return;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                return;
-                            default:
-                                throw new ArgumentOutOfRangeException();
+                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            return;
                         }
 
 
@@ -248,7 +232,26 @@ namespace PRM.ViewModel
                 {
                     _cmdClearRsaKey = new RelayCommand((o) =>
                     {
-                        SystemConfig.DataSecurity.CleanRsa();
+                        var dbEncrypted = AppChecker.CheckDbEncrypted();
+                        if (!dbEncrypted.Item1)
+                        {
+                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+
+                            if (MessageBox.Show(
+                                SystemConfig.GetInstance().Language.GetText("system_options_data_security_info_clear_rebuild_database"),
+                                SystemConfig.GetInstance().Language.GetText("messagebox_title_warning"),
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                            {
+                                if (File.Exists(SystemConfig.GetInstance().DataSecurity.DbPath))
+                                    File.Delete(SystemConfig.GetInstance().DataSecurity.DbPath);
+                                AppChecker.CheckDbExisted();
+                                Global.GetInstance().ReloadServers();
+                                SystemConfig.GetInstance().DataSecurity.Load();
+                            }
+                            return;
+                        }
+                        else
+                            SystemConfig.DataSecurity.CleanRsa();
                     });
                 }
                 return _cmdClearRsaKey;
@@ -266,6 +269,12 @@ namespace PRM.ViewModel
                 {
                     _cmdExportToJson = new RelayCommand((o) =>
                     {
+                        var dbEncrypted = AppChecker.CheckDbEncrypted();
+                        if (!dbEncrypted.Item1)
+                        {
+                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            return;
+                        }
                         var dlg = new SaveFileDialog
                         {
                             Filter = "PRM json array|*.prma",
@@ -305,6 +314,12 @@ namespace PRM.ViewModel
                 {
                     _cmdImportFromJson = new RelayCommand((o) =>
                     {
+                        var dbEncrypted = AppChecker.CheckDbEncrypted();
+                        if (!dbEncrypted.Item1)
+                        {
+                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            return;
+                        }
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
@@ -354,7 +369,7 @@ namespace PRM.ViewModel
             }
         }
 
-        
+
 
         private RelayCommand _cmdImportFromMRemoteNgCsv;
         public RelayCommand CmdImportFromMRemoteNgCsv
@@ -365,6 +380,12 @@ namespace PRM.ViewModel
                 {
                     _cmdImportFromMRemoteNgCsv = new RelayCommand((o) =>
                     {
+                        var dbEncrypted = AppChecker.CheckDbEncrypted();
+                        if (!dbEncrypted.Item1)
+                        {
+                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            return;
+                        }
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "mRemoteNG csv|*.csv",
@@ -387,7 +408,7 @@ namespace PRM.ViewModel
                                     int addressIndex = title.IndexOf("hostname");
                                     int portIndex = title.IndexOf("port");
                                     int portIndex2 = title.IndexOf("por2t");
-                                    if(protocolIndex == 0)
+                                    if (protocolIndex == 0)
                                         throw new ArgumentException("can't find protocol field");
 
                                     // body
@@ -422,7 +443,7 @@ namespace PRM.ViewModel
                                                 case "rdp":
                                                     server = new ProtocolServerRDP()
                                                     {
-                                                        DispName =  name,
+                                                        DispName = name,
                                                         GroupName = group,
                                                         Address = address,
                                                         UserName = user,
@@ -433,7 +454,7 @@ namespace PRM.ViewModel
                                                 case "ssh1":
                                                     server = new ProtocolServerSSH()
                                                     {
-                                                        DispName =  name,
+                                                        DispName = name,
                                                         GroupName = group,
                                                         Address = address,
                                                         UserName = user,
@@ -445,7 +466,7 @@ namespace PRM.ViewModel
                                                 case "ssh2":
                                                     server = new ProtocolServerSSH()
                                                     {
-                                                        DispName =  name,
+                                                        DispName = name,
                                                         GroupName = group,
                                                         Address = address,
                                                         UserName = user,
@@ -494,8 +515,8 @@ namespace PRM.ViewModel
                 return _cmdImportFromMRemoteNgCsv;
             }
         }
-        
-        
+
+
 
         private RelayCommand _cmdPuttyThemeCustomize;
         public RelayCommand CmdPuttyThemeCustomize
@@ -507,6 +528,8 @@ namespace PRM.ViewModel
                     _cmdPuttyThemeCustomize = new RelayCommand((o) =>
                     {
                         var puttyTheme = SystemConfig.Theme.SelectedPuttyTheme;
+                        if (!Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
+                            Directory.CreateDirectory(PuttyColorThemes.ThemeRegFileFolder);
                         var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, SystemConfig.Theme.SelectedPuttyThemeName + ".reg"));
                         if (fi != null)
                             System.Diagnostics.Process.Start("notepad.exe", fi.FullName);

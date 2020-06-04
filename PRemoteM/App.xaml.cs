@@ -111,42 +111,24 @@ namespace PRM
                     }
                 }
 
+                bool settingErroFlag = false;
+
                 // run check
-
+                ReCheck:
                 // check if Db is ok
+                if (!AppChecker.CheckDbExisted())
                 {
-                    try
-                    {
-                        Server.Init();
-                    }
-                    catch (Exception exception)
-                    {
-                        // todo 跳转到数据库配置页面
-                        throw;
-                    }
+                    settingErroFlag = true;
+                    // todo 跳转到数据库配置页面
+                    //return;
+                    //goto ReCheck;
                 }
-
-                // check if Rsa is ok
-                var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
-                switch (ret)
+                if (!AppChecker.CheckDbEncrypted().Item1)
                 {
-                    case SystemConfigDataSecurity.ERsaStatues.Ok:
-                        break;
-                    default:
-                        switch (ret)
-                        {
-                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                                break;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                break;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                break;
-                        }
-                        // todo 跳转到 RSA 配置页面
-                        break;
+                    settingErroFlag = true;
+                    // todo 跳转到 RSA 配置页面
+                    //return;
+                    //goto ReCheck;
                 }
 
                 #endregion
@@ -163,6 +145,12 @@ namespace PRM
                     {
                         ActivateWindow();
                     }
+
+                    if (settingErroFlag)
+                    {
+                        ActivateWindow();
+                        Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
+                    }
                 }
 
 
@@ -174,9 +162,12 @@ namespace PRM
                 InitQuickSearch();
                 #endregion
 
-                
-                // load data
-                Global.GetInstance().ReloadServers();
+
+                if (!settingErroFlag)
+                {
+                    // load data
+                    Global.GetInstance().ReloadServers();
+                }
             }
             catch (Exception ex)
             {

@@ -54,8 +54,8 @@ namespace PRM.Core.Model
             }
         }
 
-        private ResourceDictionary _defaultLanguageResourceDictionary { get; set; }= null;
-        private ResourceDictionary _currentLanguageResourceDictionary { get; set; }= null;
+        private ResourceDictionary _defaultLanguageResourceDictionary { get; set; } = null;
+        private ResourceDictionary _currentLanguageResourceDictionary { get; set; } = null;
 
 
         private Dictionary<string,string> _languageCode2Name = new Dictionary<string,string>();

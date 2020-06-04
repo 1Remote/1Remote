@@ -335,8 +335,16 @@ namespace PRM.Core.Model
                         rdp.Password = rsa.Encode(rdp.Password);
                         break;
                     case ProtocolServerSSH ssh:
-                        Debug.Assert(rsa.DecodeOrNull(ssh.Password) == null);
-                        ssh.Password = rsa.Encode(ssh.Password);
+                        if (!string.IsNullOrEmpty(ssh.Password))
+                        {
+                            Debug.Assert(rsa.DecodeOrNull(ssh.Password) == null);
+                            ssh.Password = rsa.Encode(ssh.Password);
+                        }
+                        if (!string.IsNullOrEmpty(ssh.PrivateKey))
+                        {
+                            Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) == null);
+                            ssh.PrivateKey = rsa.Encode(ssh.PrivateKey);
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
@@ -355,8 +363,16 @@ namespace PRM.Core.Model
                         rdp.Password = rsa.DecodeOrNull(rdp.Password);
                         break;
                     case ProtocolServerSSH ssh:
-                        Debug.Assert(rsa.DecodeOrNull(ssh.Password) != null);
-                        ssh.Password = rsa.DecodeOrNull(ssh.Password);
+                        if (!string.IsNullOrEmpty(ssh.Password))
+                        {
+                            Debug.Assert(rsa.DecodeOrNull(ssh.Password) != null);
+                            ssh.Password = rsa.DecodeOrNull(ssh.Password);
+                        }
+                        if (!string.IsNullOrEmpty(ssh.PrivateKey))
+                        {
+                            Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) != null);
+                            ssh.PrivateKey = rsa.DecodeOrNull(ssh.PrivateKey);
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
