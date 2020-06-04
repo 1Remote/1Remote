@@ -31,7 +31,7 @@ namespace PRM.ViewModel
             IsAddMode = server.GetType() == typeof(ProtocolServerNone) || server.Id == 0;
 
             // decrypt pwd
-            if(server.GetType() != typeof(ProtocolServerNone))
+            if (server.GetType() != typeof(ProtocolServerNone))
                 SystemConfig.GetInstance().DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
@@ -205,7 +205,7 @@ namespace PRM.ViewModel
                     server.Update(Server, typeof(ProtocolServerBase));
             }
 
-            
+
             switch (server)
             {
                 case ProtocolServerRDP _:

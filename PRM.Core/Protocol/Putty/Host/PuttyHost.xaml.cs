@@ -22,6 +22,7 @@ using Microsoft.Win32;
 using PRM.Core.Model;
 using PRM.Core.Protocol.Putty.SSH;
 using Shawn.Ulits;
+using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 
 namespace PRM.Core.Protocol.Putty.Host
@@ -164,12 +165,6 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void InitPutty()
         {
-            if (_protocolPuttyBase is ProtocolServerSSH server
-                && !string.IsNullOrEmpty(server.PrivateKey)
-                && File.Exists(server.PrivateKey))
-            {
-                _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, server.PrivateKey);
-            }
             _puttyProcess = new Process();
             var ps = new ProcessStartInfo();
             ps.FileName = Path.Combine(Environment.CurrentDirectory, PuttyExeName);
@@ -252,7 +247,18 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void RegPuttySessionInRegTable()
         {
-            // Set color theme
+            // set key
+            if (_protocolPuttyBase is ProtocolServerSSH server
+                && !string.IsNullOrEmpty(server.PrivateKey))
+            {
+                var ppk = server.PrivateKey;
+                if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
+                    ppk = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(ppk);
+                Debug.Assert(ppk != null);                    
+                _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, ppk);
+            }
+
+            // set color theme
             _puttyOption.Set(PuttyRegOptionKey.FontHeight, SystemConfig.GetInstance().Theme.PuttyFontSize);
             var options = SystemConfig.GetInstance().Theme.SelectedPuttyTheme;
             if (options != null)

@@ -408,7 +408,7 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.PingInterval, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.PingIntervalSecs, 0x0000003c));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TCPNoDelay, 0x00000001));
-            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TCPKeepalives, 0x00000000));
+            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TCPKeepalives, 0x0000001E)); // seconds between keepalives
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.AddressFamily, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ProxyDNS, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ProxyLocalhost, 0x00000000));
@@ -416,7 +416,7 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ProxyPort, 0x00000050));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.UserNameFromEnvironment, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.NoPTY, 0x00000000));
-            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Compression, 0x00000000));
+            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Compression, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TryAgent, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.AgentFwd, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.GssapiFwd, 0x00000000));
@@ -544,17 +544,31 @@ namespace PRM.Core.Protocol.Putty
 
         public void Set(PuttyRegOptionKey key, int value)
         {
-            var item = Options.First(x => x.Key == key.ToString());
-            Debug.Assert(item != null);
-            Debug.Assert(item.ValueKind == RegistryValueKind.DWord);
-            item.Value = value;
+            if (Options.Any(x => x.Key == key.ToString()))
+            {
+                var item = Options.First(x => x.Key == key.ToString());
+                Debug.Assert(item != null);
+                Debug.Assert(item.ValueKind == RegistryValueKind.DWord);
+                item.Value = value;
+            }
+            else
+            {
+                Options.Add(PuttyRegOptionItem.Create(key, value));
+            }
         }
         public void Set(PuttyRegOptionKey key, string value)
         {
-            var item = Options.First(x => x.Key == key.ToString());
-            Debug.Assert(item != null);
-            Debug.Assert(item.ValueKind == RegistryValueKind.String);
-            item.Value = value;
+            if (Options.Any(x => x.Key == key.ToString()))
+            {
+                var item = Options.First(x => x.Key == key.ToString());
+                Debug.Assert(item != null);
+                Debug.Assert(item.ValueKind == RegistryValueKind.String);
+                item.Value = value;
+            }
+            else
+            {
+                Options.Add(PuttyRegOptionItem.Create(key, value));
+            }
         }
 
         /// <summary>

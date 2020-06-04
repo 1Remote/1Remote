@@ -28,7 +28,7 @@
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
                                  Width="50" HorizontalAlignment="Left"
@@ -75,15 +75,13 @@
                         </ComboBox>
                     </Grid>
 
-                    <StackPanel Orientation="Horizontal" Margin="20 0 0 0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Margin="40 0 0 0" VerticalAlignment="Center">
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Setter Property="Visibility" Value="Visible"></Setter>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
-                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                        <Setter Property="IsEnabled" Value="False"></Setter>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullScreen}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
@@ -92,18 +90,21 @@
                             </Style>
                         </StackPanel.Style>
                         <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
-                            <CheckBox Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
-                                <CheckBox.Style>
-                                    <Style TargetType="CheckBox">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
-                                                <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
-                                                <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </CheckBox.Style>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox HorizontalAlignment="Right" Margin="10 0" Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                    <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
+                                                    <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                                <CheckBox HorizontalAlignment="Right" Content="{DynamicResource server_editor_display_full_screen_with_conn_bar}" IsChecked="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </StackPanel>

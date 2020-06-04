@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
 using PRM.View;
@@ -71,7 +72,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SystemConfigPage(this),
+                            Page = new SystemConfigPage(this, (Type)o),
                         };
                         SysOptionsMenuIsOpen = false;
                     }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));

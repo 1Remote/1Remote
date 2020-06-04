@@ -88,7 +88,7 @@
                             </Grid.Style>
                             <StackPanel>
                                 <Button Content="{DynamicResource button_open}" Click="ButtonOpenPrivateKey_OnClick"></Button>
-                                <TextBox Text="{Binding PrivateKey}" Height="100" Width="300" 
+                                <TextBox Text="{Binding PrivateKey}" Height="40" Width="300" 
                                          HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
                                          TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden"></TextBox>
                             </StackPanel>

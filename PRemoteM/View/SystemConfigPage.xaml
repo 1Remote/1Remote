@@ -104,8 +104,8 @@
     <Grid Background="{DynamicResource MainBgColorBrush}">
 
         <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}" IsEnabled="{Binding TabIsEnabled}">
-            <TabItem Header="{DynamicResource system_options_general_title}">
-                <StackPanel Margin="20 20 0 0">
+            <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
+                <StackPanel Margin="0 20 0 0">
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
@@ -185,8 +185,8 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="{DynamicResource system_options_quick_title}">
-                <StackPanel Margin="20 20 0 0">
+            <TabItem Name="TabItemQuick" Header="{DynamicResource system_options_quick_title}">
+                <StackPanel Margin="0 20 0 0">
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
@@ -231,9 +231,9 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="{DynamicResource system_options_data_security_title}">
+            <TabItem Name="TabItemDataBase" Header="{DynamicResource system_options_data_security_title}">
 
-                <StackPanel Margin="20 20 0 0">
+                <StackPanel Margin="0 20 0 0">
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
@@ -360,8 +360,8 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="{DynamicResource system_options_data_theme_title}">
-                <StackPanel Margin="20 20 0 0">
+            <TabItem Name="TabItemTheme" Header="{DynamicResource system_options_data_theme_title}">
+                <StackPanel Margin="0 20 0 0">
 
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0" Height="30">
                         <StackPanel Orientation="Horizontal">
