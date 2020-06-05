@@ -28,7 +28,7 @@
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="80" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
                                  Width="50" HorizontalAlignment="Left"
@@ -69,34 +69,86 @@
             </Grid>
 
 
-            <Grid Style="{StaticResource ServerEditorRow}" Name="GridPrivateKey" Height="Auto">
+            <Grid Name="GridPrivateKey" Height="Auto">
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
+                                <Setter Property="Margin" Value="0"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
                     <StackPanel>
                         <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource server_editor_connection_private_key_checker}" 
                                   Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
                         <Grid>
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <StackPanel>
-                                <Button Content="{DynamicResource button_open}" Click="ButtonOpenPrivateKey_OnClick"></Button>
-                                <TextBox Text="{Binding PrivateKey}" Height="40" Width="300" 
-                                         HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
-                                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden"></TextBox>
-                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
             </Grid>
+
+
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}" Width="500">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding PrivateKey}" Width="300"></TextBox>
+                            <Button Content="{DynamicResource button_open}" Click="ButtonOpenPrivateKey_OnClick">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+                                        <Setter Property="Padding" Value="5"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Grid>
+                                                        <Border BorderThickness="0" 
+                                                                    CornerRadius="3"
+                                                                    x:Name="ButtonBorder"
+                                                                    Background="{TemplateBinding Background}">
+                                                        </Border>
+                                                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" />
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.6" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.3" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter TargetName="ButtonBorder" Property="Background" Value="#BBB" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </StackPanel>
+
 
         <StackPanel Name="SpSsh">
             <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>

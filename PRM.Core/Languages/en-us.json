@@ -93,7 +93,7 @@
   "server_editor_connection_port": "Port",
   "server_editor_connection_username": "User",
   "server_editor_connection_password": "Password",
-  "server_editor_connection_private_key_checker": "Private key instead of password",
+  "server_editor_connection_private_key_checker": "use private key",
   "server_editor_connection_private_key": "Private key",
   // server editor - display group items
   "server_editor_display_full_screen_flag": "Full screen",

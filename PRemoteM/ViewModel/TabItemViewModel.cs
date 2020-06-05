@@ -11,7 +11,6 @@ namespace PRM.Core.Ulits.DragablzTab
     {
         public TabItemViewModel()
         {
-            // todo use dynamic resource
             _markColorHex = "#102b3e";
         }
 

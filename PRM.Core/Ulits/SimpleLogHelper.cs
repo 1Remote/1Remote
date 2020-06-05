@@ -9,10 +9,10 @@ namespace Shawn.Ulits
 {
     public static class SimpleLogHelper
     {
-        public static string LogFileName = "simple.log.md";
+        public static string LogFileName = "PRemoteM.log.md";
 
         public static Level PrintLogLevel = Level.Debug;
-        public static Level WriteLogLevel = Level.Warning;
+        public static Level WriteLogLevel = Level.Info;
         public static bool CanWriteWarningLog = true;
 
 
@@ -24,58 +24,60 @@ namespace Shawn.Ulits
             Info,
             Warning,
             Error,
+            Fatal,
         }
 
+        public static void Debug(params object[] o)
+        {
+            var dt = DateTime.Now;
+            Print(Level.Debug, dt, o);
+            WriteLog(Level.Debug, dt, o);
+        }
 
-        public static void Print(object o, Level level = Level.Debug, DateTime? dt = null)
+        public static void Info(params object[] o)
+        {
+            var dt = DateTime.Now;
+            Print(Level.Info, dt, o);
+            WriteLog(Level.Info, dt, o);
+        }
+
+        public static void Warning(params object[] o)
+        {
+            var dt = DateTime.Now;
+            Print(Level.Warning, dt, o);
+            WriteLog(Level.Warning, dt, o);
+        }
+
+        public static void Error(params object[] o)
+        {
+            var dt = DateTime.Now;
+            Print(Level.Error, dt, o);
+            WriteLog(Level.Error, dt, o);
+        }
+
+        public static void Fatal(params object[] o)
+        {
+            var dt = DateTime.Now;
+            Print(Level.Fatal, dt, o);
+            WriteLog(Level.Fatal, dt, o);
+        }
+
+        public static void Print(Level level, DateTime? dt = null, params object[] o)
         {
             if (level >= PrintLogLevel)
             {
                 if (dt == null)
                     dt = DateTime.Now;
                 Console.Write($"[{dt:u}]\t{level}\t\t\t");
-                Console.WriteLine(o);
+                foreach (var obj in o)
+                {
+                    Console.WriteLine(obj);
+                }
             }
         }
 
-        public static void Log(object o)
+        private static void WriteLog(Level level, DateTime? dt = null, params object[] o)
         {
-            Debug(o);
-        }
-
-        public static void Debug(object o)
-        {
-#if DEBUG
-            var dt = DateTime.Now;
-            Print(o, Level.Debug, dt);
-            WriteLog(o, Level.Debug, dt);
-#endif
-        }
-
-        public static void Info(object o)
-        {
-            var dt = DateTime.Now;
-            Print(o, Level.Info, dt);
-            WriteLog(o, Level.Info, dt);
-        }
-
-        public static void Warning(object o)
-        {
-            var dt = DateTime.Now;
-            Print(o, Level.Warning, dt);
-            WriteLog(o, Level.Warning, dt);
-        }
-
-        public static void Error(object o)
-        {
-            var dt = DateTime.Now;
-            Print(o, Level.Error, dt);
-            WriteLog(o, Level.Error, dt);
-        }
-
-        private static void WriteLog(object o, Level level, DateTime? dt = null)
-        {
-
             if (dt == null)
                 dt = DateTime.Now;
             lock (_obj)
@@ -85,7 +87,10 @@ namespace Shawn.Ulits
                     sw.WriteLine($"\r\n---");
                     sw.WriteLine($"\r\n## {dt:u}\t\t{level}\t\t");
                     sw.WriteLine("\r\n```");
-                    sw.WriteLine(o);
+                    foreach (var obj in o)
+                    {
+                        sw.WriteLine(obj);
+                    }
                     sw.WriteLine("\r\n```\r\n");
                 }
             }

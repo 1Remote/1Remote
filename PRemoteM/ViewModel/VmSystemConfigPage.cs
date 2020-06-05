@@ -4,10 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using PersonalRemoteManager;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -15,9 +13,6 @@ using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
-using PRM.Core.Ulits;
-using PRM.View;
-using Shawn.Ulits.PageHost;
 using SQLite;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -476,6 +471,7 @@ namespace PRM.ViewModel
                                                     };
                                                     break;
                                                 case "vnc":
+                                                    // TODO add vnc
                                                     break;
                                                 case "telnet":
                                                     // TODO add telnet

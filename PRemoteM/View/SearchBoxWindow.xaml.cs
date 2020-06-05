@@ -70,6 +70,7 @@ namespace PRM.View
 
         public void ShowMe()
         {
+            SimpleLogHelper.Info("Call shortcut to invoke quick window.");
             if (SystemConfig.GetInstance().QuickConnect.Enable)
                 if (_isHidden == true)
                     lock (_closeLocker)
@@ -198,16 +199,25 @@ namespace PRM.View
         {
             GlobalHotkeyHooker.GetInstance().Unregist(this);
             var r = GlobalHotkeyHooker.GetInstance().Regist(this, SystemConfig.GetInstance().QuickConnect.HotKeyModifiers, SystemConfig.GetInstance().QuickConnect.HotKeyKey, this.ShowMe);
+            var title = SystemConfig.GetInstance().Language.GetText("messagebox_title_warning");
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
+                {
+                    var msg = $"{SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
+                    SimpleLogHelper.Warning(msg);
+                    MessageBox.Show(msg, title);
                     break;
+                }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
+                {
+                    var msg = $"{SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
+                    SimpleLogHelper.Warning(msg);
+                    MessageBox.Show(msg, title);
                     break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
