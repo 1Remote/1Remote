@@ -41,34 +41,6 @@ namespace PRM.Core.Model
 
         public void ReloadServers()
         {
-            //#if DEBUG
-            //            // TODO 测试用删除数据库
-            //            if (File.Exists(SystemConfig.GetInstance().DataSecurity.DbPath))
-            //                File.Delete(SystemConfig.GetInstance().DataSecurity.DbPath);
-            //            if (PRM_DAO.GetInstance().ListAllServer().Count == 0)
-            //            {
-            //                var di = new DirectoryInfo(@"D:\rdpjson");
-            //                if (di.Exists)
-            //                {
-            //                    // read from jsonfile 
-            //                    var fis = di.GetFiles("*.prmj", SearchOption.AllDirectories);
-            //                    var rdp = new ProtocolServerRDP();
-            //                    foreach (var fi in fis)
-            //                    {
-            //                        var newRdp = rdp.CreateFromJsonString(File.ReadAllText(fi.FullName));
-            //                        if (newRdp != null)
-            //                        {
-            //                            PRM_DAO.GetInstance().Insert(ServerOrm.ConvertFrom(newRdp));
-            //                        }
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    di.Create();
-            //                }
-            //            }
-            //#endif
-
             ServerList.Clear();
             foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
             {

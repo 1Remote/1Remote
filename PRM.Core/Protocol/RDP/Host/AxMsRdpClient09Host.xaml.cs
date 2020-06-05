@@ -294,7 +294,7 @@ namespace Shawn.Ulits.RDP
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            SimpleLogHelper.Log("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
+            SimpleLogHelper.Debug("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
             _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
 
             #endregion
@@ -354,38 +354,6 @@ namespace Shawn.Ulits.RDP
             return _isConnecting;
         }
 
-        // private Task _taksTopPanelFocus = null;
-        public override void MakeItFocus()
-        {
-            //lock (MakeItFocusLocker1)
-            //{
-            //    // hack technology:
-            //    // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
-            //    // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
-            //    if (_taksTopPanelFocus?.Status != TaskStatus.Running)
-            //    {
-            //        _taksTopPanelFocus = new Task(() =>
-            //        {
-            //            lock (MakeItFocusLocker2)
-            //            {
-            //                bool flag = false;
-            //                int nCount = 50; // don't let it runs forever.
-            //                    while (!flag && nCount > 0)
-            //                {
-            //                    --nCount;
-            //                    Dispatcher.Invoke(() =>
-            //                    {
-            //                        flag = _rdp.Focus();
-            //                    });
-            //                    Thread.Sleep(10);
-            //                }
-            //            }
-            //        });
-            //        _taksTopPanelFocus.Start();
-            //    }
-            //}
-        }
-
         #endregion
 
 
@@ -441,9 +409,13 @@ namespace Shawn.Ulits.RDP
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedDisconnect
                 && reason != "")
             {
+                SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
-                // TODO 弹出非模态对话框，然后关闭 RDP 窗体
-                System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                var t = new Task(() =>
+                {
+                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                });
+                t.Start();
             }
             base.OnClosed?.Invoke(base.ConnectionId);
         }

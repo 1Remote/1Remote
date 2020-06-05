@@ -4,15 +4,10 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using PersonalRemoteManager;
 using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.View;
 using PRM.ViewModel;
-using Shawn.Ulits;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using Point = System.Windows.Point;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace PRM

@@ -56,10 +56,14 @@ namespace PRM.Core.Protocol
         
         protected static readonly object MakeItFocusLocker1 = new object();
         protected static readonly object MakeItFocusLocker2 = new object();
+
         /// <summary>
         /// call to focus the AxRdp or putty
         /// </summary>
-        public abstract void MakeItFocus();
+        public virtual void MakeItFocus()
+        {
+            // do nothing
+        }
 
 
 

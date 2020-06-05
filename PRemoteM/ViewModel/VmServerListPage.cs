@@ -45,11 +45,7 @@ namespace PRM.ViewModel
         public VmServerCard SelectedServerCard
         {
             get => _selectedServerCard;
-            set
-            {
-                DispNameFilter = "";
-                SetAndNotifyIfChanged(nameof(SelectedServerCard), ref _selectedServerCard, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(SelectedServerCard), ref _selectedServerCard, value);
         }
 
         private ObservableCollection<VmServerCard> _serverCards = new ObservableCollection<VmServerCard>();
@@ -148,7 +144,6 @@ namespace PRM.ViewModel
                 _serverCards.Remove(s);
             }
 
-            // TODO flag to order by LassConnTime
             switch (SystemConfig.GetInstance().General.ServerOrderBy)
             {
                 case EnumServerOrderBy.Name:

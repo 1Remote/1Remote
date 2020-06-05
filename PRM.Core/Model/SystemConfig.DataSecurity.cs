@@ -446,7 +446,6 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
-            //TODO thread not safe
             StopAutoSave = true;
             DbPath = _ini.GetValue(nameof(DbPath).ToLower(), SectionName, DbPath);
             StopAutoSave = false;

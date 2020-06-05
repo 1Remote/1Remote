@@ -18,7 +18,7 @@ namespace Shawn.Ulits.RDP
             }
             catch (Exception ex)
             {
-                // TODO LOG
+                SimpleLogHelper.Error(ex, ex.StackTrace);
             }
         }
     }

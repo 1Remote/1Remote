@@ -104,7 +104,7 @@ namespace PRM.Model
                 WindowPool.AddProtocolHost(host);
                 WindowPool.MoveProtocolHostToFullScreen(host.ConnectionId);
                 host.Conn();
-                SimpleLogHelper.Log($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
+                SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
             }
             else
             {
@@ -133,8 +133,8 @@ namespace PRM.Model
                 tab.Vm.SelectedItem = tab.Vm.Items.Last();
                 host.Conn();
                 _protocolHosts.Add(host.ConnectionId, host);
-                SimpleLogHelper.Log($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
-                SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
 
@@ -191,7 +191,7 @@ namespace PRM.Model
                                 t.Vm.Items.Remove(item);
                                 if (t.Vm.Items.Count > 0)
                                     t.Vm.SelectedItem = tab.Vm.Items.First();
-                                SimpleLogHelper.Log($@"Remove host({host.GetHashCode()}) from tab({t.GetHashCode()})");
+                                SimpleLogHelper.Debug($@"Remove host({host.GetHashCode()}) from tab({t.GetHashCode()})");
                             }
                         }
                     }
@@ -256,8 +256,8 @@ namespace PRM.Model
                     }
                 }
 
-                SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
-                SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
         public static void MoveProtocolHostToTab(string connectionId)
@@ -276,7 +276,7 @@ namespace PRM.Model
                     }
                     else if (host.ParentWindow is FullScreenWindow fullScreenWindow)
                     {
-                        SimpleLogHelper.Log($@"Hide full({fullScreenWindow.GetHashCode()})");
+                        SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
                         fullScreenWindow.Hide();
                         full = fullScreenWindow;
                     }
@@ -319,8 +319,8 @@ namespace PRM.Model
                     });
                     tab.Vm.SelectedItem = tab.Vm.Items.Last();
                     host.ParentWindow = tab;
-                    SimpleLogHelper.Log($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
-                    SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                    SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
+                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
             }
         }
@@ -333,19 +333,19 @@ namespace PRM.Model
             if (_protocolHosts.ContainsKey(connectionId))
             {
                 var host = _protocolHosts[connectionId];
-                SimpleLogHelper.Log($@"Del host({host.GetHashCode()})");
+                SimpleLogHelper.Debug($@"Del host({host.GetHashCode()})");
                 _protocolHosts.Remove(connectionId);
                 host.DisConn();
-                SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
 
                 // close full
                 if (_host2FullScreenWindows.ContainsKey(connectionId))
                 {
                     var full = _host2FullScreenWindows[connectionId];
-                    SimpleLogHelper.Log($@"Close full({full.GetHashCode()})");
+                    SimpleLogHelper.Debug($@"Close full({full.GetHashCode()})");
                     full.Close();
                     _host2FullScreenWindows.Remove(connectionId);
-                    SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
 
                 // remove from tab
@@ -375,12 +375,12 @@ namespace PRM.Model
             if (_tabWindows.ContainsKey(token))
             {
                 var tab = _tabWindows[token];
-                SimpleLogHelper.Log($@"Del tab({tab.GetHashCode()})");
+                SimpleLogHelper.Debug($@"Del tab({tab.GetHashCode()})");
                 foreach (var tabItemViewModel in tab.Vm.Items.ToArray())
                 {
                     DelProtocolHost(tabItemViewModel.Content.ConnectionId);
                 }
-                SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
             // close tab
             {
@@ -397,10 +397,10 @@ namespace PRM.Model
             if (_tabWindows.ContainsKey(token))
             {
                 var tab = _tabWindows[token];
-                SimpleLogHelper.Log($@"Close tab({tab.GetHashCode()})");
+                SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
                 _tabWindows.Remove(token);
                 tab.Close();
-                SimpleLogHelper.Log($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
     }

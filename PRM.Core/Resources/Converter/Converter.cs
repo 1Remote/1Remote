@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -147,12 +149,30 @@ namespace PRM.Resources.Converter
 
                 if (string.IsNullOrEmpty(keyWord))
                     return true;
-                var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
-                if (f1)
+                //var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
+                //if (f1)
+                //{
+                //    return true;
+                //}
+                //return false;
+
+
+                var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
+                var keyWordIsMatch = new List<bool>(keyWords.Length);
+                for (var i = 0; i < keyWords.Length; i++)
+                    keyWordIsMatch.Add(false);
+                
+                var dispName = server.DispName;
+                var subTitle = server.SubTitle;
+                for (var i = 0; i < keyWordIsMatch.Count; i++)
                 {
-                    return true;
+                    var f1 = dispName.IsMatchPinyinKeyWords(keyWords[i], out var m1);
+                    var f2 = subTitle.IsMatchPinyinKeyWords(keyWords[i], out var m2);
+                    keyWordIsMatch[i] = f1 || f2;
                 }
 
+                if (keyWordIsMatch.All(x => x == true))
+                    return true;
                 return false;
             }
             catch (Exception e)

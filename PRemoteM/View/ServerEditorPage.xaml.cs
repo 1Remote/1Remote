@@ -54,7 +54,6 @@ namespace PRM.View
                     LogoSelector.Logo = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                     vm.Server.IconImg = LogoSelector.Logo;
                 }
-                // todo use dynamic resource
                 ColorPick.Color = (Color)ColorConverter.ConvertFromString("#102b3e");
             }
             ColorPick.OnColorSelected += color => Vm.Server.MarkColor = ColorPick.Color;

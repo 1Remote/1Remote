@@ -48,7 +48,7 @@
                                 x:Name="ButtonBorder"
                                 Background="{TemplateBinding Background}">
                         </Border>
-                        <ContentPresenter VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

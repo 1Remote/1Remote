@@ -81,8 +81,12 @@ namespace Shawn.Ulits
 
         public static void SaveTo(this BitmapSource source, string path)
         {
-            // TODO NotImplementedException SaveTo
-            throw new NotImplementedException();
+            using (var fileStream = new FileStream(path, FileMode.Create))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(source));
+                encoder.Save(fileStream);
+            }
         }
 
 

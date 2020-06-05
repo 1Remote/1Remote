@@ -111,24 +111,18 @@ namespace PRM
                     }
                 }
 
-                bool settingErroFlag = false;
+                bool goToSettingPageFlag = false;
 
                 // run check
                 ReCheck:
                 // check if Db is ok
                 if (!AppChecker.CheckDbExisted())
                 {
-                    settingErroFlag = true;
-                    // todo 跳转到数据库配置页面
-                    //return;
-                    //goto ReCheck;
+                    goToSettingPageFlag = true;
                 }
                 if (!AppChecker.CheckDbEncrypted().Item1)
                 {
-                    settingErroFlag = true;
-                    // todo 跳转到 RSA 配置页面
-                    //return;
-                    //goto ReCheck;
+                    goToSettingPageFlag = true;
                 }
 
                 #endregion
@@ -146,8 +140,9 @@ namespace PRM
                         ActivateWindow();
                     }
 
-                    if (settingErroFlag)
+                    if (goToSettingPageFlag)
                     {
+                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
                         ActivateWindow();
                         Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
                     }
@@ -163,7 +158,7 @@ namespace PRM
                 #endregion
 
 
-                if (!settingErroFlag)
+                if (!goToSettingPageFlag)
                 {
                     // load data
                     Global.GetInstance().ReloadServers();
@@ -171,8 +166,7 @@ namespace PRM
             }
             catch (Exception ex)
             {
-                SimpleLogHelper.Error(ex.Message);
-                SimpleLogHelper.Error(ex.StackTrace);
+                SimpleLogHelper.Fatal(ex.Message, ex.StackTrace);
 #if DEBUG
                 MessageBox.Show(ex.Message);
                 MessageBox.Show(ex.StackTrace);
