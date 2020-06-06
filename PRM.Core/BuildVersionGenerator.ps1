@@ -4,8 +4,9 @@ echo $SolutionPath
 #获取所有的 PRMVersion.cs 文件
 $FileList = Get-ChildItem $SolutionPath -Recurse PRMVersion.cs
 $time = Get-Date -Format 'yyMMddHHmm'
-$oldVersion = "public const string ReleaseDate = "".*"";"
-$newVersion = "public const string ReleaseDate = """ + $time + """;"
+$oldVersion = "public const int ReleaseDate = .*;"
+$newVersion = "public const int ReleaseDate = " + $time + ";"
+echo $oldVersion 
 echo $newVersion 
 Foreach($filename in $FileList)
 {

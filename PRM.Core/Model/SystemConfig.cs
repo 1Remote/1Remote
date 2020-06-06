@@ -23,6 +23,7 @@ namespace PRM.Core.Model
             }
             return uniqueInstance;
         }
+        public static SystemConfig Instance => GetInstance();
         #endregion
 
 
@@ -54,7 +55,31 @@ namespace PRM.Core.Model
             QuickConnect = new SystemConfigQuickConnect(Ini);
             DataSecurity = new SystemConfigDataSecurity(Ini);
             Theme = new SystemConfigTheme(Ini);
+
+            var uc = new UpdateChecker();
+            uc.OnNewRelease += (s, s1) =>
+            {
+                this.NewVersion = s;
+                this.NewVersionUrl = s1;
+            };
+            uc.CheckUpdateAsync();
         }
+
+        #region Update
+        private string _newVersion = "";
+        public string NewVersion
+        {
+            get => _newVersion;
+            set => SetAndNotifyIfChanged(nameof(NewVersion), ref _newVersion, value);
+        }
+
+        private string _newVersionUrl = "";
+        public string NewVersionUrl
+        {
+            get => _newVersionUrl;
+            set => SetAndNotifyIfChanged(nameof(NewVersionUrl), ref _newVersionUrl, value);
+        }
+        #endregion
 
 
         public SystemConfigLocality Locality = new SystemConfigLocality();
@@ -75,7 +100,6 @@ namespace PRM.Core.Model
             get => _general;
             set => SetAndNotifyIfChanged(nameof(General), ref _general, value);
         }
-
 
 
 

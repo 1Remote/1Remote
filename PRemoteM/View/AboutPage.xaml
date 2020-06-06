@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PRM.View"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -81,8 +81,43 @@
                                 </Grid>
                                 <Grid Style="{StaticResource ServerEditorRow}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Version"></TextBlock>
-                                        <TextBlock Name="TbVersion" Text="0.0.0.0"></TextBlock>
+                                        <Grid>
+                                            <TextBlock Text="Version"></TextBlock>
+                                        </Grid>
+                                        <Grid>
+                                            <TextBlock Name="TbVersion" Text="0.0.0.0" Margin="0"></TextBlock>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=TbNewVersion,Path=Text}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock>
+                                            <Hyperlink NavigateUri="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersionUrl}" TextDecorations="{x:Null}" Click="Hyperlink_Click">
+                                                <Grid>
+                                                <TextBlock Text="Update" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}"/>
+                                                </Grid>
+                                                <Grid>
+                                                    <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
+                                                          Fill="Red" 
+                                                          Stretch="Uniform"
+                                                          Width="6"
+                                                          Margin="0 0 -3 0"
+                                                          VerticalAlignment="Top" HorizontalAlignment="Right" >
+                                                    </Path>
+                                                    <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}"/>
+                                                </Grid>
+                                            </Hyperlink>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -149,6 +184,11 @@
                                     <TextBlock>
                                         <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
                                             https://github.com/praeclarum/sqlite-net
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/AlexAkulov/putty-color-themes" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://github.com/AlexAkulov/putty-color-themes
                                         </Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
