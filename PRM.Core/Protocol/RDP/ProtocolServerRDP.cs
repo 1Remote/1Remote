@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Security;
-using System.Text;
-using System.Windows;
 using Newtonsoft.Json;
-using PRM.Core.Model;
 using RdpHelper;
-using Shawn.Ulits.RDP;
 
 namespace PRM.Core.Protocol.RDP
 {
@@ -278,22 +273,22 @@ namespace PRM.Core.Protocol.RDP
 
         public RdpConfig ToRdpConfig()
         {
-            var rdp = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.Password);
-            rdp.AuthenticationLevel = 0;
-            rdp.DisplayConnectionBar = 1;
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.Password);
+            rdpConfig.AuthenticationLevel = 0;
+            rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
             switch (this.RdpFullScreenFlag)
             {
                 case ERdpFullScreenFlag.Disable:
-                    rdp.ScreenModeId = 1;
-                    rdp.DesktopWidth = this.RdpWidth;
-                    rdp.DesktopHeight = this.RdpHeight;
+                    rdpConfig.ScreenModeId = 1;
+                    rdpConfig.DesktopWidth = this.RdpWidth;
+                    rdpConfig.DesktopHeight = this.RdpHeight;
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
-                    rdp.ScreenModeId = 2;
+                    rdpConfig.ScreenModeId = 2;
                     break;
                 case ERdpFullScreenFlag.EnableFullAllScreens:
-                    rdp.ScreenModeId = 2;
-                    rdp.UseMultimon = 1;
+                    rdpConfig.ScreenModeId = 2;
+                    rdpConfig.UseMultimon = 1;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -301,92 +296,92 @@ namespace PRM.Core.Protocol.RDP
             switch (this.RdpWindowResizeMode)
             {
                 case ERdpWindowResizeMode.AutoResize:
-                    rdp.SmartSizing = 0;
-                    rdp.DynamicResolution = 1;
+                    rdpConfig.SmartSizing = 0;
+                    rdpConfig.DynamicResolution = 1;
                     break;
                 case ERdpWindowResizeMode.Stretch:
                 case ERdpWindowResizeMode.StretchFullScreen:
-                    rdp.SmartSizing = 1;
-                    rdp.DynamicResolution = 0;
+                    rdpConfig.SmartSizing = 1;
+                    rdpConfig.DynamicResolution = 0;
                     break;
                 case ERdpWindowResizeMode.Fixed:
                 case ERdpWindowResizeMode.FixedFullScreen:
-                    rdp.SmartSizing = 0;
-                    rdp.DynamicResolution = 0;
+                    rdpConfig.SmartSizing = 0;
+                    rdpConfig.DynamicResolution = 0;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
 
-            rdp.NetworkAutodetect = 0;
+            rdpConfig.NetworkAutodetect = 0;
             switch (this.DisplayPerformance)
             {
                 case EDisplayPerformance.Auto:
-                    rdp.NetworkAutodetect = 1;
+                    rdpConfig.NetworkAutodetect = 1;
                     break;
                 case EDisplayPerformance.Low:
-                    rdp.ConnectionType = 1;
-                    rdp.SessionBpp = 8;
-                    rdp.AllowDesktopComposition = 0;
-                    rdp.AllowFontSmoothing = 0;
-                    rdp.DisableFullWindowDrag = 1;
-                    rdp.DisableThemes = 1;
-                    rdp.DisableWallpaper = 1;
-                    rdp.DisableMenuAnims = 1;
-                    rdp.DisableCursorSetting = 1;
+                    rdpConfig.ConnectionType = 1;
+                    rdpConfig.SessionBpp = 8;
+                    rdpConfig.AllowDesktopComposition = 0;
+                    rdpConfig.AllowFontSmoothing = 0;
+                    rdpConfig.DisableFullWindowDrag = 1;
+                    rdpConfig.DisableThemes = 1;
+                    rdpConfig.DisableWallpaper = 1;
+                    rdpConfig.DisableMenuAnims = 1;
+                    rdpConfig.DisableCursorSetting = 1;
                     break;
                 case EDisplayPerformance.Middle:
-                    rdp.SessionBpp = 16;
-                    rdp.ConnectionType = 3;
-                    rdp.AllowDesktopComposition = 1;
-                    rdp.AllowFontSmoothing = 1;
-                    rdp.DisableFullWindowDrag = 1;
-                    rdp.DisableThemes = 1;
-                    rdp.DisableWallpaper = 1;
-                    rdp.DisableMenuAnims = 1;
-                    rdp.DisableCursorSetting = 1;
+                    rdpConfig.SessionBpp = 16;
+                    rdpConfig.ConnectionType = 3;
+                    rdpConfig.AllowDesktopComposition = 1;
+                    rdpConfig.AllowFontSmoothing = 1;
+                    rdpConfig.DisableFullWindowDrag = 1;
+                    rdpConfig.DisableThemes = 1;
+                    rdpConfig.DisableWallpaper = 1;
+                    rdpConfig.DisableMenuAnims = 1;
+                    rdpConfig.DisableCursorSetting = 1;
                     break;
                 case EDisplayPerformance.High:
-                    rdp.SessionBpp = 32;
-                    rdp.ConnectionType = 6;
-                    rdp.AllowDesktopComposition = 1;
-                    rdp.AllowFontSmoothing = 1;
-                    rdp.DisableFullWindowDrag = 0;
-                    rdp.DisableThemes = 0;
-                    rdp.DisableWallpaper = 0;
-                    rdp.DisableMenuAnims = 0;
-                    rdp.DisableCursorSetting = 0;
+                    rdpConfig.SessionBpp = 32;
+                    rdpConfig.ConnectionType = 6;
+                    rdpConfig.AllowDesktopComposition = 1;
+                    rdpConfig.AllowFontSmoothing = 1;
+                    rdpConfig.DisableFullWindowDrag = 0;
+                    rdpConfig.DisableThemes = 0;
+                    rdpConfig.DisableWallpaper = 0;
+                    rdpConfig.DisableMenuAnims = 0;
+                    rdpConfig.DisableCursorSetting = 0;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            rdp.KeyboardHook = 0;
-            rdp.AudioMode = 2;
-            rdp.AudioCaptureMode = 0;
+            rdpConfig.KeyboardHook = 0;
+            rdpConfig.AudioMode = 2;
+            rdpConfig.AudioCaptureMode = 0;
 
             
             if (this.EnableDiskDrives)
-                rdp.RedirectPosDevices = 1;
+                rdpConfig.RedirectPosDevices = 1;
             if (this.EnableClipboard)
-                rdp.RedirectClipboard = 1;
+                rdpConfig.RedirectClipboard = 1;
             if (this.EnablePrinters)
-                rdp.RedirectPrinters = 1;
+                rdpConfig.RedirectPrinters = 1;
             if (this.EnablePorts)
-                rdp.RedirectComPorts = 1;
+                rdpConfig.RedirectComPorts = 1;
             if (this.EnableSmartCardsAndWinHello)
-                rdp.RedirectSmartCards = 1;
+                rdpConfig.RedirectSmartCards = 1;
             if (this.EnableKeyCombinations)
-                rdp.KeyboardHook = 2;
+                rdpConfig.KeyboardHook = 2;
             if (this.EnableSounds)
-                rdp.AudioMode = 0;
+                rdpConfig.AudioMode = 0;
             if (this.EnableAudioCapture)
-                rdp.AudioCaptureMode = 1;
+                rdpConfig.AudioCaptureMode = 1;
 
-            rdp.AutoReconnectionEnabled = 1;
+            rdpConfig.AutoReconnectionEnabled = 1;
 
-            return rdp;
+            return rdpConfig;
         }
     }
 }
