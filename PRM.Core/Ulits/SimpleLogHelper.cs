@@ -9,7 +9,7 @@ namespace Shawn.Ulits
 {
     public static class SimpleLogHelper
     {
-        public static string LogFileName = "PRemoteM.log.md";
+        public static string LogFileName = "simple.log.md";
 
         public static Level PrintLogLevel = Level.Debug;
         public static Level WriteLogLevel = Level.Info;
@@ -68,7 +68,7 @@ namespace Shawn.Ulits
             {
                 if (dt == null)
                     dt = DateTime.Now;
-                Console.Write($"[{dt:u}]\t{level}\t\t\t");
+                Console.Write($"[{dt:o}]\t{level}\t\t\t");
                 foreach (var obj in o)
                 {
                     Console.WriteLine(obj);
@@ -85,7 +85,7 @@ namespace Shawn.Ulits
                 using (StreamWriter sw = new StreamWriter(new FileStream(LogFileName, FileMode.Append)))
                 {
                     sw.WriteLine($"\r\n---");
-                    sw.WriteLine($"\r\n## {dt:u}\t\t{level}\t\t");
+                    sw.WriteLine($"\r\n## {dt:o}\t\t{level}\t\t");
                     sw.WriteLine("\r\n```");
                     foreach (var obj in o)
                     {
