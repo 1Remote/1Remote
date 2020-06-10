@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -41,6 +42,7 @@ namespace PRM.View
                 }
             };
 
+
             WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
@@ -60,12 +62,6 @@ namespace PRM.View
             };
 
             Activated += (sender, args) => { Vm?.SelectedItem?.Content?.MakeItFocus(); };
-
-            KeyDown += (sender, args) =>
-            {
-                if (args.Key == Key.F11 && args.IsDown && Vm.CmdHostGoFullScreen.CanExecute())
-                    Vm.CmdHostGoFullScreen.Execute();
-            };
         }
 
         #region DragMove
@@ -143,13 +139,13 @@ namespace PRM.View
             }
         }
 
-        //<!--TODO 从同一位置读取该值-->
-        protected Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
         public Size GetTabContentSize()
         {
+            Debug.Assert(this.Resources["TabContentBorder"] != null);
+            var tabContentBorder = (Thickness) this.Resources["TabContentBorder"];
             return new Size()
             {
-                Width = TabablzControl.ActualWidth - TabContentBorder.Left - TabContentBorder.Right,
+                Width = TabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
                 Height = TabablzControl.ActualHeight - 30 - 2 - 1,
             };
         }

@@ -372,7 +372,7 @@ namespace Shawn.Ulits
 
 
         
-        public static BitmapSource ReadImgFile(string filePath)
+        public static Bitmap ReadImgFile(string filePath)
         {
             try
             {
@@ -381,7 +381,7 @@ namespace Shawn.Ulits
                 bitmap.StreamSource = File.OpenRead(filePath);
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
-                return bitmap;
+                return bitmap.ToBitmap();
             }
             catch (Exception)
             {

@@ -120,15 +120,13 @@ namespace PRM.Core.Resources.Controls
             Img.Source = img;
             if (img != null)
             {
-                //Img.Source = GetBitmapSource(@"E:\数据存档\5160\老算法错误样本图例\Id02889___SN10125124___20190126___5160A1_Cbc5Diff.5160xml.jpg");
                 CanvasImage.Width = ((BitmapSource)Img.Source).PixelWidth * Scaling;
                 CanvasImage.Height = ((BitmapSource)Img.Source).PixelHeight * Scaling;
                 // pos at center parent
                 CanvasImage.SetValue(Canvas.LeftProperty, (CanvasWhiteBoard.Width - CanvasImage.Width) / 2);
                 CanvasImage.SetValue(Canvas.TopProperty, (CanvasWhiteBoard.Height - CanvasImage.Height) / 2);
 
-                Scaling = Math.Min(CanvasWhiteBoard.Width / CanvasImage.Width,
-                    CanvasWhiteBoard.Height / CanvasImage.Height);
+                Scaling = Math.Min(CanvasWhiteBoard.Width / CanvasImage.Width, CanvasWhiteBoard.Height / CanvasImage.Height);
             }
         }
 
@@ -198,16 +196,13 @@ namespace PRM.Core.Resources.Controls
 
                 if (roiWidth > 0 && roiHeight > 0)
                 {
-                    var roi = resize.Roi(new Rectangle((int) startPoint.X, (int) startPoint.Y, (int) roiWidth, (int) roiHeight));
-                    var bitmap = new Bitmap((int) CanvasWhiteBoard.Width, (int) CanvasWhiteBoard.Height);
-                    using (var g = Graphics.FromImage(bitmap))
-                    {
-                        g.Save();
-                        g.DrawImage(roi, drawPoint);
-                    }
-                    bitmap.MakeTransparent(System.Drawing.Color.Transparent);
-                    //double imgAccWidth = CanvasImage.
-                    return bitmap.ToBitmapSource();
+                    var roi = resize.Roi(new Rectangle((int) startPoint.X, (int) startPoint.Y, (int) roiWidth, (int) roiHeight)).ToBitmapSource();
+                    var result = new WriteableBitmap((int) CanvasWhiteBoard.Width, (int) CanvasWhiteBoard.Height, roi.DpiX, roi.DpiY, resize.Format,null);
+                    var stride = roi.PixelWidth * (roi.Format.BitsPerPixel / 8);
+                    var data = new byte[roi.PixelHeight * stride];
+                    roi.CopyPixels(data, stride, 0);
+                    result.WritePixels(new Int32Rect(0, 0, roi.PixelWidth, roi.PixelHeight), data, stride, (int)drawPoint.X, (int)drawPoint.Y);
+                    return result;
                 }
                 else
                 {
@@ -217,7 +212,6 @@ namespace PRM.Core.Resources.Controls
                         g.Save();
                     }
                     bitmap.MakeTransparent(System.Drawing.Color.Transparent);
-                    //double imgAccWidth = CanvasImage.
                     return bitmap.ToBitmapSource();
                 }
             }
@@ -344,7 +338,7 @@ namespace PRM.Core.Resources.Controls
 
 
         /// <summary>
-        ///  防止 child 跑到 parent 外面
+        ///  prevent child goes to parent outside
         /// </summary>
         /// <param name="child"></param>
         /// <param name="parent"></param>
@@ -386,24 +380,6 @@ namespace PRM.Core.Resources.Controls
         }
 
 
-        public BitmapSource GetBitmapSource(string filePath)
-        {
-            try
-            {
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = File.OpenRead(filePath);
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                return bitmap;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-
         public bool? Show(Microsoft.Win32.FileDialog fileDialog)
         {
             Window win = new Window
@@ -436,7 +412,7 @@ namespace PRM.Core.Resources.Controls
             //ofd.FilterIndex = 2;
             if (Show(ofd) == true)
             {
-                SetImg(GetBitmapSource(ofd.FileName));
+                SetImg(NetImageProcessHelper.ReadImgFile(ofd.FileName).ToBitmapSource());
             }
         }
 
