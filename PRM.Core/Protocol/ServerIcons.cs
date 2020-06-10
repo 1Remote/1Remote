@@ -62,7 +62,7 @@ namespace PRM.Core.Protocol
                 {
                     var bs = NetImageProcessHelper.ReadImgFile(fileInfo.FullName);
                     if (bs != null)
-                        Icons.Add(bs);
+                        Icons.Add(bs.ToBitmapSource());
                 }
             }
             else if(!di.Exists)

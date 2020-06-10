@@ -52,6 +52,7 @@ namespace Shawn.Ulits.RDP
                 _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
                 _rdp.OnDisconnected += RdpcOnDisconnected;
                 _rdp.OnConfirmClose += RdpOnOnConfirmClose;
+                _rdp.OnConnected += RdpOnOnConnected;
                 _rdp.OnLoginComplete += RdpOnOnLoginComplete;
                 ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
                 RdpHost.Child = _rdp;
@@ -80,15 +81,40 @@ namespace Shawn.Ulits.RDP
 
             // enable CredSSP, will use CredSsp if the client supports.
             _rdp.AdvancedSettings7.EnableCredSspSupport = true;
+            _rdp.AdvancedSettings2.EncryptionEnabled = 1;
             _rdp.AdvancedSettings5.AuthenticationLevel = 0;
             _rdp.AdvancedSettings5.EnableAutoReconnect = true;
             // setting PublicMode to false allows the saving of credentials, which prevents
             _rdp.AdvancedSettings6.PublicMode = false;
             _rdp.AdvancedSettings5.EnableWindowsKey = 1;
             _rdp.AdvancedSettings5.GrabFocusOnConnect = true;
+            _rdp.AdvancedSettings2.keepAliveInterval = 1000 * 60 * 5; // 1000 = 1000 ms
+            _rdp.AdvancedSettings2.overallConnectionTimeout = 600; // The new time, in seconds. The maximum value is 600, which represents 10 minutes.
             //// ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
             //_rdp.AdvancedSettings7.ConnectToAdministerServer = true;
+            
+            #region Others
 
+            // enable CredSSP, will use CredSsp if the client supports.
+            _rdp.AdvancedSettings9.EnableCredSspSupport = true;
+
+            //- 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
+            //- 1: If server authentication fails, don't establish a connection (Don't connect)
+            //- 2: If server authentication fails, show a warning and allow me to connect or refuse the connection (Warn me)
+            //- 3: No authentication requirement specified.
+            _rdp.AdvancedSettings9.AuthenticationLevel = 0;
+
+            // setting PublicMode to false allows the saving of credentials, which prevents
+            _rdp.AdvancedSettings9.PublicMode = false;
+            _rdp.AdvancedSettings9.EnableAutoReconnect = true;
+
+
+            // - 0 Apply key combinations only locally at the client computer.
+            // - 1 Apply key combinations at the remote server.
+            // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
+            _rdp.SecuredSettings3.KeyboardHookMode = 2;
+
+            #endregion
 
             #region conn bar
             _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar;
@@ -151,28 +177,6 @@ namespace Shawn.Ulits.RDP
             }
             #endregion
 
-            #region Others
-
-            // enable CredSSP, will use CredSsp if the client supports.
-            _rdp.AdvancedSettings9.EnableCredSspSupport = true;
-
-            //- 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
-            //- 1: If server authentication fails, don't establish a connection (Don't connect)
-            //- 2: If server authentication fails, show a warning and allow me to connect or refuse the connection (Warn me)
-            //- 3: No authentication requirement specified.
-            _rdp.AdvancedSettings9.AuthenticationLevel = 0;
-
-            // setting PublicMode to false allows the saving of credentials, which prevents
-            _rdp.AdvancedSettings9.PublicMode = false;
-            _rdp.AdvancedSettings9.EnableAutoReconnect = true;
-
-
-            // - 0 Apply key combinations only locally at the client computer.
-            // - 1 Apply key combinations at the remote server.
-            // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
-            _rdp.SecuredSettings3.KeyboardHookMode = 2;
-
-            #endregion
 
             #region Display
 
@@ -405,11 +409,13 @@ namespace Shawn.Ulits.RDP
 
             const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
             string reason = _rdp.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
+            if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
+                SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedDisconnect
+                && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
-                SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
                 var t = new Task(() =>
                 {
@@ -418,6 +424,12 @@ namespace Shawn.Ulits.RDP
                 t.Start();
             }
             base.OnClosed?.Invoke(base.ConnectionId);
+        }
+        
+        private void RdpOnOnConnected(object sender, EventArgs e)
+        {
+            RdpHost.Visibility = Visibility.Visible;
+            GridLoading.Visibility = Visibility.Collapsed;
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
@@ -428,8 +440,6 @@ namespace Shawn.Ulits.RDP
             if (this._onResizeEnd == null)
                 this._onResizeEnd += ReSizeRdp;
 
-            RdpHost.Visibility = Visibility.Visible;
-            GridLoading.Visibility = Visibility.Collapsed;
             base.OnCanResizeNowChanged?.Invoke();
         }
 
@@ -499,7 +509,7 @@ namespace Shawn.Ulits.RDP
             {
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
             }
-            ParentWindow.Topmost = true;
+            //ParentWindow.Topmost = true;
         }
 
 
@@ -527,7 +537,7 @@ namespace Shawn.Ulits.RDP
         {
             Debug.Assert(ParentWindow != null);
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
-            ParentWindow.Topmost = false;
+            //ParentWindow.Topmost = false;
             ParentWindow.ResizeMode = ResizeMode.CanResize;
             ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
             ParentWindow.WindowState = WindowState.Normal;
