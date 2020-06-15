@@ -27,12 +27,12 @@ namespace PRM.Core.Model
         }
 
 
-        private string _selectedPuttyThemeName = "";
+        private string _puttyThemeName = "";
 
-        public string SelectedPuttyThemeName
+        public string PuttyThemeName
         {
-            get => _selectedPuttyThemeName;
-            set => SetAndNotifyIfChanged(nameof(SelectedPuttyThemeName), ref _selectedPuttyThemeName, value);
+            get => _puttyThemeName;
+            set => SetAndNotifyIfChanged(nameof(PuttyThemeName), ref _puttyThemeName, value);
         }
 
         private ObservableCollection<string> _puttyThemeNames= new ObservableCollection<string>();
@@ -48,7 +48,7 @@ namespace PRM.Core.Model
         public override void Save()
         {
             _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
-            _ini.WriteValue(nameof(SelectedPuttyThemeName).ToLower(), _sectionName, SelectedPuttyThemeName.ToString());
+            _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName.ToString());
             _ini.Save();
         }
 
@@ -56,10 +56,10 @@ namespace PRM.Core.Model
         {
             StopAutoSave = true;
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
-            SelectedPuttyThemeName = _ini.GetValue(nameof(SelectedPuttyThemeName).ToLower(), _sectionName, SelectedPuttyThemeName);
+            PuttyThemeName = _ini.GetValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             ReloadThemes();
-            if (string.IsNullOrEmpty(SelectedPuttyThemeName))
-                SelectedPuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
+            if (string.IsNullOrEmpty(PuttyThemeName))
+                PuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
             StopAutoSave = false;
         }
 
@@ -73,8 +73,8 @@ namespace PRM.Core.Model
         {
             get
             {
-                if (_puttyThemes.ContainsKey(SelectedPuttyThemeName))
-                    return _puttyThemes[SelectedPuttyThemeName];
+                if (_puttyThemes.ContainsKey(PuttyThemeName))
+                    return _puttyThemes[PuttyThemeName];
                 return null;
             }
         }

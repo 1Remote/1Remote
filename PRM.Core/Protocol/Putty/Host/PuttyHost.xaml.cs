@@ -167,7 +167,22 @@ namespace PRM.Core.Protocol.Putty.Host
         {
             _puttyProcess = new Process();
             var ps = new ProcessStartInfo();
-            ps.FileName = Path.Combine(Environment.CurrentDirectory, PuttyExeName);
+            //ps.FileName = Path.Combine(Environment.CurrentDirectory, PuttyExeName);
+
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Putty");
+            if (!Directory.Exists(appDateFolder))
+                Directory.CreateDirectory(appDateFolder);
+            ps.FileName = Path.Combine(appDateFolder, PuttyExeName);
+            if (!File.Exists(ps.FileName))
+            {
+                var putty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/PuTTY_PRM.exe")).Stream;
+                using (var fileStream = File.Create(ps.FileName))
+                {
+                    putty.Seek(0, SeekOrigin.Begin);
+                    putty.CopyTo(fileStream);
+                }
+                putty.Close();
+            }
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
             ps.Arguments = _protocolPuttyBase.GetPuttyConnString();

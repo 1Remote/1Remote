@@ -188,7 +188,7 @@ namespace PRM
                 TaskTrayIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = SystemConfig.AppName,
-                    Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name),
+                    Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico")).Stream),
                     //BalloonTipText = "TXT:正在后台运行...",
                     BalloonTipText = "",
                     Visible = true

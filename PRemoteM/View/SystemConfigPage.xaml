@@ -382,7 +382,7 @@
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <ComboBox SelectedValuePath="Tag"
                                           ItemsSource="{Binding SystemConfig.Theme.PuttyThemeNames}"
-                                          SelectedItem="{Binding SystemConfig.Theme.SelectedPuttyThemeName}">
+                                          SelectedItem="{Binding SystemConfig.Theme.PuttyThemeName}">
                                 </ComboBox>
                             </Grid>
                             <TextBlock VerticalAlignment="Center" Margin="2 0">

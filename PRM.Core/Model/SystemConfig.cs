@@ -42,10 +42,13 @@ namespace PRM.Core.Model
                     }
                 }
         }
-
+#if DEBUG
+        public const string AppName = "PRemoteM_Debug";
+        public const string AppFullName = "PersonalRemoteManager_Debug";
+#else
         public const string AppName = "PRemoteM";
         public const string AppFullName = "PersonalRemoteManager";
-
+#endif
         public readonly Ini Ini;
         private SystemConfig(ResourceDictionary appResourceDictionary)
         {
@@ -65,7 +68,7 @@ namespace PRM.Core.Model
             uc.CheckUpdateAsync();
         }
 
-        #region Update
+#region Update
         private string _newVersion = "";
         public string NewVersion
         {
@@ -79,7 +82,7 @@ namespace PRM.Core.Model
             get => _newVersionUrl;
             set => SetAndNotifyIfChanged(nameof(NewVersionUrl), ref _newVersionUrl, value);
         }
-        #endregion
+#endregion
 
 
         public SystemConfigLocality Locality = new SystemConfigLocality();
