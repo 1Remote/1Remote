@@ -526,7 +526,7 @@ namespace PRM.ViewModel
                         var puttyTheme = SystemConfig.Theme.SelectedPuttyTheme;
                         if (!Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
                             Directory.CreateDirectory(PuttyColorThemes.ThemeRegFileFolder);
-                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, SystemConfig.Theme.SelectedPuttyThemeName + ".reg"));
+                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, SystemConfig.Theme.PuttyThemeName + ".reg"));
                         if (fi != null)
                             System.Diagnostics.Process.Start("notepad.exe", fi.FullName);
                     });
