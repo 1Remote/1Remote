@@ -1,10 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
+using System.IO;
+using System.IO.Pipes;
 using System.Diagnostics;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core;
 using PRM.Core.DB;
@@ -17,23 +16,6 @@ using Shawn.Ulits;
 
 namespace PRM
 {
-    // 服务端可以被代理调用的类
-    internal class OneServiceRemoteProvider : MarshalByRefObject
-    {
-        public void Activate()
-        {
-            if (App.Window != null)
-            {
-                App.Window.ActivateMe();
-            }
-        }
-    }
-
-
-
-    /// <summary>
-    /// App.xaml 的交互逻辑
-    /// </summary>
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
@@ -41,22 +23,20 @@ namespace PRM
         public static SearchBoxWindow SearchBoxWindow { get; private set; }  = null;
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEBUG
-        private const string ServiceIpcPortName = "Ipc_DEBUG_VShawn_present_singlex@foxmail.com";
-        private const string ServiceIpcRoute = "PRemoteM_DEBUG";
+        private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
 #else
-        private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com";
-        private const string ServiceIpcRoute = "PRemoteM";
+        private const string PipeName = "PRemoteM_singlex@foxmail.com"";
 #endif
 
-        private void App_OnStartup(object sender, StartupEventArgs e)
+        private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
             try
             {
                 #region single-instance app
                 var startupMode = PRM.Core.Ulits.StartupMode.Normal;
-                if (e.Args.Length > 0)
+                if (startupEvent.Args.Length > 0)
                 {
-                    System.Enum.TryParse(e.Args[0], out startupMode);
+                    System.Enum.TryParse(startupEvent.Args[0], out startupMode);
                 }
                 if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
                 {
@@ -68,23 +48,66 @@ namespace PRM
                     SetSelfStartingHelper.UnsetSelfStart();
                     Environment.Exit(0);
                 }
-#if DEBUG
-                _singleAppMutex = new Mutex(true, "PRemoteM_DEBUG", out var isFirst);
-#else
-                _singleAppMutex = new Mutex(true, "PRemoteM", out var isFirst);
-#endif
+                _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
                 if (!isFirst)
                 {
-                    var oneRemoteProvider = (OneServiceRemoteProvider)Activator.GetObject(typeof(OneServiceRemoteProvider), $"ipc://{ServiceIpcPortName}/{ServiceIpcRoute}");
-                    oneRemoteProvider.Activate();
+                    try
+                    {
+                        var client = new NamedPipeClientStream(PipeName);
+                        client.Connect();
+                        StreamReader reader = new StreamReader(client);
+                        StreamWriter writer = new StreamWriter(client);
+                        writer.WriteLine("ActivateMe");
+                        writer.Flush();
+                        client.Dispose();
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Warning(e);
+                    }
+
                     Environment.Exit(0);
                 }
                 else
                 {
-                    // ipc server init
-                    var remoteProvider = new OneServiceRemoteProvider();
-                    RemotingServices.Marshal(remoteProvider, ServiceIpcRoute);
-                    ChannelServices.RegisterChannel(new IpcChannel(ServiceIpcPortName), false);
+                    Task.Factory.StartNew(() =>
+                    {
+                        NamedPipeServerStream server = null;
+                        while (true)
+                        {
+                            server?.Dispose();
+                            server = new NamedPipeServerStream(PipeName);
+                            SimpleLogHelper.Debug("NamedPipeServerStream.WaitForConnection");
+                            server.WaitForConnection();
+
+                            try
+                            {
+                                var reader = new StreamReader(server);
+                                var line = reader.ReadLine();
+                                if (!string.IsNullOrEmpty(line))
+                                {
+                                    SimpleLogHelper.Info(line);
+                                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
+                                    if (line == "ActivateMe")
+                                    {
+                                        if (App.Window != null)
+                                        {
+                                            Dispatcher.Invoke(() =>
+                                            {
+                                                if (App.Window.WindowState == WindowState.Minimized)
+                                                    App.Window.WindowState = WindowState.Normal;
+                                                App.Window.ActivateMe();
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                SimpleLogHelper.Warning(e);
+                            }
+                        }
+                    });
                 }
                 #endregion
 
