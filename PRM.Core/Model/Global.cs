@@ -28,11 +28,6 @@ namespace PRM.Core.Model
 
         private Global()
         {
-            SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(SystemConfig.DataSecurity.DbPath))
-                    ReloadServers();
-            };
         }
 
         #region Server Data

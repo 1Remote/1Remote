@@ -124,11 +124,7 @@ namespace PRM
 
                 #region system check & init
                 
-                // config create instance (settings & langs)
-                SystemConfig.Create(this.Resources);
 
-                // global init
-                Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
 
                 // kill putty process
                 foreach (var process in Process.GetProcessesByName(PuttyHost.PuttyExeName.ToLower().Replace(".exe", "")))
@@ -142,15 +138,16 @@ namespace PRM
                     }
                 }
 
+                AppInit.Init(this.Resources);
+
                 bool goToSettingPageFlag = false;
 
                 // check if Db is ok
-                if (!AppChecker.CheckDbExisted())
+                
+                var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+                if (!res.Item1)
                 {
-                    goToSettingPageFlag = true;
-                }
-                if (!AppChecker.CheckDbEncrypted().Item1)
-                {
+                    MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
                     goToSettingPageFlag = true;
                 }
 

@@ -32,16 +32,51 @@ namespace PRM.Core.Model
                 File.Delete(_dbPath + ".back");
             }
         }
-
-        public enum ERsaStatues
+        
+        /// <summary>
+        /// Check if db is existed and writable
+        /// </summary>
+        /// <returns>
+        /// Tuple(is decrypted, error info)
+        /// </returns>
+        private static Tuple<bool, string> CheckIfDbIsWritable()
         {
-            Ok,
-            CanNotFindPrivateKey,
-            PrivateKeyContentError,
-            PrivateKeyIsNotMatch,
+            var path = SystemConfig.GetInstance().DataSecurity.DbPath;
+            try
+            {
+                var fi = new FileInfo(SystemConfig.GetInstance().DataSecurity.DbPath);
+                if (!Directory.Exists(fi.DirectoryName))
+                    Directory.CreateDirectory(fi.DirectoryName);
+                if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                {
+                    Server.Init();
+                    return new Tuple<bool, string>(true, "");
+                }
+                else
+                {
+                    return new Tuple<bool, string>(false, "TXT:db permission denied:" + " " + path);
+                }
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                SimpleLogHelper.Error(e.StackTrace);
+                return new Tuple<bool, string>(false, e.Message);
+            }
         }
-        public ERsaStatues ValidateRsa(string privateKeyPath = "")
+
+        /// <summary>
+        /// Check if db is(can) decrypted by the private key
+        /// </summary>
+        /// <returns>
+        /// Tuple(is decrypted, error info)
+        /// </returns>
+        public Tuple<bool, string> CheckIfDbIsOk(string privateKeyPath = "")
         {
+            var c1 = CheckIfDbIsWritable();
+            if (!c1.Item1)
+                return c1;
+
             var _privateKeyPath = DB.Config.RSA_PrivateKeyPath;
             if (!string.IsNullOrEmpty(privateKeyPath))
                 _privateKeyPath = privateKeyPath;
@@ -50,10 +85,10 @@ namespace PRM.Core.Model
             if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey)
                 && string.IsNullOrEmpty(_privateKeyPath)
                 && string.IsNullOrEmpty(DB.Config.RSA_SHA1))
-                return ERsaStatues.Ok;
+                return new Tuple<bool, string>(true, "");
 
             if (!File.Exists(_privateKeyPath))
-                return ERsaStatues.CanNotFindPrivateKey;
+                return new Tuple<bool, string>(false, SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
 
             com.github.xiangyuecn.rsacsharp.RSA rsaPk = null;
             com.github.xiangyuecn.rsacsharp.RSA rsaPpk = null;
@@ -64,7 +99,7 @@ namespace PRM.Core.Model
             }
             catch (Exception)
             {
-                return ERsaStatues.PrivateKeyContentError;
+                return new Tuple<bool, string>(false, SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
 
             // make sure public key is PEM format key
@@ -79,7 +114,6 @@ namespace PRM.Core.Model
                 {
                     DB.Config.RSA_PublicKey = rsaPpk.ToPEM_PKCS1(true);
                     rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
-                    return ERsaStatues.Ok;
                 }
             }
             // RSA private key is match public key?
@@ -96,10 +130,9 @@ namespace PRM.Core.Model
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                return ERsaStatues.PrivateKeyIsNotMatch;
+                return new Tuple<bool, string>(false, SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
-
-            return ERsaStatues.Ok;
+            return new Tuple<bool, string>(true, "");
         }
 
         private string _dbPath = null;
@@ -149,22 +182,10 @@ namespace PRM.Core.Model
             {
                 if (_rsa == null)
                 {
-                    var ret = ValidateRsa();
-                    switch (ret)
+                    var ret = CheckIfDbIsOk();
+                    if (!ret.Item1)
                     {
-                        case ERsaStatues.Ok:
-                            break;
-                        case ERsaStatues.CanNotFindPrivateKey:
-                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                            break;
-                        case ERsaStatues.PrivateKeyContentError:
-                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                            break;
-                        case ERsaStatues.PrivateKeyIsNotMatch:
-                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        throw new Exception(ret.Item2);
                     }
                     if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         return null;
@@ -182,9 +203,12 @@ namespace PRM.Core.Model
         public const string PrivateKeyFileExt = ".prpk";
         public void GenRsa()
         {
-            if (ValidateRsa() != ERsaStatues.Ok)
+            // validate rsa key
+            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+            if (!res.Item1)
             {
-                throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                return;
             }
 
             if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -256,22 +280,11 @@ namespace PRM.Core.Model
         public void CleanRsa()
         {
             // validate rsa key
-            var ret = ValidateRsa();
-            switch (ret)
+            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+            if (!res.Item1)
             {
-                case ERsaStatues.Ok:
-                    break;
-                case ERsaStatues.CanNotFindPrivateKey:
-                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                    break;
-                case ERsaStatues.PrivateKeyContentError:
-                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                    break;
-                case ERsaStatues.PrivateKeyIsNotMatch:
-                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                return;
             }
 
             if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -461,7 +474,7 @@ namespace PRM.Core.Model
         public override void Load()
         {
             StopAutoSave = true;
-            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), SectionName, DbPath);
+            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), SectionName);
             StopAutoSave = false;
         }
 

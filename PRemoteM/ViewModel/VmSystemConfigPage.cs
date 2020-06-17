@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
+using System.Security.AccessControl;
 using System.Security.Permissions;
+using System.Security.Principal;
 using System.Text;
 using System.Windows;
 using Microsoft.Win32;
@@ -15,6 +17,7 @@ using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.UI.VM;
+using Shawn.Ulits;
 using SQLite;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -27,7 +30,7 @@ namespace PRM.ViewModel
         {
             Host = vmMain;
             // create new SystemConfigGeneral object
-            SystemConfig = SystemConfig.GetInstance();
+            SystemConfig = SystemConfig.Instance;
             SystemConfig.DataSecurity.OnRsaProgress += OnLongTimeProgress;
         }
 
@@ -97,20 +100,15 @@ namespace PRM.ViewModel
                     _cmdSaveAndGoBack = new RelayCommand((o) =>
                     {
                         // check if Db is ok
-                        if (!AppChecker.CheckDbExisted())
+                        var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        if (!c1.Item1)
                         {
-                            MessageBox.Show(
-                                SystemConfig.GetInstance().Language
-                                    .GetText("system_options_data_security_error_can_not_open") + ": " +
-                                SystemConfig.DataSecurity.DbPath,
-                                SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
-                            return;
-                        }
-
-                        var dbEncrypted = AppChecker.CheckDbEncrypted();
-                        if (!dbEncrypted.Item1)
-                        {
-                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
+                            //MessageBox.Show(
+                            //    SystemConfig.Language
+                            //        .GetText("system_options_data_security_error_can_not_open") + ": " +
+                            //    SystemConfig.DataSecurity.DbPath,
+                            //    SystemConfig.Language.GetText("messagebox_title_error"));
                             return;
                         }
 
@@ -118,12 +116,12 @@ namespace PRM.ViewModel
                         Host.DispPage = null;
 
                         /***                update config                ***/
-                        SystemConfig.GetInstance().Language.Save();
-                        SystemConfig.GetInstance().General.Save();
-                        SystemConfig.GetInstance().QuickConnect.Save();
-                        SystemConfig.GetInstance().DataSecurity.Save();
-                        SystemConfig.GetInstance().Theme.Save();
-                        SystemConfig.GetInstance().Theme.ReloadThemes();
+                        SystemConfig.Language.Save();
+                        SystemConfig.General.Save();
+                        SystemConfig.QuickConnect.Save();
+                        SystemConfig.DataSecurity.Save();
+                        SystemConfig.Theme.Save();
+                        SystemConfig.Theme.ReloadThemes();
                     });
                 }
                 return _cmdSaveAndGoBack;
@@ -140,59 +138,29 @@ namespace PRM.ViewModel
                 {
                     _cmdSelectDbPath = new RelayCommand((o) =>
                     {
-                        //void func(string path)
-                        //{
-                        //    try
-                        //    {
-                        //        using (var db = new SQLiteConnection(path))
-                        //        {
-                        //            db.CreateTable<Server>();
-                        //        }
-                        //        SystemConfig.DataSecurity.DbPath = path;
-                        //        Global.GetInstance().ReloadServers();
-                        //    }
-                        //    catch (Exception ee)
-                        //    {
-                        //        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
-                        //    }
-                        //}
                         var dlg = new OpenFileDialog();
                         dlg.Filter = "Sqlite Database|*.db";
                         dlg.CheckFileExists = false;
-                        //dlg.FileOk += (sender, args) =>
-                        //{
-                        //    func
-                        //};
                         if (dlg.ShowDialog() == true)
                         {
                             var path = dlg.FileName;
                             try
                             {
-                                //// TODO 判断权限
-                                //if (File.Exists(path))
-                                //{
-                                //    FileIOPermission f2 = new FileIOPermission(FileIOPermissionAccess.Write,
-                                //        dlg.FileName);
-                                //    try
-                                //    {
-                                //        f2.Demand();
-                                //    }
-                                //    catch (SecurityException s)
-                                //    {
-                                //        Console.WriteLine(s.Message);
-                                //    }
-                                //}
-
-                                using (var db = new SQLiteConnection(dlg.FileName))
+                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
                                 {
-                                    db.CreateTable<Server>();
+                                    using (var db = new SQLiteConnection(dlg.FileName))
+                                    {
+                                        db.CreateTable<Server>();
+                                    }
+                                    SystemConfig.DataSecurity.DbPath = dlg.FileName;
+                                    Global.GetInstance().ReloadServers();
                                 }
-                                SystemConfig.DataSecurity.DbPath = dlg.FileName;
-                                Global.GetInstance().ReloadServers();
+                                else
+                                    MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_error_can_not_open"));
                             }
                             catch (Exception ee)
                             {
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_error_can_not_open"));
                             }
                         }
                     });
@@ -219,19 +187,10 @@ namespace PRM.ViewModel
                         };
                         if (dlg.ShowDialog() == true)
                         {
-                            var res = SystemConfig.GetInstance().DataSecurity.ValidateRsa(dlg.FileName);
-                            switch (res)
+                            var res = SystemConfig.DataSecurity.CheckIfDbIsOk(dlg.FileName);
+                            if (!res.Item1)
                             {
-                                case SystemConfigDataSecurity.ERsaStatues.Ok:
-                                    SystemConfig.GetInstance().DataSecurity.RsaPrivateKeyPath = dlg.FileName;
-                                    break;
-                                case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                                case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                                case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
+                                MessageBox.Show(res.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
                             }
                         }
                     });
@@ -266,23 +225,20 @@ namespace PRM.ViewModel
                 {
                     _cmdClearRsaKey = new RelayCommand((o) =>
                     {
-                        var dbEncrypted = AppChecker.CheckDbEncrypted();
-                        if (!dbEncrypted.Item1)
+                        var res = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        if (!res.Item1)
                         {
-                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
-
+                            MessageBox.Show(res.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
                             if (MessageBox.Show(
-                                SystemConfig.GetInstance().Language.GetText("system_options_data_security_info_clear_rebuild_database"),
-                                SystemConfig.GetInstance().Language.GetText("messagebox_title_warning"),
+                                SystemConfig.Language.GetText("system_options_data_security_info_clear_rebuild_database"),
+                                SystemConfig.Language.GetText("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                             {
-                                if (File.Exists(SystemConfig.GetInstance().DataSecurity.DbPath))
-                                    File.Delete(SystemConfig.GetInstance().DataSecurity.DbPath);
-                                AppChecker.CheckDbExisted();
+                                if (File.Exists(SystemConfig.DataSecurity.DbPath))
+                                    File.Delete(SystemConfig.DataSecurity.DbPath);
                                 Global.GetInstance().ReloadServers();
-                                SystemConfig.GetInstance().DataSecurity.Load();
+                                SystemConfig.DataSecurity.Load();
                             }
-                            return;
                         }
                         else
                             SystemConfig.DataSecurity.CleanRsa();
@@ -303,10 +259,10 @@ namespace PRM.ViewModel
                 {
                     _cmdExportToJson = new RelayCommand((o) =>
                     {
-                        var dbEncrypted = AppChecker.CheckDbEncrypted();
-                        if (!dbEncrypted.Item1)
+                        var res = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        if (!res.Item1)
                         {
-                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
                             return;
                         }
                         var dlg = new SaveFileDialog
@@ -325,8 +281,8 @@ namespace PRM.ViewModel
                                     || serverBase is ProtocolServerSSH)
                                 {
                                     var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
-                                    if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                                        pwd.Password = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(pwd.Password) ?? "";
+                                    if (SystemConfig.DataSecurity.Rsa != null)
+                                        pwd.Password = SystemConfig.DataSecurity.Rsa.DecodeOrNull(pwd.Password) ?? "";
                                 }
                                 list.Add(serverBase);
                             }
@@ -348,16 +304,16 @@ namespace PRM.ViewModel
                 {
                     _cmdImportFromJson = new RelayCommand((o) =>
                     {
-                        var dbEncrypted = AppChecker.CheckDbEncrypted();
-                        if (!dbEncrypted.Item1)
+                        var res = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        if (!res.Item1)
                         {
-                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
                             return;
                         }
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
-                            Title = SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_dialog_title"),
+                            Title = SystemConfig.Language.GetText("system_options_data_security_import_dialog_title"),
                             FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
                         };
                         if (dlg.ShowDialog() == true)
@@ -383,18 +339,18 @@ namespace PRM.ViewModel
                                             || serverBase is ProtocolServerSSH)
                                         {
                                             var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
-                                            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                                                pwd.Password = SystemConfig.GetInstance().DataSecurity.Rsa.Encode(pwd.Password);
+                                            if (SystemConfig.DataSecurity.Rsa != null)
+                                                pwd.Password = SystemConfig.DataSecurity.Rsa.Encode(pwd.Password);
                                         }
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                 }
                                 Global.GetInstance().ReloadServers();
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_done"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_done"));
                             }
                             catch (Exception e)
                             {
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_error"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_error"));
                             }
                         }
                     });
@@ -414,16 +370,16 @@ namespace PRM.ViewModel
                 {
                     _cmdImportFromMRemoteNgCsv = new RelayCommand((o) =>
                     {
-                        var dbEncrypted = AppChecker.CheckDbEncrypted();
-                        if (!dbEncrypted.Item1)
+                        var res = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        if (!res.Item1)
                         {
-                            MessageBox.Show(dbEncrypted.Item2, SystemConfig.GetInstance().Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
                             return;
                         }
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "mRemoteNG csv|*.csv",
-                            Title = SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_dialog_title"),
+                            Title = SystemConfig.Language.GetText("system_options_data_security_import_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -445,6 +401,7 @@ namespace PRM.ViewModel
                                     if (protocolIndex == 0)
                                         throw new ArgumentException("can't find protocol field");
 
+                                    var r = new Random();
                                     // body
                                     var line = sr.ReadLine();
                                     while (!string.IsNullOrEmpty(line))
@@ -518,7 +475,10 @@ namespace PRM.ViewModel
                                             }
 
                                             if (server != null)
+                                            {
+                                                server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                                                 list.Add(server);
+                                            }
                                         }
                                         line = sr.ReadLine();
                                     }
@@ -531,18 +491,18 @@ namespace PRM.ViewModel
                                             || serverBase is ProtocolServerSSH)
                                         {
                                             var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
-                                            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                                                pwd.Password = SystemConfig.GetInstance().DataSecurity.Rsa.Encode(pwd.Password);
+                                            if (SystemConfig.DataSecurity.Rsa != null)
+                                                pwd.Password = SystemConfig.DataSecurity.Rsa.Encode(pwd.Password);
                                         }
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                 }
                                 Global.GetInstance().ReloadServers();
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_done"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_done"));
                             }
                             catch (Exception e)
                             {
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_import_error"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_error"));
                             }
                         }
                     });
@@ -574,8 +534,6 @@ namespace PRM.ViewModel
             }
         }
 
-
-        
 
 
         private RelayCommand _cmdOpenPath;
