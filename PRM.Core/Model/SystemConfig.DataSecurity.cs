@@ -102,16 +102,30 @@ namespace PRM.Core.Model
             return ERsaStatues.Ok;
         }
 
-        private string _dbPath = "./PRemoteM.db";
+        private string _dbPath = null;
         public string DbPath
         {
-            get => _dbPath;
+            get
+            {
+                if (string.IsNullOrEmpty(_dbPath))
+                {
+                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                    if (!Directory.Exists(appDateFolder))
+                        Directory.CreateDirectory(appDateFolder);
+                    _dbPath = Path.Combine(appDateFolder, "PRemoteM.db");
+                    Save();
+                }
+                return _dbPath;
+            }
             set
             {
-                SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
-                Rsa = null;
-                RaisePropertyChanged(nameof(RsaPublicKey));
-                RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                lock (_lockerForRsa)
+                {
+                    SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
+                    Rsa = null;
+                    RaisePropertyChanged(nameof(RsaPublicKey));
+                    RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                }
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,15 @@ namespace PRM
         {
             try
             {
+                try
+                {
+                    var fi = new FileInfo(SystemConfig.GetInstance().DataSecurity.DbPath);
+                    if (!Directory.Exists(fi.DirectoryName))
+                        Directory.CreateDirectory(fi.DirectoryName);
+                }
+                catch (Exception)
+                {
+                }
                 Server.Init();
             }
             catch (Exception exception)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -52,12 +53,17 @@ namespace PRM.Core.Model
         public readonly Ini Ini;
         private SystemConfig(ResourceDictionary appResourceDictionary)
         {
-            Ini = new Ini(AppName + ".ini");
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            if (!Directory.Exists(appDateFolder))
+                Directory.CreateDirectory(appDateFolder);
+            var iniPath = Path.Combine(appDateFolder, AppName + ".ini");
+            Ini = new Ini(iniPath);
             Language = new SystemConfigLanguage(appResourceDictionary, Ini);
             General = new SystemConfigGeneral(Ini);
             QuickConnect = new SystemConfigQuickConnect(Ini);
             DataSecurity = new SystemConfigDataSecurity(Ini);
             Theme = new SystemConfigTheme(Ini);
+            SimpleLogHelper.LogFileName = General.LogFilePath;
 
             var uc = new UpdateChecker();
             uc.OnNewRelease += (s, s1) =>

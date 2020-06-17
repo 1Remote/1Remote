@@ -32,8 +32,8 @@
   "system_options_general_item_server_order_by_protocol": "按协议",
   "system_options_general_item_server_order_by_add_time_asc": "按添加顺序",
   "system_options_general_item_server_order_by_add_time_desc": "按添加顺序（倒序）",
-  "system_options_general_item_icons_folder_path": "自定图标路径",
-  "system_options_general_item_icons_folder_path_description": "放置自定图标",
+  "system_options_general_item_icons_folder_path": "客制化图标",
+  "system_options_general_item_icons_folder_path_description": "在此放置客制化备选图标",
 
   "system_options_quick_title": "快速连接",
   "system_options_quick_description": "快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。",

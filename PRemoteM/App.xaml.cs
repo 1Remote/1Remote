@@ -25,13 +25,19 @@ namespace PRM
 #if DEBUG
         private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
 #else
-        private const string PipeName = "PRemoteM_singlex@foxmail.com"";
+        private const string PipeName = "PRemoteM_singlex@foxmail.com";
 #endif
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
             try
             {
+                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                if (!Directory.Exists(appDateFolder))
+                    Directory.CreateDirectory(appDateFolder);
+                var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+                SimpleLogHelper.LogFileName = logFilePath;
+
                 #region single-instance app
                 var startupMode = PRM.Core.Ulits.StartupMode.Normal;
                 if (startupEvent.Args.Length > 0)
@@ -120,6 +126,7 @@ namespace PRM
                 
                 // config create instance (settings & langs)
                 SystemConfig.Create(this.Resources);
+
                 // global init
                 Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
 
@@ -137,8 +144,6 @@ namespace PRM
 
                 bool goToSettingPageFlag = false;
 
-                // run check
-                ReCheck:
                 // check if Db is ok
                 if (!AppChecker.CheckDbExisted())
                 {
