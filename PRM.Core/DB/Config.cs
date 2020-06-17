@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using PRM.Core.Model;
+using Shawn.Ulits;
 using SQLite;
 
 namespace PRM.Core.DB
@@ -34,44 +36,59 @@ namespace PRM.Core.DB
         {
             get
             {
-                Init();
-                using (var db = GetDb())
+                try
                 {
-                    if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
+                    Init();
+                    using (var db = GetDb())
                     {
-                        var c = new Config()
+                        if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
                         {
-                            Key = "RSA_SHA1",
-                            Value = "",
-                        };
-                        c.Insert();
+                            var c = new Config()
+                            {
+                                Key = "RSA_SHA1",
+                                Value = "",
+                            };
+                            c.Insert();
+                        }
+                        {
+                            var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
+                            return c.Value;
+                        }
                     }
-                    {
-                        var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
-                        return c.Value;
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    return "";
                 }
             }
             set
             {
-                Init();
-                using (var db = GetDb())
+                try
                 {
-                    if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
+                    Init();
+                    using (var db = GetDb())
                     {
-                        var c = new Config()
+                        if (db.Table<Config>().All(x => x.Key != "RSA_SHA1"))
                         {
-                            Key = "RSA_SHA1",
-                            Value = "",
-                        };
-                        c.Insert();
+                            var c = new Config()
+                            {
+                                Key = "RSA_SHA1",
+                                Value = "",
+                            };
+                            c.Insert();
+                        }
+                        if (value != null)
+                        {
+                            var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
+                            c.Value = value;
+                            c.Update();
+                        }
                     }
-                    if (value != null)
-                    {
-                        var c = db.Table<Config>().First(x => x.Key == "RSA_SHA1");
-                        c.Value = value;
-                        c.Update();
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
                 }
             }
         }
@@ -80,44 +97,59 @@ namespace PRM.Core.DB
         {
             get
             {
-                Init();
-                using (var db = GetDb())
+                try
                 {
-                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
+                    Init();
+                    using (var db = GetDb())
                     {
-                        var c = new Config()
+                        if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
                         {
-                            Key = nameof(RSA_PublicKey),
-                            Value = "",
-                        };
-                        c.Insert();
+                            var c = new Config()
+                            {
+                                Key = nameof(RSA_PublicKey),
+                                Value = "",
+                            };
+                            c.Insert();
+                        }
+                        {
+                            var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PublicKey));
+                            return c.Value;
+                        }
                     }
-                    {
-                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PublicKey));
-                        return c.Value;
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    return "";
                 }
             }
             set
             {
-                Init();
-                using (var db = GetDb())
+                try
                 {
-                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
+                    Init();
+                    using (var db = GetDb())
                     {
-                        var c = new Config()
+                        if (db.Table<Config>().All(x => x.Key != nameof(RSA_PublicKey)))
                         {
-                            Key = nameof(RSA_PublicKey),
-                            Value = "",
-                        };
-                        c.Insert();
+                            var c = new Config()
+                            {
+                                Key = nameof(RSA_PublicKey),
+                                Value = "",
+                            };
+                            c.Insert();
+                        }
+                        if (value != null)
+                        {
+                            var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PublicKey));
+                            c.Value = value;
+                            c.Update();
+                        }
                     }
-                    if (value != null)
-                    {
-                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PublicKey));
-                        c.Value = value;
-                        c.Update();
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
                 }
             }
         }
@@ -128,44 +160,59 @@ namespace PRM.Core.DB
         {
             get
             {
-                Init();
-                using (var db = GetDb())
+                try
                 {
-                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
+                    Init();
+                    using (var db = GetDb())
                     {
-                        var c = new Config()
+                        if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
                         {
-                            Key = nameof(RSA_PrivateKeyPath),
-                            Value = "",
-                        };
-                        c.Insert();
+                            var c = new Config()
+                            {
+                                Key = nameof(RSA_PrivateKeyPath),
+                                Value = "",
+                            };
+                            c.Insert();
+                        }
+                        {
+                            var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PrivateKeyPath));
+                            return c.Value;
+                        }
                     }
-                    {
-                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PrivateKeyPath));
-                        return c.Value;
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                    return "";
                 }
             }
             set
             {
-                Init();
-                using (var db = GetDb())
+                try
                 {
-                    if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
+                    Init();
+                    using (var db = GetDb())
                     {
-                        var c = new Config()
+                        if (db.Table<Config>().All(x => x.Key != nameof(RSA_PrivateKeyPath)))
                         {
-                            Key = nameof(RSA_PrivateKeyPath),
-                            Value = "",
-                        };
-                        c.Insert();
+                            var c = new Config()
+                            {
+                                Key = nameof(RSA_PrivateKeyPath),
+                                Value = "",
+                            };
+                            c.Insert();
+                        }
+                        if (value != null)
+                        {
+                            var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PrivateKeyPath));
+                            c.Value = value;
+                            c.Update();
+                        }
                     }
-                    if (value != null)
-                    {
-                        var c = db.Table<Config>().First(x => x.Key == nameof(RSA_PrivateKeyPath));
-                        c.Value = value;
-                        c.Update();
-                    }
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
                 }
             }
         }

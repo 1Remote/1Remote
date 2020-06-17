@@ -69,7 +69,11 @@ namespace PRM.Core.Model
         public string LogFilePath
         {
             get => _logFilePath;
-            private set => SetAndNotifyIfChanged(nameof(LogFilePath), ref _logFilePath, value);
+            private set
+            {
+                SetAndNotifyIfChanged(nameof(LogFilePath), ref _logFilePath, value);
+                SimpleLogHelper.LogFileName = value;
+            }
         }
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;

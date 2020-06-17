@@ -32,14 +32,14 @@ namespace PRM.Core.Model
         /// <summary>
         /// Must init before app start in app.cs
         /// </summary>
-        public static void Create(ResourceDictionary appResourceDictionary)
+        public static void Init()
         {
             if (uniqueInstance == null)
                 lock (InstanceLock)
                 {
                     if (uniqueInstance == null)
                     {
-                        uniqueInstance = new SystemConfig(appResourceDictionary);
+                        uniqueInstance = new SystemConfig();
                     }
                 }
         }
@@ -50,21 +50,14 @@ namespace PRM.Core.Model
         public const string AppName = "PRemoteM";
         public const string AppFullName = "PersonalRemoteManager";
 #endif
-        public readonly Ini Ini;
-        private SystemConfig(ResourceDictionary appResourceDictionary)
-        {
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-            if (!Directory.Exists(appDateFolder))
-                Directory.CreateDirectory(appDateFolder);
-            var iniPath = Path.Combine(appDateFolder, AppName + ".ini");
-            Ini = new Ini(iniPath);
-            Language = new SystemConfigLanguage(appResourceDictionary, Ini);
-            General = new SystemConfigGeneral(Ini);
-            QuickConnect = new SystemConfigQuickConnect(Ini);
-            DataSecurity = new SystemConfigDataSecurity(Ini);
-            Theme = new SystemConfigTheme(Ini);
-            SimpleLogHelper.LogFileName = General.LogFilePath;
+        public static Ini Ini { get; set; }
+        public static ResourceDictionary AppResourceDictionary { get; set; }
 
+
+
+
+        private SystemConfig()
+        {
             var uc = new UpdateChecker();
             uc.OnNewRelease += (s, s1) =>
             {
@@ -98,7 +91,7 @@ namespace PRM.Core.Model
         public SystemConfigLanguage Language
         {
             get => _language;
-            protected set => SetAndNotifyIfChanged(nameof(Language), ref _language, value);
+            set => SetAndNotifyIfChanged(nameof(Language), ref _language, value);
         }
 
 
