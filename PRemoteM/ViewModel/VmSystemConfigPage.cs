@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
+using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using Microsoft.Win32;
@@ -138,12 +140,49 @@ namespace PRM.ViewModel
                 {
                     _cmdSelectDbPath = new RelayCommand((o) =>
                     {
+                        //void func(string path)
+                        //{
+                        //    try
+                        //    {
+                        //        using (var db = new SQLiteConnection(path))
+                        //        {
+                        //            db.CreateTable<Server>();
+                        //        }
+                        //        SystemConfig.DataSecurity.DbPath = path;
+                        //        Global.GetInstance().ReloadServers();
+                        //    }
+                        //    catch (Exception ee)
+                        //    {
+                        //        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
+                        //    }
+                        //}
                         var dlg = new OpenFileDialog();
                         dlg.Filter = "Sqlite Database|*.db";
+                        dlg.CheckFileExists = false;
+                        //dlg.FileOk += (sender, args) =>
+                        //{
+                        //    func
+                        //};
                         if (dlg.ShowDialog() == true)
                         {
+                            var path = dlg.FileName;
                             try
                             {
+                                //// TODO 判断权限
+                                //if (File.Exists(path))
+                                //{
+                                //    FileIOPermission f2 = new FileIOPermission(FileIOPermissionAccess.Write,
+                                //        dlg.FileName);
+                                //    try
+                                //    {
+                                //        f2.Demand();
+                                //    }
+                                //    catch (SecurityException s)
+                                //    {
+                                //        Console.WriteLine(s.Message);
+                                //    }
+                                //}
+
                                 using (var db = new SQLiteConnection(dlg.FileName))
                                 {
                                     db.CreateTable<Server>();
@@ -536,7 +575,35 @@ namespace PRM.ViewModel
         }
 
 
+        
 
+
+        private RelayCommand _cmdOpenPath;
+        public RelayCommand CmdOpenPath
+        {
+            get
+            {
+                if (_cmdOpenPath == null)
+                {
+                    _cmdOpenPath = new RelayCommand((o) =>
+                    {
+                        var path = o.ToString();
+                        if (File.Exists(path))
+                        {
+                            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe");
+                            psi.Arguments = "/e,/select," + path;
+                            System.Diagnostics.Process.Start(psi);
+                        }
+
+                        if (Directory.Exists(path))
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", path);
+                        }
+                    });
+                }
+                return _cmdOpenPath;
+            }
+        }
         #endregion
     }
 }

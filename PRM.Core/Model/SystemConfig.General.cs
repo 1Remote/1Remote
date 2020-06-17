@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Newtonsoft.Json;
 using PRM.Core.Ulits;
 using Shawn.Ulits;
 
@@ -22,6 +24,13 @@ namespace PRM.Core.Model
         public SystemConfigGeneral(Ini ini) : base(ini)
         {
             Load();
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            if (!Directory.Exists(appDateFolder))
+                Directory.CreateDirectory(appDateFolder);
+            IconFolderPath = Path.Combine(appDateFolder, "icons");
+            if (!Directory.Exists(IconFolderPath))
+                Directory.CreateDirectory(IconFolderPath);
+            LogFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
         }
 
         private bool _appStartAutomatically = false;
@@ -49,9 +58,19 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(AppStartMinimized), ref _appStartMinimized, value);
         }
 
+        private string _iconFolderPath = "./Icons";
+        public string IconFolderPath
+        {
+            get => _iconFolderPath;
+            private set => SetAndNotifyIfChanged(nameof(IconFolderPath), ref _iconFolderPath, value);
+        }
 
-        public string IconFolderPath => "./Icons";
-
+        private string _logFilePath = "./PRemoteM.log.md";
+        public string LogFilePath
+        {
+            get => _logFilePath;
+            private set => SetAndNotifyIfChanged(nameof(LogFilePath), ref _logFilePath, value);
+        }
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;
         public EnumServerOrderBy ServerOrderBy
