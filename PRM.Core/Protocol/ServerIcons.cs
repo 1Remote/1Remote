@@ -55,7 +55,7 @@ namespace PRM.Core.Protocol
                 }
             }
 
-            string iconFolderPath = SystemConfig.GetInstance().General.IconFolderPath;
+            string iconFolderPath = SystemConfig.Instance.General.IconFolderPath;
             var di = new DirectoryInfo(iconFolderPath);
             if (di.Exists && di.GetFiles().Length > 0)
             {

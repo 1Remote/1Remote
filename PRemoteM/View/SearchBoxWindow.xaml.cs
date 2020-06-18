@@ -37,7 +37,7 @@ namespace PRM.View
             };
             Show();
 
-            SystemConfig.GetInstance().QuickConnect.PropertyChanged += (sender, args) =>
+            SystemConfig.Instance.QuickConnect.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(SystemConfigQuickConnect.HotKeyKey) ||
                     args.PropertyName == nameof(SystemConfigQuickConnect.HotKeyModifiers))
@@ -71,7 +71,7 @@ namespace PRM.View
         public void ShowMe()
         {
             SimpleLogHelper.Info("Call shortcut to invoke quick window.");
-            if (SystemConfig.GetInstance().QuickConnect.Enable)
+            if (SystemConfig.Instance.QuickConnect.Enable)
                 if (_isHidden == true)
                     lock (_closeLocker)
                     {
@@ -197,23 +197,23 @@ namespace PRM.View
         /// </summary>
         public void SetHotKey()
         {
-            GlobalHotkeyHooker.GetInstance().Unregist(this);
-            var r = GlobalHotkeyHooker.GetInstance().Regist(this, SystemConfig.GetInstance().QuickConnect.HotKeyModifiers, SystemConfig.GetInstance().QuickConnect.HotKeyKey, this.ShowMe);
-            var title = SystemConfig.GetInstance().Language.GetText("messagebox_title_warning");
+            GlobalHotkeyHooker.Instance.Unregist(this);
+            var r = GlobalHotkeyHooker.Instance.Regist(this, SystemConfig.Instance.QuickConnect.HotKeyModifiers, SystemConfig.Instance.QuickConnect.HotKeyKey, this.ShowMe);
+            var title = SystemConfig.Instance.Language.GetText("messagebox_title_warning");
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                 {
-                    var msg = $"{SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
+                    var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
                     SimpleLogHelper.Warning(msg);
                     MessageBox.Show(msg, title);
                     break;
                 }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                 {
-                    var msg = $"{SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
+                    var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
                     SimpleLogHelper.Warning(msg);
                     MessageBox.Show(msg, title);
                     break;

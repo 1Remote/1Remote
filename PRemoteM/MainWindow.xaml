@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pageHost1="clr-namespace:Shawn.Ulits.PageHost;assembly=PRM.Core"
         xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+        xmlns:converter="clr-namespace:PRM.Resources.Converter;assembly=PRM.Core"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
@@ -329,6 +330,28 @@
         <Grid Grid.Row="1">
             <ContentControl Content="{Binding PageServerList}"></ContentControl>
             <pageHost1:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
+
+            <Grid>
+                <Grid.Resources>
+                </Grid.Resources>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=ProgressBarMaximum, Converter={StaticResource ConverterIsGreaterThan0}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
+                        <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{Binding ProgressBarInfo}" TextWrapping="Wrap"></TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

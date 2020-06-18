@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
 using PRM.Core.DB;
+using PRM.Core.Model;
 using Shawn.Ulits;
 using Brush = System.Drawing.Brush;
 using Color = System.Windows.Media.Color;
@@ -23,12 +24,12 @@ namespace PRM.Core.Protocol
             ProtocolDisplayName = protocolDisplayName;
             OnlyOneInstance = onlyOneInstance;
         }
-        
-        private bool _OnlyOneInstance = true;
+
+        private bool _onlyOneInstance = true;
         public bool OnlyOneInstance
         {
-            get => _OnlyOneInstance;
-            private set => SetAndNotifyIfChanged(nameof(OnlyOneInstance), ref _OnlyOneInstance, value);
+            get => _onlyOneInstance;
+            private set => SetAndNotifyIfChanged(nameof(OnlyOneInstance), ref _onlyOneInstance, value);
         }
 
 
@@ -163,16 +164,12 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
         }
 
-
-        [JsonIgnore]
-        public Action<uint> OnCmdConn = null;
-
         public void Conn()
         {
             Debug.Assert(this.Id > 0);
             this.LastConnTime = DateTime.Now;
             Server.AddOrUpdate(this);
-            OnCmdConn?.Invoke(this.Id);
+            GlobalEventHelper.OnServerConnect?.Invoke(Id);
         }
 
 

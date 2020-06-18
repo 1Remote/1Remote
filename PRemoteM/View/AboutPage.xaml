@@ -191,6 +191,11 @@
                                             https://github.com/AlexAkulov/putty-color-themes
                                         </Hyperlink>
                                     </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/xiangyuecn/RSA-csharp" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            https://github.com/xiangyuecn/RSA-csharp
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

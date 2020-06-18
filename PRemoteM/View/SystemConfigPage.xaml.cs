@@ -109,8 +109,8 @@ namespace PRM.View
 
         private bool SetHotkeyIsRegistered(ModifierKeys modifier, Key key)
         {
-            if (modifier == SystemConfig.GetInstance().QuickConnect.HotKeyModifiers
-                && key == SystemConfig.GetInstance().QuickConnect.HotKeyKey)
+            if (modifier == SystemConfig.Instance.QuickConnect.HotKeyModifiers
+                && key == SystemConfig.Instance.QuickConnect.HotKeyKey)
             {
                 VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
                 VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
@@ -119,25 +119,25 @@ namespace PRM.View
 
 
             // check if HOTKEY_ALREADY_REGISTERED
-            var r = GlobalHotkeyHooker.GetInstance().Regist(null, modifier, key, () => { });
+            var r = GlobalHotkeyHooker.Instance.Regist(null, modifier, key, () => { });
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
-                    GlobalHotkeyHooker.GetInstance().Unregist(r.Item3);
+                    GlobalHotkeyHooker.Instance.Unregist(r.Item3);
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
-            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.Instance.QuickConnect.HotKeyModifiers;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.Instance.QuickConnect.HotKeyKey;
 
             return false;
         }

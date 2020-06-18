@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.UI.VM;
 using PRM.View;
@@ -43,17 +44,56 @@ namespace PRM.ViewModel
         public bool SysOptionsMenuIsOpen
         {
             get => _sysOptionsMenuIsOpen;
+            set => SetAndNotifyIfChanged(nameof(SysOptionsMenuIsOpen), ref _sysOptionsMenuIsOpen, value);
+        }
+
+        private int _progressBarValue = 0;
+        public int ProgressBarValue
+        {
+            get => _progressBarValue;
+            set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
+        }
+
+        private int _progressBarMaximum = 0;
+        public int ProgressBarMaximum
+        {
+            get => _progressBarMaximum;
             set
             {
-                SetAndNotifyIfChanged(nameof(SysOptionsMenuIsOpen), ref _sysOptionsMenuIsOpen, value);
+                if (value != _progressBarMaximum)
+                {
+                    SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
+                }
             }
         }
+
+        private string _progressBarInfo = "";
+        public string ProgressBarInfo
+        {
+            get => _progressBarInfo;
+            set
+            {
+                if (value != _progressBarInfo)
+                {
+                    SetAndNotifyIfChanged(nameof(ProgressBarInfo), ref _progressBarInfo, value);
+                }
+            }
+        }
+
+
+
 
         public VmMain()
         {
             PageServerList = new ServerListPage(this);
-        }
 
+            GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
+            {
+                ProgressBarValue = arg1;
+                ProgressBarMaximum = arg2;
+                ProgressBarInfo = arg2 > 0 ? arg3 : "";
+            };
+        }
 
 
 

@@ -79,7 +79,8 @@
     <Compile Include="DB\Config.cs" />
     <Compile Include="DB\OrmTableBase.cs" />
     <Compile Include="DB\SQLite.cs" />
-    <Compile Include="Model\Global.cs" />
+    <Compile Include="Model\GlobalData.cs" />
+    <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.DataSecurity.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
@@ -140,7 +141,7 @@
     <Compile Include="Ulits\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="Protocol\ServerFactory.cs" />
+    <Compile Include="Protocol\ServerCreateHelper.cs" />
     <Compile Include="DB\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ProtocolServerBase.cs" />

@@ -89,14 +89,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AppInit.cs" />
     <Compile Include="Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\WindowPool.cs" />
+    <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />

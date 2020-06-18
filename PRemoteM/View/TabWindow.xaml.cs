@@ -30,15 +30,15 @@ namespace PRM.View
             DataContext = Vm;
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Width = SystemConfig.GetInstance().Locality.TabWindowWidth;
-            this.Height = SystemConfig.GetInstance().Locality.TabWindowHeight;
+            this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
+            this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.GetInstance().Locality.TabWindowHeight = this.Height;
-                    SystemConfig.GetInstance().Locality.TabWindowWidth = this.Width;
-                    SystemConfig.GetInstance().Locality.Save();
+                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
+                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.Save();
                 }
             };
 
@@ -53,7 +53,7 @@ namespace PRM.View
             {
                 if (Vm.SelectedItem != null)
                 {
-                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ConnectionId);
+                    RemoteWindowPool.Instance.DelProtocolHost(Vm.SelectedItem.Content.ConnectionId);
                 }
                 else
                 {

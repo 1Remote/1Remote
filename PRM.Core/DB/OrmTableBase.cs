@@ -52,7 +52,7 @@ namespace PRM.Core.DB
 
         protected static SQLiteConnection GetDb()
         {
-            return new SQLiteConnection(SystemConfig.GetInstance().DataSecurity.DbPath);
+            return new SQLiteConnection(SystemConfig.Instance.DataSecurity.DbPath);
         }
     }
 }

@@ -18,18 +18,18 @@ namespace PRM.ViewModel
             Vm = vmMain;
 
             var lastSelectedGroup = "";
-            if (!string.IsNullOrEmpty(SystemConfig.GetInstance().Locality.MainWindowTabSelected))
+            if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected))
             {
-                lastSelectedGroup = SystemConfig.GetInstance().Locality.MainWindowTabSelected;
+                lastSelectedGroup = SystemConfig.Instance.Locality.MainWindowTabSelected;
             }
 
             RebuildVmServerCardList();
-            Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
+            GlobalData.Instance.ServerList.CollectionChanged += (sender, args) =>
             {
                 RebuildVmServerCardList();
             };
 
-            SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
+            SystemConfig.Instance.General.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
                     RebuildVmServerCardList();
@@ -79,8 +79,8 @@ namespace PRM.ViewModel
             {
                 DispNameFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
-                SystemConfig.GetInstance().Locality.MainWindowTabSelected = value;
-                SystemConfig.GetInstance().Locality.Save();
+                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+                SystemConfig.Instance.Locality.Save();
             }
         }
 
@@ -97,7 +97,7 @@ namespace PRM.ViewModel
         private void RebuildVmServerCardList()
         {
             _serverCards.Clear();
-            foreach (var serverAbstract in Global.GetInstance().ServerList)
+            foreach (var serverAbstract in GlobalData.Instance.ServerList)
             {
                 serverAbstract.PropertyChanged += (sender, args) =>
                 {
@@ -144,7 +144,7 @@ namespace PRM.ViewModel
                 _serverCards.Remove(s);
             }
 
-            switch (SystemConfig.GetInstance().General.ServerOrderBy)
+            switch (SystemConfig.Instance.General.ServerOrderBy)
             {
                 case EnumServerOrderBy.Name:
                     _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderBy(s => s.Server.DispName).ThenBy(s => s.Server.Id));

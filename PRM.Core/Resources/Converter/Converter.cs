@@ -11,6 +11,41 @@ using Shawn.Ulits;
 
 namespace PRM.Resources.Converter
 {
+    public class ConverterIsGreaterThan : IValueConverter
+    {
+        public int CompareValue { get; set; } = 0;
+        // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int v = (int)value;
+            return v > CompareValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+    public class ConverterIsLowerThan : IValueConverter
+    {
+        public int CompareValue { get; set; } = 0;
+        // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int v = (int)value;
+            return v < CompareValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+
     public class ConverterBool2Visible : IValueConverter
     {
         #region IValueConverter 成员  
@@ -161,7 +196,7 @@ namespace PRM.Resources.Converter
                 var keyWordIsMatch = new List<bool>(keyWords.Length);
                 for (var i = 0; i < keyWords.Length; i++)
                     keyWordIsMatch.Add(false);
-                
+
                 var dispName = server.DispName;
                 var subTitle = server.SubTitle;
                 for (var i = 0; i < keyWordIsMatch.Count; i++)

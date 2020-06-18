@@ -55,7 +55,7 @@ namespace PRM.ViewModel
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                            WindowPool.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
+                            RemoteWindowPool.Instance.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;
@@ -71,7 +71,7 @@ namespace PRM.ViewModel
                 {
                     _cmdClose = new RelayCommand((o) =>
                     {
-                        WindowPool.DelTabWindow(Token);
+                        RemoteWindowPool.Instance.DelTabWindow(Token);
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdClose;
@@ -87,8 +87,7 @@ namespace PRM.ViewModel
         {
             string token = DateTime.Now.Ticks.ToString();
             var v = new TabWindow(token);
-            var vm = v.Vm;
-            WindowPool.AddTab(v);
+            RemoteWindowPool.Instance.AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
