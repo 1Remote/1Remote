@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
-using System.Threading;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
 using PRM.Core.DB;
@@ -32,7 +31,7 @@ namespace PRM.Core.Model
                 File.Delete(_dbPath + ".back");
             }
         }
-        
+
         /// <summary>
         /// Check if db is existed and writable
         /// </summary>
@@ -41,10 +40,10 @@ namespace PRM.Core.Model
         /// </returns>
         private static Tuple<bool, string> CheckIfDbIsWritable()
         {
-            var path = SystemConfig.GetInstance().DataSecurity.DbPath;
+            var path = SystemConfig.Instance.DataSecurity.DbPath;
             try
             {
-                var fi = new FileInfo(SystemConfig.GetInstance().DataSecurity.DbPath);
+                var fi = new FileInfo(SystemConfig.Instance.DataSecurity.DbPath);
                 if (!Directory.Exists(fi.DirectoryName))
                     Directory.CreateDirectory(fi.DirectoryName);
                 if (IOPermissionHelper.HasWritePermissionOnFile(path))
@@ -88,24 +87,24 @@ namespace PRM.Core.Model
                 return new Tuple<bool, string>(true, "");
 
             if (!File.Exists(_privateKeyPath))
-                return new Tuple<bool, string>(false, SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
 
-            com.github.xiangyuecn.rsacsharp.RSA rsaPk = null;
-            com.github.xiangyuecn.rsacsharp.RSA rsaPpk = null;
+            RSA rsaPk = null;
+            RSA rsaPpk = null;
 
             try
             {
-                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
+                rsaPpk = new RSA(File.ReadAllText(_privateKeyPath), true);
             }
             catch (Exception)
             {
-                return new Tuple<bool, string>(false, SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
 
             // make sure public key is PEM format key
             try
             {
-                rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(DB.Config.RSA_PublicKey, true);
+                rsaPk = new RSA(DB.Config.RSA_PublicKey, true);
             }
             catch (Exception)
             {
@@ -113,13 +112,13 @@ namespace PRM.Core.Model
                 if (rsaPpk.Verify("SHA1", DB.Config.RSA_SHA1, SystemConfig.AppName))
                 {
                     DB.Config.RSA_PublicKey = rsaPpk.ToPEM_PKCS1(true);
-                    rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
+                    rsaPk = new RSA(File.ReadAllText(_privateKeyPath), true);
                 }
             }
             // RSA private key is match public key?
             try
             {
-                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
+                rsaPpk = new RSA(File.ReadAllText(_privateKeyPath), true);
                 var sha1 = rsaPpk.Sign("SHA1", SystemConfig.AppName);
                 if (!rsaPk.Verify("SHA1", sha1, SystemConfig.AppName))
                 {
@@ -130,7 +129,7 @@ namespace PRM.Core.Model
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                return new Tuple<bool, string>(false, SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
             return new Tuple<bool, string>(true, "");
         }
@@ -167,15 +166,10 @@ namespace PRM.Core.Model
         public string RsaPrivateKeyPath
         {
             get => DB.Config.RSA_PrivateKeyPath;
-            set
-            {
-                DB.Config.RSA_PrivateKeyPath = value;
-                Rsa = null;
-            }
         }
 
-        private com.github.xiangyuecn.rsacsharp.RSA _rsa = null;
-        public com.github.xiangyuecn.rsacsharp.RSA Rsa
+        private RSA _rsa = null;
+        public RSA Rsa
         {
             set => _rsa = value;
             get
@@ -189,7 +183,7 @@ namespace PRM.Core.Model
                     }
                     if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         return null;
-                    _rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                    _rsa = new RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
                 }
                 return _rsa;
             }
@@ -198,7 +192,13 @@ namespace PRM.Core.Model
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
         /// </summary>
-        public Action<int, int> OnRsaProgress = null;
+        private void OnRsaProgress(int now, int total)
+        {
+            GlobalEventHelper.OnLongTimeProgress?.Invoke(now, total, SystemConfig.Instance.Language.GetText("system_options_data_security_info_data_processing"));
+        }
+
+
+
         private readonly object _lockerForRsa = new object();
         public const string PrivateKeyFileExt = ".prpk";
         public void GenRsa()
@@ -222,54 +222,69 @@ namespace PRM.Core.Model
                     {
                         if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            var protocolServerBases = Global.GetInstance().ServerList;
+                            var protocolServerBases = GlobalData.Instance.ServerList;
                             int max = protocolServerBases.Count() * 3 + 2;
                             int val = 0;
 
-                            var dlg = new SaveFileDialog
+                            var dlg = new OpenFileDialog
                             {
-                                Title = SystemConfig.GetInstance().Language.GetText("system_options_data_security_rsa_encrypt_dialog_title"),
-                                Filter = $"PRM RSA private key|*{Core.Model.SystemConfigDataSecurity.PrivateKeyFileExt}",
-                                FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") +
-                                           Core.Model.SystemConfigDataSecurity.PrivateKeyFileExt,
+                                Title = SystemConfig.Instance.Language.GetText("system_options_data_security_rsa_encrypt_dialog_title"),
+                                Filter = $"PRM RSA private key|*{PrivateKeyFileExt}",
+                                FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                                CheckFileExists = false,
                             };
                             if (dlg.ShowDialog() == true)
                             {
-                                OnRsaProgress?.Invoke(val, max);
+                                OnRsaProgress(val, max);
                                 // database back up
                                 Debug.Assert(File.Exists(DbPath));
                                 File.Copy(_dbPath, _dbPath + ".back", true);
-                                OnRsaProgress?.Invoke(++val, max);
+                                OnRsaProgress(++val, max);
 
-
-                                // gen rsa
-                                var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
-                                OnRsaProgress?.Invoke(++val, max);
                                 Rsa = null;
-
-                                // save key
+                                RSA rsa = null;
+                                // try read rsa
+                                if (File.Exists(dlg.FileName))
+                                {
+                                    try
+                                    {
+                                        rsa = new RSA(File.ReadAllText(dlg.FileName), true);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        rsa = null;
+                                    }
+                                }
+                                // gen rsa
+                                if (rsa == null)
+                                {
+                                    rsa = new RSA(2048);
+                                    // save key file
+                                    File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
+                                }
+                                OnRsaProgress(++val, max);
+                                
+                                // key write to db
                                 DB.Config.RSA_SHA1 = rsa.Sign("SHA1", SystemConfig.AppName);
                                 DB.Config.RSA_PublicKey = rsa.ToPEM_PKCS1(true);
                                 DB.Config.RSA_PrivateKeyPath = dlg.FileName;
-                                File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
                                 RaisePropertyChanged(nameof(RsaPublicKey));
                                 RaisePropertyChanged(nameof(RsaPrivateKeyPath));
-
 
                                 // encrypt old data
                                 foreach (var psb in protocolServerBases)
                                 {
                                     EncryptPwd(psb);
-                                    OnRsaProgress?.Invoke(++val, max);
+                                    OnRsaProgress(++val, max);
                                     Server.AddOrUpdate(psb);
-                                    OnRsaProgress?.Invoke(++val, max);
+                                    OnRsaProgress(++val, max);
                                 }
 
                                 // del back up
                                 File.Delete(_dbPath + ".back");
 
                                 // done
-                                OnRsaProgress?.Invoke(0, 0);
+                                OnRsaProgress(0, 0);
                             }
                         }
                     }
@@ -295,28 +310,27 @@ namespace PRM.Core.Model
                     {
                         if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            OnRsaProgress?.Invoke(0, 1);
-                            var protocolServerBases = Global.GetInstance().ServerList;
+                            OnRsaProgress(0, 1);
+                            var protocolServerBases = GlobalData.Instance.ServerList;
                             int max = protocolServerBases.Count() * 3 + 2 + 1;
                             int val = 1;
-                            OnRsaProgress?.Invoke(val, max);
+                            OnRsaProgress(val, max);
 
                             // database back up
                             Debug.Assert(File.Exists(DbPath));
                             File.Copy(_dbPath, _dbPath + ".back", true);
-                            OnRsaProgress?.Invoke(++val, max);
+                            OnRsaProgress(++val, max);
 
                             // keep pld rsa
-                            var ppkPath = DB.Config.RSA_PrivateKeyPath;
-                            //var rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
-
+                            //var ppkPath = DB.Config.RSA_PrivateKeyPath;
+                            //var rsa = new RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
 
                             // decrypt pwd
                             Debug.Assert(Rsa != null);
                             foreach (var psb in protocolServerBases)
                             {
                                 DecryptPwd(psb);
-                                OnRsaProgress?.Invoke(++val, max);
+                                OnRsaProgress(++val, max);
                             }
 
                             // remove rsa keys from db
@@ -324,26 +338,26 @@ namespace PRM.Core.Model
                             DB.Config.RSA_SHA1 = "";
                             DB.Config.RSA_PublicKey = "";
                             DB.Config.RSA_PrivateKeyPath = "";
+                            RaisePropertyChanged(nameof(RsaPublicKey));
+                            RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                             
                             // update
                             foreach (var psb in protocolServerBases)
                             {
                                 Server.AddOrUpdate(psb);
-                                OnRsaProgress?.Invoke(++val, max);
+                                OnRsaProgress(++val, max);
                             }
 
 
-                            RaisePropertyChanged(nameof(RsaPublicKey));
-                            RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
                             // del key
-                            File.Delete(ppkPath);
+                            //File.Delete(ppkPath);
 
                             // del back up
                             File.Delete(_dbPath + ".back");
 
                             // done
-                            OnRsaProgress?.Invoke(0, 0);
+                            OnRsaProgress(0, 0);
                         }
                     }
                 });

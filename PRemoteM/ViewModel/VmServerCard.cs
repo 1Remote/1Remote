@@ -98,12 +98,12 @@ namespace PRM.ViewModel
                     _cmdDeleteServer = new RelayCommand((o) =>
                     {
                         if (MessageBox.Show(
-                                SystemConfig.GetInstance().Language.GetText("server_card_operate_confirm_delete"),
-                                SystemConfig.GetInstance().Language.GetText("messagebox_title_warning"),
+                                SystemConfig.Instance.Language.GetText("server_card_operate_confirm_delete"),
+                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question) ==
                             MessageBoxResult.Yes)
                         {
-                            Global.GetInstance().ServerListRemove(Server);
+                            GlobalData.Instance.ServerListRemove(Server);
                         }
                     });
                 return _cmdDeleteServer;

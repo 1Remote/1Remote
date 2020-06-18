@@ -31,13 +31,6 @@ namespace PRM.ViewModel
             Host = vmMain;
             // create new SystemConfigGeneral object
             SystemConfig = SystemConfig.Instance;
-            SystemConfig.DataSecurity.OnRsaProgress += OnLongTimeProgress;
-        }
-
-        private void OnLongTimeProgress(int arg1, int arg2)
-        {
-            ProgressBarValue = arg1;
-            ProgressBarMaximum = arg2;
         }
 
         public SystemConfig SystemConfig { get; set; }
@@ -57,35 +50,35 @@ namespace PRM.ViewModel
         }
 
 
-        private int _progressBarValue = 0;
-        public int ProgressBarValue
-        {
-            get => _progressBarValue;
-            set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
-        }
+        //private int _progressBarValue = 0;
+        //public int ProgressBarValue
+        //{
+        //    get => _progressBarValue;
+        //    set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
+        //}
 
-        private int _progressBarMaximum = 0;
-        public int ProgressBarMaximum
-        {
-            get => _progressBarMaximum;
-            set
-            {
-                if (value != _progressBarMaximum)
-                {
-                    SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
-                    if (value == 0)
-                    {
-                        //TabIsEnabled = true;
-                        ProgressBarVisibility = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        //TabIsEnabled = false;
-                        ProgressBarVisibility = Visibility.Visible;
-                    }
-                }
-            }
-        }
+        //private int _progressBarMaximum = 0;
+        //public int ProgressBarMaximum
+        //{
+        //    get => _progressBarMaximum;
+        //    set
+        //    {
+        //        if (value != _progressBarMaximum)
+        //        {
+        //            SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
+        //            if (value == 0)
+        //            {
+        //                //TabIsEnabled = true;
+        //                ProgressBarVisibility = Visibility.Collapsed;
+        //            }
+        //            else
+        //            {
+        //                //TabIsEnabled = false;
+        //                ProgressBarVisibility = Visibility.Visible;
+        //            }
+        //        }
+        //    }
+        //}
 
 
         #region CMD
@@ -153,14 +146,14 @@ namespace PRM.ViewModel
                                         db.CreateTable<Server>();
                                     }
                                     SystemConfig.DataSecurity.DbPath = dlg.FileName;
-                                    Global.GetInstance().ReloadServers();
+                                    GlobalData.Instance.ServerListUpdate();
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_error_can_not_open"));
+                                    MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Language.GetText("messagebox_title_error"));
                             }
                             catch (Exception ee)
                             {
-                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_error_can_not_open"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Language.GetText("messagebox_title_error"));
                             }
                         }
                     });
@@ -229,14 +222,11 @@ namespace PRM.ViewModel
                         if (!res.Item1)
                         {
                             MessageBox.Show(res.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
-                            if (MessageBox.Show(
-                                SystemConfig.Language.GetText("system_options_data_security_info_clear_rebuild_database"),
-                                SystemConfig.Language.GetText("messagebox_title_warning"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                            if (MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_info_clear_rebuild_database"), SystemConfig.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                             {
                                 if (File.Exists(SystemConfig.DataSecurity.DbPath))
                                     File.Delete(SystemConfig.DataSecurity.DbPath);
-                                Global.GetInstance().ReloadServers();
+                                GlobalData.Instance.ServerListUpdate();
                                 SystemConfig.DataSecurity.Load();
                             }
                         }
@@ -274,7 +264,7 @@ namespace PRM.ViewModel
                         if (dlg.ShowDialog() == true)
                         {
                             var list = new List<ProtocolServerBase>();
-                            foreach (var protocolServerBase in Global.GetInstance().ServerList)
+                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
                             {
                                 var serverBase = (ProtocolServerBase) protocolServerBase.Clone();
                                 if (serverBase is ProtocolServerRDP
@@ -324,7 +314,7 @@ namespace PRM.ViewModel
                                 var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(dlg.FileName, Encoding.UTF8));
                                 foreach (var json in jobj)
                                 {
-                                    var server = ServerFactory.GetInstance().CreateFromJsonString(json.ToString());
+                                    var server = ServerCreateHelper.CreateFromJsonString(json.ToString());
                                     if (server != null)
                                     {
                                         server.Id = 0;
@@ -345,12 +335,12 @@ namespace PRM.ViewModel
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                 }
-                                Global.GetInstance().ReloadServers();
+                                GlobalData.Instance.ServerListUpdate();
                                 MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_done"));
                             }
                             catch (Exception e)
                             {
-                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_error"));
+                                MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_error"), SystemConfig.Language.GetText("messagebox_title_error"));
                             }
                         }
                     });
@@ -497,7 +487,7 @@ namespace PRM.ViewModel
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                 }
-                                Global.GetInstance().ReloadServers();
+                                GlobalData.Instance.ServerListUpdate();
                                 MessageBox.Show(SystemConfig.Language.GetText("system_options_data_security_import_done"));
                             }
                             catch (Exception e)

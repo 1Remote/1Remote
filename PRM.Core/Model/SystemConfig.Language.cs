@@ -24,7 +24,6 @@ namespace PRM.Core.Model
         public const string DefaultLanguageCode = "en-us";
         public const string LanguageJsonDir = "Languages";
         public readonly ResourceDictionary AppResourceDictionary = null;
-        public Action OnLanguageChanged = null;
 
         private string _currentLanguageCode = "en-us";
         public string CurrentLanguageCode
@@ -48,7 +47,7 @@ namespace PRM.Core.Model
                             _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
                         }
                         AppResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
-                        OnLanguageChanged?.Invoke();
+                        GlobalEventHelper.OnLanguageChanged?.Invoke();
                     }
                 }
             }

@@ -8,30 +8,11 @@ using PRM.Core.Protocol;
 
 namespace PRM.Core.DB
 {
-    public class ServerFactory
+    public class ServerCreateHelper
     {
-        #region 单例
-        private static ServerFactory instance;
-        private static readonly object InstanceLock = new object();
-        private ServerFactory()
-        {
-        }
-        public static ServerFactory GetInstance()
-        {
-            lock (InstanceLock)
-            {
-                if (instance == null)
-                {
-                    instance = new ServerFactory();
-                }
-            }
-            return instance;
-        }
-        #endregion
-
         private static readonly object Locker = new object();
-        private List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
+        private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
+        public static ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
         {
             // reflect all the child class
             lock (Locker)
@@ -71,7 +52,7 @@ namespace PRM.Core.DB
             return null;
         }
 
-        public ProtocolServerBase CreateFromJsonString(string jsonString)
+        public static ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||

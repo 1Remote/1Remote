@@ -459,7 +459,7 @@
         </Button>
 
 
-        <Grid Visibility="{Binding ProgressBarVisibility}">
+        <!--<Grid Visibility="{Binding ProgressBarVisibility}">
             <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
             <Grid>
                 <StackPanel VerticalAlignment="Center">
@@ -467,6 +467,6 @@
                     <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_info_data_processing}" TextWrapping="Wrap"></TextBlock>
                 </StackPanel>
             </Grid>
-        </Grid>
+        </Grid>-->
     </Grid>
 </UserControl>

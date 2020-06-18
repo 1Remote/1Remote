@@ -23,17 +23,17 @@ namespace PRM
             Title = SystemConfig.AppName;
 
 
-            this.Width = SystemConfig.GetInstance().Locality.MainWindowWidth;
-            this.Height = SystemConfig.GetInstance().Locality.MainWindowHeight;
+            this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
+            this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
             WinTitleBar.MouseUp += (sender, e) =>
             {
                 if (e.LeftButton == MouseButtonState.Released)
                 {
                     if (this.WindowState == WindowState.Normal)
                     {
-                        SystemConfig.GetInstance().Locality.MainWindowTop = this.Top;
-                        SystemConfig.GetInstance().Locality.MainWindowLeft = this.Left;
-                        SystemConfig.GetInstance().Locality.Save();
+                        SystemConfig.Instance.Locality.MainWindowTop = this.Top;
+                        SystemConfig.Instance.Locality.MainWindowLeft = this.Left;
+                        SystemConfig.Instance.Locality.Save();
                         Console.WriteLine($"main window Top = {this.Top}, Left = {this.Left}");
                     }
                 }
@@ -42,9 +42,9 @@ namespace PRM
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.GetInstance().Locality.MainWindowHeight = this.Height;
-                    SystemConfig.GetInstance().Locality.MainWindowWidth = this.Width;
-                    SystemConfig.GetInstance().Locality.Save();
+                    SystemConfig.Instance.Locality.MainWindowHeight = this.Height;
+                    SystemConfig.Instance.Locality.MainWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.Save();
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };
@@ -58,8 +58,8 @@ namespace PRM
 
             // Startup Location
             {
-                var top = SystemConfig.GetInstance().Locality.MainWindowTop;
-                var left = SystemConfig.GetInstance().Locality.MainWindowLeft;
+                var top = SystemConfig.Instance.Locality.MainWindowTop;
+                var left = SystemConfig.Instance.Locality.MainWindowLeft;
 
                 if (top >= 0 && top < Screen.PrimaryScreen.Bounds.Height
                     && left >= 0 && left < Screen.PrimaryScreen.Bounds.Width

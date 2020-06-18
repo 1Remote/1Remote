@@ -98,7 +98,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
 
             // set putty bg color
-            var options = SystemConfig.GetInstance().Theme.SelectedPuttyTheme;
+            var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             GridBg.Background = new SolidColorBrush(new Color()
             {
                 A = 255,
@@ -267,15 +267,15 @@ namespace PRM.Core.Protocol.Putty.Host
                 && !string.IsNullOrEmpty(server.PrivateKey))
             {
                 var ppk = server.PrivateKey;
-                if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                    ppk = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(ppk);
+                if (SystemConfig.Instance.DataSecurity.Rsa != null)
+                    ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk);
                 Debug.Assert(ppk != null);                    
                 _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, ppk);
             }
 
             // set color theme
-            _puttyOption.Set(PuttyRegOptionKey.FontHeight, SystemConfig.GetInstance().Theme.PuttyFontSize);
-            var options = SystemConfig.GetInstance().Theme.SelectedPuttyTheme;
+            _puttyOption.Set(PuttyRegOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             if (options != null)
                 foreach (var option in options)
                 {

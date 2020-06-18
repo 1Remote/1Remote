@@ -19,8 +19,8 @@ namespace PRM
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
-        public static MainWindow Window  { get; private set; } = null;
-        public static SearchBoxWindow SearchBoxWindow { get; private set; }  = null;
+        public static MainWindow Window { get; private set; } = null;
+        public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEBUG
         private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
@@ -32,11 +32,13 @@ namespace PRM
         {
             try
             {
-                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-                if (!Directory.Exists(appDateFolder))
-                    Directory.CreateDirectory(appDateFolder);
-                var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
-                SimpleLogHelper.LogFileName = logFilePath;
+                {
+                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                    if (!Directory.Exists(appDateFolder))
+                        Directory.CreateDirectory(appDateFolder);
+                    var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+                    SimpleLogHelper.LogFileName = logFilePath;
+                }
 
                 #region single-instance app
                 var startupMode = PRM.Core.Ulits.StartupMode.Normal;
@@ -117,14 +119,44 @@ namespace PRM
                 }
                 #endregion
 
-                
+
 #if DEBUG
                 Shawn.Ulits.ConsoleManager.Show();
 #endif
 
                 #region system check & init
-                
 
+
+                #region Init
+                {
+                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                    if (!Directory.Exists(appDateFolder))
+                        Directory.CreateDirectory(appDateFolder);
+                    SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
+                    var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
+                    var ini = new Ini(iniPath);
+
+                    var language = new SystemConfigLanguage(this.Resources, ini);
+                    var general = new SystemConfigGeneral(ini);
+                    var quickConnect = new SystemConfigQuickConnect(ini);
+                    var theme = new SystemConfigTheme(ini);
+                    var dataSecurity = new SystemConfigDataSecurity(ini);
+
+                    // config create instance (settings & langs)
+                    SystemConfig.Init();
+                    SystemConfig.Instance.General = general;
+                    SystemConfig.Instance.Language = language;
+                    SystemConfig.Instance.QuickConnect = quickConnect;
+                    SystemConfig.Instance.DataSecurity = dataSecurity;
+                    SystemConfig.Instance.Theme = theme;
+
+                    // server data holder init.
+                    GlobalData.Init();
+
+                    // remote window pool init.
+                    RemoteWindowPool.Init();
+                }
+                #endregion
 
                 // kill putty process
                 foreach (var process in Process.GetProcessesByName(PuttyHost.PuttyExeName.ToLower().Replace(".exe", "")))
@@ -138,18 +170,7 @@ namespace PRM
                     }
                 }
 
-                AppInit.Init(this.Resources);
 
-                bool goToSettingPageFlag = false;
-
-                // check if Db is ok
-                
-                var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-                if (!res.Item1)
-                {
-                    MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
-                    goToSettingPageFlag = true;
-                }
 
                 #endregion
 
@@ -161,16 +182,24 @@ namespace PRM
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
                     MainWindow = Window;
                     Window.Closed += (o, args) => { AppOnClose(); };
-                    if (!SystemConfig.GetInstance().General.AppStartMinimized)
+                    if (!SystemConfig.Instance.General.AppStartMinimized)
                     {
                         ActivateWindow();
                     }
 
-                    if (goToSettingPageFlag)
+                    // check if Db is ok
+                    var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+                    if (!res.Item1)
                     {
                         SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
+                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
                         ActivateWindow();
                         Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
+                    }
+                    else
+                    {
+                        // load data
+                        GlobalData.Instance.ServerListUpdate();
                     }
                 }
 
@@ -182,13 +211,6 @@ namespace PRM
                 // quick search init 
                 InitQuickSearch();
                 #endregion
-
-
-                if (!goToSettingPageFlag)
-                {
-                    // load data
-                    Global.GetInstance().ReloadServers();
-                }
             }
             catch (Exception ex)
             {
@@ -219,7 +241,7 @@ namespace PRM
                     Visible = true
                 };
                 ReloadTaskTrayContextMenu();
-                SystemConfig.GetInstance().Language.OnLanguageChanged += ReloadTaskTrayContextMenu;
+                GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
                 TaskTrayIcon.MouseDoubleClick += (sender, e) =>
                 {
                     if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -241,17 +263,17 @@ namespace PRM
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
                 };
                 var @break = new System.Windows.Forms.MenuItem("-");
-                var link_how_to_use = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("about_page_how_to_use"));
+                var link_how_to_use = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_how_to_use"));
                 link_how_to_use.Click += (sender, args) =>
                 {
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
                 };
-                var link_feedback = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("about_page_feedback"));
+                var link_feedback = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_feedback"));
                 link_feedback.Click += (sender, args) =>
                 {
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
                 };
-                var exit = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("button_exit"));
+                var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("button_exit"));
                 exit.Click += (sender, args) => Window.Close();
                 var child = new System.Windows.Forms.MenuItem[] { title,@break,link_how_to_use,link_feedback, exit };
                 //var child = new System.Windows.Forms.MenuItem[] { exit };

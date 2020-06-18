@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converter="clr-namespace:PRM.Resources.Converter">
+    <converter:ConverterIsGreaterThan x:Key="ConverterIsGreaterThan0" CompareValue="0"/>
+    <converter:ConverterIsLowerThan x:Key="ConverterIsLowerThan1" CompareValue="1"/>
     <converter:ConverterBool2Visible x:Key="ConverterBool2Visible"/>
     <converter:ConverterBool2VisibleInv x:Key="ConverterBool2VisibleInv"/>
     <converter:ConverterTextWidthAndContent2FontSize x:Key="ConverterTextWidthAndContent2FontSize"/>

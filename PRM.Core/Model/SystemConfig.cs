@@ -58,12 +58,12 @@ namespace PRM.Core.Model
 
         private SystemConfig()
         {
-            var uc = new UpdateChecker();
-            uc.OnNewRelease += (s, s1) =>
+            GlobalEventHelper.OnNewVersionRelease += (s, s1) =>
             {
                 this.NewVersion = s;
                 this.NewVersionUrl = s1;
             };
+            var uc = new UpdateChecker();
             uc.CheckUpdateAsync();
         }
 

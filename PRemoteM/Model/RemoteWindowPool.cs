@@ -3,41 +3,69 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Interop;
-using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Ulits.DragablzTab;
-using PRM.Resources.Converter;
 using PRM.View;
 using Shawn.Ulits;
-using Shawn.Ulits.RDP;
 
 namespace PRM.Model
 {
-
-    public static class WindowPool
+    public class RemoteWindowPool
     {
-        private static string _lastTabToken = null;
-        private static readonly Dictionary<string, TabWindow> _tabWindows = new Dictionary<string, TabWindow>();
-        private static readonly Dictionary<string, ProtocolHostBase> _protocolHosts = new Dictionary<string, ProtocolHostBase>();
-        private static readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
+        #region singleton
+        private static RemoteWindowPool uniqueInstance;
+        private static readonly object InstanceLock = new object();
 
-
-
-        public static void ShowRemoteHost(ProtocolServerBase server)
+        public static RemoteWindowPool GetInstance()
         {
-            var id = server.Id;
-            Debug.Assert(id > 0);
-            if (server.OnlyOneInstance && _protocolHosts.ContainsKey(server.Id.ToString()))
+            lock (InstanceLock)
             {
-                _protocolHosts[server.Id.ToString()].ParentWindow?.Activate();
+                if (uniqueInstance == null)
+                {
+                    throw new NullReferenceException($"{nameof(RemoteWindowPool)} has not been inited!");
+                }
+            }
+            return uniqueInstance;
+        }
+        public static RemoteWindowPool Instance => GetInstance();
+        #endregion
+
+        public static void Init()
+        {
+            lock (InstanceLock)
+            {
+                if (uniqueInstance == null)
+                {
+                    uniqueInstance = new RemoteWindowPool();
+                }
+            }
+        }
+
+        private RemoteWindowPool()
+        {
+            GlobalEventHelper.OnServerConnect += ShowRemoteHost;
+        }
+
+
+        private string _lastTabToken = null;
+        private readonly Dictionary<string, TabWindow> _tabWindows = new Dictionary<string, TabWindow>();
+        private readonly Dictionary<string, ProtocolHostBase> _protocolHosts = new Dictionary<string, ProtocolHostBase>();
+        private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
+
+        public void ShowRemoteHost(uint id)
+        {
+            Debug.Assert(id > 0);
+            Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
+            var server = GlobalData.Instance.ServerList.First(x => x.Id == id);
+            if (server.OnlyOneInstance && _protocolHosts.ContainsKey(id.ToString()))
+            {
+                _protocolHosts[id.ToString()].ParentWindow?.Activate();
                 return;
             }
 
@@ -101,8 +129,8 @@ namespace PRM.Model
                 var host = ProtocolHostFactory.Get(server);
                 host.OnClosed += OnProtocolClose;
                 host.OnFullScreen2Window += OnFullScreen2Window;
-                WindowPool.AddProtocolHost(host);
-                WindowPool.MoveProtocolHostToFullScreen(host.ConnectionId);
+                AddProtocolHost(host);
+                MoveProtocolHostToFullScreen(host.ConnectionId);
                 host.Conn();
                 SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
             }
@@ -138,18 +166,18 @@ namespace PRM.Model
             }
         }
 
-        private static void OnFullScreen2Window(string connectionId)
+        private void OnFullScreen2Window(string connectionId)
         {
             MoveProtocolHostToTab(connectionId);
         }
 
-        private static void OnProtocolClose(string connectionId)
+        private void OnProtocolClose(string connectionId)
         {
             DelProtocolHost(connectionId);
         }
 
 
-        public static void AddTab(TabWindow tab)
+        public void AddTab(TabWindow tab)
         {
             var token = tab.Vm.Token;
             Debug.Assert(!_tabWindows.ContainsKey(token));
@@ -158,19 +186,19 @@ namespace PRM.Model
             tab.Activated += (sender, args) =>
                 _lastTabToken = tab.Vm.Token;
         }
-        public static void AddFull(FullScreenWindow full)
+        public void AddFull(FullScreenWindow full)
         {
             Debug.Assert(!_host2FullScreenWindows.ContainsKey(full.ProtocolHostBase.ConnectionId));
             _host2FullScreenWindows.Add(full.ProtocolHostBase.ConnectionId, full);
         }
-        public static void AddProtocolHost(ProtocolHostBase protocol)
+        public void AddProtocolHost(ProtocolHostBase protocol)
         {
             Debug.Assert(!_protocolHosts.ContainsKey(protocol.ConnectionId));
             _protocolHosts.Add(protocol.ConnectionId, protocol);
         }
 
 
-        public static void MoveProtocolHostToFullScreen(string connectionId)
+        public void MoveProtocolHostToFullScreen(string connectionId)
         {
             if (_protocolHosts.ContainsKey(connectionId))
             {
@@ -260,7 +288,7 @@ namespace PRM.Model
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
-        public static void MoveProtocolHostToTab(string connectionId)
+        public void MoveProtocolHostToTab(string connectionId)
         {
             if (_protocolHosts.ContainsKey(connectionId))
             {
@@ -328,7 +356,7 @@ namespace PRM.Model
         /// <summary>
         /// terminate remote connection
         /// </summary>
-        public static void DelProtocolHost(string connectionId)
+        public void DelProtocolHost(string connectionId)
         {
             if (_protocolHosts.ContainsKey(connectionId))
             {
@@ -369,7 +397,7 @@ namespace PRM.Model
         /// <summary>
         /// del window terminate remote connection
         /// </summary>
-        public static void DelTabWindow(string token)
+        public void DelTabWindow(string token)
         {
             // del protocol
             if (_tabWindows.ContainsKey(token))
@@ -392,7 +420,7 @@ namespace PRM.Model
             }
         }
 
-        public static void CloseTabWindow(string token)
+        public void CloseTabWindow(string token)
         {
             if (_tabWindows.ContainsKey(token))
             {

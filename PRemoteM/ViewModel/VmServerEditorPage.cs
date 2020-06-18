@@ -32,7 +32,7 @@ namespace PRM.ViewModel
 
             // decrypt pwd
             if (server.GetType() != typeof(ProtocolServerNone))
-                SystemConfig.GetInstance().DataSecurity.DecryptPwd(Server);
+                SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -127,8 +127,8 @@ namespace PRM.ViewModel
                     _cmdSave = new RelayCommand((o) =>
                     {
                         // encrypt pwd
-                        SystemConfig.GetInstance().DataSecurity.EncryptPwd(Server);
-                        Global.GetInstance().ServerListUpdate(Server);
+                        SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
+                        GlobalData.Instance.ServerListUpdate(Server);
                         Host.Vm.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
@@ -171,7 +171,7 @@ namespace PRM.ViewModel
                         if (dlg.ShowDialog() == true)
                         {
                             string jsonString = File.ReadAllText(dlg.FileName, Encoding.UTF8);
-                            var server = ServerFactory.GetInstance().CreateFromJsonString(jsonString);
+                            var server = ServerCreateHelper.CreateFromJsonString(jsonString);
                             if (server != null)
                             {
                                 server.Id = 0;

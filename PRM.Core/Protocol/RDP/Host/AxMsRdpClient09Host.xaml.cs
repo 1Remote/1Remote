@@ -71,8 +71,8 @@ namespace Shawn.Ulits.RDP
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                secured.ClearTextPassword = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(_rdpServer.Password) ?? "";
+            if (SystemConfig.Instance.DataSecurity.Rsa != null)
+                secured.ClearTextPassword = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_rdpServer.Password) ?? "";
             else
                 secured.ClearTextPassword = _rdpServer.Password;
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
@@ -419,7 +419,7 @@ namespace Shawn.Ulits.RDP
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
                 var t = new Task(() =>
                 {
-                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 });
                 t.Start();
             }

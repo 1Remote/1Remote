@@ -147,11 +147,10 @@ namespace PRM.Core.Model
                 var r = CheckUpdate();
                 if (r.Item1)
                 {
-                    OnNewRelease?.Invoke(r.Item2, r.Item3);
+                    GlobalEventHelper.OnNewVersionRelease?.Invoke(r.Item2, r.Item3);
                 }
             });
             t.Start();
         }
-        public Action<string, string> OnNewRelease = null;
     }
 }
