@@ -107,7 +107,7 @@
                     <Grid Style="{StaticResource ServerEditorRowInput}" Width="500">
                         <StackPanel Orientation="Horizontal">
                             <TextBox Text="{Binding PrivateKey}" Width="300"></TextBox>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonOpenPrivateKey_OnClick">
+                            <Button Content="{DynamicResource button_select}" Click="ButtonOpenPrivateKey_OnClick">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>

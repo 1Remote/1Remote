@@ -2,8 +2,8 @@
 using System.Windows.Controls;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.UI.VM;
 using PRM.View;
+using Shawn.Ulits;
 using Shawn.Ulits.PageHost;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 

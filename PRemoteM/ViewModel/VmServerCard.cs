@@ -4,9 +4,8 @@ using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.UI.VM;
 using PRM.View;
+using Shawn.Ulits;
 using Shawn.Ulits.PageHost;
 
 namespace PRM.ViewModel

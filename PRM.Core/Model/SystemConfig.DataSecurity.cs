@@ -10,11 +10,13 @@ using System.Windows;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits;
+using SQLite;
 
 namespace PRM.Core.Model
 {
@@ -498,6 +500,428 @@ namespace PRM.Core.Model
             Save();
         }
 
+        #endregion
+
+
+        #region CMD
+        private RelayCommand _cmdSelectDbPath;
+        public RelayCommand CmdSelectDbPath
+        {
+            get
+            {
+                if (_cmdSelectDbPath == null)
+                {
+                    _cmdSelectDbPath = new RelayCommand((o) =>
+                    {
+                        var dlg = new OpenFileDialog();
+                        dlg.Filter = "Sqlite Database|*.db";
+                        dlg.CheckFileExists = false;
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var path = dlg.FileName;
+                            var oldDbPath = DbPath;
+                            try
+                            {
+                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                                {
+                                    using (var db = new SQLiteConnection(dlg.FileName))
+                                    {
+                                        db.CreateTable<Server>();
+                                    }
+                                    DbPath = dlg.FileName;
+                                    GlobalData.Instance.ServerListUpdate();
+                                }
+                                else
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                            catch (Exception ee)
+                            {
+                                DbPath = oldDbPath;
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdSelectDbPath;
+            }
+        }
+
+        private RelayCommand _cmdSelectRsaPrivateKey;
+        public RelayCommand CmdSelectRsaPrivateKey
+        {
+            get
+            {
+                if (_cmdSelectRsaPrivateKey == null)
+                {
+                    _cmdSelectRsaPrivateKey = new RelayCommand((o) =>
+                    {
+                        var dlg = new OpenFileDialog
+                        {
+                            Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
+                            InitialDirectory = RsaPrivateKeyPath,
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var res = CheckIfDbIsOk(dlg.FileName);
+                            if (!res.Item1)
+                            {
+                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdSelectRsaPrivateKey;
+            }
+        }
+
+        private RelayCommand _cmdGenRsaKey;
+        public RelayCommand CmdGenRsaKey
+        {
+            get
+            {
+                if (_cmdGenRsaKey == null)
+                {
+                    _cmdGenRsaKey = new RelayCommand((o) =>
+                    {
+                        GenRsa();
+                    });
+                }
+                return _cmdGenRsaKey;
+            }
+        }
+
+
+        private RelayCommand _cmdClearRsaKey;
+        public RelayCommand CmdClearRsaKey
+        {
+            get
+            {
+                if (_cmdClearRsaKey == null)
+                {
+                    _cmdClearRsaKey = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            if (MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"), SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                            {
+                                if (File.Exists(DbPath))
+                                    File.Delete(DbPath);
+                                GlobalData.Instance.ServerListUpdate();
+                                Load();
+                            }
+                        }
+                        else
+                            CleanRsa();
+                    });
+                }
+                return _cmdClearRsaKey;
+            }
+        }
+
+        private RelayCommand _cmdExportToJson;
+        public RelayCommand CmdExportToJson
+        {
+            get
+            {
+                if (_cmdExportToJson == null)
+                {
+                    _cmdExportToJson = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new SaveFileDialog
+                        {
+                            Filter = "PRM json array|*.prma",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
+                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var list = new List<ProtocolServerBase>();
+                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
+                            {
+                                var serverBase = (ProtocolServerBase) protocolServerBase.Clone();
+                                if (serverBase is ProtocolServerRDP
+                                    || serverBase is ProtocolServerSSH)
+                                {
+                                    var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                    if (Rsa != null)
+                                        pwd.Password = Rsa.DecodeOrNull(pwd.Password) ?? "";
+                                }
+                                list.Add(serverBase);
+                            }
+                            File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                        }
+                    });
+                }
+                return _cmdExportToJson;
+            }
+        }
+
+        private RelayCommand _cmdImportFromJson;
+        public RelayCommand CmdImportFromJson
+        {
+            get
+            {
+                if (_cmdImportFromJson == null)
+                {
+                    _cmdImportFromJson = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new OpenFileDialog()
+                        {
+                            Filter = "PRM json array|*.prma",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
+                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            try
+                            {
+                                var list = new List<ProtocolServerBase>();
+                                var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(dlg.FileName, Encoding.UTF8));
+                                foreach (var json in jobj)
+                                {
+                                    var server = ServerCreateHelper.CreateFromJsonString(json.ToString());
+                                    if (server != null)
+                                    {
+                                        server.Id = 0;
+                                        list.Add(server);
+                                    }
+                                }
+                                if (list?.Count > 0)
+                                {
+                                    foreach (var serverBase in list)
+                                    {
+                                        if (serverBase is ProtocolServerRDP
+                                            || serverBase is ProtocolServerSSH)
+                                        {
+                                            var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                            if (Rsa != null)
+                                                pwd.Password = Rsa.Encode(pwd.Password);
+                                        }
+                                        Server.AddOrUpdate(serverBase, true);
+                                    }
+                                }
+                                GlobalData.Instance.ServerListUpdate();
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdImportFromJson;
+            }
+        }
+
+        private RelayCommand _cmdImportFromMRemoteNgCsv;
+        public RelayCommand CmdImportFromMRemoteNgCsv
+        {
+            get
+            {
+                if (_cmdImportFromMRemoteNgCsv == null)
+                {
+                    _cmdImportFromMRemoteNgCsv = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new OpenFileDialog()
+                        {
+                            Filter = "mRemoteNG csv|*.csv",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            try
+                            {
+                                var list = new List<ProtocolServerBase>();
+                                using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
+                                {
+                                    // title
+                                    var title = sr.ReadLine().ToLower().Split(';').ToList();
+                                    int protocolIndex = title.IndexOf("protocol");
+                                    int nameIndex = title.IndexOf("name");
+                                    int groupIndex = title.IndexOf("panel");
+                                    int userIndex = title.IndexOf("username");
+                                    int pwdIndex = title.IndexOf("password");
+                                    int addressIndex = title.IndexOf("hostname");
+                                    int portIndex = title.IndexOf("port");
+                                    int portIndex2 = title.IndexOf("por2t");
+                                    if (protocolIndex == 0)
+                                        throw new ArgumentException("can't find protocol field");
+
+                                    var r = new Random();
+                                    // body
+                                    var line = sr.ReadLine();
+                                    while (!string.IsNullOrEmpty(line))
+                                    {
+                                        var arr = line.Split(';');
+                                        if (arr.Length >= 15)
+                                        {
+                                            ProtocolServerBase server = null;
+                                            var protocol = arr[protocolIndex].ToLower();
+                                            var name = "";
+                                            var group ="";
+                                            var user = "";
+                                            var pwd = "";
+                                            var address = "";
+                                            int port = 22;
+                                            if (nameIndex >= 0)
+                                                name = arr[nameIndex];
+                                            if (groupIndex >= 0)
+                                                group = arr[groupIndex];
+                                            if (userIndex >= 0)
+                                                user = arr[userIndex];
+                                            if (pwdIndex >= 0)
+                                                pwd = arr[pwdIndex];
+                                            if (addressIndex >= 0)
+                                                address = arr[addressIndex];
+                                            if (portIndex >= 0)
+                                                port = int.Parse(arr[portIndex]);
+                                            switch (protocol)
+                                            {
+                                                case "rdp":
+                                                    server = new ProtocolServerRDP()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        UserName = user,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                    };
+                                                    break;
+                                                case "ssh1":
+                                                    server = new ProtocolServerSSH()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        UserName = user,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                        SshVersion = ProtocolServerSSH.ESshVersion.V1
+                                                    };
+                                                    break;
+                                                case "ssh2":
+                                                    server = new ProtocolServerSSH()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        UserName = user,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                        SshVersion = ProtocolServerSSH.ESshVersion.V2
+                                                    };
+                                                    break;
+                                                case "vnc":
+                                                    // TODO add vnc
+                                                    break;
+                                                case "telnet":
+                                                    // TODO add telnet
+                                                    break;
+                                            }
+
+                                            if (server != null)
+                                            {
+                                                server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                                                list.Add(server);
+                                            }
+                                        }
+                                        line = sr.ReadLine();
+                                    }
+                                }
+                                if (list?.Count > 0)
+                                {
+                                    foreach (var serverBase in list)
+                                    {
+                                        if (serverBase is ProtocolServerRDP
+                                            || serverBase is ProtocolServerSSH)
+                                        {
+                                            var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                            if (Rsa != null)
+                                                pwd.Password = Rsa.Encode(pwd.Password);
+                                        }
+                                        Server.AddOrUpdate(serverBase, true);
+                                    }
+                                }
+                                GlobalData.Instance.ServerListUpdate();
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdImportFromMRemoteNgCsv;
+            }
+        }
+
+        
+        private RelayCommand _cmdDbMigrate;
+        public RelayCommand CmdDbMigrate
+        {
+            get
+            {
+                if (_cmdDbMigrate == null)
+                {
+                    _cmdDbMigrate = new RelayCommand((o) =>
+                    {
+                        var dlg = new SaveFileDialog();
+                        dlg.Filter = "Sqlite Database|*.db";
+                        dlg.CheckFileExists = false;
+                        dlg.InitialDirectory = new FileInfo(DbPath).DirectoryName;
+                        dlg.FileName = new FileInfo(DbPath).Name;
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var path = dlg.FileName;
+                            var oldDbPath = DbPath;
+                            if(oldDbPath == path)
+                                return;
+                            try
+                            {
+                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                                {
+                                    File.Move(oldDbPath, path);
+                                    File.Delete(oldDbPath);
+                                    DbPath = path;
+                                    GlobalData.Instance.ServerListUpdate();
+                                }
+                                else
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                            catch (Exception ee)
+                            {
+                                DbPath = oldDbPath;
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdDbMigrate;
+            }
+        }
         #endregion
     }
 }

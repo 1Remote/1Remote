@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -87,5 +88,29 @@ namespace PRM.Core.Model
             _puttyThemeNames = puttyThemeNames;
         }
         #endregion
+
+
+
+
+        private RelayCommand _cmdPuttyThemeCustomize;
+        public RelayCommand CmdPuttyThemeCustomize
+        {
+            get
+            {
+                if (_cmdPuttyThemeCustomize == null)
+                {
+                    _cmdPuttyThemeCustomize = new RelayCommand((o) =>
+                    {
+                        var puttyTheme = SelectedPuttyTheme;
+                        if (!Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
+                            Directory.CreateDirectory(PuttyColorThemes.ThemeRegFileFolder);
+                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, PuttyThemeName + ".reg"));
+                        if (fi != null)
+                            System.Diagnostics.Process.Start("notepad.exe", fi.FullName);
+                    });
+                }
+                return _cmdPuttyThemeCustomize;
+            }
+        }
     }
 }
