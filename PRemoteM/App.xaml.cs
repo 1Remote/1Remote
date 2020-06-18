@@ -135,12 +135,20 @@ namespace PRM
                     SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
                     var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
                     var ini = new Ini(iniPath);
-
+                    //if (!File.Exists(iniPath))
+                    //{
+                    //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
+                    //}
                     var language = new SystemConfigLanguage(this.Resources, ini);
                     var general = new SystemConfigGeneral(ini);
                     var quickConnect = new SystemConfigQuickConnect(ini);
                     var theme = new SystemConfigTheme(ini);
                     var dataSecurity = new SystemConfigDataSecurity(ini);
+
+                    //if (!File.Exists(dataSecurity.DbPath))
+                    //{
+                    //    // TODO db is not existed, then tell our user to create new one or select a new one.
+                    //}
 
                     // config create instance (settings & langs)
                     SystemConfig.Init();

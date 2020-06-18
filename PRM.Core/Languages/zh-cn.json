@@ -11,7 +11,8 @@
   "button_save": "保存",
   "button_back": "返回",
   "button_cancel": "取消",
-  "button_open": "打开",
+  "button_select": "选择",
+  "button_explore_to": "打开",
   "tab_all": "全部",
   "info_filter": "搜索 (Ctrl+F)",
   "info_hotkey_already_registered": "快捷键已被占用",
@@ -42,6 +43,7 @@
 
   "system_options_data_security_title": "数据与安全",
   "system_options_data_security_database": "数据库",
+  "system_options_data_security_database_migrate": "迁移",
   "system_options_data_security_rsa_title": "RSA加密",
   "system_options_data_security_rsa_encrypt": "生成加密",
   "system_options_data_security_rsa_encrypt_dialog_title": "选择私钥放置位置",

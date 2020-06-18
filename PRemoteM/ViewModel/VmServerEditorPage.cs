@@ -14,9 +14,8 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.UI.VM;
 using PRM.View;
-using Shawn.Ulits.PageHost;
+using Shawn.Ulits;
 
 namespace PRM.ViewModel
 {

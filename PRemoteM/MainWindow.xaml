@@ -5,12 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pageHost1="clr-namespace:Shawn.Ulits.PageHost;assembly=PRM.Core"
         xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-        xmlns:converter="clr-namespace:PRM.Resources.Converter;assembly=PRM.Core"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
         x:Name="Window"
-        Title="PRemoteM" Height="500" Width="680" MinWidth="530" MinHeight="300">
+        Title="PRemoteM" Height="590" Width="840" MinWidth="840" MinHeight="590">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
