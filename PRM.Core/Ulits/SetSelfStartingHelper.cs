@@ -179,7 +179,7 @@ namespace PRM.Core.Ulits
                     {
                         Process.Start(processInfo);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                     }
 
@@ -206,7 +206,7 @@ namespace PRM.Core.Ulits
                 {
                     Process.Start(processInfo);
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }

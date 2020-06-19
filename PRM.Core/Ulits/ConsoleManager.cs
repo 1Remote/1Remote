@@ -55,17 +55,23 @@ namespace Shawn.Ulits
         static void InvalidateOutAndError()
         {
             Type type = typeof(System.Console);
-            System.Reflection.FieldInfo _out = type.GetField("_out",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-            System.Reflection.FieldInfo _error = type.GetField("_error",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-            System.Reflection.MethodInfo _InitializeStdOutError = type.GetMethod("InitializeStdOutError",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            System.Reflection.FieldInfo _out = type.GetField("_out", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            System.Reflection.FieldInfo _error = type.GetField("_error", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            System.Reflection.MethodInfo _InitializeStdOutError = type.GetMethod("InitializeStdOutError", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
+#if NETCOREAPP
             System.Diagnostics.Debug.Assert(_out != null);
             System.Diagnostics.Debug.Assert(_error != null);
             System.Diagnostics.Debug.Assert(_InitializeStdOutError != null);
             _out.SetValue(null, null);
-            _error.SetValue(null, null);
+            _error.SetValue(null, null); 
+#else
+            System.Diagnostics.Debug.Assert(_out != null);
+            System.Diagnostics.Debug.Assert(_error != null);
+            System.Diagnostics.Debug.Assert(_InitializeStdOutError != null);
+            _out.SetValue(null, null);
+            _error.SetValue(null, null); 
+#endif
             _InitializeStdOutError.Invoke(null, new object[] { true });
         }
         static void SetOutAndErrorNull()
