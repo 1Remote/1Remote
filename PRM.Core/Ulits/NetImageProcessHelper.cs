@@ -406,7 +406,7 @@ namespace Shawn.Ulits
                     encoder.Save(fs);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

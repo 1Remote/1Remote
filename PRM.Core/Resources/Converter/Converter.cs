@@ -210,7 +210,7 @@ namespace PRM.Resources.Converter
                     return true;
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return true;
             }

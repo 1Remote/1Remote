@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Interop;
-using System.Windows;
 
 namespace Shawn.Ulits
 {

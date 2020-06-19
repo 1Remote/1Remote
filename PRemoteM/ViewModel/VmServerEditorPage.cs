@@ -48,7 +48,7 @@ namespace PRM.ViewModel
             {
                 ProtocolSelected = ProtocolList.First(x => x.GetType() == Server.GetType());
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 ProtocolSelected = ProtocolList.First();
             }
