@@ -610,18 +610,16 @@ namespace Shawn.Ulits.RDP
                         {
                             _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                         }
-                        catch (Exception e)
+                        catch
                         {
-                            // ignored
                         }
 
                         try
                         {
                             base.SizeChanged -= _ResizeEnd_WindowSizeChanged;
                         }
-                        catch (Exception e)
+                        catch
                         {
-                            // ignored
                         }
                     }
                 }

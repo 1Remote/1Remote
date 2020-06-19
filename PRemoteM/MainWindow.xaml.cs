@@ -81,7 +81,6 @@ namespace PRM
                 Close();
                 return;
 #endif
-                HideMe();
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
