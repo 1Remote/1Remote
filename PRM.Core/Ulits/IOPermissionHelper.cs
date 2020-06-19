@@ -38,6 +38,21 @@ namespace Shawn.Ulits
             try
             {
                 FileSystemSecurity security;
+#if NETCOREAPP
+                // nuget import System.IO.FileSystem.AccessControl
+                if (File.Exists(filePath))
+                {
+                    security = new FileSecurity(filePath, AccessControlSections.Owner | 
+                                                          AccessControlSections.Group |
+                                                          AccessControlSections.Access);
+                }
+                else
+                {
+                    security = new DirectorySecurity(filePath,AccessControlSections.Owner | 
+                                                              AccessControlSections.Group |
+                                                              AccessControlSections.Access);
+                }
+#else
                 if (File.Exists(filePath))
                 {
                     security = File.GetAccessControl(filePath);
@@ -46,6 +61,7 @@ namespace Shawn.Ulits
                 {
                     security = Directory.GetAccessControl(Path.GetDirectoryName(filePath));
                 }
+#endif
                 var rules = security.GetAccessRules(true, true, typeof(NTAccount));
                 var currentUser = new WindowsPrincipal(WindowsIdentity.GetCurrent());
                 bool result = false;
