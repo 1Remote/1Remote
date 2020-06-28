@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.ViewModel;
+using Shawn.Ulits;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
@@ -136,8 +137,9 @@ namespace PRM
             {
                 if (this.WindowState == WindowState.Maximized)
                 {
-                    var top = Mouse.GetPosition(this).Y;
-                    var left = Mouse.GetPosition(this).X;
+                    var p = ScreenInfoEx.GetMouseScreenPosition();
+                    var top = p.Y;
+                    var left = p.X;
                     this.Top = 0;
                     this.Left = 0;
                     this.WindowState = WindowState.Normal;

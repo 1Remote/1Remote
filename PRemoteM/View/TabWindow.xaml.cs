@@ -13,6 +13,7 @@ using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.Model;
 using PRM.ViewModel;
+using Shawn.Ulits;
 using Size = System.Windows.Size;
 
 namespace PRM.View
@@ -106,8 +107,9 @@ namespace PRM.View
             {
                 if (this.WindowState == WindowState.Maximized)
                 {
-                    var top = Mouse.GetPosition(this).Y;
-                    var left = Mouse.GetPosition(this).X;
+                    var p = ScreenInfoEx.GetMouseScreenPosition();
+                    var top = p.Y;
+                    var left = p.X;
                     this.Top = 0;
                     this.Left = 0;
                     this.WindowState = WindowState.Normal;
