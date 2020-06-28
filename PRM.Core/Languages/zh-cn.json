@@ -12,7 +12,7 @@
   "button_back": "返回",
   "button_cancel": "取消",
   "button_select": "选择",
-  "button_explore_to": "打开",
+  "button_explore_to": "定位到...",
   "tab_all": "全部",
   "info_filter": "搜索 (Ctrl+F)",
   "info_hotkey_already_registered": "快捷键已被占用",
@@ -33,6 +33,7 @@
   "system_options_general_item_server_order_by_protocol": "按协议",
   "system_options_general_item_server_order_by_add_time_asc": "按添加顺序",
   "system_options_general_item_server_order_by_add_time_desc": "按添加顺序（倒序）",
+  "system_options_general_item_log_file_path": "日志文件",
   "system_options_general_item_icons_folder_path": "客制化图标",
   "system_options_general_item_icons_folder_path_description": "在此放置客制化备选图标",
 

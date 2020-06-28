@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits;
 using SQLite;
@@ -418,7 +419,7 @@ namespace PRM.Core.Model
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                        break;
                 }
             }
         }
@@ -433,10 +434,9 @@ namespace PRM.Core.Model
                 server.GroupName = rsa.Encode(server.GroupName);
                 switch (server)
                 {
-                    case ProtocolServerNone _:
-                        break;
                     case ProtocolServerRDP _:
                     case ProtocolServerSSH _:
+                    case ProtocolServerWithAddrPortUserPwdBase _:
                         var p = (ProtocolServerWithAddrPortUserPwdBase) server;
                         if (!string.IsNullOrEmpty(p.UserName))
                             p.UserName = rsa.Encode(p.UserName);
@@ -446,7 +446,7 @@ namespace PRM.Core.Model
                             p.Password = rsa.Encode(p.Password);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                        break;
                 }
             }
         }
@@ -461,10 +461,9 @@ namespace PRM.Core.Model
                 server.GroupName = rsa.DecodeOrNull(server.GroupName);
                 switch (server)
                 {
-                    case ProtocolServerNone _:
-                        break;
                     case ProtocolServerRDP _:
                     case ProtocolServerSSH _:
+                    case ProtocolServerWithAddrPortUserPwdBase _:
                         var p = (ProtocolServerWithAddrPortUserPwdBase) server;
                         if (!string.IsNullOrEmpty(p.UserName))
                             p.UserName = rsa.DecodeOrNull(p.UserName);
@@ -474,7 +473,7 @@ namespace PRM.Core.Model
                             p.Password = rsa.DecodeOrNull(p.Password);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                        break;
                 }
             }
         }
@@ -705,7 +704,8 @@ namespace PRM.Core.Model
                                     foreach (var serverBase in list)
                                     {
                                         if (serverBase is ProtocolServerRDP
-                                            || serverBase is ProtocolServerSSH)
+                                            || serverBase is ProtocolServerSSH
+                                            || serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
                                         {
                                             var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
                                             if (Rsa != null)

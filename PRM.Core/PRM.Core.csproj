@@ -93,6 +93,7 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
+    <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
     <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
@@ -106,6 +107,8 @@
     <Compile Include="Protocol\Putty\PuttyOptions.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
+    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
+    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
     <Compile Include="Protocol\ServerIcons.cs" />
     <Compile Include="Protocol\ProtocolServerNone.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
@@ -277,7 +280,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/ansible-stable-2.9" languages_4en-us_1json__JsonSchema="https://json.schemastore.org/appsscript" />
+      <UserProperties languages_4en-us_1json__JsonSchema="https://json.schemastore.org/appsscript" languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/ansible-stable-2.9" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>

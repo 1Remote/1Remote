@@ -169,7 +169,7 @@
 
                     <Grid Style="{StaticResource ServerEditorRow}" >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="TXT:LOG File"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_log_file_path}"></TextBlock>
                             <!--<Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
