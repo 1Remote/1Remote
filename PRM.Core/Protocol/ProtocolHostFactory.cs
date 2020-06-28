@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits.RDP;
 
@@ -28,6 +29,11 @@ namespace PRM.Core.Protocol
                         var host = new PuttyHost(ssh);
                         return host;
                     }
+                case ProtocolServerTelnet telnet:
+                    {
+                        var host = new PuttyHost(telnet);
+                        return host;
+                    }
                 default:
                     throw new NotImplementedException();
             }
@@ -46,9 +52,8 @@ namespace PRM.Core.Protocol
                         return rdp.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false;
                     }
                 case ProtocolServerSSH _:
-                    {
+                case ProtocolServerTelnet _:
                         return false;
-                    }
                 default:
                     throw new NotImplementedException();
             }

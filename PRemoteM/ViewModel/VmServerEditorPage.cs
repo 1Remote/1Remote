@@ -13,6 +13,7 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.View;
 using Shawn.Ulits;
@@ -199,6 +200,9 @@ namespace PRM.ViewModel
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
                     && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                     server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
+                else if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
+                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                    server.Update(Server, typeof(ProtocolServerWithAddrPortBase));
                 // switch just hold base info
                 else
                     server.Update(Server, typeof(ProtocolServerBase));
@@ -212,6 +216,9 @@ namespace PRM.ViewModel
                     break;
                 case ProtocolServerSSH _:
                     ProtocolEditControl = new ProtocolServerSSHForm(server);
+                    break;
+                case ProtocolServerTelnet _:
+                    ProtocolEditControl = new ProtocolServerTelnetForm(server);
                     break;
                 default:
                     throw new NotImplementedException();

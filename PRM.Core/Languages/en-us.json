@@ -12,7 +12,7 @@
   "button_back": "Back",
   "button_cancel": "Cancel",
   "button_select": "Select",
-  "button_explore_to": "Explore to",
+  "button_explore_to": "Explore to...",
   "tab_all": "All",
   "info_filter": "Search (Ctrl+F)",
   "info_hotkey_already_registered": "Hotkey already registered",
@@ -33,6 +33,7 @@
   "system_options_general_item_server_order_by_protocol": "Protocol",
   "system_options_general_item_server_order_by_add_time_asc": "Add time asc",
   "system_options_general_item_server_order_by_add_time_desc": "Add time desc",
+  "system_options_general_item_log_file_path": "Log file",
   "system_options_general_item_icons_folder_path": "Custom icons",
   "system_options_general_item_icons_folder_path_description": "Put your own server icons here",
 
@@ -43,7 +44,7 @@
 
   "system_options_data_security_title": "Data & Security",
   "system_options_data_security_database": "Database",
-  "system_options_data_security_database_migrate": "Migrate", 
+  "system_options_data_security_database_migrate": "Migrate",
   "system_options_data_security_rsa_title": "RSA encryption",
   "system_options_data_security_rsa_encrypt": "Encrypt",
   "system_options_data_security_rsa_encrypt_dialog_title": "Select a path to place your key",
