@@ -78,9 +78,17 @@ namespace PRM
             BtnClose.Click += (sender, args) =>
             {
 #if DEBUG
-                Close();
+                CloseMe();
                 return;
 #endif
+            };
+            this.Closing += (sender, args) =>
+            {
+                if (this.ShowInTaskbar)
+                {
+                    HideMe();
+                    args.Cancel = true;
+                }
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
@@ -168,6 +176,12 @@ namespace PRM
             });
         }
 
+        public void CloseMe()
+        {
+            HideMe();
+            Close();
+        }
+
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             TbFilter.Focus();
@@ -183,7 +197,7 @@ namespace PRM
 
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            CloseMe();
         }
     }
 }
