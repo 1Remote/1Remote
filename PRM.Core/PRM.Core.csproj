@@ -280,7 +280,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4en-us_1json__JsonSchema="https://json.schemastore.org/appsscript" languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/ansible-stable-2.9" />
+      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/ansible-stable-2.9" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>

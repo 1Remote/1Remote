@@ -649,9 +649,9 @@ namespace PRM.Core.Model
                                 if (serverBase is ProtocolServerRDP
                                     || serverBase is ProtocolServerSSH)
                                 {
-                                    var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                    var obj = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
                                     if (Rsa != null)
-                                        pwd.Password = Rsa.DecodeOrNull(pwd.Password) ?? "";
+                                        obj.Password = Rsa.DecodeOrNull(obj.Password) ?? "";
                                 }
                                 list.Add(serverBase);
                             }
@@ -660,6 +660,81 @@ namespace PRM.Core.Model
                     });
                 }
                 return _cmdExportToJson;
+            }
+        }
+        
+        private RelayCommand _cmdExportToCsv;
+        public RelayCommand CmdExportToCsv
+        {
+            get
+            {
+                if (_cmdExportToCsv == null)
+                {
+                    _cmdExportToCsv = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new SaveFileDialog
+                        {
+                            Filter = "PRM csv array|*.csv",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
+                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".csv"
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var sb = new StringBuilder();
+                            sb.AppendLine("name;protocol;panel;hostname;port;username;password");
+                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
+                            {
+                                var protocol = "";
+                                var name = "";
+                                var group ="";
+                                var user = "";
+                                var pwd = "";
+                                var address = "";
+                                string port = "";
+
+                                var serverBase = (ProtocolServerBase) protocolServerBase.Clone();
+                                name = serverBase.DispName;
+                                group = serverBase.GroupName;
+                                protocol = serverBase.Protocol;
+                                if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
+                                    || serverBase is ProtocolServerRDP
+                                    || serverBase is ProtocolServerSSH)
+                                {
+                                    var obj = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                    pwd = obj.Password;
+                                    if (Rsa != null)
+                                        pwd = Rsa.DecodeOrNull(pwd) ?? obj.Password;
+                                    user = obj.UserName;
+                                    address = obj.Address;
+                                    port = obj.Port;
+                                }
+                                else if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                                {
+                                    var obj = (ProtocolServerWithAddrPortBase) serverBase;
+                                    address = obj.Address;
+                                    port = obj.Port;
+                                }
+
+                                protocol = protocol.Replace(";", "_");
+                                name = name.Replace(";", "_");
+                                group = group.Replace(";", "_");
+                                user = user.Replace(";", "_");
+                                pwd = pwd.Replace(";", "_");
+                                address = address.Replace(";", "_");
+                                port = port.Replace(";", "_");
+                                sb.AppendLine($"{name};{protocol};{group};{address};{port};{user};{pwd}");
+                            }
+                            File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                        }
+                    });
+                }
+                return _cmdExportToCsv;
             }
         }
 
@@ -729,7 +804,7 @@ namespace PRM.Core.Model
         }
 
         private RelayCommand _cmdImportFromMRemoteNgCsv;
-        public RelayCommand CmdImportFromMRemoteNgCsv
+        public RelayCommand CmdImportFromCsv
         {
             get
             {
@@ -745,7 +820,7 @@ namespace PRM.Core.Model
                         }
                         var dlg = new OpenFileDialog()
                         {
-                            Filter = "mRemoteNG csv|*.csv",
+                            Filter = "csv|*.csv",
                             Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
@@ -764,7 +839,6 @@ namespace PRM.Core.Model
                                     int pwdIndex = title.IndexOf("password");
                                     int addressIndex = title.IndexOf("hostname");
                                     int portIndex = title.IndexOf("port");
-                                    int portIndex2 = title.IndexOf("por2t");
                                     if (protocolIndex == 0)
                                         throw new ArgumentException("can't find protocol field");
 
@@ -837,7 +911,13 @@ namespace PRM.Core.Model
                                                     // TODO add vnc
                                                     break;
                                                 case "telnet":
-                                                    // TODO add telnet
+                                                    server = new ProtocolServerTelnet()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        Port = port.ToString(),
+                                                    };
                                                     break;
                                             }
 

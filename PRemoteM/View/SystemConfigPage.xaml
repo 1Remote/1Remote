@@ -340,6 +340,8 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Button Style="{StaticResource ServerEditorCautionButton}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToJson}"
                                             Content="{DynamicResource system_options_data_security_export_to_json}"></Button>
+                                    <Button Style="{StaticResource ServerEditorCautionButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToCsv}"
+                                            Content="{DynamicResource system_options_data_security_export_to_csv}"></Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -354,7 +356,7 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Button Style="{StaticResource ServerEditorNormalButton}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromJson}"
                                             Content="{DynamicResource system_options_data_security_import_from_json}"></Button>
-                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromMRemoteNgCsv}"
+                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromCsv}"
                                             Content="{DynamicResource system_options_data_security_import_from_csv}"></Button>
                                 </StackPanel>
                             </Grid>
