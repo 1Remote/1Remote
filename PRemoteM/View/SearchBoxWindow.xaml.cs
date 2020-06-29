@@ -47,6 +47,14 @@ namespace PRM.View
             };
         }
 
+        protected override void OnLocationChanged(EventArgs e)
+        {
+            // make popup control moves with parent by https://stackoverflow.com/questions/5736359/popup-control-moves-with-parent
+            PopupSelections.HorizontalOffset += 1;
+            PopupSelections.HorizontalOffset -= 1;
+            base.OnLocationChanged(e);
+        }
+
         private readonly object _closeLocker = new object();
         private bool _isHidden = false;
         private void HideMe()
