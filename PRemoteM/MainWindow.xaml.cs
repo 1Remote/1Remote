@@ -82,6 +82,7 @@ namespace PRM
                 CloseMe();
                 return;
 #endif
+                HideMe();
             };
             this.Closing += (sender, args) =>
             {
