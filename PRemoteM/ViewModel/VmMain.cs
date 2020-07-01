@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -121,7 +123,12 @@ namespace PRM.ViewModel
                     Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext)),
                 };
 
-                Window.ActivateMe();
+                var t = new Task(() =>
+                {
+                    //Thread.Sleep(100);
+                    Window.ActivateMe();
+                });
+                t.Start();
             };
         }
 

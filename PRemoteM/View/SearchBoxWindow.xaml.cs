@@ -67,7 +67,6 @@ namespace PRM.View
                     if (_isHidden == false)
                     {
                         this.Visibility = Visibility.Hidden;
-                        _vmSearchBox.DispNameFilter = "";
                         _vmSearchBox.PopupSelectionsIsOpen = false;
                         _vmSearchBox.PopupActionsIsOpen = false;
                         _isHidden = true;
@@ -81,7 +80,8 @@ namespace PRM.View
 
         public void ShowMe()
         {
-            SimpleLogHelper.Info("Call shortcut to invoke quick window.");
+            SimpleLogHelper.Info("Call shortcut to invoke quick window."); 
+            _vmSearchBox.DispNameFilter = "";
             if (SystemConfig.Instance.QuickConnect.Enable)
                 if (_isHidden == true)
                     lock (_closeLocker)
@@ -149,12 +149,12 @@ namespace PRM.View
                     switch (key)
                     {
                         case Key.Enter:
+                            HideMe();
                             if (_vmSearchBox.SelectedServerIndex >= 0 && _vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count)
                             {
                                 var s = _vmSearchBox.Servers[_vmSearchBox.SelectedServerIndex];
                                 GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
                             }
-                            HideMe();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count - 1)
@@ -209,13 +209,13 @@ namespace PRM.View
                     switch (key)
                     {
                         case Key.Enter:
+                            HideMe();
                             if (_vmSearchBox.Actions.Count > 0 
                                 && _vmSearchBox.SelectedActionIndex >= 0 
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
                                 _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
                             }
-                            HideMe();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count - 1)
