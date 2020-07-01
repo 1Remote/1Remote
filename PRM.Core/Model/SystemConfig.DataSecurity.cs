@@ -372,27 +372,19 @@ namespace PRM.Core.Model
         {
             var rsa = Rsa;
             if (rsa != null)
-                switch (server)
+            {
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
-                    case ProtocolServerRDP rdp:
-                        Debug.Assert(rsa.DecodeOrNull(rdp.Password) == null);
-                        rdp.Password = rsa.Encode(rdp.Password);
-                        break;
-                    case ProtocolServerSSH ssh:
-                        if (!string.IsNullOrEmpty(ssh.Password))
-                        {
-                            Debug.Assert(rsa.DecodeOrNull(ssh.Password) == null);
-                            ssh.Password = rsa.Encode(ssh.Password);
-                        }
-                        if (!string.IsNullOrEmpty(ssh.PrivateKey))
-                        {
-                            Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) == null);
-                            ssh.PrivateKey = rsa.Encode(ssh.PrivateKey);
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                    var s = (ProtocolServerWithAddrPortUserPwdBase) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.Password) == null);
+                    s.Password = rsa.Encode(s.Password);
                 }
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
+                {
+                    var s = (ProtocolServerSSH) server;
+                    s.PrivateKey = rsa.Encode(s.PrivateKey);
+                }
+            }
         }
 
         public void DecryptPwd(ProtocolServerBase server)
@@ -400,26 +392,17 @@ namespace PRM.Core.Model
             var rsa = Rsa;
             if (rsa != null)
             {
-                switch (server)
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
-                    case ProtocolServerRDP rdp:
-                        Debug.Assert(rsa.DecodeOrNull(rdp.Password) != null);
-                        rdp.Password = rsa.DecodeOrNull(rdp.Password);
-                        break;
-                    case ProtocolServerSSH ssh:
-                        if (!string.IsNullOrEmpty(ssh.Password))
-                        {
-                            Debug.Assert(rsa.DecodeOrNull(ssh.Password) != null);
-                            ssh.Password = rsa.DecodeOrNull(ssh.Password);
-                        }
-                        if (!string.IsNullOrEmpty(ssh.PrivateKey))
-                        {
-                            Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) != null);
-                            ssh.PrivateKey = rsa.DecodeOrNull(ssh.PrivateKey);
-                        }
-                        break;
-                    default:
-                        break;
+                    var s = (ProtocolServerWithAddrPortUserPwdBase) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.Password) != null);
+                    s.Password = rsa.DecodeOrNull(s.Password);
+                }
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
+                {
+                    var s = (ProtocolServerSSH) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.PrivateKey) != null);
+                    s.PrivateKey = rsa.DecodeOrNull(s.PrivateKey);
                 }
             }
         }
@@ -442,8 +425,6 @@ namespace PRM.Core.Model
                             p.UserName = rsa.Encode(p.UserName);
                         if (!string.IsNullOrEmpty(p.Address))
                             p.Address = rsa.Encode(p.Address);
-                        if (!string.IsNullOrEmpty(p.Password))
-                            p.Password = rsa.Encode(p.Password);
                         break;
                     default:
                         break;
@@ -464,14 +445,21 @@ namespace PRM.Core.Model
                     case ProtocolServerRDP _:
                     case ProtocolServerSSH _:
                     case ProtocolServerWithAddrPortUserPwdBase _:
-                        var p = (ProtocolServerWithAddrPortUserPwdBase) server;
-                        if (!string.IsNullOrEmpty(p.UserName))
-                            p.UserName = rsa.DecodeOrNull(p.UserName);
-                        if (!string.IsNullOrEmpty(p.Address))
-                            p.Address = rsa.DecodeOrNull(p.Address);
-                        if (!string.IsNullOrEmpty(p.Password))
-                            p.Password = rsa.DecodeOrNull(p.Password);
-                        break;
+                        {
+                            var p = (ProtocolServerWithAddrPortUserPwdBase) server;
+                            if (!string.IsNullOrEmpty(p.UserName))
+                                p.UserName = rsa.DecodeOrNull(p.UserName);
+                            if (!string.IsNullOrEmpty(p.Address))
+                                p.Address = rsa.DecodeOrNull(p.Address);
+                            break;
+                        }
+                    case ProtocolServerWithAddrPortBase _:
+                        {
+                            var p = (ProtocolServerWithAddrPortBase) server;
+                            if (!string.IsNullOrEmpty(p.Address))
+                                p.Address = rsa.DecodeOrNull(p.Address);
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -500,7 +488,6 @@ namespace PRM.Core.Model
         }
 
         #endregion
-
 
         #region CMD
         private RelayCommand _cmdSelectDbPath;
@@ -662,7 +649,7 @@ namespace PRM.Core.Model
                 return _cmdExportToJson;
             }
         }
-        
+
         private RelayCommand _cmdExportToCsv;
         public RelayCommand CmdExportToCsv
         {
@@ -958,7 +945,7 @@ namespace PRM.Core.Model
             }
         }
 
-        
+
         private RelayCommand _cmdDbMigrate;
         public RelayCommand CmdDbMigrate
         {
@@ -977,7 +964,7 @@ namespace PRM.Core.Model
                         {
                             var path = dlg.FileName;
                             var oldDbPath = DbPath;
-                            if(oldDbPath == path)
+                            if (oldDbPath == path)
                                 return;
                             try
                             {

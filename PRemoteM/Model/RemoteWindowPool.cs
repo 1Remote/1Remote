@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
@@ -63,6 +64,12 @@ namespace PRM.Model
             Debug.Assert(id > 0);
             Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
             var server = GlobalData.Instance.ServerList.First(x => x.Id == id);
+
+            // update last conn time
+            server.LastConnTime = DateTime.Now;
+            Server.AddOrUpdate(server);
+
+            // start conn
             if (server.OnlyOneInstance && _protocolHosts.ContainsKey(id.ToString()))
             {
                 _protocolHosts[id.ToString()].ParentWindow?.Activate();

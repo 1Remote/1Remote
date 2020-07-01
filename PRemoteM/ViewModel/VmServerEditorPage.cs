@@ -26,12 +26,12 @@ namespace PRM.ViewModel
 
         public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host)
         {
-            Server = server;
+            Server = (ProtocolServerBase)server.Clone();
             Host = host;
             IsAddMode = server.GetType() == typeof(ProtocolServerNone) || server.Id == 0;
 
             // decrypt pwd
-            if (server.GetType() != typeof(ProtocolServerNone))
+            if (Server.GetType() != typeof(ProtocolServerNone))
                 SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
@@ -156,8 +156,6 @@ namespace PRM.ViewModel
 
 
 
-
-
         private RelayCommand _cmdImportFromFile;
         public RelayCommand CmdImportFromFile
         {
@@ -172,6 +170,14 @@ namespace PRM.ViewModel
                         {
                             string jsonString = File.ReadAllText(dlg.FileName, Encoding.UTF8);
                             var server = ServerCreateHelper.CreateFromJsonString(jsonString);
+                            foreach (var protocolServerBase in ProtocolList)
+                            {
+                                if (server.GetType() == protocolServerBase.GetType())
+                                {
+                                    ProtocolSelected = protocolServerBase;
+                                    break;
+                                }
+                            }
                             if (server != null)
                             {
                                 server.Id = 0;

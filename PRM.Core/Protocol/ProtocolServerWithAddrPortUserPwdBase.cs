@@ -36,6 +36,14 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
         }
 
+        public string GetDecryptPassWord()
+        {
+            if (SystemConfig.Instance.DataSecurity.Rsa != null)
+            {
+                return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_password) ?? "";
+            }
+            return _password;
+        }
 
         protected override string GetSubTitle()
         {

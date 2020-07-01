@@ -52,10 +52,7 @@ namespace PRM.Core.Protocol
         public string DispName
         {
             get => _dispName;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
         }
 
         [JsonIgnore]
@@ -119,7 +116,6 @@ namespace PRM.Core.Protocol
                 {
                     _iconBase64 = null;
                     Icon = null;
-                    //Console.WriteLine(e);
                 }
             }
         }
@@ -163,15 +159,6 @@ namespace PRM.Core.Protocol
             get => _lastConnTime;
             set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
         }
-
-        public void Conn()
-        {
-            Debug.Assert(this.Id > 0);
-            this.LastConnTime = DateTime.Now;
-            Server.AddOrUpdate(this);
-            GlobalEventHelper.OnServerConnect?.Invoke(Id);
-        }
-
 
         /// <summary>
         /// copy all value type fields
@@ -258,7 +245,6 @@ namespace PRM.Core.Protocol
 
 
         protected abstract string GetSubTitle();
-
 
 
 

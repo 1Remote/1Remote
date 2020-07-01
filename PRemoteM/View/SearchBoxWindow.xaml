@@ -261,6 +261,27 @@
 
 
 
+        <DataTemplate x:Key="SearchBoxActionItemDataTemplate">
+            <Grid>
+                <Grid Height="20" Margin="0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Row="0" Grid.Column="1"></Grid>
+
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" FontSize="12" VerticalAlignment="Center"></TextBlock>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="SearchBoxActionList" TargetType="{x:Type ListBox}" BasedOn="{StaticResource SearchBoxSelectionList}">
+            <Setter Property="ItemTemplate" Value="{StaticResource SearchBoxActionItemDataTemplate}"></Setter>
+        </Style>
+
     </Window.Resources>
 
 
@@ -305,13 +326,16 @@
                         <DataTrigger Binding="{Binding ElementName=PopupSelections, Path=IsOpen}" Value="True">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding ElementName=PopupActions, Path=IsOpen}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Border.Style>
         </Border>
         <Popup Name="PopupSelections" StaysOpen="True" 
                AllowsTransparency="True"
-               IsOpen="{Binding PopupIsOpen}"
+               IsOpen="{Binding PopupSelectionsIsOpen}"
                Width="{StaticResource Width}"
                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
             <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" Background="{DynamicResource MainColor1Brush}">
@@ -324,6 +348,63 @@
                                  Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                  Style="{DynamicResource SearchBoxSelectionList}">
                     </ListBox>
+                </Grid>
+            </Border>
+        </Popup>
+
+        <Popup Name="PopupActions" StaysOpen="True"
+               AllowsTransparency="True"
+               IsOpen="{Binding PopupActionsIsOpen}"
+               Width="{StaticResource Width}"
+               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+            <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" 
+                    Background="{DynamicResource MainColor1Brush}">
+                <Grid>
+                    <StackPanel>
+                        <Grid Background="{DynamicResource MainColor1LighterBrush}" Margin="0 0 0 20">
+                            <Grid Height="30" Margin="0 5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="5"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="5"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20"></RowDefinition>
+                                    <RowDefinition Height="10"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                                    <Image Source="{Binding SelectedServer.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                                </Grid>
+
+                                <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
+                                   Text="{Binding SelectedServer.Server.ProtocolDisplayName}" 
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   Opacity="0.1"
+                                   HorizontalAlignment="Right"
+                                   Margin="10 0"
+                                   VerticalAlignment="Center"></TextBlock>
+
+                                <TextBlock Grid.Row="0" Grid.Column="3" 
+                                           FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           Text="{Binding SelectedServer.Server.DispName}"></TextBlock>
+
+                                <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
+                                           FontSize="10" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           Text="{Binding SelectedServer.Server.SubTitle}"></TextBlock>
+                            </Grid>
+                        </Grid>
+                        <ListBox x:Name="ListBoxActions" MaxHeight="402"
+                                 Style="{StaticResource SearchBoxActionList}"
+                                 BorderThickness="0"
+                                 SelectedIndex="{Binding SelectedActionIndex}" 
+                                 ItemsSource="{Binding Actions}"
+                                 Background="{DynamicResource MainColor1Brush}"
+                                 Foreground="{DynamicResource MainColor1ForegroundBrush}">
+                        </ListBox>
+                    </StackPanel>
                 </Grid>
             </Border>
         </Popup>

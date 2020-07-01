@@ -13,6 +13,13 @@ namespace PRM.Core.Model
         /// </summary>
         public static Action<uint> OnServerConnect { get; set; } = null;
 
+        /// <summary>
+        /// Go to server edit by server id
+        /// param1 uint: server id
+        /// param2 boo: is duplicate?
+        /// </summary>
+        public static Action<uint, bool> OnGoToServerEditPage { get; set; } = null;
+
 
         /// <summary>
         /// Invoke to notify a newer version of te software was released
@@ -30,6 +37,6 @@ namespace PRM.Core.Model
         /// <summary>
         /// Invoke to notify language was changed.
         /// </summary>
-        public static Action OnLanguageChanged = null;
+        public static Action OnLanguageChanged { get; set; } = null;
     }
 }

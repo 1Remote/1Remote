@@ -133,8 +133,6 @@ namespace PRM.ViewModel
                 SelectedGroup = "";
         }
 
-
-
         private void OrderServerList()
         {
             // Delete ProtocolServerNone
