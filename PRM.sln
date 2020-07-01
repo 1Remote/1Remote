@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRM.Core", "PRM.Core\PRM.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRemoteM", "PRemoteM\PRemoteM.csproj", "{AF7B4735-78AB-41EB-A799-5BAB792B7E22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRM.UnitTest", "PRM.UnitTest\PRM.UnitTest.csproj", "{51696BA4-F729-4807-9CCF-A9AD636BC3D4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{AF7B4735-78AB-41EB-A799-5BAB792B7E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF7B4735-78AB-41EB-A799-5BAB792B7E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF7B4735-78AB-41EB-A799-5BAB792B7E22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51696BA4-F729-4807-9CCF-A9AD636BC3D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51696BA4-F729-4807-9CCF-A9AD636BC3D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51696BA4-F729-4807-9CCF-A9AD636BC3D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51696BA4-F729-4807-9CCF-A9AD636BC3D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
