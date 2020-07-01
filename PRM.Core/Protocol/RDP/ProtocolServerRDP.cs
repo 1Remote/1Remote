@@ -273,7 +273,7 @@ namespace PRM.Core.Protocol.RDP
 
         public RdpConfig ToRdpConfig()
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.Password);
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.GetDecryptPassWord());
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
             switch (this.RdpFullScreenFlag)

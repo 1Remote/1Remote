@@ -71,10 +71,7 @@ namespace Shawn.Ulits.RDP
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            if (SystemConfig.Instance.DataSecurity.Rsa != null)
-                secured.ClearTextPassword = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_rdpServer.Password) ?? "";
-            else
-                secured.ClearTextPassword = _rdpServer.Password;
+            secured.ClearTextPassword = _rdpServer.GetDecryptPassWord();
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
             #endregion
 

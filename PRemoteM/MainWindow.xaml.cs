@@ -19,7 +19,7 @@ namespace PRM
         public MainWindow()
         {
             InitializeComponent();
-            VmMain = new VmMain();
+            VmMain = new VmMain(this);
             this.DataContext = VmMain;
             Title = SystemConfig.AppName;
 
@@ -157,10 +157,11 @@ namespace PRM
             VmMain.SysOptionsMenuIsOpen = true;
         }
 
-
-        public void ActivateMe()
+        public void ActivateMe(bool isForceActivate = false)
         {
-            Dispatcher.Invoke(() =>
+            if(isForceActivate)
+                HideMe(false);
+            Dispatcher?.Invoke(() =>
             {
                 this.Visibility = Visibility.Visible;
                 this.ShowInTaskbar = true;
@@ -168,13 +169,13 @@ namespace PRM
             });
         }
 
-        public void HideMe()
+        public void HideMe(bool isShowTip = true)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher?.Invoke(() =>
             {
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
-                if (!string.IsNullOrEmpty(App.TaskTrayIcon.BalloonTipText))
+                if (isShowTip && !string.IsNullOrEmpty(App.TaskTrayIcon?.BalloonTipText))
                     App.TaskTrayIcon?.ShowBalloonTip(1000);
             });
         }

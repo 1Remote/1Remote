@@ -52,6 +52,8 @@ namespace PRM.View
             // make popup control moves with parent by https://stackoverflow.com/questions/5736359/popup-control-moves-with-parent
             PopupSelections.HorizontalOffset += 1;
             PopupSelections.HorizontalOffset -= 1;
+            PopupActions.HorizontalOffset += 1;
+            PopupActions.HorizontalOffset -= 1;
             base.OnLocationChanged(e);
         }
 
@@ -66,7 +68,8 @@ namespace PRM.View
                     {
                         this.Visibility = Visibility.Hidden;
                         _vmSearchBox.DispNameFilter = "";
-                        _vmSearchBox.PopupIsOpen = false;
+                        _vmSearchBox.PopupSelectionsIsOpen = false;
+                        _vmSearchBox.PopupActionsIsOpen = false;
                         _isHidden = true;
                         this.Hide();
                     }
@@ -97,6 +100,8 @@ namespace PRM.View
                             this.Focus();         // important
                             TbKeyWord.Focus();
                             _isHidden = false;
+                            _vmSearchBox.PopupSelectionsIsOpen = false;
+                            _vmSearchBox.PopupActionsIsOpen = false;
                         }
                     }
         }
@@ -124,81 +129,136 @@ namespace PRM.View
         private readonly object _keyDownLocker = new object();
         private void TbKeyWord_OnKeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            lock (_keyDownLocker)
             {
-                case Key.Escape:
+                if (_vmSearchBox.Servers.Count == 0)
+                {
+                    _vmSearchBox.PopupSelectionsIsOpen = false;
+                    _vmSearchBox.PopupActionsIsOpen = false;
+                    return;
+                }
+
+                var key = e.Key;
+                if (key == Key.Escape)
+                {
                     HideMe();
-                    break;
-
-                case Key.Enter:
+                    return;
+                }
+                else if (_vmSearchBox.PopupSelectionsIsOpen)
+                {
+                    switch (key)
                     {
-                        lock (_closeLocker)
-                        {
-                            var i = _vmSearchBox.SelectedServerIndex;
-                            var j = _vmSearchBox.Servers.Count;
-                            if (i < j && i >= 0)
+                        case Key.Enter:
+                            if (_vmSearchBox.SelectedServerIndex >= 0 && _vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count)
                             {
-                                var s = _vmSearchBox.Servers[i];
-                                s.Server.Conn();
+                                var s = _vmSearchBox.Servers[_vmSearchBox.SelectedServerIndex];
+                                GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
                             }
-                        }
-                        HideMe();
-                        break;
-                    }
-
-                case Key.Down:
-                    {
-                        lock (_keyDownLocker)
-                        {
+                            HideMe();
+                            break;
+                        case Key.Down:
                             if (_vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count - 1)
                             {
                                 ++_vmSearchBox.SelectedServerIndex;
                                 ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                             }
-                        }
-                        break;
-                    }
-
-                case Key.Up:
-                    {
-                        lock (_keyDownLocker)
-                        {
+                            break;
+                        case Key.Up:
                             if (_vmSearchBox.SelectedServerIndex > 0)
                             {
                                 --_vmSearchBox.SelectedServerIndex;
                                 ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
                             }
-                        }
-                        break;
+                            break;
+                        case Key.PageUp:
+                            if (_vmSearchBox.SelectedServerIndex > 0)
+                            {
+                                _vmSearchBox.SelectedServerIndex =
+                                    _vmSearchBox.SelectedServerIndex - 5 < 0 ? 0 : _vmSearchBox.SelectedServerIndex - 5;
+                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                            }
+                            break;
+                        case Key.PageDown:
+                            if (_vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count - 1)
+                            {
+                                _vmSearchBox.SelectedServerIndex =
+                                    _vmSearchBox.SelectedServerIndex + 5 > _vmSearchBox.Servers.Count - 1
+                                        ? _vmSearchBox.Servers.Count - 1
+                                        : _vmSearchBox.SelectedServerIndex + 5;
+                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                            }
+                            break;
+                        case Key.Right:
+                            if (sender is TextBox tb)
+                            {
+                                if (tb.CaretIndex != tb.Text.Length)
+                                {
+                                    return;
+                                }
+                            }
+                            if (_vmSearchBox.SelectedServerIndex >= 0 && _vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count)
+                            {
+                                _vmSearchBox.ShowActionsList();
+                            }
+                            e.Handled = true;
+                            break;
                     }
-
-                case Key.PageUp:
+                }
+                else if (_vmSearchBox.PopupActionsIsOpen)
+                {
+                    switch (key)
                     {
-                        lock (_keyDownLocker)
-                        {
-                            var i = _vmSearchBox.SelectedServerIndex - 5;
-                            if (i < 0)
-                                i = 0;
-                            _vmSearchBox.SelectedServerIndex = i;
-                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                        }
-                        break;
+                        case Key.Enter:
+                            if (_vmSearchBox.Actions.Count > 0 
+                                && _vmSearchBox.SelectedActionIndex >= 0 
+                                && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
+                            {
+                                _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
+                            }
+                            HideMe();
+                            break;
+                        case Key.Down:
+                            if (_vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count - 1)
+                            {
+                                ++_vmSearchBox.SelectedActionIndex;
+                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                            }
+                            break;
+                        case Key.Up:
+                            if (_vmSearchBox.SelectedActionIndex > 0)
+                            {
+                                --_vmSearchBox.SelectedActionIndex;
+                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                            }
+                            break;
+                        case Key.PageUp:
+                            if (_vmSearchBox.SelectedActionIndex > 0)
+                            {
+                                _vmSearchBox.SelectedActionIndex =
+                                    _vmSearchBox.SelectedActionIndex - 5 < 0 ? 0 : _vmSearchBox.SelectedActionIndex - 5;
+                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                            }
+                            break;
+                        case Key.PageDown:
+                            if (_vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count - 1)
+                            {
+                                _vmSearchBox.SelectedActionIndex =
+                                    _vmSearchBox.SelectedActionIndex + 5 > _vmSearchBox.Actions.Count - 1
+                                        ? _vmSearchBox.Actions.Count - 1
+                                        : _vmSearchBox.SelectedActionIndex + 5;
+                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                            }
+                            break;
+                        case Key.Left:
+                            _vmSearchBox.PopupSelectionsIsOpen = true;
+                            _vmSearchBox.PopupActionsIsOpen = false;
+                            e.Handled = true;
+                            break;
                     }
-
-                case Key.PageDown:
-                    {
-                        lock (_keyDownLocker)
-                        {
-                            var i = _vmSearchBox.SelectedServerIndex + 5;
-                            if (i > _vmSearchBox.Servers.Count - 1)
-                                i = _vmSearchBox.Servers.Count - 1;
-                            _vmSearchBox.SelectedServerIndex = i;
-                            ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                        }
-                        break;
-                    }
+                }
             }
         }
+
 
         /// <summary>
         /// use it after Show() has been called
@@ -213,19 +273,19 @@ namespace PRM.View
                 case GlobalHotkeyHooker.RetCode.Success:
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                {
-                    var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
-                    SimpleLogHelper.Warning(msg);
-                    MessageBox.Show(msg, title);
-                    break;
-                }
+                    {
+                        var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
+                        SimpleLogHelper.Warning(msg);
+                        MessageBox.Show(msg, title);
+                        break;
+                    }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                {
-                    var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
-                    SimpleLogHelper.Warning(msg);
-                    MessageBox.Show(msg, title);
-                    break;
-                }
+                    {
+                        var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
+                        SimpleLogHelper.Warning(msg);
+                        MessageBox.Show(msg, title);
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

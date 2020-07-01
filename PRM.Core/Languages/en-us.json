@@ -77,9 +77,13 @@
 
   // server card operate
   "server_card_operate_confirm_delete": "Sure to delete this server?",
+  "server_card_operate_conn": "Connect",
   "server_card_operate_edit": "Edit",
   "server_card_operate_duplicate": "Duplicate",
   "server_card_operate_export_to_prmj": "Export config",
+  "server_card_operate_copy_address": "Copy address to clipboard",
+  "server_card_operate_copy_username": "Copy username to clipboard",
+  "server_card_operate_copy_password": "Copy password to clipboard",
 
 
   // server editor

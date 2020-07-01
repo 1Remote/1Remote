@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.ViewModel;
 
 namespace PRM.Controls
@@ -47,7 +49,7 @@ namespace PRM.Controls
                 VmServerCard.CmdEditServer.Execute();
             }
         }
-        
+
         private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
@@ -67,7 +69,9 @@ namespace PRM.Controls
             };
             if (dlg.ShowDialog() == true)
             {
-                File.WriteAllText(dlg.FileName, VmServerCard.Server.ToJsonString(), Encoding.UTF8);
+                var server = (ProtocolServerBase)VmServerCard.Server.Clone();
+                SystemConfig.Instance.DataSecurity.DecryptPwd(server);
+                File.WriteAllText(dlg.FileName, server.ToJsonString(), Encoding.UTF8);
             }
         }
     }

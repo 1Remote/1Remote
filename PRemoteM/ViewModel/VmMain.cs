@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows.Controls;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -80,11 +82,12 @@ namespace PRM.ViewModel
             }
         }
 
+        public readonly MainWindow Window;
 
 
-
-        public VmMain()
+        public VmMain(MainWindow window)
         {
+            Window = window;
             PageServerList = new ServerListPage(this);
 
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
@@ -92,6 +95,33 @@ namespace PRM.ViewModel
                 ProgressBarValue = arg1;
                 ProgressBarMaximum = arg2;
                 ProgressBarInfo = arg2 > 0 ? arg3 : "";
+            };
+            GlobalEventHelper.OnGoToServerEditPage += (id, isDuplicate) =>
+            {
+                ProtocolServerBase server;
+                if (id <= 0)
+                {
+                    server = new ProtocolServerNone();
+                }
+                else
+                {
+                    Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
+                    server = GlobalData.Instance.ServerList.First(x => x.Id == id);
+                    if (isDuplicate)
+                    {
+                        server = (ProtocolServerBase)server.Clone();
+                        server.Id = 0;
+                    }
+                }
+
+                DispPage = new AnimationPage()
+                {
+                    InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext)),
+                };
+
+                Window.ActivateMe();
             };
         }
 
