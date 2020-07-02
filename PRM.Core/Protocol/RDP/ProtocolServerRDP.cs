@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Security;
-using System.Text;
-using System.Windows;
 using Newtonsoft.Json;
-using PRM.Core.Model;
-using Shawn.Ulits.RDP;
+using RdpHelper;
 
 namespace PRM.Core.Protocol.RDP
 {
@@ -25,9 +21,21 @@ namespace PRM.Core.Protocol.RDP
 
     public enum EDisplayPerformance
     {
+        /// <summary>
+        /// Auto judge(by connection speed)
+        /// </summary>
         Auto = 0,
+        /// <summary>
+        /// Low(8bit color with no feature support)
+        /// </summary>
         Low = 1,
+        /// <summary>
+        /// Mdiddle(16bit color with only font smoothing and desktop composition)
+        /// </summary>
         Middle = 2,
+        /// <summary>
+        /// High(32bit color with full features support)
+        /// </summary>
         High = 3,
     }
 
@@ -36,18 +44,18 @@ namespace PRM.Core.Protocol.RDP
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
-            private bool _fullScreenLastSessionIsFullScreen = true;
-            public bool FullScreen_LastSessionIsFullScreen
+            private bool _fullScreenLastSessionIsFullScreen = false;
+            public bool FullScreenLastSessionIsFullScreen
             {
                 get => _fullScreenLastSessionIsFullScreen;
-                set => SetAndNotifyIfChanged(nameof(FullScreen_LastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
+                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
             }
 
             private int _fullScreenLastSessionScreenIndex = -1;
-            public int FullScreen_LastSessionScreenIndex
+            public int FullScreenLastSessionScreenIndex
             {
                 get => _fullScreenLastSessionScreenIndex;
-                set => SetAndNotifyIfChanged(nameof(FullScreen_LastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
+                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
             }
         }
 
@@ -93,6 +101,14 @@ namespace PRM.Core.Protocol.RDP
         {
             get => _isConnWithFullScreen;
             set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
+        }
+
+        
+        private bool _isFullScreenWithConnectionBar = true;
+        public bool IsFullScreenWithConnectionBar
+        {
+            get => _isFullScreenWithConnectionBar;
+            set => SetAndNotifyIfChanged(nameof(IsFullScreenWithConnectionBar), ref _isFullScreenWithConnectionBar, value);
         }
 
         private ERdpWindowResizeMode _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
@@ -243,12 +259,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
-        public override string ToJsonString()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
-
-
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
@@ -259,6 +269,119 @@ namespace PRM.Core.Protocol.RDP
             {
                 return null;
             }
+        }
+
+        public RdpConfig ToRdpConfig()
+        {
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.GetDecryptPassWord());
+            rdpConfig.AuthenticationLevel = 0;
+            rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
+            switch (this.RdpFullScreenFlag)
+            {
+                case ERdpFullScreenFlag.Disable:
+                    rdpConfig.ScreenModeId = 1;
+                    rdpConfig.DesktopWidth = this.RdpWidth;
+                    rdpConfig.DesktopHeight = this.RdpHeight;
+                    break;
+                case ERdpFullScreenFlag.EnableFullScreen:
+                    rdpConfig.ScreenModeId = 2;
+                    break;
+                case ERdpFullScreenFlag.EnableFullAllScreens:
+                    rdpConfig.ScreenModeId = 2;
+                    rdpConfig.UseMultimon = 1;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            switch (this.RdpWindowResizeMode)
+            {
+                case ERdpWindowResizeMode.AutoResize:
+                    rdpConfig.SmartSizing = 0;
+                    rdpConfig.DynamicResolution = 1;
+                    break;
+                case ERdpWindowResizeMode.Stretch:
+                case ERdpWindowResizeMode.StretchFullScreen:
+                    rdpConfig.SmartSizing = 1;
+                    rdpConfig.DynamicResolution = 0;
+                    break;
+                case ERdpWindowResizeMode.Fixed:
+                case ERdpWindowResizeMode.FixedFullScreen:
+                    rdpConfig.SmartSizing = 0;
+                    rdpConfig.DynamicResolution = 0;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+
+            rdpConfig.NetworkAutodetect = 0;
+            switch (this.DisplayPerformance)
+            {
+                case EDisplayPerformance.Auto:
+                    rdpConfig.NetworkAutodetect = 1;
+                    break;
+                case EDisplayPerformance.Low:
+                    rdpConfig.ConnectionType = 1;
+                    rdpConfig.SessionBpp = 8;
+                    rdpConfig.AllowDesktopComposition = 0;
+                    rdpConfig.AllowFontSmoothing = 0;
+                    rdpConfig.DisableFullWindowDrag = 1;
+                    rdpConfig.DisableThemes = 1;
+                    rdpConfig.DisableWallpaper = 1;
+                    rdpConfig.DisableMenuAnims = 1;
+                    rdpConfig.DisableCursorSetting = 1;
+                    break;
+                case EDisplayPerformance.Middle:
+                    rdpConfig.SessionBpp = 16;
+                    rdpConfig.ConnectionType = 3;
+                    rdpConfig.AllowDesktopComposition = 1;
+                    rdpConfig.AllowFontSmoothing = 1;
+                    rdpConfig.DisableFullWindowDrag = 1;
+                    rdpConfig.DisableThemes = 1;
+                    rdpConfig.DisableWallpaper = 1;
+                    rdpConfig.DisableMenuAnims = 1;
+                    rdpConfig.DisableCursorSetting = 1;
+                    break;
+                case EDisplayPerformance.High:
+                    rdpConfig.SessionBpp = 32;
+                    rdpConfig.ConnectionType = 6;
+                    rdpConfig.AllowDesktopComposition = 1;
+                    rdpConfig.AllowFontSmoothing = 1;
+                    rdpConfig.DisableFullWindowDrag = 0;
+                    rdpConfig.DisableThemes = 0;
+                    rdpConfig.DisableWallpaper = 0;
+                    rdpConfig.DisableMenuAnims = 0;
+                    rdpConfig.DisableCursorSetting = 0;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            rdpConfig.KeyboardHook = 0;
+            rdpConfig.AudioMode = 2;
+            rdpConfig.AudioCaptureMode = 0;
+
+            
+            if (this.EnableDiskDrives)
+                rdpConfig.RedirectPosDevices = 1;
+            if (this.EnableClipboard)
+                rdpConfig.RedirectClipboard = 1;
+            if (this.EnablePrinters)
+                rdpConfig.RedirectPrinters = 1;
+            if (this.EnablePorts)
+                rdpConfig.RedirectComPorts = 1;
+            if (this.EnableSmartCardsAndWinHello)
+                rdpConfig.RedirectSmartCards = 1;
+            if (this.EnableKeyCombinations)
+                rdpConfig.KeyboardHook = 2;
+            if (this.EnableSounds)
+                rdpConfig.AudioMode = 0;
+            if (this.EnableAudioCapture)
+                rdpConfig.AudioCaptureMode = 1;
+
+            rdpConfig.AutoReconnectionEnabled = 1;
+
+            return rdpConfig;
         }
     }
 }

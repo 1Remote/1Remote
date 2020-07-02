@@ -11,7 +11,7 @@ namespace PRM.Core.Protocol.Putty
     public class PuttyRegOptionItem
     {
 
-        protected PuttyRegOptionItem() { }
+        private PuttyRegOptionItem() { }
         public static PuttyRegOptionItem Create(PuttyRegOptionKey key, int value)
         {
             return new PuttyRegOptionItem
@@ -60,27 +60,93 @@ namespace PRM.Core.Protocol.Putty
         Answerback,
         BellWaveFile,
         WinTitle,
+        /// <summary>
+        /// Default Foreground
+        /// </summary>
         Colour0,
+        /// <summary>
+        /// Default Bold Foreground
+        /// </summary>
         Colour1,
+        /// <summary>
+        /// Default Background
+        /// </summary>
         Colour2,
+        /// <summary>
+        /// Default Bold Background
+        /// </summary>
         Colour3,
+        /// <summary>
+        /// Cursor Text
+        /// </summary>
         Colour4,
+        /// <summary>
+        /// Cursor Color
+        /// </summary>
         Colour5,
+        /// <summary>
+        ///  ANSI Black
+        /// </summary>
         Colour6,
+        /// <summary>
+        /// ANSI Black Bold
+        /// </summary>
         Colour7,
+        /// <summary>
+        /// ANSI Red
+        /// </summary>
         Colour8,
+        /// <summary>
+        /// ANSI Red Bold
+        /// </summary>
         Colour9,
+        /// <summary>
+        /// ANSI Green
+        /// </summary>
         Colour10,
+        /// <summary>
+        /// ANSI Green Bold
+        /// </summary>
         Colour11,
+        /// <summary>
+        /// ANSI Yellow
+        /// </summary>
         Colour12,
+        /// <summary>
+        /// ANSI Yellow Bold
+        /// </summary>
         Colour13,
+        /// <summary>
+        /// ANSI Blue
+        /// </summary>
         Colour14,
+        /// <summary>
+        /// ANSI Blue Bold
+        /// </summary>
         Colour15,
+        /// <summary>
+        /// ANSI Magenta
+        /// </summary>
         Colour16,
+        /// <summary>
+        /// ANSI Magenta Bold
+        /// </summary>
         Colour17,
+        /// <summary>
+        /// ANSI Cyan
+        /// </summary>
         Colour18,
+        /// <summary>
+        /// ANSI Cyan Bold
+        /// </summary>
         Colour19,
+        /// <summary>
+        /// ANSI White
+        /// </summary>
         Colour20,
+        /// <summary>
+        /// ANSI White Bold
+        /// </summary>
         Colour21,
         Wordness0,
         Wordness32,
@@ -342,7 +408,7 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.PingInterval, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.PingIntervalSecs, 0x0000003c));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TCPNoDelay, 0x00000001));
-            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TCPKeepalives, 0x00000000));
+            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TCPKeepalives, 0x0000001E)); // seconds between keepalives
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.AddressFamily, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ProxyDNS, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ProxyLocalhost, 0x00000000));
@@ -350,7 +416,7 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.ProxyPort, 0x00000050));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.UserNameFromEnvironment, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.NoPTY, 0x00000000));
-            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Compression, 0x00000000));
+            Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Compression, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TryAgent, 0x00000001));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.AgentFwd, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.GssapiFwd, 0x00000000));
@@ -415,9 +481,9 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.TermHeight, 0x00000018));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.FontIsBold, 0x00000000));
             Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.FontCharSet, 0x00000000));
-            using (Font font = new Font("Consolas", 10))
+            using (var font = new Font("Consolas", 10))
             {
-                if (font.Name == "Consolas")
+                if (font?.Name == "Consolas")
                     Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Font, "Consolas"));
                 else
                     Options.Add(PuttyRegOptionItem.Create(PuttyRegOptionKey.Font, "Courier New"));
@@ -478,19 +544,36 @@ namespace PRM.Core.Protocol.Putty
 
         public void Set(PuttyRegOptionKey key, int value)
         {
-            var item = Options.First(x => x.Key == key.ToString());
-            Debug.Assert(item != null);
-            Debug.Assert(item.ValueKind == RegistryValueKind.DWord);
-            item.Value = value;
+            if (Options.Any(x => x.Key == key.ToString()))
+            {
+                var item = Options.First(x => x.Key == key.ToString());
+                Debug.Assert(item != null);
+                Debug.Assert(item.ValueKind == RegistryValueKind.DWord);
+                item.Value = value;
+            }
+            else
+            {
+                Options.Add(PuttyRegOptionItem.Create(key, value));
+            }
         }
         public void Set(PuttyRegOptionKey key, string value)
         {
-            var item = Options.First(x => x.Key == key.ToString());
-            Debug.Assert(item != null);
-            Debug.Assert(item.ValueKind == RegistryValueKind.String);
-            item.Value = value;
+            if (Options.Any(x => x.Key == key.ToString()))
+            {
+                var item = Options.First(x => x.Key == key.ToString());
+                Debug.Assert(item != null);
+                Debug.Assert(item.ValueKind == RegistryValueKind.String);
+                item.Value = value;
+            }
+            else
+            {
+                Options.Add(PuttyRegOptionItem.Create(key, value));
+            }
         }
 
+        /// <summary>
+        /// save to reg table
+        /// </summary>
         public void Save()
         {
             string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
@@ -505,6 +588,9 @@ namespace PRM.Core.Protocol.Putty
                 }
             }
         }
+        /// <summary>
+        /// del from reg table
+        /// </summary>
         public void Del()
         {
             if (File.Exists(PuttyKeyFilePath))

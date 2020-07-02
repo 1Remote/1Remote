@@ -13,10 +13,10 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.UI.VM;
 using PRM.View;
-using Shawn.Ulits.PageHost;
+using Shawn.Ulits;
 
 namespace PRM.ViewModel
 {
@@ -26,13 +26,13 @@ namespace PRM.ViewModel
 
         public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host)
         {
-            Server = server;
+            Server = (ProtocolServerBase)server.Clone();
             Host = host;
             IsAddMode = server.GetType() == typeof(ProtocolServerNone) || server.Id == 0;
 
             // decrypt pwd
-            if(server.GetType() != typeof(ProtocolServerNone))
-                SystemConfig.GetInstance().DataSecurity.DecryptPwd(Server);
+            if (Server.GetType() != typeof(ProtocolServerNone))
+                SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -49,7 +49,7 @@ namespace PRM.ViewModel
             {
                 ProtocolSelected = ProtocolList.First(x => x.GetType() == Server.GetType());
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 ProtocolSelected = ProtocolList.First();
             }
@@ -127,8 +127,8 @@ namespace PRM.ViewModel
                     _cmdSave = new RelayCommand((o) =>
                     {
                         // encrypt pwd
-                        SystemConfig.GetInstance().DataSecurity.EncryptPwd(Server);
-                        Global.GetInstance().ServerListUpdate(Server);
+                        SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
+                        GlobalData.Instance.ServerListUpdate(Server);
                         Host.Vm.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
@@ -156,8 +156,6 @@ namespace PRM.ViewModel
 
 
 
-
-
         private RelayCommand _cmdImportFromFile;
         public RelayCommand CmdImportFromFile
         {
@@ -171,7 +169,15 @@ namespace PRM.ViewModel
                         if (dlg.ShowDialog() == true)
                         {
                             string jsonString = File.ReadAllText(dlg.FileName, Encoding.UTF8);
-                            var server = ServerFactory.GetInstance().CreateFromJsonString(jsonString);
+                            var server = ServerCreateHelper.CreateFromJsonString(jsonString);
+                            foreach (var protocolServerBase in ProtocolList)
+                            {
+                                if (server.GetType() == protocolServerBase.GetType())
+                                {
+                                    ProtocolSelected = protocolServerBase;
+                                    break;
+                                }
+                            }
                             if (server != null)
                             {
                                 server.Id = 0;
@@ -200,12 +206,15 @@ namespace PRM.ViewModel
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
                     && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                     server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
+                else if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
+                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                    server.Update(Server, typeof(ProtocolServerWithAddrPortBase));
                 // switch just hold base info
                 else
                     server.Update(Server, typeof(ProtocolServerBase));
             }
 
-            
+
             switch (server)
             {
                 case ProtocolServerRDP _:
@@ -213,6 +222,9 @@ namespace PRM.ViewModel
                     break;
                 case ProtocolServerSSH _:
                     ProtocolEditControl = new ProtocolServerSSHForm(server);
+                    break;
+                case ProtocolServerTelnet _:
+                    ProtocolEditControl = new ProtocolServerTelnetForm(server);
                     break;
                 default:
                     throw new NotImplementedException();

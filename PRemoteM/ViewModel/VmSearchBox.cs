@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using PRM.Core;
@@ -18,10 +19,7 @@ namespace PRM.ViewModel
         public ProtocolServerBase Server
         {
             get => _server;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(Server), ref _server, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
         }
 
         public ProtocolServerBaseInSearchBox(ProtocolServerBase psb)
@@ -42,10 +40,7 @@ namespace PRM.ViewModel
         public object DispNameControl
         {
             get => _dispNameControl;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(DispNameControl), ref _dispNameControl, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(DispNameControl), ref _dispNameControl, value);
         }
 
 
@@ -54,12 +49,20 @@ namespace PRM.ViewModel
         public object SubTitleControl
         {
             get => _subTitleControl;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(SubTitleControl), ref _subTitleControl, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(SubTitleControl), ref _subTitleControl, value);
+        }
+    }
+
+    public class ActionItem : NotifyPropertyChangedBase
+    {
+        private string _actionName = "";
+        public string ActionName
+        {
+            get => _actionName;
+            set => SetAndNotifyIfChanged(nameof(ActionName), ref _actionName, value);
         }
 
+        public Action Run;
     }
 
 
@@ -84,18 +87,58 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(Servers), ref _servers, value);
+                if (Servers.Count > 0 && _selectedServerIndex >= 0 && _selectedServerIndex < Servers.Count)
+                {
+                    SelectedServer = Servers[_selectedServerIndex];
+                }
+                else
+                {
+                    SelectedServer = null;
+                }
             }
         }
 
 
+        private ProtocolServerBaseInSearchBox _selectedServer;
+        public ProtocolServerBaseInSearchBox SelectedServer
+        {
+            get => _selectedServer;
+            private set => SetAndNotifyIfChanged(nameof(SelectedServer), ref _selectedServer, value);
+        }
 
         private int _selectedServerIndex;
         public int SelectedServerIndex
         {
             get => _selectedServerIndex;
-            set => SetAndNotifyIfChanged(nameof(SelectedServerIndex), ref _selectedServerIndex, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(SelectedServerIndex), ref _selectedServerIndex, value);
+                if (Servers.Count > 0 && _selectedServerIndex >= 0 && _selectedServerIndex < Servers.Count)
+                {
+                    SelectedServer = Servers[_selectedServerIndex];
+                }
+                else
+                {
+                    SelectedServer = null;
+                }
+            }
         }
 
+
+
+        private ObservableCollection<ActionItem> _actions = new ObservableCollection<ActionItem>();
+        public ObservableCollection<ActionItem> Actions
+        {
+            get => _actions;
+            set => SetAndNotifyIfChanged(nameof(Actions), ref _actions, value);
+        }
+
+        private int _selectedActionIndex;
+        public int SelectedActionIndex
+        {
+            get => _selectedActionIndex;
+            set => SetAndNotifyIfChanged(nameof(SelectedActionIndex), ref _selectedActionIndex, value);
+        }
 
 
         private string _dispNameFilter;
@@ -113,18 +156,99 @@ namespace PRM.ViewModel
 
 
 
-        private bool _PopupIsOpen = true;
-        public bool PopupIsOpen
+        private bool _popupSelectionsIsOpen = false;
+        public bool PopupSelectionsIsOpen
         {
-            get => _PopupIsOpen;
-            set => SetAndNotifyIfChanged(nameof(PopupIsOpen), ref _PopupIsOpen, value);
+            get => _popupSelectionsIsOpen;
+            set => SetAndNotifyIfChanged(nameof(PopupSelectionsIsOpen), ref _popupSelectionsIsOpen, value);
         }
 
 
 
 
+        private bool _popupActionsIsOpen = false;
+        public bool PopupActionsIsOpen
+        {
+            get => _popupActionsIsOpen;
+            set => SetAndNotifyIfChanged(nameof(PopupActionsIsOpen), ref _popupActionsIsOpen, value);
+        }
 
 
+
+        // TODO OnLanguageChanged
+
+
+        public void ShowActionsList()
+        {
+            var actions = new ObservableCollection<ActionItem>();
+            actions.Add(new ActionItem()
+            {
+                ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_conn"),
+                Run = () =>
+                {
+                    Debug.Assert(SelectedServer?.Server != null);
+                    GlobalEventHelper.OnServerConnect?.Invoke(SelectedServer.Server.Id);
+                },
+            });
+            actions.Add(new ActionItem()
+            {
+                ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_edit"),
+                Run = () =>
+                {
+                    Debug.Assert(SelectedServer?.Server != null);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedServer.Server.Id, false);
+                },
+            });
+            actions.Add(new ActionItem()
+            {
+                ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_duplicate"),
+                Run = () =>
+                {
+                    Debug.Assert(SelectedServer?.Server != null);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedServer.Server.Id, true);
+                },
+            });
+            if (SelectedServer.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+            {
+                actions.Add(new ActionItem()
+                {
+                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_address"),
+                    Run = () =>
+                    {
+                        if (SelectedServer.Server is ProtocolServerWithAddrPortBase server)
+                            Clipboard.SetText($"{server.Address}:{server.GetPort()}");
+                    },
+                });
+            }
+            if (SelectedServer.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            {
+                actions.Add(new ActionItem()
+                {
+                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_username"),
+                    Run = () =>
+                    {
+                        if (SelectedServer.Server is ProtocolServerWithAddrPortUserPwdBase server)
+                            Clipboard.SetText(server.UserName);
+                    },
+                });
+            }
+            if (SelectedServer.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            {
+                actions.Add(new ActionItem()
+                {
+                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_password"),
+                    Run = () =>
+                    {
+                        if (SelectedServer.Server is ProtocolServerWithAddrPortUserPwdBase server)
+                            Clipboard.SetText(server.GetDecryptPassWord());
+                    },
+                });
+            }
+            Actions = actions;
+            PopupSelectionsIsOpen = false;
+            PopupActionsIsOpen = true;
+            SelectedActionIndex = 0;
+        }
 
 
 
@@ -141,7 +265,7 @@ namespace PRM.ViewModel
                     keyWordIsMatch.Add(false);
 
                 // match keyword
-                foreach (var item in Global.GetInstance().ServerList.Where(x => x.GetType() != typeof(ProtocolServerNone)))
+                foreach (var item in GlobalData.Instance.ServerList.Where(x => x.GetType() != typeof(ProtocolServerNone)))
                 {
                     Debug.Assert(!string.IsNullOrEmpty(item.ClassVersion));
                     Debug.Assert(!string.IsNullOrEmpty(item.Protocol));
@@ -235,7 +359,7 @@ namespace PRM.ViewModel
             var odometer = tmp.OrderByDescending(x => x.Server.LastConnTime);
 
             if (!odometer.Any())
-                PopupIsOpen = false;
+                PopupSelectionsIsOpen = false;
             else
             {
                 foreach (var searchBox in odometer)
@@ -243,7 +367,7 @@ namespace PRM.ViewModel
                     Servers.Add(searchBox);
                 }
                 SelectedServerIndex = 0;
-                PopupIsOpen = true;
+                PopupSelectionsIsOpen = true;
             }
         }
     }

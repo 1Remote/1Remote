@@ -11,7 +11,6 @@ namespace PRM.Core.Ulits.DragablzTab
     {
         public TabItemViewModel()
         {
-            // todo use dynamic resource
             _markColorHex = "#102b3e";
         }
 
@@ -38,22 +37,17 @@ namespace PRM.Core.Ulits.DragablzTab
         }
         
         private bool _canResizeNow = true;
+
         public bool CanResizeNow
         {
             get => _canResizeNow;
             set => SetAndNotifyIfChanged(nameof(CanResizeNow), ref _canResizeNow, value);
         }
 
-        //private bool _isSelected;
-        //public bool IsSelected
-        //{
-        //    get => _isSelected;
-        //    set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
-        //}
-
-
 
         private string _markColorHex;
+        /// <summary>
+        /// tab title mark color        /// </summary>
         public string MarkColorHex
         {
             get => _markColorHex;

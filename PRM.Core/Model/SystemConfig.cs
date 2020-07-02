@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -23,6 +24,7 @@ namespace PRM.Core.Model
             }
             return uniqueInstance;
         }
+        public static SystemConfig Instance => GetInstance();
         #endregion
 
 
@@ -30,30 +32,56 @@ namespace PRM.Core.Model
         /// <summary>
         /// Must init before app start in app.cs
         /// </summary>
-        public static void Create(ResourceDictionary appResourceDictionary)
+        public static void Init()
         {
             if (uniqueInstance == null)
                 lock (InstanceLock)
                 {
                     if (uniqueInstance == null)
                     {
-                        uniqueInstance = new SystemConfig(appResourceDictionary);
+                        uniqueInstance = new SystemConfig();
                     }
                 }
         }
-
+#if DEBUG
+        public const string AppName = "PRemoteM_Debug";
+        public const string AppFullName = "PersonalRemoteManager_Debug";
+#else
         public const string AppName = "PRemoteM";
         public const string AppFullName = "PersonalRemoteManager";
+#endif
+        public static Ini Ini { get; set; }
+        public static ResourceDictionary AppResourceDictionary { get; set; }
 
-        public readonly Ini Ini;
-        private SystemConfig(ResourceDictionary appResourceDictionary)
+
+
+
+        private SystemConfig()
         {
-            Ini = new Ini(AppName + ".ini");
-            Language = new SystemConfigLanguage(appResourceDictionary, Ini);
-            General = new SystemConfigGeneral(Ini);
-            QuickConnect = new SystemConfigQuickConnect(Ini);
-            DataSecurity = new SystemConfigDataSecurity(Ini);
+            GlobalEventHelper.OnNewVersionRelease += (s, s1) =>
+            {
+                this.NewVersion = s;
+                this.NewVersionUrl = s1;
+            };
+            var uc = new UpdateChecker();
+            uc.CheckUpdateAsync();
         }
+
+#region Update
+        private string _newVersion = "";
+        public string NewVersion
+        {
+            get => _newVersion;
+            set => SetAndNotifyIfChanged(nameof(NewVersion), ref _newVersion, value);
+        }
+
+        private string _newVersionUrl = "";
+        public string NewVersionUrl
+        {
+            get => _newVersionUrl;
+            set => SetAndNotifyIfChanged(nameof(NewVersionUrl), ref _newVersionUrl, value);
+        }
+#endregion
 
 
         public SystemConfigLocality Locality = new SystemConfigLocality();
@@ -63,7 +91,7 @@ namespace PRM.Core.Model
         public SystemConfigLanguage Language
         {
             get => _language;
-            protected set => SetAndNotifyIfChanged(nameof(Language), ref _language, value);
+            set => SetAndNotifyIfChanged(nameof(Language), ref _language, value);
         }
 
 
@@ -74,7 +102,6 @@ namespace PRM.Core.Model
             get => _general;
             set => SetAndNotifyIfChanged(nameof(General), ref _general, value);
         }
-
 
 
 
@@ -93,6 +120,16 @@ namespace PRM.Core.Model
         {
             get => _dataSecurity;
             set => SetAndNotifyIfChanged(nameof(DataSecurity), ref _dataSecurity, value);
+        }
+
+
+
+
+        private SystemConfigTheme _theme = null;
+        public SystemConfigTheme Theme
+        {
+            get => _theme;
+            set => SetAndNotifyIfChanged(nameof(Theme), ref _theme, value);
         }
     }
 

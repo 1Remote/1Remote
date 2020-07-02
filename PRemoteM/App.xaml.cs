@@ -1,67 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
+using System.IO.Pipes;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM;
+using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Ulits;
 using PRM.Model;
 using PRM.View;
 using Shawn.Ulits;
-using SQLite;
 
-namespace PersonalRemoteManager
+namespace PRM
 {
-    // 服务端可以被代理调用的类
-    internal class OneServiceRemoteProvider : MarshalByRefObject
-    {
-        public void Activate()
-        {
-            if (App.Window != null)
-            {
-                App.Window.ActivateMe();
-            }
-        }
-    }
-
-
-
-    /// <summary>
-    /// App.xaml 的交互逻辑
-    /// </summary>
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
-        public static MainWindow Window  { get; private set; } = null;
-        public static SearchBoxWindow SearchBoxWindow { get; private set; }  = null;
+        public static MainWindow Window { get; private set; } = null;
+        public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEBUG
-        private const string ServiceIpcPortName = "Ipc_DEBUG_VShawn_present_singlex@foxmail.com";
-        private const string ServiceIpcRoute = "PRemoteM_DEBUG";
+        private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
 #else
-        private const string ServiceIpcPortName = "Ipc_VShawn_present_singlex@foxmail.com";
-        private const string ServiceIpcRoute = "PRemoteM";
+        private const string PipeName = "PRemoteM_singlex@foxmail.com";
 #endif
 
-        private void App_OnStartup(object sender, StartupEventArgs e)
+        private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
             try
             {
+                {
+                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                    if (!Directory.Exists(appDateFolder))
+                        Directory.CreateDirectory(appDateFolder);
+                    var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+                    SimpleLogHelper.LogFileName = logFilePath;
+                }
+
                 #region single-instance app
                 var startupMode = PRM.Core.Ulits.StartupMode.Normal;
-                if (e.Args.Length > 0)
+                if (startupEvent.Args.Length > 0)
                 {
-                    System.Enum.TryParse(e.Args[0], out startupMode);
+                    System.Enum.TryParse(startupEvent.Args[0], out startupMode);
                 }
                 if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
                 {
@@ -73,76 +56,129 @@ namespace PersonalRemoteManager
                     SetSelfStartingHelper.UnsetSelfStart();
                     Environment.Exit(0);
                 }
-#if DEBUG
-                _singleAppMutex = new Mutex(true, "PRemoteM_DEBUG", out var isFirst);
-#else
-                _singleAppMutex = new Mutex(true, "PRemoteM", out var isFirst);
-#endif
+                _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
                 if (!isFirst)
                 {
-                    var oneRemoteProvider = (OneServiceRemoteProvider)Activator.GetObject(typeof(OneServiceRemoteProvider), $"ipc://{ServiceIpcPortName}/{ServiceIpcRoute}");
-                    oneRemoteProvider.Activate();
+                    try
+                    {
+                        var client = new NamedPipeClientStream(PipeName);
+                        client.Connect();
+                        StreamReader reader = new StreamReader(client);
+                        StreamWriter writer = new StreamWriter(client);
+                        writer.WriteLine("ActivateMe");
+                        writer.Flush();
+                        client.Dispose();
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Warning(e);
+                    }
+
                     Environment.Exit(0);
                 }
                 else
                 {
-                    // ipc server init
-                    var remoteProvider = new OneServiceRemoteProvider();
-                    RemotingServices.Marshal(remoteProvider, ServiceIpcRoute);
-                    ChannelServices.RegisterChannel(new IpcChannel(ServiceIpcPortName), false);
+                    Task.Factory.StartNew(() =>
+                    {
+                        NamedPipeServerStream server = null;
+                        while (true)
+                        {
+                            server?.Dispose();
+                            server = new NamedPipeServerStream(PipeName);
+                            SimpleLogHelper.Debug("NamedPipeServerStream.WaitForConnection");
+                            server.WaitForConnection();
+
+                            try
+                            {
+                                var reader = new StreamReader(server);
+                                var line = reader.ReadLine();
+                                if (!string.IsNullOrEmpty(line))
+                                {
+                                    SimpleLogHelper.Info(line);
+                                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
+                                    if (line == "ActivateMe")
+                                    {
+                                        if (App.Window != null)
+                                        {
+                                            Dispatcher.Invoke(() =>
+                                            {
+                                                if (App.Window.WindowState == WindowState.Minimized)
+                                                    App.Window.WindowState = WindowState.Normal;
+                                                App.Window.ActivateMe();
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                SimpleLogHelper.Warning(e);
+                            }
+                        }
+                    });
                 }
                 #endregion
 
-                
+
 #if DEBUG
                 Shawn.Ulits.ConsoleManager.Show();
 #endif
 
                 #region system check & init
-                
-                // config create instance (settings & langs)
-                SystemConfig.Create(this.Resources);
-                // global init
-                Global.GetInstance().OnServerConn += WindowPool.ShowRemoteHost;
 
 
-                // run check
+                #region Init
+                {
+                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                    if (!Directory.Exists(appDateFolder))
+                        Directory.CreateDirectory(appDateFolder);
+                    SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
+                    var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
+                    var ini = new Ini(iniPath);
+                    //if (!File.Exists(iniPath))
+                    //{
+                    //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
+                    //}
+                    var language = new SystemConfigLanguage(this.Resources, ini);
+                    var general = new SystemConfigGeneral(ini);
+                    var quickConnect = new SystemConfigQuickConnect(ini);
+                    var theme = new SystemConfigTheme(ini);
+                    var dataSecurity = new SystemConfigDataSecurity(ini);
 
-                // check if Db is ok
+                    //if (!File.Exists(dataSecurity.DbPath))
+                    //{
+                    //    // TODO db is not existed, then tell our user to create new one or select a new one.
+                    //}
+
+                    // config create instance (settings & langs)
+                    SystemConfig.Init();
+                    SystemConfig.Instance.General = general;
+                    SystemConfig.Instance.Language = language;
+                    SystemConfig.Instance.QuickConnect = quickConnect;
+                    SystemConfig.Instance.DataSecurity = dataSecurity;
+                    SystemConfig.Instance.Theme = theme;
+
+                    // server data holder init.
+                    GlobalData.Init();
+
+                    // remote window pool init.
+                    RemoteWindowPool.Init();
+                }
+                #endregion
+
+                // kill putty process
+                foreach (var process in Process.GetProcessesByName(PuttyHost.PuttyExeName.ToLower().Replace(".exe", "")))
                 {
                     try
                     {
-                        Server.Init();
+                        process.Kill();
                     }
-                    catch (Exception exception)
+                    catch
                     {
-                        // todo 跳转到数据库配置页面
-                        throw;
                     }
                 }
 
-                // check if Rsa is ok
-                var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
-                switch (ret)
-                {
-                    case SystemConfigDataSecurity.ERsaStatues.Ok:
-                        break;
-                    default:
-                        switch (ret)
-                        {
-                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                                break;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                break;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                break;
-                        }
-                        // todo 跳转到 RSA 配置页面
-                        break;
-                }
+
 
                 #endregion
 
@@ -154,9 +190,24 @@ namespace PersonalRemoteManager
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
                     MainWindow = Window;
                     Window.Closed += (o, args) => { AppOnClose(); };
-                    if (!SystemConfig.GetInstance().General.AppStartMinimized)
+                    if (!SystemConfig.Instance.General.AppStartMinimized)
                     {
                         ActivateWindow();
+                    }
+
+                    // check if Db is ok
+                    var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+                    if (!res.Item1)
+                    {
+                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
+                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                        ActivateWindow();
+                        Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
+                    }
+                    else
+                    {
+                        // load data
+                        GlobalData.Instance.ServerListUpdate();
                     }
                 }
 
@@ -168,15 +219,10 @@ namespace PersonalRemoteManager
                 // quick search init 
                 InitQuickSearch();
                 #endregion
-
-                
-                // load data
-                Global.GetInstance().ReloadServers();
             }
             catch (Exception ex)
             {
-                SimpleLogHelper.Error(ex.Message);
-                SimpleLogHelper.Error(ex.StackTrace);
+                SimpleLogHelper.Fatal(ex.Message, ex.StackTrace);
 #if DEBUG
                 MessageBox.Show(ex.Message);
                 MessageBox.Show(ex.StackTrace);
@@ -197,13 +243,13 @@ namespace PersonalRemoteManager
                 TaskTrayIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = SystemConfig.AppName,
-                    Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name),
+                    Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico")).Stream),
                     //BalloonTipText = "TXT:正在后台运行...",
                     BalloonTipText = "",
                     Visible = true
                 };
                 ReloadTaskTrayContextMenu();
-                SystemConfig.GetInstance().Language.OnLanguageChanged += ReloadTaskTrayContextMenu;
+                GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
                 TaskTrayIcon.MouseDoubleClick += (sender, e) =>
                 {
                     if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -219,27 +265,26 @@ namespace PersonalRemoteManager
             // rebuild TaskTrayContextMenu while language changed
             if (TaskTrayIcon != null)
             {
-                //System.Windows.Forms.MenuItem version = new System.Windows.Forms.MenuItem("Ver:" + Version);
                 var title = new System.Windows.Forms.MenuItem(SystemConfig.AppName);
                 title.Click += (sender, args) =>
                 {
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
                 };
                 var @break = new System.Windows.Forms.MenuItem("-");
-                var link_how_to_use = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("about_page_how_to_use"));
+                var link_how_to_use = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_how_to_use"));
                 link_how_to_use.Click += (sender, args) =>
                 {
-                    // TODO WIKI
-                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
                 };
-                var link_feedback = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("about_page_feedback"));
+                var link_feedback = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_feedback"));
                 link_feedback.Click += (sender, args) =>
                 {
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
                 };
-                var exit = new System.Windows.Forms.MenuItem(SystemConfig.GetInstance().Language.GetText("button_exit"));
-                exit.Click += (sender, args) => Window.Close();
+                var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("button_exit"));
+                exit.Click += (sender, args) => Window.CloseMe();
                 var child = new System.Windows.Forms.MenuItem[] { title,@break,link_how_to_use,link_feedback, exit };
+                //var child = new System.Windows.Forms.MenuItem[] { exit };
                 TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
             }
         }

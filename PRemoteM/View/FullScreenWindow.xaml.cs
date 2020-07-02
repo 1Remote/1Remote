@@ -23,12 +23,10 @@ namespace PRM.View
     /// </summary>
     public partial class FullScreenWindow : Window
     {
-        public ProtocolHostBase ProtocolHostBase { get; private set; }= null;
-        public FullScreenWindow(ProtocolHostBase content)
+        public ProtocolHostBase ProtocolHostBase { get; private set; } = null;
+        public FullScreenWindow()
         {
-            Debug.Assert(content != null);
             InitializeComponent();
-            SetProtocolHost(content);
             Loaded += (sender, args) =>
             {
                 this.Content = ProtocolHostBase;
@@ -37,13 +35,14 @@ namespace PRM.View
             {
                 if (ProtocolHostBase != null)
                 {
-                    WindowPool.DelProtocolHost(ProtocolHostBase.ProtocolServer.Id);
+                    RemoteWindowPool.Instance.DelProtocolHost(ProtocolHostBase.ConnectionId);
                 }
             };
         }
 
         public void SetProtocolHost(ProtocolHostBase content)
         {
+            Debug.Assert(content != null);
             this.Content = null;
             ProtocolHostBase = content;
             this.Title = ProtocolHostBase.ProtocolServer.DispName + " - " + ProtocolHostBase.ProtocolServer.SubTitle;
@@ -52,5 +51,7 @@ namespace PRM.View
             if (IsLoaded)
                 this.Content = content;
         }
+
+        public string LastTabToken = "";
     }
 }

@@ -8,14 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
-using System.Threading;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits;
+using SQLite;
 
 namespace PRM.Core.Model
 {
@@ -33,15 +35,50 @@ namespace PRM.Core.Model
             }
         }
 
-        public enum ERsaStatues
+        /// <summary>
+        /// Check if db is existed and writable
+        /// </summary>
+        /// <returns>
+        /// Tuple(is decrypted, error info)
+        /// </returns>
+        private static Tuple<bool, string> CheckIfDbIsWritable()
         {
-            Ok,
-            CanNotFindPrivateKey,
-            PrivateKeyContentError,
-            PrivateKeyIsNotMatch,
+            var path = SystemConfig.Instance.DataSecurity.DbPath;
+            try
+            {
+                var fi = new FileInfo(SystemConfig.Instance.DataSecurity.DbPath);
+                if (!Directory.Exists(fi.DirectoryName))
+                    Directory.CreateDirectory(fi.DirectoryName);
+                if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                {
+                    Server.Init();
+                    return new Tuple<bool, string>(true, "");
+                }
+                else
+                {
+                    return new Tuple<bool, string>(false, "TXT:db permission denied:" + " " + path);
+                }
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                SimpleLogHelper.Error(e.StackTrace);
+                return new Tuple<bool, string>(false, e.Message);
+            }
         }
-        public ERsaStatues ValidateRsa(string privateKeyPath = "")
+
+        /// <summary>
+        /// Check if db is(can) decrypted by the private key
+        /// </summary>
+        /// <returns>
+        /// Tuple(is decrypted, error info)
+        /// </returns>
+        public Tuple<bool, string> CheckIfDbIsOk(string privateKeyPath = "")
         {
+            var c1 = CheckIfDbIsWritable();
+            if (!c1.Item1)
+                return c1;
+
             var _privateKeyPath = DB.Config.RSA_PrivateKeyPath;
             if (!string.IsNullOrEmpty(privateKeyPath))
                 _privateKeyPath = privateKeyPath;
@@ -50,27 +87,27 @@ namespace PRM.Core.Model
             if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey)
                 && string.IsNullOrEmpty(_privateKeyPath)
                 && string.IsNullOrEmpty(DB.Config.RSA_SHA1))
-                return ERsaStatues.Ok;
+                return new Tuple<bool, string>(true, "");
 
             if (!File.Exists(_privateKeyPath))
-                return ERsaStatues.CanNotFindPrivateKey;
+                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
 
-            com.github.xiangyuecn.rsacsharp.RSA rsaPk = null;
-            com.github.xiangyuecn.rsacsharp.RSA rsaPpk = null;
+            RSA rsaPk = null;
+            RSA rsaPpk = null;
 
             try
             {
-                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
+                rsaPpk = new RSA(File.ReadAllText(_privateKeyPath), true);
             }
             catch (Exception)
             {
-                return ERsaStatues.PrivateKeyContentError;
+                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
 
             // make sure public key is PEM format key
             try
             {
-                rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(DB.Config.RSA_PublicKey, true);
+                rsaPk = new RSA(DB.Config.RSA_PublicKey, true);
             }
             catch (Exception)
             {
@@ -78,14 +115,13 @@ namespace PRM.Core.Model
                 if (rsaPpk.Verify("SHA1", DB.Config.RSA_SHA1, SystemConfig.AppName))
                 {
                     DB.Config.RSA_PublicKey = rsaPpk.ToPEM_PKCS1(true);
-                    rsaPk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
-                    return ERsaStatues.Ok;
+                    rsaPk = new RSA(File.ReadAllText(_privateKeyPath), true);
                 }
             }
             // RSA private key is match public key?
             try
             {
-                rsaPpk = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(_privateKeyPath), true);
+                rsaPpk = new RSA(File.ReadAllText(_privateKeyPath), true);
                 var sha1 = rsaPpk.Sign("SHA1", SystemConfig.AppName);
                 if (!rsaPk.Verify("SHA1", sha1, SystemConfig.AppName))
                 {
@@ -96,22 +132,35 @@ namespace PRM.Core.Model
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                return ERsaStatues.PrivateKeyIsNotMatch;
+                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
-
-            return ERsaStatues.Ok;
+            return new Tuple<bool, string>(true, "");
         }
 
-        private string _dbPath = "./PRemoteM.db";
+        private string _dbPath = null;
         public string DbPath
         {
-            get => _dbPath;
+            get
+            {
+                if (string.IsNullOrEmpty(_dbPath))
+                {
+                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                    if (!Directory.Exists(appDateFolder))
+                        Directory.CreateDirectory(appDateFolder);
+                    _dbPath = Path.Combine(appDateFolder, "PRemoteM.db");
+                    Save();
+                }
+                return _dbPath;
+            }
             set
             {
-                SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
-                Rsa = null;
-                RaisePropertyChanged(nameof(RsaPublicKey));
-                RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                lock (_lockerForRsa)
+                {
+                    SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
+                    Rsa = null;
+                    RaisePropertyChanged(nameof(RsaPublicKey));
+                    RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                }
             }
         }
 
@@ -120,41 +169,24 @@ namespace PRM.Core.Model
         public string RsaPrivateKeyPath
         {
             get => DB.Config.RSA_PrivateKeyPath;
-            set
-            {
-                DB.Config.RSA_PrivateKeyPath = value;
-                Rsa = null;
-            }
         }
 
-        private com.github.xiangyuecn.rsacsharp.RSA _rsa = null;
-        public com.github.xiangyuecn.rsacsharp.RSA Rsa
+        private RSA _rsa = null;
+        public RSA Rsa
         {
             set => _rsa = value;
             get
             {
                 if (_rsa == null)
                 {
-                    var ret = ValidateRsa();
-                    switch (ret)
+                    var ret = CheckIfDbIsOk();
+                    if (!ret.Item1)
                     {
-                        case ERsaStatues.Ok:
-                            break;
-                        case ERsaStatues.CanNotFindPrivateKey:
-                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                            break;
-                        case ERsaStatues.PrivateKeyContentError:
-                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                            break;
-                        case ERsaStatues.PrivateKeyIsNotMatch:
-                            throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        throw new Exception(ret.Item2);
                     }
                     if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         return null;
-                    _rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
+                    _rsa = new RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
                 }
                 return _rsa;
             }
@@ -163,14 +195,23 @@ namespace PRM.Core.Model
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
         /// </summary>
-        public Action<int, int> OnRsaProgress = null;
+        private void OnRsaProgress(int now, int total)
+        {
+            GlobalEventHelper.OnLongTimeProgress?.Invoke(now, total, SystemConfig.Instance.Language.GetText("system_options_data_security_info_data_processing"));
+        }
+
+
+
         private readonly object _lockerForRsa = new object();
         public const string PrivateKeyFileExt = ".prpk";
         public void GenRsa()
         {
-            if (ValidateRsa() != ERsaStatues.Ok)
+            // validate rsa key
+            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+            if (!res.Item1)
             {
-                throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                return;
             }
 
             if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -184,54 +225,69 @@ namespace PRM.Core.Model
                     {
                         if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            var protocolServerBases = Global.GetInstance().ServerList;
+                            var protocolServerBases = GlobalData.Instance.ServerList;
                             int max = protocolServerBases.Count() * 3 + 2;
                             int val = 0;
 
-                            var dlg = new SaveFileDialog
+                            var dlg = new OpenFileDialog
                             {
-                                Title = "TXT: 选择私钥放置位置",
-                                Filter = $"PRM RSA private key|*{Core.Model.SystemConfigDataSecurity.PrivateKeyFileExt}",
-                                FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") +
-                                           Core.Model.SystemConfigDataSecurity.PrivateKeyFileExt,
+                                Title = SystemConfig.Instance.Language.GetText("system_options_data_security_rsa_encrypt_dialog_title"),
+                                Filter = $"PRM RSA private key|*{PrivateKeyFileExt}",
+                                FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                                CheckFileExists = false,
                             };
                             if (dlg.ShowDialog() == true)
                             {
-                                OnRsaProgress?.Invoke(val, max);
+                                OnRsaProgress(val, max);
                                 // database back up
                                 Debug.Assert(File.Exists(DbPath));
                                 File.Copy(_dbPath, _dbPath + ".back", true);
-                                OnRsaProgress?.Invoke(++val, max);
+                                OnRsaProgress(++val, max);
 
-
-                                // gen rsa
-                                var rsa = new com.github.xiangyuecn.rsacsharp.RSA(2048);
-                                OnRsaProgress?.Invoke(++val, max);
                                 Rsa = null;
-
-                                // save key
+                                RSA rsa = null;
+                                // try read rsa
+                                if (File.Exists(dlg.FileName))
+                                {
+                                    try
+                                    {
+                                        rsa = new RSA(File.ReadAllText(dlg.FileName), true);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        rsa = null;
+                                    }
+                                }
+                                // gen rsa
+                                if (rsa == null)
+                                {
+                                    rsa = new RSA(2048);
+                                    // save key file
+                                    File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
+                                }
+                                OnRsaProgress(++val, max);
+                                
+                                // key write to db
                                 DB.Config.RSA_SHA1 = rsa.Sign("SHA1", SystemConfig.AppName);
                                 DB.Config.RSA_PublicKey = rsa.ToPEM_PKCS1(true);
                                 DB.Config.RSA_PrivateKeyPath = dlg.FileName;
-                                File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
                                 RaisePropertyChanged(nameof(RsaPublicKey));
                                 RaisePropertyChanged(nameof(RsaPrivateKeyPath));
-
 
                                 // encrypt old data
                                 foreach (var psb in protocolServerBases)
                                 {
                                     EncryptPwd(psb);
-                                    OnRsaProgress?.Invoke(++val, max);
+                                    OnRsaProgress(++val, max);
                                     Server.AddOrUpdate(psb);
-                                    OnRsaProgress?.Invoke(++val, max);
+                                    OnRsaProgress(++val, max);
                                 }
 
                                 // del back up
                                 File.Delete(_dbPath + ".back");
 
                                 // done
-                                OnRsaProgress?.Invoke(0, 0);
+                                OnRsaProgress(0, 0);
                             }
                         }
                     }
@@ -242,22 +298,11 @@ namespace PRM.Core.Model
         public void CleanRsa()
         {
             // validate rsa key
-            var ret = ValidateRsa();
-            switch (ret)
+            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+            if (!res.Item1)
             {
-                case ERsaStatues.Ok:
-                    break;
-                case ERsaStatues.CanNotFindPrivateKey:
-                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                    break;
-                case ERsaStatues.PrivateKeyContentError:
-                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                    break;
-                case ERsaStatues.PrivateKeyIsNotMatch:
-                    throw new Exception(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                return;
             }
 
             if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
@@ -268,28 +313,27 @@ namespace PRM.Core.Model
                     {
                         if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            OnRsaProgress?.Invoke(0, 1);
-                            var protocolServerBases = Global.GetInstance().ServerList;
+                            OnRsaProgress(0, 1);
+                            var protocolServerBases = GlobalData.Instance.ServerList;
                             int max = protocolServerBases.Count() * 3 + 2 + 1;
                             int val = 1;
-                            OnRsaProgress?.Invoke(val, max);
+                            OnRsaProgress(val, max);
 
                             // database back up
                             Debug.Assert(File.Exists(DbPath));
                             File.Copy(_dbPath, _dbPath + ".back", true);
-                            OnRsaProgress?.Invoke(++val, max);
+                            OnRsaProgress(++val, max);
 
                             // keep pld rsa
-                            var ppkPath = DB.Config.RSA_PrivateKeyPath;
-                            //var rsa = new com.github.xiangyuecn.rsacsharp.RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
-
+                            //var ppkPath = DB.Config.RSA_PrivateKeyPath;
+                            //var rsa = new RSA(File.ReadAllText(DB.Config.RSA_PrivateKeyPath), true);
 
                             // decrypt pwd
                             Debug.Assert(Rsa != null);
                             foreach (var psb in protocolServerBases)
                             {
                                 DecryptPwd(psb);
-                                OnRsaProgress?.Invoke(++val, max);
+                                OnRsaProgress(++val, max);
                             }
 
                             // remove rsa keys from db
@@ -297,26 +341,26 @@ namespace PRM.Core.Model
                             DB.Config.RSA_SHA1 = "";
                             DB.Config.RSA_PublicKey = "";
                             DB.Config.RSA_PrivateKeyPath = "";
+                            RaisePropertyChanged(nameof(RsaPublicKey));
+                            RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                             
                             // update
                             foreach (var psb in protocolServerBases)
                             {
                                 Server.AddOrUpdate(psb);
-                                OnRsaProgress?.Invoke(++val, max);
+                                OnRsaProgress(++val, max);
                             }
 
 
-                            RaisePropertyChanged(nameof(RsaPublicKey));
-                            RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
                             // del key
-                            File.Delete(ppkPath);
+                            //File.Delete(ppkPath);
 
                             // del back up
                             File.Delete(_dbPath + ".back");
 
                             // done
-                            OnRsaProgress?.Invoke(0, 0);
+                            OnRsaProgress(0, 0);
                         }
                     }
                 });
@@ -328,19 +372,19 @@ namespace PRM.Core.Model
         {
             var rsa = Rsa;
             if (rsa != null)
-                switch (server)
+            {
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
-                    case ProtocolServerRDP rdp:
-                        Debug.Assert(rsa.DecodeOrNull(rdp.Password) == null);
-                        rdp.Password = rsa.Encode(rdp.Password);
-                        break;
-                    case ProtocolServerSSH ssh:
-                        Debug.Assert(rsa.DecodeOrNull(ssh.Password) == null);
-                        ssh.Password = rsa.Encode(ssh.Password);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                    var s = (ProtocolServerWithAddrPortUserPwdBase) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.Password) == null);
+                    s.Password = rsa.Encode(s.Password);
                 }
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
+                {
+                    var s = (ProtocolServerSSH) server;
+                    s.PrivateKey = rsa.Encode(s.PrivateKey);
+                }
+            }
         }
 
         public void DecryptPwd(ProtocolServerBase server)
@@ -348,18 +392,17 @@ namespace PRM.Core.Model
             var rsa = Rsa;
             if (rsa != null)
             {
-                switch (server)
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
-                    case ProtocolServerRDP rdp:
-                        Debug.Assert(rsa.DecodeOrNull(rdp.Password) != null);
-                        rdp.Password = rsa.DecodeOrNull(rdp.Password);
-                        break;
-                    case ProtocolServerSSH ssh:
-                        Debug.Assert(rsa.DecodeOrNull(ssh.Password) != null);
-                        ssh.Password = rsa.DecodeOrNull(ssh.Password);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                    var s = (ProtocolServerWithAddrPortUserPwdBase) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.Password) != null);
+                    s.Password = rsa.DecodeOrNull(s.Password);
+                }
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
+                {
+                    var s = (ProtocolServerSSH) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.PrivateKey) != null);
+                    s.PrivateKey = rsa.DecodeOrNull(s.PrivateKey);
                 }
             }
         }
@@ -374,20 +417,17 @@ namespace PRM.Core.Model
                 server.GroupName = rsa.Encode(server.GroupName);
                 switch (server)
                 {
-                    case ProtocolServerNone _:
-                        break;
                     case ProtocolServerRDP _:
                     case ProtocolServerSSH _:
+                    case ProtocolServerWithAddrPortUserPwdBase _:
                         var p = (ProtocolServerWithAddrPortUserPwdBase) server;
                         if (!string.IsNullOrEmpty(p.UserName))
                             p.UserName = rsa.Encode(p.UserName);
                         if (!string.IsNullOrEmpty(p.Address))
                             p.Address = rsa.Encode(p.Address);
-                        if (!string.IsNullOrEmpty(p.Password))
-                            p.Password = rsa.Encode(p.Password);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                        break;
                 }
             }
         }
@@ -402,20 +442,26 @@ namespace PRM.Core.Model
                 server.GroupName = rsa.DecodeOrNull(server.GroupName);
                 switch (server)
                 {
-                    case ProtocolServerNone _:
-                        break;
                     case ProtocolServerRDP _:
                     case ProtocolServerSSH _:
-                        var p = (ProtocolServerWithAddrPortUserPwdBase) server;
-                        if (!string.IsNullOrEmpty(p.UserName))
-                            p.UserName = rsa.DecodeOrNull(p.UserName);
-                        if (!string.IsNullOrEmpty(p.Address))
-                            p.Address = rsa.DecodeOrNull(p.Address);
-                        if (!string.IsNullOrEmpty(p.Password))
-                            p.Password = rsa.DecodeOrNull(p.Password);
-                        break;
+                    case ProtocolServerWithAddrPortUserPwdBase _:
+                        {
+                            var p = (ProtocolServerWithAddrPortUserPwdBase) server;
+                            if (!string.IsNullOrEmpty(p.UserName))
+                                p.UserName = rsa.DecodeOrNull(p.UserName);
+                            if (!string.IsNullOrEmpty(p.Address))
+                                p.Address = rsa.DecodeOrNull(p.Address);
+                            break;
+                        }
+                    case ProtocolServerWithAddrPortBase _:
+                        {
+                            var p = (ProtocolServerWithAddrPortBase) server;
+                            if (!string.IsNullOrEmpty(p.Address))
+                                p.Address = rsa.DecodeOrNull(p.Address);
+                            break;
+                        }
                     default:
-                        throw new ArgumentOutOfRangeException($"Protocol not support: {server.GetType()}");
+                        break;
                 }
             }
         }
@@ -430,9 +476,8 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
-            //TODO thread not safe
             StopAutoSave = true;
-            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), SectionName, DbPath);
+            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), SectionName);
             StopAutoSave = false;
         }
 
@@ -442,6 +487,508 @@ namespace PRM.Core.Model
             Save();
         }
 
+        #endregion
+
+        #region CMD
+        private RelayCommand _cmdSelectDbPath;
+        public RelayCommand CmdSelectDbPath
+        {
+            get
+            {
+                if (_cmdSelectDbPath == null)
+                {
+                    _cmdSelectDbPath = new RelayCommand((o) =>
+                    {
+                        var dlg = new OpenFileDialog();
+                        dlg.Filter = "Sqlite Database|*.db";
+                        dlg.CheckFileExists = false;
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var path = dlg.FileName;
+                            var oldDbPath = DbPath;
+                            try
+                            {
+                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                                {
+                                    using (var db = new SQLiteConnection(dlg.FileName))
+                                    {
+                                        db.CreateTable<Server>();
+                                    }
+                                    DbPath = dlg.FileName;
+                                    GlobalData.Instance.ServerListUpdate();
+                                }
+                                else
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                            catch (Exception ee)
+                            {
+                                DbPath = oldDbPath;
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdSelectDbPath;
+            }
+        }
+
+        private RelayCommand _cmdSelectRsaPrivateKey;
+        public RelayCommand CmdSelectRsaPrivateKey
+        {
+            get
+            {
+                if (_cmdSelectRsaPrivateKey == null)
+                {
+                    _cmdSelectRsaPrivateKey = new RelayCommand((o) =>
+                    {
+                        var dlg = new OpenFileDialog
+                        {
+                            Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
+                            InitialDirectory = RsaPrivateKeyPath,
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var res = CheckIfDbIsOk(dlg.FileName);
+                            if (!res.Item1)
+                            {
+                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdSelectRsaPrivateKey;
+            }
+        }
+
+        private RelayCommand _cmdGenRsaKey;
+        public RelayCommand CmdGenRsaKey
+        {
+            get
+            {
+                if (_cmdGenRsaKey == null)
+                {
+                    _cmdGenRsaKey = new RelayCommand((o) =>
+                    {
+                        GenRsa();
+                    });
+                }
+                return _cmdGenRsaKey;
+            }
+        }
+
+
+        private RelayCommand _cmdClearRsaKey;
+        public RelayCommand CmdClearRsaKey
+        {
+            get
+            {
+                if (_cmdClearRsaKey == null)
+                {
+                    _cmdClearRsaKey = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            if (MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"), SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                            {
+                                if (File.Exists(DbPath))
+                                    File.Delete(DbPath);
+                                GlobalData.Instance.ServerListUpdate();
+                                Load();
+                            }
+                        }
+                        else
+                            CleanRsa();
+                    });
+                }
+                return _cmdClearRsaKey;
+            }
+        }
+
+        private RelayCommand _cmdExportToJson;
+        public RelayCommand CmdExportToJson
+        {
+            get
+            {
+                if (_cmdExportToJson == null)
+                {
+                    _cmdExportToJson = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new SaveFileDialog
+                        {
+                            Filter = "PRM json array|*.prma",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
+                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var list = new List<ProtocolServerBase>();
+                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
+                            {
+                                var serverBase = (ProtocolServerBase) protocolServerBase.Clone();
+                                if (serverBase is ProtocolServerRDP
+                                    || serverBase is ProtocolServerSSH)
+                                {
+                                    var obj = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                    if (Rsa != null)
+                                        obj.Password = Rsa.DecodeOrNull(obj.Password) ?? "";
+                                }
+                                list.Add(serverBase);
+                            }
+                            File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                        }
+                    });
+                }
+                return _cmdExportToJson;
+            }
+        }
+
+        private RelayCommand _cmdExportToCsv;
+        public RelayCommand CmdExportToCsv
+        {
+            get
+            {
+                if (_cmdExportToCsv == null)
+                {
+                    _cmdExportToCsv = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new SaveFileDialog
+                        {
+                            Filter = "PRM csv array|*.csv",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
+                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".csv"
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var sb = new StringBuilder();
+                            sb.AppendLine("name;protocol;panel;hostname;port;username;password");
+                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
+                            {
+                                var protocol = "";
+                                var name = "";
+                                var group ="";
+                                var user = "";
+                                var pwd = "";
+                                var address = "";
+                                string port = "";
+
+                                var serverBase = (ProtocolServerBase) protocolServerBase.Clone();
+                                name = serverBase.DispName;
+                                group = serverBase.GroupName;
+                                protocol = serverBase.Protocol;
+                                if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
+                                    || serverBase is ProtocolServerRDP
+                                    || serverBase is ProtocolServerSSH)
+                                {
+                                    var obj = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                    pwd = obj.Password;
+                                    if (Rsa != null)
+                                        pwd = Rsa.DecodeOrNull(pwd) ?? obj.Password;
+                                    user = obj.UserName;
+                                    address = obj.Address;
+                                    port = obj.Port;
+                                }
+                                else if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                                {
+                                    var obj = (ProtocolServerWithAddrPortBase) serverBase;
+                                    address = obj.Address;
+                                    port = obj.Port;
+                                }
+
+                                protocol = protocol.Replace(";", "_");
+                                name = name.Replace(";", "_");
+                                group = group.Replace(";", "_");
+                                user = user.Replace(";", "_");
+                                pwd = pwd.Replace(";", "_");
+                                address = address.Replace(";", "_");
+                                port = port.Replace(";", "_");
+                                sb.AppendLine($"{name};{protocol};{group};{address};{port};{user};{pwd}");
+                            }
+                            File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                        }
+                    });
+                }
+                return _cmdExportToCsv;
+            }
+        }
+
+        private RelayCommand _cmdImportFromJson;
+        public RelayCommand CmdImportFromJson
+        {
+            get
+            {
+                if (_cmdImportFromJson == null)
+                {
+                    _cmdImportFromJson = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new OpenFileDialog()
+                        {
+                            Filter = "PRM json array|*.prma",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
+                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            try
+                            {
+                                var list = new List<ProtocolServerBase>();
+                                var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(dlg.FileName, Encoding.UTF8));
+                                foreach (var json in jobj)
+                                {
+                                    var server = ServerCreateHelper.CreateFromJsonString(json.ToString());
+                                    if (server != null)
+                                    {
+                                        server.Id = 0;
+                                        list.Add(server);
+                                    }
+                                }
+                                if (list?.Count > 0)
+                                {
+                                    foreach (var serverBase in list)
+                                    {
+                                        if (serverBase is ProtocolServerRDP
+                                            || serverBase is ProtocolServerSSH
+                                            || serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                                        {
+                                            var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                            if (Rsa != null)
+                                                pwd.Password = Rsa.Encode(pwd.Password);
+                                        }
+                                        Server.AddOrUpdate(serverBase, true);
+                                    }
+                                }
+                                GlobalData.Instance.ServerListUpdate();
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdImportFromJson;
+            }
+        }
+
+        private RelayCommand _cmdImportFromMRemoteNgCsv;
+        public RelayCommand CmdImportFromCsv
+        {
+            get
+            {
+                if (_cmdImportFromMRemoteNgCsv == null)
+                {
+                    _cmdImportFromMRemoteNgCsv = new RelayCommand((o) =>
+                    {
+                        var res = CheckIfDbIsOk();
+                        if (!res.Item1)
+                        {
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            return;
+                        }
+                        var dlg = new OpenFileDialog()
+                        {
+                            Filter = "csv|*.csv",
+                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
+                        };
+                        if (dlg.ShowDialog() == true)
+                        {
+                            try
+                            {
+                                var list = new List<ProtocolServerBase>();
+                                using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
+                                {
+                                    // title
+                                    var title = sr.ReadLine().ToLower().Split(';').ToList();
+                                    int protocolIndex = title.IndexOf("protocol");
+                                    int nameIndex = title.IndexOf("name");
+                                    int groupIndex = title.IndexOf("panel");
+                                    int userIndex = title.IndexOf("username");
+                                    int pwdIndex = title.IndexOf("password");
+                                    int addressIndex = title.IndexOf("hostname");
+                                    int portIndex = title.IndexOf("port");
+                                    if (protocolIndex == 0)
+                                        throw new ArgumentException("can't find protocol field");
+
+                                    var r = new Random();
+                                    // body
+                                    var line = sr.ReadLine();
+                                    while (!string.IsNullOrEmpty(line))
+                                    {
+                                        var arr = line.Split(';');
+                                        if (arr.Length >= 15)
+                                        {
+                                            ProtocolServerBase server = null;
+                                            var protocol = arr[protocolIndex].ToLower();
+                                            var name = "";
+                                            var group ="";
+                                            var user = "";
+                                            var pwd = "";
+                                            var address = "";
+                                            int port = 22;
+                                            if (nameIndex >= 0)
+                                                name = arr[nameIndex];
+                                            if (groupIndex >= 0)
+                                                group = arr[groupIndex];
+                                            if (userIndex >= 0)
+                                                user = arr[userIndex];
+                                            if (pwdIndex >= 0)
+                                                pwd = arr[pwdIndex];
+                                            if (addressIndex >= 0)
+                                                address = arr[addressIndex];
+                                            if (portIndex >= 0)
+                                                port = int.Parse(arr[portIndex]);
+                                            switch (protocol)
+                                            {
+                                                case "rdp":
+                                                    server = new ProtocolServerRDP()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        UserName = user,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                    };
+                                                    break;
+                                                case "ssh1":
+                                                    server = new ProtocolServerSSH()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        UserName = user,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                        SshVersion = ProtocolServerSSH.ESshVersion.V1
+                                                    };
+                                                    break;
+                                                case "ssh2":
+                                                    server = new ProtocolServerSSH()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        UserName = user,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                        SshVersion = ProtocolServerSSH.ESshVersion.V2
+                                                    };
+                                                    break;
+                                                case "vnc":
+                                                    // TODO add vnc
+                                                    break;
+                                                case "telnet":
+                                                    server = new ProtocolServerTelnet()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        Port = port.ToString(),
+                                                    };
+                                                    break;
+                                            }
+
+                                            if (server != null)
+                                            {
+                                                server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                                                list.Add(server);
+                                            }
+                                        }
+                                        line = sr.ReadLine();
+                                    }
+                                }
+                                if (list?.Count > 0)
+                                {
+                                    foreach (var serverBase in list)
+                                    {
+                                        if (serverBase is ProtocolServerRDP
+                                            || serverBase is ProtocolServerSSH)
+                                        {
+                                            var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
+                                            if (Rsa != null)
+                                                pwd.Password = Rsa.Encode(pwd.Password);
+                                        }
+                                        Server.AddOrUpdate(serverBase, true);
+                                    }
+                                }
+                                GlobalData.Instance.ServerListUpdate();
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdImportFromMRemoteNgCsv;
+            }
+        }
+
+
+        private RelayCommand _cmdDbMigrate;
+        public RelayCommand CmdDbMigrate
+        {
+            get
+            {
+                if (_cmdDbMigrate == null)
+                {
+                    _cmdDbMigrate = new RelayCommand((o) =>
+                    {
+                        var dlg = new SaveFileDialog();
+                        dlg.Filter = "Sqlite Database|*.db";
+                        dlg.CheckFileExists = false;
+                        dlg.InitialDirectory = new FileInfo(DbPath).DirectoryName;
+                        dlg.FileName = new FileInfo(DbPath).Name;
+                        if (dlg.ShowDialog() == true)
+                        {
+                            var path = dlg.FileName;
+                            var oldDbPath = DbPath;
+                            if (oldDbPath == path)
+                                return;
+                            try
+                            {
+                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                                {
+                                    File.Move(oldDbPath, path);
+                                    File.Delete(oldDbPath);
+                                    DbPath = path;
+                                    GlobalData.Instance.ServerListUpdate();
+                                }
+                                else
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                            catch (Exception ee)
+                            {
+                                DbPath = oldDbPath;
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            }
+                        }
+                    });
+                }
+                return _cmdDbMigrate;
+            }
+        }
         #endregion
     }
 }

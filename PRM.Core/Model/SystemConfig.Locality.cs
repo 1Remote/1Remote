@@ -14,7 +14,7 @@ namespace PRM.Core.Model
 {
     public sealed class SystemConfigLocality : NotifyPropertyChangedBase
     {
-        private new readonly Ini _ini;
+        private readonly Ini _ini;
 
         public SystemConfigLocality()
         {

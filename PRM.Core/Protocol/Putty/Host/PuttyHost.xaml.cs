@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,7 +18,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using PRM.Core.Model;
+using PRM.Core.Protocol.Putty.SSH;
 using Shawn.Ulits;
+using MessageBox = System.Windows.MessageBox;
+using Path = System.IO.Path;
 
 namespace PRM.Core.Protocol.Putty.Host
 {
@@ -63,6 +69,7 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int SW_SHOWNORMAL = 1;
         private const int SW_SHOWMAXIMIZED = 3;
 
+        public const string PuttyExeName = "PuTTY_PRM.exe";
 
         private const int PuttyWindowMargin = 0;
         private Process _puttyProcess = null;
@@ -89,7 +96,9 @@ namespace PRM.Core.Protocol.Putty.Host
             Debug.Assert(ParentWindow != null);
             Debug.Assert(_protocolPuttyBase.ProtocolServerBase.Id > 0);
 
-            // TODO set to putty bg color
+
+            // set putty bg color
+            var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             GridBg.Background = new SolidColorBrush(new Color()
             {
                 A = 255,
@@ -97,8 +106,28 @@ namespace PRM.Core.Protocol.Putty.Host
                 G = 0,
                 B = 0,
             });
+            var bgOption = options?.First(x => x.Key == PuttyRegOptionKey.Colour2.ToString());
+            if (bgOption != null
+                && bgOption.Value.ToString().Split(',').Length == 3)
+            {
+                var color = bgOption.Value.ToString().Split(',');
+                if (byte.TryParse(color[0], out var r)
+                    && byte.TryParse(color[1], out var g)
+                    && byte.TryParse(color[2], out var b))
+                {
+                    GridBg.Background = new SolidColorBrush(new Color()
+                    {
+                        A = 255,
+                        R = r,
+                        G = g,
+                        B = b,
+                    });
+                }
+            }
+
 
             _puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
+            RegPuttySessionInRegTable();
 
             _puttyHandle = IntPtr.Zero;
             //FormBorderStyle = FormBorderStyle.None;
@@ -136,10 +165,24 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void InitPutty()
         {
-            CreatePuttySessionInRegTable();
             _puttyProcess = new Process();
             var ps = new ProcessStartInfo();
-            ps.FileName = @"C:\putty60.exe";
+            //ps.FileName = Path.Combine(Environment.CurrentDirectory, PuttyExeName);
+
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Putty");
+            if (!Directory.Exists(appDateFolder))
+                Directory.CreateDirectory(appDateFolder);
+            ps.FileName = Path.Combine(appDateFolder, PuttyExeName);
+            if (!File.Exists(ps.FileName))
+            {
+                var putty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/PuTTY_PRM.exe")).Stream;
+                using (var fileStream = File.Create(ps.FileName))
+                {
+                    putty.Seek(0, SeekOrigin.Begin);
+                    putty.CopyTo(fileStream);
+                }
+                putty.Close();
+            }
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
             ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
@@ -165,7 +208,7 @@ namespace PRM.Core.Protocol.Putty.Host
                 SetWindowLong(_puttyHandle, GWL_STYLE, lStyle);
                 //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
                 MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2, _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
-                DeletePuttySessionInRegTable();
+                DelPuttySessionInRegTable();
 
                 _topTransparentPanel = new TransparentPanel
                 {
@@ -201,7 +244,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public void ClosePutty()
         {
-            DeletePuttySessionInRegTable();
+            DelPuttySessionInRegTable();
             try
             {
                 if (_puttyProcess?.HasExited == false)
@@ -217,91 +260,124 @@ namespace PRM.Core.Protocol.Putty.Host
         }
 
 
-        private void CreatePuttySessionInRegTable()
+        private void RegPuttySessionInRegTable()
         {
-            //PuttyOption.Set(PuttyRegOptionKey.FontHeight, 14);
-            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
+            // set key
+            if (_protocolPuttyBase is ProtocolServerSSH server
+                && !string.IsNullOrEmpty(server.PrivateKey))
+            {
+                var ppk = server.PrivateKey;
+                if (SystemConfig.Instance.DataSecurity.Rsa != null)
+                    ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk);
+                Debug.Assert(ppk != null);                    
+                _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, ppk);
+            }
+
+            // set color theme
+            _puttyOption.Set(PuttyRegOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
+            if (options != null)
+                foreach (var option in options)
+                {
+                    try
+                    {
+                        if (Enum.TryParse(option.Key, out PuttyRegOptionKey key))
+                        {
+                            if (option.ValueKind == RegistryValueKind.DWord)
+                                _puttyOption.Set(key, (int)(option.Value));
+                            else
+                                _puttyOption.Set(key, (string)option.Value);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
+                    }
+                }
 
 
-            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "255,0,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour10,"0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour11,"85,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour12,"187,187,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour13,"255,255,85");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour14,"0,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour15,"0,0,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour16,"0,0,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour17,"255,85,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour18,"0,187,187");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour19,"85,255,255");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour20,"187,187,187");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour21,"255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
 
 
-            //PuttyOption.Set(PuttyRegOptionKey.UseSystemColours, 0);
-            //PuttyOption.Set(PuttyRegOptionKey.TryPalette, 0);
-            //PuttyOption.Set(PuttyRegOptionKey.ANSIColour, 1);
-            //PuttyOption.Set(PuttyRegOptionKey.Xterm256Colour, 1);
-            //PuttyOption.Set(PuttyRegOptionKey.BoldAsColour, 1);
+            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "255,0,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour10,"0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour11,"85,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour12,"187,187,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour13,"255,255,85");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour14,"0,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour15,"0,0,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour16,"0,0,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour17,"255,85,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour18,"0,187,187");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour19,"85,255,255");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour20,"187,187,187");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour21,"255,255,255");
 
-            //PuttyOption.Set(PuttyRegOptionKey.Colour0, "211,215,207");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour1, "238,238,236");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour2, "46,52,54");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour3, "85,87,83");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour6, "46,52,54");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour7, "85,87,83");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour8, "204,0,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour9, "239,41,41");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour10,"78,154,6");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour11,"138,226,52");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour12,"196,160,0");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour13,"252,233,79");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour14,"52,101,164");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour15,"114,159,207");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour16,"117,80,123");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour17,"173,127,168");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour18,"6,152,154");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour19,"52,226,226");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
-            //PuttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
+
+            //_puttyOption.Set(PuttyRegOptionKey.UseSystemColours, 0);
+            //_puttyOption.Set(PuttyRegOptionKey.TryPalette, 0);
+            //_puttyOption.Set(PuttyRegOptionKey.ANSIColour, 1);
+            //_puttyOption.Set(PuttyRegOptionKey.Xterm256Colour, 1);
+            //_puttyOption.Set(PuttyRegOptionKey.BoldAsColour, 1);
+
+            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "211,215,207");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "238,238,236");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "46,52,54");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,87,83");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "46,52,54");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,87,83");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "204,0,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "239,41,41");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour10,"78,154,6");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour11,"138,226,52");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour12,"196,160,0");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour13,"252,233,79");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour14,"52,101,164");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour15,"114,159,207");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour16,"117,80,123");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour17,"173,127,168");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour18,"6,152,154");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour19,"52,226,226");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
+            //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
 
 
             _puttyOption.Save();
         }
 
-        private void DeletePuttySessionInRegTable()
+        private void DelPuttySessionInRegTable()
         {
             _puttyOption?.Del();
             _puttyOption = null;
@@ -322,23 +398,21 @@ namespace PRM.Core.Protocol.Putty.Host
             return false;
         }
 
-        private static readonly object Locker1 = new object();
-        private static readonly object Locker2 = new object();
         public override void MakeItFocus()
         {
             if (_topTransparentPanel != null)
             {
-                lock (Locker1)
+                lock (MakeItFocusLocker1)
                 {
-                    // hack technology:
+                    // hack technology
                     // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
-                    // Then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
+                    // then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
 
                     if (_taksTopPanelFocus?.Status != TaskStatus.Running)
                     {
                         _taksTopPanelFocus = new Task(() =>
                         {
-                            lock (Locker2)
+                            lock (MakeItFocusLocker2)
                             {
                                 bool flag = false;
                                 int nCount = 50; // don't let it runs forever.

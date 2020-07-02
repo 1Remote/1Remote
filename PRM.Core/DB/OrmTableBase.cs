@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ namespace PRM.Core.DB
 
         protected static SQLiteConnection GetDb()
         {
-            return new SQLiteConnection(SystemConfig.GetInstance().DataSecurity.DbPath);
+            return new SQLiteConnection(SystemConfig.Instance.DataSecurity.DbPath);
         }
     }
 }

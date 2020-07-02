@@ -62,6 +62,9 @@
     <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -92,9 +95,8 @@
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\WindowPool.cs" />
+    <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="ViewModel\RelayCommand.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
@@ -147,10 +149,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="PRM_STD_ScrollViewerStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Styles\PRM_ScrollViewerControlTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -79,19 +79,24 @@
     <Compile Include="DB\Config.cs" />
     <Compile Include="DB\OrmTableBase.cs" />
     <Compile Include="DB\SQLite.cs" />
-    <Compile Include="Model\Global.cs" />
+    <Compile Include="Model\GlobalData.cs" />
+    <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.DataSecurity.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
     <Compile Include="Model\SystemConfig.Language.cs" />
     <Compile Include="Model\SystemConfig.Locality.cs" />
+    <Compile Include="Model\SystemConfig.Theme.cs" />
     <Compile Include="Model\SystemConfig.QuickConnect.cs" />
+    <Compile Include="Model\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
+    <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
+    <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
     <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
       <DependentUpon>PuttyHost.xaml</DependentUpon>
     </Compile>
@@ -102,6 +107,8 @@
     <Compile Include="Protocol\Putty\PuttyOptions.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
+    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
+    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
     <Compile Include="Protocol\ServerIcons.cs" />
     <Compile Include="Protocol\ProtocolServerNone.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
@@ -130,12 +137,14 @@
     </Compile>
     <Compile Include="Ulits\ConsoleManager.cs" />
     <Compile Include="Ulits\GlobalHotkeyHooker.cs" />
+    <Compile Include="Ulits\HttpHelper.cs" />
     <Compile Include="Ulits\Ini.cs" />
+    <Compile Include="Ulits\IOPermissionHelper.cs" />
     <Compile Include="Ulits\KeyWordMatchHelper.cs" />
     <Compile Include="Ulits\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="Protocol\ServerFactory.cs" />
+    <Compile Include="Protocol\ServerCreateHelper.cs" />
     <Compile Include="DB\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ProtocolServerBase.cs" />
@@ -148,8 +157,12 @@
     </Compile>
     <Compile Include="Ulits\PageHost\StoryboardHelpers.cs" />
     <Compile Include="Ulits\PasswordEx\PasswordBoxEx.cs" />
+    <Compile Include="Ulits\RdpFile\DataProtection.cs" />
+    <Compile Include="Ulits\RdpFile\RdpConfig.cs" />
+    <Compile Include="Ulits\RelayCommand.cs" />
     <Compile Include="Ulits\RSA\RSA.cs" />
     <Compile Include="Ulits\RSA\RSA_PEM.cs" />
+    <Compile Include="Ulits\ScreenInfoEx.cs" />
     <Compile Include="Ulits\SetSelfStartingHelper.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode1.cs" />
     <Compile Include="Ulits\TinyPinyin.Net\Data\PinyinCode2.cs" />
@@ -162,6 +175,8 @@
     <Compile Include="Ulits\SimpleLogHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Logo\author_avatar.jpg" />
+    <Resource Include="PuTTY_PRM.exe" />
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -210,7 +225,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Skins\Default.xaml">
+    <Page Include="Resources\Theme\Default.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -265,7 +280,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/appsettings" languages_4en-us_1json__JsonSchema="http://json-schema.org/draft-04/schema" />
+      <UserProperties languages_4zh-cn_1json__JsonSchema="http://json.schemastore.org/ansible-stable-2.9" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>

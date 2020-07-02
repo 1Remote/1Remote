@@ -81,8 +81,12 @@ namespace Shawn.Ulits
 
         public static void SaveTo(this BitmapSource source, string path)
         {
-            // TODO NotImplementedException SaveTo
-            throw new NotImplementedException();
+            using (var fileStream = new FileStream(path, FileMode.Create))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(source));
+                encoder.Save(fileStream);
+            }
         }
 
 
@@ -368,7 +372,7 @@ namespace Shawn.Ulits
 
 
         
-        public static BitmapSource ReadImgFile(string filePath)
+        public static Bitmap ReadImgFile(string filePath)
         {
             try
             {
@@ -377,7 +381,7 @@ namespace Shawn.Ulits
                 bitmap.StreamSource = File.OpenRead(filePath);
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
-                return bitmap;
+                return bitmap.ToBitmap();
             }
             catch (Exception)
             {
@@ -402,7 +406,7 @@ namespace Shawn.Ulits
                     encoder.Save(fs);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

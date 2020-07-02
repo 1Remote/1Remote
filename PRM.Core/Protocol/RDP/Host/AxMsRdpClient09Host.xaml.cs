@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net.Mime;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using AxMSTSCLib;
 using MSTSCLib;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
@@ -19,7 +24,7 @@ namespace Shawn.Ulits.RDP
     {
         private readonly AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
-        private uint _scaleFactor = 100;
+        private uint _primaryScaleFactor = 100;
         private bool _isDisconned = false;
         private bool _isConnecting = false;
 
@@ -47,6 +52,7 @@ namespace Shawn.Ulits.RDP
                 _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
                 _rdp.OnDisconnected += RdpcOnDisconnected;
                 _rdp.OnConfirmClose += RdpOnOnConfirmClose;
+                _rdp.OnConnected += RdpOnOnConnected;
                 _rdp.OnLoginComplete += RdpOnOnLoginComplete;
                 ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
                 RdpHost.Child = _rdp;
@@ -65,28 +71,50 @@ namespace Shawn.Ulits.RDP
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            if (SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                secured.ClearTextPassword = SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(_rdpServer.Password) ?? "";
-            else
-                secured.ClearTextPassword = _rdpServer.Password;
+            secured.ClearTextPassword = _rdpServer.GetDecryptPassWord();
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
             #endregion
 
 
             // enable CredSSP, will use CredSsp if the client supports.
             _rdp.AdvancedSettings7.EnableCredSspSupport = true;
+            _rdp.AdvancedSettings2.EncryptionEnabled = 1;
             _rdp.AdvancedSettings5.AuthenticationLevel = 0;
             _rdp.AdvancedSettings5.EnableAutoReconnect = true;
             // setting PublicMode to false allows the saving of credentials, which prevents
             _rdp.AdvancedSettings6.PublicMode = false;
             _rdp.AdvancedSettings5.EnableWindowsKey = 1;
             _rdp.AdvancedSettings5.GrabFocusOnConnect = true;
+            _rdp.AdvancedSettings2.keepAliveInterval = 1000 * 60 * 5; // 1000 = 1000 ms
+            _rdp.AdvancedSettings2.overallConnectionTimeout = 600; // The new time, in seconds. The maximum value is 600, which represents 10 minutes.
             //// ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
             //_rdp.AdvancedSettings7.ConnectToAdministerServer = true;
+            
+            #region Others
 
+            // enable CredSSP, will use CredSsp if the client supports.
+            _rdp.AdvancedSettings9.EnableCredSspSupport = true;
+
+            //- 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
+            //- 1: If server authentication fails, don't establish a connection (Don't connect)
+            //- 2: If server authentication fails, show a warning and allow me to connect or refuse the connection (Warn me)
+            //- 3: No authentication requirement specified.
+            _rdp.AdvancedSettings9.AuthenticationLevel = 0;
+
+            // setting PublicMode to false allows the saving of credentials, which prevents
+            _rdp.AdvancedSettings9.PublicMode = false;
+            _rdp.AdvancedSettings9.EnableAutoReconnect = true;
+
+
+            // - 0 Apply key combinations only locally at the client computer.
+            // - 1 Apply key combinations at the remote server.
+            // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
+            _rdp.SecuredSettings3.KeyboardHookMode = 2;
+
+            #endregion
 
             #region conn bar
-            _rdp.AdvancedSettings6.DisplayConnectionBar = true;
+            _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar;
             _rdp.AdvancedSettings6.ConnectionBarShowPinButton = true;
             _rdp.AdvancedSettings6.PinConnectionBar = false;
             _rdp.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
@@ -107,8 +135,10 @@ namespace Shawn.Ulits.RDP
                 // - 0 Apply key combinations only locally at the client computer.
                 // - 1 Apply key combinations at the remote server.
                 // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
-                _rdp.SecuredSettings3.KeyboardHookMode = 2;
+                _rdp.SecuredSettings3.KeyboardHookMode = 1;
             }
+            else
+                _rdp.SecuredSettings3.KeyboardHookMode = 0;
 
             if (_rdpServer.EnableSounds)
             {
@@ -136,37 +166,19 @@ namespace Shawn.Ulits.RDP
             if (_rdpServer.EnableAudioCapture)
             {
                 // indicates whether the default audio input device is redirected from the client to the remote session
+                _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = true;
+            }
+            else
+            {
                 _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = false;
             }
             #endregion
 
-            #region Others
-
-            // enable CredSSP, will use CredSsp if the client supports.
-            _rdp.AdvancedSettings9.EnableCredSspSupport = true;
-
-            //- 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
-            //- 1: If server authentication fails, don't establish a connection (Don't connect)
-            //- 2: If server authentication fails, show a warning and allow me to connect or refuse the connection (Warn me)
-            //- 3: No authentication requirement specified.
-            _rdp.AdvancedSettings9.AuthenticationLevel = 0;
-
-            // setting PublicMode to false allows the saving of credentials, which prevents
-            _rdp.AdvancedSettings9.PublicMode = false;
-            _rdp.AdvancedSettings9.EnableAutoReconnect = true;
-
-
-            // - 0 Apply key combinations only locally at the client computer.
-            // - 1 Apply key combinations at the remote server.
-            // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
-            _rdp.SecuredSettings3.KeyboardHookMode = 2;
-
-            #endregion
 
             #region Display
 
             ReadScaleFactor();
-            _rdp.SetExtendedProperty("DesktopScaleFactor", _scaleFactor);
+            _rdp.SetExtendedProperty("DesktopScaleFactor", _primaryScaleFactor);
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
             if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch
             || _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
@@ -179,8 +191,8 @@ namespace Shawn.Ulits.RDP
                 {
                     case ERdpWindowResizeMode.Stretch:
                     case ERdpWindowResizeMode.Fixed:
-                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth / (_scaleFactor / 100.0));
-                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight / (_scaleFactor / 100.0));
+                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth / (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight / (_primaryScaleFactor / 100.0));
                         break;
                     case ERdpWindowResizeMode.StretchFullScreen:
                     case ERdpWindowResizeMode.FixedFullScreen:
@@ -192,13 +204,13 @@ namespace Shawn.Ulits.RDP
                     default:
                         if (width > 100 && height > 100)
                         {
-                            _rdp.DesktopWidth = (int)(width * (_scaleFactor / 100.0));
-                            _rdp.DesktopHeight = (int)(height * (_scaleFactor / 100.0));
+                            _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
+                            _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
                         }
                         else
                         {
-                            _rdp.DesktopWidth = (int)(800 * (_scaleFactor / 100.0));
-                            _rdp.DesktopHeight = (int)(600 * (_scaleFactor / 100.0));
+                            _rdp.DesktopWidth = (int)(800 * (_primaryScaleFactor / 100.0));
+                            _rdp.DesktopHeight = (int)(600 * (_primaryScaleFactor / 100.0));
                         }
                         break;
                 }
@@ -212,7 +224,7 @@ namespace Shawn.Ulits.RDP
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
                     base.CanFullScreen = true;
-                    if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreen_LastSessionIsFullScreen ?? false))
+                    if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false))
                     {
                         var screenSize = GetScreenSize();
                         _rdp.DesktopWidth = (int)(screenSize.Width);
@@ -283,7 +295,7 @@ namespace Shawn.Ulits.RDP
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            SimpleLogHelper.Log("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
+            SimpleLogHelper.Debug("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
             _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
 
             #endregion
@@ -314,10 +326,15 @@ namespace Shawn.Ulits.RDP
 
         public override void GoFullScreen()
         {
-            // full screen on current 
-            var t = GetCurrentScreen();
-            if (t != null)
-                _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = t.Item1;
+            Debug.Assert(this.ParentWindow != null);
+
+            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
+            {
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
+            }
+            else
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
+            Server.AddOrUpdate(_rdpServer);
             _rdp.FullScreen = true;
         }
 
@@ -336,11 +353,6 @@ namespace Shawn.Ulits.RDP
         public override bool IsConnecting()
         {
             return _isConnecting;
-        }
-
-        public override void MakeItFocus()
-        {
-            // noting to do
         }
 
         #endregion
@@ -394,16 +406,27 @@ namespace Shawn.Ulits.RDP
 
             const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
             string reason = _rdp.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
+            if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
+                SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedDisconnect
                 && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
-                // TODO 弹出非模态对话框，然后关闭 RDP 窗体
-                System.Windows.MessageBox.Show(disconnectedText, SystemConfig.GetInstance().Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                var t = new Task(() =>
+                {
+                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                });
+                t.Start();
             }
-            base.OnClosed?.Invoke(_rdpServer.Id);
+            base.OnClosed?.Invoke(base.ConnectionId);
+        }
+        
+        private void RdpOnOnConnected(object sender, EventArgs e)
+        {
+            RdpHost.Visibility = Visibility.Visible;
+            GridLoading.Visibility = Visibility.Collapsed;
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
@@ -414,8 +437,6 @@ namespace Shawn.Ulits.RDP
             if (this._onResizeEnd == null)
                 this._onResizeEnd += ReSizeRdp;
 
-            RdpHost.Visibility = Visibility.Visible;
-            GridLoading.Visibility = Visibility.Collapsed;
             base.OnCanResizeNowChanged?.Invoke();
         }
 
@@ -444,7 +465,7 @@ namespace Shawn.Ulits.RDP
             {
                 //_rdp.Reconnect(nw, nh);
                 ReadScaleFactor();
-                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _scaleFactor, 100);
+                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _primaryScaleFactor, 100);
             }
             catch (Exception e)
             {
@@ -461,8 +482,9 @@ namespace Shawn.Ulits.RDP
         private void MakeNormal2FullScreen(bool saveSize = true)
         {
             Debug.Assert(ParentWindow != null);
-            _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = true;
+            _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
 
+            var screenSize = GetScreenSize();
             if (saveSize)
             {
                 _normalWidth = ParentWindow.Width;
@@ -474,18 +496,17 @@ namespace Shawn.Ulits.RDP
             ParentWindow.WindowState = WindowState.Normal;
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
+            //ParentWindow.WindowState = WindowState.Maximized;
 
-
-            var screenSize = GetScreenSize();
-            ParentWindow.Width = screenSize.Width / (_scaleFactor / 100.0);
-            ParentWindow.Height = screenSize.Height / (_scaleFactor / 100.0);
-            ParentWindow.Left = screenSize.Left / (_scaleFactor / 100.0);
-            ParentWindow.Top = screenSize.Top / (_scaleFactor / 100.0);
+            ParentWindow.Width = screenSize.Width / (_primaryScaleFactor / 100.0);
+            ParentWindow.Height = screenSize.Height / (_primaryScaleFactor / 100.0);
+            ParentWindow.Left = screenSize.Left / (_primaryScaleFactor / 100.0);
+            ParentWindow.Top = screenSize.Top / (_primaryScaleFactor / 100.0);
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
             }
-            ParentWindow.Topmost = true;
+            //ParentWindow.Topmost = true;
         }
 
 
@@ -500,17 +521,10 @@ namespace Shawn.Ulits.RDP
             }
             else
             {
-                if (_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex < 0
-                    || _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
+                if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
+                    && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
                 {
-                    for (int i = 0; i < System.Windows.Forms.Screen.AllScreens.Length; i++)
-                    {
-                        if (Equals(System.Windows.Forms.Screen.PrimaryScreen, System.Windows.Forms.Screen.AllScreens[i]))
-                        {
-                            _rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex = i;
-                            return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreen_LastSessionScreenIndex].Bounds;
-                        }
-                    }
+                    return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
                 }
             }
             return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
@@ -519,8 +533,8 @@ namespace Shawn.Ulits.RDP
         private void MakeFullScreen2Normal()
         {
             Debug.Assert(ParentWindow != null);
-            _rdpServer.AutoSetting.FullScreen_LastSessionIsFullScreen = false;
-            ParentWindow.Topmost = false;
+            _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
+            //ParentWindow.Topmost = false;
             ParentWindow.ResizeMode = ResizeMode.CanResize;
             ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
             ParentWindow.WindowState = WindowState.Normal;
@@ -528,7 +542,7 @@ namespace Shawn.Ulits.RDP
             ParentWindow.Height = _normalHeight;
             ParentWindow.Top = _normalTop;
             ParentWindow.Left = _normalLeft;
-            base.OnFullScreen2Window?.Invoke(_rdpServer.Id);
+            base.OnFullScreen2Window?.Invoke(base.ConnectionId);
         }
         private void MakeForm2Minimize()
         {
@@ -543,17 +557,18 @@ namespace Shawn.Ulits.RDP
         {
             try
             {
-                _scaleFactor = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width /
-                                       SystemParameters.PrimaryScreenWidth);
+                // !must use PrimaryScreen scale factor
+                _primaryScaleFactor = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
+                //_primaryScaleFactor = (uint)(100 * ScreenInfoEx.GetCurrentScreen(this.ParentWindow).ScaleFactor);
             }
             catch (Exception)
             {
-                _scaleFactor = 100;
+                _primaryScaleFactor = 100;
             }
             finally
             {
-                if (_scaleFactor < 100)
-                    _scaleFactor = 100;
+                if (_primaryScaleFactor < 100)
+                    _primaryScaleFactor = 100;
             }
         }
 
@@ -592,18 +607,16 @@ namespace Shawn.Ulits.RDP
                         {
                             _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                         }
-                        catch (Exception e)
+                        catch
                         {
-                            // ignored
                         }
 
                         try
                         {
                             base.SizeChanged -= _ResizeEnd_WindowSizeChanged;
                         }
-                        catch (Exception e)
+                        catch
                         {
-                            // ignored
                         }
                     }
                 }
@@ -621,30 +634,5 @@ namespace Shawn.Ulits.RDP
             _onResizeEnd?.Invoke();
         }
         #endregion
-
-
-
-        private static System.Windows.Forms.Screen GetScreen(int screenIndex)
-
-        {
-            if (screenIndex < 0
-                || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
-            {
-                return null;
-            }
-            return System.Windows.Forms.Screen.AllScreens[screenIndex];
-        }
-        private Tuple<int, System.Windows.Forms.Screen> GetCurrentScreen()
-        {
-            var screen = System.Windows.Forms.Screen.FromControl(_rdp);
-            for (int i = 0; i < System.Windows.Forms.Screen.AllScreens.Length; i++)
-            {
-                if (Equals(screen, System.Windows.Forms.Screen.AllScreens[i]))
-                {
-                    return new Tuple<int, Screen>(i, screen);
-                }
-            }
-            return null;
-        }
     }
 }

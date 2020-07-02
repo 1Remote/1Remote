@@ -11,7 +11,6 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolHostBase : UserControl
     {
-        public uint Id => ProtocolServer.Id;
         public readonly ProtocolServerBase ProtocolServer;
         public Window ParentWindow { get; set; } = null;
 
@@ -21,6 +20,17 @@ namespace PRM.Core.Protocol
             CanFullScreen = canFullScreen;
         }
 
+
+        public string ConnectionId
+        {
+            get
+            {
+                if (ProtocolServer.OnlyOneInstance)
+                    return ProtocolServer.Id.ToString();
+                else
+                    return ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
+            }
+        }
 
         public bool CanFullScreen { get; protected set; }
 
@@ -41,14 +51,23 @@ namespace PRM.Core.Protocol
         public abstract void GoFullScreen();
         public abstract bool IsConnected();
         public abstract bool IsConnecting();
+
+
+        
+        protected static readonly object MakeItFocusLocker1 = new object();
+        protected static readonly object MakeItFocusLocker2 = new object();
+
         /// <summary>
         /// call to focus the AxRdp or putty
         /// </summary>
-        public abstract void MakeItFocus();
+        public virtual void MakeItFocus()
+        {
+            // do nothing
+        }
 
 
 
-        public Action<uint> OnClosed = null;
-        public Action<uint> OnFullScreen2Window = null;
+        public Action<string> OnClosed = null;
+        public Action<string> OnFullScreen2Window = null;
     }
 }
