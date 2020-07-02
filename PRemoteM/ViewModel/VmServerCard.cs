@@ -4,9 +4,8 @@ using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.UI.VM;
 using PRM.View;
+using Shawn.Ulits;
 using Shawn.Ulits.PageHost;
 
 namespace PRM.ViewModel
@@ -38,7 +37,7 @@ namespace PRM.ViewModel
                 if (_cmdConnServer == null)
                     _cmdConnServer = new RelayCommand((o) =>
                     {
-                        this.Server.Conn();
+                        GlobalEventHelper.OnServerConnect?.Invoke(Server.Id);
                     });
                 return _cmdConnServer;
             }
@@ -49,19 +48,10 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdEditServer == null)
+                return _cmdEditServer ?? (_cmdEditServer = new RelayCommand((o) =>
                 {
-                    _cmdEditServer = new RelayCommand((o) =>
-                    {
-                        Host.Vm.DispPage = new AnimationPage()
-                        {
-                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new ServerEditorPage(new VmServerEditorPage((ProtocolServerBase)this.Server.Clone(), this.Host)),
-                        };
-                    });
-                }
-                return _cmdEditServer;
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false);
+                }));
             }
         }
 
@@ -71,21 +61,10 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdDuplicateServer == null)
+                return _cmdDuplicateServer ?? (_cmdDuplicateServer = new RelayCommand((o) =>
                 {
-                    _cmdDuplicateServer = new RelayCommand((o) =>
-                    {
-                        var s = (ProtocolServerBase) this.Server.Clone();
-                        s.Id = 0;
-                        Host.Vm.DispPage = new AnimationPage()
-                        {
-                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new ServerEditorPage(new VmServerEditorPage(s, this.Host)),
-                        };
-                    });
-                }
-                return _cmdDuplicateServer;
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true);
+                }));
             }
         }
 
@@ -94,19 +73,17 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdDeleteServer == null)
-                    _cmdDeleteServer = new RelayCommand((o) =>
+                return _cmdDeleteServer ?? (_cmdDeleteServer = new RelayCommand((o) =>
+                {
+                    if (MessageBox.Show(
+                            SystemConfig.Instance.Language.GetText("server_card_operate_confirm_delete"),
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
+                            MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+                        MessageBoxResult.Yes)
                     {
-                        if (MessageBox.Show(
-                                SystemConfig.GetInstance().Language.GetText("server_card_operate_confirm_delete"),
-                                SystemConfig.GetInstance().Language.GetText("messagebox_title_warning"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Question) ==
-                            MessageBoxResult.Yes)
-                        {
-                            Global.GetInstance().ServerListRemove(Server);
-                        }
-                    });
-                return _cmdDeleteServer;
+                        GlobalData.Instance.ServerListRemove(Server);
+                    }
+                }));
             }
         }
         #endregion

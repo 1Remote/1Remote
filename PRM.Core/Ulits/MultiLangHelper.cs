@@ -40,7 +40,6 @@ namespace Shawn.Ulits
             if (!fi.Exists) return null;
             var rd = LangDictFromJsonString(File.ReadAllText(fi.FullName));
 #if DEBUG
-            // TODO 删除：调试时根据json生成一份xaml资源文件
             if (jsonPath.IndexOf("zh-cn") >= 0)
                 SaveToLangResourceDictionary(rd, "zh-cn.xaml");
             if (jsonPath.IndexOf("en-us") >= 0)

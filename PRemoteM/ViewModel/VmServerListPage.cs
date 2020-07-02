@@ -18,18 +18,18 @@ namespace PRM.ViewModel
             Vm = vmMain;
 
             var lastSelectedGroup = "";
-            if (!string.IsNullOrEmpty(SystemConfig.GetInstance().Locality.MainWindowTabSelected))
+            if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected))
             {
-                lastSelectedGroup = SystemConfig.GetInstance().Locality.MainWindowTabSelected;
+                lastSelectedGroup = SystemConfig.Instance.Locality.MainWindowTabSelected;
             }
 
             RebuildVmServerCardList();
-            Global.GetInstance().ServerList.CollectionChanged += (sender, args) =>
+            GlobalData.Instance.ServerList.CollectionChanged += (sender, args) =>
             {
                 RebuildVmServerCardList();
             };
 
-            SystemConfig.GetInstance().General.PropertyChanged += (sender, args) =>
+            SystemConfig.Instance.General.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
                     RebuildVmServerCardList();
@@ -45,11 +45,7 @@ namespace PRM.ViewModel
         public VmServerCard SelectedServerCard
         {
             get => _selectedServerCard;
-            set
-            {
-                DispNameFilter = "";
-                SetAndNotifyIfChanged(nameof(SelectedServerCard), ref _selectedServerCard, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(SelectedServerCard), ref _selectedServerCard, value);
         }
 
         private ObservableCollection<VmServerCard> _serverCards = new ObservableCollection<VmServerCard>();
@@ -83,8 +79,8 @@ namespace PRM.ViewModel
             {
                 DispNameFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
-                SystemConfig.GetInstance().Locality.MainWindowTabSelected = value;
-                SystemConfig.GetInstance().Locality.Save();
+                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+                SystemConfig.Instance.Locality.Save();
             }
         }
 
@@ -101,7 +97,7 @@ namespace PRM.ViewModel
         private void RebuildVmServerCardList()
         {
             _serverCards.Clear();
-            foreach (var serverAbstract in Global.GetInstance().ServerList)
+            foreach (var serverAbstract in GlobalData.Instance.ServerList)
             {
                 serverAbstract.PropertyChanged += (sender, args) =>
                 {
@@ -137,8 +133,6 @@ namespace PRM.ViewModel
                 SelectedGroup = "";
         }
 
-
-
         private void OrderServerList()
         {
             // Delete ProtocolServerNone
@@ -148,8 +142,7 @@ namespace PRM.ViewModel
                 _serverCards.Remove(s);
             }
 
-            // TODO flag to order by LassConnTime
-            switch (SystemConfig.GetInstance().General.ServerOrderBy)
+            switch (SystemConfig.Instance.General.ServerOrderBy)
             {
                 case EnumServerOrderBy.Name:
                     _serverCards = new ObservableCollection<VmServerCard>(ServerCards.OrderBy(s => s.Server.DispName).ThenBy(s => s.Server.Id));

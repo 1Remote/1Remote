@@ -131,7 +131,7 @@
                 </Grid>
             </Grid>
 
-            <Button Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource button_open}">
+            <Button Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource button_select}">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>

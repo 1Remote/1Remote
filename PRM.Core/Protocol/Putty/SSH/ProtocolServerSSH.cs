@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             V1 = 1,
             V2 = 2,
         }
-        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
+        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH", false)
         {
         }
         
@@ -33,21 +33,15 @@ namespace PRM.Core.Protocol.Putty.SSH
         public ESshVersion SshVersion
         {
             get => _sshVersion;
-            set => 
-                SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
-        }
-
-
-        public override string ToJsonString()
-        {
-            return JsonConvert.SerializeObject(this);
+            set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
         }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
             {
-                return JsonConvert.DeserializeObject<ProtocolServerSSH>(jsonString);
+                var ret = JsonConvert.DeserializeObject<ProtocolServerSSH>(jsonString);
+                return ret;
             }
             catch (Exception e)
             {
@@ -59,9 +53,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string GetPuttyConnString()
         {
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            if(SystemConfig.GetInstance().DataSecurity.Rsa != null)
-                return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {SystemConfig.GetInstance().DataSecurity.Rsa.DecodeOrNull(Password) ?? ""} -{(int)SshVersion}";
-            return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
+            return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptPassWord()} -{(int)SshVersion}";
         }
 
         [JsonIgnore]

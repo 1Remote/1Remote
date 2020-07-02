@@ -47,14 +47,13 @@ namespace PRM.View
             else
             // add mode
             {
-                ButtonSave.Content = SystemConfig.GetInstance().Language.GetText("button_add");
+                ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
                 if (ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
                     LogoSelector.Logo = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                     vm.Server.IconImg = LogoSelector.Logo;
                 }
-                // todo use dynamic resource
                 ColorPick.Color = (Color)ColorConverter.ConvertFromString("#102b3e");
             }
             ColorPick.OnColorSelected += color => Vm.Server.MarkColor = ColorPick.Color;

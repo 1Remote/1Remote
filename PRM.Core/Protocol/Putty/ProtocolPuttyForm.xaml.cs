@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 
 
 namespace PRM.Core.Protocol.Putty
@@ -29,7 +30,24 @@ namespace PRM.Core.Protocol.Putty
             GridUserName.Visibility = Visibility.Collapsed;
             GridPwd.Visibility = Visibility.Collapsed;
             SpSsh.Visibility = Visibility.Collapsed;
+            GridPrivateKey.Visibility = Visibility.Collapsed;
 
+
+            if (Vm.GetType() == typeof(ProtocolServerSSH)
+                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
+            {
+                GridPrivateKey.Visibility =
+                GridUserName.Visibility =
+                    GridPwd.Visibility =
+                SpSsh.Visibility = Visibility.Visible;
+            }
+
+
+            if (Vm.GetType() == typeof(ProtocolServerTelnet)
+                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortBase))
+            {
+                
+            }
 
             if (Vm.GetType() == typeof(ProtocolServerSSH))
             {
@@ -39,23 +57,23 @@ namespace PRM.Core.Protocol.Putty
                     CbUsePrivateKey.IsChecked = true;
                 }
             }
-
-            if (Vm.GetType() == typeof(ProtocolServerSSH)
-                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
-            {
-                GridUserName.Visibility =
-                GridPwd.Visibility =
-                SpSsh.Visibility = Visibility.Visible;
-            }
         }
 
         public override bool CanSave()
         {
-            if (Vm.GetType() == typeof(ProtocolServerSSH))
+            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
             {
-                var protocol = (ProtocolServerSSH) Vm;
+                var protocol = (ProtocolServerWithAddrPortUserPwdBase) Vm;
                 if (!string.IsNullOrEmpty(protocol.Address?.Trim())
                     && !string.IsNullOrEmpty(protocol.UserName?.Trim())
+                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
+                    return true;
+                return false;
+            }
+            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortBase))
+            {
+                var protocol = (ProtocolServerWithAddrPortBase) Vm;
+                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
                     && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
                     return true;
                 return false;
@@ -71,7 +89,7 @@ namespace PRM.Core.Protocol.Putty
                 dlg.Filter = "ppk|*.*";
                 if (dlg.ShowDialog() == true)
                 {
-                    ((ProtocolServerSSH)Vm).PrivateKey = File.ReadAllText(dlg.FileName);
+                    ((ProtocolServerSSH)Vm).PrivateKey = dlg.FileName;
                 }
             }
         }

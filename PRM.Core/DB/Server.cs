@@ -53,7 +53,7 @@ namespace PRM.Core.DB
             Init();
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            SystemConfig.GetInstance().DataSecurity.EncryptInfo(tmp);
+            SystemConfig.Instance.DataSecurity.EncryptInfo(tmp);
 
             if (isAdd == false)
             {
@@ -80,8 +80,8 @@ namespace PRM.Core.DB
             var servers = ListAll<Server>();
             foreach (var server in servers)
             {
-                var tmp = ServerFactory.GetInstance().CreateFromDbObjectServerOrm(server);
-                SystemConfig.GetInstance().DataSecurity.DecryptInfo(tmp);
+                var tmp = ServerCreateHelper.CreateFromDbObjectServerOrm(server);
+                SystemConfig.Instance.DataSecurity.DecryptInfo(tmp);
                 yield return tmp;
             }
         }

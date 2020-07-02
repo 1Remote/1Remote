@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
 using PRM.Core.DB;
+using PRM.Core.Model;
 using Shawn.Ulits;
 using Brush = System.Drawing.Brush;
 using Color = System.Windows.Media.Color;
@@ -16,11 +17,19 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase, ICloneable
     {
-        protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName)
+        protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName, bool onlyOneInstance = true)
         {
             Protocol = protocol;
             ClassVersion = classVersion;
             ProtocolDisplayName = protocolDisplayName;
+            OnlyOneInstance = onlyOneInstance;
+        }
+
+        private bool _onlyOneInstance = true;
+        public bool OnlyOneInstance
+        {
+            get => _onlyOneInstance;
+            private set => SetAndNotifyIfChanged(nameof(OnlyOneInstance), ref _onlyOneInstance, value);
         }
 
 
@@ -31,7 +40,6 @@ namespace PRM.Core.Protocol
             get => _id;
             set => SetAndNotifyIfChanged(nameof(Id), ref _id, value);
         }
-
 
         public string Protocol { get; }
 
@@ -44,10 +52,7 @@ namespace PRM.Core.Protocol
         public string DispName
         {
             get => _dispName;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
         }
 
         [JsonIgnore]
@@ -111,7 +116,6 @@ namespace PRM.Core.Protocol
                 {
                     _iconBase64 = null;
                     Icon = null;
-                    //Console.WriteLine(e);
                 }
             }
         }
@@ -155,19 +159,6 @@ namespace PRM.Core.Protocol
             get => _lastConnTime;
             set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
         }
-
-
-        [JsonIgnore]
-        public Action<uint> OnCmdConn = null;
-
-        public void Conn()
-        {
-            Debug.Assert(this.Id > 0);
-            this.LastConnTime = DateTime.Now;
-            Server.AddOrUpdate(this);
-            OnCmdConn?.Invoke(this.Id);
-        }
-
 
         /// <summary>
         /// copy all value type fields
@@ -242,16 +233,18 @@ namespace PRM.Core.Protocol
         //    }
         //    return false;
         //}
+        public virtual string ToJsonString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
 
 
-        public abstract string ToJsonString();
         public abstract ProtocolServerBase CreateFromJsonString(string jsonString);
 
 
 
 
         protected abstract string GetSubTitle();
-
 
 
 

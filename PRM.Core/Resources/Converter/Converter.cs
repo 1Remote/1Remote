@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,6 +11,41 @@ using Shawn.Ulits;
 
 namespace PRM.Resources.Converter
 {
+    public class ConverterIsGreaterThan : IValueConverter
+    {
+        public int CompareValue { get; set; } = 0;
+        // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int v = (int)value;
+            return v > CompareValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+    public class ConverterIsLowerThan : IValueConverter
+    {
+        public int CompareValue { get; set; } = 0;
+        // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            int v = (int)value;
+            return v < CompareValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+    }
+
     public class ConverterBool2Visible : IValueConverter
     {
         #region IValueConverter 成员  
@@ -147,15 +184,33 @@ namespace PRM.Resources.Converter
 
                 if (string.IsNullOrEmpty(keyWord))
                     return true;
-                var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
-                if (f1)
+                //var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
+                //if (f1)
+                //{
+                //    return true;
+                //}
+                //return false;
+
+
+                var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
+                var keyWordIsMatch = new List<bool>(keyWords.Length);
+                for (var i = 0; i < keyWords.Length; i++)
+                    keyWordIsMatch.Add(false);
+
+                var dispName = server.DispName;
+                var subTitle = server.SubTitle;
+                for (var i = 0; i < keyWordIsMatch.Count; i++)
                 {
-                    return true;
+                    var f1 = dispName.IsMatchPinyinKeyWords(keyWords[i], out var m1);
+                    var f2 = subTitle.IsMatchPinyinKeyWords(keyWords[i], out var m2);
+                    keyWordIsMatch[i] = f1 || f2;
                 }
 
+                if (keyWordIsMatch.All(x => x == true))
+                    return true;
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return true;
             }

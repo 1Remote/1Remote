@@ -6,10 +6,10 @@ using System.Windows.Controls;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.UI.VM;
 using PRM.Core.Ulits.DragablzTab;
 using PRM.Model;
 using PRM.View;
+using Shawn.Ulits;
 using Shawn.Ulits.RDP;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -35,11 +35,7 @@ namespace PRM.ViewModel
         public TabItemViewModel SelectedItem
         {
             get => _selectedItem;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
-                SelectedItem?.Content?.MakeItFocus();
-            }
+            set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
         }
 
         #region drag drop tab
@@ -59,7 +55,7 @@ namespace PRM.ViewModel
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                            WindowPool.MoveProtocolToFullScreen(SelectedItem.Content.ProtocolServer.Id);
+                            RemoteWindowPool.Instance.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;
@@ -75,7 +71,7 @@ namespace PRM.ViewModel
                 {
                     _cmdClose = new RelayCommand((o) =>
                     {
-                        WindowPool.DelTabWindow(Token);
+                        RemoteWindowPool.Instance.DelTabWindow(Token);
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdClose;
@@ -91,8 +87,7 @@ namespace PRM.ViewModel
         {
             string token = DateTime.Now.Ticks.ToString();
             var v = new TabWindow(token);
-            var vm = v.Vm;
-            WindowPool.AddTab(v);
+            RemoteWindowPool.Instance.AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)

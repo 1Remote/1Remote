@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using PRM.Core.DB;
@@ -29,61 +31,24 @@ namespace PRM.View
     {
         public VmMain Host;
         public VmSystemConfigPage VmSystemConfigPage;
-        public SystemConfigPage(VmMain host)
+        public SystemConfigPage(VmMain host,Type t = null)
         {
             Host = host;
             VmSystemConfigPage = new VmSystemConfigPage(host);
             InitializeComponent();
             DataContext = VmSystemConfigPage;
-        }
 
-        private void ButtonSelectDb_OnClick(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "Sqlite Database|*.db";
-            if (dlg.ShowDialog() == true)
-            {
-                try
-                {
-                    using (var db = new SQLiteConnection(dlg.FileName))
-                    {
-                        db.CreateTable<Server>();
-                    }
-                    VmSystemConfigPage.SystemConfig.DataSecurity.DbPath = dlg.FileName;
-                }
-                catch (Exception ee)
-                {
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_can_not_open"));
-                }
-            }
-        }
-
-
-
-        private void ButtonSelectRsaKey_OnClick(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog
-            {
-                Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
-                InitialDirectory = VmSystemConfigPage.SystemConfig.DataSecurity.RsaPrivateKeyPath,
-            };
-            if (dlg.ShowDialog() == true)
-            {
-                var res = SystemConfig.GetInstance().DataSecurity.ValidateRsa(dlg.FileName);
-                switch (res)
-                {
-                    case SystemConfigDataSecurity.ERsaStatues.Ok:
-                        SystemConfig.GetInstance().DataSecurity.RsaPrivateKeyPath = dlg.FileName;
-                        break;
-                    case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                    case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                        MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+            
+            if (t == typeof(SystemConfigGeneral))
+                TabItemGeneral.IsSelected = true;
+            if (t == typeof(SystemConfigLanguage))
+                TabItemGeneral.IsSelected = true;
+            if (t == typeof(SystemConfigQuickConnect))
+                TabItemQuick.IsSelected = true;
+            if (t == typeof(SystemConfigDataSecurity))
+                TabItemDataBase.IsSelected = true;
+            if (t == typeof(SystemConfigTheme))
+                TabItemTheme.IsSelected = true;
         }
 
 
@@ -144,8 +109,8 @@ namespace PRM.View
 
         private bool SetHotkeyIsRegistered(ModifierKeys modifier, Key key)
         {
-            if (modifier == SystemConfig.GetInstance().QuickConnect.HotKeyModifiers
-                && key == SystemConfig.GetInstance().QuickConnect.HotKeyKey)
+            if (modifier == SystemConfig.Instance.QuickConnect.HotKeyModifiers
+                && key == SystemConfig.Instance.QuickConnect.HotKeyKey)
             {
                 VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
                 VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
@@ -154,27 +119,33 @@ namespace PRM.View
 
 
             // check if HOTKEY_ALREADY_REGISTERED
-            var r = GlobalHotkeyHooker.GetInstance().Regist(null, modifier, key, () => { });
+            var r = GlobalHotkeyHooker.Instance.Regist(null, modifier, key, () => { });
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
-                    GlobalHotkeyHooker.GetInstance().Unregist(r.Item3);
+                    GlobalHotkeyHooker.Instance.Unregist(r.Item3);
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.GetInstance().Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.GetInstance().QuickConnect.HotKeyModifiers;
-            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.GetInstance().QuickConnect.HotKeyKey;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.Instance.QuickConnect.HotKeyModifiers;
+            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.Instance.QuickConnect.HotKeyKey;
 
             return false;
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            var link = sender as Hyperlink;
+            Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
     }
 

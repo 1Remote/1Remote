@@ -104,8 +104,8 @@
     <Grid Background="{DynamicResource MainBgColorBrush}">
 
         <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}" IsEnabled="{Binding TabIsEnabled}">
-            <TabItem Header="{DynamicResource system_options_general_title}">
-                <StackPanel Margin="20 20 0 0">
+            <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
+                <StackPanel Margin="0 20 0 0">
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
@@ -124,7 +124,7 @@
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_start}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
@@ -134,7 +134,7 @@
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_minimized}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
@@ -149,7 +149,7 @@
                                 </Style>
                             </StackPanel.Resources>
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_server_order_by}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" VerticalAlignment="Center" Width="Auto">
+                            <Grid Style="{StaticResource ServerEditorRowInput}" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
@@ -167,12 +167,24 @@
                     </Grid>
 
 
+                    <Grid Style="{StaticResource ServerEditorRow}" >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_log_file_path}"></TextBlock>
+                            <!--<Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            </Grid>-->
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}"></Button>
+                        </StackPanel>
+                    </Grid>
+
+
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                            <!--<Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
-                            </Grid>
+                            </Grid>-->
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -184,8 +196,9 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="{DynamicResource system_options_quick_title}">
-                <StackPanel Margin="20 20 0 0">
+
+            <TabItem Name="TabItemQuick" Header="{DynamicResource system_options_quick_title}">
+                <StackPanel Margin="0 20 0 0">
 
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
@@ -224,21 +237,23 @@
 
                     <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="64 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
+                            <TextBlock Margin="64 0 0 0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="450" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="{DynamicResource system_options_data_security_title}">
 
-                <StackPanel Margin="20 20 0 0">
+            <TabItem Name="TabItemDataBase" Header="{DynamicResource system_options_data_security_title}">
+
+                <StackPanel Margin="0 20 0 0">
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath}"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectDb_OnClick"></Button>
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></Button>
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -246,12 +261,12 @@
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="0 0 0 0" Command="{Binding CmdGenRsaKey}" 
+                                    <Button Margin="0" Command="{Binding SystemConfig.DataSecurity.CmdGenRsaKey}" 
                                             Content="{DynamicResource system_options_data_security_rsa_encrypt}">
                                         <Button.Style>
-                                            <Style TargetType="Button">
+                                            <Style TargetType="Button" BasedOn="{StaticResource ServerEditorCautionButton}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
@@ -261,10 +276,10 @@
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Background="{DynamicResource MainColor2Brush}" Margin="20 0 0 0" Command="{Binding CmdClearRsaKey}"
+                                    <Button Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdClearRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_decrypt}">
                                         <Button.Style>
-                                            <Style TargetType="Button">
+                                            <Style TargetType="Button" BasedOn="{StaticResource ServerEditorCautionButton}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                         <Setter Property="IsEnabled" Value="False"></Setter>
@@ -282,29 +297,22 @@
                     <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Name="TbPublicKey" Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="200" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
-                    <!--<Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
-                            <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="TXT:若要修改密钥，请先取消加密。" TextWrapping="WrapWithOverflow"></TextBlock>
-                        </StackPanel>
-                    </Grid>-->
-
 
 
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
-                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="300">
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_open}" Click="ButtonSelectRsaKey_OnClick">
+                            <Button Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}">
                                 <Button.Style>
-                                    <Style TargetType="Button">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ServerEditorNormalButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
@@ -321,11 +329,80 @@
                             <TextBlock Margin="0" Style="{StaticResource ServerEditorRowTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_data_security_info_encrypt_private_key_warning}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
+
+
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_export}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource ServerEditorCautionButton}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToJson}"
+                                            Content="{DynamicResource system_options_data_security_export_to_json}"></Button>
+                                    <Button Style="{StaticResource ServerEditorCautionButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToCsv}"
+                                            Content="{DynamicResource system_options_data_security_export_to_csv}"></Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_import}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromJson}"
+                                            Content="{DynamicResource system_options_data_security_import_from_json}"></Button>
+                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromCsv}"
+                                            Content="{DynamicResource system_options_data_security_import_from_csv}"></Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
+
+
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="TXT:Theme" />
+            <TabItem Name="TabItemTheme" Header="{DynamicResource system_options_data_theme_title}">
+                <StackPanel Margin="0 20 0 0">
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="15 0" Height="30">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{DynamicResource system_options_data_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_putty_font_size}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="200">
+                                <TextBox Text="{Binding SystemConfig.Theme.PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_putty_theme}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="200">
+                                <ComboBox SelectedValuePath="Tag"
+                                          ItemsSource="{Binding SystemConfig.Theme.PuttyThemeNames}"
+                                          SelectedItem="{Binding SystemConfig.Theme.PuttyThemeName}">
+                                </ComboBox>
+                            </Grid>
+                            <TextBlock VerticalAlignment="Center" Margin="2 0">
+                                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                    (?)
+                                </Hyperlink>
+                            </TextBlock>
 
+                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource system_options_data_theme_putty_customize}" Command="{Binding SystemConfig.Theme.CmdPuttyThemeCustomize}"></Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
         </TabControl>
 
 
@@ -374,16 +451,5 @@
                 </Style>
             </Button.Style>
         </Button>
-
-
-        <Grid Visibility="{Binding ProgressBarVisibility}">
-            <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
-            <Grid>
-                <StackPanel VerticalAlignment="Center">
-                    <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
-                    <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_info_data_processing}" TextWrapping="Wrap"></TextBlock>
-                </StackPanel>
-            </Grid>
-        </Grid>
     </Grid>
 </UserControl>

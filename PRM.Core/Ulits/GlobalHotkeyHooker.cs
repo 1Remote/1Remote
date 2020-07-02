@@ -16,7 +16,7 @@ namespace Shawn.Ulits
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                var r = GlobalHotkeyHooker.GetInstance().Regist(this,(uint)GlobalHotkeyHooker.HotkeyModifiers.Ctrl | (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt, Key.M, 
+                var r = GlobalHotkeyHooker.Instance.Regist(this,(uint)GlobalHotkeyHooker.HotkeyModifiers.Ctrl | (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt, Key.M, 
                     () => { MessageBox.Show("hook"); });
                 switch (r.Item1)
                 {
@@ -77,6 +77,7 @@ namespace Shawn.Ulits
             }
             return uniqueInstance;
         }
+        public static GlobalHotkeyHooker Instance => GetInstance();
         #endregion
 
         ~GlobalHotkeyHooker()

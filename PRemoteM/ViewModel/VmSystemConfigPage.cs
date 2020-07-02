@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security;
+using System.Security.AccessControl;
+using System.Security.Permissions;
+using System.Security.Principal;
+using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using Microsoft.Win32;
-using PersonalRemoteManager;
+using Newtonsoft.Json;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.UI.VM;
-using PRM.Core.Ulits;
-using PRM.View;
-using Shawn.Ulits.PageHost;
+using PRM.Core.Protocol.Putty;
+using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.RDP;
+using Shawn.Ulits;
 using SQLite;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -24,14 +29,7 @@ namespace PRM.ViewModel
         {
             Host = vmMain;
             // create new SystemConfigGeneral object
-            SystemConfig = SystemConfig.GetInstance();
-            SystemConfig.DataSecurity.OnRsaProgress += OnRsaProgress;
-        }
-
-        private void OnRsaProgress(int arg1, int arg2)
-        {
-            ProgressBarValue = arg1;
-            ProgressBarMaximum = arg2;
+            SystemConfig = SystemConfig.Instance;
         }
 
         public SystemConfig SystemConfig { get; set; }
@@ -43,7 +41,7 @@ namespace PRM.ViewModel
             private set => SetAndNotifyIfChanged(nameof(TabIsEnabled), ref _tabIsEnabled, value);
         }
 
-        private Visibility _progressBarVisibility = Visibility.Hidden;
+        private Visibility _progressBarVisibility = Visibility.Collapsed;
         public Visibility ProgressBarVisibility
         {
             get => _progressBarVisibility;
@@ -51,35 +49,35 @@ namespace PRM.ViewModel
         }
 
 
-        private int _progressBarValue = 0;
-        public int ProgressBarValue
-        {
-            get => _progressBarValue;
-            set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
-        }
+        //private int _progressBarValue = 0;
+        //public int ProgressBarValue
+        //{
+        //    get => _progressBarValue;
+        //    set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
+        //}
 
-        private int _progressBarMaximum = 0;
-        public int ProgressBarMaximum
-        {
-            get => _progressBarMaximum;
-            set
-            {
-                if (value != _progressBarMaximum)
-                {
-                    SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
-                    if (value == 0)
-                    {
-                        //TabIsEnabled = true;
-                        ProgressBarVisibility = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        //TabIsEnabled = false;
-                        ProgressBarVisibility = Visibility.Visible;
-                    }
-                }
-            }
-        }
+        //private int _progressBarMaximum = 0;
+        //public int ProgressBarMaximum
+        //{
+        //    get => _progressBarMaximum;
+        //    set
+        //    {
+        //        if (value != _progressBarMaximum)
+        //        {
+        //            SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
+        //            if (value == 0)
+        //            {
+        //                //TabIsEnabled = true;
+        //                ProgressBarVisibility = Visibility.Collapsed;
+        //            }
+        //            else
+        //            {
+        //                //TabIsEnabled = false;
+        //                ProgressBarVisibility = Visibility.Visible;
+        //            }
+        //        }
+        //    }
+        //}
 
 
         #region CMD
@@ -93,50 +91,29 @@ namespace PRM.ViewModel
                 {
                     _cmdSaveAndGoBack = new RelayCommand((o) =>
                     {
+                        // check if Db is ok
+                        var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        if (!c1.Item1)
                         {
-                            try
-                            {
-                                Server.Init();
-                            }
-                            catch (Exception ee)
-                            {
-                                MessageBox.Show(
-                                    SystemConfig.GetInstance().Language
-                                        .GetText("system_options_data_security_error_can_not_open") + ": " +
-                                    SystemConfig.DataSecurity.DbPath);
-                                return;
-                            }
-                        }
-
-
-                        var ret = SystemConfig.GetInstance().DataSecurity.ValidateRsa();
-                        switch (ret)
-                        {
-                            case SystemConfigDataSecurity.ERsaStatues.Ok:
-                                break;
-                            case SystemConfigDataSecurity.ERsaStatues.CanNotFindPrivateKey:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-                                return;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyContentError:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                return;
-                            case SystemConfigDataSecurity.ERsaStatues.PrivateKeyIsNotMatch:
-                                MessageBox.Show(SystemConfig.GetInstance().Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-                                return;
-                            default:
-                                throw new ArgumentOutOfRangeException();
+                            MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
+                            //MessageBox.Show(
+                            //    SystemConfig.Language
+                            //        .GetText("system_options_data_security_error_can_not_open") + ": " +
+                            //    SystemConfig.DataSecurity.DbPath,
+                            //    SystemConfig.Language.GetText("messagebox_title_error"));
+                            return;
                         }
 
 
                         Host.DispPage = null;
 
                         /***                update config                ***/
-                        SystemConfig.GetInstance().Language.Save();
-                        SystemConfig.GetInstance().General.Save();
-                        SystemConfig.GetInstance().QuickConnect.Save();
-                        SystemConfig.GetInstance().DataSecurity.Save();
-
-                        Global.GetInstance().ReloadServers();
+                        SystemConfig.Language.Save();
+                        SystemConfig.General.Save();
+                        SystemConfig.QuickConnect.Save();
+                        SystemConfig.DataSecurity.Save();
+                        SystemConfig.Theme.Save();
+                        SystemConfig.Theme.ReloadThemes();
                     });
                 }
                 return _cmdSaveAndGoBack;
@@ -144,36 +121,32 @@ namespace PRM.ViewModel
         }
 
 
-        private RelayCommand _cmdGenRsaKey;
-        public RelayCommand CmdGenRsaKey
+
+
+        private RelayCommand _cmdOpenPath;
+        public RelayCommand CmdOpenPath
         {
             get
             {
-                if (_cmdGenRsaKey == null)
+                if (_cmdOpenPath == null)
                 {
-                    _cmdGenRsaKey = new RelayCommand((o) =>
+                    _cmdOpenPath = new RelayCommand((o) =>
                     {
-                        SystemConfig.DataSecurity.GenRsa();
+                        var path = o.ToString();
+                        if (File.Exists(path))
+                        {
+                            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe");
+                            psi.Arguments = "/e,/select," + path;
+                            System.Diagnostics.Process.Start(psi);
+                        }
+
+                        if (Directory.Exists(path))
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", path);
+                        }
                     });
                 }
-                return _cmdGenRsaKey;
-            }
-        }
-
-
-        private RelayCommand _cmdClearRsaKey;
-        public RelayCommand CmdClearRsaKey
-        {
-            get
-            {
-                if (_cmdClearRsaKey == null)
-                {
-                    _cmdClearRsaKey = new RelayCommand((o) =>
-                    {
-                        SystemConfig.DataSecurity.CleanRsa();
-                    });
-                }
-                return _cmdClearRsaKey;
+                return _cmdOpenPath;
             }
         }
         #endregion

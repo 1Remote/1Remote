@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pageHost1="clr-namespace:Shawn.Ulits.PageHost;assembly=PRM.Core"
+        xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
         x:Name="Window"
-        Title="PRemoteM" Height="500" Width="680" MinWidth="530" MinHeight="300">
+        Title="PRemoteM" Height="590" Width="840" MinWidth="840" MinHeight="590">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
@@ -122,17 +123,17 @@
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Opacity" Value="0.5"></Setter>
+                            <Setter Property="Opacity" Value="0.6"></Setter>
                             <Setter Property="Background" Value="Transparent"></Setter>
                             <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor1LighterBrush}"/>
-                                    <Setter Property="Opacity" Value="0.6"></Setter>
+                                    <Setter Property="Opacity" Value="0.8"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsFocused" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"/>
-                                    <Setter Property="Opacity" Value="0.6"></Setter>
+                                    <Setter Property="Opacity" Value="0.8"></Setter>
                                 </Trigger>
                                 <Trigger Property="Text" Value="{x:Null}">
                                     <Setter Property="Background" Value="{StaticResource HintText}"/>
@@ -166,6 +167,23 @@
                     <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
                           -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
                           Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="0.75" Stretch="Fill" />
+
+                    <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
+                          Fill="Red" 
+                          Stretch="Uniform"
+                          Width="6"
+                          Margin="0 -3 -3 0"
+                          VerticalAlignment="Top" HorizontalAlignment="Right" >
+                        <Path.Style>
+                            <Style TargetType="Path">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Value="">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Path.Style>
+                    </Path>
                 </Grid>
             </Button>
             <Popup Name="PopupSettingMenu" 
@@ -185,7 +203,7 @@
                                     <Border x:Name="border" 
                                                                 Background="{TemplateBinding Background}"
                                                                 Opacity="{TemplateBinding Opacity}"
-                                                                Padding="20 0 0 0"
+                                                                Padding="0 0 0 0"
                                                                 BorderThickness="0"
                                                                 SnapsToDevicePixels="true">
                                         <ContentPresenter x:Name="contentPresenter" Focusable="False" 
@@ -215,14 +233,38 @@
                     </Border.Effect>
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
-                            <Button Content="{DynamicResource system_menu_options_title}" Command="{Binding CmdGoSysOptionsPage}"></Button>
+                            <Button Command="{Binding CmdGoSysOptionsPage}">
+                                <TextBlock Text="{DynamicResource system_menu_options_title}" Margin="20 0 0 0"></TextBlock>
+                            </Button>
                             <Button Command="{Binding CmdGoAboutPage}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{DynamicResource system_menu_about_title}"></TextBlock>
-                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="16" Margin="10 0 0 0"></Image>
+                                <Grid>
+                                    <Grid Width="20" HorizontalAlignment="Left">
+                                        <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
+                                          Fill="Red" Stretch="Uniform"
+                                          Width="6"
+                                          VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
+                                        <TextBlock Text="{DynamicResource system_menu_about_title}"></TextBlock>
+                                        <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="16" Margin="10 0 0 0"></Image>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                            <Button Click="ButtonExit_OnClick">
+                                <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
+                                    <TextBlock Text="{DynamicResource button_exit}"></TextBlock>
                                 </StackPanel>
                             </Button>
-                            <Button Content="{DynamicResource button_exit}" Click="ButtonExit_OnClick"></Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -287,6 +329,28 @@
         <Grid Grid.Row="1">
             <ContentControl Content="{Binding PageServerList}"></ContentControl>
             <pageHost1:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
+
+            <Grid>
+                <Grid.Resources>
+                </Grid.Resources>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=ProgressBarMaximum, Converter={StaticResource ConverterIsGreaterThan0}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
+                        <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{Binding ProgressBarInfo}" TextWrapping="Wrap"></TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

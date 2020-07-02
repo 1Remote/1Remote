@@ -35,33 +35,7 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-
-            <!--<Color x:Key="MainColor1">#102b3e</Color>
-            <Color x:Key="MainColor1Lighter">#445a68</Color>
-            <Color x:Key="MainColor1Darker">#0c2230</Color>
-            <Color x:Key="MainColor1Foreground">White</Color>
-
-            <Color x:Key="MainColor2">#e83d61</Color>
-            <Color x:Key="MainColor2Lighter">#ed6884</Color>
-            <Color x:Key="MainColor2Darker">#b5304c</Color>
-            <Color x:Key="MainColor2Foreground">White</Color>
-
-            <Color x:Key="MainBgColor">#ced8e1</Color>
-            <Brush x:Key="MainBgColorForeground">#000</Brush>
-
-            <Brush x:Key="MainColor1Brush">#102b3e</Brush>
-            <Brush x:Key="MainColor1LighterBrush">#445a68</Brush>
-            <Brush x:Key="MainColor1DarkerBrush">#0c2230</Brush>
-            <Brush x:Key="MainColor1ForegroundBrush">White</Brush>
-
-            <Brush x:Key="MainColor2Brush">#e83d61</Brush>
-            <Brush x:Key="MainColor2LighterBrush">#ed6884</Brush>
-            <Brush x:Key="MainColor2DarkerBrush">#b5304c</Brush>
-            <Brush x:Key="MainColor2ForegroundBrush">White</Brush>
-
-            <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
-            <Brush x:Key="MainBgColorForegroundBrush">#000</Brush>-->
-
+            <Thickness x:Key="TabContentBorder">2,0,2,2</Thickness>
             <view:Hex2Brush x:Key="Hex2Brush"></view:Hex2Brush>
             <Style TargetType="{x:Type Thumb}" x:Key="MahAppsInvisibleThumbStyle">
                 <Setter Property="Background" Value="Transparent" />
@@ -88,8 +62,7 @@
 
             <DataTemplate DataType="{x:Type dragablzTab:TabItemViewModel}">
                 <!--leave some border of remote desktop-->
-                <!--TODO 从同一位置读取该值-->
-                <Grid Margin="2 0 2 2">
+                <Grid Margin="{StaticResource TabContentBorder}">
                     <ContentControl Content="{Binding Content}" Background="Transparent"/>
                 </Grid>
             </DataTemplate>
@@ -191,7 +164,7 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar" PreviewMouseDown="System_MouseDown">
+        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
                     <Image Name="IconTitleBar"></Image>
@@ -297,7 +270,7 @@
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
             </Button>
-            
+
 
             <Button Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
                 <Button.Style>

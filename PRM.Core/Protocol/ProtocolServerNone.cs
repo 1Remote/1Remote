@@ -11,11 +11,6 @@ namespace PRM.Core.Protocol
     /// </summary>
     public class ProtocolServerNone : ProtocolServerBase
     {
-        public override string ToJsonString()
-        {
-            return "";
-        }
-
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             throw new NotImplementedException();

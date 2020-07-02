@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -12,6 +13,7 @@ using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.Model;
 using PRM.ViewModel;
+using Shawn.Ulits;
 using Size = System.Windows.Size;
 
 namespace PRM.View
@@ -28,54 +30,96 @@ namespace PRM.View
             Vm = new VmTabWindow(token);
             DataContext = Vm;
 
-
-            this.Width = SystemConfig.GetInstance().Locality.TabWindowWidth;
-            this.Height = SystemConfig.GetInstance().Locality.TabWindowHeight;
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
+            this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.GetInstance().Locality.TabWindowHeight = this.Height;
-                    SystemConfig.GetInstance().Locality.TabWindowWidth = this.Width;
-                    SystemConfig.GetInstance().Locality.Save();
+                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
+                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.Save();
                 }
             };
 
+
+            WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
+            WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
+
+            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm.SelectedItem != null)
                 {
-                    WindowPool.DelProtocolHost(Vm.SelectedItem.Content.ProtocolServer.Id);
+                    RemoteWindowPool.Instance.DelProtocolHost(Vm.SelectedItem.Content.ConnectionId);
                 }
                 else
                 {
                     Vm.CmdClose.Execute();
                 }
             };
-            this.Activated += (sender, args) =>
-            {
-                Vm?.SelectedItem?.Content?.MakeItFocus();
-            };
-            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-            BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
+
+            Activated += (sender, args) => { Vm?.SelectedItem?.Content?.MakeItFocus(); };
         }
 
-        /// <summary>
-        /// DragMove
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void System_MouseDown(object sender, MouseButtonEventArgs e)
+        #region DragMove
+        private bool _isLeftMouseDown = false;
+        private bool _isDraging = false;
+        private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            _isDraging = false;
+            _isLeftMouseDown = false;
+
             if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
             {
                 this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                return;
             }
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                _isLeftMouseDown = true;
+                var th = new Thread(new ThreadStart(() =>
+                {
+                    Thread.Sleep(50);
+                    if (_isLeftMouseDown)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            _isDraging = true;
+                        });
+                    }
+                }));
+                th.Start();
+            }
+        }
+        private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _isLeftMouseDown = false;
+            _isDraging = false;
+        }
+        private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && _isDraging)
+            {
+                if (this.WindowState == WindowState.Maximized)
+                {
+                    var p = ScreenInfoEx.GetMouseScreenPosition();
+                    var top = p.Y;
+                    var left = p.X;
+                    this.Top = 0;
+                    this.Left = 0;
+                    this.WindowState = WindowState.Normal;
+                    this.Top = top - 15;
+                    this.Left = left - this.Width / 2;
+                }
                 this.DragMove();
             }
         }
+        #endregion
 
         private void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -97,13 +141,13 @@ namespace PRM.View
             }
         }
 
-        //<!--TODO 从同一位置读取该值-->
-        protected Thickness TabContentBorder { get; } = new Thickness(2, 0, 2, 2);
         public Size GetTabContentSize()
         {
+            Debug.Assert(this.Resources["TabContentBorder"] != null);
+            var tabContentBorder = (Thickness) this.Resources["TabContentBorder"];
             return new Size()
             {
-                Width = TabablzControl.ActualWidth - TabContentBorder.Left - TabContentBorder.Right,
+                Width = TabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
                 Height = TabablzControl.ActualHeight - 30 - 2 - 1,
             };
         }

@@ -21,7 +21,6 @@
     <SolidColorBrush x:Key="ComboBoxDisabledForegroundBrush" Color="#888888" />
     <SolidColorBrush x:Key="ComboBoxDisabledBackgroundBrush" Color="#eeeeee" />
     <SolidColorBrush x:Key="ComboBoxDisabledBorderBrush" Color="#888888" />
-
     <ControlTemplate TargetType="ToggleButton" x:Key="ComboBoxToggleButtonTemplate">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -58,7 +57,6 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-
     <Style TargetType="{x:Type ComboBox}">
         <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
         <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>

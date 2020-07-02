@@ -1,7 +1,13 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.UI.VM;
 using PRM.View;
+using Shawn.Ulits;
 using Shawn.Ulits.PageHost;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -42,17 +48,89 @@ namespace PRM.ViewModel
         public bool SysOptionsMenuIsOpen
         {
             get => _sysOptionsMenuIsOpen;
+            set => SetAndNotifyIfChanged(nameof(SysOptionsMenuIsOpen), ref _sysOptionsMenuIsOpen, value);
+        }
+
+        private int _progressBarValue = 0;
+        public int ProgressBarValue
+        {
+            get => _progressBarValue;
+            set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
+        }
+
+        private int _progressBarMaximum = 0;
+        public int ProgressBarMaximum
+        {
+            get => _progressBarMaximum;
             set
             {
-                SetAndNotifyIfChanged(nameof(SysOptionsMenuIsOpen), ref _sysOptionsMenuIsOpen, value);
+                if (value != _progressBarMaximum)
+                {
+                    SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
+                }
             }
         }
 
-        public VmMain()
+        private string _progressBarInfo = "";
+        public string ProgressBarInfo
         {
-            PageServerList = new ServerListPage(this);
+            get => _progressBarInfo;
+            set
+            {
+                if (value != _progressBarInfo)
+                {
+                    SetAndNotifyIfChanged(nameof(ProgressBarInfo), ref _progressBarInfo, value);
+                }
+            }
         }
 
+        public readonly MainWindow Window;
+
+
+        public VmMain(MainWindow window)
+        {
+            Window = window;
+            PageServerList = new ServerListPage(this);
+
+            GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
+            {
+                ProgressBarValue = arg1;
+                ProgressBarMaximum = arg2;
+                ProgressBarInfo = arg2 > 0 ? arg3 : "";
+            };
+            GlobalEventHelper.OnGoToServerEditPage += (id, isDuplicate) =>
+            {
+                ProtocolServerBase server;
+                if (id <= 0)
+                {
+                    server = new ProtocolServerNone();
+                }
+                else
+                {
+                    Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
+                    server = GlobalData.Instance.ServerList.First(x => x.Id == id);
+                    if (isDuplicate)
+                    {
+                        server = (ProtocolServerBase)server.Clone();
+                        server.Id = 0;
+                    }
+                }
+
+                DispPage = new AnimationPage()
+                {
+                    InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext)),
+                };
+
+                var t = new Task(() =>
+                {
+                    //Thread.Sleep(100);
+                    Window.ActivateMe();
+                });
+                t.Start();
+            };
+        }
 
 
 
@@ -71,7 +149,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SystemConfigPage(this),
+                            Page = new SystemConfigPage(this, (Type)o),
                         };
                         SysOptionsMenuIsOpen = false;
                     }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
