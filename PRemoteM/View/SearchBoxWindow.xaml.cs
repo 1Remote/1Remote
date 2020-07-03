@@ -80,7 +80,7 @@ namespace PRM.View
 
         public void ShowMe()
         {
-            SimpleLogHelper.Info("Call shortcut to invoke quick window."); 
+            SimpleLogHelper.Info("Call shortcut to invoke quick window.");
             _vmSearchBox.DispNameFilter = "";
             if (SystemConfig.Instance.QuickConnect.Enable)
                 if (_isHidden == true)
@@ -210,8 +210,8 @@ namespace PRM.View
                     {
                         case Key.Enter:
                             HideMe();
-                            if (_vmSearchBox.Actions.Count > 0 
-                                && _vmSearchBox.SelectedActionIndex >= 0 
+                            if (_vmSearchBox.Actions.Count > 0
+                                && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
                                 _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();

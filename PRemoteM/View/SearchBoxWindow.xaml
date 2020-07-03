@@ -355,8 +355,7 @@
         <Popup Name="PopupActions" StaysOpen="True"
                AllowsTransparency="True"
                IsOpen="{Binding PopupActionsIsOpen}"
-               Width="{StaticResource Width}"
-               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+               Width="{StaticResource Width}">
             <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" 
                     Background="{DynamicResource MainColor1Brush}">
                 <Grid>
@@ -389,10 +388,12 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="3" 
                                            FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           VerticalAlignment="Center"
                                            Text="{Binding SelectedServer.Server.DispName}"></TextBlock>
 
                                 <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
                                            FontSize="10" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           VerticalAlignment="Center"
                                            Text="{Binding SelectedServer.Server.SubTitle}"></TextBlock>
                             </Grid>
                         </Grid>
