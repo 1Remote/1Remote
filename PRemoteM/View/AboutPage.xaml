@@ -142,8 +142,12 @@
                                 <StackPanel>
                                     <Grid Style="{StaticResource ServerEditorRow}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="How to use"></TextBlock>
-                                            <TextBlock Text="Bug report"></TextBlock>
+                                            <!--<TextBlock Text="How to use"></TextBlock>-->
+                                            <TextBlock>
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM-Test/issues" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                    Bug report
+                                                </Hyperlink>
+                                            </TextBlock>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
@@ -153,7 +157,11 @@
                                 <StackPanel>
                                     <Grid Style="{StaticResource ServerEditorRow}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="Github"></TextBlock>
+                                            <TextBlock>
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM-Test" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                    Github
+                                                </Hyperlink>
+                                            </TextBlock>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
