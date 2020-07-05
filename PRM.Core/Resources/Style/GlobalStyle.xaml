@@ -1,5 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
+                    >
     <Style TargetType="Control">
         <Setter Property="FontFamily" Value="Microsoft YaHei"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
@@ -12,7 +14,129 @@
         <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
     </Style>
 
+    <Style TargetType="{x:Type controls:ButtonEx}" x:Key="ButtonExStyleBase">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+        <Setter Property="Opacity" Value="1"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor1LighterBrush}"/>
+        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="OpacityOnMouseOver" Value="1"/>
+        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor1LighterBrush}"/>
+        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="OpacityOnPressed" Value="0.5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Border 
+                        x:Name="ButtonBorder"
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{Binding BorderCornerRadius, RelativeSource={x:Static RelativeSource.TemplatedParent}}"
+                        SnapsToDevicePixels="true">
+                        </Border>
+                        <ContentPresenter 
+                            x:Name="ButtonContentPresenter"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            RecognizesAccessKey="True" 
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                            Margin="{TemplateBinding Padding}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"></Condition>
+                                <Condition Property="IsEnabled" Value="True"></Condition>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"></Condition>
+                                <Condition Property="IsPressed" Value="True"></Condition>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                            <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
+    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+    </Style>
+
+
+
+    <Style TargetType="Button" x:Key="MainColor1Button">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+        <Setter Property="Opacity" Value="1"></Setter>
+        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"></Condition>
+                    <Condition Property="IsEnabled" Value="True"></Condition>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5" ></Setter>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Opacity" Value="0.7" ></Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="Button" x:Key="MainColor2Button" BasedOn="{StaticResource MainColor1Button}">
+        <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"></Condition>
+                    <Condition Property="IsEnabled" Value="True"></Condition>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+        </Style.Triggers>
+    </Style>
 
 
     <!-- Flat ComboBox ref: https://gist.github.com/hansmaad/9187633 -->
