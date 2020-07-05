@@ -91,7 +91,10 @@ namespace PRM.Core.Protocol.Putty
             var ordered = tmp.OrderBy(x => x.Key);
             foreach (var kv in ordered)
             {
-                themes.Add(kv.Key, kv.Value);
+                if (!themes.ContainsKey(kv.Key))
+                    themes.Add(kv.Key, kv.Value);
+                else
+                    themes[kv.Key] = kv.Value;
             }
             return themes;
         }
