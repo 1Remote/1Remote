@@ -137,7 +137,29 @@
                                 BorderThickness="0" Content="{DynamicResource tab_all}">
                         <controls1:ButtonEx.Style>
                             <Style TargetType="{x:Type controls1:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
+                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Grid>
+                                                <Border Background="{TemplateBinding Background}" 
+                                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                                    SnapsToDevicePixels="true">
+                                                </Border>
+                                                <ContentPresenter 
+                                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                                 <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                                    </Trigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
