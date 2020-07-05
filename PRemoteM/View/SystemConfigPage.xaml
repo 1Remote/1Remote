@@ -6,6 +6,7 @@
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -103,7 +104,7 @@
 
     <Grid Background="{DynamicResource MainBgColorBrush}">
 
-        <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}" IsEnabled="{Binding TabIsEnabled}">
+        <TabControl TabStripPlacement="Left" Style="{DynamicResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}">
             <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
                 <StackPanel Margin="0 20 0 0">
 
@@ -406,50 +407,21 @@
         </TabControl>
 
 
-        <Button VerticalAlignment="Bottom"
-                Width="200" 
+        <controls:ButtonEx VerticalAlignment="Bottom"
+                Width="200" Height="40"
                 HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
-                IsEnabled="{Binding TabIsEnabled}"
+                BorderThickness="0"
+                Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                Background="{DynamicResource MainColor1DarkerBrush}"
+                BackgroundOnMouseOver="{DynamicResource MainColor2Brush}"
+                ForegroundOnMouseOver="{DynamicResource MainColor2ForegroundBrush}"
+                OpacityOnMouseOver="1"
+                BackgroundOnPressed="{DynamicResource MainColor2Brush}"
+                ForegroundOnPressed="{DynamicResource MainColor2ForegroundBrush}"
+                OpacityOnPressed="0.5"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource button_back}">
-            <Button.Style>
-                <Style TargetType="Button">
-                    <Setter Property="Height" Value="40"></Setter>
-                    <Setter Property="Opacity" Value="1"></Setter>
-                    <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
-                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                    <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Border x:Name="border" 
-                                                                Background="{TemplateBinding Background}"
-                                                                Opacity="{TemplateBinding Opacity}"
-                                                                Padding="0 0 0 0"
-                                                                BorderThickness="0"
-                                                                SnapsToDevicePixels="true">
-                                    <ContentPresenter x:Name="contentPresenter" Focusable="False" 
-                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                                              Margin="3" 
-                                                                              RecognizesAccessKey="True" 
-                                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="Button.IsMouseOver" Value="true">
-                                        <Setter TargetName="border" Property="Background" Value="{DynamicResource MainColor2Brush}"/>
-                                        <Setter Property="Opacity" Value="1"/>
-                                    </Trigger>
-                                    <Trigger Property="Button.IsPressed" Value="true">
-                                        <Setter Property="Opacity" Value="0.9"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Button.Style>
-        </Button>
+        </controls:ButtonEx>
     </Grid>
 </UserControl>

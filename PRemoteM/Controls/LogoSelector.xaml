@@ -148,7 +148,7 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>

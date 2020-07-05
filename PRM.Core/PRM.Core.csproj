@@ -118,6 +118,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\Controls\ButtonEx.cs" />
     <Compile Include="Ulits\AES256.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPalette.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />

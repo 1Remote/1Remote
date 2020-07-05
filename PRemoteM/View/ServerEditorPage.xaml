@@ -102,8 +102,8 @@
                                                             <Button.Style>
                                                                 <Style TargetType="Button" >
                                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                                                                    <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
+                                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                                                     <Setter Property="Template">
                                                                         <Setter.Value>
                                                                             <ControlTemplate TargetType="{x:Type Button}">
@@ -115,7 +115,7 @@
                                                                     </Setter>
                                                                     <Style.Triggers>
                                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
                                                                         </Trigger>
                                                                     </Style.Triggers>
                                                                 </Style>
@@ -139,7 +139,7 @@
                                                                     </Setter>
                                                                     <Style.Triggers>
                                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                                            <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
                                                                         </Trigger>
                                                                     </Style.Triggers>
                                                                 </Style>
@@ -365,62 +365,15 @@
                                 Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
+                                Style="{DynamicResource MainColor2Button}"
                                 BorderThickness="0" Content="{DynamicResource button_save}">
-                            <Button.Style>
-                                <Style TargetType="Button" >
-                                    <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsMouseOver" Value="True"></Condition>
-                                                <Condition Property="IsEnabled" Value="True"></Condition>
-                                            </MultiTrigger.Conditions>
-                                            <MultiTrigger.Setters>
-                                                <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
-                                            </MultiTrigger.Setters>
-                                        </MultiTrigger>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Opacity" Value="0.7" ></Setter>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
                         </Button>
 
                         <Button Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
-                                BorderThickness="0" Content="{DynamicResource button_cancel}">
-                            <Button.Style>
-                                <Style TargetType="Button" >
-                                    <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
+                                Style="{DynamicResource MainColor1Button}"
+                                BorderThickness="1" Content="{DynamicResource button_cancel}">
                         </Button>
                     </Grid>
                 </Grid>
