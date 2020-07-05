@@ -7,6 +7,7 @@
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -14,7 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -361,20 +361,20 @@
                 <Grid Height="{StaticResource BottomHeight}">
 
                     <Grid Width="300">
-                        <Button Name="ButtonSave"
+                        <controls:ButtonEx Name="ButtonSave"
                                 Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
                                 Style="{DynamicResource MainColor2Button}"
                                 BorderThickness="0" Content="{DynamicResource button_save}">
-                        </Button>
+                        </controls:ButtonEx>
 
-                        <Button Padding="0 1 0 0" Width="80" Height="20"
+                        <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
-                                Style="{DynamicResource MainColor1Button}"
-                                BorderThickness="1" Content="{DynamicResource button_cancel}">
-                        </Button>
+                                BorderThickness="1"
+                                Content="{DynamicResource button_cancel}">
+                        </controls:ButtonEx>
                     </Grid>
                 </Grid>
             </Border>

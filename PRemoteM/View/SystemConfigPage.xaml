@@ -14,11 +14,13 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary>
                     <view:EnumServerOrderBy2IsCheckedConverter x:Key="EnumServerOrderBy2IsCheckedConverter"/>
                     <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
                     <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
+                </ResourceDictionary>
+                <ResourceDictionary>
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
@@ -174,7 +176,7 @@
                             <!--<Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
-                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}"></Button>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -185,7 +187,7 @@
                             <!--<Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
-                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></Button>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -253,8 +255,8 @@
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath}"></TextBox>
                             </Grid>
-                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></Button>
-                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></Button>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -264,10 +266,10 @@
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Margin="0" Command="{Binding SystemConfig.DataSecurity.CmdGenRsaKey}" 
+                                    <controls:ButtonEx Margin="0" Command="{Binding SystemConfig.DataSecurity.CmdGenRsaKey}" 
                                             Content="{DynamicResource system_options_data_security_rsa_encrypt}">
                                         <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ServerEditorCautionButton}">
+                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2ButtonRadius3}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
@@ -276,11 +278,11 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
-                                    </Button>
-                                    <Button Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdClearRsaKey}"
+                                    </controls:ButtonEx>
+                                    <controls:ButtonEx Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdClearRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_decrypt}">
                                         <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ServerEditorCautionButton}">
+                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2ButtonRadius3}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                         <Setter Property="IsEnabled" Value="False"></Setter>
@@ -288,7 +290,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
-                                    </Button>
+                                    </controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -311,9 +313,9 @@
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <Button Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}">
+                            <controls:ButtonEx Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ServerEditorNormalButton}">
+                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
@@ -321,7 +323,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                            </Button>
+                            </controls:ButtonEx>
                         </StackPanel>
                     </Grid>
                     <Grid Style="{StaticResource ServerEditorRow}" Height="Auto" Opacity="0.3">
@@ -339,10 +341,10 @@
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_export}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource ServerEditorCautionButton}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToJson}"
-                                            Content="{DynamicResource system_options_data_security_export_to_json}"></Button>
-                                    <Button Style="{StaticResource ServerEditorCautionButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToCsv}"
-                                            Content="{DynamicResource system_options_data_security_export_to_csv}"></Button>
+                                    <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToJson}"
+                                            Content="{DynamicResource system_options_data_security_export_to_json}"></controls:ButtonEx>
+                                    <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToCsv}"
+                                            Content="{DynamicResource system_options_data_security_export_to_csv}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -355,10 +357,10 @@
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_security_import}"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromJson}"
-                                            Content="{DynamicResource system_options_data_security_import_from_json}"></Button>
-                                    <Button Style="{StaticResource ServerEditorNormalButton}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromCsv}"
-                                            Content="{DynamicResource system_options_data_security_import_from_csv}"></Button>
+                                    <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromJson}"
+                                            Content="{DynamicResource system_options_data_security_import_from_json}"></controls:ButtonEx>
+                                    <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromCsv}"
+                                            Content="{DynamicResource system_options_data_security_import_from_csv}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -399,7 +401,7 @@
                                 </Hyperlink>
                             </TextBlock>
 
-                            <Button Style="{StaticResource ServerEditorNormalButton}" Content="{DynamicResource system_options_data_theme_putty_customize}" Command="{Binding SystemConfig.Theme.CmdPuttyThemeCustomize}"></Button>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource system_options_data_theme_putty_customize}" Command="{Binding SystemConfig.Theme.CmdPuttyThemeCustomize}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
