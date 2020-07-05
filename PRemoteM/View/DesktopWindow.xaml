@@ -11,13 +11,6 @@
             <RowDefinition Height="30"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid>
-            <StackPanel Orientation="Horizontal">
-                <!--<Button Click="ButtonConn_OnClick">Conn</Button>
-                <Button Click="ButtonDisconn_OnClick">Disconn</Button>
-                <Button Click="ButtonFullScreen1_OnClick">FullScreen 1 Monitor</Button>-->
-            </StackPanel>
-        </Grid>
         <ContentControl Grid.Row="1" x:Name="DesktopContent"/>
     </Grid>
 </Window>

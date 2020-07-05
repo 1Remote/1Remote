@@ -152,7 +152,7 @@
                                         Value="{TemplateBinding HorizontalOffset}"
                                         Maximum="{TemplateBinding ScrollableWidth}"
                                         ViewportSize="{TemplateBinding ViewportWidth}"
-                                        Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Style="{DynamicResource MinHorizontalScrollBarStyle}"/>
+                                        Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Style="{StaticResource MinHorizontalScrollBarStyle}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">

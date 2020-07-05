@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              xmlns:s="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
         <s:Double x:Key="CardWidth">144</s:Double>
@@ -145,12 +146,12 @@
                             <RowDefinition Height="20"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid>
-                            <Button Width="20" HorizontalAlignment="Right" 
+                            <controls:ButtonEx Width="20" HorizontalAlignment="Right" 
                                     Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
                                     BorderThickness="0" 
                                     Command="{Binding CmdDeleteServer}">
-                                <Button.Style>
-                                    <Style TargetType="Button">
+                                <controls:ButtonEx.Style>
+                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
                                         <Setter Property="Visibility" Value="Hidden"></Setter>
                                         <Setter Property="Template">
                                             <Setter.Value>
@@ -159,13 +160,12 @@
                                                         <Path Margin="5"
                                                               Name="Symbol"
                                                               Data="M 50.864 62.832 L 41.888 62.832 L 25.256 35.552 L 8.360001 62.832 L 0 62.832 L 20.856 30.096 L 1.320002 0 L 10.12 0 L 25.52 24.64 L 41.008 0 L 49.368 0 L 29.92 29.92 Z"
-                                                              Fill="{DynamicResource MainColor1Brush}"
+                                                              Fill="{DynamicResource MainColor2ForegroundBrush}"
                                                               Stretch="Fill" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
                                                             <Setter TargetName="Symbol" Property="Margin" Value="4"></Setter>
-                                                            <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
@@ -183,8 +183,8 @@
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
-                                </Button.Style>
-                            </Button>
+                                </controls:ButtonEx.Style>
+                            </controls:ButtonEx>
                         </Grid>
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
@@ -192,84 +192,70 @@
                                 <TextBlock VerticalAlignment="Center" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}"/>
                             </Grid>
                             <Grid>
-                                <!-- setting button -->
-                                <Button 
+                                <!-- setting menu button -->
+                                <controls:ButtonEx
                                     x:Name="BtnSettingMenu"
                                     Width="20" HorizontalAlignment="Right" 
                                     BorderThickness="0"
                                     Click="BtnSettingMenu_OnClick">
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
-                                            <Setter Property="Background" Value="{Binding ElementName=CardRealBorder,Path=BorderBrush}"></Setter>
+                                    <controls:ButtonEx.Style>
+                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
+                                            <Setter Property="Visibility" Value="Hidden"></Setter>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type Button}">
-                                                        <Border BorderBrush="{TemplateBinding Control.BorderBrush}" 
-                                                                Background="{TemplateBinding Control.Background}" 
+                                                        <Border Background="{DynamicResource MainColor2Brush}" 
                                                                 BorderThickness="0" 
                                                                 Name="PART_Background">
                                                             <Path Margin="5 6 5 3"
                                                                   Name="Symbol"
                                                                   Data="M 2.707031 0 L 49.97266 0 L 49.97266 5 L 2.707031 5 Z M 2.707031 20 L 49.97266 20 L 49.97266 25 L 2.707031 25 Z M 2.707031 40 L 49.97266 40 L 49.97266 45 L 2.707031 45 Z"
-                                                                  Fill="{TemplateBinding Foreground}"
+                                                                  Fill="{DynamicResource MainColor1ForegroundBrush}"
                                                                   Stretch="Fill" />
                                                         </Border>
                                                         <ControlTemplate.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
                                                                 <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
-                                                                <Setter TargetName="Symbol" Property="Opacity" Value="0.8"></Setter>
                                                             </Trigger>
                                                             <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                                                                 <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
                                                                 <Setter TargetName="PART_Background" Property="Button.Background" Value="{DynamicResource MainColor1DarkerBrush}" />
-                                                                <Setter TargetName="Symbol" Property="Path.Fill" Value="{DynamicResource MainColor1ForegroundBrush}" />
                                                             </DataTrigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </DataTrigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
                                         </Style>
-                                    </Button.Style>
-                                </Button>
+                                    </controls:ButtonEx.Style>
+                                </controls:ButtonEx>
                                 <Popup 
                                     AllowsTransparency="True"
                                     Name="PopupCardSettingMenu"
                                     PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
                                     <Popup.Resources>
-                                        <Style TargetType="Button">
-                                            <Setter Property="Opacity" Value="0.6"></Setter>
+                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                                            <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
                                             <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                                            <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type Button}">
-                                                        <Border x:Name="border" 
-                                                                Background="{TemplateBinding Background}"
-                                                                Opacity="{TemplateBinding Opacity}"
-                                                                Padding="20 2 10 2"
-                                                                BorderThickness="0"
-                                                                SnapsToDevicePixels="true">
-                                                            <ContentPresenter x:Name="contentPresenter" Focusable="False" 
-                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                                              Margin="3" 
-                                                                              RecognizesAccessKey="True" 
-                                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="Button.IsMouseOver" Value="true">
-                                                    <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
-                                                    <Setter Property="Opacity" Value="1"/>
-                                                </Trigger>
-                                                <Trigger Property="Button.IsPressed" Value="true">
-                                                    <Setter Property="Opacity" Value="0.9"/>
-                                                </Trigger>
-                                            </Style.Triggers>
+                                            <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
+                                            <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}"/>
+                                            <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                                            <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
+                                            <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                                            <Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>
+                                            <Setter Property="ForegroundOnDisabled" Value="Gray"/>
+                                            <Setter Property="OpacityOnPressed" Value="1"></Setter>
                                         </Style>
                                     </Popup.Resources>
                                     <Border Padding="0 0 4 4">
@@ -278,9 +264,9 @@
                                         </Border.Effect>
                                         <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
                                             <StackPanel>
-                                                <Button Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></Button>
-                                                <Button Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></Button>
-                                                <Button Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></Button>
+                                                <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></controls:ButtonEx>
+                                                <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
+                                                <controls:ButtonEx Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></controls:ButtonEx>
                                             </StackPanel>
                                         </Grid>
                                     </Border>
