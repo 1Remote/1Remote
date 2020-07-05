@@ -139,7 +139,7 @@
                        Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
                        Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
                        ViewportSize="{TemplateBinding ViewportHeight}" 
-                       Style="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}"/>
+                       Style="{StaticResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}"/>
                 </Grid>
             </Border>
         </ControlTemplate>
@@ -204,12 +204,6 @@
                             </Style>
                         </ContentControl.Resources>
                     </ContentControl>
-
-
-                    <!--<TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Server.DispName}" FontSize="18" VerticalAlignment="Center"></TextBlock>
-                    <Grid Grid.Row="1" Grid.Column="3" Opacity="0.7">
-                        <TextBlock Text="{Binding Server.SubTitle}" FontSize="10" VerticalAlignment="Center"></TextBlock>
-                    </Grid>-->
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -311,7 +305,7 @@
                          Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
                          PreviewKeyDown="TbKeyWord_OnKeyDown"
                          VerticalContentAlignment="Center"
-                         Style="{DynamicResource SearchBoxTbKeyWordStyle}"></TextBox>
+                         Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
                 <Grid Width="50" Height="44" HorizontalAlignment="Right" 
                           Background="{DynamicResource MainColor1Brush}"
@@ -346,7 +340,7 @@
                                  ItemsSource="{Binding Servers}"
                                  Background="{DynamicResource MainColor1Brush}"
                                  Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                 Style="{DynamicResource SearchBoxSelectionList}">
+                                 Style="{StaticResource SearchBoxSelectionList}">
                     </ListBox>
                 </Grid>
             </Border>

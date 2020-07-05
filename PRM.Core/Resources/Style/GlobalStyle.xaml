@@ -14,15 +14,15 @@
         <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
     </Style>
 
+
+    <!--ButtonEx Style Start-->
     <Style TargetType="{x:Type controls:ButtonEx}" x:Key="ButtonExStyleBase">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Opacity" Value="1"></Setter>
         <Setter Property="Padding" Value="5"></Setter>
         <Setter Property="BorderBrush" Value="Gray"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
@@ -85,6 +85,29 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"></Condition>
+                    <Condition Property="IsEnabled" Value="True"></Condition>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="Foreground" Value="{Binding ForegroundOnMouseOver, RelativeSource={x:Static RelativeSource.Self}}"/>
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"></Condition>
+                    <Condition Property="IsPressed" Value="True"></Condition>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
@@ -102,8 +125,6 @@
         <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
     </Style>
 
-
-
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}" x:Key="MainColor1ButtonRadius3">
         <Setter Property="BorderCornerRadius" Value="3"/>
     </Style>
@@ -111,8 +132,14 @@
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}" x:Key="MainColor2ButtonRadius3">
         <Setter Property="BorderCornerRadius" Value="3"/>
     </Style>
+    <!--ButtonEx Style End-->
 
-
+    
+    
+    
+    
+    
+    
     <!-- Flat ComboBox ref: https://gist.github.com/hansmaad/9187633 -->
     <SolidColorBrush x:Key="ComboBoxNormalBorderBrush" Color="#e3e9ef" />
     <SolidColorBrush x:Key="ComboBoxNormalBackgroundBrush" Color="#ffffff" />

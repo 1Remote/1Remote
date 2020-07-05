@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -222,43 +223,13 @@
 
             <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource BottomHeight}">
-
                     <Grid Width="300">
-                        <Button 
+                        <controls:ButtonEx Style="{StaticResource MainColor2Button}"
                                 Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Center"
                                 Command="{Binding CmdGoServerListPage}"
                                 BorderThickness="0" Content="Back">
-                            <Button.Style>
-                                <Style TargetType="Button" >
-                                    <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsMouseOver" Value="True"></Condition>
-                                                <Condition Property="IsEnabled" Value="True"></Condition>
-                                            </MultiTrigger.Conditions>
-                                            <MultiTrigger.Setters>
-                                                <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
-                                            </MultiTrigger.Setters>
-                                        </MultiTrigger>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Opacity" Value="0.7" ></Setter>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                        </controls:ButtonEx>
                     </Grid>
                 </Grid>
             </Border>
