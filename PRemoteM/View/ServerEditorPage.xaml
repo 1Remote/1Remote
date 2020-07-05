@@ -74,7 +74,7 @@
                                                     <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
-                                                <colorPickerWpf:ColorPickRowPopup Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                <colorPickerWpf:ColorPickRowPopup Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>

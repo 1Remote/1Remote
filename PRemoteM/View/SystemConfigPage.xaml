@@ -19,9 +19,6 @@
                     <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
                     <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
                 </ResourceDictionary>
-                <ResourceDictionary>
-
-                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
@@ -58,25 +55,25 @@
 
 
             <Style TargetType="TabItem">
-                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TabItem">
                             <Border Name="Border" Padding="0 2" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MainColor2Brush}">
-                                <ContentPresenter x:Name="ContentSite"
-                                                  VerticalAlignment="Center"
-                                                  HorizontalAlignment="Center"
-                                                  ContentSource="Header"
-                                                  Margin="10"/>
+                                <TextBlock x:Name="TabItemContent" 
+                                           HorizontalAlignment="Center" 
+                                           Margin="10" 
+                                           Text="{TemplateBinding Header}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainBgColorBrush}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}" />
+                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}" />
                                     <Setter TargetName="Border" Property="BorderThickness" Value="0 0 0 1"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="False">
                                     <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor1Brush}" />
+                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}" />
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -85,6 +82,7 @@
                                     </MultiTrigger.Conditions>
                                     <MultiTrigger.Setters>
                                         <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor2Brush}" />
+                                        <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </MultiTrigger.Setters>
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
@@ -148,7 +146,8 @@
                         <StackPanel Orientation="Horizontal">
                             <StackPanel.Resources>
                                 <Style TargetType="RadioButton">
-                                    <Setter Property="Margin" Value="0 2 30 0"></Setter>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
                                 </Style>
                             </StackPanel.Resources>
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_general_item_server_order_by}"></TextBlock>
