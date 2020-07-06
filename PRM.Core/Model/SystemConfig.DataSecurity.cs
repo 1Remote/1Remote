@@ -790,14 +790,14 @@ namespace PRM.Core.Model
             }
         }
 
-        private RelayCommand _cmdImportFromMRemoteNgCsv;
+        private RelayCommand _cmdImportFromCsv;
         public RelayCommand CmdImportFromCsv
         {
             get
             {
-                if (_cmdImportFromMRemoteNgCsv == null)
+                if (_cmdImportFromCsv == null)
                 {
-                    _cmdImportFromMRemoteNgCsv = new RelayCommand((o) =>
+                    _cmdImportFromCsv = new RelayCommand((o) =>
                     {
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
@@ -941,7 +941,7 @@ namespace PRM.Core.Model
                         }
                     });
                 }
-                return _cmdImportFromMRemoteNgCsv;
+                return _cmdImportFromCsv;
             }
         }
 

@@ -139,7 +139,7 @@
                        Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
                        Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
                        ViewportSize="{TemplateBinding ViewportHeight}" 
-                       Style="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}"/>
+                       Style="{StaticResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}"/>
                 </Grid>
             </Border>
         </ControlTemplate>
@@ -204,12 +204,6 @@
                             </Style>
                         </ContentControl.Resources>
                     </ContentControl>
-
-
-                    <!--<TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Server.DispName}" FontSize="18" VerticalAlignment="Center"></TextBlock>
-                    <Grid Grid.Row="1" Grid.Column="3" Opacity="0.7">
-                        <TextBlock Text="{Binding Server.SubTitle}" FontSize="10" VerticalAlignment="Center"></TextBlock>
-                    </Grid>-->
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -311,7 +305,7 @@
                          Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
                          PreviewKeyDown="TbKeyWord_OnKeyDown"
                          VerticalContentAlignment="Center"
-                         Style="{DynamicResource SearchBoxTbKeyWordStyle}"></TextBox>
+                         Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
                 <Grid Width="50" Height="44" HorizontalAlignment="Right" 
                           Background="{DynamicResource MainColor1Brush}"
@@ -346,7 +340,7 @@
                                  ItemsSource="{Binding Servers}"
                                  Background="{DynamicResource MainColor1Brush}"
                                  Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                 Style="{DynamicResource SearchBoxSelectionList}">
+                                 Style="{StaticResource SearchBoxSelectionList}">
                     </ListBox>
                 </Grid>
             </Border>
@@ -355,8 +349,7 @@
         <Popup Name="PopupActions" StaysOpen="True"
                AllowsTransparency="True"
                IsOpen="{Binding PopupActionsIsOpen}"
-               Width="{StaticResource Width}"
-               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+               Width="{StaticResource Width}">
             <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" 
                     Background="{DynamicResource MainColor1Brush}">
                 <Grid>
@@ -389,10 +382,12 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="3" 
                                            FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           VerticalAlignment="Center"
                                            Text="{Binding SelectedServer.Server.DispName}"></TextBlock>
 
                                 <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
                                            FontSize="10" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           VerticalAlignment="Center"
                                            Text="{Binding SelectedServer.Server.SubTitle}"></TextBlock>
                             </Grid>
                         </Grid>

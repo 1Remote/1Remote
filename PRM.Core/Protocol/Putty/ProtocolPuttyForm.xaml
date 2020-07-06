@@ -6,13 +6,13 @@
                         xmlns:putty="clr-namespace:PRM.Core.Protocol.Putty"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
                         xmlns:ulits="clr-namespace:Shawn.Ulits"
+                        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
                         mc:Ignorable="d" 
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/ServerEditorStyle.xaml"></ResourceDictionary>
                     <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Ulits/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
@@ -106,43 +106,16 @@
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}" Width="500">
                         <StackPanel Orientation="Horizontal">
-                            <TextBox Text="{Binding PrivateKey}" Width="300"></TextBox>
-                            <Button Content="{DynamicResource button_select}" Click="ButtonOpenPrivateKey_OnClick">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+                            <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" Width="300"></TextBox>
+                            <controls:ButtonEx Content="{DynamicResource button_select}" Click="ButtonOpenPrivateKey_OnClick">
+                                <controls:ButtonEx.Style>
+                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                                        <Setter Property="Height" Value="{Binding ElementName=TbPrivateKey, Path=Height}"></Setter>
+                                        <Setter Property="BorderCornerRadius" Value="0 5 5 0"></Setter>
                                         <Setter Property="Padding" Value="5"></Setter>
-                                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
-                                        <Setter Property="SnapsToDevicePixels" Value="True" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Grid>
-                                                        <Border BorderThickness="0" 
-                                                                    CornerRadius="3"
-                                                                    x:Name="ButtonBorder"
-                                                                    Background="{TemplateBinding Background}">
-                                                        </Border>
-                                                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" />
-                                                    </Grid>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.6" />
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.3" />
-                                                        </Trigger>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter TargetName="ButtonBorder" Property="Background" Value="#BBB" />
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
                                     </Style>
-                                </Button.Style>
-                            </Button>
+                                </controls:ButtonEx.Style>
+                            </controls:ButtonEx>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

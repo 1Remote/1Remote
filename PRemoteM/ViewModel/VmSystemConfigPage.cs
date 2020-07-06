@@ -34,50 +34,12 @@ namespace PRM.ViewModel
 
         public SystemConfig SystemConfig { get; set; }
 
-        private bool _tabIsEnabled = true;
-        public bool TabIsEnabled
-        {
-            get => _tabIsEnabled;
-            private set => SetAndNotifyIfChanged(nameof(TabIsEnabled), ref _tabIsEnabled, value);
-        }
-
         private Visibility _progressBarVisibility = Visibility.Collapsed;
         public Visibility ProgressBarVisibility
         {
             get => _progressBarVisibility;
             private set => SetAndNotifyIfChanged(nameof(ProgressBarVisibility), ref _progressBarVisibility, value);
         }
-
-
-        //private int _progressBarValue = 0;
-        //public int ProgressBarValue
-        //{
-        //    get => _progressBarValue;
-        //    set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
-        //}
-
-        //private int _progressBarMaximum = 0;
-        //public int ProgressBarMaximum
-        //{
-        //    get => _progressBarMaximum;
-        //    set
-        //    {
-        //        if (value != _progressBarMaximum)
-        //        {
-        //            SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
-        //            if (value == 0)
-        //            {
-        //                //TabIsEnabled = true;
-        //                ProgressBarVisibility = Visibility.Collapsed;
-        //            }
-        //            else
-        //            {
-        //                //TabIsEnabled = false;
-        //                ProgressBarVisibility = Visibility.Visible;
-        //            }
-        //        }
-        //    }
-        //}
 
 
         #region CMD

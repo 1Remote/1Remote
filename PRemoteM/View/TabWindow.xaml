@@ -6,6 +6,7 @@
         xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
         xmlns:dragablzTab="clr-namespace:PRM.Core.Ulits.DragablzTab" 
         xmlns:view="clr-namespace:PRM.View"
+        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
         mc:Ignorable="d"
         Title="Host - PRemoteM" Height="600" Width="800">
 
@@ -67,7 +68,7 @@
                 </Grid>
             </DataTemplate>
 
-            <Style x:Key="MahAppsTrapezoidDragableTabItemStyle"  TargetType="{x:Type dragablz:DragablzItem}">
+            <Style x:Key="MahAppsTrapezoidDragableTabItemStyle" TargetType="{x:Type dragablz:DragablzItem}">
                 <Setter Property="FocusVisualStyle" Value="{StaticResource MahAppsFocusVisual}"/>
                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
@@ -175,44 +176,28 @@
             </StackPanel>
         </Grid>
 
-        <!-- System Button Area -->
+        <!-- System controls:ButtonEx Area -->
         <StackPanel Grid.Row="0" 
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
             <StackPanel.Resources>
-                <Style TargetType="{x:Type Button}" x:Key="WinTitleBarBtnStyle">
-                    <Setter Property="Padding" Value="0"/>
+                <Style TargetType="{x:Type controls:ButtonEx}" x:Key="WinTitleBarBtnStyle" BasedOn="{StaticResource ButtonExStyleBase}">
                     <Setter Property="Width" Value="35"/>
                     <Setter Property="Height" Value="40"/>
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="VerticalAlignment" Value="Top"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
                     <Style.Triggers>
-                        <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
-                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Button.Visibility" Value="Collapsed" />
+                            <Setter Property="controls:ButtonEx.Visibility" Value="Collapsed" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </StackPanel.Resources>
 
-            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
-                <Rectangle Width="15"  Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
-            </Button>
+            <controls:ButtonEx Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}">
+                <Rectangle Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+            </controls:ButtonEx>
 
-            <Button Name="BtnMaximize" Focusable="False">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+            <controls:ButtonEx Name="BtnMaximize">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
@@ -220,7 +205,7 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Button.Style>
+                </controls:ButtonEx.Style>
                 <Grid>
 
                     <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
@@ -251,13 +236,13 @@
                         </Path.Style>
                     </Path>
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
 
 
-            <Button Command="{Binding CmdHostGoFullScreen}" 
+            <controls:ButtonEx Command="{Binding CmdHostGoFullScreen}" 
                     CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
@@ -265,53 +250,46 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Button.Style>
+                </controls:ButtonEx.Style>
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
 
 
-            <Button Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+            <controls:ButtonEx Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="Red" />
+                            <Trigger Property="controls:ButtonEx.IsMouseOver" Value="True">
+                                <Setter Property="controls:ButtonEx.Background" Value="Red" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
-                </Button.Style>
+                </controls:ButtonEx.Style>
                 <Grid Width="15" Height="15">
-                    <!--<Path Data="F1 M 46.750000 -44.000000 L 41.250000 -44.000000 L 41.250000 -88.000000 L 46.750000 -88.000000 Z M 55.859375 -75.109375 C 59.812500 -73.848953 63.429035 -72.015625 66.708984 -69.609375 C 69.988930 -67.203125 72.796219 -64.381508 75.130859 -61.144531 C 77.465492 -57.907551 79.277344 -54.355469 80.566406 -50.488281 C 81.855469 -46.621094 82.500000 -42.625000 82.500000 -38.500000 C 82.500000 -34.947914 82.041664 -31.531900 81.125000 -28.251953 C 80.208328 -24.972004 78.912109 -21.906900 77.236328 -19.056641 C 75.560547 -16.206379 73.555336 -13.613932 
-                          71.220703 -11.279297 C 68.886063 -8.944661 66.293617 -6.939453 63.443359 -5.263672 C 60.593094 -3.587891 57.527992 -2.291667 54.248047 -1.375000 C 50.968098 -0.458333 47.552082 0.000000 44.000000 0.000000 C 40.447914 0.000000 37.031898 -0.458333 33.751953 -1.375000 C 30.472004 -2.291667 27.406900 -3.587891 24.556641 -5.263672 C 21.706379 -6.939453 19.113932 -8.944661 16.779297 -11.279297 C 14.444660 -13.613932 12.439452 -16.206379 10.763672 -19.056641 C 9.087891 
-                          -21.906900 7.791666 -24.972004 6.875000 -28.251953 C 5.958333 -31.531900 5.500000 -34.947914 5.500000 -38.500000 C 5.500000 -42.625000 6.144531 -46.621094 7.433594 -50.488281 C 8.722656 -54.355469 10.534506 -57.907551 12.869141 -61.144531 C 15.203775 -64.381508 18.011066 -67.203125 21.291016 -69.609375 C 24.570963 -72.015625 28.187500 -73.848953 32.140625 -75.109375 L 33.859375 -69.910156 C 30.450520 -68.792969 27.342445 -67.203125 24.535156 -65.140625 C 21.727863 -63.078125 19.321613 -60.671875 17.316406 -57.921875 C 15.311197 -55.171875 13.757160 
-                          -52.142578 12.654297 -48.833984 C 11.551432 -45.525391 11.000000 -42.080727 11.000000 -38.500000 C 11.000000 -35.463539 11.393880 -32.541664 12.181641 -29.734375 C 12.969400 -26.927082 14.079427 -24.298826 15.511719 -21.849609 C 16.944010 -19.400391 18.662760 -17.173176 20.667969 -15.167969 C 22.673176 -13.162760 24.900391 -11.444010 27.349609 -10.011719 C 29.798828 -8.579427 32.427082 -7.469400 35.234375 -6.681641 C 38.041664 -5.893880 40.963539 -5.500000 44.000000 
-                          -5.500000 C 47.036457 -5.500000 49.958332 -5.893880 52.765625 -6.681641 C 55.572914 -7.469400 58.201168 -8.579427 60.650391 -10.011719 C 63.099606 -11.444010 65.326820 -13.162760 67.332031 -15.167969 C 69.337234 -17.173176 71.055984 -19.400391 72.488281 -21.849609 C 73.920570 -24.298826 75.030594 -26.927082 75.818359 -29.734375 C 76.606117 -32.541664 77.000000 -35.463539 77.000000 -38.500000 C 77.000000 -42.080727 76.448563 -45.525391 75.345703 -48.833984 C 74.242836 -52.142578 72.688797 -55.171875 70.683594 -57.921875 C 68.678383 -60.671875 66.272133 -63.078125 63.464844 -65.140625 C 60.657551 -67.203125 57.549477 -68.792969 54.140625 -69.910156 Z " 
-                          Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />-->
-                    <!--<Path Data="F1 M 11.730469 -4.253906 L 66.816406 -4.253906 L 66.816406 -59.382813 L 11.730469 -59.382813 Z M 7.433594 0.000000 L 7.433594 -63.593750 L 71.027344 -63.593750 L 71.027344 0.000000 Z M 39.251953 -34.804688 L 55.739197 -51.304688 L 58.744324 -48.296875 L 42.257751 -31.796875 L 58.744324 -15.296875 L 55.739197 -12.332031 L 39.251953 -28.789063 L 22.764709 -12.332031 L 19.802551 -15.296875 L 36.246826 -31.796875 L 19.802551 -48.296875 L 22.764709 -51.304688 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />-->
                     <Path Data="F1 M 87.871094 -29.003906 L 75.410156 -16.500000 L 87.871094 -3.996094 L 84.003906 -0.128906 L 71.500000 -12.589844 L 58.996094 -0.128906 L 55.128906 -3.996094 L 67.589844 -16.500000 L 55.128906 -29.003906 L 58.996094 -32.871094 L 71.500000 -20.410156 L 84.003906 -32.871094 Z M 82.500000 -77.000000 L 82.500000 -38.500000 L 49.500000 -38.500000 L 49.500000 -5.500000 L 11.000000 -5.500000 L 11.000000 -77.000000 Z M 16.500000 -71.500000 L 16.500000 -44.000000 L 44.000000 -44.000000 L 44.000000 -71.500000 Z M 44.000000 -11.000000 L 44.000000 -38.500000 L 16.500000 -38.500000 L 16.500000 -11.000000 Z M 77.000000 -44.000000 L 77.000000 -71.500000 L 49.500000 -71.500000 L 49.500000 -44.000000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
 
-            <Button Name="BtnClose" Focusable="False">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+            <controls:ButtonEx Name="BtnClose">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                         <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="Red" />
+                            <Trigger Property="controls:ButtonEx.IsMouseOver" Value="True">
+                                <Setter Property="controls:ButtonEx.Background" Value="Red" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
-                </Button.Style>
+                </controls:ButtonEx.Style>
 
                 <Grid Height="15" Width="15" >
                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
                           L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
                           Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
         </StackPanel>
 
         <Grid Grid.Row="1" Background="{DynamicResource MainColor1Brush}">

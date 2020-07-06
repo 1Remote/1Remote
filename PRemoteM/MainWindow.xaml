@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pageHost1="clr-namespace:Shawn.Ulits.PageHost;assembly=PRM.Core"
         xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
@@ -69,31 +70,6 @@
         <!-- System Button Area -->
         <StackPanel Grid.Row="0" 
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type Button}" x:Key="WinTitleBarBtnStyle">
-                    <Setter Property="Padding" Value="0"/>
-                    <Setter Property="Width" Value="35"/>
-                    <Setter Property="Height" Value="35"/>
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="VerticalAlignment" Value="Top"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Resources>
-
             <Grid Height="{Binding ElementName=BtnSetting,Path=Height}" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
@@ -149,20 +125,20 @@
                     </TextBox.Style>
                 </TextBox>
             </Grid>
-            <Button Name="BtnSetting" Click="BtnSetting_OnClick" Focusable="False">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+
+
+            <controls:ButtonEx Name="BtnSetting" 
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
+                               Click="BtnSetting_OnClick">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1LighterBrush}" />
-                            </Trigger>
                             <DataTrigger Binding="{Binding ElementName=PopupSettingMenu,Path=IsOpen}" Value="True">
-                                <Setter Property="Button.Background" Value="{DynamicResource MainColor1DarkerBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Button.Style>
+                </controls:ButtonEx.Style>
                 <Grid Width="15" Height="15">
                     <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
                           -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
@@ -185,46 +161,25 @@
                         </Path.Style>
                     </Path>
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
             <Popup Name="PopupSettingMenu" 
                    AllowsTransparency="True"
                    PlacementTarget="{Binding ElementName=BtnSetting}"
                    IsOpen="{Binding SysOptionsMenuIsOpen}"
                    StaysOpen="False">
                 <Popup.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Opacity" Value="0.8"></Setter>
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                        <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
                         <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                        <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border x:Name="border" 
-                                                                Background="{TemplateBinding Background}"
-                                                                Opacity="{TemplateBinding Opacity}"
-                                                                Padding="0 0 0 0"
-                                                                BorderThickness="0"
-                                                                SnapsToDevicePixels="true">
-                                        <ContentPresenter x:Name="contentPresenter" Focusable="False" 
-                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                                              Margin="3" 
-                                                                              RecognizesAccessKey="True" 
-                                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="Button.IsMouseOver" Value="true">
-                                            <Setter TargetName="border" Property="Background" Value="{DynamicResource MainColor2Brush}"/>
-                                            <Setter Property="Opacity" Value="1"/>
-                                        </Trigger>
-                                        <Trigger Property="Button.IsPressed" Value="true">
-                                            <Setter Property="Opacity" Value="0.9"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
+                        <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
+                        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}"/>
+                        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
+                        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                        <Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>
+                        <Setter Property="ForegroundOnDisabled" Value="Gray"/>
+                        <Setter Property="OpacityOnPressed" Value="1"></Setter>
                     </Style>
                 </Popup.Resources>
                 <Border Padding="0 0 4 4">
@@ -233,10 +188,12 @@
                     </Border.Effect>
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
-                            <Button Command="{Binding CmdGoSysOptionsPage}">
-                                <TextBlock Text="{DynamicResource system_menu_options_title}" Margin="20 0 0 0"></TextBlock>
-                            </Button>
-                            <Button Command="{Binding CmdGoAboutPage}">
+                            <controls:ButtonEx Command="{Binding CmdGoSysOptionsPage}">
+                                <TextBlock Text="{DynamicResource system_menu_options_title}" Margin="20 0 0 0"
+                                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
+                                </TextBlock>
+                            </controls:ButtonEx>
+                            <controls:ButtonEx Command="{Binding CmdGoAboutPage}">
                                 <Grid>
                                     <Grid Width="20" HorizontalAlignment="Left">
                                         <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
@@ -255,26 +212,32 @@
                                         </Path>
                                     </Grid>
                                     <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
-                                        <TextBlock Text="{DynamicResource system_menu_about_title}"></TextBlock>
+                                        <TextBlock Text="{DynamicResource system_menu_about_title}" 
+                                                   Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
+                                        </TextBlock>
                                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="16" Margin="10 0 0 0"></Image>
                                     </StackPanel>
                                 </Grid>
-                            </Button>
-                            <Button Click="ButtonExit_OnClick">
-                                <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
-                                    <TextBlock Text="{DynamicResource button_exit}"></TextBlock>
-                                </StackPanel>
-                            </Button>
+                            </controls:ButtonEx>
+                            <controls:ButtonEx Click="ButtonExit_OnClick">
+                                <TextBlock Text="{DynamicResource button_exit}" Margin="20 0 0 0"
+                                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
+                                </TextBlock>
+                            </controls:ButtonEx>
                         </StackPanel>
                     </Grid>
                 </Border>
             </Popup>
 
-            <Button Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
-                <Rectangle Width="15"  Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
-            </Button>
+            <controls:ButtonEx Name="BtnMinimize"
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
+                               Click="BtnSetting_OnClick">
+                <Rectangle Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+            </controls:ButtonEx>
 
-            <Button Name="BtnMaximize" Style="{StaticResource WinTitleBarBtnStyle}" Focusable="False">
+            <controls:ButtonEx Name="BtnMaximize" 
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
+                               Click="BtnSetting_OnClick">
                 <Grid>
                     <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
                           Stretch="Uniform" >
@@ -304,26 +267,23 @@
                         </Path.Style>
                     </Path>
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
 
-            <Button Name="BtnClose" Focusable="False">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
-                        <Style.Triggers>
-                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                <Setter Property="Button.Background" Value="Red" />
-                            </Trigger>
-                        </Style.Triggers>
+            <controls:ButtonEx Name="BtnClose" 
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
+                               Click="BtnSetting_OnClick">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                        <Setter Property="BackgroundOnMouseOver" Value="Red"/>
+                        <Setter Property="BackgroundOnPressed" Value="Red"/>
                     </Style>
-                </Button.Style>
-
+                </controls:ButtonEx.Style>
                 <Grid Height="15" Width="15" >
                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
                           L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
                           Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
                 </Grid>
-            </Button>
+            </controls:ButtonEx>
         </StackPanel>
 
         <Grid Grid.Row="1">
