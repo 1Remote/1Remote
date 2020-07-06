@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:PRM.Controls"
+             xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              mc:Ignorable="d" 
              Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -130,26 +131,34 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Padding="0 1 0 0"
+                    <controls1:ButtonEx Padding="0 1 0 0"
                                 MinWidth="80"
                                 Click="BtnAllServer_Click"
                                 BorderThickness="0" Content="{DynamicResource tab_all}">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
+                        <controls1:ButtonEx.Style>
+                            <Style TargetType="{x:Type controls1:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
+                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
-                                            <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
+                                            <Grid>
+                                                <Border Background="{TemplateBinding Background}" 
+                                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                                    SnapsToDevicePixels="true">
+                                                </Border>
+                                                <ContentPresenter 
+                                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                            </Grid>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                                     </Trigger>
                                     <DataTrigger Binding="{Binding SelectedGroup}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
@@ -161,8 +170,8 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Button.Style>
-                    </Button>
+                        </controls1:ButtonEx.Style>
+                    </controls1:ButtonEx>
 
                     <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" 
                                       Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"

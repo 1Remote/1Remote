@@ -118,6 +118,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\Controls\ButtonEx.cs" />
     <Compile Include="Ulits\AES256.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPalette.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
@@ -232,10 +233,6 @@
     <Page Include="Resources\Style\GlobalStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Style\ServerEditorStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ulits\ColorPickerWPF\ColorPickerControl.xaml">
       <Generator>MSBuild:Compile</Generator>
