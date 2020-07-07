@@ -344,7 +344,7 @@ namespace PRM.Model
                         }
                         tab.Show();
                         _lastTabToken = token;
-                        // move tab to screen witch display full window 
+                        // move tab to screen which display full window 
                     }
                     tab.Activate();
                     tab.Vm.Items.Add(new TabItemViewModel()

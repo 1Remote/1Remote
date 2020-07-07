@@ -15,12 +15,12 @@ namespace Shawn.Ulits
     {
         /// <summary>
         /// get lang file path by this key: VarResourceDictionary[MultiLangHelper.LangFilePathKey]
-        /// to determine witch lang it is
+        /// to determine which lang it is
         /// </summary>
         public const string LangFilePathKey = "__Lang_File_Path_Key";
 
         /// <summary>
-        /// to determine witch lang it is
+        /// to determine which lang it is
         /// </summary>
         public const string ResourceTypeKey = "__Resource_Type_Key";
         public const string ResourceTypeValue = "__Resource_Type_Value=languages";
