@@ -808,6 +808,7 @@ namespace PRM.Core.Model
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "csv|*.csv",
+                            InitialDirectory = new FileInfo(DbPath).DirectoryName,
                             Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)

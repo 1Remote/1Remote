@@ -134,6 +134,12 @@ namespace PRM
                         Directory.CreateDirectory(appDateFolder);
                     SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
                     var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
+                    if (Environment.CurrentDirectory.IndexOf(@"C:\Windows") < 0)
+                        if (File.Exists(SystemConfig.AppName + ".ini")
+                            || IOPermissionHelper.HasWritePermissionOnDir("./"))
+                        {
+                            iniPath = SystemConfig.AppName + ".ini";
+                        }
                     var ini = new Ini(iniPath);
                     //if (!File.Exists(iniPath))
                     //{
@@ -142,7 +148,7 @@ namespace PRM
                     var language = new SystemConfigLanguage(this.Resources, ini);
                     var general = new SystemConfigGeneral(ini);
                     var quickConnect = new SystemConfigQuickConnect(ini);
-                    var theme = new SystemConfigTheme(ini);
+                    var theme = new SystemConfigTheme(this.Resources, ini);
                     var dataSecurity = new SystemConfigDataSecurity(ini);
 
                     //if (!File.Exists(dataSecurity.DbPath))
