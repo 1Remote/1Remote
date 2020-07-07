@@ -14,7 +14,7 @@ namespace ColorPickerWPF
     /// <summary>
     /// Interaction logic for ColorPickerControl.xaml
     /// </summary>
-    public partial class ColorPickerControl : UserControl
+    public partial class ColorPickerControl4Popup : UserControl
     {
         public Color Color = Colors.White;
 
@@ -23,21 +23,19 @@ namespace ColorPickerWPF
         public event ColorPickerChangeHandler OnPickColor;
 
         internal List<ColorSwatchItem> ColorSwatch1 = new List<ColorSwatchItem>();
-        //internal List<ColorSwatchItem> ColorSwatch2 = new List<ColorSwatchItem>();
+        internal List<ColorSwatchItem> ColorSwatch2 = new List<ColorSwatchItem>();
 
         public bool IsSettingValues = false;
 
         protected const int NumColorsFirstSwatch = 39;
+        protected const int NumColorsSecondSwatch = 112;
 
         internal static ColorPalette ColorPalette;
 
 
-        public ColorPickerControl()
+        public ColorPickerControl4Popup()
         {
             InitializeComponent();
-
-            ColorPickerSwatch.ColorPickerControl = this;
-
 
             if (ColorPalette == null)
             {
@@ -47,7 +45,11 @@ namespace ColorPickerWPF
 
 
             ColorSwatch1.AddRange(ColorPalette.BuiltInColors.Take(NumColorsFirstSwatch).ToArray());
+
+            ColorSwatch2.AddRange(ColorPalette.BuiltInColors.Skip(NumColorsFirstSwatch).Take(NumColorsSecondSwatch).ToArray());
+            
             Swatch1.SwatchListBox.ItemsSource = ColorSwatch1;
+            Swatch2.SwatchListBox.ItemsSource = ColorSwatch2;
 
 
             RSlider.Slider.Maximum = 255;
@@ -249,7 +251,35 @@ namespace ColorPickerWPF
                 var h = Color.GetHue();
                 var a = (int) ASlider.Slider.Value;
                 Color = Util.FromAhsb(a, h, s, l);
+
                 SetColor(Color);
+            }
+        }
+
+        public void LoadCustomPalette(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    ColorPalette = ColorPalette.LoadFromXml(filename);
+
+
+                    // Do regular one too
+
+                    ColorSwatch1.Clear();
+                    ColorSwatch2.Clear();
+                    ColorSwatch1.AddRange(ColorPalette.BuiltInColors.Take(NumColorsFirstSwatch).ToArray());
+                    ColorSwatch2.AddRange(ColorPalette.BuiltInColors.Skip(NumColorsFirstSwatch).Take(NumColorsSecondSwatch).ToArray());
+                    Swatch1.SwatchListBox.ItemsSource = ColorSwatch1;
+                    Swatch2.SwatchListBox.ItemsSource = ColorSwatch2;
+
+                }
+                catch (Exception ex)
+                {
+                    ex = ex;
+                }
+
             }
         }
     }
