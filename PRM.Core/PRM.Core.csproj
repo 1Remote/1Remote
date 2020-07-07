@@ -118,8 +118,8 @@
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\ColorSwatchItem.cs" />
     <Compile Include="Ulits\ColorPickerWPF\Code\Util.cs" />
-    <Compile Include="Ulits\ColorPickerWPF\ColorPickerControl.xaml.cs">
-      <DependentUpon>ColorPickerControl.xaml</DependentUpon>
+    <Compile Include="Ulits\ColorPickerWPF\ColorPickerControl4Popup.xaml.cs">
+      <DependentUpon>ColorPickerControl4Popup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ulits\ColorPickerWPF\ColorPickerSwatch.xaml.cs">
       <DependentUpon>ColorPickerSwatch.xaml</DependentUpon>
@@ -228,7 +228,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Ulits\ColorPickerWPF\ColorPickerControl.xaml">
+    <Page Include="Ulits\ColorPickerWPF\ColorPickerControl4Popup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
