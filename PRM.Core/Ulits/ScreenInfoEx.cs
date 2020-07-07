@@ -54,7 +54,7 @@ namespace Shawn.Ulits
         public ScreenInfoEx(Screen screen)
         {
             const int ENUM_CURRENT_SETTINGS = -1;
-            var mainRealScaleFactor = (100.0 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
+            var mainRealScaleFactor = 100.0 * Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
 
 
             var dmMain = new DEVMODE { dmSize = (short)Marshal.SizeOf(typeof(DEVMODE)) };
@@ -62,7 +62,9 @@ namespace Shawn.Ulits
             var mainLogicScaleFactor = 100.0 * dmMain.dmPelsWidth / Screen.PrimaryScreen.Bounds.Width;
 
             double k = mainRealScaleFactor / mainLogicScaleFactor;
-
+#if DEBUG
+            Console.WriteLine($@"{nameof(ScreenInfoEx)}: k = {mainRealScaleFactor } / {mainLogicScaleFactor} = {k}");
+#endif
 
             Screen = screen;
             var dm = new DEVMODE { dmSize = (short)Marshal.SizeOf(typeof(DEVMODE)) };
@@ -81,6 +83,33 @@ namespace Shawn.Ulits
                 (int)(screen.WorkingArea.Width / k),
                 (int)(screen.WorkingArea.Height / k)
             );
+
+            if (VirtualBounds.Width > screen.Bounds.Width)
+            {
+
+#if DEBUG
+                Console.WriteLine($@"
+// in this case , something goes wrong and let the VirtualBounds.Width > screen.Bounds.Width.
+// ScaleFactor >= 100%, so VirtualBounds.Width = PhysicalPixWidth / ScaleFactor must <= screen.Bounds.Width
+// i am not sure ↓ is right or wrong, BUT it did work on my case： 4k remote to win2016, then print ScreenInfoEx on win2016");
+#endif
+                // in this case , something goes wrong and let the VirtualBounds.Width > screen.Bounds.Width.
+                // we can't read the real logic pix width(Screen.PrimaryScreen.Bounds.Width), 4k + 200% it should be 1920, and return 3840
+                // ScaleFactor >= 100%, so VirtualBounds.Width = PhysicalPixWidth / ScaleFactor must <= screen.Bounds.Width
+                // i am not sure ↓ is right or wrong, BUT it did work on my case： 4k remote to win2016, then print ScreenInfoEx on win2016
+                VirtualBounds = new Rectangle(
+                    (int)(screen.Bounds.Left),
+                    (int)(screen.Bounds.Top),
+                    (int)(screen.Bounds.Width),
+                    (int)(screen.Bounds.Height)
+                );
+                VirtualWorkingArea = new Rectangle(
+                    (int)(screen.WorkingArea.Left),
+                    (int)(screen.WorkingArea.Top),
+                    (int)(screen.WorkingArea.Width),
+                    (int)(screen.WorkingArea.Height)
+                );
+            }
         }
 
 
