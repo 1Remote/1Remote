@@ -4,30 +4,30 @@
 
     <system:String x:Key="ResourceTypeKey">__Resource_Type_Value=colortheme</system:String>
 
-    <Color x:Key="MainColor1">#ff102b3e</Color>
-    <Color x:Key="MainColor1Lighter">#ff445a68</Color>
-    <Color x:Key="MainColor1Darker">#ff0c2230</Color>
+    <Color x:Key="MainColor1">#102b3e</Color>
+    <Color x:Key="MainColor1Lighter">#445a68</Color>
+    <Color x:Key="MainColor1Darker">#0c2230</Color>
     <Color x:Key="MainColor1Foreground">White</Color>
 
-    <Color x:Key="MainColor2">#ffe83d61</Color>
-    <Color x:Key="MainColor2Lighter">#ffed6884</Color>
-    <Color x:Key="MainColor2Darker">#ffb5304c</Color>
+    <Color x:Key="MainColor2">#e83d61</Color>
+    <Color x:Key="MainColor2Lighter">#ed6884</Color>
+    <Color x:Key="MainColor2Darker">#b5304c</Color>
     <Color x:Key="MainColor2Foreground">White</Color>
 
-    <Color x:Key="MainBgColor">#ffced8e1</Color>
-    <Brush x:Key="MainBgColorForeground">#ff000</Brush>
+    <Color x:Key="MainBgColor">#ced8e1</Color>
+    <Brush x:Key="MainBgColorForeground">#000</Brush>
 
-    <Brush x:Key="MainColor1Brush">#ff102b3e</Brush>
-    <Brush x:Key="MainColor1LighterBrush">#ff445a68</Brush>
-    <Brush x:Key="MainColor1DarkerBrush">#ff0c2230</Brush>
+    <Brush x:Key="MainColor1Brush">#102b3e</Brush>
+    <Brush x:Key="MainColor1LighterBrush">#445a68</Brush>
+    <Brush x:Key="MainColor1DarkerBrush">#0c2230</Brush>
     <Brush x:Key="MainColor1ForegroundBrush">White</Brush>
 
-    <Brush x:Key="MainColor2Brush">#ffe83d61</Brush>
-    <Brush x:Key="MainColor2LighterBrush">#ffed6884</Brush>
-    <Brush x:Key="MainColor2DarkerBrush">#ffb5304c</Brush>
+    <Brush x:Key="MainColor2Brush">#e83d61</Brush>
+    <Brush x:Key="MainColor2LighterBrush">#ed6884</Brush>
+    <Brush x:Key="MainColor2DarkerBrush">#b5304c</Brush>
     <Brush x:Key="MainColor2ForegroundBrush">White</Brush>
 
-    <Brush x:Key="MainBgColorBrush">#ffced8e1</Brush>
-    <Brush x:Key="MainBgColorForegroundBrush">#ff000000</Brush>
+    <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
+    <Brush x:Key="MainBgColorForegroundBrush">#000000</Brush>
 
 </ResourceDictionary>
