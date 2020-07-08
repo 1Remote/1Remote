@@ -70,7 +70,6 @@ namespace PRM.Core.Model
                     SetAndNotifyIfChanged(nameof(MainColor1), ref _mainColor1, value);
                     RaisePropertyChanged(nameof(MainColor1Lighter));
                     RaisePropertyChanged(nameof(MainColor1Darker));
-                    RebuildColorTheme();
                 }
                 catch (Exception e)
                 {
@@ -78,9 +77,9 @@ namespace PRM.Core.Model
             }
         }
 
-        public string MainColor1Lighter { get; private set; } = "#445a68";
+        public string MainColor1Lighter { get; set; } = "#445a68";
 
-        public string MainColor1Darker { get; private set; } = "#0c2230";
+        public string MainColor1Darker { get; set; } = "#0c2230";
 
 
         private string _mainColor1Foreground = "#ffffff";
@@ -112,9 +111,9 @@ namespace PRM.Core.Model
             }
         }
 
-        public string MainColor2Lighter { get; private set; } = "#ed6884";
+        public string MainColor2Lighter { get; set; } = "#ed6884";
 
-        public string MainColor2Darker { get; private set; } = "#b5304c";
+        public string MainColor2Darker { get; set; } = "#b5304c";
 
 
         private string _mainColor2Foreground = "#ffffff";
@@ -157,6 +156,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
             _ini.WriteValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
             _ini.Save();
+            ReloadThemes();
         }
 
         public override void Load()
@@ -201,6 +201,7 @@ namespace PRM.Core.Model
             _puttyThemes = PuttyColorThemes.GetThemes();
             var puttyThemeNames = new ObservableCollection<string>(_puttyThemes.Keys);
             _puttyThemeNames = puttyThemeNames;
+            ReloadColorTheme();
         }
         #endregion
 
@@ -228,7 +229,7 @@ namespace PRM.Core.Model
             }
         }
 
-        private void RebuildColorTheme()
+        private void ReloadColorTheme()
         {
             Debug.Assert(AppResourceDictionary != null);
             const string resourceTypeKey = "__Resource_Type_Key";

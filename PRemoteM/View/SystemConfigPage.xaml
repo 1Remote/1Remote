@@ -398,10 +398,58 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="txt:主色调"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="200">
-                                <colorPickerWpf:ColorPickRowPopup Name="ColorPick1" 
-                                                                  Color="{Binding SystemConfig.Theme.MainColor1}"
-                                                                  HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                                                  HexVisible="Collapsed"/>
+                                <StackPanel Orientation="Horizontal">
+
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor1}"
+                                                                  HorizontalAlignment="Left" 
+                                                                  HexVisible="Collapsed"
+                                                                  VerticalAlignment="Center"/>
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor1Lighter}"
+                                                                  HorizontalAlignment="Left" 
+                                                                  HexVisible="Collapsed"
+                                                                  VerticalAlignment="Center"/>
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor1Darker}"
+                                                                  HorizontalAlignment="Left" 
+                                                                  HexVisible="Collapsed"
+                                                                  VerticalAlignment="Center"/>
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor1Foreground}"
+                                                                  HorizontalAlignment="Left" 
+                                                                  HexVisible="Collapsed"
+                                                                  VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="txt:次色调"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="200">
+                                <StackPanel Orientation="Horizontal">
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor2}"
+                                                                      HorizontalAlignment="Left" 
+                                                                      HexVisible="Collapsed"
+                                                                      VerticalAlignment="Center"/>
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor2Lighter}"
+                                                                      HorizontalAlignment="Left" 
+                                                                      HexVisible="Collapsed"
+                                                                      VerticalAlignment="Center"/>
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor2Darker}"
+                                                                      HorizontalAlignment="Left" 
+                                                                      HexVisible="Collapsed"
+                                                                      VerticalAlignment="Center"/>
+
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}"
+                                                                      HorizontalAlignment="Left" 
+                                                                      HexVisible="Collapsed"
+                                                                      VerticalAlignment="Center"/>
+                                </StackPanel>
                             </Grid>
 
                             <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
@@ -411,15 +459,17 @@
                     </Grid>
                     <Grid Style="{StaticResource ServerEditorRow}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="txt:次色调"></TextBlock>
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="txt:背景"></TextBlock>
                             <Grid Style="{StaticResource ServerEditorRowInput}" Width="200">
                                 <StackPanel Orientation="Horizontal">
 
-                                    <colorPickerWpf:ColorPickRowPopup Name="ColorPick2" HorizontalAlignment="Left" 
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainBgColor}"
+                                                                      HorizontalAlignment="Left" 
                                                                       HexVisible="Collapsed"
                                                                       VerticalAlignment="Center"/>
 
-                                    <colorPickerWpf:ColorPickRowPopup Name="ColorPick3" HorizontalAlignment="Left" 
+                                    <colorPickerWpf:ColorPickRowPopup HexColor="{Binding SystemConfig.Theme.MainBgColorForeground}"
+                                                                      HorizontalAlignment="Left" 
                                                                       HexVisible="Collapsed"
                                                                       VerticalAlignment="Center"/>
                                 </StackPanel>
