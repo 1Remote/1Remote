@@ -231,6 +231,7 @@ namespace PRM.Core.Model
 
         private void ReloadColorTheme()
         {
+            return;
             Debug.Assert(AppResourceDictionary != null);
             const string resourceTypeKey = "__Resource_Type_Key";
             const string resourceTypeValue = "__Resource_Type_Value=colortheme";
