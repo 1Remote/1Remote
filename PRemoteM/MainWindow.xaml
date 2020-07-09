@@ -180,8 +180,9 @@
                         <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                         <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
                         <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                        <Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>
-                        <Setter Property="ForegroundOnDisabled" Value="Gray"/>
+                        <!--<Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>-->
+                        <!--<Setter Property="ForegroundOnDisabled" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                        <Setter Property="OpacityOnDisabled" Value="0.5"/>-->
                         <Setter Property="OpacityOnPressed" Value="1"></Setter>
                     </Style>
                 </Popup.Resources>

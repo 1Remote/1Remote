@@ -75,7 +75,7 @@ namespace PRM.ViewModel
                         SystemConfig.QuickConnect.Save();
                         SystemConfig.DataSecurity.Save();
                         SystemConfig.Theme.Save();
-                        SystemConfig.Theme.ReloadThemes();
+                        SystemConfig.Theme.ReloadPuttyThemes();
                     });
                 }
                 return _cmdSaveAndGoBack;
