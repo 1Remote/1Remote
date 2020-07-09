@@ -188,8 +188,8 @@
                         </Grid>
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
-                            <Grid HorizontalAlignment="Center" Margin="0 1 0 0">
-                                <TextBlock VerticalAlignment="Center" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}"/>
+                            <Grid HorizontalAlignment="Center" Margin="0 4 0 0">
+                                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}"/>
                             </Grid>
                             <Grid>
                                 <!-- setting menu button -->

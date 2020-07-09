@@ -26,7 +26,7 @@
                 <Setter Property="Padding" Value="2"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Background" Value="{DynamicResource MainColor1Lighter}"/>
+                <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                 <Setter Property="Template">
@@ -92,10 +92,7 @@
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="False">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{DynamicResource MainColor1Foreground}" Opacity="0.6"></SolidColorBrush>
-                            </Setter.Value>
+                        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}">
                         </Setter>
                     </Trigger>
                 </Style.Triggers>

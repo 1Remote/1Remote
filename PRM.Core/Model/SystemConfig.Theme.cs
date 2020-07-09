@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using PRM.Core.Protocol.Putty;
+using PRM.Core.Ulits;
 using Shawn.Ulits;
 
 namespace PRM.Core.Model
@@ -64,7 +65,7 @@ namespace PRM.Core.Model
             {
                 try
                 {
-                    var color = System.Drawing.ColorTranslator.FromHtml(value);
+                    var color = ColorAndBrushHelper.HexColorToMediaColor(value);
                     MainColor1Lighter = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
                     MainColor1Darker = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
                     SetAndNotifyIfChanged(nameof(MainColor1), ref _mainColor1, value);
@@ -98,7 +99,7 @@ namespace PRM.Core.Model
             {
                 try
                 {
-                    var color = System.Drawing.ColorTranslator.FromHtml(value);
+                    var color = ColorAndBrushHelper.HexColorToMediaColor(value);
                     MainColor2Lighter = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
                     MainColor2Darker = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
                     SetAndNotifyIfChanged(nameof(MainColor2), ref _mainColor2, value);
@@ -231,7 +232,6 @@ namespace PRM.Core.Model
 
         private void ReloadColorTheme()
         {
-            return;
             Debug.Assert(AppResourceDictionary != null);
             const string resourceTypeKey = "__Resource_Type_Key";
             const string resourceTypeValue = "__Resource_Type_Value=colortheme";
@@ -247,31 +247,30 @@ namespace PRM.Core.Model
                 || o[resourceTypeKey]?.ToString() == resourceTypeValue).ToArray();
             try
             {
-                var converter = new System.Windows.Media.BrushConverter();
                 // create new theme resources
                 var rd = new ResourceDictionary();
                 SetKey(rd, resourceTypeKey, resourceTypeValue);
-                SetKey(rd, "MainColor1", System.Drawing.ColorTranslator.FromHtml(MainColor1));
-                SetKey(rd, "MainColor1Lighter", System.Drawing.ColorTranslator.FromHtml(MainColor1Lighter));
-                SetKey(rd, "MainColor1Darker", System.Drawing.ColorTranslator.FromHtml(MainColor1Lighter));
-                SetKey(rd, "MainColor1Foreground", System.Drawing.ColorTranslator.FromHtml(MainColor1Foreground));
-                SetKey(rd, "MainColor2", System.Drawing.ColorTranslator.FromHtml(MainColor2));
-                SetKey(rd, "MainColor2Lighter", System.Drawing.ColorTranslator.FromHtml(MainColor2Lighter));
-                SetKey(rd, "MainColor2Darker", System.Drawing.ColorTranslator.FromHtml(MainColor2Lighter));
-                SetKey(rd, "MainColor2Foreground", System.Drawing.ColorTranslator.FromHtml(MainColor2Foreground));
-                SetKey(rd, "MainBgColor", System.Drawing.ColorTranslator.FromHtml(MainBgColor));
-                SetKey(rd, "MainBgColorForeground", System.Drawing.ColorTranslator.FromHtml(MainBgColorForeground));
+                SetKey(rd, "MainColor1", ColorAndBrushHelper.HexColorToMediaColor(MainColor1));
+                SetKey(rd, "MainColor1Lighter", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Lighter));
+                SetKey(rd, "MainColor1Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Lighter));
+                SetKey(rd, "MainColor1Foreground", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Foreground));
+                SetKey(rd, "MainColor2", ColorAndBrushHelper.HexColorToMediaColor(MainColor2));
+                SetKey(rd, "MainColor2Lighter", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Lighter));
+                SetKey(rd, "MainColor2Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Lighter));
+                SetKey(rd, "MainColor2Foreground", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Foreground));
+                SetKey(rd, "MainBgColor", ColorAndBrushHelper.HexColorToMediaColor(MainBgColor));
+                SetKey(rd, "MainBgColorForeground", ColorAndBrushHelper.HexColorToMediaColor(MainBgColorForeground));
 
-                SetKey(rd, "MainColor1Brush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor1));
-                SetKey(rd, "MainColor1LighterBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor1Lighter));
-                SetKey(rd, "MainColor1DarkerBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor1Lighter));
-                SetKey(rd, "MainColor1ForegroundBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor1Foreground));
-                SetKey(rd, "MainColor2Brush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor2));
-                SetKey(rd, "MainColor2LighterBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor2Lighter));
-                SetKey(rd, "MainColor2DarkerBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor2Lighter));
-                SetKey(rd, "MainColor2ForegroundBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainColor2Foreground));
-                SetKey(rd, "MainBgColorBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainBgColor));
-                SetKey(rd, "MainBgColorForegroundBrush", (System.Windows.Media.Brush)converter.ConvertFromString(MainBgColorForeground));
+                SetKey(rd, "MainColor1Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1));
+                SetKey(rd, "MainColor1LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Lighter));
+                SetKey(rd, "MainColor1DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Lighter));
+                SetKey(rd, "MainColor1ForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Foreground));
+                SetKey(rd, "MainColor2Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2));
+                SetKey(rd, "MainColor2LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Lighter));
+                SetKey(rd, "MainColor2DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Lighter));
+                SetKey(rd, "MainColor2ForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Foreground));
+                SetKey(rd, "MainBgColorBrush", ColorAndBrushHelper.ColorToMediaBrush(MainBgColor));
+                SetKey(rd, "MainBgColorForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainBgColorForeground));
 
                 foreach (var r in rs)
                 {

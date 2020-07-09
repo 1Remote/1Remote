@@ -73,33 +73,36 @@
             <Grid Height="{Binding ElementName=BtnSetting,Path=Height}" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
+                        Foreground="{DynamicResource MainColor1ForegroundBrush}"
                         KeyUp="TbFilter_OnKeyUp"
                         VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>
-                                <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}"/>
+                                <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" 
+                                           Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           />
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </TextBox.Resources>
                     <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}">
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
+                            <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type TextBox}">
                                         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                                             <Grid>
-                                                <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}">
-                                                </Grid>
-                                                <Grid x:Name="grid1" Background="{TemplateBinding Background}" Opacity="{TemplateBinding Opacity}">
-                                                    <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                                <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}"></Grid>
+                                                <Grid x:Name="grid1" Opacity="{TemplateBinding Opacity}">
+                                                    <ScrollViewer Foreground="{DynamicResource MainColor1ForegroundBrush}" x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                                                 </Grid>
                                             </Grid>
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Opacity" Value="0.6"></Setter>
+                            <Setter Property="Opacity" Value="0.5"></Setter>
                             <Setter Property="Background" Value="Transparent"></Setter>
                             <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
@@ -142,7 +145,7 @@
                 <Grid Width="15" Height="15">
                     <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
                           -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
-                          Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="0.75" Stretch="Fill" />
+                          Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
 
                     <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
                           Fill="Red" 
@@ -232,7 +235,7 @@
             <controls:ButtonEx Name="BtnMinimize"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
                                Click="BtnSetting_OnClick">
-                <Rectangle Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+                <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
             </controls:ButtonEx>
 
             <controls:ButtonEx Name="BtnMaximize" 
@@ -276,12 +279,14 @@
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="BackgroundOnMouseOver" Value="Red"/>
                         <Setter Property="BackgroundOnPressed" Value="Red"/>
+                        <Setter Property="ForegroundOnMouseOver" Value="White"/>
+                        <Setter Property="ForegroundOnPressed" Value="White"/>
                     </Style>
                 </controls:ButtonEx.Style>
                 <Grid Height="15" Width="15" >
                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
                           L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
-                          Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </controls:ButtonEx>
         </StackPanel>
