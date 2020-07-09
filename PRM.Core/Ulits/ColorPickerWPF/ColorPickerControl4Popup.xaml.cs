@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
+using PRM.Core.Ulits;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace ColorPickerWPF
@@ -47,7 +48,7 @@ namespace ColorPickerWPF
             ColorSwatch1.AddRange(ColorPalette.BuiltInColors.Take(NumColorsFirstSwatch).ToArray());
 
             ColorSwatch2.AddRange(ColorPalette.BuiltInColors.Skip(NumColorsFirstSwatch).Take(NumColorsSecondSwatch).ToArray());
-            
+
             Swatch1.SwatchListBox.ItemsSource = ColorSwatch1;
             Swatch2.SwatchListBox.ItemsSource = ColorSwatch2;
 
@@ -110,6 +111,7 @@ namespace ColorPickerWPF
 
             IsSettingValues = false;
             OnPickColor?.Invoke(color);
+            TbHex.Text = color.ToHexString();
         }
 
 
@@ -117,25 +119,25 @@ namespace ColorPickerWPF
         {
             // https://social.msdn.microsoft.com/Forums/vstudio/en-US/82a5731e-e201-4aaf-8d4b-062b138338fe/getting-pixel-information-from-a-bitmapimage?forum=wpf
 
-            int stride = (int) img.Width*4;
-            int size = (int) img.Height*stride;
-            byte[] pixels = new byte[(int) size];
+            int stride = (int)img.Width * 4;
+            int size = (int)img.Height * stride;
+            byte[] pixels = new byte[(int)size];
 
             img.CopyPixels(pixels, stride, 0);
 
 
             // Get pixel
-            var x = (int) pos.X;
-            var y = (int) pos.Y;
+            var x = (int)pos.X;
+            var y = (int)pos.Y;
 
-            int index = y*stride + 4*x;
+            int index = y * stride + 4 * x;
 
-            byte red = pixels[index];
-            byte green = pixels[index + 1];
-            byte blue = pixels[index + 2];
-            byte alpha = pixels[index + 3];
+            byte b = pixels[index];
+            byte g = pixels[index + 1];
+            byte r = pixels[index + 2];
+            byte a = pixels[index + 3];
 
-            var color = Color.FromArgb(alpha, blue, green, red);
+            var color = Color.FromArgb(a, r, g, b);
             SetColor(color);
         }
 
@@ -153,7 +155,7 @@ namespace ColorPickerWPF
         {
             var pos = e.GetPosition(SampleImage);
             var img = SampleImage.Source as BitmapSource;
-                                         
+
             if (pos.X > 0 && pos.Y > 0 && pos.X < img.PixelWidth && pos.Y < img.PixelHeight)
                 SampleImageClick(img, pos);
         }
@@ -176,8 +178,8 @@ namespace ColorPickerWPF
             {
                 var s = Color.GetSaturation();
                 var l = Color.GetBrightness();
-                var h = (float) value;
-                var a = (int) ASlider.Slider.Value;
+                var h = (float)value;
+                var a = (int)ASlider.Slider.Value;
                 Color = Util.FromAhsb(a, h, s, l);
 
                 SetColor(Color);
@@ -191,7 +193,7 @@ namespace ColorPickerWPF
         {
             if (!IsSettingValues)
             {
-                var val = (byte) value;
+                var val = (byte)value;
                 Color.R = val;
                 SetColor(Color);
             }
@@ -201,7 +203,7 @@ namespace ColorPickerWPF
         {
             if (!IsSettingValues)
             {
-                var val = (byte) value;
+                var val = (byte)value;
                 Color.G = val;
                 SetColor(Color);
             }
@@ -211,7 +213,7 @@ namespace ColorPickerWPF
         {
             if (!IsSettingValues)
             {
-                var val = (byte) value;
+                var val = (byte)value;
                 Color.B = val;
                 SetColor(Color);
             }
@@ -231,10 +233,10 @@ namespace ColorPickerWPF
         {
             if (!IsSettingValues)
             {
-                var s = (float) value;
+                var s = (float)value;
                 var l = Color.GetBrightness();
                 var h = Color.GetHue();
-                var a = (int) ASlider.Slider.Value;
+                var a = (int)ASlider.Slider.Value;
                 Color = Util.FromAhsb(a, h, s, l);
 
                 SetColor(Color);
@@ -247,9 +249,9 @@ namespace ColorPickerWPF
             if (!IsSettingValues)
             {
                 var s = Color.GetSaturation();
-                var l = (float) value;
+                var l = (float)value;
                 var h = Color.GetHue();
-                var a = (int) ASlider.Slider.Value;
+                var a = (int)ASlider.Slider.Value;
                 Color = Util.FromAhsb(a, h, s, l);
 
                 SetColor(Color);
@@ -277,10 +279,63 @@ namespace ColorPickerWPF
                 }
                 catch (Exception ex)
                 {
-                    ex = ex;
                 }
 
             }
+        }
+
+        private void TbHex_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                var (a, r, g, b) = HexColorToArgb(TbHex.Text);
+                var color = Color.FromArgb(a, r, g, b);
+                SetColor(color);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
+        /// <summary>
+        /// color in hex string to (a,r,g,b);
+        /// #FFFEFDFC   ->  Tuple(255,254,253,252),
+        /// #FEFDFC     ->  Tuple(255,254,253,252)
+        /// </summary>
+        /// <param name="hexColor"></param>
+        /// <returns></returns>
+        private static Tuple<byte, byte, byte, byte> HexColorToArgb(string hexColor)
+        {
+            //remove the # at the front
+            var hex = hexColor.Replace("#", "");
+
+            byte a = 255;
+            byte r = 255;
+            byte g = 255;
+            byte b = 255;
+
+            int start = 0;
+
+            try
+            {
+                if (hex.Length != 8 && hex.Length != 6)
+                    throw new ArgumentException("Error hex color string length.");
+                //handle ARGB strings (8 characters long)
+                if (hex.Length == 8)
+                {
+                    a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                    start = 2;
+                }
+                //convert RGB characters to bytes
+                r = byte.Parse(hex.Substring(start, 2), System.Globalization.NumberStyles.HexNumber);
+                g = byte.Parse(hex.Substring(start + 2, 2), System.Globalization.NumberStyles.HexNumber);
+                b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return new Tuple<byte, byte, byte, byte>(a, r, g, b);
         }
     }
 }

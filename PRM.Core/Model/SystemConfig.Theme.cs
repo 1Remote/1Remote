@@ -203,8 +203,7 @@ namespace PRM.Core.Model
         private const string _sectionName = "Theme";
         public override void Save()
         {
-            _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
-            _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName.ToString());
+            _ini.WriteValue(nameof(PrmColorThemeName).ToLower(), _sectionName, PrmColorThemeName);
             _ini.WriteValue(nameof(MainColor1).ToLower(), _sectionName, MainColor1);
             _ini.WriteValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
             _ini.WriteValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
@@ -215,6 +214,8 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
             _ini.WriteValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
             _ini.WriteValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
+            _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
+            _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             _ini.Save();
             ApplyPrmColorTheme();
         }
@@ -226,7 +227,11 @@ namespace PRM.Core.Model
             PrmColorThemeNames = new ObservableCollection<string>(PrmColorThemes.Keys);
             _prmColorThemeName = PrmColorThemeNames.First();
             ReloadPuttyThemes();
-            PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
+
+            _prmColorThemeName = _ini.GetValue(nameof(PrmColorThemeName).ToLower(), _sectionName, _prmColorThemeName);
+            if (string.IsNullOrEmpty(_prmColorThemeName)
+                || !PrmColorThemeNames.Contains(_prmColorThemeName))
+                _prmColorThemeName = PrmColorThemeNames.First();
             _mainColor1 = _ini.GetValue(nameof(MainColor1).ToLower(), _sectionName, MainColor1);
             _mainColor1Lighter = _ini.GetValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
             _mainColor1Darker = _ini.GetValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
@@ -237,8 +242,12 @@ namespace PRM.Core.Model
             _mainColor2Foreground = _ini.GetValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
             _mainBgColor = _ini.GetValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
             _mainBgColorForeground = _ini.GetValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
+
+            PuttyThemeName = _ini.GetValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             if (string.IsNullOrEmpty(PuttyThemeName))
                 PuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
+            PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
+
             StopAutoSave = false;
             ApplyPrmColorTheme();
         }

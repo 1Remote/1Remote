@@ -19,8 +19,7 @@
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource MainColor1Brush}">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderBrush" Value="#333"></Setter>
-                        <Setter Property="BorderThickness" Value="1"></Setter>
+                        <Setter Property="BorderThickness" Value="0"></Setter>
                     </Style>
                 </Border.Style>
                 <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">
@@ -240,8 +239,7 @@
             </controls:ButtonEx>
 
             <controls:ButtonEx Name="BtnMaximize" 
-                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
-                               Click="BtnSetting_OnClick">
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
                 <Grid>
                     <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
                           Stretch="Uniform" >
