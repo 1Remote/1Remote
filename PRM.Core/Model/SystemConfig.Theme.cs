@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using PRM.Core.Protocol.Putty;
+using PRM.Core.Resources.Theme;
 using PRM.Core.Ulits;
 using Shawn.Ulits;
 
@@ -41,21 +42,58 @@ namespace PRM.Core.Model
 
 
         private string _puttyThemeName = "";
-
         public string PuttyThemeName
         {
             get => _puttyThemeName;
             set => SetAndNotifyIfChanged(nameof(PuttyThemeName), ref _puttyThemeName, value);
         }
 
-        private ObservableCollection<string> _puttyThemeNames= new ObservableCollection<string>();
+        private ObservableCollection<string> _puttyThemeNames = new ObservableCollection<string>();
         public ObservableCollection<string> PuttyThemeNames
         {
             get => _puttyThemeNames;
             set => SetAndNotifyIfChanged(nameof(PuttyThemeNames), ref _puttyThemeNames, value);
         }
 
+        
 
+        private string _prmColorThemeName = "";
+        public string PrmColorThemeName
+        {
+            get => _prmColorThemeName;
+            set
+            {
+                if (PrmColorThemes.ContainsKey(value))
+                {
+                    var theme = PrmColorThemes[value];
+                    _mainColor1 = theme.MainColor1;
+                    _mainColor1Lighter = theme.MainColor1Lighter;
+                    _mainColor1Darker = theme.MainColor1Darker;
+                    _mainColor1Foreground = theme.MainColor1Foreground;
+                    _mainColor2 = theme.MainColor2;
+                    _mainColor2Lighter = theme.MainColor2Lighter;
+                    _mainColor2Darker = theme.MainColor2Darker;
+                    _mainColor2Foreground = theme.MainColor2Foreground;
+                    _mainBgColor = theme.MainBgColor;
+                    _mainBgColorForeground = theme.MainBgColorForeground;
+                    Save();
+                    SetAndNotifyIfChanged(nameof(PrmColorThemeName), ref _prmColorThemeName, value);
+                }
+            }
+        }
+        
+        private ObservableCollection<string> _prmColorThemeNames = new ObservableCollection<string>();
+        public ObservableCollection<string> PrmColorThemeNames
+        {
+            get => _prmColorThemeNames;
+            set => SetAndNotifyIfChanged(nameof(PrmColorThemeNames), ref _prmColorThemeNames, value);
+        }
+        private Dictionary<string, PrmColorTheme> _prmColorThemes;
+        public Dictionary<string, PrmColorTheme> PrmColorThemes
+        {
+            get => _prmColorThemes;
+            set => SetAndNotifyIfChanged(nameof(PrmColorThemes), ref _prmColorThemes, value);
+        }
 
         private string _mainColor1 = "#102b3e";
         public string MainColor1
@@ -78,9 +116,20 @@ namespace PRM.Core.Model
             }
         }
 
-        public string MainColor1Lighter { get; set; } = "#445a68";
+        private string _mainColor1Lighter = "#445a68";
+        public string MainColor1Lighter
+        {
+            get => _mainColor1Lighter;
+            set => SetAndNotifyIfChanged(nameof(MainColor1Lighter), ref _mainColor1Lighter, value);
+        }
 
-        public string MainColor1Darker { get; set; } = "#0c2230";
+        private string _mainColor1Darker = "#0c2230";
+        public string MainColor1Darker
+        {
+            get => _mainColor1Darker;
+            set => SetAndNotifyIfChanged(nameof(MainColor1Darker), ref _mainColor1Darker, value);
+        }
+
 
 
         private string _mainColor1Foreground = "#ffffff";
@@ -112,9 +161,19 @@ namespace PRM.Core.Model
             }
         }
 
-        public string MainColor2Lighter { get; set; } = "#ed6884";
+        private string _mainColor2Lighter = "#ed6884";
+        public string MainColor2Lighter
+        {
+            get => _mainColor2Lighter;
+            set => SetAndNotifyIfChanged(nameof(MainColor2Lighter), ref _mainColor2Lighter, value);
+        }
 
-        public string MainColor2Darker { get; set; } = "#b5304c";
+        private string _mainColor2Darker = "#b5304c";
+        public string MainColor2Darker
+        {
+            get => _mainColor2Darker;
+            set => SetAndNotifyIfChanged(nameof(MainColor2Darker), ref _mainColor2Darker, value);
+        }
 
 
         private string _mainColor2Foreground = "#ffffff";
@@ -157,27 +216,31 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
             _ini.WriteValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
             _ini.Save();
-            ReloadThemes();
+            ApplyPrmColorTheme();
         }
 
         public override void Load()
         {
             StopAutoSave = true;
+            PrmColorThemes = PRM.Core.Resources.Theme.PrmColorThemes.GetThemes();
+            PrmColorThemeNames = new ObservableCollection<string>(PrmColorThemes.Keys);
+            _prmColorThemeName = PrmColorThemeNames.First();
+            ReloadPuttyThemes();
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
             _mainColor1 = _ini.GetValue(nameof(MainColor1).ToLower(), _sectionName, MainColor1);
-            MainColor1Lighter = _ini.GetValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
-            MainColor1Darker = _ini.GetValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
+            _mainColor1Lighter = _ini.GetValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
+            _mainColor1Darker = _ini.GetValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
             _mainColor1Foreground = _ini.GetValue(nameof(MainColor1Foreground).ToLower(), _sectionName, MainColor1Foreground);
             _mainColor2 = _ini.GetValue(nameof(MainColor2).ToLower(), _sectionName, MainColor2);
-            MainColor2Lighter = _ini.GetValue(nameof(MainColor2Lighter).ToLower(), _sectionName, MainColor2Lighter);
-            MainColor2Darker = _ini.GetValue(nameof(MainColor2Darker).ToLower(), _sectionName, MainColor2Darker);
-            MainColor2Foreground = _ini.GetValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
+            _mainColor2Lighter = _ini.GetValue(nameof(MainColor2Lighter).ToLower(), _sectionName, MainColor2Lighter);
+            _mainColor2Darker = _ini.GetValue(nameof(MainColor2Darker).ToLower(), _sectionName, MainColor2Darker);
+            _mainColor2Foreground = _ini.GetValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
             _mainBgColor = _ini.GetValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
             _mainBgColorForeground = _ini.GetValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
-            ReloadThemes();
             if (string.IsNullOrEmpty(PuttyThemeName))
                 PuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
             StopAutoSave = false;
+            ApplyPrmColorTheme();
         }
 
         public override void Update(SystemConfigBase newConfig)
@@ -197,40 +260,15 @@ namespace PRM.Core.Model
         }
 
 
-        public void ReloadThemes()
+        public void ReloadPuttyThemes()
         {
             _puttyThemes = PuttyColorThemes.GetThemes();
             var puttyThemeNames = new ObservableCollection<string>(_puttyThemes.Keys);
             _puttyThemeNames = puttyThemeNames;
-            ReloadColorTheme();
         }
         #endregion
 
-
-
-
-        private RelayCommand _cmdPuttyThemeCustomize;
-        public RelayCommand CmdPuttyThemeCustomize
-        {
-            get
-            {
-                if (_cmdPuttyThemeCustomize == null)
-                {
-                    _cmdPuttyThemeCustomize = new RelayCommand((o) =>
-                    {
-                        var puttyTheme = SelectedPuttyTheme;
-                        if (!Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
-                            Directory.CreateDirectory(PuttyColorThemes.ThemeRegFileFolder);
-                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, PuttyThemeName + ".reg"));
-                        if (fi != null)
-                            System.Diagnostics.Process.Start("notepad.exe", fi.FullName);
-                    });
-                }
-                return _cmdPuttyThemeCustomize;
-            }
-        }
-
-        private void ReloadColorTheme()
+        private void ApplyPrmColorTheme()
         {
             Debug.Assert(AppResourceDictionary != null);
             const string resourceTypeKey = "__Resource_Type_Key";
@@ -252,18 +290,18 @@ namespace PRM.Core.Model
                 SetKey(rd, resourceTypeKey, resourceTypeValue);
                 SetKey(rd, "MainColor1", ColorAndBrushHelper.HexColorToMediaColor(MainColor1));
                 SetKey(rd, "MainColor1Lighter", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Lighter));
-                SetKey(rd, "MainColor1Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Lighter));
+                SetKey(rd, "MainColor1Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Darker));
                 SetKey(rd, "MainColor1Foreground", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Foreground));
                 SetKey(rd, "MainColor2", ColorAndBrushHelper.HexColorToMediaColor(MainColor2));
                 SetKey(rd, "MainColor2Lighter", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Lighter));
-                SetKey(rd, "MainColor2Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Lighter));
+                SetKey(rd, "MainColor2Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Darker));
                 SetKey(rd, "MainColor2Foreground", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Foreground));
                 SetKey(rd, "MainBgColor", ColorAndBrushHelper.HexColorToMediaColor(MainBgColor));
                 SetKey(rd, "MainBgColorForeground", ColorAndBrushHelper.HexColorToMediaColor(MainBgColorForeground));
 
                 SetKey(rd, "MainColor1Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1));
                 SetKey(rd, "MainColor1LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Lighter));
-                SetKey(rd, "MainColor1DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Lighter));
+                SetKey(rd, "MainColor1DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Darker));
                 SetKey(rd, "MainColor1ForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Foreground));
                 SetKey(rd, "MainColor2Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2));
                 SetKey(rd, "MainColor2LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Lighter));
@@ -277,11 +315,64 @@ namespace PRM.Core.Model
                     AppResourceDictionary.MergedDictionaries.Remove(r);
                 }
                 AppResourceDictionary.MergedDictionaries.Add(rd);
+
+                RaisePropertyChanged(nameof(MainColor1));
+                RaisePropertyChanged(nameof(MainColor1Lighter));
+                RaisePropertyChanged(nameof(MainColor1Darker));
+                RaisePropertyChanged(nameof(MainColor1Foreground));
+                RaisePropertyChanged(nameof(MainColor2));
+                RaisePropertyChanged(nameof(MainColor2Lighter));
+                RaisePropertyChanged(nameof(MainColor2Darker));
+                RaisePropertyChanged(nameof(MainColor2Foreground));
+                RaisePropertyChanged(nameof(MainBgColor));
+                RaisePropertyChanged(nameof(MainBgColorForeground));
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Warning(e);
             }
         }
+
+
+
+
+        #region CMD
+        private RelayCommand _cmdPuttyThemeCustomize;
+        public RelayCommand CmdPuttyThemeCustomize
+        {
+            get
+            {
+                if (_cmdPuttyThemeCustomize == null)
+                {
+                    _cmdPuttyThemeCustomize = new RelayCommand((o) =>
+                    {
+                        var puttyTheme = SelectedPuttyTheme;
+                        if (!Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
+                            Directory.CreateDirectory(PuttyColorThemes.ThemeRegFileFolder);
+                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, PuttyThemeName + ".reg"));
+                        if (fi != null)
+                            System.Diagnostics.Process.Start("notepad.exe", fi.FullName);
+                    });
+                }
+                return _cmdPuttyThemeCustomize;
+            }
+        } 
+        
+        private RelayCommand _cmdPrmThemeReset;
+        public RelayCommand CmdPrmThemeReset
+        {
+            get
+            {
+                if (_cmdPrmThemeReset == null)
+                {
+                    _cmdPrmThemeReset = new RelayCommand((o) =>
+                    {
+                        PrmColorThemeName = PrmColorThemeName;
+                    });
+                }
+                return _cmdPrmThemeReset;
+            }
+        } 
+        #endregion
     }
 }
