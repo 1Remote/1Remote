@@ -239,6 +239,15 @@
 
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                                         <Style.Triggers>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="Selector.IsSelected" Value="False"></Condition>
+                                                    <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
+                                                </MultiTrigger.Conditions>
+                                                <MultiTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                </MultiTrigger.Setters>
+                                            </MultiTrigger>
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
                                             </Trigger>
