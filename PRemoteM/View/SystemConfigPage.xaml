@@ -440,8 +440,8 @@
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}"/>
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="txt:背景色" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor2}"/>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainBgColor}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainBgColorForeground}"/>
                         </Grid>
                     </Grid>
 

@@ -7,6 +7,36 @@
     x:Class="ColorPickerWPF.ColorPickerControl4Popup"
              mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="350" MinHeight="300">
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="Control">
+                <Setter Property="FontFamily" Value="Microsoft YaHei"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="Foreground" Value="#000"></Setter>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="Foreground" Value="#000"></Setter>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="Foreground" Value="#000"></Setter>
+                <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            </Style>
+            <Style TargetType="CheckBox">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="Foreground" Value="#000"></Setter>
+                <Setter Property="TextElement.Foreground" Value="#000"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            </Style>
+            <Style TargetType="RadioButton">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="Foreground" Value="#000"></Setter>
+            </Style>
+            <Style TargetType="TextElement">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="Foreground" Value="#000"></Setter>
+            </Style>
+        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="326"  />
             <ColumnDefinition Width="*" />
@@ -57,9 +87,14 @@
             </Grid>
             <colorPickerWpf:ColorPickerSwatch x:Name="Swatch2" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Stretch"
                                            OnPickColor="Swatch_OnOnPickColor"/>
-
         </Grid>
 
 
+        <Grid Grid.Row="1" Grid.Column="1" Margin="3">
+            <StackPanel>
+                <TextBlock>Hex:</TextBlock>
+                <TextBox Name="TbHex" KeyUp="TbHex_OnKeyUp"></TextBox>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
