@@ -9,6 +9,9 @@ using System.Text;
 
 namespace RdpHelper
 {
+    /// <summary>
+    /// REF: https://www.donkz.nl/overview-rdp-file-settings/
+    /// </summary>
     public sealed class RdpConfig
     {
         [RdpConfName("screen mode id:i:")]
@@ -63,16 +66,27 @@ namespace RdpHelper
         public int BitmapCachePersistenable { get; set; } = 1;
         [RdpConfName("audiomode:i:")]
         public int AudioMode { get; set; } = 1;
-        [RdpConfName("redirectprinters:i:")]
-        public int RedirectPrinters { get; set; } = 0;
-        [RdpConfName("redirectcomports:i:")]
-        public int RedirectComPorts { get; set; } = 0;
-        [RdpConfName("redirectsmartcards:i:")]
-        public int RedirectSmartCards { get; set; } = 0;
+        /// <summary>
+        /// Determines whether the clipboard on the client computer will be redirected and available in the remote session and vice versa.
+        /// 0 - Do not redirect the clipboard.
+        /// 1 - Redirect the clipboard.
+        /// </summary>
         [RdpConfName("redirectclipboard:i:")]
         public int RedirectClipboard { get; set; } = 0;
+        [RdpConfName("redirectcomports:i:")]
+        public int RedirectComPorts { get; set; } = 0;
+        [RdpConfName("redirectdirectx:i:")]
+        public int RedirectDirectX { get; set; } = 1;
+        [RdpConfName("redirectdrives:i:")]
+        public int RedirectDrives { get; set; } = 1;
         [RdpConfName("redirectposdevices:i:")]
         public int RedirectPosDevices { get; set; } = 0;
+        [RdpConfName("redirectprinters:i:")]
+        public int RedirectPrinters { get; set; } = 0;
+        [RdpConfName("redirectsmartcards:i:")]
+        public int RedirectSmartCards { get; set; } = 0;
+
+
         [RdpConfName("autoreconnection enabled:i:")]
         public int AutoReconnectionEnabled { get; set; } = 1;
         [RdpConfName("authentication level:i:")]
@@ -101,8 +115,6 @@ namespace RdpHelper
         public int UseRedirectionServerName { get; set; } = 0;
         [RdpConfName("drivestoredirect:s:")]
         public string DrivestoreDirect { get; set; } = "";
-        [RdpConfName("redirectdirectx:i:")]
-        public int RedirectDirectX { get; set; } = 1;
 
         [RdpConfName("full address:s:")]
         private string FullAddress { get; set; } = "";
@@ -141,7 +153,7 @@ namespace RdpHelper
 
             if ((this.Password ?? "") != "")
             {
-                RdpConfNameAttribute attr = typeof(RdpConfig)
+                var attr = typeof(RdpConfig)
                     .GetProperty(nameof(this.Password), BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetCustomAttributes(typeof(RdpConfNameAttribute), false)
                     .First() as RdpConfNameAttribute; 

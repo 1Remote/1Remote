@@ -43,7 +43,7 @@ namespace PRM.Core.Model
                         if (_currentLanguageResourceDictionary == null)
                         {
                             // use default
-                            CurrentLanguageCode = DefaultLanguageCode;
+                            _currentLanguageCode = DefaultLanguageCode;
                             _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
                         }
                         AppResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
