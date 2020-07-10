@@ -54,7 +54,7 @@ namespace PRM.View
             {
                 if (Vm.SelectedItem != null)
                 {
-                    RemoteWindowPool.Instance.DelProtocolHost(Vm.SelectedItem.Content.ConnectionId);
+                    RemoteWindowPool.Instance.DelProtocolHost(Vm?.SelectedItem?.Content?.ConnectionId);
                 }
                 else
                 {

@@ -22,7 +22,7 @@ namespace PRM.Core.Model
             Load();
         }
         public const string DefaultLanguageCode = "en-us";
-        public const string LanguageJsonDir = "Languages";
+        public static string LanguageJsonDir = "Languages";
         public readonly ResourceDictionary AppResourceDictionary = null;
 
         private string _currentLanguageCode = "en-us";

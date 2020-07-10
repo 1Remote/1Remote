@@ -130,8 +130,16 @@
                                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/author_avatar.jpg" Width="32"></Image>
                                 </Grid>
                                 <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
-                                    <TextBlock Text="Shawn"></TextBlock>
-                                    <TextBlock Text="(singlex@foxmail.com)"></TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/VShawn" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            Shawn
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="mailto::singlex@foxmail.com?subject=PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                            (singlex@foxmail.com)
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -143,10 +151,9 @@
                                 <StackPanel>
                                     <Grid Style="{StaticResource ServerEditorRow}">
                                         <StackPanel Orientation="Horizontal">
-                                            <!--<TextBlock Text="How to use"></TextBlock>-->
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM-Test/issues" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
-                                                    Bug report
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                    How to use
                                                 </Hyperlink>
                                             </TextBlock>
                                         </StackPanel>
@@ -159,7 +166,12 @@
                                     <Grid Style="{StaticResource ServerEditorRow}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM-Test" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                    Bug report
+                                                </Hyperlink>
+                                            </TextBlock>
+                                            <TextBlock>
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
                                                     Github
                                                 </Hyperlink>
                                             </TextBlock>
