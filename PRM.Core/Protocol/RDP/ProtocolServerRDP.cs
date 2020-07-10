@@ -363,7 +363,7 @@ namespace PRM.Core.Protocol.RDP
 
             
             if (this.EnableDiskDrives)
-                rdpConfig.RedirectPosDevices = 1;
+                rdpConfig.RedirectDrives = 1;
             if (this.EnableClipboard)
                 rdpConfig.RedirectClipboard = 1;
             if (this.EnablePrinters)

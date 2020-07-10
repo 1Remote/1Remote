@@ -94,7 +94,7 @@ namespace PRM.Model
                         var invalid = new string(Path.GetInvalidFileNameChars()) +
                                       new string(Path.GetInvalidPathChars());
                         dp = invalid.Aggregate(dp, (current, c) => current.Replace(c.ToString(), ""));
-                        var rdpFile = Path.Combine(tmp, DateTime.Now.ToString(dp + "_yyyyMMddHHmmss") + ".rdp");
+                        var rdpFile = Path.Combine(tmp, dp + ".rdp");
                         try
                         {
                             File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());

@@ -55,7 +55,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(PuttyThemeNames), ref _puttyThemeNames, value);
         }
 
-        
+
 
         private string _prmColorThemeName = "";
         public string PrmColorThemeName
@@ -81,7 +81,7 @@ namespace PRM.Core.Model
                 }
             }
         }
-        
+
         private ObservableCollection<string> _prmColorThemeNames = new ObservableCollection<string>();
         public ObservableCollection<string> PrmColorThemeNames
         {
@@ -290,7 +290,7 @@ namespace PRM.Core.Model
                     rd[key] = value;
             }
             var rs = AppResourceDictionary.MergedDictionaries.Where(o =>
-                (o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Languages/zh-cn.xaml".ToLower()) >= 0)
+                (o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Theme/Default.xaml".ToLower()) >= 0)
                 || o[resourceTypeKey]?.ToString() == resourceTypeValue).ToArray();
             try
             {
@@ -365,8 +365,8 @@ namespace PRM.Core.Model
                 }
                 return _cmdPuttyThemeCustomize;
             }
-        } 
-        
+        }
+
         private RelayCommand _cmdPrmThemeReset;
         public RelayCommand CmdPrmThemeReset
         {
@@ -381,7 +381,7 @@ namespace PRM.Core.Model
                 }
                 return _cmdPrmThemeReset;
             }
-        } 
+        }
         #endregion
     }
 }
