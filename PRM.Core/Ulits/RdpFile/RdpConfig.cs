@@ -113,8 +113,16 @@ namespace RdpHelper
         public int PromptCredentialOnce { get; set; } = 0;
         [RdpConfName("use redirection server name:i:")]
         public int UseRedirectionServerName { get; set; } = 0;
+        [RdpConfName("rdgiskdcproxy:i:")]
+        public int RdgiskdcProxy { get; set; } = 0;
+        [RdpConfName("kdcproxyname:s:")]
+        public string KdcProxyName { get; set; } = "";
+        [RdpConfName("devicestoredirect:s:")]
+        public string DeviceStoreDirect { get; set; } = "*";
         [RdpConfName("drivestoredirect:s:")]
-        public string DrivestoreDirect { get; set; } = "";
+        public string DriveStoreDirect { get; set; } = "*";
+        [RdpConfName("camerastoredirect:s:")]
+        public string CameraStoreDirect { get; set; } = "*";
 
         [RdpConfName("full address:s:")]
         private string FullAddress { get; set; } = "";
@@ -156,12 +164,12 @@ namespace RdpHelper
                 var attr = typeof(RdpConfig)
                     .GetProperty(nameof(this.Password), BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetCustomAttributes(typeof(RdpConfNameAttribute), false)
-                    .First() as RdpConfNameAttribute; 
+                    .First() as RdpConfNameAttribute;
                 str.AppendLine(attr.Name + this.Password);
             }
 
             return str.ToString();
-        }    
+        }
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]

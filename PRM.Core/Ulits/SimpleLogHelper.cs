@@ -14,6 +14,7 @@ namespace Shawn.Ulits
         public static Level PrintLogLevel = Level.Debug;
         public static Level WriteLogLevel = Level.Info;
         public static bool CanWriteWarningLog = true;
+        public static long LogFileMaxSizeMb = 10;
 
 
         private static readonly object _obj = new object();
@@ -82,6 +83,15 @@ namespace Shawn.Ulits
                 dt = DateTime.Now;
             lock (_obj)
             {
+                if (File.Exists(LogFileName))
+                {
+                    var fi = new FileInfo(LogFileName);
+                    if (fi.Length > 1024 * 1024 * LogFileMaxSizeMb)
+                    {
+                        var lines =File.ReadAllLines(LogFileName);
+                        File.WriteAllLines(LogFileName, lines.Skip(lines.Length / 3).ToArray());
+                    }
+                }
                 using (StreamWriter sw = new StreamWriter(new FileStream(LogFileName, FileMode.Append)))
                 {
                     sw.WriteLine($"\r\n---");
