@@ -277,16 +277,16 @@
             </Border>
         </Grid>
 
-        <Grid VerticalAlignment="Bottom" Height="30" Background="{DynamicResource MainColor1Brush}">
+        <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource MainColor1Brush}">
             <Grid.Style>
                 <Style TargetType="Grid">
-                    <Setter Property="Opacity" Value="0.8"></Setter>
+                    <Setter Property="Opacity" Value="0.9"></Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
-                            <Setter Property="Opacity" Value="0.3"></Setter>
+                            <Setter Property="Opacity" Value="0"></Setter>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
-                            <Setter Property="Opacity" Value="0.3"></Setter>
+                            <Setter Property="Opacity" Value="0"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
