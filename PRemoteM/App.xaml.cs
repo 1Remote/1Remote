@@ -8,6 +8,7 @@ using System.Windows;
 using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
+using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Ulits;
 using PRM.Model;
@@ -94,7 +95,6 @@ namespace PRM
                                 var line = reader.ReadLine();
                                 if (!string.IsNullOrEmpty(line))
                                 {
-                                    SimpleLogHelper.Info(line);
                                     SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
                                     if (line == "ActivateMe")
                                     {
@@ -134,16 +134,28 @@ namespace PRM
                         Directory.CreateDirectory(appDateFolder);
                     SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
                     var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
+                    if (Environment.CurrentDirectory.IndexOf(@"C:\Windows") < 0)
+                        if (File.Exists(SystemConfig.AppName + ".ini")
+                            || IOPermissionHelper.HasWritePermissionOnDir("./"))
+                        {
+                            iniPath = SystemConfig.AppName + ".ini";
+                        }
                     var ini = new Ini(iniPath);
                     //if (!File.Exists(iniPath))
                     //{
                     //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
                     //}
+
+                    // Set default folder path
+                    SystemConfigLanguage.LanguageJsonDir = Path.Combine(appDateFolder, SystemConfigLanguage.LanguageJsonDir);
+                    PuttyColorThemes.ThemeRegFileFolder = Path.Combine(appDateFolder, PuttyColorThemes.ThemeRegFileFolder);
+
                     var language = new SystemConfigLanguage(this.Resources, ini);
                     var general = new SystemConfigGeneral(ini);
                     var quickConnect = new SystemConfigQuickConnect(ini);
-                    var theme = new SystemConfigTheme(ini);
+                    var theme = new SystemConfigTheme(this.Resources, ini);
                     var dataSecurity = new SystemConfigDataSecurity(ini);
+
 
                     //if (!File.Exists(dataSecurity.DbPath))
                     //{

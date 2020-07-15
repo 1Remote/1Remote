@@ -80,7 +80,7 @@ namespace PRM.View
 
         public void ShowMe()
         {
-            SimpleLogHelper.Info("Call shortcut to invoke quick window.");
+            SimpleLogHelper.Debug("Call shortcut to invoke quick window.");
             _vmSearchBox.DispNameFilter = "";
             if (SystemConfig.Instance.QuickConnect.Enable)
                 if (_isHidden == true)
@@ -88,8 +88,8 @@ namespace PRM.View
                     {
                         if (_isHidden == true)
                         {
-                            var p = ScreenInfoEx.GetMouseScreenPosition();
-                            var screenEx = ScreenInfoEx.GetCurrentScreen(new System.Drawing.Point((int)p.X,(int)p.Y));
+                            var p = ScreenInfoEx.GetMouseSystemPosition();
+                            var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
                             this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
                             this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
                             this.Show();

@@ -9,6 +9,9 @@ using System.Text;
 
 namespace RdpHelper
 {
+    /// <summary>
+    /// REF: https://www.donkz.nl/overview-rdp-file-settings/
+    /// </summary>
     public sealed class RdpConfig
     {
         [RdpConfName("screen mode id:i:")]
@@ -63,16 +66,27 @@ namespace RdpHelper
         public int BitmapCachePersistenable { get; set; } = 1;
         [RdpConfName("audiomode:i:")]
         public int AudioMode { get; set; } = 1;
-        [RdpConfName("redirectprinters:i:")]
-        public int RedirectPrinters { get; set; } = 0;
-        [RdpConfName("redirectcomports:i:")]
-        public int RedirectComPorts { get; set; } = 0;
-        [RdpConfName("redirectsmartcards:i:")]
-        public int RedirectSmartCards { get; set; } = 0;
+        /// <summary>
+        /// Determines whether the clipboard on the client computer will be redirected and available in the remote session and vice versa.
+        /// 0 - Do not redirect the clipboard.
+        /// 1 - Redirect the clipboard.
+        /// </summary>
         [RdpConfName("redirectclipboard:i:")]
         public int RedirectClipboard { get; set; } = 0;
+        [RdpConfName("redirectcomports:i:")]
+        public int RedirectComPorts { get; set; } = 0;
+        [RdpConfName("redirectdirectx:i:")]
+        public int RedirectDirectX { get; set; } = 1;
+        [RdpConfName("redirectdrives:i:")]
+        public int RedirectDrives { get; set; } = 1;
         [RdpConfName("redirectposdevices:i:")]
         public int RedirectPosDevices { get; set; } = 0;
+        [RdpConfName("redirectprinters:i:")]
+        public int RedirectPrinters { get; set; } = 0;
+        [RdpConfName("redirectsmartcards:i:")]
+        public int RedirectSmartCards { get; set; } = 0;
+
+
         [RdpConfName("autoreconnection enabled:i:")]
         public int AutoReconnectionEnabled { get; set; } = 1;
         [RdpConfName("authentication level:i:")]
@@ -99,10 +113,16 @@ namespace RdpHelper
         public int PromptCredentialOnce { get; set; } = 0;
         [RdpConfName("use redirection server name:i:")]
         public int UseRedirectionServerName { get; set; } = 0;
+        [RdpConfName("rdgiskdcproxy:i:")]
+        public int RdgiskdcProxy { get; set; } = 0;
+        [RdpConfName("kdcproxyname:s:")]
+        public string KdcProxyName { get; set; } = "";
+        [RdpConfName("devicestoredirect:s:")]
+        public string DeviceStoreDirect { get; set; } = "*";
         [RdpConfName("drivestoredirect:s:")]
-        public string DrivestoreDirect { get; set; } = "";
-        [RdpConfName("redirectdirectx:i:")]
-        public int RedirectDirectX { get; set; } = 1;
+        public string DriveStoreDirect { get; set; } = "*";
+        [RdpConfName("camerastoredirect:s:")]
+        public string CameraStoreDirect { get; set; } = "*";
 
         [RdpConfName("full address:s:")]
         private string FullAddress { get; set; } = "";
@@ -141,15 +161,15 @@ namespace RdpHelper
 
             if ((this.Password ?? "") != "")
             {
-                RdpConfNameAttribute attr = typeof(RdpConfig)
+                var attr = typeof(RdpConfig)
                     .GetProperty(nameof(this.Password), BindingFlags.NonPublic | BindingFlags.Instance)
                     .GetCustomAttributes(typeof(RdpConfNameAttribute), false)
-                    .First() as RdpConfNameAttribute; 
+                    .First() as RdpConfNameAttribute;
                 str.AppendLine(attr.Name + this.Password);
             }
 
             return str.ToString();
-        }    
+        }
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]

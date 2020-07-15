@@ -37,13 +37,13 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid Margin="0 0 0 0">
+    <Grid Background="{DynamicResource MainColor1Brush}">
+        <Grid Margin="0 21 0 0" Background="{DynamicResource MainBgColorBrush}">
             <ListView 
                 Name="LvServerCards"
                 SelectedItem="{Binding SelectedServerCard}"
                 ItemsSource="{Binding ServerCards}" 
-                      Padding="10 0 0 0" Margin="0 23 0 0"
+                      Padding="10 0 0 0" Margin="0 2 0 0"
                       BorderThickness="0"
                       Background="Transparent"
                       ScrollViewer.HorizontalScrollBarVisibility="Hidden" Grid.ColumnSpan="2" 
@@ -239,6 +239,15 @@
 
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                                         <Style.Triggers>
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="Selector.IsSelected" Value="False"></Condition>
+                                                    <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
+                                                </MultiTrigger.Conditions>
+                                                <MultiTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                </MultiTrigger.Setters>
+                                            </MultiTrigger>
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
                                             </Trigger>

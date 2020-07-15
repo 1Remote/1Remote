@@ -14,6 +14,7 @@ using PRM.Core.Protocol.RDP;
 using PRM.Core.Ulits.DragablzTab;
 using PRM.View;
 using Shawn.Ulits;
+using MessageBox = System.Windows.MessageBox;
 
 namespace PRM.Model
 {
@@ -75,32 +76,34 @@ namespace PRM.Model
                 _protocolHosts[id.ToString()].ParentWindow?.Activate();
                 return;
             }
-
-
-            if (server.IsConnWithFullScreen())
+            
+            TabWindow tab = null;
+            try
             {
-                // for those people using 2+ monitor which are in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
-                if (Screen.AllScreens.Length > 1 
-                    && server is ProtocolServerRDP rdp
-                    && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
+                if (server.IsConnWithFullScreen())
                 {
-                    int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-                    // check if screens are in different scale factors
-                    bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
-                    if (differentScaleFactorFlag)
+                    // for those people using 2+ monitor which are in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+                    if (Screen.AllScreens.Length > 1
+                        && server is ProtocolServerRDP rdp
+                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
                     {
-                        var tmp = Path.GetTempPath();
-                        var dp = rdp.DispName;
-                        var invalid = new string(Path.GetInvalidFileNameChars()) +
-                                      new string(Path.GetInvalidPathChars());
-                        dp = invalid.Aggregate(dp, (current, c) => current.Replace(c.ToString(), ""));
-                        var rdpFile = Path.Combine(tmp, DateTime.Now.ToString(dp + "_yyyyMMddHHmmss") + ".rdp");
-                        try
+                        int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+                        // check if screens are in different scale factors
+                        bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
+                        if (differentScaleFactorFlag)
                         {
-                            File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
-                            var p = new Process
+                            var tmp = Path.GetTempPath();
+                            var dp = rdp.DispName;
+                            var invalid = new string(Path.GetInvalidFileNameChars()) +
+                                      new string(Path.GetInvalidPathChars());
+                            dp = invalid.Aggregate(dp, (current, c) => current.Replace(c.ToString(), ""));
+                            var rdpFile = Path.Combine(tmp, dp + ".rdp");
+                            try
                             {
-                                StartInfo =
+                                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
+                                var p = new Process
+                                {
+                                    StartInfo =
                                 {
                                     FileName = "cmd.exe",
                                     UseShellExecute = false,
@@ -109,67 +112,76 @@ namespace PRM.Model
                                     RedirectStandardError = true,
                                     CreateNoWindow = true
                                 }
-                            };
-                            p.Start();
-                            p.StandardInput.WriteLine("mstsc -admin " + rdpFile);
-                            p.StandardInput.WriteLine("exit");
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                        finally
-                        {
-                            var t = new Task(() =>
+                                };
+                                p.Start();
+                                p.StandardInput.WriteLine("mstsc -admin " + rdpFile);
+                                p.StandardInput.WriteLine("exit");
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+                            finally
+                            {
+                                var t = new Task(() =>
                             {
                                 Thread.Sleep(1000 * 10);
                                 if (File.Exists(rdpFile))
                                     File.Delete(rdpFile);
                             });
-                            t.Start();
+                                t.Start();
+                            }
+                            return;
                         }
-                        return;
                     }
+
+
+                    var host = ProtocolHostFactory.Get(server);
+                    host.OnClosed += OnProtocolClose;
+                    host.OnFullScreen2Window += OnFullScreen2Window;
+                    AddProtocolHost(host);
+                    MoveProtocolHostToFullScreen(host.ConnectionId);
+                    host.Conn();
+                    SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
                 }
-
-
-                var host = ProtocolHostFactory.Get(server);
-                host.OnClosed += OnProtocolClose;
-                host.OnFullScreen2Window += OnFullScreen2Window;
-                AddProtocolHost(host);
-                MoveProtocolHostToFullScreen(host.ConnectionId);
-                host.Conn();
-                SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
-            }
-            else
-            {
-                TabWindow tab = null;
-                if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
-                    tab = _tabWindows[_lastTabToken];
                 else
                 {
-                    var token = DateTime.Now.Ticks.ToString();
-                    AddTab(new TabWindow(token));
-                    tab = _tabWindows[token];
-                    tab.Show();
-                    _lastTabToken = token;
+                    if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
+                        tab = _tabWindows[_lastTabToken];
+                    else
+                    {
+                        var token = DateTime.Now.Ticks.ToString();
+                        AddTab(new TabWindow(token));
+                        tab = _tabWindows[token];
+                        tab.Show();
+                        _lastTabToken = token;
+                    }
+                    tab.Activate();
+                    var size = tab.GetTabContentSize();
+                    var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
+                    host.OnClosed += OnProtocolClose;
+                    host.OnFullScreen2Window += OnFullScreen2Window;
+                    host.ParentWindow = tab;
+                    tab.Vm.Items.Add(new TabItemViewModel()
+                    {
+                        Content = host,
+                        Header = server.DispName,
+                    });
+                    tab.Vm.SelectedItem = tab.Vm.Items.Last();
+                    host.Conn();
+                    _protocolHosts.Add(host.ConnectionId, host);
+                    SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
+                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
-                tab.Activate();
-                var size = tab.GetTabContentSize();
-                var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
-                host.OnClosed += OnProtocolClose;
-                host.OnFullScreen2Window += OnFullScreen2Window;
-                host.ParentWindow = tab;
-                tab.Vm.Items.Add(new TabItemViewModel()
+            }
+            catch (Exception e)
+            {
+                if (tab?.Vm != null && (tab.Vm?.Items?.Count ?? 0) == 0)
                 {
-                    Content = host,
-                    Header = server.DispName,
-                });
-                tab.Vm.SelectedItem = tab.Vm.Items.Last();
-                host.Conn();
-                _protocolHosts.Add(host.ConnectionId, host);
-                SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                    CloseTabWindow(tab.Vm.Token);
+                }
+                SimpleLogHelper.Error(e);
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -344,7 +356,7 @@ namespace PRM.Model
                         }
                         tab.Show();
                         _lastTabToken = token;
-                        // move tab to screen witch display full window 
+                        // move tab to screen which display full window 
                     }
                     tab.Activate();
                     tab.Vm.Items.Add(new TabItemViewModel()
@@ -365,7 +377,8 @@ namespace PRM.Model
         /// </summary>
         public void DelProtocolHost(string connectionId)
         {
-            if (_protocolHosts.ContainsKey(connectionId))
+            if (!string.IsNullOrEmpty(connectionId)
+                && _protocolHosts.ContainsKey(connectionId))
             {
                 var host = _protocolHosts[connectionId];
                 SimpleLogHelper.Debug($@"Del host({host.GetHashCode()})");

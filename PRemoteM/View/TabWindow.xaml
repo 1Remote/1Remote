@@ -85,7 +85,7 @@
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
                                 <Grid.Background>
-                                    <LinearGradientBrush>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="{Binding MarkColorHex}" Offset="0"></GradientStop>
                                         <GradientStop Color="{DynamicResource MainColor1}" Offset="1"></GradientStop>
                                     </LinearGradientBrush>
@@ -191,11 +191,11 @@
                 </Style>
             </StackPanel.Resources>
 
-            <controls:ButtonEx Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}">
-                <Rectangle Width="15" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75"/>
+            <controls:ButtonEx Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}" Width="35" Height="40">
+                <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
             </controls:ButtonEx>
 
-            <controls:ButtonEx Name="BtnMaximize">
+            <controls:ButtonEx Name="BtnMaximize" Width="35" Height="40">
                 <controls:ButtonEx.Style>
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
@@ -239,7 +239,7 @@
             </controls:ButtonEx>
 
 
-            <controls:ButtonEx Command="{Binding CmdHostGoFullScreen}" 
+            <controls:ButtonEx Command="{Binding CmdHostGoFullScreen}" Width="35" Height="40"
                     CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
                 <controls:ButtonEx.Style>
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
@@ -252,42 +252,41 @@
                     </Style>
                 </controls:ButtonEx.Style>
                 <Grid Height="15" Width="15">
-                    <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
+                    <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z " 
+                          Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </controls:ButtonEx>
 
 
-            <controls:ButtonEx Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}">
+            <controls:ButtonEx Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}" Width="35" Height="40">
                 <controls:ButtonEx.Style>
-                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                        <Style.Triggers>
-                            <Trigger Property="controls:ButtonEx.IsMouseOver" Value="True">
-                                <Setter Property="controls:ButtonEx.Background" Value="Red" />
-                            </Trigger>
-                        </Style.Triggers>
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                        <Setter Property="BackgroundOnMouseOver" Value="Red"/>
+                        <Setter Property="BackgroundOnPressed" Value="Red"/>
+                        <Setter Property="ForegroundOnMouseOver" Value="White"/>
+                        <Setter Property="ForegroundOnPressed" Value="White"/>
                     </Style>
                 </controls:ButtonEx.Style>
                 <Grid Width="15" Height="15">
-                    <Path Data="F1 M 87.871094 -29.003906 L 75.410156 -16.500000 L 87.871094 -3.996094 L 84.003906 -0.128906 L 71.500000 -12.589844 L 58.996094 -0.128906 L 55.128906 -3.996094 L 67.589844 -16.500000 L 55.128906 -29.003906 L 58.996094 -32.871094 L 71.500000 -20.410156 L 84.003906 -32.871094 Z M 82.500000 -77.000000 L 82.500000 -38.500000 L 49.500000 -38.500000 L 49.500000 -5.500000 L 11.000000 -5.500000 L 11.000000 -77.000000 Z M 16.500000 -71.500000 L 16.500000 -44.000000 L 44.000000 -44.000000 L 44.000000 -71.500000 Z M 44.000000 -11.000000 L 44.000000 -38.500000 L 16.500000 -38.500000 L 16.500000 -11.000000 Z M 77.000000 -44.000000 L 77.000000 -71.500000 L 49.500000 -71.500000 L 49.500000 -44.000000 Z " Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
+                    <Path Data="F1 M 87.871094 -29.003906 L 75.410156 -16.500000 L 87.871094 -3.996094 L 84.003906 -0.128906 L 71.500000 -12.589844 L 58.996094 -0.128906 L 55.128906 -3.996094 L 67.589844 -16.500000 L 55.128906 -29.003906 L 58.996094 -32.871094 L 71.500000 -20.410156 L 84.003906 -32.871094 Z M 82.500000 -77.000000 L 82.500000 -38.500000 L 49.500000 -38.500000 L 49.500000 -5.500000 L 11.000000 -5.500000 L 11.000000 -77.000000 Z M 16.500000 -71.500000 L 16.500000 -44.000000 L 44.000000 -44.000000 L 44.000000 -71.500000 Z M 44.000000 -11.000000 L 44.000000 -38.500000 L 16.500000 -38.500000 L 16.500000 -11.000000 Z M 77.000000 -44.000000 L 77.000000 -71.500000 L 49.500000 -71.500000 L 49.500000 -44.000000 Z " 
+                        Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </controls:ButtonEx>
 
-            <controls:ButtonEx Name="BtnClose">
+            <controls:ButtonEx Name="BtnClose" Width="35" Height="40">
                 <controls:ButtonEx.Style>
-                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
-                        <Style.Triggers>
-                            <Trigger Property="controls:ButtonEx.IsMouseOver" Value="True">
-                                <Setter Property="controls:ButtonEx.Background" Value="Red" />
-                            </Trigger>
-                        </Style.Triggers>
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                        <Setter Property="BackgroundOnMouseOver" Value="Red"/>
+                        <Setter Property="BackgroundOnPressed" Value="Red"/>
+                        <Setter Property="ForegroundOnMouseOver" Value="White"/>
+                        <Setter Property="ForegroundOnPressed" Value="White"/>
                     </Style>
                 </controls:ButtonEx.Style>
 
                 <Grid Height="15" Width="15" >
                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
                           L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
-                          Fill="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="0.75" Stretch="Uniform" />
+                        Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </controls:ButtonEx>
         </StackPanel>

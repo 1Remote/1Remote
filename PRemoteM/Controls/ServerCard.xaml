@@ -188,8 +188,25 @@
                         </Grid>
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
-                            <Grid HorizontalAlignment="Center" Margin="0 1 0 0">
-                                <TextBlock VerticalAlignment="Center" Foreground="White" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}"/>
+                            <Grid HorizontalAlignment="Center" Margin="0 4 0 0">
+                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </Grid>
                             <Grid>
                                 <!-- setting menu button -->

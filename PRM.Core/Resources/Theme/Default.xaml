@@ -1,5 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="ResourceTypeKey">__Resource_Type_Value=colortheme</system:String>
 
     <Color x:Key="MainColor1">#102b3e</Color>
     <Color x:Key="MainColor1Lighter">#445a68</Color>
@@ -9,15 +12,15 @@
     <Color x:Key="MainColor2">#e83d61</Color>
     <Color x:Key="MainColor2Lighter">#ed6884</Color>
     <Color x:Key="MainColor2Darker">#b5304c</Color>
-    <Color x:Key="MainColor2Foreground">White</Color>
+    <Color x:Key="MainColor2Foreground">#ffffff</Color>
 
     <Color x:Key="MainBgColor">#ced8e1</Color>
-    <Brush x:Key="MainBgColorForeground">#000</Brush>
+    <Color x:Key="MainBgColorForeground">#000000</Color>
 
     <Brush x:Key="MainColor1Brush">#102b3e</Brush>
     <Brush x:Key="MainColor1LighterBrush">#445a68</Brush>
     <Brush x:Key="MainColor1DarkerBrush">#0c2230</Brush>
-    <Brush x:Key="MainColor1ForegroundBrush">White</Brush>
+    <Brush x:Key="MainColor1ForegroundBrush">#ffffff</Brush>
 
     <Brush x:Key="MainColor2Brush">#e83d61</Brush>
     <Brush x:Key="MainColor2LighterBrush">#ed6884</Brush>
@@ -25,6 +28,6 @@
     <Brush x:Key="MainColor2ForegroundBrush">White</Brush>
 
     <Brush x:Key="MainBgColorBrush">#ced8e1</Brush>
-    <Brush x:Key="MainBgColorForegroundBrush">#000</Brush>
+    <Brush x:Key="MainBgColorForegroundBrush">#000000</Brush>
 
 </ResourceDictionary>

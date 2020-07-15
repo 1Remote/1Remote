@@ -2,31 +2,43 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
                     >
-    <Style TargetType="Control">
+
+
+    <Style TargetType="Control" x:Key="ControlBase">
         <Setter Property="FontFamily" Value="Microsoft YaHei"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
-    <Style TargetType="Button">
+    <Style TargetType="Button" x:Key="ButtonBase">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
-    <Style TargetType="TextBox">
+    <Style TargetType="TextBox" x:Key="TextBoxBase">
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
     </Style>
-    <Style TargetType="CheckBox">
+    <Style TargetType="CheckBox" x:Key="CheckBoxBase">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
-    <Style TargetType="RadioButton">
+    <Style TargetType="RadioButton" x:Key="RadioButtonBase">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
-    <Style TargetType="TextElement">
+    <Style TargetType="TextElement" x:Key="TextElementBase">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
+
+    <Style TargetType="Control" BasedOn="{StaticResource ControlBase}" />
+    <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" />
+    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBase}" />
+    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}" />
+    <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonBase}" />
+    <Style TargetType="TextElement" BasedOn="{StaticResource TextElementBase}" />
 
 
     <!--ButtonEx Style Start-->
@@ -124,12 +136,8 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-    </Style>
-
-    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}" x:Key="MainColor1Button">
-    </Style>
-    
+    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}"/>
+    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}" x:Key="MainColor1Button"/>
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}" x:Key="MainColor2Button">
         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
@@ -148,12 +156,12 @@
     </Style>
     <!--ButtonEx Style End-->
 
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     <!-- Flat ComboBox ref: https://gist.github.com/hansmaad/9187633 -->
     <SolidColorBrush x:Key="ComboBoxNormalBorderBrush" Color="#e3e9ef" />
     <SolidColorBrush x:Key="ComboBoxNormalBackgroundBrush" Color="#ffffff" />
@@ -259,12 +267,12 @@
     </Style>
 
 
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     <Style x:Key="ServerEditorRow" TargetType="Grid">
         <Setter Property="Height" Value="25"></Setter>
         <Setter Property="Margin">
@@ -298,7 +306,7 @@
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
         <Setter Property="Margin" Value="50 20 0 10"></Setter>
     </Style>
-    
-    
+
+
     <!-- End of Flat ComboBox -->
 </ResourceDictionary>
