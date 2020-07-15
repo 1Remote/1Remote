@@ -12,7 +12,7 @@ namespace PRM.Core.Protocol.Putty
 {
     public static class PuttyColorThemes
     {
-        public const string ThemeRegFileFolder = "PuttyThemes";
+        public static string ThemeRegFileFolder = "PuttyThemes";
 
         public static List<PuttyRegOptionItem> ColorThemesFromRegFile(string filePath)
         {

@@ -42,7 +42,6 @@ namespace PRM.View
             if (!vm.IsAddMode)
             {
                 LogoSelector.SetImg(vm.Server.IconImg);
-                ColorPick.Color = vm.Server.MarkColor;
             }
             else
             // add mode
@@ -56,7 +55,6 @@ namespace PRM.View
                 }
                 ColorPick.Color = (Color)ColorConverter.ConvertFromString("#102b3e");
             }
-            ColorPick.OnColorSelected += color => Vm.Server.MarkColor = ColorPick.Color;
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

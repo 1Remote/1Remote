@@ -7,6 +7,7 @@
              xmlns:view="clr-namespace:PRM.View"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -25,7 +26,7 @@
                 <Setter Property="Padding" Value="2"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Background" Value="{DynamicResource MainColor1Lighter}"/>
+                <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                 <Setter Property="Template">
@@ -91,10 +92,7 @@
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="False">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{DynamicResource MainColor1Foreground}" Opacity="0.6"></SolidColorBrush>
-                            </Setter.Value>
+                        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}">
                         </Setter>
                     </Trigger>
                 </Style.Triggers>
@@ -372,6 +370,81 @@
 
             <TabItem Name="TabItemTheme" Header="{DynamicResource system_options_data_theme_title}">
                 <StackPanel Margin="0 20 0 0">
+                    <Grid Style="{StaticResource ServerEditorRow}" Margin="15 0" Height="30">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{DynamicResource system_options_data_theme_prm_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource ServerEditorRow}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource system_options_data_theme_prm_theme}"></TextBlock>
+                            <Grid Style="{StaticResource ServerEditorRowInput}" Width="200">
+                                <ComboBox SelectedValuePath="Tag"
+                                          ItemsSource="{Binding SystemConfig.Theme.PrmColorThemeNames}"
+                                          SelectedItem="{Binding SystemConfig.Theme.PrmColorThemeName}">
+                                </ComboBox>
+                            </Grid>
+
+                            <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
+                                (?)
+                            </TextBlock>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource system_options_data_theme_prm_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
+                        <Grid Width="500" HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="130"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                </Style>
+                                <Style TargetType="{x:Type colorPickerWpf:ColorPickRowPopup}">
+                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                    <Setter Property="HexVisible" Value="Collapsed"></Setter>
+                                </Style>
+                            </Grid.Resources>
+
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource system_options_data_theme_prm_color_normal}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource system_options_data_theme_prm_color_lighter}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="{DynamicResource system_options_data_theme_prm_color_darker}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource system_options_data_theme_prm_color_foreground}"></TextBlock>
+
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_theme_prm_main_color}" Width="100" TextAlignment="Right"></TextBlock>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor1}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor1Lighter}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor1Darker}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor1Foreground}"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_data_theme_prm_secondary_color}" Width="100" TextAlignment="Right"></TextBlock>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor2}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor2Lighter}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor2Darker}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource system_options_data_theme_prm_background_color}" Width="100" TextAlignment="Right"></TextBlock>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainBgColor}"/>
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainBgColorForeground}"/>
+                        </Grid>
+                    </Grid>
+
                     <Grid Style="{StaticResource ServerEditorRow}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource system_options_data_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>

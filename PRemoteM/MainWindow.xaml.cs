@@ -138,11 +138,11 @@ namespace PRM
             {
                 if (this.WindowState == WindowState.Maximized)
                 {
-                    var p = ScreenInfoEx.GetMouseScreenPosition();
+                    var p = ScreenInfoEx.GetMouseVirtualPosition();
                     var top = p.Y;
                     var left = p.X;
-                    this.Top = 0;
-                    this.Left = 0;
+                    this.Top = top - 15;
+                    this.Left = left - this.Width / 2;
                     this.WindowState = WindowState.Normal;
                     this.Top = top - 15;
                     this.Left = left - this.Width / 2;

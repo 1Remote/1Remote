@@ -106,7 +106,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
                                         <CheckBox.Style>
-                                            <Style TargetType="CheckBox">
+                                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static local:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                         <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
@@ -196,9 +196,7 @@
 
                     <UniformGrid Columns="3" Rows="3" Width="400" Height="90" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <UniformGrid.Resources>
-                            <Style TargetType="CheckBox">
-                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                            </Style>
+                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}"></Style>
                         </UniformGrid.Resources>
                         <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding EnableClipboard}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding EnableKeyCombinations}"></CheckBox>
