@@ -24,11 +24,14 @@ namespace PRM.ViewModel
     {
         public readonly VmServerListPage Host;
 
-        public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host)
+        public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host, bool isDuplicate = false)
         {
             Server = (ProtocolServerBase)server.Clone();
+            _isDuplicate = isDuplicate;
+            if (_isDuplicate)
+                Server.Id = 0;
             Host = host;
-            IsAddMode = server.GetType() == typeof(ProtocolServerNone) || server.Id == 0;
+            IsAddMode = server.GetType() == typeof(ProtocolServerNone) || Server.Id == 0;
 
             // decrypt pwd
             if (Server.GetType() != typeof(ProtocolServerNone))
@@ -99,6 +102,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ProtocolList), ref _protocolList, value);
         }
 
+        private bool _isDuplicate = false;
 
         private bool _isAddMode = true;
         public bool IsAddMode
@@ -199,7 +203,7 @@ namespace PRM.ViewModel
             Debug.Assert(ProtocolSelected.GetType().FullName != null);
             var assembly = typeof(ProtocolServerBase).Assembly;
             var server = Server;
-            if (IsAddMode)
+            if (IsAddMode && !_isDuplicate)
             {
                 server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
                 // switch protocol and hold uname pwd.
