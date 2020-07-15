@@ -32,23 +32,23 @@ namespace PRM.Core.Model
             set
             {
                 var newVal = value?.Trim()?.ToLower();
-                if (!string.IsNullOrEmpty(newVal)
-                    && LanguageCode2Name.ContainsKey(newVal))
+                if (string.IsNullOrEmpty(newVal)
+                    || !LanguageCode2Name.ContainsKey(newVal))
+                    newVal = DefaultLanguageCode;
+
+                if (_currentLanguageCode != newVal || _currentLanguageResourceDictionary == null)
                 {
-                    if (_currentLanguageCode != value || _currentLanguageResourceDictionary == null)
+                    SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
+                    // reload ResourceDictionary
+                    _currentLanguageResourceDictionary = GetResourceDictionaryByCode(_currentLanguageCode);
+                    if (_currentLanguageResourceDictionary == null)
                     {
-                        SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
-                        // reload ResourceDictionary
-                        _currentLanguageResourceDictionary = GetResourceDictionaryByCode(_currentLanguageCode);
-                        if (_currentLanguageResourceDictionary == null)
-                        {
-                            // use default
-                            _currentLanguageCode = DefaultLanguageCode;
-                            _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
-                        }
-                        AppResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
-                        GlobalEventHelper.OnLanguageChanged?.Invoke();
+                        // use default
+                        _currentLanguageCode = DefaultLanguageCode;
+                        _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
                     }
+                    AppResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
+                    GlobalEventHelper.OnLanguageChanged?.Invoke();
                 }
             }
         }
@@ -100,6 +100,10 @@ namespace PRM.Core.Model
                         continue;
                     }
                 }
+            }
+            else
+            {
+                Directory.CreateDirectory(LanguageJsonDir);
             }
 
             // add static language resources
