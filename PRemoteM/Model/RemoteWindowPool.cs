@@ -76,7 +76,7 @@ namespace PRM.Model
                 _protocolHosts[id.ToString()].ParentWindow?.Activate();
                 return;
             }
-            
+
             TabWindow tab = null;
             try
             {
@@ -89,7 +89,7 @@ namespace PRM.Model
                     {
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                         // check if screens are in different scale factors
-                        bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
+                        bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
                         if (differentScaleFactorFlag)
                         {
                             var tmp = Path.GetTempPath();
@@ -176,10 +176,7 @@ namespace PRM.Model
             }
             catch (Exception e)
             {
-                if (tab?.Vm != null && (tab.Vm?.Items?.Count ?? 0) == 0)
-                {
-                    CloseTabWindow(tab.Vm.Token);
-                }
+                CloseEmpytTab();
                 SimpleLogHelper.Error(e);
                 MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -292,16 +289,7 @@ namespace PRM.Model
                     full.Show();
                     AddFull(full);
                 }
-
-
-                // close empty tab
-                {
-                    var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
-                    foreach (var t in tabs)
-                    {
-                        CloseTabWindow(t.Vm.Token);
-                    }
-                }
+                CloseEmpytTab();
 
                 SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
@@ -403,15 +391,7 @@ namespace PRM.Model
                     tab.Vm.Items.Remove(tab.Vm.Items.First(x => x.Content.ConnectionId == connectionId));
                 }
             }
-
-            // close tab
-            {
-                var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
-                foreach (var tab in tabs)
-                {
-                    CloseTabWindow(tab.Vm.Token);
-                }
-            }
+            CloseEmpytTab();
         }
 
         /// <summary>
@@ -430,25 +410,21 @@ namespace PRM.Model
                 }
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
+            CloseEmpytTab();
+        }
+
+        private void CloseEmpytTab()
+        {
             // close tab
             {
                 var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
                 foreach (var tab in tabs)
                 {
-                    CloseTabWindow(tab.Vm.Token);
+                    SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
+                    _tabWindows.Remove(tab.Vm.Token);
+                    tab.Close();
+                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
-            }
-        }
-
-        public void CloseTabWindow(string token)
-        {
-            if (_tabWindows.ContainsKey(token))
-            {
-                var tab = _tabWindows[token];
-                SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
-                _tabWindows.Remove(token);
-                tab.Close();
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
     }

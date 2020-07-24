@@ -76,7 +76,7 @@
                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
                             <StackPanel>
-                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="PRemoteM" Margin="0 10 0 0"></TextBlock>
+                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{x:Static model:SystemConfig.AppName}" Margin="0 10 0 0"></TextBlock>
                                 <Grid Style="{StaticResource ServerEditorRow}">
                                     <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>

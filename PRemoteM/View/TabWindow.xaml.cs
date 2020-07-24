@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.Core.Ulits;
 using PRM.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
@@ -125,7 +126,7 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                this.Title = Vm.SelectedItem.Header + " - " + "PRemoteM";
+                this.Title = Vm.SelectedItem.Header + " - " + SystemConfig.AppName;
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
                 var t = new Task(() =>
@@ -160,7 +161,7 @@ namespace PRM.View
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string hex = value.ToString();
-            var brush = (System.Windows.Media.Brush)(new System.Windows.Media.BrushConverter().ConvertFrom(hex));
+            var brush  = ColorAndBrushHelper.ColorToMediaBrush(hex);
             return brush;
         }
 
