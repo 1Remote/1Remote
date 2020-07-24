@@ -99,7 +99,7 @@ namespace PRM.Core.Protocol
         }
 
 
-        private BitmapSource _iconImg;
+        private BitmapSource _iconImg = null;
         [JsonIgnore]
         public BitmapSource IconImg
         {

@@ -109,18 +109,13 @@ namespace PRM.ViewModel
                 {
                     Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
                     server = GlobalData.Instance.ServerList.First(x => x.Id == id);
-                    if (isDuplicate)
-                    {
-                        server = (ProtocolServerBase)server.Clone();
-                        server.Id = 0;
-                    }
                 }
 
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext, isDuplicate)),
                 };
 
                 var t = new Task(() =>
