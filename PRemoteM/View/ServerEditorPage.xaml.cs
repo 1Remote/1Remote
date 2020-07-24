@@ -21,6 +21,7 @@ using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Ulits;
 using PRM.ViewModel;
 using Shawn.Ulits;
 
@@ -38,23 +39,24 @@ namespace PRM.View
             InitializeComponent();
             Vm = vm;
             DataContext = vm;
-            // edit mode
-            if (!vm.IsAddMode)
-            {
-                LogoSelector.SetImg(vm.Server.IconImg);
-            }
-            else
             // add mode
+            if (vm.IsAddMode)
+            {
+                ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
+                ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.MainColor1);
+            }
+
+            if (vm.Server.IconImg == null)
             {
                 ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
                 if (ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
-                    LogoSelector.Logo = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                     vm.Server.IconImg = LogoSelector.Logo;
                 }
-                ColorPick.Color = (Color)ColorConverter.ConvertFromString("#102b3e");
             }
+            
+            LogoSelector.SetImg(vm.Server.IconImg);
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

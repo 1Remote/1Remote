@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.ViewModel;
+using Shawn.Ulits;
 
 namespace PRM.View
 {
@@ -29,6 +30,13 @@ namespace PRM.View
             VmDataContext = new VmServerListPage(host);
             InitializeComponent();
             DataContext = VmDataContext;
+
+            // hide GridBottom when hover.
+            MouseMove += (sender, args) =>
+            {
+                var p = args.GetPosition(GridBottom);
+                GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
+            };
         }
         public ServerListPage(VmServerListPage vmDataContext)
         {

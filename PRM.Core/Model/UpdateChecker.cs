@@ -12,10 +12,11 @@ namespace PRM.Core.Model
     {
         private readonly string[] urls =
         {
-            "https://github.com/VShawn/PRemoteM/wiki/release",
             "https://github.com/VShawn/PRemoteM/wiki",
             "https://github.com/VShawn/PRemoteM",
+#if DEBUG
             "https://github.com/VShawn/PRemoteM-Test/wiki",
+#endif
         };
 
 
