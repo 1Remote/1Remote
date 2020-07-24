@@ -159,7 +159,7 @@
         </Style>
     </Window.Style>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>

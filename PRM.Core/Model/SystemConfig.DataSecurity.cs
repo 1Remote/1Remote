@@ -147,7 +147,7 @@ namespace PRM.Core.Model
                     var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
                     if (!Directory.Exists(appDateFolder))
                         Directory.CreateDirectory(appDateFolder);
-                    _dbPath = Path.Combine(appDateFolder, "PRemoteM.db");
+                    _dbPath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.db");
                     Save();
                 }
                 return _dbPath;

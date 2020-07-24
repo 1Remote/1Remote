@@ -30,7 +30,7 @@ namespace PRM.Core.Model
             IconFolderPath = Path.Combine(appDateFolder, "icons");
             if (!Directory.Exists(IconFolderPath))
                 Directory.CreateDirectory(IconFolderPath);
-            LogFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+            LogFilePath = Path.Combine(appDateFolder, SystemConfig.AppName + ".log.md");
         }
 
         private bool _appStartAutomatically = false;
@@ -65,7 +65,7 @@ namespace PRM.Core.Model
             private set => SetAndNotifyIfChanged(nameof(IconFolderPath), ref _iconFolderPath, value);
         }
 
-        private string _logFilePath = "./PRemoteM.log.md";
+        private string _logFilePath = $"./{SystemConfig.AppName}.log.md";
         public string LogFilePath
         {
             get => _logFilePath;

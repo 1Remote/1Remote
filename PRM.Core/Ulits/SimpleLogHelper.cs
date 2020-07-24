@@ -30,9 +30,11 @@ namespace Shawn.Ulits
 
         public static void Debug(params object[] o)
         {
+#if DEBUG
             var dt = DateTime.Now;
             Print(Level.Debug, dt, o);
             WriteLog(Level.Debug, dt, o);
+#endif
         }
 
         public static void Info(params object[] o)
