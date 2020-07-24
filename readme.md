@@ -1,4 +1,7 @@
 # PRemoteM
+English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md)
+
+
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/PRemoteM.png" width="50" />
 </p>
@@ -26,6 +29,7 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="700"/>
 </p>
 
+
 ## Featutes
 ----
 - RDP with multi-screen and HiDpi(Testd on **Win10 + 4k*2** to **Win2016**)
@@ -39,7 +43,7 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 # Lastet
 Latest Version: 0.4.7.2007161608
 
-[Download](https://github.com/VShawn/PRemoteM/releases)
+- [Download](https://github.com/VShawn/PRemoteM/releases)
 
 ## Requirements
 ----
@@ -64,6 +68,9 @@ Full instruction
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/step3.jpg" width="300"/>
 
 ### Encryption
+
+<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Encryption.jpg"/>
+
 By encrypting data, no one can get your remote password by open database directly.
 1. In <kbd>Setting</kbd> -> <kbd>Data & Security</kbd> page
 2. click <kbd>Encrypt</kbd> button and select a proper place to store your **Key File**.
