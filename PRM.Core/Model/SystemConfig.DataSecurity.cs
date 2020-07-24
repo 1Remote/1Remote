@@ -502,6 +502,7 @@ namespace PRM.Core.Model
                         var dlg = new OpenFileDialog();
                         dlg.Filter = "Sqlite Database|*.db";
                         dlg.CheckFileExists = false;
+                        dlg.InitialDirectory = new FileInfo(DbPath).DirectoryName;
                         if (dlg.ShowDialog() == true)
                         {
                             var path = dlg.FileName;
@@ -544,7 +545,7 @@ namespace PRM.Core.Model
                         var dlg = new OpenFileDialog
                         {
                             Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
-                            InitialDirectory = RsaPrivateKeyPath,
+                            InitialDirectory = new FileInfo(RsaPrivateKeyPath).DirectoryName,
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -667,7 +668,7 @@ namespace PRM.Core.Model
                         }
                         var dlg = new SaveFileDialog
                         {
-                            Filter = "PRM csv array|*.csv",
+                            Filter = "PRM csv data|*.csv",
                             Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
                             FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".csv"
                         };
@@ -708,13 +709,14 @@ namespace PRM.Core.Model
                                     port = obj.Port;
                                 }
 
-                                protocol = protocol.Replace(";", "_");
-                                name = name.Replace(";", "_");
-                                group = group.Replace(";", "_");
-                                user = user.Replace(";", "_");
-                                pwd = pwd.Replace(";", "_");
-                                address = address.Replace(";", "_");
-                                port = port.Replace(";", "_");
+                                const string mark = "%THIS_IS_A_SENUCOLON%";
+                                protocol = protocol.Replace(";", mark);
+                                name = name.Replace(";", mark);
+                                group = group.Replace(";", mark);
+                                user = user.Replace(";", mark);
+                                pwd = pwd.Replace(";", mark);
+                                address = address.Replace(";", mark);
+                                port = port.Replace(";", mark);
                                 sb.AppendLine($"{name};{protocol};{group};{address};{port};{user};{pwd}");
                             }
                             File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
@@ -808,7 +810,6 @@ namespace PRM.Core.Model
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "csv|*.csv",
-                            InitialDirectory = new FileInfo(DbPath).DirectoryName,
                             Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
@@ -836,7 +837,7 @@ namespace PRM.Core.Model
                                     while (!string.IsNullOrEmpty(line))
                                     {
                                         var arr = line.Split(';');
-                                        if (arr.Length >= 15)
+                                        if (arr.Length >= 7)
                                         {
                                             ProtocolServerBase server = null;
                                             var protocol = arr[protocolIndex].ToLower();
@@ -858,6 +859,16 @@ namespace PRM.Core.Model
                                                 address = arr[addressIndex];
                                             if (portIndex >= 0)
                                                 port = int.Parse(arr[portIndex]);
+
+
+                                            const string mark = "%THIS_IS_A_SENUCOLON%";
+                                            protocol = protocol.Replace(mark, ";");
+                                            name = name.Replace(mark, ";");
+                                            group = group.Replace(mark, ";");
+                                            user = user.Replace(mark, ";");
+                                            pwd = pwd.Replace(mark, ";");
+                                            address = address.Replace(mark, ";");
+
                                             switch (protocol)
                                             {
                                                 case "rdp":
