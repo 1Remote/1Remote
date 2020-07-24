@@ -1,31 +1,32 @@
 # PRemoteM
+English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md)
+
+
 <p align="center">
-    <img src="../DocPic/PRemoteM.png" width="50" />
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/PRemoteM.png" width="50" />
 </p>
 
 ```
 PRemoteM = Personal Remote Manager
-
-- :smiley:I am the old user of mRemoteNG.
-- :disappointed_relieved:I decided make a new remote tool in WPF after I bought two 4k monitors.
 ```
 
 
 PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-screen RDP, SSH, Telnet and others remote protocols in a tab window.
-
+- :smiley:I am the old user of mRemoteNG.
+- :disappointed_relieved:I decided make a new remote tool in WPF after I bought two 4k monitors.
 
 
 
 <p align="center">
-    <img src="../DocPic/quickstart.gif" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="300"/>
 </p>
 
 <p align="center">
-    <img src="../DocPic/tab.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.jpg" width="300"/>
 </p>
 
 <p align="center">
-    <img src="../DocPic/multi-screen.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="700"/>
 </p>
 
 
@@ -39,6 +40,11 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 - [Migare remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migare-from-mRemoteNG)
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
+# Lastet
+Latest Version: 0.4.7.2007161608
+
+- [Download](https://github.com/VShawn/PRemoteM/releases)
+
 ## Requirements
 ----
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
@@ -51,23 +57,26 @@ Full instruction
 1. run PRemote.exe.
 2. click "+" button to add connection info.
    
-    <img src="../DocPic/step1.jpg" width="200"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/step1.jpg" width="200"/>
 
 3. double click the **Server Card** to open a remote session.
    
-    <img src="../DocPic/step2.jpg" width="200"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/step2.jpg" width="200"/>
 
 4. or you can open a session by <kbd>Alt</kbd> + <kbd>M</kbd> and keyword.
 
-    <img src="../DocPic/step3.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/step3.jpg" width="300"/>
 
 ### Encryption
+
+<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Encryption.jpg"/>
+
 By encrypting data, no one can get your remote password by open database directly.
 1. In <kbd>Setting</kbd> -> <kbd>Data & Security</kbd> page
 2. click <kbd>Encrypt</kbd> button and select a proper place to store your **Key File**.
 
 ### Migare from mRemoteNG
-<img src="../DocPic/Migare.jpg"/>
+<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migare.jpg"/>
 
 ## Make contribution
 Help to make this tool more powerful.
@@ -82,7 +91,7 @@ Your name woluld be shown below as a contributor.
   - Put your lang file to **C:\Users\YourName\AppData\Roaming\PRemoteM\Languages** for preview.
     - click this button can go to the directory **C:\Users\YourName\AppData\Roaming\PRemoteM**
     
-    <img src="../DocPic/GoToAppData.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/GoToAppData.jpg" width="300"/>
   - Share your lang file after job is done.
 - Doc
   - [WIP]
