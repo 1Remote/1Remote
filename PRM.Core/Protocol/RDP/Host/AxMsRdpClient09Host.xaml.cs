@@ -174,7 +174,6 @@ namespace Shawn.Ulits.RDP
             }
             #endregion
 
-
             #region Display
 
             ReadScaleFactor();
@@ -298,6 +297,27 @@ namespace Shawn.Ulits.RDP
             SimpleLogHelper.Debug("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
             _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
 
+            #endregion
+
+            #region Gateway
+            // Specifies whether Remote Desktop Gateway (RD Gateway) is supported.
+            // TODO check if gateway is enabled
+            if (_rdp.TransportSettings.GatewayIsSupported != 0)
+            {
+                // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayusagemethod
+                _rdp.TransportSettings.GatewayUsageMethod = 2;// TSC_PROXY_MODE_DETECT 
+
+                // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewaycredssource
+                // TSC_PROXY_CREDS_MODE_USERPASS (0): Use a password (NTLM) as the authentication method for RD Gateway.
+                // TSC_PROXY_CREDS_MODE_SMARTCARD (1): Use a smart card as the authentication method for RD Gateway.
+                // TSC_PROXY_CREDS_MODE_ANY (4): Use any authentication method for RD Gateway.
+                _rdp.TransportSettings.GatewayCredsSource = 0;
+
+                _rdp.TransportSettings2.GatewayHostname = "XXXXX";
+                _rdp.TransportSettings2.GatewayDomain = "XXXXX";
+                _rdp.TransportSettings2.GatewayUsername = "XXXXX";
+                _rdp.TransportSettings2.GatewayPassword = "XXXXX";
+            }
             #endregion
         }
 
