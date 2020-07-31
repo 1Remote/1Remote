@@ -213,5 +213,80 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_gateway}"></TextBlock>
+
+            <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_gateway_mode}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <RadioButton GroupName="RDGatewaySetting" Content="{DynamicResource server_editor_gateway_mode_automatically_detect}" VerticalAlignment="Center"></RadioButton>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource ServerEditorRow}" Height="Auto">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <StackPanel>
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                                <RadioButton GroupName="RDGatewaySetting" Content="{DynamicResource server_editor_gateway_mode_use_these}" VerticalAlignment="Center"></RadioButton>
+                            </Grid>
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0 3">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_gateway_server_host_name}"></TextBlock>
+                                    <TextBox Text="{Binding GatewayUserName,UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0 3">
+                                <Grid.Resources>
+                                    <local:ConverterEGatewayLogonMethod x:Key="ConverterEGatewayLogonMethod"/>
+                                </Grid.Resources>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_gateway_logon_method}"></TextBlock>
+                                    <ComboBox SelectedIndex="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
+                                        <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_psw}" ToolTip="{DynamicResource server_editor_gateway_logon_method_psw}"/>
+                                        <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_smart_card}" ToolTip="{DynamicResource server_editor_gateway_logon_method_smart_card}"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0 3">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
+                                    <TextBox Text="{Binding GatewayUserName,UpdateSourceTrigger=PropertyChanged}" Width="200"></TextBox>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0 3">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
+                                    <PasswordBox ulits:PasswordBoxEx.Password="{Binding GatewayPassword,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                                     Style="{StaticResource PasswordBoxEx}" Width="200"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0 3 0 0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
+                                    <CheckBox IsChecked="{Binding GatewayBypassForLocalAddress}" Content="{DynamicResource server_editor_gateway_bypass_gateway_for_loacl_address}"></CheckBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+
+            <Grid Style="{StaticResource ServerEditorRow}" Margin="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <RadioButton GroupName="RDGatewaySetting" Content="{DynamicResource server_editor_gateway_mode_do_not_use}" VerticalAlignment="Center"></RadioButton>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
     </StackPanel>
 </protocol:ProtocolServerFormBase>
