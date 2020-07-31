@@ -146,8 +146,10 @@ namespace PRM
                     //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
                     //}
 
-                    // Set default folder path
+// Set default folder path
+#if !DEBUG
                     SystemConfigLanguage.LanguageJsonDir = Path.Combine(appDateFolder, SystemConfigLanguage.LanguageJsonDir);
+#endif
                     PuttyColorThemes.ThemeRegFileFolder = Path.Combine(appDateFolder, PuttyColorThemes.ThemeRegFileFolder);
 
                     var language = new SystemConfigLanguage(this.Resources, ini);
@@ -176,7 +178,7 @@ namespace PRM
                     // remote window pool init.
                     RemoteWindowPool.Init();
                 }
-                #endregion
+#endregion
 
                 // kill putty process
                 foreach (var process in Process.GetProcessesByName(PuttyHost.PuttyExeName.ToLower().Replace(".exe", "")))
@@ -192,10 +194,10 @@ namespace PRM
 
 
 
-                #endregion
+#endregion
 
 
-                #region app start
+#region app start
                 // main window init
                 {
                     Window = new MainWindow();
@@ -230,7 +232,7 @@ namespace PRM
 
                 // quick search init 
                 InitQuickSearch();
-                #endregion
+#endregion
             }
             catch (Exception ex)
             {

@@ -271,7 +271,11 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties languages_4zh-cn_1json__JsonSchema="b" />
+    </VisualStudio>
+  </ProjectExtensions>
   <PropertyGroup>
     <PreBuildEvent>PowerShell  -ExecutionPolicy RemoteSigned -file "$(ProjectDir)BuildVersionGenerator.ps1"</PreBuildEvent>
   </PropertyGroup>
