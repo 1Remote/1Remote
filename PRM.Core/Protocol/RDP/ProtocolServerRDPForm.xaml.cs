@@ -107,17 +107,19 @@ namespace PRM.Core.Protocol.RDP
 
 
 
-    public class ConverterEGatewayMode : IValueConverter
+    public class ConverterEGatewayMode2Bool : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((int)((EGatewayMode)value)).ToString();
+            var e = (EGatewayMode) parameter;
+            return e == (EGatewayMode) value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (EGatewayMode)(int.Parse(value.ToString()));
+            var e = (EGatewayMode) parameter;
+            return e;
         }
         #endregion
     }
