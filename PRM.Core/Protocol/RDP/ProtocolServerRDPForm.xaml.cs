@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using PRM.Core.Model;
 
 
 namespace PRM.Core.Protocol.RDP
@@ -100,6 +101,42 @@ namespace PRM.Core.Protocol.RDP
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             return (EDisplayPerformance)(int.Parse(value.ToString()));
+        }
+        #endregion
+    }
+
+
+
+    public class ConverterEGatewayMode2Bool : IValueConverter
+    {
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var e = (EGatewayMode) parameter;
+            return e == (EGatewayMode) value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var e = (EGatewayMode) parameter;
+            return e;
+        }
+        #endregion
+    }
+
+
+
+    public class ConverterEGatewayLogonMethod : IValueConverter
+    {
+        #region IValueConverter 成员  
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ((int)((EGatewayLogonMethod)value)).ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return (EGatewayLogonMethod)(int.Parse(value.ToString()));
         }
         #endregion
     }
