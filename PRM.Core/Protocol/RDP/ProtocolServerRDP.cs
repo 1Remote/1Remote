@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using RdpHelper;
 
 namespace PRM.Core.Protocol.RDP
@@ -38,7 +39,18 @@ namespace PRM.Core.Protocol.RDP
         /// </summary>
         High = 3,
     }
-
+    
+    public enum EGatewayMode
+    {
+        AutomaticallyDetectGatewayServerSettings = 0,
+        UseTheseGatewayServerSettings = 1,
+        DoNotUseGateway = 2,
+    }
+    public enum EGatewayLogonMethod
+    {
+        Password = 0,
+        SmartCard = 1,
+    }
 
     public class ProtocolServerRDP : ProtocolServerWithAddrPortUserPwdBase
     {
@@ -251,6 +263,62 @@ namespace PRM.Core.Protocol.RDP
 
 
 
+        #region Gateway
+        private EGatewayMode _gatewayMode = EGatewayMode.AutomaticallyDetectGatewayServerSettings;
+        public EGatewayMode GatewayMode
+        {
+            get => _gatewayMode;
+            set => SetAndNotifyIfChanged(nameof(GatewayMode), ref _gatewayMode, value);
+        }
+
+        
+        private bool _gatewayBypassForLocalAddress = true;
+        public bool GatewayBypassForLocalAddress
+        {
+            get => _gatewayBypassForLocalAddress;
+            set => SetAndNotifyIfChanged(nameof(GatewayBypassForLocalAddress), ref _gatewayBypassForLocalAddress, value);
+        }
+        
+        private string _gatewayHostName = "";
+        public string GatewayHostName
+        {
+            get => _gatewayHostName;
+            set => SetAndNotifyIfChanged(nameof(GatewayHostName), ref _gatewayHostName, value);
+        }
+
+        
+        private EGatewayLogonMethod _gatewayLogonMethod = EGatewayLogonMethod.Password;
+        public EGatewayLogonMethod GatewayLogonMethod
+        {
+            get => _gatewayLogonMethod;
+            set => SetAndNotifyIfChanged(nameof(GatewayLogonMethod), ref _gatewayLogonMethod, value);
+        }
+
+        
+        private string _gatewayUserName = "";
+        public string GatewayUserName
+        {
+            get => _gatewayUserName;
+            set => SetAndNotifyIfChanged(nameof(GatewayUserName), ref _gatewayUserName, value);
+        }
+
+        private string _gatewayPassword = "";
+        public string GatewayPassword
+        {
+            get => _gatewayPassword;
+            set => SetAndNotifyIfChanged(nameof(GatewayPassword), ref _gatewayPassword, value);
+        }
+
+        public string GetDecryptedGatewayPassword()
+        {
+            if (SystemConfig.Instance.DataSecurity.Rsa != null)
+            {
+                return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_gatewayPassword) ?? "";
+            }
+            return _gatewayPassword;
+        }
+        #endregion
+
         private LocalSetting _autoSetting = new LocalSetting();
         public LocalSetting AutoSetting
         {
@@ -271,9 +339,13 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
+        /// <summary>
+        /// To rdp file object
+        /// </summary>
+        /// <returns></returns>
         public RdpConfig ToRdpConfig()
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.GetDecryptPassWord());
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.GetDecryptedPassWord());
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
             switch (this.RdpFullScreenFlag)
@@ -380,6 +452,7 @@ namespace PRM.Core.Protocol.RDP
                 rdpConfig.AudioCaptureMode = 1;
 
             rdpConfig.AutoReconnectionEnabled = 1;
+
 
             return rdpConfig;
         }
