@@ -240,7 +240,7 @@ namespace PRM.ViewModel
                     Run = () =>
                     {
                         if (SelectedServer.Server is ProtocolServerWithAddrPortUserPwdBase server)
-                            Clipboard.SetText(server.GetDecryptPassWord());
+                            Clipboard.SetText(server.GetDecryptedPassWord());
                     },
                 });
             }
