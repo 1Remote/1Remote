@@ -266,14 +266,16 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type ComboBox}" x:Key="ComboBoxDefault">
+
+
+    </Style>
 
 
 
 
 
-
-
-    <Style x:Key="ServerEditorRow" TargetType="Grid">
+<Style x:Key="ServerEditorRow" TargetType="Grid">
         <Setter Property="Height" Value="25"></Setter>
         <Setter Property="Margin">
             <Setter.Value>
