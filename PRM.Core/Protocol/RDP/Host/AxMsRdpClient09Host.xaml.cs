@@ -301,7 +301,6 @@ namespace Shawn.Ulits.RDP
 
             #region Gateway
             // Specifies whether Remote Desktop Gateway (RD Gateway) is supported.
-            // TODO check if gateway is enabled
             if (_rdp.TransportSettings.GatewayIsSupported != 0)
             {
                 // https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayprofileusagemethod

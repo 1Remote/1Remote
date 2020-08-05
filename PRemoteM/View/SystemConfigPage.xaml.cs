@@ -150,7 +150,7 @@ namespace PRM.View
     }
 
 
-    public class EnumServerOrderBy2IsCheckedConverter : IValueConverter
+    public class ObjEqualParam2Bool : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
