@@ -19,6 +19,12 @@ namespace PRM.Core.Model
         AddTimeDesc,
         Protocol,
     }
+    public enum EnumTabMode
+    {
+        NewItemGoesToLatestActivate,
+        NewItemGoesToGroup,
+        NewItemGoesToProtocol,
+    }
     public sealed class SystemConfigGeneral : SystemConfigBase
     {
         public SystemConfigGeneral(Ini ini) : base(ini)
@@ -82,7 +88,14 @@ namespace PRM.Core.Model
             get => _serverOrderBy;
             set => SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
         }
+        
 
+        private EnumTabMode _tabMode = EnumTabMode.NewItemGoesToLatestActivate;
+        public EnumTabMode TabMode
+        {
+            get => _tabMode;
+            set => SetAndNotifyIfChanged(nameof(TabMode), ref _tabMode, value);
+        }
 
 
         #region Interface
@@ -93,6 +106,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
+            _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
             StopAutoSave = false;
             _ini.Save();
         }
@@ -103,9 +117,9 @@ namespace PRM.Core.Model
             AppStartAutomatically = _ini.GetValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically);
             AppStartMinimized = _ini.GetValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString()), out var so))
-            {
                 ServerOrderBy = so;
-            }
+            if (Enum.TryParse<EnumTabMode>(_ini.GetValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString()), out var tm))
+                TabMode = tm;
             StopAutoSave = false;
         }
 

@@ -126,7 +126,11 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                this.Title = Vm.SelectedItem.Header + " - " + SystemConfig.AppName;
+                if (!string.IsNullOrEmpty(Vm.Tag))
+                    this.Title = Vm.Tag + " - " + Vm.SelectedItem.Header;
+                else
+                    this.Title = Vm.SelectedItem.Header + " - " + SystemConfig.AppName;
+
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
                 var t = new Task(() =>
@@ -145,11 +149,13 @@ namespace PRM.View
         public Size GetTabContentSize()
         {
             Debug.Assert(this.Resources["TabContentBorder"] != null);
-            var tabContentBorder = (Thickness) this.Resources["TabContentBorder"];
+            Debug.Assert(this.Resources["TrapezoidHeight"] != null);
+            var tabContentBorder = (Thickness)this.Resources["TabContentBorder"];
+            var trapezoidHeight = (double)this.Resources["TrapezoidHeight"];
             return new Size()
             {
                 Width = TabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
-                Height = TabablzControl.ActualHeight - 30 - 2 - 1,
+                Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
             };
         }
     }

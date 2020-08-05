@@ -81,30 +81,36 @@ namespace Shawn.Ulits
 
         private static void WriteLog(Level level, DateTime? dt = null, params object[] o)
         {
-            if (dt == null)
-                dt = DateTime.Now;
-            lock (_obj)
+            try
             {
-                if (File.Exists(LogFileName))
+                if (dt == null)
+                    dt = DateTime.Now;
+                lock (_obj)
                 {
-                    var fi = new FileInfo(LogFileName);
-                    if (fi.Length > 1024 * 1024 * LogFileMaxSizeMb)
+                    if (File.Exists(LogFileName))
                     {
-                        var lines =File.ReadAllLines(LogFileName);
-                        File.WriteAllLines(LogFileName, lines.Skip(lines.Length / 3).ToArray());
+                        var fi = new FileInfo(LogFileName);
+                        if (fi.Length > 1024 * 1024 * LogFileMaxSizeMb)
+                        {
+                            var lines =File.ReadAllLines(LogFileName);
+                            File.WriteAllLines(LogFileName, lines.Skip(lines.Length / 3).ToArray());
+                        }
+                    }
+                    using (StreamWriter sw = new StreamWriter(new FileStream(LogFileName, FileMode.Append)))
+                    {
+                        sw.WriteLine($"\r\n---");
+                        sw.WriteLine($"\r\n## {dt:o}\t\t{level}\t\t");
+                        sw.WriteLine("\r\n```");
+                        foreach (var obj in o)
+                        {
+                            sw.WriteLine(obj);
+                        }
+                        sw.WriteLine("\r\n```\r\n");
                     }
                 }
-                using (StreamWriter sw = new StreamWriter(new FileStream(LogFileName, FileMode.Append)))
-                {
-                    sw.WriteLine($"\r\n---");
-                    sw.WriteLine($"\r\n## {dt:o}\t\t{level}\t\t");
-                    sw.WriteLine("\r\n```");
-                    foreach (var obj in o)
-                    {
-                        sw.WriteLine(obj);
-                    }
-                    sw.WriteLine("\r\n```\r\n");
-                }
+            }
+            catch (Exception)
+            {
             }
         }
     }
