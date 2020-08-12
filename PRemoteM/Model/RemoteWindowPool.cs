@@ -73,7 +73,13 @@ namespace PRM.Model
             // is connected now! activate it then return.
             if (server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
             {
-                _protocolHosts[serverId.ToString()].ParentWindow?.Activate();
+                if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindow t)
+                {
+                    var s = t.Vm?.Items?.First(x => x.Content?.ProtocolServer?.Id == serverId);
+                    if (s != null)
+                        t.Vm.SelectedItem = s;
+                    t.Activate();
+                }
                 return;
             }
 

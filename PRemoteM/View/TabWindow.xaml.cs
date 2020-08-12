@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.Core.Ulits;
+using PRM.Core.Ulits.DragablzTab;
 using PRM.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
@@ -60,6 +61,15 @@ namespace PRM.View
                 else
                 {
                     Vm.CmdClose.Execute();
+                }
+            };
+            TabablzControl.ClosingItemCallback += args =>
+            {
+                args.Cancel();
+                if (args.DragablzItem.DataContext is TabItemViewModel tivm)
+                {
+                    var pb = tivm.Content;
+                    RemoteWindowPool.Instance.DelProtocolHost(pb?.ConnectionId);
                 }
             };
 
@@ -138,7 +148,7 @@ namespace PRM.View
                     Thread.Sleep(100);
                     Dispatcher.Invoke(() =>
                     {
-                        if(IsActive)
+                        if (IsActive)
                             Vm?.SelectedItem?.Content?.MakeItFocus();
                     });
                 });
@@ -158,6 +168,22 @@ namespace PRM.View
                 Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
             };
         }
+
+
+        //private static RelayCommand _myCloseItemCommand = (RoutedCommand)new RoutedUICommand("Close", "Close", typeof(TabablzControl));;
+        //public static RelayCommand MyCloseItemCommand
+        //{
+        //    get
+        //    {
+        //        if (_cmdConnServer == null)
+        //            _cmdConnServer = new RelayCommand((o) =>
+        //            {
+        //                TabablzControl.CloseItemCommand
+        //                GlobalEventHelper.OnServerConnect?.Invoke(Server.Id);
+        //            });
+        //        return _cmdConnServer;
+        //    }
+        //}
     }
 
 
@@ -167,7 +193,7 @@ namespace PRM.View
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string hex = value.ToString();
-            var brush  = ColorAndBrushHelper.ColorToMediaBrush(hex);
+            var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
             return brush;
         }
 
