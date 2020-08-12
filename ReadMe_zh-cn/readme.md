@@ -41,10 +41,11 @@ PRemoteM 是一款帮助你管理远程会话的小工具，它允许你进行�
 - [基于 RSA 的敏感数据保护](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#数据加密)
 
 # Lastet
-最新版本: 0.4.7.2007161608 
 
-- [下载](https://github.com/VShawn/PRemoteM/releases)
+最新版本: 0.4.8.2008150945
 
+- [下载](https://github.com/VShawn/PRemoteM/releases/tag/0.4.8.2008150945)
+  
 ## 系统要求
 ----
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
@@ -86,6 +87,7 @@ Your name woluld be shown below as a contributor.
 - Pull request are welcome.
 
 ### Translate
+
 - UI
   - Just duplicate the lang file [en-us.js](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md/blob/master/PRM.Core/Languages/en-us.json), and translate it to your language. 
   - Put your lang file to **C:\Users\YourName\AppData\Roaming\PRemoteM\Languages** for preview.
