@@ -68,6 +68,14 @@ namespace PRM.ViewModel
                     Server.GroupName = Host.SelectedGroup;
             }
 
+            NameSelections = GlobalData.Instance.ServerList.Select(x => x.DispName)
+                .Distinct()
+                .Where(x => !string.IsNullOrEmpty(x)).ToList();
+
+            GroupSelections = GlobalData.Instance.ServerList.Select(x => x.GroupName)
+                .Distinct()
+                .Where(x => !string.IsNullOrEmpty(x)).ToList();
+
             Debug.Assert(Server.GetType() != typeof(ProtocolServerNone));
         }
 
@@ -119,7 +127,9 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ProtocolEditControl), ref _protocolEditControl, value);
         }
 
-
+        
+        public List<string> NameSelections { get; set; }
+        public List<string> GroupSelections { get; set; }
 
 
         private RelayCommand _cmdSave;

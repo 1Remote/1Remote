@@ -11,6 +11,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.Core.Ulits;
+using PRM.Core.Ulits.DragablzTab;
 using PRM.Model;
 using PRM.ViewModel;
 using Shawn.Ulits;
@@ -59,6 +61,15 @@ namespace PRM.View
                 else
                 {
                     Vm.CmdClose.Execute();
+                }
+            };
+            TabablzControl.ClosingItemCallback += args =>
+            {
+                args.Cancel();
+                if (args.DragablzItem.DataContext is TabItemViewModel tivm)
+                {
+                    var pb = tivm.Content;
+                    RemoteWindowPool.Instance.DelProtocolHost(pb?.ConnectionId);
                 }
             };
 
@@ -125,7 +136,11 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                this.Title = Vm.SelectedItem.Header + " - " + "PRemoteM";
+                if (!string.IsNullOrEmpty(Vm.Tag))
+                    this.Title = Vm.Tag + " - " + Vm.SelectedItem.Header;
+                else
+                    this.Title = Vm.SelectedItem.Header + " - " + SystemConfig.AppName;
+
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
                 var t = new Task(() =>
@@ -133,7 +148,7 @@ namespace PRM.View
                     Thread.Sleep(100);
                     Dispatcher.Invoke(() =>
                     {
-                        if(IsActive)
+                        if (IsActive)
                             Vm?.SelectedItem?.Content?.MakeItFocus();
                     });
                 });
@@ -144,13 +159,31 @@ namespace PRM.View
         public Size GetTabContentSize()
         {
             Debug.Assert(this.Resources["TabContentBorder"] != null);
-            var tabContentBorder = (Thickness) this.Resources["TabContentBorder"];
+            Debug.Assert(this.Resources["TrapezoidHeight"] != null);
+            var tabContentBorder = (Thickness)this.Resources["TabContentBorder"];
+            var trapezoidHeight = (double)this.Resources["TrapezoidHeight"];
             return new Size()
             {
                 Width = TabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
-                Height = TabablzControl.ActualHeight - 30 - 2 - 1,
+                Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
             };
         }
+
+
+        //private static RelayCommand _myCloseItemCommand = (RoutedCommand)new RoutedUICommand("Close", "Close", typeof(TabablzControl));;
+        //public static RelayCommand MyCloseItemCommand
+        //{
+        //    get
+        //    {
+        //        if (_cmdConnServer == null)
+        //            _cmdConnServer = new RelayCommand((o) =>
+        //            {
+        //                TabablzControl.CloseItemCommand
+        //                GlobalEventHelper.OnServerConnect?.Invoke(Server.Id);
+        //            });
+        //        return _cmdConnServer;
+        //    }
+        //}
     }
 
 
@@ -160,7 +193,7 @@ namespace PRM.View
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string hex = value.ToString();
-            var brush = (System.Windows.Media.Brush)(new System.Windows.Media.BrushConverter().ConvertFrom(hex));
+            var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
             return brush;
         }
 

@@ -71,7 +71,7 @@ namespace Shawn.Ulits.RDP
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            secured.ClearTextPassword = _rdpServer.GetDecryptPassWord();
+            secured.ClearTextPassword = _rdpServer.GetDecryptedPassWord();
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
             #endregion
 
@@ -87,9 +87,9 @@ namespace Shawn.Ulits.RDP
             _rdp.AdvancedSettings5.GrabFocusOnConnect = true;
             _rdp.AdvancedSettings2.keepAliveInterval = 1000 * 60 * 5; // 1000 = 1000 ms
             _rdp.AdvancedSettings2.overallConnectionTimeout = 600; // The new time, in seconds. The maximum value is 600, which represents 10 minutes.
-            //// ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
-            //_rdp.AdvancedSettings7.ConnectToAdministerServer = true;
-            
+                                                                   //// ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
+                                                                   //_rdp.AdvancedSettings7.ConnectToAdministerServer = true;
+
             #region Others
 
             // enable CredSSP, will use CredSsp if the client supports.
@@ -173,7 +173,6 @@ namespace Shawn.Ulits.RDP
                 _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = false;
             }
             #endregion
-
 
             #region Display
 
@@ -299,6 +298,59 @@ namespace Shawn.Ulits.RDP
             _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
 
             #endregion
+
+            #region Gateway
+            // Specifies whether Remote Desktop Gateway (RD Gateway) is supported.
+            if (_rdp.TransportSettings.GatewayIsSupported != 0)
+            {
+                // https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayprofileusagemethod
+                _rdp.TransportSettings2.GatewayProfileUsageMethod = 1; // Use explicit settings, as specified by the user.
+
+                // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayusagemethod
+                switch (_rdpServer.GatewayMode)
+                {
+                    case EGatewayMode.DoNotUseGateway:
+                        _rdp.TransportSettings.GatewayUsageMethod = 0;// TSC_PROXY_MODE_NONE_DIRECT , Do not use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
+                        //if(_rdpServer.GatewayBypassForLocalAddress)
+                        //    _rdp.TransportSettings.GatewayUsageMethod = 4;// TSC_PROXY_MODE_NONE_DETECT , Do not use an RD Gateway server. In the Remote Desktop Connection (RDC) client UI, the Bypass RD Gateway server for local addresses check box is cleared.
+                        //else
+                        //    _rdp.TransportSettings.GatewayUsageMethod = 0;// TSC_PROXY_MODE_NONE_DIRECT , Do not use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
+                        break;
+                    case EGatewayMode.UseTheseGatewayServerSettings:
+                        _rdp.TransportSettings.GatewayUsageMethod = 1;
+                        break;
+                    case EGatewayMode.AutomaticallyDetectGatewayServerSettings:
+                        _rdp.TransportSettings.GatewayUsageMethod = 2;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewaycredssource
+                // TSC_PROXY_CREDS_MODE_USERPASS (0): Use a password (NTLM) as the authentication method for RD Gateway.
+                // TSC_PROXY_CREDS_MODE_SMARTCARD (1): Use a smart card as the authentication method for RD Gateway.
+                // TSC_PROXY_CREDS_MODE_ANY (4): Use any authentication method for RD Gateway.
+                switch (_rdpServer.GatewayLogonMethod)
+                {
+                    case EGatewayLogonMethod.Password:
+                        _rdp.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
+                        _rdp.TransportSettings2.GatewayUsername = _rdpServer.GatewayUserName;
+                        _rdp.TransportSettings2.GatewayPassword = _rdpServer.GetDecryptedGatewayPassword();
+                        break;
+                    case EGatewayLogonMethod.SmartCard:
+                        _rdp.TransportSettings.GatewayCredsSource = 1; // TSC_PROXY_CREDS_MODE_SMARTCARD 
+                        break;
+                    default:
+                        _rdp.TransportSettings.GatewayCredsSource = 4; // TSC_PROXY_CREDS_MODE_ANY 
+                        break;
+                }
+
+                _rdp.TransportSettings2.GatewayCredSharing = 0;
+
+                _rdp.TransportSettings2.GatewayHostname = _rdpServer.GatewayHostName;
+                //_rdp.TransportSettings2.GatewayDomain = "XXXXX";
+            }
+            #endregion
         }
 
 
@@ -422,7 +474,7 @@ namespace Shawn.Ulits.RDP
             }
             base.OnClosed?.Invoke(base.ConnectionId);
         }
-        
+
         private void RdpOnOnConnected(object sender, EventArgs e)
         {
             RdpHost.Visibility = Visibility.Visible;

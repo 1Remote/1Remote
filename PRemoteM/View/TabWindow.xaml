@@ -7,6 +7,7 @@
         xmlns:dragablzTab="clr-namespace:PRM.Core.Ulits.DragablzTab" 
         xmlns:view="clr-namespace:PRM.View"
         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Host - PRemoteM" Height="600" Width="800">
 
@@ -36,6 +37,7 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
+            <system:Double x:Key="TrapezoidHeight">30</system:Double>
             <Thickness x:Key="TabContentBorder">2,0,2,2</Thickness>
             <view:Hex2Brush x:Key="Hex2Brush"></view:Hex2Brush>
             <Style TargetType="{x:Type Thumb}" x:Key="MahAppsInvisibleThumbStyle">
@@ -84,13 +86,33 @@
                             <Grid x:Name="templateRoot" 
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <ContextMenu.Style>
+                                            <Style TargetType="{x:Type ContextMenu}">
+                                                <Setter Property="OverridesDefaultStyle" Value="True" />
+                                                <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type ContextMenu}">
+                                                            <Border BorderThickness="1" BorderBrush="#666" x:Name="Border" Background="{DynamicResource MainColor1Brush}">
+                                                                <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ContextMenu.Style>
+                                        <MenuItem Command="{x:Static dragablz:TabablzControl.CloseItemCommand}" Header="{DynamicResource button_close}"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
                                 <Grid.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="{Binding MarkColorHex}" Offset="0"></GradientStop>
                                         <GradientStop Color="{DynamicResource MainColor1}" Offset="1"></GradientStop>
                                     </LinearGradientBrush>
                                 </Grid.Background>
-                                <Grid Name="Trapezoid" Height="30" VerticalAlignment="Center">
+                                <Grid Name="Trapezoid" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10" />
                                         <ColumnDefinition Width="20" />
@@ -99,7 +121,7 @@
                                         <ColumnDefinition Width="10" />
                                     </Grid.ColumnDefinitions>
                                     <Grid Width="5" Name="ColorMark" Visibility="Hidden" HorizontalAlignment="Left" Background="{Binding MarkColorHex,Converter={StaticResource Hex2Brush}, Mode=OneWay}"></Grid>
-                                    <Border  Grid.Column="1" Padding="0 0 4 0">
+                                    <Border Grid.Column="1" Padding="0 0 4 0">
                                         <Grid Width="16" Height="16"
                                               VerticalAlignment="Center"
                                               HorizontalAlignment="Center">
@@ -159,7 +181,7 @@
         </Style>
     </Window.Style>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>

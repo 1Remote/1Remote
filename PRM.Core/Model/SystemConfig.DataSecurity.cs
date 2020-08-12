@@ -147,7 +147,7 @@ namespace PRM.Core.Model
                     var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
                     if (!Directory.Exists(appDateFolder))
                         Directory.CreateDirectory(appDateFolder);
-                    _dbPath = Path.Combine(appDateFolder, "PRemoteM.db");
+                    _dbPath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.db");
                     Save();
                 }
                 return _dbPath;
@@ -384,6 +384,11 @@ namespace PRM.Core.Model
                     var s = (ProtocolServerSSH) server;
                     s.PrivateKey = rsa.Encode(s.PrivateKey);
                 }
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerRDP)))
+                {
+                    var s = (ProtocolServerRDP) server;
+                    s.GatewayPassword = rsa.Encode(s.GatewayPassword);
+                }
             }
         }
 
@@ -403,6 +408,12 @@ namespace PRM.Core.Model
                     var s = (ProtocolServerSSH) server;
                     Debug.Assert(rsa.DecodeOrNull(s.PrivateKey) != null);
                     s.PrivateKey = rsa.DecodeOrNull(s.PrivateKey);
+                }
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerRDP)))
+                {
+                    var s = (ProtocolServerRDP) server;
+                    Debug.Assert(rsa.DecodeOrNull(s.GatewayPassword) != null);
+                    s.GatewayPassword = rsa.DecodeOrNull(s.GatewayPassword);
                 }
             }
         }
@@ -690,6 +701,7 @@ namespace PRM.Core.Model
                                 name = serverBase.DispName;
                                 group = serverBase.GroupName;
                                 protocol = serverBase.Protocol;
+                                // todo ADD RD GATEWAY
                                 if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
                                     || serverBase is ProtocolServerRDP
                                     || serverBase is ProtocolServerSSH)
@@ -868,7 +880,7 @@ namespace PRM.Core.Model
                                             user = user.Replace(mark, ";");
                                             pwd = pwd.Replace(mark, ";");
                                             address = address.Replace(mark, ";");
-
+                                            // todo ADD RD GATEWAY
                                             switch (protocol)
                                             {
                                                 case "rdp":
@@ -933,12 +945,20 @@ namespace PRM.Core.Model
                                 {
                                     foreach (var serverBase in list)
                                     {
-                                        if (serverBase is ProtocolServerRDP
+                                        if (
+                                            serverBase is ProtocolServerWithAddrPortUserPwdBase
+                                            || serverBase is ProtocolServerRDP
                                             || serverBase is ProtocolServerSSH)
                                         {
                                             var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
                                             if (Rsa != null)
+                                            {
                                                 pwd.Password = Rsa.Encode(pwd.Password);
+                                                if (serverBase is ProtocolServerRDP rdp)
+                                                {
+                                                    rdp.GatewayPassword = Rsa.Encode(rdp.GatewayPassword);
+                                                }
+                                            }
                                         }
                                         Server.AddOrUpdate(serverBase, true);
                                     }

@@ -10,7 +10,7 @@
         BorderThickness="0"
         BorderBrush="Transparent"
         x:Name="Window"
-        Title="PRemoteM" Height="560" Width="840" MinWidth="840" MinHeight="560">
+        Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>

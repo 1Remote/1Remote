@@ -60,23 +60,30 @@ namespace PRM.Model
         private readonly Dictionary<string, ProtocolHostBase> _protocolHosts = new Dictionary<string, ProtocolHostBase>();
         private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
 
-        public void ShowRemoteHost(uint id)
+        public void ShowRemoteHost(uint serverId)
         {
-            Debug.Assert(id > 0);
-            Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
-            var server = GlobalData.Instance.ServerList.First(x => x.Id == id);
+            Debug.Assert(serverId > 0);
+            Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == serverId));
+            var server = GlobalData.Instance.ServerList.First(x => x.Id == serverId);
 
             // update last conn time
             server.LastConnTime = DateTime.Now;
             Server.AddOrUpdate(server);
 
-            // start conn
-            if (server.OnlyOneInstance && _protocolHosts.ContainsKey(id.ToString()))
+            // is connected now! activate it then return.
+            if (server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
             {
-                _protocolHosts[id.ToString()].ParentWindow?.Activate();
+                if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindow t)
+                {
+                    var s = t.Vm?.Items?.First(x => x.Content?.ProtocolServer?.Id == serverId);
+                    if (s != null)
+                        t.Vm.SelectedItem = s;
+                    t.Activate();
+                }
                 return;
             }
-            
+
+            // create new remote session
             TabWindow tab = null;
             try
             {
@@ -89,7 +96,7 @@ namespace PRM.Model
                     {
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                         // check if screens are in different scale factors
-                        bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int) (new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
+                        bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
                         if (differentScaleFactorFlag)
                         {
                             var tmp = Path.GetTempPath();
@@ -146,15 +153,37 @@ namespace PRM.Model
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
-                        tab = _tabWindows[_lastTabToken];
-                    else
+                    switch (SystemConfig.Instance.General.TabMode)
+                    {
+                        case EnumTabMode.NewItemGoesToGroup:
+                            // work in tab by group mode
+                            if (_tabWindows.Any(x => x.Value.Vm.Tag == server.GroupName))
+                                tab = _tabWindows.First(x => x.Value.Vm.Tag == server.GroupName).Value;
+                            break;
+                        case EnumTabMode.NewItemGoesToProtocol:
+                            // work in tab by protocol mode
+                            if (_tabWindows.Any(x => x.Value.Vm.Tag == server.ProtocolDisplayName))
+                                tab = _tabWindows.First(x => x.Value.Vm.Tag == server.ProtocolDisplayName).Value;
+                            break;
+                        default:
+                            // work in tab by latest tab mode
+                            if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
+                                tab = _tabWindows[_lastTabToken];
+                            break;
+                    }
+
+                    if (tab == null)
                     {
                         var token = DateTime.Now.Ticks.ToString();
                         AddTab(new TabWindow(token));
                         tab = _tabWindows[token];
                         tab.Show();
                         _lastTabToken = token;
+
+                        if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToGroup)
+                            tab.Vm.Tag = server.GroupName;
+                        else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
+                            tab.Vm.Tag = server.ProtocolDisplayName;
                     }
                     tab.Activate();
                     var size = tab.GetTabContentSize();
@@ -176,10 +205,7 @@ namespace PRM.Model
             }
             catch (Exception e)
             {
-                if (tab?.Vm != null && (tab.Vm?.Items?.Count ?? 0) == 0)
-                {
-                    CloseTabWindow(tab.Vm.Token);
-                }
+                CloseEmpytTab();
                 SimpleLogHelper.Error(e);
                 MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -292,16 +318,7 @@ namespace PRM.Model
                     full.Show();
                     AddFull(full);
                 }
-
-
-                // close empty tab
-                {
-                    var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
-                    foreach (var t in tabs)
-                    {
-                        CloseTabWindow(t.Vm.Token);
-                    }
-                }
+                CloseEmpytTab();
 
                 SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
@@ -331,29 +348,49 @@ namespace PRM.Model
                         throw new ArgumentOutOfRangeException(host.ParentWindow + " type is wrong!");
                 }
 
+                if (full != null)
                 {
                     TabWindow tab = null;
 
-                    if (!string.IsNullOrEmpty(full?.LastTabToken)
-                        && _tabWindows.ContainsKey(full.LastTabToken))
+                    var server = full.ProtocolHostBase.ProtocolServer;
+
+                    if (!string.IsNullOrEmpty(full.LastTabToken) && _tabWindows.ContainsKey(full.LastTabToken))
                         tab = _tabWindows[full.LastTabToken];
-                    else if (
-                        string.IsNullOrEmpty(full?.LastTabToken)
-                        && !string.IsNullOrEmpty(_lastTabToken)
-                        && _tabWindows.ContainsKey(_lastTabToken))
-                        tab = _tabWindows[_lastTabToken];
                     else
+                        switch (SystemConfig.Instance.General.TabMode)
+                        {
+                            case EnumTabMode.NewItemGoesToGroup:
+                                // work in tab by group mode
+                                if (_tabWindows.Any(x => x.Value.Vm.Tag == server.GroupName))
+                                    tab = _tabWindows.First(x => x.Value.Vm.Tag == server.GroupName).Value;
+                                break;
+                            case EnumTabMode.NewItemGoesToProtocol:
+                                // work in tab by protocol mode
+                                if (_tabWindows.Any(x => x.Value.Vm.Tag == server.ProtocolDisplayName))
+                                    tab = _tabWindows.First(x => x.Value.Vm.Tag == server.ProtocolDisplayName).Value;
+                                break;
+                            default:
+                                // work in tab by latest tab mode
+                                if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
+                                    tab = _tabWindows[_lastTabToken];
+                                break;
+                        }
+
+                    if (tab == null)
                     {
                         var token = DateTime.Now.Ticks.ToString();
                         AddTab(new TabWindow(token));
                         tab = _tabWindows[token];
-                        if (full != null)
-                        {
-                            var screenEx = ScreenInfoEx.GetCurrentScreen(full);
-                            tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
-                            tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
-                            tab.WindowStartupLocation = WindowStartupLocation.Manual;
-                        }
+
+                        if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToGroup)
+                            tab.Vm.Tag = server.GroupName;
+                        else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
+                            tab.Vm.Tag = server.ProtocolDisplayName;
+
+                        var screenEx = ScreenInfoEx.GetCurrentScreen(full);
+                        tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
+                        tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
+                        tab.WindowStartupLocation = WindowStartupLocation.Manual;
                         tab.Show();
                         _lastTabToken = token;
                         // move tab to screen which display full window 
@@ -403,15 +440,7 @@ namespace PRM.Model
                     tab.Vm.Items.Remove(tab.Vm.Items.First(x => x.Content.ConnectionId == connectionId));
                 }
             }
-
-            // close tab
-            {
-                var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
-                foreach (var tab in tabs)
-                {
-                    CloseTabWindow(tab.Vm.Token);
-                }
-            }
+            CloseEmpytTab();
         }
 
         /// <summary>
@@ -430,25 +459,21 @@ namespace PRM.Model
                 }
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
+            CloseEmpytTab();
+        }
+
+        private void CloseEmpytTab()
+        {
             // close tab
             {
                 var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
                 foreach (var tab in tabs)
                 {
-                    CloseTabWindow(tab.Vm.Token);
+                    SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
+                    _tabWindows.Remove(tab.Vm.Token);
+                    tab.Close();
+                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
-            }
-        }
-
-        public void CloseTabWindow(string token)
-        {
-            if (_tabWindows.ContainsKey(token))
-            {
-                var tab = _tabWindows[token];
-                SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
-                _tabWindows.Remove(token);
-                tab.Close();
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
         }
     }
