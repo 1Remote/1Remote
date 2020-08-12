@@ -33,6 +33,10 @@
   "system_options_general_item_server_order_by_protocol": "Protocol",
   "system_options_general_item_server_order_by_add_time_asc": "Add time asc",
   "system_options_general_item_server_order_by_add_time_desc": "Add time desc",
+  "system_options_general_item_tab_mode": "Tab mode",
+  "system_options_general_item_tab_mode_new_to_latest": "Show new connection to latest tab",
+  "system_options_general_item_tab_mode_new_to_group": "Show new connection by group",
+  "system_options_general_item_tab_mode_new_to_protocol": "Show new connection by protocol",
   "system_options_general_item_log_file_path": "Log file",
   "system_options_general_item_icons_folder_path": "Custom icons",
   "system_options_general_item_icons_folder_path_description": "Put your own server icons here",
@@ -101,6 +105,7 @@
   "server_editor_group_title_connection": "Connection",
   "server_editor_group_title_display": "Display",
   "server_editor_group_title_advantage": "Advantage",
+  "server_editor_group_title_gateway": "RD Gateway server",
   // server editor - common group items
   "server_editor_display_name": "Name",
   "server_editor_group": "Group",
@@ -142,10 +147,18 @@
   "server_editor_advantage_printers": "Printers",
   "server_editor_advantage_smart_cards": "Smart Cards",
   "server_editor_advantage_ssh_version": "SSH Verison",
+  // server editor - RD-gateway group items
+  "server_editor_gateway_mode": "Connection",
+  "server_editor_gateway_mode_automatically_detect": "Automatically detect RD Gateway server settings",
+  "server_editor_gateway_mode_use_these": "Use these RD Gateway server settings",
+  "server_editor_gateway_mode_do_not_use": "Do not use RD Gateway server",
+  "server_editor_gateway_server_host_name": "Host Name",
+  "server_editor_gateway_logon_method": "Logon Method",
+  "server_editor_gateway_logon_method_psw": "Password",
+  "server_editor_gateway_logon_method_smart_card": "Smart Card",
+  "server_editor_gateway_bypass_gateway_for_loacl_address": "Bypass RD Gateway server for local address",
 
 
-
-  "server_editor_type_rdp": "RDP",
   "server_editor_type_import_from_prmj": "Import",
 
 

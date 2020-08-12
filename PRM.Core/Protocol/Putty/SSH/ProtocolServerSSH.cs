@@ -53,7 +53,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string GetPuttyConnString()
         {
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptPassWord()} -{(int)SshVersion}";
+            return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptedPassWord()} -{(int)SshVersion}";
         }
 
         [JsonIgnore]

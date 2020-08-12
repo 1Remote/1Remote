@@ -33,6 +33,10 @@
   "system_options_general_item_server_order_by_protocol": "按协议",
   "system_options_general_item_server_order_by_add_time_asc": "按添加顺序",
   "system_options_general_item_server_order_by_add_time_desc": "按添加顺序（倒序）",
+  "system_options_general_item_tab_mode": "Tab管理",
+  "system_options_general_item_tab_mode_new_to_latest": "显示远程连接到最新的Tab",
+  "system_options_general_item_tab_mode_new_to_group": "Tab按组显示远程连接",
+  "system_options_general_item_tab_mode_new_to_protocol": "Tab按远程协议显示远程连接",
   "system_options_general_item_log_file_path": "日志文件",
   "system_options_general_item_icons_folder_path": "客制化图标",
   "system_options_general_item_icons_folder_path_description": "在此放置客制化备选图标",
@@ -101,6 +105,7 @@
   "server_editor_group_title_connection": "连接",
   "server_editor_group_title_display": "显示",
   "server_editor_group_title_advantage": "高级",
+  "server_editor_group_title_gateway": "RD 网关服务器",
   // server editor - common group items
   "server_editor_display_name": "名称",
   "server_editor_group": "分组",
@@ -142,10 +147,18 @@
   "server_editor_advantage_printers": "打印机",
   "server_editor_advantage_smart_cards": "智能卡",
   "server_editor_advantage_ssh_version": "SSH Verison",
+  // server editor - RD-gateway group items
+  "server_editor_gateway_mode": "连接设置",
+  "server_editor_gateway_mode_automatically_detect": "自动检测RD网关服务器设置",
+  "server_editor_gateway_mode_use_these": "使用下列RD网关服务器设置",
+  "server_editor_gateway_mode_do_not_use": "不使用RD网关服务器",
+  "server_editor_gateway_server_host_name": "服务器地址",
+  "server_editor_gateway_logon_method": "登录方法",
+  "server_editor_gateway_logon_method_psw": "账号密码",
+  "server_editor_gateway_logon_method_smart_card": "智能卡",
+  "server_editor_gateway_bypass_gateway_for_loacl_address": "不对本地地址使用RD网关",
 
 
-
-  "server_editor_type_rdp": "RDP连接",
   "server_editor_type_import_from_prmj": "导入",
 
 

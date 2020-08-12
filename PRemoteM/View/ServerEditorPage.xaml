@@ -8,6 +8,7 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:ulits="clr-namespace:Shawn.Ulits"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -46,7 +47,10 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <TextBox Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                        <ulits:AutoCompleteComboBox x:Name="DispName" 
+                                                                    Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
+                                                                    Selections="{Binding NameSelections}"
+                                        ></ulits:AutoCompleteComboBox>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -54,7 +58,41 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <TextBox Text="{Binding Server.GroupName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                        <ulits:AutoCompleteComboBox x:Name="TbGroup" 
+                                                                    Text="{Binding Server.GroupName,UpdateSourceTrigger=PropertyChanged}"
+                                                                    Selections="{Binding GroupSelections}"
+                                                                    ></ulits:AutoCompleteComboBox>
+                                        <Popup 
+                                               Name="PopupGroup"
+                                               PlacementTarget="{Binding ElementName=TbGroup}" 
+                                               Width="{Binding ElementName=TbGroup, Path=ActualWidth}"
+                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}"
+                                               >
+                                            <Popup.Style>
+                                                <Style TargetType="Popup">
+                                                    <Setter Property="IsOpen" Value="False"></Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=TbGroup, Path=IsFocused}" Value="true">
+                                                            <Setter Property="IsOpen" Value="True"></Setter>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=PopupGroup, Path=IsFocused}" Value="true">
+                                                            <Setter Property="IsOpen" Value="True"></Setter>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=PopupGroup, Path=IsMouseOver}" Value="true">
+                                                            <Setter Property="IsOpen" Value="True"></Setter>
+                                                        </DataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=PopupGroup, Path=IsFocused}" Value="true"></Condition>
+                                                                <Condition Binding="{Binding ElementName=TbGroup, Path=IsMouseOver}" Value="true"></Condition>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="IsOpen" Value="True"></Setter>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Popup.Style>
+                                            <Grid Height="200" Background="AliceBlue"></Grid>
+                                        </Popup>
                                     </Grid>
                                 </StackPanel>
                             </Grid>

@@ -89,6 +89,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AutoCompleteComboBox.xaml.cs">
+      <DependentUpon>AutoCompleteComboBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
@@ -129,6 +132,10 @@
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\TabItemViewModel.cs" />
+    <Page Include="Controls\AutoCompleteComboBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\LogoSelector.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

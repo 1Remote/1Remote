@@ -52,7 +52,7 @@ namespace PRM.View
                 if (ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
-                    vm.Server.IconImg = LogoSelector.Logo;
+                    vm.Server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                 }
             }
             

@@ -25,7 +25,10 @@ namespace PRM.ViewModel
                 RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
 
-
+        /// <summary>
+        /// tag of the Tab, e.g. tag = Group1 then the servers in Group1 will be shown on this Tab.
+        /// </summary>
+        public string Tag { get; set; } = "";
 
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
