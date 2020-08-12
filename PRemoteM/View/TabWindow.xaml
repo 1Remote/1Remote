@@ -86,6 +86,26 @@
                             <Grid x:Name="templateRoot" 
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <ContextMenu.Style>
+                                            <Style TargetType="{x:Type ContextMenu}">
+                                                <Setter Property="OverridesDefaultStyle" Value="True" />
+                                                <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type ContextMenu}">
+                                                            <Border BorderThickness="1" BorderBrush="#666" x:Name="Border" Background="{DynamicResource MainColor1Brush}">
+                                                                <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ContextMenu.Style>
+                                        <MenuItem Command="{x:Static dragablz:TabablzControl.CloseItemCommand}" Header="{DynamicResource button_close}"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
                                 <Grid.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="{Binding MarkColorHex}" Offset="0"></GradientStop>
