@@ -35,7 +35,7 @@ namespace PRM.Core.Ulits.DragablzTab
                 value.OnCanResizeNowChanged += () => CanResizeNow = value.CanResizeNow();
             }
         }
-        
+
         private bool _canResizeNow = true;
 
         public bool CanResizeNow
@@ -47,7 +47,8 @@ namespace PRM.Core.Ulits.DragablzTab
 
         private string _markColorHex;
         /// <summary>
-        /// tab title mark color        /// </summary>
+        /// tab title mark color
+        /// </summary>
         public string MarkColorHex
         {
             get => _markColorHex;
@@ -63,7 +64,7 @@ namespace PRM.Core.Ulits.DragablzTab
             }
         }
 
-        
+
         private System.Windows.Media.Imaging.BitmapSource _iconImg;
         public System.Windows.Media.Imaging.BitmapSource IconImg
         {
