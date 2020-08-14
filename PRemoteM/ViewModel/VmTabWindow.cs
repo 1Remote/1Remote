@@ -25,10 +25,37 @@ namespace PRM.ViewModel
                 RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
 
+        private string _tag = "";
         /// <summary>
         /// tag of the Tab, e.g. tag = Group1 then the servers in Group1 will be shown on this Tab.
         /// </summary>
-        public string Tag { get; set; } = "";
+        public string Tag
+        {
+            get => _tag;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(Tag), ref _tag, value);
+                SetTitle();
+            }
+        }
+
+        private string _title = "";
+        public string Title
+        {
+            get => _title;
+            set => SetAndNotifyIfChanged(nameof(Title), ref _title, value);
+        }
+
+        private void SetTitle()
+        {
+            if (SelectedItem != null)
+            {
+                if (!string.IsNullOrEmpty(Tag))
+                    this.Title = Tag + " - " + SelectedItem.Header;
+                else
+                    this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
+            }
+        }
 
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
@@ -38,7 +65,11 @@ namespace PRM.ViewModel
         public TabItemViewModel SelectedItem
         {
             get => _selectedItem;
-            set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+                SetTitle();
+            }
         }
 
         #region drag drop tab
@@ -66,6 +97,7 @@ namespace PRM.ViewModel
         }
 
         private RelayCommand _cmdClose;
+
         public RelayCommand CmdClose
         {
             get
@@ -95,6 +127,10 @@ namespace PRM.ViewModel
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
+            if (window is TabWindow tab)
+            {
+                RemoteWindowPool.Instance.DelTabWindow(tab.Vm.Token);
+            }
             return TabEmptiedResponse.CloseWindowOrLayoutBranch;
         }
     }

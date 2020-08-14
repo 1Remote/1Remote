@@ -136,11 +136,6 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                if (!string.IsNullOrEmpty(Vm.Tag))
-                    this.Title = Vm.Tag + " - " + Vm.SelectedItem.Header;
-                else
-                    this.Title = Vm.SelectedItem.Header + " - " + SystemConfig.AppName;
-
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
                 var t = new Task(() =>
