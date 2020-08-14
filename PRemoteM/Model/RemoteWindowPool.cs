@@ -448,6 +448,7 @@ namespace PRM.Model
         /// </summary>
         public void DelTabWindow(string token)
         {
+            var tag = "";
             // del protocol
             if (_tabWindows.ContainsKey(token))
             {
@@ -473,6 +474,37 @@ namespace PRM.Model
                     _tabWindows.Remove(tab.Vm.Token);
                     tab.Close();
                     SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+
+                    /*
+                    // if close a tab with tag, then find another tag can be this tag.
+                    var tag = tab.Vm.Tag;
+                    if (!string.IsNullOrEmpty(tag))
+                        switch (SystemConfig.Instance.General.TabMode)
+                        {
+                            case EnumTabMode.NewItemGoesToGroup:
+                            {
+                                if (_tabWindows.Values.Any(x =>
+                                    x.Vm.Items.All(y => y.Content.ProtocolServer.GroupName == tag)))
+                                {
+                                    var t = _tabWindows.Values.First(x =>
+                                        x.Vm.Items.All(y => y.Content.ProtocolServer.GroupName == tag));
+                                    t.Vm.Tag = tag;
+                                }
+                            }
+                                break;
+                            case EnumTabMode.NewItemGoesToProtocol:
+                            {
+                                if (_tabWindows.Values.Any(x =>
+                                    x.Vm.Items.All(y => y.Content.ProtocolServer.ProtocolDisplayName == tag)))
+                                {
+                                    var t = _tabWindows.Values.First(x =>
+                                        x.Vm.Items.All(y => y.Content.ProtocolServer.ProtocolDisplayName == tag));
+                                    t.Vm.Tag = tag;
+                                }
+                            }
+                                break;
+                        }
+                    */
                 }
             }
         }
