@@ -19,6 +19,12 @@
   "info_hotkey_already_registered": "Hotkey already registered",
   "info_hotkey_registered_fail": "Failed to register hotkey",
 
+
+  // tab
+  "tab_window_set_tag": "temporary tag",
+
+
+
   // sys menu
   "system_menu_options_title": "Options",
   "system_menu_about_title": "About",
