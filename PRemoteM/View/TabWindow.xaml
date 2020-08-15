@@ -192,9 +192,27 @@
                 <Grid Background="Transparent" Width="24" Height="24" Margin="3 0 0 0">
                     <Image Name="IconTitleBar"></Image>
                 </Grid>
-                <Label VerticalContentAlignment="Center" Margin="0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
-                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
-                </Label>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <StackPanel Orientation="Horizontal">
+                <Grid Width="24" Height="24" Margin="3 0 0 0">
+                </Grid>
+                <Grid Background="{DynamicResource MainColor1Brush}">
+                    <Grid.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding CmdIsTagEditToggle}"></KeyBinding>
+                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdIsTagEditToggle}"></MouseBinding>
+                    </Grid.InputBindings>
+                    <Label VerticalContentAlignment="Center" Margin="0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Visibility="{Binding TitleTextVisibility}">
+                        <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+                    </Label>
+                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0" Visibility="{Binding TitleTagEditorVisibility}">
+                        <Label VerticalContentAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" Content="{DynamicResource tab_window_set_tag}"></Label>
+                        <TextBox Width="100" Height="18" Text="{Binding Tag, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
         </Grid>
 
