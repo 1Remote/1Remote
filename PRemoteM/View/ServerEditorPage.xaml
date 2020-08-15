@@ -59,7 +59,7 @@
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
                                         <ulits:AutoCompleteComboBox x:Name="TbGroup" 
-                                                                    Text="{Binding Server.GroupName,UpdateSourceTrigger=PropertyChanged}"
+                                                                    Text="{Binding Server.GroupName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding GroupSelections}"
                                                                     ></ulits:AutoCompleteComboBox>
                                         <Popup 

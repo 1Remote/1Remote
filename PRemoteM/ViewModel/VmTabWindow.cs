@@ -46,20 +46,27 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(Title), ref _title, value);
         }
 
-        private void SetTitle()
-        {
-            if (SelectedItem != null)
-            {
-                if (!string.IsNullOrEmpty(Tag))
-                    this.Title = Tag + " - " + SelectedItem.Header;
-                else
-                    this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
-            }
-        }
-
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
         public Visibility BtnCloseAllVisibility => Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+
+
+        private bool _isTagEditing = false;
+        public bool IsTagEditing
+        {
+            get => _isTagEditing;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(IsTagEditing), ref _isTagEditing, value);
+                RaisePropertyChanged(nameof(TitleTextVisibility));
+                RaisePropertyChanged(nameof(TitleTagEditorVisibility));
+            }
+        }
+
+        public Visibility TitleTextVisibility => !IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
+
+        public Visibility TitleTagEditorVisibility => IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
+
 
         private TabItemViewModel _selectedItem = new TabItemViewModel();
         public TabItemViewModel SelectedItem
@@ -77,6 +84,17 @@ namespace PRM.ViewModel
         public IInterTabClient InterTabClient => _interTabClient;
         #endregion
 
+
+        private void SetTitle()
+        {
+            if (SelectedItem != null)
+            {
+                if (!string.IsNullOrEmpty(Tag))
+                    this.Title = Tag + " - " + SelectedItem.Header;
+                else
+                    this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
+            }
+        }
 
         #region CMD
         private RelayCommand _cmdHostGoFullScreen;
@@ -97,7 +115,6 @@ namespace PRM.ViewModel
         }
 
         private RelayCommand _cmdClose;
-
         public RelayCommand CmdClose
         {
             get
@@ -110,6 +127,23 @@ namespace PRM.ViewModel
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdClose;
+            }
+        }
+
+
+        private RelayCommand _cmdIsTagEditToggle;
+        public RelayCommand CmdIsTagEditToggle
+        {
+            get
+            {
+                if (_cmdIsTagEditToggle == null)
+                {
+                    _cmdIsTagEditToggle = new RelayCommand((o) =>
+                    {
+                        IsTagEditing = !IsTagEditing;
+                    }, o => this.SelectedItem != null);
+                }
+                return _cmdIsTagEditToggle;
             }
         }
         #endregion
