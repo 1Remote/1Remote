@@ -89,7 +89,7 @@ namespace PRM.Model
             {
                 if (server.IsConnWithFullScreen())
                 {
-                    // for those people using 2+ monitor which are in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+                    // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
                     if (Screen.AllScreens.Length > 1
                         && server is ProtocolServerRDP rdp
                         && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
@@ -97,45 +97,42 @@ namespace PRM.Model
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                         // check if screens are in different scale factors
                         bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
-                        if (differentScaleFactorFlag)
+                        if (differentScaleFactorFlag || true)
                         {
                             var tmp = Path.GetTempPath();
-                            var dp = rdp.DispName;
+                            var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{rdp.UserName}";
                             var invalid = new string(Path.GetInvalidFileNameChars()) +
                                       new string(Path.GetInvalidPathChars());
-                            dp = invalid.Aggregate(dp, (current, c) => current.Replace(c.ToString(), ""));
-                            var rdpFile = Path.Combine(tmp, dp + ".rdp");
+                            rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
+                            var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
                             try
                             {
                                 File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
                                 var p = new Process
                                 {
                                     StartInfo =
-                                {
-                                    FileName = "cmd.exe",
-                                    UseShellExecute = false,
-                                    RedirectStandardInput = true,
-                                    RedirectStandardOutput = true,
-                                    RedirectStandardError = true,
-                                    CreateNoWindow = true
-                                }
+                                    {
+                                        FileName = "cmd.exe",
+                                        UseShellExecute = false,
+                                        RedirectStandardInput = true,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true,
+                                        CreateNoWindow = true
+                                    }
                                 };
                                 p.Start();
-                                p.StandardInput.WriteLine("mstsc -admin " + rdpFile);
+                                p.StandardInput.WriteLine("mstsc -admin \"" + rdpFile + "\"");
                                 p.StandardInput.WriteLine("exit");
-                            }
-                            catch (Exception)
-                            {
-                                throw;
                             }
                             finally
                             {
+                                // delete tmp rdp file, ETA 10s
                                 var t = new Task(() =>
-                            {
-                                Thread.Sleep(1000 * 10);
-                                if (File.Exists(rdpFile))
-                                    File.Delete(rdpFile);
-                            });
+                                {
+                                    Thread.Sleep(1000 * 10);
+                                    if (File.Exists(rdpFile))
+                                        File.Delete(rdpFile);
+                                });
                                 t.Start();
                             }
                             return;

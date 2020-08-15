@@ -19,6 +19,12 @@
   "info_hotkey_already_registered": "快捷键已被占用",
   "info_hotkey_registered_fail": "快捷键注册失败",
 
+
+  // tab
+  "tab_window_set_tag": "临时标签",
+
+
+
   // sys menu
   "system_menu_options_title": "设置",
   "system_menu_about_title": "关于",
