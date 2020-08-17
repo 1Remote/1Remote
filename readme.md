@@ -22,7 +22,7 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="300"/>
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 - Tab support
 - UI themes support
 - Opening a remote session via shortcut
-- [Migare remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migare-from-mRemoteNG)
+- [Migrate remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migrate-from-mRemoteNG)
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
@@ -75,8 +75,8 @@ By encrypting data, no one can get your remote password by open database directl
 1. In <kbd>Setting</kbd> -> <kbd>Data & Security</kbd> page
 2. click <kbd>Encrypt</kbd> button and select a proper place to store your **Key File**.
 
-### Migare from mRemoteNG
-<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migare.jpg"/>
+### Migrate from mRemoteNG
+<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migrate.jpg"/>
 
 ## Make contribution
 Help to make this tool more powerful.
