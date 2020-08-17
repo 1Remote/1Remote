@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using PRM.Core.Model;
+using Shawn.Ulits;
 
 namespace PRM.Core.Protocol
 {
@@ -18,6 +21,14 @@ namespace PRM.Core.Protocol
         {
             ProtocolServer = protocolServer;
             CanFullScreen = canFullScreen;
+            MenuItems.Add(new System.Windows.Controls.MenuItem()
+            {
+                Header = SystemConfig.Instance.Language.GetText("button_close"),
+                Command = new RelayCommand((o) =>
+                {
+                    DisConn();
+                })
+            });
         }
 
 
@@ -35,6 +46,11 @@ namespace PRM.Core.Protocol
         public bool CanFullScreen { get; protected set; }
 
         /// <summary>
+        /// special menu for tab
+        /// </summary>
+        public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+
+        /// <summary>
         /// since resizing when rdp is connecting would not tiger the rdp size change event
         /// then I let rdp host return false when rdp is on connecting to prevent TabWindow resize or maximize.
         /// </summary>
@@ -47,13 +63,20 @@ namespace PRM.Core.Protocol
 
 
         public abstract void Conn();
-        public abstract void DisConn();
+
+        /// <summary>
+        /// disconn the session and close host window
+        /// </summary>
+        public virtual void DisConn()
+        {
+            OnClosed?.Invoke(ConnectionId);
+        }
         public abstract void GoFullScreen();
         public abstract bool IsConnected();
         public abstract bool IsConnecting();
 
 
-        
+
         protected static readonly object MakeItFocusLocker1 = new object();
         protected static readonly object MakeItFocusLocker2 = new object();
 
@@ -67,7 +90,7 @@ namespace PRM.Core.Protocol
 
 
 
-        public Action<string> OnClosed = null;
-        public Action<string> OnFullScreen2Window = null;
+        public Action<string> OnClosed { get; set; } = null;
+        public Action<string> OnFullScreen2Window { get; set; } = null;
     }
 }

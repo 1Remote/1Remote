@@ -12,6 +12,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Shawn.Ulits;
+using VncSharpWpf;
 using Color = System.Drawing.Color;
 
 namespace PRM.Core.Protocol.VNC.Host
@@ -31,10 +32,44 @@ namespace PRM.Core.Protocol.VNC.Host
             InitializeComponent();
             Debug.Assert(protocolServer.GetType() == typeof(ProtocolServerVNC));
 
-            Vnc.ConnectComplete += RdpOnOnConnected;
-            Vnc.ConnectionLost += VncOnConnectionLost;
+            Vnc.ConnectComplete += OnConnected;
+            Vnc.ConnectionLost += OnConnectionLost;
 
-                _vncServer = (ProtocolServerVNC)protocolServer;
+            _vncServer = (ProtocolServerVNC)protocolServer;
+
+            MenuItems.Clear();
+            MenuItems.Add(new System.Windows.Controls.MenuItem()
+            {
+                Header = "Ctrl + Alt + Del",
+                Command = new RelayCommand((o) =>
+                {
+                    Vnc.SendSpecialKeys(SpecialKeys.CtrlAltDel);
+                }, o => IsConnected() == true)
+            });
+            MenuItems.Add(new System.Windows.Controls.MenuItem()
+            {
+                Header = "Ctrl + Esc",
+                Command = new RelayCommand((o) =>
+                {
+                    Vnc.SendSpecialKeys(SpecialKeys.CtrlEsc);
+                }, o => IsConnected() == true)
+            });
+            MenuItems.Add(new System.Windows.Controls.MenuItem()
+            {
+                Header = "Alt + F4",
+                Command = new RelayCommand((o) =>
+                {
+                    Vnc.SendSpecialKeys(SpecialKeys.AltF4);
+                }, o => IsConnected() == true)
+            });
+            MenuItems.Add(new System.Windows.Controls.MenuItem()
+            {
+                Header = SystemConfig.Instance.Language.GetText("button_close"),
+                Command = new RelayCommand((o) =>
+                {
+                    DisConn();
+                })
+            });
         }
 
         #region Base Interface
@@ -60,6 +95,7 @@ namespace PRM.Core.Protocol.VNC.Host
                 if (Vnc.IsConnected)
                     Vnc.Disconnect();
             }
+            base.DisConn();
         }
 
         public override void GoFullScreen()
@@ -96,13 +132,13 @@ namespace PRM.Core.Protocol.VNC.Host
 
         #region connection
 
-        private void RdpOnOnConnected(object sender, EventArgs e)
+        private void OnConnected(object sender, EventArgs e)
         {
             Vnc.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
         }
 
-        private void VncOnConnectionLost(object sender, EventArgs e)
+        private void OnConnectionLost(object sender, EventArgs e)
         {
             _isDisconned = true;
             base.OnClosed?.Invoke(base.ConnectionId);
@@ -110,37 +146,5 @@ namespace PRM.Core.Protocol.VNC.Host
 
         #endregion
         #endregion
-
-
-        /*
-        private double _normalWidth = 800;
-        private double _normalHeight = 600;
-        private double _normalTop = 0;
-        private double _normalLeft = 0;
-        private void MakeNormal2FullScreen(bool saveSize = true)
-        {
-            Debug.Assert(ParentWindow != null);
-            //_rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
-
-            var screenSize = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Screen.Bounds;
-            if (saveSize)
-            {
-                _normalWidth = ParentWindow.Width;
-                _normalHeight = ParentWindow.Height;
-                _normalTop = ParentWindow.Top;
-                _normalLeft = ParentWindow.Left;
-            }
-
-            ParentWindow.WindowState = WindowState.Normal;
-            ParentWindow.WindowStyle = WindowStyle.None;
-            ParentWindow.ResizeMode = ResizeMode.NoResize;
-            //ParentWindow.WindowState = WindowState.Maximized;
-
-            ParentWindow.Width = screenSize.Width / (_primaryScaleFactor / 100.0);
-            ParentWindow.Height = screenSize.Height / (_primaryScaleFactor / 100.0);
-            ParentWindow.Left = screenSize.Left / (_primaryScaleFactor / 100.0);
-            ParentWindow.Top = screenSize.Top / (_primaryScaleFactor / 100.0);
-        }
-        */
     }
 }

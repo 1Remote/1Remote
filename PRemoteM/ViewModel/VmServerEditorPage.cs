@@ -45,7 +45,7 @@ namespace PRM.ViewModel
                 ProtocolList.Clear();
                 ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                     .Where(x => x.FullName != typeof(ProtocolServerNone).FullName)
-                    .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
+                    .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
             }
 
             // set selected protocol
