@@ -32,9 +32,9 @@ namespace Shawn.Ulits.RDP
         public AxMsRdpClient09Host(ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(protocolServer, true)
         {
             InitializeComponent();
-            if (protocolServer.GetType() == typeof(ProtocolServerRDP))
+            if (protocolServer is ProtocolServerRDP rdp)
             {
-                _rdpServer = (ProtocolServerRDP)protocolServer;
+                _rdpServer = rdp;
                 _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
                 ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
                 _rdp.Dock = DockStyle.Fill;
