@@ -38,5 +38,10 @@ namespace PRM.Core.Protocol.VNC
                 return null;
             }
         }
+
+        public override int GetListOrder()
+        {
+            return 2;
+        }
     }
 }

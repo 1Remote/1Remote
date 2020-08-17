@@ -149,6 +149,7 @@ namespace PRM.Core.Protocol.Putty.Host
         public override void DisConn()
         {
             ClosePutty();
+            base.DisConn();
         }
 
         private void PuttyMasterPanelOnSizeChanged(object sender, EventArgs e)

@@ -153,7 +153,6 @@ namespace PRM.Core.Protocol
         }
 
         private DateTime _lastConnTime = DateTime.MinValue;
-        [JsonIgnore]
         public DateTime LastConnTime
         {
             get => _lastConnTime;
@@ -238,15 +237,25 @@ namespace PRM.Core.Protocol
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
-
+        /// <summary>
+        /// json string to instance
+        /// </summary>
+        /// <param name="jsonString"></param>
+        /// <returns></returns>
         public abstract ProtocolServerBase CreateFromJsonString(string jsonString);
 
 
-
-
+        /// <summary>
+        /// subtitle of every server, different form each protocol
+        /// </summary>
+        /// <returns></returns>
         protected abstract string GetSubTitle();
 
-
+        /// <summary>
+        /// determine the display order to show items
+        /// </summary>
+        /// <returns></returns>
+        public abstract int GetListOrder();
 
         /// <summary>
         /// cation: it is a shallow

@@ -42,7 +42,7 @@ namespace PRM.Core.Protocol
                         return host;
                     }
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
         }
 
@@ -61,7 +61,7 @@ namespace PRM.Core.Protocol
                 case ProtocolServerVNC _:
                 case ProtocolServerSSH _:
                 case ProtocolServerTelnet _:
-                        return false;
+                    return false;
                 default:
                     throw new NotImplementedException();
             }

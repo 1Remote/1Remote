@@ -21,6 +21,11 @@ namespace PRM.Core.Protocol
             return "";
         }
 
+        public override int GetListOrder()
+        {
+            throw new NotImplementedException();
+        }
+
         public ProtocolServerNone() : base("", "", "")
         {
         }

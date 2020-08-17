@@ -339,6 +339,11 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
+        public override int GetListOrder()
+        {
+            return 0;
+        }
+
         /// <summary>
         /// To rdp file object
         /// </summary>
