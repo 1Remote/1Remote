@@ -16,6 +16,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.VNC;
 using Shawn.Ulits;
 using SQLite;
 
@@ -381,13 +382,13 @@ namespace PRM.Core.Model
                 }
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
                 {
-                    var s = (ProtocolServerSSH) server;
-                    s.PrivateKey = rsa.Encode(s.PrivateKey);
+                    var s = (ProtocolServerSSH)server;
+                    if (!string.IsNullOrWhiteSpace(s.PrivateKey))
+                        s.PrivateKey = rsa.Encode(s.PrivateKey);
                 }
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerRDP)))
+                if (server is ProtocolServerRDP rdp)
                 {
-                    var s = (ProtocolServerRDP) server;
-                    s.GatewayPassword = rsa.Encode(s.GatewayPassword);
+                    rdp.GatewayPassword = rsa.Encode(rdp.GatewayPassword);
                 }
             }
         }
@@ -409,11 +410,10 @@ namespace PRM.Core.Model
                     Debug.Assert(rsa.DecodeOrNull(s.PrivateKey) != null);
                     s.PrivateKey = rsa.DecodeOrNull(s.PrivateKey);
                 }
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerRDP)))
+                if (server is ProtocolServerRDP rdp)
                 {
-                    var s = (ProtocolServerRDP) server;
-                    Debug.Assert(rsa.DecodeOrNull(s.GatewayPassword) != null);
-                    s.GatewayPassword = rsa.DecodeOrNull(s.GatewayPassword);
+                    Debug.Assert(rsa.DecodeOrNull(rdp.GatewayPassword) != null);
+                    rdp.GatewayPassword = rsa.DecodeOrNull(rdp.GatewayPassword);
                 }
             }
         }
@@ -426,19 +426,16 @@ namespace PRM.Core.Model
                 Debug.Assert(rsa.DecodeOrNull(server.DispName) == null);
                 server.DispName = rsa.Encode(server.DispName);
                 server.GroupName = rsa.Encode(server.GroupName);
-                switch (server)
+
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
                 {
-                    case ProtocolServerRDP _:
-                    case ProtocolServerSSH _:
-                    case ProtocolServerWithAddrPortUserPwdBase _:
-                        var p = (ProtocolServerWithAddrPortUserPwdBase) server;
-                        if (!string.IsNullOrEmpty(p.UserName))
-                            p.UserName = rsa.Encode(p.UserName);
-                        if (!string.IsNullOrEmpty(p.Address))
-                            p.Address = rsa.Encode(p.Address);
-                        break;
-                    default:
-                        break;
+                    var p = (ProtocolServerWithAddrPortUserPwdBase)server;
+                    if (!string.IsNullOrEmpty(p.UserName))
+                        p.UserName = rsa.Encode(p.UserName);
+                    if (!string.IsNullOrEmpty(p.Address))
+                        p.Address = rsa.Encode(p.Address);
+                    if (!string.IsNullOrEmpty(p.Port))
+                        p.Port = rsa.Encode(p.Port);
                 }
             }
         }
@@ -451,28 +448,16 @@ namespace PRM.Core.Model
                 Debug.Assert(rsa.DecodeOrNull(server.DispName) != null);
                 server.DispName = rsa.DecodeOrNull(server.DispName);
                 server.GroupName = rsa.DecodeOrNull(server.GroupName);
-                switch (server)
+
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
                 {
-                    case ProtocolServerRDP _:
-                    case ProtocolServerSSH _:
-                    case ProtocolServerWithAddrPortUserPwdBase _:
-                        {
-                            var p = (ProtocolServerWithAddrPortUserPwdBase) server;
-                            if (!string.IsNullOrEmpty(p.UserName))
-                                p.UserName = rsa.DecodeOrNull(p.UserName);
-                            if (!string.IsNullOrEmpty(p.Address))
-                                p.Address = rsa.DecodeOrNull(p.Address);
-                            break;
-                        }
-                    case ProtocolServerWithAddrPortBase _:
-                        {
-                            var p = (ProtocolServerWithAddrPortBase) server;
-                            if (!string.IsNullOrEmpty(p.Address))
-                                p.Address = rsa.DecodeOrNull(p.Address);
-                            break;
-                        }
-                    default:
-                        break;
+                    var p = (ProtocolServerWithAddrPortUserPwdBase)server;
+                    if (!string.IsNullOrEmpty(p.UserName))
+                        p.UserName = rsa.DecodeOrNull(p.UserName) ?? p.UserName;
+                    if (!string.IsNullOrEmpty(p.Address))
+                        p.Address = rsa.DecodeOrNull(p.Address) ?? p.Address;
+                    if (!string.IsNullOrEmpty(p.Port))
+                        p.Port = rsa.DecodeOrNull(p.Port) ?? p.Port;
                 }
             }
         }
@@ -644,14 +629,17 @@ namespace PRM.Core.Model
                             var list = new List<ProtocolServerBase>();
                             foreach (var protocolServerBase in GlobalData.Instance.ServerList)
                             {
-                                var serverBase = (ProtocolServerBase) protocolServerBase.Clone();
-                                if (serverBase is ProtocolServerRDP
-                                    || serverBase is ProtocolServerSSH)
-                                {
-                                    var obj = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
-                                    if (Rsa != null)
-                                        obj.Password = Rsa.DecodeOrNull(obj.Password) ?? "";
-                                }
+                                var serverBase = (ProtocolServerBase)protocolServerBase.Clone();
+                                if (Rsa != null)
+                                    if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+                                    {
+                                        var obj = (ProtocolServerWithAddrPortUserPwdBase)serverBase;
+                                        obj.Password = Rsa.DecodeOrNull(obj.Password) ?? obj.Password;
+                                        if (serverBase is ProtocolServerRDP rdp)
+                                        {
+                                            rdp.GatewayPassword = Rsa.DecodeOrNull(rdp.GatewayPassword) ?? rdp.GatewayPassword;
+                                        }
+                                    }
                                 list.Add(serverBase);
                             }
                             File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
@@ -702,14 +690,13 @@ namespace PRM.Core.Model
                                 group = serverBase.GroupName;
                                 protocol = serverBase.Protocol;
                                 // todo ADD RD GATEWAY
-                                if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
-                                    || serverBase is ProtocolServerRDP
-                                    || serverBase is ProtocolServerSSH)
+                                if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                                 {
                                     var obj = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
                                     pwd = obj.Password;
                                     if (Rsa != null)
                                         pwd = Rsa.DecodeOrNull(pwd) ?? obj.Password;
+
                                     user = obj.UserName;
                                     address = obj.Address;
                                     port = obj.Port;
@@ -779,9 +766,7 @@ namespace PRM.Core.Model
                                 {
                                     foreach (var serverBase in list)
                                     {
-                                        if (serverBase is ProtocolServerRDP
-                                            || serverBase is ProtocolServerSSH
-                                            || serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                                        if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                                         {
                                             var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
                                             if (Rsa != null)
@@ -919,7 +904,14 @@ namespace PRM.Core.Model
                                                     };
                                                     break;
                                                 case "vnc":
-                                                    // TODO add vnc
+                                                    server = new ProtocolServerVNC()
+                                                    {
+                                                        DispName = name,
+                                                        GroupName = group,
+                                                        Address = address,
+                                                        Password = pwd,
+                                                        Port = port.ToString(),
+                                                    };
                                                     break;
                                                 case "telnet":
                                                     server = new ProtocolServerTelnet()
@@ -943,25 +935,20 @@ namespace PRM.Core.Model
                                 }
                                 if (list?.Count > 0)
                                 {
-                                    foreach (var serverBase in list)
-                                    {
-                                        if (
-                                            serverBase is ProtocolServerWithAddrPortUserPwdBase
-                                            || serverBase is ProtocolServerRDP
-                                            || serverBase is ProtocolServerSSH)
+                                    if (Rsa != null)
+                                        foreach (var serverBase in list)
                                         {
-                                            var pwd = (ProtocolServerWithAddrPortUserPwdBase) serverBase;
-                                            if (Rsa != null)
+                                            if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                                             {
+                                                var pwd = (ProtocolServerWithAddrPortUserPwdBase)serverBase;
                                                 pwd.Password = Rsa.Encode(pwd.Password);
                                                 if (serverBase is ProtocolServerRDP rdp)
                                                 {
                                                     rdp.GatewayPassword = Rsa.Encode(rdp.GatewayPassword);
                                                 }
                                             }
+                                            Server.AddOrUpdate(serverBase, true);
                                         }
-                                        Server.AddOrUpdate(serverBase, true);
-                                    }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));

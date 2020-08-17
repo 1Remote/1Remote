@@ -15,6 +15,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.VNC;
 using PRM.View;
 using Shawn.Ulits;
 
@@ -211,56 +212,70 @@ namespace PRM.ViewModel
         {
             Debug.Assert(ProtocolSelected != null);
             Debug.Assert(ProtocolSelected.GetType().FullName != null);
-            var assembly = typeof(ProtocolServerBase).Assembly;
-            var server = Server;
-            if (IsAddMode && !_isDuplicate)
+            try
             {
-                server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
-                // switch protocol and hold uname pwd.
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
-                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-                    server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
-                else if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
-                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
-                    server.Update(Server, typeof(ProtocolServerWithAddrPortBase));
-                // switch just hold base info
+                var assembly = typeof(ProtocolServerBase).Assembly;
+                var server = Server;
+                if (IsAddMode && !_isDuplicate)
+                {
+                    server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
+                    // switch protocol and hold uname pwd.
+                    if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
+                        && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+                        server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
+                    else if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
+                        && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                        server.Update(Server, typeof(ProtocolServerWithAddrPortBase));
+                    // switch just hold base info
+                    else
+                        server.Update(Server, typeof(ProtocolServerBase));
+                }
+
+
+                //switch (server)
+                //{
+                //    case ProtocolServerRDP _:
+                //        ProtocolEditControl = new ProtocolServerRDPForm(server);
+                //        break;
+                //    case ProtocolServerSSH _:
+                //        ProtocolEditControl = new ProtocolServerSSHForm(server);
+                //        break;
+                //    case ProtocolServerTelnet _:
+                //        ProtocolEditControl = new ProtocolServerTelnetForm(server);
+                //        break;
+                //    case ProtocolServerVNC _:
+                //        ProtocolEditControl = new ProtocolServerVNCForm(server);
+                //        break;
+                //    default:
+                //        throw new NotImplementedException();
+                //}
+                //Server = server;
+
+
+                var types = assembly.GetTypes();
+                var formName = ProtocolSelected.GetType().Name + "Form";
+                var forms = types.Where(x => x.Name == formName).ToList();
+                if (forms.Count == 1)
+                {
+                    var t = forms[0];
+                    var parameters = new object[1];
+                    parameters[0] = server;
+                    ProtocolEditControl = (ProtocolServerFormBase)assembly.CreateInstance(t.FullName, true, System.Reflection.BindingFlags.Default, null, parameters, null, null);
+                    Server = server;
+                }
                 else
-                    server.Update(Server, typeof(ProtocolServerBase));
+                {
+                    if (forms.Count == 0)
+                        throw new NotImplementedException($"can not find class '{formName}' in {nameof(VmServerEditorPage)}");
+                    else
+                        throw new Exception($"error on reflecting class '{formName}' in {nameof(VmServerEditorPage)}");
+                }
             }
-
-
-            switch (server)
+            catch (Exception e)
             {
-                case ProtocolServerRDP _:
-                    ProtocolEditControl = new ProtocolServerRDPForm(server);
-                    break;
-                case ProtocolServerSSH _:
-                    ProtocolEditControl = new ProtocolServerSSHForm(server);
-                    break;
-                case ProtocolServerTelnet _:
-                    ProtocolEditControl = new ProtocolServerTelnetForm(server);
-                    break;
-                default:
-                    throw new NotImplementedException();
+                SimpleLogHelper.Fatal(e);
+                throw;
             }
-            Server = server;
-
-
-            //var types = assembly.GetTypes();
-            //var formName = ProtocolSelected.GetType().Name + "Form";
-            //var forms = types.Where(x => x.Name == formName).ToList();
-            //if (forms.Count == 1)
-            //{
-            //    var t = forms[0];
-            //    object[] parameters = new object[1];
-            //    parameters[0] = server;
-            //    ProtocolEditControl = (ProtocolServerFormBase)assembly.CreateInstance(t.FullName, true, System.Reflection.BindingFlags.Default, null, parameters, null, null);
-            //    Server = server;
-            //}
-            //else
-            //{
-            //    throw new ArgumentException("反射服务器编辑表单时，表单类不存在或存在重复项目！");
-            //}
         }
     }
 }
