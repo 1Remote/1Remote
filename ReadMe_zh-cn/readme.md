@@ -22,7 +22,7 @@ PRemoteM 是一款帮助你管理远程会话的小工具，它允许你进行�
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="300"/>
 </p>
 
 <p align="center">
