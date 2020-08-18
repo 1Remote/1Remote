@@ -380,11 +380,11 @@ namespace PRM.Core.Model
                     Debug.Assert(rsa.DecodeOrNull(s.Password) == null);
                     s.Password = rsa.Encode(s.Password);
                 }
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
+                if (server is ProtocolServerSSH ssh
+                    && !string.IsNullOrWhiteSpace(ssh.PrivateKey))
                 {
-                    var s = (ProtocolServerSSH)server;
-                    if (!string.IsNullOrWhiteSpace(s.PrivateKey))
-                        s.PrivateKey = rsa.Encode(s.PrivateKey);
+                    if (!string.IsNullOrWhiteSpace(ssh.PrivateKey))
+                        ssh.PrivateKey = rsa.Encode(ssh.PrivateKey);
                 }
                 if (server is ProtocolServerRDP rdp)
                 {
@@ -400,15 +400,15 @@ namespace PRM.Core.Model
             {
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
-                    var s = (ProtocolServerWithAddrPortUserPwdBase) server;
+                    var s = (ProtocolServerWithAddrPortUserPwdBase)server;
                     Debug.Assert(rsa.DecodeOrNull(s.Password) != null);
                     s.Password = rsa.DecodeOrNull(s.Password);
                 }
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerSSH)))
+                if (server is ProtocolServerSSH ssh
+                && !string.IsNullOrWhiteSpace(ssh.PrivateKey))
                 {
-                    var s = (ProtocolServerSSH) server;
-                    Debug.Assert(rsa.DecodeOrNull(s.PrivateKey) != null);
-                    s.PrivateKey = rsa.DecodeOrNull(s.PrivateKey);
+                    Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) != null);
+                    ssh.PrivateKey = rsa.DecodeOrNull(ssh.PrivateKey);
                 }
                 if (server is ProtocolServerRDP rdp)
                 {
@@ -434,8 +434,6 @@ namespace PRM.Core.Model
                         p.UserName = rsa.Encode(p.UserName);
                     if (!string.IsNullOrEmpty(p.Address))
                         p.Address = rsa.Encode(p.Address);
-                    if (!string.IsNullOrEmpty(p.Port))
-                        p.Port = rsa.Encode(p.Port);
                 }
             }
         }
@@ -456,8 +454,6 @@ namespace PRM.Core.Model
                         p.UserName = rsa.DecodeOrNull(p.UserName) ?? p.UserName;
                     if (!string.IsNullOrEmpty(p.Address))
                         p.Address = rsa.DecodeOrNull(p.Address) ?? p.Address;
-                    if (!string.IsNullOrEmpty(p.Port))
-                        p.Port = rsa.DecodeOrNull(p.Port) ?? p.Port;
                 }
             }
         }
