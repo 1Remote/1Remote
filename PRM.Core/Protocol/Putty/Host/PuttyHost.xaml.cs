@@ -269,7 +269,7 @@ namespace PRM.Core.Protocol.Putty.Host
             {
                 var ppk = server.PrivateKey;
                 if (SystemConfig.Instance.DataSecurity.Rsa != null)
-                    ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk);
+                    ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk) ?? ppk;
                 Debug.Assert(ppk != null);
                 _puttyOption.Set(PuttyRegOptionKey.PublicKeyFile, ppk);
             }
