@@ -52,7 +52,7 @@ namespace PRM.Core.Protocol.RDP
         SmartCard = 1,
     }
 
-    public class ProtocolServerRDP : ProtocolServerWithAddrPortUserPwdBase
+    public sealed class ProtocolServerRDP : ProtocolServerWithAddrPortUserPwdBase
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
@@ -337,6 +337,11 @@ namespace PRM.Core.Protocol.RDP
             {
                 return null;
             }
+        }
+
+        public override int GetListOrder()
+        {
+            return 0;
         }
 
         /// <summary>

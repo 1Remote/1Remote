@@ -32,9 +32,9 @@ namespace Shawn.Ulits.RDP
         public AxMsRdpClient09Host(ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(protocolServer, true)
         {
             InitializeComponent();
-            if (protocolServer.GetType() == typeof(ProtocolServerRDP))
+            if (protocolServer is ProtocolServerRDP rdp)
             {
-                _rdpServer = (ProtocolServerRDP)protocolServer;
+                _rdpServer = rdp;
                 _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
                 ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
                 _rdp.Dock = DockStyle.Fill;
@@ -51,7 +51,7 @@ namespace Shawn.Ulits.RDP
                 };
                 _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
                 _rdp.OnDisconnected += RdpcOnDisconnected;
-                _rdp.OnConfirmClose += RdpOnOnConfirmClose;
+                _rdp.OnConfirmClose += RdpOnConfirmClose;
                 _rdp.OnConnected += RdpOnOnConnected;
                 _rdp.OnLoginComplete += RdpOnOnLoginComplete;
                 ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
@@ -374,6 +374,7 @@ namespace Shawn.Ulits.RDP
                     && _rdp.Connected > 0)
                     _rdp.Disconnect();
             }
+            base.DisConn();
         }
 
         public override void GoFullScreen()
@@ -492,9 +493,9 @@ namespace Shawn.Ulits.RDP
             base.OnCanResizeNowChanged?.Invoke();
         }
 
-        private void RdpOnOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
+        private void RdpOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
         {
-            DisConn();
+            base.OnClosed?.Invoke(base.ConnectionId);
         }
 
         #endregion

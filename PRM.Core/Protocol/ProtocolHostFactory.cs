@@ -9,6 +9,8 @@ using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.VNC;
+using PRM.Core.Protocol.VNC.Host;
 using Shawn.Ulits.RDP;
 
 namespace PRM.Core.Protocol
@@ -21,7 +23,7 @@ namespace PRM.Core.Protocol
             {
                 case ProtocolServerRDP _:
                     {
-                        var host = new AxMsRdpClient09Host(server,width,height);
+                        var host = new AxMsRdpClient09Host(server, width, height);
                         return host;
                     }
                 case ProtocolServerSSH ssh:
@@ -34,8 +36,13 @@ namespace PRM.Core.Protocol
                         var host = new PuttyHost(telnet);
                         return host;
                     }
+                case ProtocolServerVNC vnc:
+                    {
+                        var host = new VncHost(vnc);
+                        return host;
+                    }
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
         }
 
@@ -51,9 +58,10 @@ namespace PRM.Core.Protocol
                             return true;
                         return rdp.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false;
                     }
+                case ProtocolServerVNC _:
                 case ProtocolServerSSH _:
                 case ProtocolServerTelnet _:
-                        return false;
+                    return false;
                 default:
                     throw new NotImplementedException();
             }

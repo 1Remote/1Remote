@@ -417,7 +417,8 @@ namespace PRM.Model
                 var host = _protocolHosts[connectionId];
                 SimpleLogHelper.Debug($@"Del host({host.GetHashCode()})");
                 _protocolHosts.Remove(connectionId);
-                host.DisConn();
+                if (host.IsConnected())
+                    host.DisConn();
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
 
                 // close full

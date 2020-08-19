@@ -583,7 +583,8 @@ namespace PRM.Core.Protocol.Putty
                 {
                     foreach (var item in Options)
                     {
-                        regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                        if (item.Value != null)
+                            regKey.SetValue(item.Key, item.Value, item.ValueKind);
                     }
                 }
             }
