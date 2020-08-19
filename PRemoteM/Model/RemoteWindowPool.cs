@@ -97,7 +97,7 @@ namespace PRM.Model
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                         // check if screens are in different scale factors
                         bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
-                        if (differentScaleFactorFlag || true)
+                        if (differentScaleFactorFlag)
                         {
                             var tmp = Path.GetTempPath();
                             var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{rdp.UserName}";
