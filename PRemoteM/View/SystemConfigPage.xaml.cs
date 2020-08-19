@@ -14,7 +14,7 @@ using System.Windows.Input;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.ViewModel;
-using Shawn.Ulits;
+using Shawn.Utils;
 using SQLite;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;

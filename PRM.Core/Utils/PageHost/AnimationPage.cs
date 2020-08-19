@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-namespace Shawn.Ulits.PageHost
+namespace Shawn.Utils.PageHost
 {
     public class AnimationPage
     {

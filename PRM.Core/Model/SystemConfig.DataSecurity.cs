@@ -17,7 +17,7 @@ using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
-using Shawn.Ulits;
+using Shawn.Utils;
 using SQLite;
 
 namespace PRM.Core.Model

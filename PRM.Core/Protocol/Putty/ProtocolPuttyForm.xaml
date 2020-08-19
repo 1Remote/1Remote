@@ -5,7 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                         xmlns:putty="clr-namespace:PRM.Core.Protocol.Putty"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
-                        xmlns:ulits="clr-namespace:Shawn.Ulits"
+                        xmlns:utils="clr-namespace:Shawn.Utils"
                         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
                         mc:Ignorable="d" 
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -13,7 +13,7 @@
         <StackPanel.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Ulits/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
+                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Utils/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </StackPanel.Resources>
@@ -62,7 +62,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                        <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                      Style="{StaticResource PasswordBoxEx}"/>
                     </Grid>
                 </StackPanel>

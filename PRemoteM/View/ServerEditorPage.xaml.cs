@@ -21,9 +21,8 @@ using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Ulits;
 using PRM.ViewModel;
-using Shawn.Ulits;
+using Shawn.Utils;
 
 namespace PRM.View
 {

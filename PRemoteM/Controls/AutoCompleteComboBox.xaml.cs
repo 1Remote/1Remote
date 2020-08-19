@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     /// <summary>
     /// AutoCompleteComboBox.xaml 的交互逻辑

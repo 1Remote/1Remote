@@ -11,11 +11,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Core.Model;
-using PRM.Core.Ulits;
-using PRM.Core.Ulits.DragablzTab;
+using Shawn.Utils.DragablzTab;
 using PRM.Model;
 using PRM.ViewModel;
-using Shawn.Ulits;
+using Shawn.Utils;
 using Size = System.Windows.Size;
 
 namespace PRM.View

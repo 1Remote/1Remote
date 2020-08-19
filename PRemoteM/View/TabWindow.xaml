@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-        xmlns:dragablzTab="clr-namespace:PRM.Core.Ulits.DragablzTab" 
+        xmlns:dragablzTab="clr-namespace:Shawn.Utils.DragablzTab" 
         xmlns:view="clr-namespace:PRM.View"
         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
         xmlns:system="clr-namespace:System;assembly=mscorlib"

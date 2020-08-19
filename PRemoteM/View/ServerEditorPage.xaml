@@ -8,7 +8,7 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-             xmlns:ulits="clr-namespace:Shawn.Ulits"
+             xmlns:utils="clr-namespace:Shawn.Utils"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -47,10 +47,10 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <ulits:AutoCompleteComboBox x:Name="DispName" 
+                                        <utils:AutoCompleteComboBox x:Name="DispName" 
                                                                     Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
-                                        ></ulits:AutoCompleteComboBox>
+                                        ></utils:AutoCompleteComboBox>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -58,10 +58,10 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource ServerEditorRowInput}">
-                                        <ulits:AutoCompleteComboBox x:Name="TbGroup" 
+                                        <utils:AutoCompleteComboBox x:Name="TbGroup" 
                                                                     Text="{Binding Server.GroupName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding GroupSelections}"
-                                                                    ></ulits:AutoCompleteComboBox>
+                                                                    ></utils:AutoCompleteComboBox>
                                         <Popup 
                                                Name="PopupGroup"
                                                PlacementTarget="{Binding ElementName=TbGroup}" 

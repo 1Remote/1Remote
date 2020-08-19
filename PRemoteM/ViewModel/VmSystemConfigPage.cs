@@ -16,7 +16,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
-using Shawn.Ulits;
+using Shawn.Utils;
 using SQLite;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 

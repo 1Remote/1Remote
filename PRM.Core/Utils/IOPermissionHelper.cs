@@ -7,7 +7,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     public static class IOPermissionHelper
     {

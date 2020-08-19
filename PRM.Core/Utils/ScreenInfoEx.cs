@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Interop;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     /*How to use:
 

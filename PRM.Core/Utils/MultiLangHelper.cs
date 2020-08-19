@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Markup;
 using Newtonsoft.Json;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     public static class MultiLangHelper
     {

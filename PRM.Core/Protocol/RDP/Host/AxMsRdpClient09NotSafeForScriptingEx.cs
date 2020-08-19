@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MSTSCLib;
 
-namespace Shawn.Ulits.RDP
+namespace Shawn.Utils.RDP
 {
     public static class AxMsRdpClient9NotSafeForScriptingExAdd
     {

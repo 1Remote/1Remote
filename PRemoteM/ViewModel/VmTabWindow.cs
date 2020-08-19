@@ -6,11 +6,11 @@ using System.Windows.Controls;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Ulits.DragablzTab;
+using Shawn.Utils.DragablzTab;
 using PRM.Model;
 using PRM.View;
-using Shawn.Ulits;
-using Shawn.Ulits.RDP;
+using Shawn.Utils;
+using Shawn.Utils.RDP;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
