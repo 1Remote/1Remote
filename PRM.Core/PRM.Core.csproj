@@ -125,7 +125,6 @@
     </Compile>
     <Compile Include="Resources\Controls\ButtonEx.cs" />
     <Compile Include="Resources\Theme\PrmColorThemes.cs" />
-    <Compile Include="Utils\AES256.cs" />
     <Compile Include="Utils\ColorAndBrushHelper.cs" />
     <Compile Include="Utils\ColorPickerWPF\Code\ColorPalette.cs" />
     <Compile Include="Utils\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
@@ -157,7 +156,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
-    <Compile Include="Utils\AutoCompleteBehavior.cs" />
     <Compile Include="Utils\NetImageProcessHelper.cs" />
     <Compile Include="Utils\PageHost\AnimationPage.cs" />
     <Compile Include="Utils\PageHost\PageHost.xaml.cs">
