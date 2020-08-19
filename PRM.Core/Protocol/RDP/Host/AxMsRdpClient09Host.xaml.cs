@@ -36,7 +36,7 @@ namespace Shawn.Ulits.RDP
             {
                 _rdpServer = rdp;
                 _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
-                ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
+                ((System.ComponentModel.ISupportInitialize) (_rdp)).BeginInit();
                 _rdp.Dock = DockStyle.Fill;
                 _rdp.Enabled = true;
                 _rdp.BackColor = Color.Black;
@@ -54,12 +54,22 @@ namespace Shawn.Ulits.RDP
                 _rdp.OnConfirmClose += RdpOnConfirmClose;
                 _rdp.OnConnected += RdpOnOnConnected;
                 _rdp.OnLoginComplete += RdpOnOnLoginComplete;
-                ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
+                ((System.ComponentModel.ISupportInitialize) (_rdp)).EndInit();
                 RdpHost.Child = _rdp;
                 InitRdp(width, height);
+
+                GlobalEventHelper.OnResolutionChanged += OnResolutionChanged;
             }
             else
-                _rdp = null;
+                throw new ArgumentException($"Send {protocolServer.GetType()} to RdpHost!");
+        }
+
+        private void OnResolutionChanged()
+        {
+            if (_rdp.FullScreen == true)
+            {
+                MakeFullScreen2Normal();
+            }
         }
 
         private void InitRdp(double width = 0, double height = 0)
@@ -500,6 +510,9 @@ namespace Shawn.Ulits.RDP
 
         #endregion
 
+        /// <summary>
+        /// set remote resolution to _rdp size if is AutoResize
+        /// </summary>
         private void ReSizeRdp()
         {
             if (_rdp.FullScreen == false
@@ -674,8 +687,6 @@ namespace Shawn.Ulits.RDP
                     }
                 }
         }
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
             _resizeEndTimer.Stop();

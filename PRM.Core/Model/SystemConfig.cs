@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Shawn.Ulits;
+using Microsoft.Win32;
 
 namespace PRM.Core.Model
 {
@@ -65,9 +66,42 @@ namespace PRM.Core.Model
             };
             var uc = new UpdateChecker();
             uc.CheckUpdateAsync();
+            _lastScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
+            _lastScreenRectangle = GetScreenSize();
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
         }
 
-#region Update
+        ~SystemConfig()
+        {
+            SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
+        }
+
+        #region Resolution Watcher
+        private static int _lastScreenCount = 0;
+        private static System.Drawing.Rectangle _lastScreenRectangle = System.Drawing.Rectangle.Empty;
+        private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        {
+            SimpleLogHelper.Debug("Resolution Change: " + e);
+            var newScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
+            var newScreenRectangle = GetScreenSize();
+            if (newScreenCount != _lastScreenCount
+               || newScreenRectangle.Width != _lastScreenRectangle.Width
+               || newScreenRectangle.Height != _lastScreenRectangle.Height)
+                GlobalEventHelper.OnResolutionChanged?.Invoke();
+            _lastScreenCount = newScreenCount;
+            _lastScreenRectangle = newScreenRectangle;
+        }
+        private static System.Drawing.Rectangle GetScreenSize()
+        {
+            var entireSize = System.Drawing.Rectangle.Empty;
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+                entireSize = System.Drawing.Rectangle.Union(entireSize, screen.Bounds);
+            return entireSize;
+        }
+        #endregion
+
+
+        #region Update
         private string _newVersion = "";
         public string NewVersion
         {
@@ -81,7 +115,7 @@ namespace PRM.Core.Model
             get => _newVersionUrl;
             set => SetAndNotifyIfChanged(nameof(NewVersionUrl), ref _newVersionUrl, value);
         }
-#endregion
+        #endregion
 
 
         public SystemConfigLocality Locality = new SystemConfigLocality();
@@ -136,12 +170,7 @@ namespace PRM.Core.Model
 
     public abstract class SystemConfigBase : NotifyPropertyChangedBase
     {
-        private object locker = new object();
-        protected bool StopAutoSave
-        {
-            get => _stopAutoSave;
-            set => _stopAutoSave = value;
-        }
+        protected bool StopAutoSave { get; set; } = false;
 
         protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
         {
@@ -155,18 +184,15 @@ namespace PRM.Core.Model
         }
 
         protected Ini _ini = null;
-        private bool _stopAutoSave = false;
 
         protected SystemConfigBase(Ini ini)
         {
             _ini = ini;
         }
 
-
         public abstract void Save();
         public abstract void Load();
         public abstract void Update(SystemConfigBase newConfig);
-
         protected static void UpdateBase(SystemConfigBase old, SystemConfigBase newConfig, Type configType)
         {
             var t = configType;
