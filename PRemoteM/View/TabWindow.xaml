@@ -87,7 +87,7 @@
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
-                                    <ContextMenu>
+                                    <ContextMenu ItemsSource="{Binding Content.MenuItems}">
                                         <ContextMenu.Style>
                                             <Style TargetType="{x:Type ContextMenu}">
                                                 <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -103,7 +103,6 @@
                                                 </Setter>
                                             </Style>
                                         </ContextMenu.Style>
-                                        <MenuItem Command="{x:Static dragablz:TabablzControl.CloseItemCommand}" Header="{DynamicResource button_close}"/>
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <Grid.Background>

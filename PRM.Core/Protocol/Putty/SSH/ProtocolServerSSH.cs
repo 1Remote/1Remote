@@ -49,6 +49,11 @@ namespace PRM.Core.Protocol.Putty.SSH
             }
         }
 
+        public override int GetListOrder()
+        {
+            return 1;
+        }
+
 
         public string GetPuttyConnString()
         {

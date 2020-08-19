@@ -21,7 +21,7 @@ namespace PRM.Core.Protocol.Putty
     public partial class ProtocolPuttyForm : ProtocolServerFormBase
     {
         public readonly ProtocolServerBase Vm;
-        public ProtocolPuttyForm(ProtocolServerBase vm) : base()
+        public ProtocolPuttyForm(ProtocolServerBase vm) : base(vm)
         {
             InitializeComponent();
             Vm = vm;

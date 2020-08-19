@@ -28,6 +28,11 @@ namespace PRM.Core.Protocol.Putty.Telnet
             }
         }
 
+        public override int GetListOrder()
+        {
+            return 3;
+        }
+
 
         public string GetPuttyConnString()
         {
