@@ -21,7 +21,7 @@ using System.Windows.Shapes;
 using Microsoft.Win32;
 using PRM.Core.Model;
 using PRM.Core.Protocol.Putty.SSH;
-using Shawn.Ulits;
+using Shawn.Utils;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 

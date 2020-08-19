@@ -10,10 +10,9 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
-using PRM.Core.Ulits;
 using PRM.Model;
 using PRM.View;
-using Shawn.Ulits;
+using Shawn.Utils;
 
 namespace PRM
 {
@@ -42,17 +41,17 @@ namespace PRM
                 }
 
                 #region single-instance app
-                var startupMode = PRM.Core.Ulits.StartupMode.Normal;
+                var startupMode = Shawn.Utils.StartupMode.Normal;
                 if (startupEvent.Args.Length > 0)
                 {
                     System.Enum.TryParse(startupEvent.Args[0], out startupMode);
                 }
-                if (startupMode == PRM.Core.Ulits.StartupMode.SetSelfStart)
+                if (startupMode == Shawn.Utils.StartupMode.SetSelfStart)
                 {
                     SetSelfStartingHelper.SetSelfStart();
                     Environment.Exit(0);
                 }
-                if (startupMode == PRM.Core.Ulits.StartupMode.UnsetSelfStart)
+                if (startupMode == Shawn.Utils.StartupMode.UnsetSelfStart)
                 {
                     SetSelfStartingHelper.UnsetSelfStart();
                     Environment.Exit(0);
@@ -121,7 +120,7 @@ namespace PRM
 
 
 #if DEBUG
-                Shawn.Ulits.ConsoleManager.Show();
+                Shawn.Utils.ConsoleManager.Show();
 #endif
 
                 #region system check & init

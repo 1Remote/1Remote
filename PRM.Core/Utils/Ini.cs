@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     public class Ini
     {

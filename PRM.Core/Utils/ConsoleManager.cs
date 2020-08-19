@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     public static class ConsoleManager
     {

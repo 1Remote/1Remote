@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     /*
         HOW TO USE:

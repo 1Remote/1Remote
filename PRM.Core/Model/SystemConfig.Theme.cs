@@ -13,8 +13,7 @@ using System.Windows.Input;
 using Newtonsoft.Json;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Resources.Theme;
-using PRM.Core.Ulits;
-using Shawn.Ulits;
+using Shawn.Utils;
 
 namespace PRM.Core.Model
 {

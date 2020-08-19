@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows;
 using PRM.Core.Model;
 
-namespace PRM.Core.Ulits
+namespace Shawn.Utils
 {
     public enum StartupMode
     {

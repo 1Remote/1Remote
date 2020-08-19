@@ -11,9 +11,9 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Ulits.DragablzTab;
+using Shawn.Utils.DragablzTab;
 using PRM.View;
-using Shawn.Ulits;
+using Shawn.Utils;
 using MessageBox = System.Windows.MessageBox;
 
 namespace PRM.Model

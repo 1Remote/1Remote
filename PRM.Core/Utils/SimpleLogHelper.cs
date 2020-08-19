@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     public static class SimpleLogHelper
     {

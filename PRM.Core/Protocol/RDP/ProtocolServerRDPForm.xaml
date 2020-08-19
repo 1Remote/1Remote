@@ -5,14 +5,14 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                         xmlns:local="clr-namespace:PRM.Core.Protocol.RDP"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
-                        xmlns:ulits="clr-namespace:Shawn.Ulits"
+                        xmlns:utils="clr-namespace:Shawn.Utils"
                         mc:Ignorable="d" 
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Ulits/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
+                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Utils/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </StackPanel.Resources>
@@ -51,7 +51,7 @@
                     <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource ServerEditorRowInput}">
                         <!--<TextBox Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}"></TextBox>-->
-                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                        <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                      Style="{StaticResource PasswordBoxEx}"/>
                     </Grid>
                 </StackPanel>
@@ -302,7 +302,7 @@
                                     </Grid.Style>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
-                                        <PasswordBox ulits:PasswordBoxEx.Password="{Binding GatewayPassword,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        <PasswordBox utils:PasswordBoxEx.Password="{Binding GatewayPassword,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                                      Style="{StaticResource PasswordBoxEx}" Width="200"/>
                                     </StackPanel>
                                 </Grid>

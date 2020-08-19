@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Shawn.Ulits
+namespace Shawn.Utils
 {
     public static class PasswordBoxEx
     {

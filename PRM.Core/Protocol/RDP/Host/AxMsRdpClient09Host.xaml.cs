@@ -15,7 +15,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Color = System.Drawing.Color;
 
-namespace Shawn.Ulits.RDP
+namespace Shawn.Utils.RDP
 {
     /// <summary>
     /// AxMsRdpClient09Host.xaml 的交互逻辑
@@ -36,7 +36,7 @@ namespace Shawn.Ulits.RDP
             {
                 _rdpServer = rdp;
                 _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
-                ((System.ComponentModel.ISupportInitialize) (_rdp)).BeginInit();
+                ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
                 _rdp.Dock = DockStyle.Fill;
                 _rdp.Enabled = true;
                 _rdp.BackColor = Color.Black;
@@ -54,7 +54,7 @@ namespace Shawn.Ulits.RDP
                 _rdp.OnConfirmClose += RdpOnConfirmClose;
                 _rdp.OnConnected += RdpOnOnConnected;
                 _rdp.OnLoginComplete += RdpOnOnLoginComplete;
-                ((System.ComponentModel.ISupportInitialize) (_rdp)).EndInit();
+                ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
                 RdpHost.Child = _rdp;
                 InitRdp(width, height);
 
@@ -68,7 +68,7 @@ namespace Shawn.Ulits.RDP
         {
             if (_rdp.FullScreen == true)
             {
-                MakeFullScreen2Normal();
+                _rdp.FullScreen = false;
             }
         }
 
