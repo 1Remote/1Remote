@@ -38,5 +38,12 @@ namespace PRM.Core.Model
         /// Invoke to notify language was changed.
         /// </summary>
         public static Action OnLanguageChanged { get; set; } = null;
+
+
+
+        /// <summary>
+        /// OnResolutionChanged
+        /// </summary>
+        public static Action OnResolutionChanged { get; set; } = null;
     }
 }
