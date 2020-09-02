@@ -53,14 +53,18 @@ namespace PRM.View
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
             BtnClose.Click += (sender, args) =>
             {
-                if (Vm.SelectedItem != null)
+                if (Vm?.SelectedItem != null)
                 {
                     RemoteWindowPool.Instance.DelProtocolHost(Vm?.SelectedItem?.Content?.ConnectionId);
                 }
                 else
                 {
-                    Vm.CmdClose.Execute();
+                    Vm?.CmdClose.Execute();
                 }
+            };
+            this.Closed += (sender, args) =>
+            {
+                Vm?.CmdClose.Execute();
             };
             TabablzControl.ClosingItemCallback += args =>
             {

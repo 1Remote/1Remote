@@ -81,6 +81,9 @@ namespace PRM
 #if DEBUG
                 CloseMe();
                 return;
+#else
+                if (Shawn.Utils.ConsoleManager.HasConsole)
+                    Shawn.Utils.ConsoleManager.Hide();
 #endif
                 HideMe();
             };

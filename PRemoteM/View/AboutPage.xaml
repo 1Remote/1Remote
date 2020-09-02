@@ -147,7 +147,7 @@
                     <Grid Grid.Column="1">
                         <StackPanel Orientation="Vertical" Margin="20 0 0 0">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Support"></TextBlock>
+                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Support" MouseRightButtonDown="SupportText_OnMouseRightButtonDown"></TextBlock>
                                 <StackPanel>
                                     <Grid Style="{StaticResource ServerEditorRow}">
                                         <StackPanel Orientation="Horizontal">

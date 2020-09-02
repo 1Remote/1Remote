@@ -416,10 +416,10 @@ namespace PRM.Model
             {
                 var host = _protocolHosts[connectionId];
                 SimpleLogHelper.Debug($@"Del host({host.GetHashCode()})");
-                _protocolHosts.Remove(connectionId);
+                if (host.OnClosed != null) 
+                    host.OnClosed -= OnProtocolClose;
                 if (host.IsConnected())
                     host.DisConn();
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
 
                 // close full
                 if (_host2FullScreenWindows.ContainsKey(connectionId))
@@ -428,7 +428,6 @@ namespace PRM.Model
                     SimpleLogHelper.Debug($@"Close full({full.GetHashCode()})");
                     full.Close();
                     _host2FullScreenWindows.Remove(connectionId);
-                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
 
                 // remove from tab
@@ -437,6 +436,8 @@ namespace PRM.Model
                 {
                     tab.Vm.Items.Remove(tab.Vm.Items.First(x => x.Content.ConnectionId == connectionId));
                 }
+                _protocolHosts.Remove(connectionId);
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
             CloseEmpytTab();
         }
@@ -446,7 +447,6 @@ namespace PRM.Model
         /// </summary>
         public void DelTabWindow(string token)
         {
-            var tag = "";
             // del protocol
             if (_tabWindows.ContainsKey(token))
             {
@@ -456,6 +456,7 @@ namespace PRM.Model
                 {
                     DelProtocolHost(tabItemViewModel.Content.ConnectionId);
                 }
+                tab.Vm = null;
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
             CloseEmpytTab();
@@ -463,6 +464,17 @@ namespace PRM.Model
 
         private void CloseEmpytTab()
         {
+            // close un-handel protocol
+            {
+                var ps = _protocolHosts.Where(p =>
+                    _tabWindows.Values.All(x => x.Vm.Items.Any(y => y.Content.ConnectionId != p.Key))
+                    && !_host2FullScreenWindows.ContainsKey(p.Key));
+                if (ps.Any())
+                {
+                    DelProtocolHost(ps.First().Key);
+                }
+            }
+
             // close tab
             {
                 var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
