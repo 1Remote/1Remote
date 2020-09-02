@@ -37,5 +37,13 @@ namespace PRM.View
             var link = sender as Hyperlink;
             Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
+
+        private void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 3)
+            {
+                Shawn.Utils.ConsoleManager.Toggle();
+            }
+        }
     }
 }

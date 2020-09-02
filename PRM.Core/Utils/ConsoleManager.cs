@@ -22,24 +22,20 @@ namespace Shawn.Utils
         /// Creates a new console instance if the process is not attached to a console already.    
         public static void Show()
         {
-#if DEBUG
             if (!HasConsole)
             {
                 AllocConsole();
                 InvalidateOutAndError();
             }
-#endif
         }
         /// If the process has a console attached to it, it will be detached and no longer visible. Writing to the System.Console is still possible, but no output will be shown.     
         public static void Hide()
         {
-#if DEBUG
             if (HasConsole)
             {
                 SetOutAndErrorNull();
                 FreeConsole();
             }
-#endif
         }
         public static void Toggle()
         {

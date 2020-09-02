@@ -30,6 +30,8 @@ namespace PRM
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
+            SimpleLogHelper.WriteLogLevel = SimpleLogHelper.Level.Warning;
+            SimpleLogHelper.PrintLogLevel = SimpleLogHelper.Level.Debug;
             try
             {
                 {
@@ -120,6 +122,7 @@ namespace PRM
 
 
 #if DEBUG
+                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.Level.Debug;
                 Shawn.Utils.ConsoleManager.Show();
 #endif
 

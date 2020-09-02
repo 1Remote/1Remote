@@ -9,16 +9,6 @@ namespace Shawn.Utils
 {
     public static class SimpleLogHelper
     {
-        public static string LogFileName = "simple.log.md";
-
-        public static Level PrintLogLevel = Level.Debug;
-        public static Level WriteLogLevel = Level.Info;
-        public static bool CanWriteWarningLog = true;
-        public static long LogFileMaxSizeMb = 10;
-
-
-        private static readonly object _obj = new object();
-
         public enum Level
         {
             Debug,
@@ -28,44 +18,119 @@ namespace Shawn.Utils
             Fatal,
         }
 
+        public static string LogFileName
+        {
+            get => _simpleLogHelper.LogFileName;
+            set => _simpleLogHelper.LogFileName = value;
+        }
+
+        public static Level PrintLogLevel
+        {
+            get => _simpleLogHelper.PrintLogLevel;
+            set => _simpleLogHelper.PrintLogLevel = value;
+        }
+
+        public static Level WriteLogLevel
+        {
+            get => _simpleLogHelper.WriteLogLevel;
+            set => _simpleLogHelper.WriteLogLevel = value;
+        }
+        public static long LogFileMaxSizeMb
+        {
+            get => _simpleLogHelper.LogFileMaxSizeMb;
+            set => _simpleLogHelper.LogFileMaxSizeMb = value;
+        }
+
+
+        private static SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
+
+
+
         public static void Debug(params object[] o)
         {
-#if DEBUG
-            var dt = DateTime.Now;
-            Print(Level.Debug, dt, o);
-            WriteLog(Level.Debug, dt, o);
-#endif
+            _simpleLogHelper.Debug(o);
         }
 
         public static void Info(params object[] o)
         {
-            var dt = DateTime.Now;
-            Print(Level.Info, dt, o);
-            WriteLog(Level.Info, dt, o);
+            _simpleLogHelper.Info(o);
         }
 
         public static void Warning(params object[] o)
         {
-            var dt = DateTime.Now;
-            Print(Level.Warning, dt, o);
-            WriteLog(Level.Warning, dt, o);
+            _simpleLogHelper.Warning(o);
         }
 
         public static void Error(params object[] o)
         {
-            var dt = DateTime.Now;
-            Print(Level.Error, dt, o);
-            WriteLog(Level.Error, dt, o);
+            _simpleLogHelper.Error(o);
         }
 
         public static void Fatal(params object[] o)
         {
-            var dt = DateTime.Now;
-            Print(Level.Fatal, dt, o);
-            WriteLog(Level.Fatal, dt, o);
+            _simpleLogHelper.Fatal(o);
+        }
+    }
+
+
+    public class SimpleLogHelperObject
+    {
+        public SimpleLogHelperObject(string logFileName = "")
+        {
+            LogFileName = logFileName;
         }
 
-        public static void Print(Level level, DateTime? dt = null, params object[] o)
+        public string LogFileName = "simple.log.md";
+
+        public SimpleLogHelper.Level PrintLogLevel = SimpleLogHelper.Level.Debug;
+        public SimpleLogHelper.Level WriteLogLevel = SimpleLogHelper.Level.Info;
+        public long LogFileMaxSizeMb = 100;
+
+
+        private readonly object _obj = new object();
+
+        public void Debug(params object[] o)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            var dt = DateTime.Now;
+            Print(SimpleLogHelper.Level.Debug, dt, o);
+            WriteLog(SimpleLogHelper.Level.Debug, dt, o);
+        }
+
+        public void Info(params object[] o)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            var dt = DateTime.Now;
+            Print(SimpleLogHelper.Level.Info, dt, o);
+            WriteLog(SimpleLogHelper.Level.Info, dt, o);
+        }
+
+        public void Warning(params object[] o)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            var dt = DateTime.Now;
+            Print(SimpleLogHelper.Level.Warning, dt, o);
+            WriteLog(SimpleLogHelper.Level.Warning, dt, o);
+        }
+
+        public void Error(params object[] o)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            var dt = DateTime.Now;
+            Print(SimpleLogHelper.Level.Error, dt, o);
+            WriteLog(SimpleLogHelper.Level.Error, dt, o);
+        }
+
+        public void Fatal(params object[] o)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Red;
+            var dt = DateTime.Now;
+            Print(SimpleLogHelper.Level.Fatal, dt, o);
+            WriteLog(SimpleLogHelper.Level.Fatal, dt, o);
+        }
+
+        private void Print(SimpleLogHelper.Level level, DateTime? dt = null, params object[] o)
         {
             if (level >= PrintLogLevel)
             {
@@ -77,9 +142,10 @@ namespace Shawn.Utils
                     Console.WriteLine(obj);
                 }
             }
+            Console.ResetColor();
         }
 
-        private static void WriteLog(Level level, DateTime? dt = null, params object[] o)
+        private void WriteLog(SimpleLogHelper.Level level, DateTime? dt = null, params object[] o)
         {
             try
             {
@@ -92,7 +158,7 @@ namespace Shawn.Utils
                         var fi = new FileInfo(LogFileName);
                         if (fi.Length > 1024 * 1024 * LogFileMaxSizeMb)
                         {
-                            var lines =File.ReadAllLines(LogFileName);
+                            var lines = File.ReadAllLines(LogFileName);
                             File.WriteAllLines(LogFileName, lines.Skip(lines.Length / 3).ToArray());
                         }
                     }
