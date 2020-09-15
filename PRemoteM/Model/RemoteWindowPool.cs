@@ -85,6 +85,7 @@ namespace PRM.Model
 
             // create new remote session
             TabWindow tab = null;
+            ProtocolHostBase host = null;
             try
             {
                 if (server.IsConnWithFullScreen())
@@ -140,7 +141,7 @@ namespace PRM.Model
                     }
 
 
-                    var host = ProtocolHostFactory.Get(server);
+                    host = ProtocolHostFactory.Get(server);
                     host.OnClosed += OnProtocolClose;
                     host.OnFullScreen2Window += OnFullScreen2Window;
                     AddProtocolHost(host);
@@ -184,7 +185,7 @@ namespace PRM.Model
                     }
                     tab.Activate();
                     var size = tab.GetTabContentSize();
-                    var host = ProtocolHostFactory.Get(server, size.Width, size.Height);
+                    host = ProtocolHostFactory.Get(server, size.Width, size.Height);
                     host.OnClosed += OnProtocolClose;
                     host.OnFullScreen2Window += OnFullScreen2Window;
                     host.ParentWindow = tab;
@@ -194,17 +195,19 @@ namespace PRM.Model
                         Header = server.DispName,
                     });
                     tab.Vm.SelectedItem = tab.Vm.Items.Last();
-                    host.Conn();
                     _protocolHosts.Add(host.ConnectionId, host);
+                    host.Conn();
                     SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
                     SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
             }
             catch (Exception e)
             {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (host != null)
+                    DelProtocolHost(host.ConnectionId);
                 CloseEmpytTab();
                 SimpleLogHelper.Error(e);
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

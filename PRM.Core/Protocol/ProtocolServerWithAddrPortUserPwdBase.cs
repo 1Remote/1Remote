@@ -45,10 +45,6 @@ namespace PRM.Core.Protocol
             return _password;
         }
 
-        protected override string GetSubTitle()
-        {
-            return $"@{Address}:{Port} ({UserName})";
-        }
         #endregion
     }
 }
