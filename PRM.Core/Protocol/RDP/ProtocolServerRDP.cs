@@ -461,5 +461,10 @@ namespace PRM.Core.Protocol.RDP
 
             return rdpConfig;
         }
+
+        protected override string GetSubTitle()
+        {
+            return $"@{Address}:{Port} ({UserName})";
+        }
     }
 }

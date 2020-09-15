@@ -39,6 +39,11 @@ namespace PRM.Core.Protocol.Putty.Telnet
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
         }
 
+        protected override string GetSubTitle()
+        {
+            return $"@{Address}:{Port}";
+        }
+
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
     }

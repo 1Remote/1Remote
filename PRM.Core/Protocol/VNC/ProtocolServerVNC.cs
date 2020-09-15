@@ -43,5 +43,10 @@ namespace PRM.Core.Protocol.VNC
         {
             return 2;
         }
+
+        protected override string GetSubTitle()
+        {
+            return $"@{Address}:{Port}";
+        }
     }
 }
