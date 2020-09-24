@@ -470,7 +470,7 @@ namespace PRM.Model
             // close un-handel protocol
             {
                 var ps = _protocolHosts.Where(p =>
-                    _tabWindows.Values.All(x => x.Vm.Items.Any(y => y.Content.ConnectionId != p.Key))
+                    _tabWindows.Values.All(x => x.Vm.Items.All(y => y.Content.ConnectionId != p.Key))
                     && !_host2FullScreenWindows.ContainsKey(p.Key));
                 if (ps.Any())
                 {
