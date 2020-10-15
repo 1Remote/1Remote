@@ -24,7 +24,7 @@ namespace PRM.ViewModel
             }
 
             RebuildVmServerCardList();
-            GlobalData.Instance.ServerList.CollectionChanged += (sender, args) =>
+            GlobalData.Instance.VmItemList.CollectionChanged += (sender, args) =>
             {
                 RebuildVmServerCardList();
             };
@@ -97,9 +97,9 @@ namespace PRM.ViewModel
         private void RebuildVmServerCardList()
         {
             _serverCards.Clear();
-            foreach (var serverAbstract in GlobalData.Instance.ServerList)
+            foreach (var vs in GlobalData.Instance.VmItemList)
             {
-                serverAbstract.PropertyChanged += (sender, args) =>
+                vs.Server.PropertyChanged += (sender, args) =>
                 {
                     switch (args.PropertyName)
                     {
@@ -108,7 +108,7 @@ namespace PRM.ViewModel
                             break;
                     }
                 };
-                ServerCards.Add(new VmServerCard(serverAbstract, this));
+                ServerCards.Add(new VmServerCard(vs.Server, this));
             }
             OrderServerList();
             RebuildGroupList();

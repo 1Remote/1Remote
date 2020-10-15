@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+        xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
@@ -161,8 +163,8 @@
 
 
 
-        <DataTemplate x:Key="SearchBoxSelectionItemNormal">
-            <Grid>
+        <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
+            <Grid Visibility="{Binding ObjectVisibility}">
                 <Grid Height="30" Margin="0 5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
@@ -250,7 +252,6 @@
                     </Style>
                 </Setter.Value>
             </Setter>
-            <Setter Property="ItemTemplate" Value="{StaticResource SearchBoxSelectionItemNormal}"></Setter>
         </Style>
 
 
@@ -336,8 +337,8 @@
                 <Grid>
                     <ListBox x:Name="ListBoxSelections" MaxHeight="402"
                                  BorderThickness="0"
-                                 SelectedIndex="{Binding SelectedServerIndex}" 
-                                 ItemsSource="{Binding Servers}"
+                                 SelectedIndex="{Binding SelectedIndex}" 
+                                 ItemsSource="{Binding Source={x:Static model:GlobalData.Instance}, Path=VmItemList}"
                                  Background="{DynamicResource MainColor1Brush}"
                                  Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                  Style="{StaticResource SearchBoxSelectionList}">
@@ -368,11 +369,11 @@
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-                                    <Image Source="{Binding SelectedServer.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                                    <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                                 </Grid>
 
                                 <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
-                                   Text="{Binding SelectedServer.Server.ProtocolDisplayName}" 
+                                   Text="{Binding SelectedItem.Server.ProtocolDisplayName}" 
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                    Opacity="0.1"
@@ -383,12 +384,12 @@
                                 <TextBlock Grid.Row="0" Grid.Column="3" 
                                            FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            VerticalAlignment="Center"
-                                           Text="{Binding SelectedServer.Server.DispName}"></TextBlock>
+                                           Text="{Binding SelectedItem.Server.DispName}"></TextBlock>
 
                                 <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
                                            FontSize="10" Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            VerticalAlignment="Center"
-                                           Text="{Binding SelectedServer.Server.SubTitle}"></TextBlock>
+                                           Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
                             </Grid>
                         </Grid>
                         <ListBox x:Name="ListBoxActions" MaxHeight="402"

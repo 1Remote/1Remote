@@ -13,46 +13,6 @@ using Shawn.Utils;
 
 namespace PRM.ViewModel
 {
-    public class ProtocolServerBaseInSearchBox : NotifyPropertyChangedBase
-    {
-        private ProtocolServerBase _server = null;
-        public ProtocolServerBase Server
-        {
-            get => _server;
-            set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
-        }
-
-        public ProtocolServerBaseInSearchBox(ProtocolServerBase psb)
-        {
-            Server = psb;
-            DispNameControl = (new TextBlock()
-            {
-                Text = psb.DispName,
-            });
-            SubTitleControl = (new TextBlock()
-            {
-                Text = psb.SubTitle,
-            });
-        }
-
-
-        private object _dispNameControl = null;
-        public object DispNameControl
-        {
-            get => _dispNameControl;
-            set => SetAndNotifyIfChanged(nameof(DispNameControl), ref _dispNameControl, value);
-        }
-
-
-
-        private object _subTitleControl = null;
-        public object SubTitleControl
-        {
-            get => _subTitleControl;
-            set => SetAndNotifyIfChanged(nameof(SubTitleControl), ref _subTitleControl, value);
-        }
-    }
-
     public class ActionItem : NotifyPropertyChangedBase
     {
         private string _actionName = "";
@@ -72,54 +32,32 @@ namespace PRM.ViewModel
     {
         public VmSearchBox()
         {
-            UpdateDispList("");
         }
 
 
-
-        private ObservableCollection<ProtocolServerBaseInSearchBox> _servers = new ObservableCollection<ProtocolServerBaseInSearchBox>();
-        /// <summary>
-        /// ServerList data source for listbox
-        /// </summary>
-        public ObservableCollection<ProtocolServerBaseInSearchBox> Servers
+        private VmProtocolServer _selectedItem;
+        public VmProtocolServer SelectedItem
         {
-            get => _servers;
+            get => _selectedItem;
+            private set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+        }
+
+        private int _selectedIndex;
+        public int SelectedIndex
+        {
+            get => _selectedIndex;
             set
             {
-                SetAndNotifyIfChanged(nameof(Servers), ref _servers, value);
-                if (Servers.Count > 0 && _selectedServerIndex >= 0 && _selectedServerIndex < Servers.Count)
+                SetAndNotifyIfChanged(nameof(SelectedIndex), ref _selectedIndex, value);
+                if (GlobalData.Instance.VmItemList.Count > 0
+                    && _selectedIndex >= 0
+                    && _selectedIndex < GlobalData.Instance.VmItemList.Count)
                 {
-                    SelectedServer = Servers[_selectedServerIndex];
+                    SelectedItem = GlobalData.Instance.VmItemList[_selectedIndex];
                 }
                 else
                 {
-                    SelectedServer = null;
-                }
-            }
-        }
-
-
-        private ProtocolServerBaseInSearchBox _selectedServer;
-        public ProtocolServerBaseInSearchBox SelectedServer
-        {
-            get => _selectedServer;
-            private set => SetAndNotifyIfChanged(nameof(SelectedServer), ref _selectedServer, value);
-        }
-
-        private int _selectedServerIndex;
-        public int SelectedServerIndex
-        {
-            get => _selectedServerIndex;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(SelectedServerIndex), ref _selectedServerIndex, value);
-                if (Servers.Count > 0 && _selectedServerIndex >= 0 && _selectedServerIndex < Servers.Count)
-                {
-                    SelectedServer = Servers[_selectedServerIndex];
-                }
-                else
-                {
-                    SelectedServer = null;
+                    SelectedItem = null;
                 }
             }
         }
@@ -154,6 +92,12 @@ namespace PRM.ViewModel
 
 
 
+        private Visibility _selectionsVisibility = Visibility.Visible;
+        public Visibility SelectionsVisibility
+        {
+            get => _selectionsVisibility;
+            set => SetAndNotifyIfChanged(nameof(SelectionsVisibility), ref _selectionsVisibility, value);
+        }
 
 
         private bool _popupSelectionsIsOpen = false;
@@ -175,8 +119,6 @@ namespace PRM.ViewModel
 
 
 
-        // TODO OnLanguageChanged
-
 
         public void ShowActionsList()
         {
@@ -186,8 +128,8 @@ namespace PRM.ViewModel
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_conn"),
                 Run = () =>
                 {
-                    Debug.Assert(SelectedServer?.Server != null);
-                    GlobalEventHelper.OnServerConnect?.Invoke(SelectedServer.Server.Id);
+                    Debug.Assert(SelectedItem?.Server != null);
+                    GlobalEventHelper.OnServerConnect?.Invoke(SelectedItem.Server.Id);
                 },
             });
             actions.Add(new ActionItem()
@@ -195,8 +137,8 @@ namespace PRM.ViewModel
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_edit"),
                 Run = () =>
                 {
-                    Debug.Assert(SelectedServer?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedServer.Server.Id, false);
+                    Debug.Assert(SelectedItem?.Server != null);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, false);
                 },
             });
             actions.Add(new ActionItem()
@@ -204,42 +146,42 @@ namespace PRM.ViewModel
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_duplicate"),
                 Run = () =>
                 {
-                    Debug.Assert(SelectedServer?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedServer.Server.Id, true);
+                    Debug.Assert(SelectedItem?.Server != null);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, true);
                 },
             });
-            if (SelectedServer.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+            if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
                 actions.Add(new ActionItem()
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_address"),
                     Run = () =>
                     {
-                        if (SelectedServer.Server is ProtocolServerWithAddrPortBase server)
+                        if (SelectedItem.Server is ProtocolServerWithAddrPortBase server)
                             Clipboard.SetText($"{server.Address}:{server.GetPort()}");
                     },
                 });
             }
-            if (SelectedServer.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
             {
                 actions.Add(new ActionItem()
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_username"),
                     Run = () =>
                     {
-                        if (SelectedServer.Server is ProtocolServerWithAddrPortUserPwdBase server)
+                        if (SelectedItem.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             Clipboard.SetText(server.UserName);
                     },
                 });
             }
-            if (SelectedServer.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
             {
                 actions.Add(new ActionItem()
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_password"),
                     Run = () =>
                     {
-                        if (SelectedServer.Server is ProtocolServerWithAddrPortUserPwdBase server)
+                        if (SelectedItem.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             Clipboard.SetText(server.GetDecryptedPassWord());
                     },
                 });
@@ -252,64 +194,33 @@ namespace PRM.ViewModel
 
 
 
-        private void UpdateDispList(string keyWord)
+        private void UpdateDispList(string keyword)
         {
-            Servers.Clear();
-
-            var tmp = new List<ProtocolServerBaseInSearchBox>();
-            if (!string.IsNullOrEmpty(keyWord))
+            if (!string.IsNullOrEmpty(keyword))
             {
-                var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
-                var keyWordIsMatch = new List<bool>(keyWords.Length);
-                for (var i = 0; i < keyWords.Length; i++)
-                    keyWordIsMatch.Add(false);
-
                 // match keyword
-                foreach (var item in GlobalData.Instance.ServerList.Where(x => x.GetType() != typeof(ProtocolServerNone)))
+                foreach (var item in GlobalData.Instance.VmItemList.Where(x =>
+                    x.GetType() != typeof(ProtocolServerNone)))
                 {
-                    Debug.Assert(!string.IsNullOrEmpty(item.ClassVersion));
-                    Debug.Assert(!string.IsNullOrEmpty(item.Protocol));
+                    Debug.Assert(item != null);
+                    Debug.Assert(!string.IsNullOrEmpty(item.Server.ClassVersion));
+                    Debug.Assert(!string.IsNullOrEmpty(item.Server.Protocol));
 
-                    var mDispName = new List<List<bool>>();
-                    var mSubTitle = new List<List<bool>>();
-                    var dispName = item.DispName;
-                    var subTitle = item.SubTitle;
-                    for (var i = 0; i < keyWordIsMatch.Count; i++)
+                    var dispName = item.Server.DispName;
+                    var subTitle = item.Server.SubTitle;
+
+                    var f1 = dispName.IsMatchPinyinKeywords(keyword, out var m1);
+                    var f2 = subTitle.IsMatchPinyinKeywords(keyword, out var m2);
+                    if (f1 || f2)
                     {
-                        var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
-                        var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
-                        mDispName.Add(m1);
-                        mSubTitle.Add(m2);
-                        keyWordIsMatch[i] = f1 || f2;
-                    }
-
-                    if (keyWordIsMatch.All(x => x == true))
-                    {
-                        var m1 = new List<bool>();
-                        var m2 = new List<bool>();
-                        for (var i = 0; i < dispName.Length; i++)
-                            m1.Add(false);
-                        for (var i = 0; i < subTitle.Length; i++)
-                            m2.Add(false);
-                        for (var i = 0; i < keyWordIsMatch.Count; i++)
-                        {
-                            if (mDispName[i] != null)
-                                for (int j = 0; j < mDispName[i].Count; j++)
-                                    m1[j] |= mDispName[i][j];
-                            if (mSubTitle[i] != null)
-                                for (int j = 0; j < mSubTitle[i].Count; j++)
-                                    m2[j] |= mSubTitle[i][j];
-                        }
-
-
-                        var semite = new ProtocolServerBaseInSearchBox(item);
+                        item.ObjectVisibility = Visibility.Visible;
                         const bool enableHighLine = true;
-                        // highline matched chars.
                         if (enableHighLine)
                         {
-                            if (m1.Any(x => x == true))
+                            if (m1 != null && m1.Any(x => x == true))
                             {
-                                var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
+                                var sp = new StackPanel()
+                                { Orientation = System.Windows.Controls.Orientation.Horizontal };
                                 for (int i = 0; i < m1.Count; i++)
                                 {
                                     if (m1[i])
@@ -325,50 +236,72 @@ namespace PRM.ViewModel
                                         });
                                 }
 
-                                semite.DispNameControl = sp;
+                                item.DispNameControl = sp;
                             }
-
-                            if (m2.Any(x => x == true))
+                            if (m2 != null && m2.Any(x => x == true))
                             {
-                                var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                var subtitle = item.SubTitle;
+                                var sp = new StackPanel()
+                                { Orientation = System.Windows.Controls.Orientation.Horizontal };
                                 for (int i = 0; i < m2.Count; i++)
                                 {
                                     if (m2[i])
                                         sp.Children.Add(new TextBlock()
                                         {
-                                            Text = subtitle[i].ToString(),
-                                            Background = new SolidColorBrush(Color.FromArgb(120, 239, 242, 132)),
+                                            Text = subTitle[i].ToString(),
+                                            Background = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132)),
                                         });
                                     else
                                         sp.Children.Add(new TextBlock()
                                         {
-                                            Text = subtitle[i].ToString(),
+                                            Text = subTitle[i].ToString(),
                                         });
                                 }
 
-                                semite.SubTitleControl = sp;
+                                item.SubTitleControl = sp;
                             }
                         }
-
-                        tmp.Add(semite);
+                    }
+                    else
+                    {
+                        item.ObjectVisibility = Visibility.Collapsed;
                     }
                 }
             }
-
-            var odometer = tmp.OrderByDescending(x => x.Server.LastConnTime);
-
-            if (!odometer.Any())
-                PopupSelectionsIsOpen = false;
             else
             {
-                foreach (var searchBox in odometer)
+                // show all
+                foreach (var item in GlobalData.Instance.VmItemList)
                 {
-                    Servers.Add(searchBox);
+                    item.ObjectVisibility = Visibility.Visible;
+                    item.DispNameControl = item.OrgDispNameControl;
+                    item.SubTitleControl = item.OrgSubTitleControl;
                 }
-                SelectedServerIndex = 0;
-                PopupSelectionsIsOpen = true;
             }
+
+            // index the list to first item
+            for (var i = 0; i < GlobalData.Instance.VmItemList.Count; i++)
+            {
+                var vmClipObject = GlobalData.Instance.VmItemList[i];
+                if (vmClipObject.ObjectVisibility == Visibility.Visible)
+                {
+                    SelectedIndex = i;
+                    SelectedItem = vmClipObject;
+                    break;
+                }
+            }
+
+            // hide or show selection grid
+            if (GlobalData.Instance.VmItemList.Any(x => x.ObjectVisibility == Visibility.Visible))
+            {
+                PopupSelectionsIsOpen = true;
+                SelectionsVisibility = Visibility.Visible;
+            }
+            else
+            {
+                PopupSelectionsIsOpen = false;
+                SelectionsVisibility = Visibility.Collapsed;
+            }
+            PopupActionsIsOpen = false;
         }
     }
 }

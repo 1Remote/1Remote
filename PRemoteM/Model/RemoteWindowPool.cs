@@ -63,15 +63,15 @@ namespace PRM.Model
         public void ShowRemoteHost(uint serverId)
         {
             Debug.Assert(serverId > 0);
-            Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == serverId));
-            var server = GlobalData.Instance.ServerList.First(x => x.Id == serverId);
+            Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == serverId));
+            var vmProtocolServer = GlobalData.Instance.VmItemList.First(x => x.Server.Id == serverId);
 
             // update last conn time
-            server.LastConnTime = DateTime.Now;
-            Server.AddOrUpdate(server);
+            vmProtocolServer.Server.LastConnTime = DateTime.Now;
+            Server.AddOrUpdate(vmProtocolServer.Server);
 
             // is connected now! activate it then return.
-            if (server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
+            if (vmProtocolServer.Server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindow t)
                 {
@@ -88,11 +88,11 @@ namespace PRM.Model
             ProtocolHostBase host = null;
             try
             {
-                if (server.IsConnWithFullScreen())
+                if (vmProtocolServer.Server.IsConnWithFullScreen())
                 {
                     // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
                     if (Screen.AllScreens.Length > 1
-                        && server is ProtocolServerRDP rdp
+                        && vmProtocolServer.Server is ProtocolServerRDP rdp
                         && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
                     {
                         int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
@@ -141,13 +141,13 @@ namespace PRM.Model
                     }
 
 
-                    host = ProtocolHostFactory.Get(server);
+                    host = ProtocolHostFactory.Get(vmProtocolServer.Server);
                     host.OnClosed += OnProtocolClose;
                     host.OnFullScreen2Window += OnFullScreen2Window;
                     AddProtocolHost(host);
                     MoveProtocolHostToFullScreen(host.ConnectionId);
                     host.Conn();
-                    SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
+                    SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DispName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with full");
                 }
                 else
                 {
@@ -155,13 +155,13 @@ namespace PRM.Model
                     {
                         case EnumTabMode.NewItemGoesToGroup:
                             // work in tab by group mode
-                            if (_tabWindows.Any(x => x.Value.Vm.Tag == server.GroupName))
-                                tab = _tabWindows.First(x => x.Value.Vm.Tag == server.GroupName).Value;
+                            if (_tabWindows.Any(x => x.Value.Vm.Tag == vmProtocolServer.Server.GroupName))
+                                tab = _tabWindows.First(x => x.Value.Vm.Tag == vmProtocolServer.Server.GroupName).Value;
                             break;
                         case EnumTabMode.NewItemGoesToProtocol:
                             // work in tab by protocol mode
-                            if (_tabWindows.Any(x => x.Value.Vm.Tag == server.ProtocolDisplayName))
-                                tab = _tabWindows.First(x => x.Value.Vm.Tag == server.ProtocolDisplayName).Value;
+                            if (_tabWindows.Any(x => x.Value.Vm.Tag == vmProtocolServer.Server.ProtocolDisplayName))
+                                tab = _tabWindows.First(x => x.Value.Vm.Tag == vmProtocolServer.Server.ProtocolDisplayName).Value;
                             break;
                         default:
                             // work in tab by latest tab mode
@@ -179,25 +179,25 @@ namespace PRM.Model
                         _lastTabToken = token;
 
                         if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToGroup)
-                            tab.Vm.Tag = server.GroupName;
+                            tab.Vm.Tag = vmProtocolServer.Server.GroupName;
                         else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
-                            tab.Vm.Tag = server.ProtocolDisplayName;
+                            tab.Vm.Tag = vmProtocolServer.Server.ProtocolDisplayName;
                     }
                     tab.Activate();
                     var size = tab.GetTabContentSize();
-                    host = ProtocolHostFactory.Get(server, size.Width, size.Height);
+                    host = ProtocolHostFactory.Get(vmProtocolServer.Server, size.Width, size.Height);
                     host.OnClosed += OnProtocolClose;
                     host.OnFullScreen2Window += OnFullScreen2Window;
                     host.ParentWindow = tab;
                     tab.Vm.Items.Add(new TabItemViewModel()
                     {
                         Content = host,
-                        Header = server.DispName,
+                        Header = vmProtocolServer.Server.DispName,
                     });
                     tab.Vm.SelectedItem = tab.Vm.Items.Last();
                     _protocolHosts.Add(host.ConnectionId, host);
                     host.Conn();
-                    SimpleLogHelper.Debug($@"Start Conn: {server.DispName}({server.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
+                    SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DispName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
                     SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
                 }
             }

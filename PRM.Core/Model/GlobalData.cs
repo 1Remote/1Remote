@@ -44,7 +44,7 @@ namespace PRM.Core.Model
 
         #region Server Data
 
-        public ObservableCollection<ProtocolServerBase> ServerList { get; set; } = new ObservableCollection<ProtocolServerBase>();
+        public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
 
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null)
@@ -52,16 +52,16 @@ namespace PRM.Core.Model
             // read from db
             if (protocolServer == null)
             {
-                ServerList.Clear();
+                VmItemList.Clear();
                 foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
                 {
-                    ServerList.Add(serverAbstract);
+                    VmItemList.Add(new VmProtocolServer(serverAbstract));
                 }
             }
             // edit
-            else if (protocolServer.Id > 0 && ServerList.First(x => x.Id == protocolServer.Id) != null)
+            else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
-                ServerList.First(x => x.Id == protocolServer.Id).Update(protocolServer);
+                VmItemList.First(x => x.Server.Id == protocolServer.Id).Server.Update(protocolServer);
                 Server.AddOrUpdate(protocolServer);
             }
             // add

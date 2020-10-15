@@ -116,6 +116,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
       <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Protocol\VmProtocolServer.cs" />
     <Compile Include="Protocol\VNC\Host\VncHost.xaml.cs">
       <DependentUpon>VncHost.xaml</DependentUpon>
     </Compile>
