@@ -10,12 +10,12 @@ namespace Shawn.Utils
 {
     public static class KeyWordMatchHelper
     {
-        public static bool IsMatchKeyWords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keyWordSeparator = " ", bool isCaseSensitive = false)
+        public static bool IsMatchKeywords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keywordSeparator = " ", bool isCaseSensitive = false)
         {
-            if (string.IsNullOrEmpty(keyWordSeparator))
-                return IsMatchKeyWords(orgString, new[] { keyword }, out matchPlace, isCaseSensitive);
-            var kws = keyword.Split(new string[] { keyWordSeparator }, StringSplitOptions.RemoveEmptyEntries);
-            return IsMatchKeyWords(orgString, kws, out matchPlace, isCaseSensitive);
+            if (string.IsNullOrEmpty(keywordSeparator))
+                return IsMatchKeywords(orgString, new[] { keyword }, out matchPlace, isCaseSensitive);
+            var kws = keyword.Split(new string[] { keywordSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            return IsMatchKeywords(orgString, kws, out matchPlace, isCaseSensitive);
         }
 
         /// <summary>
@@ -26,13 +26,13 @@ namespace Shawn.Utils
         /// <param name="matchPlace"></param>
         /// <param name="isCaseSensitive">大小写敏感</param>
         /// <returns></returns>
-        public static bool IsMatchKeyWords(this string orgString, [NotNull] IEnumerable<string> keywords, out List<bool> matchPlace, bool isCaseSensitive = false)
+        public static bool IsMatchKeywords(this string orgString, [NotNull] IEnumerable<string> keywords, out List<bool> matchPlace, bool isCaseSensitive = false)
         {
             matchPlace = null;
             if (string.IsNullOrEmpty(orgString))
                 return false;
-            var keyWordList = keywords.ToList();
-            if (!keyWordList.Any())
+            var keywordList = keywords.ToList();
+            if (!keywordList.Any())
                 return false;
 
 
@@ -47,7 +47,7 @@ namespace Shawn.Utils
 
             bool isAllKeyWordMatched = true;
             matchPlace = new List<bool>(new bool[orgString.Length]);
-            foreach (var t in keyWordList)
+            foreach (var t in keywordList)
             {
                 if (string.IsNullOrEmpty(t))
                     continue;
@@ -89,14 +89,15 @@ namespace Shawn.Utils
         /// <param name="orgString"></param>
         /// <param name="keyword"></param>
         /// <param name="matchPlace"></param>
+        /// <param name="keywordSeparator"></param>
         /// <param name="isCaseSensitive"></param>
         /// <returns></returns>
-        public static bool IsMatchPinyinKeyWords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keyWordSeparator = " ", bool isCaseSensitive = false)
+        public static bool IsMatchPinyinKeywords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keywordSeparator = " ", bool isCaseSensitive = false)
         {
-            if (string.IsNullOrEmpty(keyWordSeparator))
-                return IsMatchPinyinKeyWords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive);
-            var kws = keyword.Split(new string[] { keyWordSeparator }, StringSplitOptions.RemoveEmptyEntries);
-            return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive);
+            if (string.IsNullOrEmpty(keywordSeparator))
+                return IsMatchPinyinKeywords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive);
+            var kws = keyword.Split(new string[] { keywordSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            return IsMatchPinyinKeywords(orgString, kws, out matchPlace, isCaseSensitive);
         }
 
 
@@ -106,14 +107,15 @@ namespace Shawn.Utils
         /// <param name="orgString"></param>
         /// <param name="keyword"></param>
         /// <param name="matchPlace"></param>
+        /// <param name="keywordSeparator"></param>
         /// <param name="isCaseSensitive"></param>
         /// <returns></returns>
-        public static bool IsMatchPinyinInitialKeyWords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keyWordSeparator = " ", bool isCaseSensitive = false)
+        public static bool IsMatchPinyinInitialKeywords(this string orgString, [NotNull] string keyword, out List<bool> matchPlace, string keywordSeparator = " ", bool isCaseSensitive = false)
         {
-            if (string.IsNullOrEmpty(keyWordSeparator))
-                return IsMatchPinyinKeyWords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive, true);
-            var kws = keyword.Split(new string[] { keyWordSeparator }, StringSplitOptions.RemoveEmptyEntries);
-            return IsMatchPinyinKeyWords(orgString, kws, out matchPlace, isCaseSensitive, true);
+            if (string.IsNullOrEmpty(keywordSeparator))
+                return IsMatchPinyinKeywords(orgString, new string[] { keyword }, out matchPlace, isCaseSensitive, true);
+            var kws = keyword.Split(new string[] { keywordSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            return IsMatchPinyinKeywords(orgString, kws, out matchPlace, isCaseSensitive, true);
         }
 
 
@@ -126,38 +128,51 @@ namespace Shawn.Utils
         /// <param name="isCaseSensitive"></param>
         /// <param name="isInitialOnly">是否用只用拼音首字母匹配</param>
         /// <returns></returns>
-        public static bool IsMatchPinyinKeyWords(this string orgString, [NotNull] IEnumerable<string> keywords, out List<bool> matchPlace, bool isCaseSensitive = false, bool isInitialOnly = false)
+        private static bool IsMatchPinyinKeywords(this string orgString, [NotNull] IEnumerable<string> keywords, out List<bool> matchPlace, bool isCaseSensitive = false, bool isInitialOnly = false)
         {
             matchPlace = null;
             if (string.IsNullOrEmpty(orgString))
                 return false;
-            var keyWordList = keywords.ToList();
-            if (!keyWordList.Any())
+            var keywordList = keywords.ToList();
+            if (!keywordList.Any())
                 return false;
 
+            var keywordMatchedFlags = new List<bool>(keywordList.Count);
+            for (int i = 0; i < keywordList.Count; i++)
+                keywordMatchedFlags.Add(false);
+
+            matchPlace = new List<bool>(orgString.Length);
+            var matchPlaceEn = new List<bool>(orgString.Length);
+            var matchPlacePinyinInitials = new List<bool>(orgString.Length);
+            var matchPlacePinyinAll = new List<bool>(orgString.Length);
+            for (int i = 0; i < orgString.Length; i++)
             {
-                // 原始字符串直接匹配成功时，直接返回
-                if (IsMatchKeyWords(orgString, keyWordList, out matchPlace, isCaseSensitive))
-                    return true;
+                matchPlace.Add(false);
+                matchPlaceEn.Add(false);
+                matchPlacePinyinInitials.Add(false);
+                matchPlacePinyinAll.Add(false);
             }
 
 
+            // 原始字符匹配(英文匹配)
+            for (var i = 0; i < keywordList.Count; i++)
             {
-                bool hasChinese = false;
-                foreach (var @char in orgString)
+                var keyword = keywordList[i];
+                if (IsMatchKeywords(orgString, new[] { keyword }, out var m1, isCaseSensitive))
                 {
-                    if (TinyPinyin.PinyinHelper.IsChinese(@char))
+                    keywordMatchedFlags[i] = true;
+                    for (int j = 0; j < m1.Count; j++)
                     {
-                        hasChinese = true;
-                        break;
+                        matchPlaceEn[j] |= m1[j];
                     }
                 }
+            }
 
-                // 没有汉字时，匹配失败
-                if (!hasChinese)
-                {
-                    return false;
-                }
+
+            // 没有汉字时，直接返回英文匹配结果
+            if (orgString.All(@char => !TinyPinyin.PinyinHelper.IsChinese(@char)))
+            {
+                goto Return;
             }
 
 
@@ -170,127 +185,114 @@ namespace Shawn.Utils
 
 
 
-            // 标记哪里是拼音，哪里是汉字
-            var charFullPinYinList = new List<string>();
+            // 标记哪里是汉字哪里是英文，为 true 的地方表示是汉字
             var pinyinFlagOnOrgString = new List<bool>();
             foreach (var @char in orgString)
             {
                 if (TinyPinyin.PinyinHelper.IsChinese(@char))
                 {
                     var pinyin = TinyPinyin.PinyinHelper.GetPinyin(@char).ToLower();
-                    charFullPinYinList.Add(pinyin);
                     pinyinFlagOnOrgString.Add(true);
                 }
                 else
                 {
-                    charFullPinYinList.Add(@char.ToString());
                     pinyinFlagOnOrgString.Add(false);
                 }
             }
 
 
 
-
-            // 否则进行拼音首字母的匹配
+            // 进行拼音首字母的匹配
             {
                 string pinyinInitialsString = TinyPinyin.PinyinHelper.GetPinyinInitials(orgString);
                 // 先用小写匹配所有词，再根据大小写敏感校验英文字符是否匹配
                 var pinyinInitialsLowerString = pinyinInitialsString.ToLower();
-                matchPlace = new List<bool>(new bool[orgString.Length]);
-                bool isAllKeyWordMatched = true;
-                foreach (var keyword in keyWordList)
+                for (var n = 0; n < keywordList.Count; n++)
                 {
+                    var keyword = keywordList[n];
                     if (string.IsNullOrEmpty(keyword))
                         continue;
 
-                    bool isThisKeyWordDirectMatched = false;
-                    if (IsMatchKeyWords(orgString, keyword, out var m1, "", isCaseSensitive))
+                    if (isCaseSensitive == false)
                     {
-                        isThisKeyWordDirectMatched = true;
-                        for (int i = 0; i < m1.Count; i++)
+                        // 大小写不敏感时，直接标记所有匹配位置
+                        if (IsMatchKeywords(pinyinInitialsLowerString, keyword, out var m1, "", false))
                         {
-                            if (m1[i])
-                                matchPlace[i] = true;
+                            keywordMatchedFlags[n] = true;
+                            for (int i = 0; i < m1.Count; i++)
+                            {
+                                if (m1[i])
+                                    matchPlacePinyinInitials[i] = true;
+                            }
                         }
                     }
-
-                    bool isThisKeyWordMatched = false;
-                    if (pinyinInitialsLowerString.IndexOf(keyword.ToLower(), StringComparison.Ordinal) >= 0)
+                    else
                     {
-                        var placeholderString = new string(placeholder, keyword.Length);
-                        var tmpString = pinyinInitialsLowerString.Replace(keyword.ToLower(), placeholderString);
-                        if (isCaseSensitive == false)
+                        // 大小写敏感时，先找出全小写模式下的匹配位置，再判断这些匹配位置处非汉字字符的大小写匹配情况
+                        if (IsMatchKeywords(pinyinInitialsLowerString, keyword, out var m1, "", false))
                         {
-                            // 大小写不敏感时，直接标记所有匹配位置
-                            for (var i = 0; i < tmpString.Length; i++)
+                            for (int i = 0; i <= m1.Count - keyword.Length; i++)
                             {
-                                var @char = tmpString[i];
-                                if (@char == placeholder)
+                                // 如果此处匹配 keyword[0]，则进入继续匹配 keyword[0] - keyword[keyword.Count - 1]
+                                if (m1[i]
+                                    && ((!pinyinFlagOnOrgString[i] && string.Equals(orgString[i].ToString(),
+                                             keyword[0].ToString(), StringComparison.CurrentCultureIgnoreCase))
+                                        || (pinyinFlagOnOrgString[i] && string.Equals(
+                                                pinyinInitialsLowerString[i].ToString(), keyword[0].ToString(),
+                                                StringComparison.CurrentCultureIgnoreCase))))
                                 {
-                                    matchPlace[i] = true;
-                                }
-                            }
-                            isThisKeyWordMatched = true;
-                        }
-                        else
-                        {
-                            // 针对大小写敏感的情况，先找出全小写模式下的匹配位置，再判断这些匹配位置处非汉字字符的大小写匹配情况
-                            int n = tmpString.IndexOf(placeholderString, StringComparison.Ordinal);
-                            int offset = 0;
-                            while (n >= 0)
-                            {
-                                bool isThisPlaceMatched = true;
-                                for (int i = 0; i < placeholderString.Length; i++)
-                                {
-                                    if (!pinyinFlagOnOrgString[i + n + offset] && orgString[i + n + offset] != keyword[i])
+                                    bool isThisPlaceMatched = true;
+                                    for (int j = 0; j < keyword.Length; j++)
                                     {
-                                        isThisPlaceMatched = false;
-                                        break;
-                                    }
-                                }
-
-                                if (isThisPlaceMatched)
-                                {
-                                    isThisKeyWordMatched = true;
-                                    // 标记所有匹配位置
-                                    for (var i = 0; i < placeholderString.Length; i++)
-                                    {
-                                        var @char = tmpString[i + n];
-                                        if (@char == placeholder)
+                                        // 匹配且是英文的位置，验证大小写是否匹配
+                                        if (!pinyinFlagOnOrgString[i + j]
+                                            && orgString[i + j] != keyword[j])
                                         {
-                                            matchPlace[i + n + offset] = true;
+                                            isThisPlaceMatched = false;
+                                            break;
+                                        }
+                                    }
+
+                                    // 任一位置匹配成功后，标记当前 keyword 匹配成功
+                                    if (isThisPlaceMatched == true)
+                                    {
+                                        keywordMatchedFlags[n] = true;
+                                        for (var j = 0; j < keyword.Length; j++)
+                                        {
+                                            matchPlacePinyinInitials[i + j] = true;
                                         }
                                     }
                                 }
-
-                                offset += (n + keyword.Length);
-                                tmpString = tmpString.Substring(n + keyword.Length);
-                                n = tmpString.IndexOf(placeholderString, StringComparison.Ordinal);
                             }
                         }
                     }
-
-                    // 该关键词直接匹配，拼音匹配均不成功时，标记匹配失败
-                    if (isThisKeyWordDirectMatched == false && isThisKeyWordMatched == false)
-                    {
-                        isAllKeyWordMatched = false;
-                        break;
-                    }
                 }
-                if (isAllKeyWordMatched)
-                    return true;
             }
 
 
 
 
-            // 否则进行拼音全词匹配
+            // 进行拼音全词匹配
             if (isInitialOnly == false)
             {
+                var charFullPinYinList = new List<string>();
+                for (var i = 0; i < orgString.Length; i++)
+                {
+                    var @char = orgString[i];
+                    if (pinyinFlagOnOrgString[i])
+                    {
+                        var pinyin = TinyPinyin.PinyinHelper.GetPinyin(@char).ToLower();
+                        charFullPinYinList.Add(pinyin);
+                    }
+                    else
+                    {
+                        charFullPinYinList.Add(@char.ToString());
+                    }
+                }
+
                 // 拼音字符串中字符，对应原始汉字字符的索引，非拼音首字母字符索引为负数，例如 "你好世界2020" 的拼音 "nihaoshijie2020"，其索引为 [0,-1,  1,-1,-1,   2,-1,-1,   3,-1,-1,  4,5,6,7]
                 var pinyinChar2OrgCharIndex = new List<int>();
-                var pinyinFlagOnPinyinString = new List<bool>();
-                StringBuilder sb = new StringBuilder();  // 构建拼音字符串
+                var sb = new StringBuilder();  // 构建拼音字符串
                 for (var i = 0; i < charFullPinYinList.Count; ++i)
                 {
                     var c = charFullPinYinList[i];
@@ -298,16 +300,13 @@ namespace Shawn.Utils
                     if (c.Length == 1)
                     {
                         pinyinChar2OrgCharIndex.Add(i);
-                        pinyinFlagOnPinyinString.Add(false);
                     }
                     else
                     {
                         pinyinChar2OrgCharIndex.Add(i);
-                        pinyinFlagOnPinyinString.Add(true);
                         for (int j = 1; j < c.Length; ++j)
                         {
                             pinyinChar2OrgCharIndex.Add(-1);
-                            pinyinFlagOnPinyinString.Add(true);
                         }
                     }
                 }
@@ -315,104 +314,85 @@ namespace Shawn.Utils
                 // 先用小写匹配所有词，再根据大小写敏感校验英文字符是否匹配
                 var pinyinLowerString = sb.ToString().ToLower();
                 matchPlace = new List<bool>(new bool[orgString.Length]);
-                bool isAllKeyWordMatched = true;
-                foreach (var keyword in keyWordList)
+                for (var n = 0; n < keywordList.Count; n++)
                 {
+                    var keyword = keywordList[n];
                     if (string.IsNullOrEmpty(keyword))
                         continue;
 
-                    bool isThisKeyWordDirectMatched = false;
-                    if (IsMatchKeyWords(orgString, keyword, out var m1, "", isCaseSensitive))
+                    if (isCaseSensitive == false)
                     {
-                        isThisKeyWordDirectMatched = true;
-                        for (int i = 0; i < m1.Count; i++)
+                        // 大小写不敏感时，直接标记所有匹配位置
+                        if (IsMatchKeywords(pinyinLowerString, keyword, out var m1, "", false))
                         {
-                            if (m1[i])
-                                matchPlace[i] = true;
+                            keywordMatchedFlags[n] = true;
+                            for (int i = 0; i < m1.Count; i++)
+                            {
+                                if (m1[i]
+                                    && pinyinChar2OrgCharIndex[i] >= 0)
+                                    matchPlacePinyinInitials[pinyinChar2OrgCharIndex[i]] = true;
+                            }
                         }
                     }
-
-                    bool isThisKeyWordMatched = false;
-                    if (pinyinLowerString.IndexOf(keyword.ToLower()) >= 0)
+                    else
                     {
-                        var placeholderString = new string(placeholder, keyword.Length);
-                        var tmpString = pinyinLowerString.Replace(keyword.ToLower(), placeholderString);
-
-                        int n = tmpString.IndexOf(placeholderString, StringComparison.Ordinal);
-                        int offset = 0;
-                        while (n >= 0)
+                        // 大小写敏感时，先找出全小写模式下的匹配位置，再判断这些匹配位置处非汉字字符的大小写匹配情况
+                        if (IsMatchKeywords(pinyinLowerString, keyword, out var m1, "", isCaseSensitive))
                         {
-                            if (pinyinChar2OrgCharIndex[n + offset] >= 0) // 保证关键词是以汉字的拼音首字母开头
+                            for (int i = 0; i <= m1.Count - keyword.Length; i++)
                             {
-                                if (isCaseSensitive == false)
+                                // 如果此处匹配 keyword[0]，则进入继续匹配 keyword[0] - keyword[keyword.Count - 1]
+                                if (m1[i]
+                                    && pinyinChar2OrgCharIndex[i] >= 0
+                                    && ((!pinyinFlagOnOrgString[pinyinChar2OrgCharIndex[i]] &&
+                                         string.Equals(orgString[pinyinChar2OrgCharIndex[i]].ToString(),
+                                             keyword[0].ToString(), StringComparison.CurrentCultureIgnoreCase))
+                                        || (pinyinFlagOnOrgString[pinyinChar2OrgCharIndex[i]] &&
+                                            string.Equals(pinyinLowerString[i].ToString(), keyword[0].ToString(),
+                                                StringComparison.CurrentCultureIgnoreCase))))
                                 {
-                                    isThisKeyWordMatched = true;
-                                    // 大小写不敏感时，直接标记所有匹配位置
-                                    for (var i = 0; i < placeholderString.Length; i++)
-                                    {
-                                        if (pinyinChar2OrgCharIndex[i + n + offset] >= 0)
-                                        {
-                                            var @char = tmpString[i + n];
-                                            if (@char == placeholder)
-                                            {
-                                                matchPlace[pinyinChar2OrgCharIndex[i + n + offset]] = true;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (isCaseSensitive)
-                                {
-                                    // 针对大小写敏感的情况，先找出全小写模式下的匹配位置，再判断这些匹配位置处非汉字字符的大小写匹配情况
                                     bool isThisPlaceMatched = true;
-                                    // 非英文部分校验大小写匹配
-                                    for (int i = 0; i < keyword.Length; i++)
+                                    for (int j = 0; j < keyword.Length; j++)
                                     {
-                                        if (pinyinFlagOnPinyinString[i + n + offset] == false && // 该位置不是汉字
-                                            pinyinChar2OrgCharIndex[i + n + offset] >= 0 && // 该位置对应原始字符串的字符
-                                            orgString[pinyinChar2OrgCharIndex[i + n + offset]] != keyword[i])
+                                        // 匹配且是英文的位置，验证大小写是否匹配
+                                        if (!pinyinFlagOnOrgString[pinyinChar2OrgCharIndex[i] + j]
+                                            && orgString[pinyinChar2OrgCharIndex[i] + j] != keyword[j])
                                         {
                                             isThisPlaceMatched = false;
                                             break;
                                         }
                                     }
 
-                                    if (isThisPlaceMatched)
+                                    // 任一位置匹配成功后，标记当前 keyword 匹配成功
+                                    if (isThisPlaceMatched == true)
                                     {
-                                        isThisKeyWordMatched = true;
-                                        // 标记所有匹配位置
-                                        for (var i = 0; i < placeholderString.Length; i++)
+                                        keywordMatchedFlags[n] = true;
+                                        for (var j = 0; j < keyword.Length; j++)
                                         {
-                                            if (pinyinChar2OrgCharIndex[i + n + offset] >= 0)
+                                            if (pinyinChar2OrgCharIndex[i + j] >= 0)
                                             {
-                                                var @char = tmpString[i + n];
-                                                if (@char == placeholder)
-                                                {
-                                                    matchPlace[pinyinChar2OrgCharIndex[i + n + offset]] = true;
-                                                }
+                                                int k = pinyinChar2OrgCharIndex[i + j];
+                                                matchPlacePinyinInitials[k] = true;
                                             }
                                         }
                                     }
                                 }
                             }
-                            offset += (n + keyword.Length);
-                            tmpString = tmpString.Substring(n + keyword.Length);
-                            n = tmpString.IndexOf(placeholderString, StringComparison.Ordinal);
                         }
-
-                    }
-
-                    // 该关键词直接匹配，拼音匹配均不成功时，标记匹配失败
-                    if (isThisKeyWordDirectMatched == false && isThisKeyWordMatched == false)
-                    {
-                        isAllKeyWordMatched = false;
-                        break;
                     }
                 }
-                if (isAllKeyWordMatched)
-                    return true;
             }
 
+        Return:
+
+            if (keywordMatchedFlags.All(x => x == true))
+            {
+                for (int i = 0; i < orgString.Length; i++)
+                {
+                    matchPlace[i] = (matchPlaceEn?[i] ?? false) | matchPlacePinyinInitials[i] | matchPlacePinyinAll[i];
+                }
+                return true;
+            }
 
             matchPlace = null;
             return false;
@@ -436,6 +416,5 @@ namespace Shawn.Utils
                 return (char)0;
             return placeholder;
         }
-
     }
 }

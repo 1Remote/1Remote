@@ -15,7 +15,8 @@
   "button_select": "Select",
   "button_explore_to": "Explore to...",
   "tab_all": "All",
-  "info_filter": "Search (Ctrl+F)",
+  "info_filter": "Input your keywords",
+  "info_filter_main_window": "Search (Ctrl+F)",
   "info_hotkey_already_registered": "Hotkey already registered",
   "info_hotkey_registered_fail": "Failed to register hotkey",
 
