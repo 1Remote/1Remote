@@ -78,7 +78,7 @@
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>
-                                <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" 
+                                <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter_main_window}" 
                                            Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            />
                             </VisualBrush.Visual>

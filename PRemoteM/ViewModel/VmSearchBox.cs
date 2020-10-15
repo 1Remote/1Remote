@@ -276,8 +276,8 @@ namespace PRM.ViewModel
                     var subTitle = item.SubTitle;
                     for (var i = 0; i < keyWordIsMatch.Count; i++)
                     {
-                        var f1 = dispName.IsMatchPinyinKeyWords(keyWords[i], out var m1);
-                        var f2 = subTitle.IsMatchPinyinKeyWords(keyWords[i], out var m2);
+                        var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
+                        var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
                         mDispName.Add(m1);
                         mSubTitle.Add(m2);
                         keyWordIsMatch[i] = f1 || f2;

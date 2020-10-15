@@ -184,7 +184,7 @@ namespace PRM.Resources.Converter
 
                 if (string.IsNullOrEmpty(keyWord))
                     return true;
-                //var f1 = KeyWordMatchHelper.IsMatchPinyinKeyWords(server.DispName, keyWord, out var m1);
+                //var f1 = KeyWordMatchHelper.IsMatchPinyinKeywords(server.DispName, keyWord, out var m1);
                 //if (f1)
                 //{
                 //    return true;
@@ -201,8 +201,8 @@ namespace PRM.Resources.Converter
                 var subTitle = server.SubTitle;
                 for (var i = 0; i < keyWordIsMatch.Count; i++)
                 {
-                    var f1 = dispName.IsMatchPinyinKeyWords(keyWords[i], out var m1);
-                    var f2 = subTitle.IsMatchPinyinKeyWords(keyWords[i], out var m2);
+                    var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
+                    var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
                     keyWordIsMatch[i] = f1 || f2;
                 }
 

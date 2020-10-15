@@ -15,7 +15,8 @@
   "button_select": "选择",
   "button_explore_to": "定位到...",
   "tab_all": "全部",
-  "info_filter": "搜索 (Ctrl+F)",
+  "info_filter": "在此输入关键词",
+  "info_filter_main_window": "搜索 (Ctrl+F)",
   "info_hotkey_already_registered": "快捷键已被占用",
   "info_hotkey_registered_fail": "快捷键注册失败",
 

@@ -63,7 +63,7 @@ namespace Shawn.Utils
 
                 o.Selections4Show = new ObservableCollection<string>(o.Selections
                     .Where(x => x.ToLower().IndexOf(newValue.ToLower()) >= 0 
-                                || x.IsMatchPinyinKeyWords(newValue, out var _)
+                                || x.IsMatchPinyinKeywords(newValue, out var _)
                                 ));
                 if (o.Selections4Show?.Count() > 0)
                 {
