@@ -69,11 +69,11 @@ namespace PRM.ViewModel
                     Server.GroupName = Host.SelectedGroup;
             }
 
-            NameSelections = GlobalData.Instance.ServerList.Select(x => x.DispName)
+            NameSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.DispName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
 
-            GroupSelections = GlobalData.Instance.ServerList.Select(x => x.GroupName)
+            GroupSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.GroupName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
 

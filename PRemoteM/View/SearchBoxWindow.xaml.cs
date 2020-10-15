@@ -45,6 +45,14 @@ namespace PRM.View
                     SetHotKey();
                 }
             };
+
+            _vmSearchBox.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(VmSearchBox.SelectedIndex))
+                {
+                    ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                }
+            };
         }
 
         protected override void OnLocationChanged(EventArgs e)
@@ -100,8 +108,6 @@ namespace PRM.View
                             this.Focus();         // important
                             TbKeyWord.Focus();
                             _isHidden = false;
-                            _vmSearchBox.PopupSelectionsIsOpen = false;
-                            _vmSearchBox.PopupActionsIsOpen = false;
                         }
                     }
         }
@@ -131,13 +137,6 @@ namespace PRM.View
         {
             lock (_keyDownLocker)
             {
-                if (_vmSearchBox.Servers.Count == 0)
-                {
-                    _vmSearchBox.PopupSelectionsIsOpen = false;
-                    _vmSearchBox.PopupActionsIsOpen = false;
-                    return;
-                }
-
                 var key = e.Key;
                 if (key == Key.Escape)
                 {
@@ -150,42 +149,77 @@ namespace PRM.View
                     {
                         case Key.Enter:
                             HideMe();
-                            if (_vmSearchBox.SelectedServerIndex >= 0 && _vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count)
+                            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
                             {
-                                var s = _vmSearchBox.Servers[_vmSearchBox.SelectedServerIndex];
+                                var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
                                 GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
                             }
                             break;
                         case Key.Down:
-                            if (_vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count - 1)
+                            if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
                             {
-                                ++_vmSearchBox.SelectedServerIndex;
-                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                                var index = _vmSearchBox.SelectedIndex;
+                                Console.WriteLine("b Selected item index: " + index);
+                                for (int i = _vmSearchBox.SelectedIndex + 1; i < GlobalData.Instance.VmItemList.Count; i++)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
                             }
                             break;
                         case Key.Up:
-                            if (_vmSearchBox.SelectedServerIndex > 0)
+                            if (_vmSearchBox.SelectedIndex > 0)
                             {
-                                --_vmSearchBox.SelectedServerIndex;
-                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                                var index = _vmSearchBox.SelectedIndex;
+                                for (int i = _vmSearchBox.SelectedIndex - 1; i >= 0; i--)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
                             }
                             break;
                         case Key.PageUp:
-                            if (_vmSearchBox.SelectedServerIndex > 0)
+                            if (_vmSearchBox.SelectedIndex > 0)
                             {
-                                _vmSearchBox.SelectedServerIndex =
-                                    _vmSearchBox.SelectedServerIndex - 5 < 0 ? 0 : _vmSearchBox.SelectedServerIndex - 5;
-                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                                var index = _vmSearchBox.SelectedIndex;
+                                int count = 0;
+                                for (int i = _vmSearchBox.SelectedIndex - 1; i >= 0; i--)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        ++count;
+                                        index = i;
+                                        if (count == 5)
+                                            break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
                             }
                             break;
                         case Key.PageDown:
-                            if (_vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count - 1)
+                            if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
                             {
-                                _vmSearchBox.SelectedServerIndex =
-                                    _vmSearchBox.SelectedServerIndex + 5 > _vmSearchBox.Servers.Count - 1
-                                        ? _vmSearchBox.Servers.Count - 1
-                                        : _vmSearchBox.SelectedServerIndex + 5;
-                                ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                                var index = _vmSearchBox.SelectedIndex;
+                                int count = 0;
+                                for (int i = _vmSearchBox.SelectedIndex + 1; i < GlobalData.Instance.VmItemList.Count; i++)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        ++count;
+                                        index = i;
+                                        if (count == 5)
+                                            break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
                             }
                             break;
                         case Key.Right:
@@ -196,7 +230,7 @@ namespace PRM.View
                                     return;
                                 }
                             }
-                            if (_vmSearchBox.SelectedServerIndex >= 0 && _vmSearchBox.SelectedServerIndex < _vmSearchBox.Servers.Count)
+                            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
                             {
                                 _vmSearchBox.ShowActionsList();
                             }

@@ -226,7 +226,7 @@ namespace PRM.Core.Model
                     {
                         if (string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
-                            var protocolServerBases = GlobalData.Instance.ServerList;
+                            var protocolServerBases = GlobalData.Instance.VmItemList;
                             int max = protocolServerBases.Count() * 3 + 2;
                             int val = 0;
 
@@ -278,9 +278,9 @@ namespace PRM.Core.Model
                                 // encrypt old data
                                 foreach (var psb in protocolServerBases)
                                 {
-                                    EncryptPwd(psb);
+                                    EncryptPwd(psb.Server);
                                     OnRsaProgress(++val, max);
-                                    Server.AddOrUpdate(psb);
+                                    Server.AddOrUpdate(psb.Server);
                                     OnRsaProgress(++val, max);
                                 }
 
@@ -315,8 +315,8 @@ namespace PRM.Core.Model
                         if (!string.IsNullOrEmpty(DB.Config.RSA_PublicKey))
                         {
                             OnRsaProgress(0, 1);
-                            var protocolServerBases = GlobalData.Instance.ServerList;
-                            int max = protocolServerBases.Count() * 3 + 2 + 1;
+                            var list = GlobalData.Instance.VmItemList;
+                            int max = list.Count() * 3 + 2 + 1;
                             int val = 1;
                             OnRsaProgress(val, max);
 
@@ -331,9 +331,9 @@ namespace PRM.Core.Model
 
                             // decrypt pwd
                             Debug.Assert(Rsa != null);
-                            foreach (var psb in protocolServerBases)
+                            foreach (var vs in list)
                             {
-                                DecryptPwd(psb);
+                                DecryptPwd(vs.Server);
                                 OnRsaProgress(++val, max);
                             }
 
@@ -346,9 +346,9 @@ namespace PRM.Core.Model
                             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
                             // update
-                            foreach (var psb in protocolServerBases)
+                            foreach (var vs in list)
                             {
-                                Server.AddOrUpdate(psb);
+                                Server.AddOrUpdate(vs.Server);
                                 OnRsaProgress(++val, max);
                             }
 
@@ -657,9 +657,9 @@ namespace PRM.Core.Model
                         if (dlg.ShowDialog() == true)
                         {
                             var list = new List<ProtocolServerBase>();
-                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
+                            foreach (var vs in GlobalData.Instance.VmItemList)
                             {
-                                var serverBase = (ProtocolServerBase)protocolServerBase.Clone();
+                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                 DecryptPwd(serverBase);
                                 list.Add(serverBase);
                             }
@@ -696,7 +696,7 @@ namespace PRM.Core.Model
                         {
                             var sb = new StringBuilder();
                             sb.AppendLine("name;protocol;panel;hostname;port;username;password");
-                            foreach (var protocolServerBase in GlobalData.Instance.ServerList)
+                            foreach (var vs in GlobalData.Instance.VmItemList)
                             {
                                 var protocol = "";
                                 var name = "";
@@ -706,7 +706,7 @@ namespace PRM.Core.Model
                                 var address = "";
                                 string port = "";
 
-                                var serverBase = (ProtocolServerBase)protocolServerBase.Clone();
+                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                 name = serverBase.DispName;
                                 group = serverBase.GroupName;
                                 protocol = serverBase.Protocol;

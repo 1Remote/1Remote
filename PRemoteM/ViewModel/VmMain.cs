@@ -107,8 +107,8 @@ namespace PRM.ViewModel
                 }
                 else
                 {
-                    Debug.Assert(GlobalData.Instance.ServerList.Any(x => x.Id == id));
-                    server = GlobalData.Instance.ServerList.First(x => x.Id == id);
+                    Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == id));
+                    server = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id).Server;
                 }
 
                 DispPage = new AnimationPage()
