@@ -1,21 +1,34 @@
 ﻿<Window x:Class="PRM.View.SearchBoxWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
         xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-        ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
         WindowStyle="None"
-        Topmost="True"
-        mc:Ignorable="d"
-        Name="Window"
-        AllowsTransparency="True"
+        SizeToContent="WidthAndHeight"
         Background="Transparent"
-        Title="SearchBoxWindow" Height="46" Width="400">
+        Title="SearchBoxWindow" Height="460" Width="480">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" />
+    </WindowChrome.WindowChrome>
+    <Window.Template>
+        <ControlTemplate TargetType="Window">
+            <Border Padding="40" Background="Transparent">
+                <Border CornerRadius="16" Background="White">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="30" />
+                    </Border.Effect>
+                    <ContentPresenter ClipToBounds="True" />
+                </Border>
+            </Border>
+        </ControlTemplate>
+    </Window.Template>
     <Window.Resources>
+        <system:Double x:Key="Width">400</system:Double>
+        <system:Double x:Key="CornerRadius">8</system:Double>
+
 
 
         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
@@ -85,7 +98,11 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Thumb}">
-                        <Rectangle x:Name="rectangle" Fill="#AAA" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>
+                        <Grid Margin="0 0 0 3">
+                            <Border x:Name="rectangle" Opacity="0.5" Background="#FFF" CornerRadius="5" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}">
+                                <!--<Rectangle Fill="#FFF" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>-->
+                            </Border>
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
                                 <Setter Property="Opacity" TargetName="rectangle" Value="0.7"/>
@@ -131,10 +148,14 @@
         <ControlTemplate x:Key="SearchBoxSelectionList_ScrollViewerTemplate" TargetType="{x:Type ScrollViewer}">
             <Border BorderThickness="0" BorderBrush="{TemplateBinding BorderBrush}">
                 <Grid x:Name="Grid" Background="{TemplateBinding Background}">
-                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" 
-                                    CanHorizontallyScroll="False" CanVerticallyScroll="False" 
-                                    ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" 
-                                    Margin="{TemplateBinding Padding}"/>
+                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" 
+                                            CanContentScroll="{TemplateBinding CanContentScroll}" 
+                                            CanHorizontallyScroll="False" 
+                                            CanVerticallyScroll="False" 
+                                            ClipToBounds="True"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                            Content="{TemplateBinding Content}" 
+                                            Margin="{TemplateBinding Padding}"/>
                     <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow"
                        HorizontalAlignment="Right"
                        Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" 
@@ -231,7 +252,15 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Grid>
-                                        <Grid x:Name="GridContainer"></Grid>
+                                        <Border x:Name="GridContainer">
+                                            <Border.CornerRadius>
+                                                <CornerRadius 
+                                                    TopLeft="{StaticResource CornerRadius}"
+                                                    TopRight="{StaticResource CornerRadius}"
+                                                    BottomRight="{StaticResource CornerRadius}"
+                                                    BottomLeft="{StaticResource CornerRadius}"/>
+                                            </Border.CornerRadius>
+                                        </Border>
                                         <ContentPresenter/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
@@ -242,7 +271,7 @@
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer"/>
-                                            <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}" TargetName="GridContainer"/>
+                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}" TargetName="GridContainer"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
@@ -286,16 +315,28 @@
 
 
 
-    <Grid Width="400" Background="Transparent">
-        <Grid.Resources>
-            <ResourceDictionary>
-                <SolidColorBrush x:Key="SearchBoxBorderColor" Color="#666" Opacity="0.2"></SolidColorBrush>
-                <system:Double x:Key="Width">400</system:Double>
-            </ResourceDictionary>
-        </Grid.Resources>
-        <Border BorderBrush="{StaticResource SearchBoxBorderColor}" 
-                BorderThickness="1 1 1 1"
+    <Grid Width="{StaticResource Width}" Background="Transparent">
+
+        <Grid Background="{DynamicResource MainColor1Brush}" 
+              Visibility="{Binding SelectionsVisibility}"
+              Height="15" 
+              Margin="0 36 0 0" 
+              VerticalAlignment="Top">
+        </Grid>
+
+
+
+
+        <Border Height="46"
+                VerticalAlignment="Top"
                 Background="{DynamicResource MainColor1Brush}">
+            <Border.CornerRadius>
+                <CornerRadius 
+                    TopLeft="{StaticResource CornerRadius}"
+                    TopRight="{StaticResource CornerRadius}"
+                    BottomRight="{StaticResource CornerRadius}"
+                    BottomLeft="{StaticResource CornerRadius}"/>
+            </Border.CornerRadius>
             <Grid>
                 <TextBox Name="TbKeyWord" 
                          Margin="10 0 0 0"
@@ -308,50 +349,40 @@
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
-                <Grid Width="50" Height="44" HorizontalAlignment="Right" 
+                <Grid Width="50" Height="40" Margin="0 0 5 0" HorizontalAlignment="Right" 
                           Background="{DynamicResource MainColor1Brush}"
                           MouseMove="WindowHeader_MouseMove"></Grid>
             </Grid>
         </Border>
-        <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="0 0 0 1">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Setter Property="Visibility" Value="Hidden"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=PopupSelections, Path=IsOpen}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=PopupActions, Path=IsOpen}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-        </Border>
-        <Popup Name="PopupSelections" StaysOpen="True" 
-               AllowsTransparency="True"
-               IsOpen="{Binding PopupSelectionsIsOpen}"
-               Width="{StaticResource Width}"
-               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-            <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" Background="{DynamicResource MainColor1Brush}">
-                <Grid>
-                    <ListBox x:Name="ListBoxSelections" MaxHeight="402"
-                                 BorderThickness="0"
-                                 SelectedIndex="{Binding SelectedIndex}" 
-                                 ItemsSource="{Binding Source={x:Static model:GlobalData.Instance}, Path=VmItemList}"
-                                 Background="{DynamicResource MainColor1Brush}"
-                                 Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                 Style="{StaticResource SearchBoxSelectionList}">
+
+
+
+        <Border Margin="0 46 0 0"
+                VerticalAlignment="Top"
+                Visibility="{Binding SelectionsVisibility}"
+                Background="{DynamicResource MainColor1Brush}">
+            <Border.CornerRadius>
+                <CornerRadius BottomLeft="{StaticResource CornerRadius}" BottomRight="{StaticResource CornerRadius}"/>
+            </Border.CornerRadius>
+            <Grid>
+                <StackPanel>
+                    <ListBox x:Name="ListBoxSelections" MaxHeight="400"
+                             BorderThickness="0"
+                             SelectedIndex="{Binding SelectedIndex}" 
+                             ItemsSource="{Binding Source={x:Static model:GlobalData.Instance}, Path=VmItemList}"
+                             Background="Transparent"
+                             Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                             Style="{StaticResource SearchBoxSelectionList}">
                     </ListBox>
-                </Grid>
-            </Border>
-        </Popup>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <Popup Name="PopupActions" StaysOpen="True"
                AllowsTransparency="True"
                IsOpen="{Binding PopupActionsIsOpen}"
                Width="{StaticResource Width}">
-            <Border BorderBrush="{StaticResource SearchBoxBorderColor}" BorderThickness="1 0 1 1" 
+            <Border BorderBrush="#AAA" BorderThickness="1 0 1 1" 
                     Background="{DynamicResource MainColor1Brush}">
                 <Grid>
                     <StackPanel>
