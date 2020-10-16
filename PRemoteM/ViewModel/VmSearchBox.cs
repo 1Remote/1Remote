@@ -198,6 +198,11 @@ namespace PRM.ViewModel
         {
             if (!string.IsNullOrEmpty(keyword))
             {
+                var keyWords = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                var keyWordIsMatch = new List<bool>(keyWords.Length);
+                for (var i = 0; i < keyWords.Length; i++)
+                    keyWordIsMatch.Add(false);
+
                 // match keyword
                 foreach (var item in GlobalData.Instance.VmItemList.Where(x =>
                     x.GetType() != typeof(ProtocolServerNone)))
@@ -209,15 +214,42 @@ namespace PRM.ViewModel
                     var dispName = item.Server.DispName;
                     var subTitle = item.Server.SubTitle;
 
-                    var f1 = dispName.IsMatchPinyinKeywords(keyword, out var m1);
-                    var f2 = subTitle.IsMatchPinyinKeywords(keyword, out var m2);
-                    if (f1 || f2)
+
+                    var mDispName = new List<List<bool>>();
+                    var mSubTitle = new List<List<bool>>();
+                    for (var i = 0; i < keyWordIsMatch.Count; i++)
                     {
+                        var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
+                        var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
+                        mDispName.Add(m1);
+                        mSubTitle.Add(m2);
+                        keyWordIsMatch[i] = f1 || f2;
+                    }
+
+                    if (keyWordIsMatch.All(x => x == true))
+                    {
+                        var m1 = new List<bool>();
+                        var m2 = new List<bool>();
+                        for (var i = 0; i < dispName.Length; i++)
+                            m1.Add(false);
+                        for (var i = 0; i < subTitle.Length; i++)
+                            m2.Add(false);
+                        for (var i = 0; i < keyWordIsMatch.Count; i++)
+                        {
+                            if (mDispName[i] != null)
+                                for (int j = 0; j < mDispName[i].Count; j++)
+                                    m1[j] |= mDispName[i][j];
+                            if (mSubTitle[i] != null)
+                                for (int j = 0; j < mSubTitle[i].Count; j++)
+                                    m2[j] |= mSubTitle[i][j];
+                        }
+
+
                         item.ObjectVisibility = Visibility.Visible;
                         const bool enableHighLine = true;
                         if (enableHighLine)
                         {
-                            if (m1 != null && m1.Any(x => x == true))
+                            if (m1.Any(x => x == true))
                             {
                                 var sp = new StackPanel()
                                 { Orientation = System.Windows.Controls.Orientation.Horizontal };
@@ -238,7 +270,7 @@ namespace PRM.ViewModel
 
                                 item.DispNameControl = sp;
                             }
-                            if (m2 != null && m2.Any(x => x == true))
+                            if (m2.Any(x => x == true))
                             {
                                 var sp = new StackPanel()
                                 { Orientation = System.Windows.Controls.Orientation.Horizontal };
