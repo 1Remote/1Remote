@@ -26,7 +26,8 @@
         </ControlTemplate>
     </Window.Template>
     <Window.Resources>
-        <system:Double x:Key="Width">400</system:Double>
+        <system:Double x:Key="OneItemHeight">40</system:Double>
+        <system:Double x:Key="OneActionItemHeight">30</system:Double>
         <system:Double x:Key="CornerRadius">8</system:Double>
 
 
@@ -185,8 +186,8 @@
 
 
         <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
-            <Grid Visibility="{Binding ObjectVisibility}">
-                <Grid Height="30" Margin="0 5">
+            <Grid Visibility="{Binding ObjectVisibility}" Height="{StaticResource OneItemHeight}">
+                <Grid Height="30" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="30"></ColumnDefinition>
@@ -286,8 +287,8 @@
 
 
         <DataTemplate x:Key="SearchBoxActionItemDataTemplate">
-            <Grid>
-                <Grid Height="20" Margin="0 5">
+            <Grid Height="{StaticResource OneActionItemHeight}">
+                <Grid Height="20" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="30"></ColumnDefinition>
@@ -305,105 +306,84 @@
         <Style x:Key="SearchBoxActionList" TargetType="{x:Type ListBox}" BasedOn="{StaticResource SearchBoxSelectionList}">
             <Setter Property="ItemTemplate" Value="{StaticResource SearchBoxActionItemDataTemplate}"></Setter>
         </Style>
-
     </Window.Resources>
 
 
+    <Grid Name="GridMain" 
+          Width="{Binding GridMainWidth}"
+          Height="{Binding GridMainHeight}"
+          Clip="{Binding GridMainClip}" 
+          Background="{DynamicResource MainColor1Brush}">
 
-
-
-
-
-
-    <Grid Width="{StaticResource Width}" Background="Transparent">
-
-        <Grid Background="{DynamicResource MainColor1Brush}" 
-              Visibility="{Binding SelectionsVisibility}"
-              Height="15" 
-              Margin="0 36 0 0" 
-              VerticalAlignment="Top">
-        </Grid>
-
-
-
-
-        <Border Height="46"
-                VerticalAlignment="Top"
-                Background="{DynamicResource MainColor1Brush}">
-            <Border.CornerRadius>
-                <CornerRadius 
-                    TopLeft="{StaticResource CornerRadius}"
-                    TopRight="{StaticResource CornerRadius}"
-                    BottomRight="{StaticResource CornerRadius}"
-                    BottomLeft="{StaticResource CornerRadius}"/>
-            </Border.CornerRadius>
-            <Grid>
-                <TextBox Name="TbKeyWord" 
+        <Grid Name="GridKeyword"
+              VerticalAlignment="Top"
+              Height="{Binding GridKeywordHeight}" 
+              Background="{DynamicResource MainColor1Brush}">
+            <TextBox Name="TbKeyWord"
                          Margin="10 0 0 0"
                          Foreground="{DynamicResource MainColor1ForegroundBrush}" 
                          CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
-                         Width="{StaticResource Width}" Height="44" 
+                         Height="44" 
                          FontSize="18"
                          Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
                          PreviewKeyDown="TbKeyWord_OnKeyDown"
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
-                <Grid Width="50" Height="40" Margin="0 0 5 0" HorizontalAlignment="Right" 
+            <Grid Width="50" Height="40" HorizontalAlignment="Right" 
                           Background="{DynamicResource MainColor1Brush}"
                           MouseMove="WindowHeader_MouseMove"></Grid>
-            </Grid>
-        </Border>
+        </Grid>
 
 
 
-        <Border Margin="0 46 0 0"
+        <Grid Name="GridSelections"
+              VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Height="{Binding ElementName=GridKeyword, Path=Height}"></Grid>
+                <ListBox x:Name="ListBoxSelections"
+                         Height="{Binding GridSelectionsHeight}"
+                         VerticalAlignment="Top"
+                         BorderThickness="0"
+                         SelectedIndex="{Binding SelectedIndex}" 
+                         ItemsSource="{Binding Source={x:Static model:GlobalData.Instance}, Path=VmItemList}"
+                         Background="Transparent"
+                         Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                         Style="{StaticResource SearchBoxSelectionList}">
+                </ListBox>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}"
                 VerticalAlignment="Top"
-                Visibility="{Binding SelectionsVisibility}"
                 Background="{DynamicResource MainColor1Brush}">
-            <Border.CornerRadius>
-                <CornerRadius BottomLeft="{StaticResource CornerRadius}" BottomRight="{StaticResource CornerRadius}"/>
-            </Border.CornerRadius>
-            <Grid>
-                <StackPanel>
-                    <ListBox x:Name="ListBoxSelections" MaxHeight="400"
-                             BorderThickness="0"
-                             SelectedIndex="{Binding SelectedIndex}" 
-                             ItemsSource="{Binding Source={x:Static model:GlobalData.Instance}, Path=VmItemList}"
-                             Background="Transparent"
-                             Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                             Style="{StaticResource SearchBoxSelectionList}">
-                    </ListBox>
-                </StackPanel>
-            </Grid>
-        </Border>
+            <StackPanel>
+                <Grid Height="{Binding GridKeywordHeight}">
+                    <Grid Height="30" Margin="0 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"></ColumnDefinition>
+                            <ColumnDefinition Width="30"></ColumnDefinition>
+                            <ColumnDefinition Width="5"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"></RowDefinition>
+                            <RowDefinition Height="10"></RowDefinition>
+                        </Grid.RowDefinitions>
 
-        <Popup Name="PopupActions" StaysOpen="True"
-               AllowsTransparency="True"
-               IsOpen="{Binding PopupActionsIsOpen}"
-               Width="{StaticResource Width}">
-            <Border BorderBrush="#AAA" BorderThickness="1 0 1 1" 
-                    Background="{DynamicResource MainColor1Brush}">
-                <Grid>
-                    <StackPanel>
-                        <Grid Background="{DynamicResource MainColor1LighterBrush}" Margin="0 0 0 20">
-                            <Grid Height="30" Margin="0 5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="5"></ColumnDefinition>
-                                    <ColumnDefinition Width="30"></ColumnDefinition>
-                                    <ColumnDefinition Width="5"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="20"></RowDefinition>
-                                    <RowDefinition Height="10"></RowDefinition>
-                                </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-                                    <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
-                                </Grid>
+                        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+                            <Path Margin="2" Fill="{DynamicResource MainColor1LighterBrush}"
+                                  Data="F1 M 16.591797 2.431641 L 9.023438 10 L 16.591797 17.568359 L 14.238281 19.931641 L 4.306641 10 L 14.238281 0.068359 L 16.591797 2.431641 Z " Stretch="Uniform">
+                            </Path>
+                        </Grid>
 
-                                <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
+                        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                            <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                        </Grid>
+
+                        <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}" 
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource MainColor1ForegroundBrush}"
@@ -412,28 +392,26 @@
                                    Margin="10 0"
                                    VerticalAlignment="Center"></TextBlock>
 
-                                <TextBlock Grid.Row="0" Grid.Column="3" 
+                        <TextBlock Grid.Row="0" Grid.Column="3" 
                                            FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            VerticalAlignment="Center"
                                            Text="{Binding SelectedItem.Server.DispName}"></TextBlock>
 
-                                <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
+                        <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
                                            FontSize="10" Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            VerticalAlignment="Center"
                                            Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
-                            </Grid>
-                        </Grid>
-                        <ListBox x:Name="ListBoxActions" MaxHeight="402"
+                    </Grid>
+                </Grid>
+                <ListBox x:Name="ListBoxActions"
                                  Style="{StaticResource SearchBoxActionList}"
                                  BorderThickness="0"
                                  SelectedIndex="{Binding SelectedActionIndex}" 
                                  ItemsSource="{Binding Actions}"
                                  Background="{DynamicResource MainColor1Brush}"
                                  Foreground="{DynamicResource MainColor1ForegroundBrush}">
-                        </ListBox>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Popup>
+                </ListBox>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
