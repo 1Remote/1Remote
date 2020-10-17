@@ -7,7 +7,7 @@ using PRM.Core.Protocol;
 
 namespace PRM.Core.Model
 {
-    public class GlobalData
+    public class GlobalData : NotifyPropertyChangedBase
     {
         #region singleton
         private static GlobalData uniqueInstance;
@@ -44,7 +44,12 @@ namespace PRM.Core.Model
 
         #region Server Data
 
-        public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
+        private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
+        public ObservableCollection<VmProtocolServer> VmItemList
+        {
+            get => _vmItemList;
+            set => SetAndNotifyIfChanged(nameof(VmItemList), ref _vmItemList, value);
+        }
 
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null)

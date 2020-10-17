@@ -9,6 +9,7 @@ using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
+using Shawn.Utils.PageHost;
 
 namespace PRM.View
 {
@@ -24,7 +25,13 @@ namespace PRM.View
         {
             InitializeComponent();
             ShowInTaskbar = false;
-            _vmSearchBox = new VmSearchBox();
+
+
+            double oneItemHeight = (double)FindResource("OneItemHeight");
+            double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
+            double cornerRadius = (double)FindResource("CornerRadius");
+            _vmSearchBox = new VmSearchBox(oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
+
             DataContext = _vmSearchBox;
             Loaded += (sender, args) =>
             {
@@ -55,14 +62,6 @@ namespace PRM.View
             };
         }
 
-        protected override void OnLocationChanged(EventArgs e)
-        {
-            // make popup control moves with parent by https://stackoverflow.com/questions/5736359/popup-control-moves-with-parent
-            PopupActions.HorizontalOffset += 1;
-            PopupActions.HorizontalOffset -= 1;
-            base.OnLocationChanged(e);
-        }
-
         private readonly object _closeLocker = new object();
         private bool _isHidden = false;
         private void HideMe()
@@ -73,10 +72,11 @@ namespace PRM.View
                     if (_isHidden == false)
                     {
                         this.Visibility = Visibility.Hidden;
-                        _vmSearchBox.PopupSelectionsIsOpen = false;
-                        _vmSearchBox.PopupActionsIsOpen = false;
                         _isHidden = true;
                         this.Hide();
+                        GridMenuActions.Margin = new Thickness(0, -GridMenuActions.ActualHeight, 0, 0);
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                        _vmSearchBox.HideActionsList();
                     }
                 }
         }
@@ -136,107 +136,13 @@ namespace PRM.View
             lock (_keyDownLocker)
             {
                 var key = e.Key;
+
                 if (key == Key.Escape)
                 {
                     HideMe();
                     return;
                 }
-                else if (_vmSearchBox.PopupSelectionsIsOpen)
-                {
-                    switch (key)
-                    {
-                        case Key.Enter:
-                            HideMe();
-                            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
-                            {
-                                var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
-                                GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
-                            }
-                            break;
-                        case Key.Down:
-                            if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
-                            {
-                                var index = _vmSearchBox.SelectedIndex;
-                                Console.WriteLine("b Selected item index: " + index);
-                                for (int i = _vmSearchBox.SelectedIndex + 1; i < GlobalData.Instance.VmItemList.Count; i++)
-                                {
-                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                                _vmSearchBox.SelectedIndex = index;
-                            }
-                            break;
-                        case Key.Up:
-                            if (_vmSearchBox.SelectedIndex > 0)
-                            {
-                                var index = _vmSearchBox.SelectedIndex;
-                                for (int i = _vmSearchBox.SelectedIndex - 1; i >= 0; i--)
-                                {
-                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                                _vmSearchBox.SelectedIndex = index;
-                            }
-                            break;
-                        case Key.PageUp:
-                            if (_vmSearchBox.SelectedIndex > 0)
-                            {
-                                var index = _vmSearchBox.SelectedIndex;
-                                int count = 0;
-                                for (int i = _vmSearchBox.SelectedIndex - 1; i >= 0; i--)
-                                {
-                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        ++count;
-                                        index = i;
-                                        if (count == 5)
-                                            break;
-                                    }
-                                }
-                                _vmSearchBox.SelectedIndex = index;
-                            }
-                            break;
-                        case Key.PageDown:
-                            if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
-                            {
-                                var index = _vmSearchBox.SelectedIndex;
-                                int count = 0;
-                                for (int i = _vmSearchBox.SelectedIndex + 1; i < GlobalData.Instance.VmItemList.Count; i++)
-                                {
-                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        ++count;
-                                        index = i;
-                                        if (count == 5)
-                                            break;
-                                    }
-                                }
-                                _vmSearchBox.SelectedIndex = index;
-                            }
-                            break;
-                        case Key.Right:
-                            if (sender is TextBox tb)
-                            {
-                                if (tb.CaretIndex != tb.Text.Length)
-                                {
-                                    return;
-                                }
-                            }
-                            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
-                            {
-                                _vmSearchBox.ShowActionsList();
-                            }
-                            e.Handled = true;
-                            break;
-                    }
-                }
-                else if (_vmSearchBox.PopupActionsIsOpen)
+                else if (GridMenuActions.Visibility == Visibility.Visible)
                 {
                     switch (key)
                     {
@@ -282,9 +188,104 @@ namespace PRM.View
                             }
                             break;
                         case Key.Left:
-                            _vmSearchBox.PopupSelectionsIsOpen = true;
-                            _vmSearchBox.PopupActionsIsOpen = false;
+                            _vmSearchBox.HideActionsList();
+                            break;
+                    }
+                    e.Handled = true;
+                }
+                else
+                {
+                    switch (key)
+                    {
+                        case Key.Right:
+                            if (sender is TextBox tb)
+                            {
+                                if (tb.CaretIndex != tb.Text.Length)
+                                {
+                                    return;
+                                }
+                            }
+
+                            if (_vmSearchBox.SelectedIndex >= 0 &&
+                                _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
+                            {
+                                _vmSearchBox.ShowActionsList();
+                            }
                             e.Handled = true;
+                            break;
+                        case Key.Enter:
+                            HideMe();
+                            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
+                            {
+                                var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
+                                GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
+                            }
+                            break;
+                        case Key.Down:
+                            if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
+                            {
+                                var index = _vmSearchBox.SelectedIndex;
+                                for (int i = _vmSearchBox.SelectedIndex + 1; i < GlobalData.Instance.VmItemList.Count; i++)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
+                            }
+                            break;
+                        case Key.Up:
+                            if (_vmSearchBox.SelectedIndex > 0)
+                            {
+                                var index = _vmSearchBox.SelectedIndex;
+                                for (int i = _vmSearchBox.SelectedIndex - 1; i >= 0; i--)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
+                            }
+                            break;
+                        case Key.PageUp:
+                            if (_vmSearchBox.SelectedIndex > 0)
+                            {
+                                var index = _vmSearchBox.SelectedIndex;
+                                int count = 0;
+                                for (int i = _vmSearchBox.SelectedIndex - 1; i >= 0; i--)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        ++count;
+                                        index = i;
+                                        if (count == 5)
+                                            break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
+                            }
+                            break;
+                        case Key.PageDown:
+                            if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
+                            {
+                                var index = _vmSearchBox.SelectedIndex;
+                                int count = 0;
+                                for (int i = _vmSearchBox.SelectedIndex + 1; i < GlobalData.Instance.VmItemList.Count; i++)
+                                {
+                                    if (GlobalData.Instance.VmItemList[i].ObjectVisibility == Visibility)
+                                    {
+                                        ++count;
+                                        index = i;
+                                        if (count == 5)
+                                            break;
+                                    }
+                                }
+                                _vmSearchBox.SelectedIndex = index;
+                            }
                             break;
                     }
                 }

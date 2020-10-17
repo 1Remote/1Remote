@@ -10,6 +10,7 @@ using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using Shawn.Utils;
+using Shawn.Utils.PageHost;
 
 namespace PRM.ViewModel
 {
@@ -30,8 +31,22 @@ namespace PRM.ViewModel
 
     public class VmSearchBox : NotifyPropertyChangedBase
     {
-        public VmSearchBox()
+        private readonly double _oneItemHeight;
+        private readonly double _oneActionHeight;
+        private readonly double _cornerRadius;
+        private readonly FrameworkElement _listSelections;
+        private readonly FrameworkElement _listActions;
+
+        public VmSearchBox(double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
         {
+            _oneItemHeight = oneItemHeight;
+            _oneActionHeight = oneActionHeight;
+            this._listSelections = listSelections;
+            this._listActions = listActions;
+            _cornerRadius = cornerRadius;
+            GridKeywordHeight = 46;
+            GridMainWidth = 400;
+            RecalcWindowHeight(false);
         }
 
 
@@ -86,42 +101,93 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                UpdateDispList(value);
+                UpdateItemsList(value);
             }
         }
 
 
 
-        private Visibility _selectionsVisibility = Visibility.Visible;
-        public Visibility SelectionsVisibility
+        private int _displayItemCount;
+        public int DisplayItemCount
         {
-            get => _selectionsVisibility;
-            set => SetAndNotifyIfChanged(nameof(SelectionsVisibility), ref _selectionsVisibility, value);
+            get => _displayItemCount;
+            set => SetAndNotifyIfChanged(nameof(DisplayItemCount), ref _displayItemCount, value);
         }
 
 
-        private bool _popupSelectionsIsOpen = false;
-        public bool PopupSelectionsIsOpen
+        private double _gridMainWidth;
+        public double GridMainWidth
         {
-            get => _popupSelectionsIsOpen;
-            set => SetAndNotifyIfChanged(nameof(PopupSelectionsIsOpen), ref _popupSelectionsIsOpen, value);
+            get => _gridMainWidth;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(GridMainWidth), ref _gridMainWidth, value);
+                GridMainClip = new RectangleGeometry(new Rect(new Size(GridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
+            }
+        }
+
+
+        private double _gridMainHeight;
+        public double GridMainHeight
+        {
+            get => _gridMainHeight;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(GridMainHeight), ref _gridMainHeight, value);
+                GridMainClip = new RectangleGeometry(new Rect(new Size(GridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
+            }
+        }
+
+        private RectangleGeometry _gridMainClip = null;
+        public RectangleGeometry GridMainClip
+        {
+            get => _gridMainClip;
+            set => SetAndNotifyIfChanged(nameof(GridMainClip), ref _gridMainClip, value);
+        }
+
+        public double GridKeywordHeight { get; }
+
+
+        private double _gridSelectionsHeight;
+        public double GridSelectionsHeight
+        {
+            get => _gridSelectionsHeight;
+            set => SetAndNotifyIfChanged(nameof(GridSelectionsHeight), ref _gridSelectionsHeight, value);
+        }
+
+
+        private double _gridActionsHeight;
+        public double GridActionsHeight
+        {
+            get => _gridActionsHeight;
+            set => SetAndNotifyIfChanged(nameof(GridActionsHeight), ref _gridActionsHeight, value);
         }
 
 
 
-
-        private bool _popupActionsIsOpen = false;
-        public bool PopupActionsIsOpen
+        public void RecalcWindowHeight(bool showGridAction)
         {
-            get => _popupActionsIsOpen;
-            set => SetAndNotifyIfChanged(nameof(PopupActionsIsOpen), ref _popupActionsIsOpen, value);
+            if (showGridAction)
+            {
+                GridSelectionsHeight = (Actions?.Count ?? 0) * _oneActionHeight;
+                GridActionsHeight = GridKeywordHeight + GridSelectionsHeight;
+                GridMainHeight = GridActionsHeight;
+            }
+            else
+            {
+                if (DisplayItemCount >= 8)
+                {
+                    GridSelectionsHeight = _oneItemHeight * 8;
+                }
+                else
+                    GridSelectionsHeight = _oneItemHeight * DisplayItemCount;
+                GridMainHeight = GridKeywordHeight + GridSelectionsHeight;
+            }
         }
-
-
-
 
         public void ShowActionsList()
         {
+            #region Build Actions
             var actions = new ObservableCollection<ActionItem>();
             actions.Add(new ActionItem()
             {
@@ -185,16 +251,38 @@ namespace PRM.ViewModel
                             Clipboard.SetText(server.GetDecryptedPassWord());
                     },
                 });
-            }
+            } 
+            #endregion
+
             Actions = actions;
-            PopupSelectionsIsOpen = false;
-            PopupActionsIsOpen = true;
             SelectedActionIndex = 0;
+
+            RecalcWindowHeight(true);
+
+            _listActions.Visibility = Visibility.Visible;
+
+            var sb = AnimationPage.GetInOutStoryboard(0.3,
+                AnimationPage.InOutAnimationType.SlideFromLeft,
+                GridMainWidth,
+                GridMainHeight);
+            sb.Begin(_listActions);
         }
 
+        public void HideActionsList()
+        {
+            var sb = AnimationPage.GetInOutStoryboard(0.3,
+                AnimationPage.InOutAnimationType.SlideToLeft,
+                GridMainWidth,
+                GridMainHeight);
+            sb.Completed += (o, args) =>
+            {
+                _listActions.Visibility = Visibility.Hidden;
+                RecalcWindowHeight(false);
+            };
+            sb.Begin(_listActions);
+        }
 
-
-        private void UpdateDispList(string keyword)
+        private void UpdateItemsList(string keyword)
         {
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -203,6 +291,7 @@ namespace PRM.ViewModel
                 for (var i = 0; i < keyWords.Length; i++)
                     keyWordIsMatch.Add(false);
 
+                int nMatchedCount = 0;
                 // match keyword
                 foreach (var item in GlobalData.Instance.VmItemList.Where(x =>
                     x.GetType() != typeof(ProtocolServerNone)))
@@ -246,6 +335,7 @@ namespace PRM.ViewModel
 
 
                         item.ObjectVisibility = Visibility.Visible;
+                        ++nMatchedCount;
                         const bool enableHighLine = true;
                         if (enableHighLine)
                         {
@@ -298,6 +388,7 @@ namespace PRM.ViewModel
                         item.ObjectVisibility = Visibility.Collapsed;
                     }
                 }
+                DisplayItemCount = nMatchedCount;
             }
             else
             {
@@ -308,7 +399,21 @@ namespace PRM.ViewModel
                     item.DispNameControl = item.OrgDispNameControl;
                     item.SubTitleControl = item.OrgSubTitleControl;
                 }
+                DisplayItemCount = GlobalData.Instance.VmItemList.Count;
             }
+
+            // reorder
+            for (var i = 1; i < GlobalData.Instance.VmItemList.Count; i++)
+            {
+                var s0 = GlobalData.Instance.VmItemList[i - 1];
+                var s1 = GlobalData.Instance.VmItemList[i];
+                if (s0.Server.LastConnTime < s1.Server.LastConnTime)
+                {
+                    GlobalData.Instance.VmItemList = new ObservableCollection<VmProtocolServer>(GlobalData.Instance.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+                    break;
+                }
+            }
+
 
             // index the list to first item
             for (var i = 0; i < GlobalData.Instance.VmItemList.Count; i++)
@@ -322,18 +427,7 @@ namespace PRM.ViewModel
                 }
             }
 
-            // hide or show selection grid
-            if (GlobalData.Instance.VmItemList.Any(x => x.ObjectVisibility == Visibility.Visible))
-            {
-                PopupSelectionsIsOpen = true;
-                SelectionsVisibility = Visibility.Visible;
-            }
-            else
-            {
-                PopupSelectionsIsOpen = false;
-                SelectionsVisibility = Visibility.Collapsed;
-            }
-            PopupActionsIsOpen = false;
+            RecalcWindowHeight(false);
         }
     }
 }
