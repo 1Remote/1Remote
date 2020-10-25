@@ -31,21 +31,22 @@ namespace PRM.ViewModel
 
     public class VmSearchBox : NotifyPropertyChangedBase
     {
+        private readonly double _gridMainWidth;
         private readonly double _oneItemHeight;
         private readonly double _oneActionHeight;
         private readonly double _cornerRadius;
         private readonly FrameworkElement _listSelections;
         private readonly FrameworkElement _listActions;
 
-        public VmSearchBox(double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
+        public VmSearchBox(double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
         {
+            _gridMainWidth = gridMainWidth;
             _oneItemHeight = oneItemHeight;
             _oneActionHeight = oneActionHeight;
             this._listSelections = listSelections;
             this._listActions = listActions;
             _cornerRadius = cornerRadius;
             GridKeywordHeight = 46;
-            GridMainWidth = 400;
             RecalcWindowHeight(false);
         }
 
@@ -106,27 +107,6 @@ namespace PRM.ViewModel
         }
 
 
-
-        private int _displayItemCount;
-        public int DisplayItemCount
-        {
-            get => _displayItemCount;
-            set => SetAndNotifyIfChanged(nameof(DisplayItemCount), ref _displayItemCount, value);
-        }
-
-
-        private double _gridMainWidth;
-        public double GridMainWidth
-        {
-            get => _gridMainWidth;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(GridMainWidth), ref _gridMainWidth, value);
-                GridMainClip = new RectangleGeometry(new Rect(new Size(GridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
-            }
-        }
-
-
         private double _gridMainHeight;
         public double GridMainHeight
         {
@@ -134,7 +114,7 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(GridMainHeight), ref _gridMainHeight, value);
-                GridMainClip = new RectangleGeometry(new Rect(new Size(GridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
+                GridMainClip = new RectangleGeometry(new Rect(new Size(_gridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
             }
         }
 
@@ -175,12 +155,12 @@ namespace PRM.ViewModel
             }
             else
             {
-                if (DisplayItemCount >= 8)
-                {
-                    GridSelectionsHeight = _oneItemHeight * 8;
-                }
+                const int nMaxCount = 8;
+                int visibleCount = GlobalData.Instance.VmItemList.Count(vm => vm.ObjectVisibility == Visibility.Visible);
+                if (visibleCount >= nMaxCount)
+                    GridSelectionsHeight = _oneItemHeight * nMaxCount;
                 else
-                    GridSelectionsHeight = _oneItemHeight * DisplayItemCount;
+                    GridSelectionsHeight = _oneItemHeight * visibleCount;
                 GridMainHeight = GridKeywordHeight + GridSelectionsHeight;
             }
         }
@@ -263,7 +243,7 @@ namespace PRM.ViewModel
 
             var sb = AnimationPage.GetInOutStoryboard(0.3,
                 AnimationPage.InOutAnimationType.SlideFromLeft,
-                GridMainWidth,
+                _gridMainWidth,
                 GridMainHeight);
             sb.Begin(_listActions);
         }
@@ -272,7 +252,7 @@ namespace PRM.ViewModel
         {
             var sb = AnimationPage.GetInOutStoryboard(0.3,
                 AnimationPage.InOutAnimationType.SlideToLeft,
-                GridMainWidth,
+                _gridMainWidth,
                 GridMainHeight);
             sb.Completed += (o, args) =>
             {
@@ -291,17 +271,16 @@ namespace PRM.ViewModel
                 for (var i = 0; i < keyWords.Length; i++)
                     keyWordIsMatch.Add(false);
 
-                int nMatchedCount = 0;
                 // match keyword
-                foreach (var item in GlobalData.Instance.VmItemList.Where(x =>
+                foreach (var vm in GlobalData.Instance.VmItemList.Where(x =>
                     x.GetType() != typeof(ProtocolServerNone)))
                 {
-                    Debug.Assert(item != null);
-                    Debug.Assert(!string.IsNullOrEmpty(item.Server.ClassVersion));
-                    Debug.Assert(!string.IsNullOrEmpty(item.Server.Protocol));
+                    Debug.Assert(vm != null);
+                    Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
+                    Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
 
-                    var dispName = item.Server.DispName;
-                    var subTitle = item.Server.SubTitle;
+                    var dispName = vm.Server.DispName;
+                    var subTitle = vm.Server.SubTitle;
 
 
                     var mDispName = new List<List<bool>>();
@@ -317,28 +296,26 @@ namespace PRM.ViewModel
 
                     if (keyWordIsMatch.All(x => x == true))
                     {
-                        var m1 = new List<bool>();
-                        var m2 = new List<bool>();
-                        for (var i = 0; i < dispName.Length; i++)
-                            m1.Add(false);
-                        for (var i = 0; i < subTitle.Length; i++)
-                            m2.Add(false);
-                        for (var i = 0; i < keyWordIsMatch.Count; i++)
-                        {
-                            if (mDispName[i] != null)
-                                for (int j = 0; j < mDispName[i].Count; j++)
-                                    m1[j] |= mDispName[i][j];
-                            if (mSubTitle[i] != null)
-                                for (int j = 0; j < mSubTitle[i].Count; j++)
-                                    m2[j] |= mSubTitle[i][j];
-                        }
+                        vm.ObjectVisibility = Visibility.Visible;
 
-
-                        item.ObjectVisibility = Visibility.Visible;
-                        ++nMatchedCount;
                         const bool enableHighLine = true;
                         if (enableHighLine)
                         {
+                            var m1 = new List<bool>();
+                            var m2 = new List<bool>();
+                            for (var i = 0; i < dispName.Length; i++)
+                                m1.Add(false);
+                            for (var i = 0; i < subTitle.Length; i++)
+                                m2.Add(false);
+                            for (var i = 0; i < keyWordIsMatch.Count; i++)
+                            {
+                                if (mDispName[i] != null)
+                                    for (int j = 0; j < mDispName[i].Count; j++)
+                                        m1[j] |= mDispName[i][j];
+                                if (mSubTitle[i] != null)
+                                    for (int j = 0; j < mSubTitle[i].Count; j++)
+                                        m2[j] |= mSubTitle[i][j];
+                            }
                             if (m1.Any(x => x == true))
                             {
                                 var sp = new StackPanel()
@@ -358,7 +335,7 @@ namespace PRM.ViewModel
                                         });
                                 }
 
-                                item.DispNameControl = sp;
+                                vm.DispNameControl = sp;
                             }
                             if (m2.Any(x => x == true))
                             {
@@ -379,27 +356,25 @@ namespace PRM.ViewModel
                                         });
                                 }
 
-                                item.SubTitleControl = sp;
+                                vm.SubTitleControl = sp;
                             }
                         }
                     }
                     else
                     {
-                        item.ObjectVisibility = Visibility.Collapsed;
+                        vm.ObjectVisibility = Visibility.Collapsed;
                     }
                 }
-                DisplayItemCount = nMatchedCount;
             }
             else
             {
                 // show all
-                foreach (var item in GlobalData.Instance.VmItemList)
+                foreach (var vm in GlobalData.Instance.VmItemList)
                 {
-                    item.ObjectVisibility = Visibility.Visible;
-                    item.DispNameControl = item.OrgDispNameControl;
-                    item.SubTitleControl = item.OrgSubTitleControl;
+                    vm.ObjectVisibility = Visibility.Visible;
+                    vm.DispNameControl = vm.OrgDispNameControl;
+                    vm.SubTitleControl = vm.OrgSubTitleControl;
                 }
-                DisplayItemCount = GlobalData.Instance.VmItemList.Count;
             }
 
             // reorder
@@ -418,11 +393,11 @@ namespace PRM.ViewModel
             // index the list to first item
             for (var i = 0; i < GlobalData.Instance.VmItemList.Count; i++)
             {
-                var vmClipObject = GlobalData.Instance.VmItemList[i];
-                if (vmClipObject.ObjectVisibility == Visibility.Visible)
+                var vm = GlobalData.Instance.VmItemList[i];
+                if (vm.ObjectVisibility == Visibility.Visible)
                 {
                     SelectedIndex = i;
-                    SelectedItem = vmClipObject;
+                    SelectedItem = vm;
                     break;
                 }
             }

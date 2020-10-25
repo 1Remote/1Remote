@@ -26,6 +26,7 @@
         </ControlTemplate>
     </Window.Template>
     <Window.Resources>
+        <system:Double x:Key="GridMainWidth">400</system:Double>
         <system:Double x:Key="OneItemHeight">40</system:Double>
         <system:Double x:Key="OneActionItemHeight">30</system:Double>
         <system:Double x:Key="CornerRadius">8</system:Double>
@@ -310,7 +311,7 @@
 
 
     <Grid Name="GridMain" 
-          Width="{Binding GridMainWidth}"
+          Width="{StaticResource GridMainWidth}"
           Height="{Binding GridMainHeight}"
           Clip="{Binding GridMainClip}" 
           Background="{DynamicResource MainColor1Brush}">

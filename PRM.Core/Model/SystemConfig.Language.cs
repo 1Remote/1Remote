@@ -16,13 +16,15 @@ namespace PRM.Core.Model
         public SystemConfigLanguage(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
         {
             Debug.Assert(appResourceDictionary != null);
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            LanguageJsonDir = Path.Combine(appDateFolder, "Languages");
             AppResourceDictionary = appResourceDictionary;
             InitLanguageCode2Name();
             _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguageCode);
             Load();
         }
         public const string DefaultLanguageCode = "en-us";
-        public static string LanguageJsonDir = "Languages";
+        public readonly string LanguageJsonDir;
         public readonly ResourceDictionary AppResourceDictionary = null;
 
         private string _currentLanguageCode = "en-us";
