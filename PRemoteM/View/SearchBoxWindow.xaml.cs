@@ -27,10 +27,11 @@ namespace PRM.View
             ShowInTaskbar = false;
 
 
+            double gridMainWidth = (double)FindResource("GridMainWidth");
             double oneItemHeight = (double)FindResource("OneItemHeight");
             double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
             double cornerRadius = (double)FindResource("CornerRadius");
-            _vmSearchBox = new VmSearchBox(oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
+            _vmSearchBox = new VmSearchBox(gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
 
             DataContext = _vmSearchBox;
             Loaded += (sender, args) =>
@@ -62,21 +63,20 @@ namespace PRM.View
             };
         }
 
-        private readonly object _closeLocker = new object();
+        private readonly object _hideToggleLocker = new object();
         private bool _isHidden = false;
         private void HideMe()
         {
             if (_isHidden == false)
-                lock (_closeLocker)
+                lock (_hideToggleLocker)
                 {
                     if (_isHidden == false)
                     {
                         this.Visibility = Visibility.Hidden;
                         _isHidden = true;
                         this.Hide();
-                        GridMenuActions.Margin = new Thickness(0, -GridMenuActions.ActualHeight, 0, 0);
-                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
                         _vmSearchBox.HideActionsList();
+                        _vmSearchBox.DispNameFilter = "";
                     }
                 }
         }
@@ -86,28 +86,30 @@ namespace PRM.View
 
         public void ShowMe()
         {
+            if (!SystemConfig.Instance.QuickConnect.Enable)
+                return;
+
             SimpleLogHelper.Debug("Call shortcut to invoke quick window.");
-            _vmSearchBox.DispNameFilter = "";
-            if (SystemConfig.Instance.QuickConnect.Enable)
-                if (_isHidden == true)
-                    lock (_closeLocker)
+            if (_isHidden == true)
+                lock (_hideToggleLocker)
+                {
+                    if (_isHidden == true)
                     {
-                        if (_isHidden == true)
-                        {
-                            var p = ScreenInfoEx.GetMouseSystemPosition();
-                            var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
-                            this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
-                            this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
-                            this.Show();
-                            this.Visibility = Visibility.Visible;
-                            this.Activate();
-                            this.Topmost = true;  // important
-                            this.Topmost = false; // important
-                            this.Focus();         // important
-                            TbKeyWord.Focus();
-                            _isHidden = false;
-                        }
+                        _vmSearchBox.DispNameFilter = "";
+                        var p = ScreenInfoEx.GetMouseSystemPosition();
+                        var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
+                        this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+                        this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+                        this.Show();
+                        this.Visibility = Visibility.Visible;
+                        this.Activate();
+                        this.Topmost = true;  // important
+                        this.Topmost = false; // important
+                        this.Focus();         // important
+                        TbKeyWord.Focus();
+                        _isHidden = false;
                     }
+                }
         }
 
 
@@ -147,13 +149,13 @@ namespace PRM.View
                     switch (key)
                     {
                         case Key.Enter:
-                            HideMe();
                             if (_vmSearchBox.Actions.Count > 0
                                 && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
                                 _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
                             }
+                            HideMe();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count - 1)
@@ -214,12 +216,12 @@ namespace PRM.View
                             e.Handled = true;
                             break;
                         case Key.Enter:
-                            HideMe();
                             if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
                             {
                                 var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
                                 GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
                             }
+                            HideMe();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
