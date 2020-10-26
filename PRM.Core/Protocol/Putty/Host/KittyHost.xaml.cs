@@ -28,9 +28,9 @@ using Path = System.IO.Path;
 namespace PRM.Core.Protocol.Putty.Host
 {
     /// <summary>
-    /// PuttyHost.xaml 的交互逻辑
+    /// KittyHost.xaml 的交互逻辑
     /// </summary>
-    public partial class PuttyHost : ProtocolHostBase
+    public partial class KittyHost : ProtocolHostBase
     {
         [DllImport("User32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
@@ -69,26 +69,24 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int SW_SHOWNORMAL = 1;
         private const int SW_SHOWMAXIMIZED = 3;
 
-        public const string PuttyExeName = "PuTTY_PRM.exe";
+        public const string KittyExeName = "KiTTY_PRM.exe";
 
-        private const int PuttyWindowMargin = 0;
-        private Process _puttyProcess = null;
-        private IntPtr _puttyHandle = IntPtr.Zero;
-        private System.Windows.Forms.Panel _puttyMasterPanel = null;
-        private TransparentPanel _topTransparentPanel = null;
-        private Task _taksTopPanelFocus = null;
+        private const int KittyWindowMargin = 0;
+        private Process _kittyProcess = null;
+        private IntPtr _kittyHandle = IntPtr.Zero;
+        private System.Windows.Forms.Panel _kittyMasterPanel = null;
         private PuttyOptions _puttyOption = null;
         private readonly IPuttyConnectable _protocolPuttyBase = null;
 
-        public PuttyHost(IPuttyConnectable iPuttyConnectable) : base(iPuttyConnectable.ProtocolServerBase, false)
+        public KittyHost(IPuttyConnectable iPuttyConnectable) : base(iPuttyConnectable.ProtocolServerBase, false)
         {
             _protocolPuttyBase = iPuttyConnectable;
             InitializeComponent();
         }
 
-        ~PuttyHost()
+        ~KittyHost()
         {
-            ClosePutty();
+            CloseKitty();
         }
 
         public override void Conn()
@@ -129,95 +127,86 @@ namespace PRM.Core.Protocol.Putty.Host
             _puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
             SetPuttySessionConfig();
 
-            _puttyHandle = IntPtr.Zero;
+            _kittyHandle = IntPtr.Zero;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
-            var tsk = new Task(InitPutty);
+            var tsk = new Task(InitKitty);
             tsk.Start();
 
 
-            _puttyMasterPanel = new System.Windows.Forms.Panel
+            _kittyMasterPanel = new System.Windows.Forms.Panel
             {
                 BackColor = System.Drawing.Color.Transparent,
                 Dock = System.Windows.Forms.DockStyle.Fill,
                 BorderStyle = BorderStyle.None
             };
-            _puttyMasterPanel.SizeChanged += PuttyMasterPanelOnSizeChanged;
-            FormsHost.Child = _puttyMasterPanel;
+            _kittyMasterPanel.SizeChanged += KittyMasterPanelOnSizeChanged;
+            FormsHost.Child = _kittyMasterPanel;
         }
 
         public override void DisConn()
         {
-            ClosePutty();
+            CloseKitty();
             base.DisConn();
         }
 
-        private void PuttyMasterPanelOnSizeChanged(object sender, EventArgs e)
+        private void KittyMasterPanelOnSizeChanged(object sender, EventArgs e)
         {
-            if (_puttyHandle != IntPtr.Zero)
+            if (_kittyHandle != IntPtr.Zero)
             {
-                MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2,
-                    _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
-                _topTransparentPanel.Width = _puttyMasterPanel.Width;
-                _topTransparentPanel.Height = _puttyMasterPanel.Height;
+                MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2,
+                    _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
                 MakeItFocus();
             }
         }
 
-        private void InitPutty()
+        private void InitKitty()
         {
-            _puttyProcess = new Process();
+            _kittyProcess = new Process();
             var ps = new ProcessStartInfo();
-            //ps.FileName = Path.Combine(Environment.CurrentDirectory, PuttyExeName);
+            //ps.FileName = Path.Combine(Environment.CurrentDirectory, KittyExeName);
 
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Putty");
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Kitty");
             if (!Directory.Exists(appDateFolder))
                 Directory.CreateDirectory(appDateFolder);
-            ps.FileName = Path.Combine(appDateFolder, PuttyExeName);
+            ps.FileName = Path.Combine(appDateFolder, KittyExeName);
             ps.WorkingDirectory = appDateFolder;
             if (!File.Exists(ps.FileName))
             {
-                var putty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/PuTTY_PRM.exe")).Stream;
+                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/PuTTY_PRM.exe")).Stream;
                 using (var fileStream = File.Create(ps.FileName))
                 {
-                    putty.Seek(0, SeekOrigin.Begin);
-                    putty.CopyTo(fileStream);
+                    kitty.Seek(0, SeekOrigin.Begin);
+                    kitty.CopyTo(fileStream);
                 }
-                putty.Close();
+                kitty.Close();
             }
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
-            ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
+            ps.Arguments = _protocolPuttyBase.GetPuttyConnString() + "-hwndparent " + ParentWindowHandle;
             ps.WindowStyle = ProcessWindowStyle.Minimized;
-            _puttyProcess.StartInfo = ps;
-            _puttyProcess.Start();
-            _puttyProcess.Exited += (sender, args) => _puttyProcess = null;
-            _puttyProcess.Refresh();
-            _puttyProcess.WaitForInputIdle();
-            _puttyHandle = _puttyProcess.MainWindowHandle;
+            _kittyProcess.StartInfo = ps;
+            _kittyProcess.Start();
+            _kittyProcess.Exited += (sender, args) => _kittyProcess = null;
+            _kittyProcess.Refresh();
+            _kittyProcess.WaitForInputIdle();
+            _kittyHandle = _kittyProcess.MainWindowHandle;
 
             Dispatcher.Invoke(() =>
             {
-                SetParent(_puttyHandle, _puttyMasterPanel.Handle);
+                SetParent(_kittyHandle, _kittyMasterPanel.Handle);
                 var wih = new WindowInteropHelper(ParentWindow);
                 IntPtr hWnd = wih.Handle;
                 SetForegroundWindow(hWnd);
-                ShowWindow(_puttyHandle, SW_SHOWMAXIMIZED);
-                int lStyle = GetWindowLong(_puttyHandle, GWL_STYLE);
+                ShowWindow(_kittyHandle, SW_SHOWMAXIMIZED);
+                int lStyle = GetWindowLong(_kittyHandle, GWL_STYLE);
                 lStyle &= ~WS_CAPTION; // no title
                 lStyle &= ~WS_BORDER;  // no border
                 lStyle &= ~WS_THICKFRAME;
-                SetWindowLong(_puttyHandle, GWL_STYLE, lStyle);
-                //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
-                MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2, _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
+                SetWindowLong(_kittyHandle, GWL_STYLE, lStyle);
+                //MoveWindow(PuttyHandle, -KittyWindowMargin, -KittyWindowMargin, panel.Width + KittyWindowMargin, panel.Height + KittyWindowMargin, true);
+                MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2, _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
                 DelPuttySessionConfig();
-
-                _topTransparentPanel = new TransparentPanel
-                {
-                    Parent = _puttyMasterPanel,
-                    PuttyHandle = _puttyHandle
-                };
-                _topTransparentPanel.BringToFront();
 
 
 
@@ -228,15 +217,15 @@ namespace PRM.Core.Protocol.Putty.Host
                 //                };
                 //                _topTransparentPanel.GotFocus += (a, b) =>
                 //                {
-                //                    Console.WriteLine("_puttyMasterPanel.Focus");
+                //                    Console.WriteLine("_kittyMasterPanel.Focus");
                 //                };
-                //                _puttyMasterPanel.LostFocus += (a, b) =>
+                //                _kittyMasterPanel.LostFocus += (a, b) =>
                 //                {
-                //                    Console.WriteLine("_puttyMasterPanel.LostFocus");
+                //                    Console.WriteLine("_kittyMasterPanel.LostFocus");
                 //                };
-                //                _puttyMasterPanel.GotFocus += (a, b) =>
+                //                _kittyMasterPanel.GotFocus += (a, b) =>
                 //                {
-                //                    Console.WriteLine("_puttyMasterPanel.Focus");
+                //                    Console.WriteLine("_kittyMasterPanel.Focus");
                 //                    MakeItFocus();
                 //                };
                 //#endif
@@ -244,16 +233,16 @@ namespace PRM.Core.Protocol.Putty.Host
             });
         }
 
-        public void ClosePutty()
+        public void CloseKitty()
         {
             DelPuttySessionConfig();
             try
             {
-                if (_puttyProcess?.HasExited == false)
+                if (_kittyProcess?.HasExited == false)
                 {
-                    _puttyProcess?.Kill();
+                    _kittyProcess?.Kill();
                 }
-                _puttyProcess = null;
+                _kittyProcess = null;
             }
             catch (Exception e)
             {
@@ -402,116 +391,6 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override void MakeItFocus()
         {
-            if (_topTransparentPanel != null)
-            {
-                lock (MakeItFocusLocker1)
-                {
-                    // hack technologyN
-                    // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
-                    // then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
-
-                    if (_taksTopPanelFocus?.Status != TaskStatus.Running)
-                    {
-                        _taksTopPanelFocus = new Task(() =>
-                        {
-                            lock (MakeItFocusLocker2)
-                            {
-                                bool flag = false;
-                                int nCount = 50; // don't let it runs forever.
-                                while (!flag && nCount > 0)
-                                {
-                                    --nCount;
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        flag = _topTransparentPanel.Focus();
-                                    });
-                                    Thread.Sleep(10);
-                                }
-                            }
-                        });
-                        _taksTopPanelFocus.Start();
-                    }
-                }
-            }
-        }
-    }
-
-    public sealed class TransparentPanel : System.Windows.Forms.Panel
-    {
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        public IntPtr PuttyHandle = IntPtr.Zero;
-        public TransparentPanel()
-        {
-            BackColor = System.Drawing.Color.Transparent;
-            Dock = System.Windows.Forms.DockStyle.Fill;
-            SetStyle(ControlStyles.Selectable, true);
-            TabStop = true;
-        }
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                var cp = base.CreateParams;
-                cp.ExStyle |= 0x00000020; // WS_EX_TRANSPARENT
-                return cp;
-            }
-        }
-
-        protected override void OnPaintBackground(PaintEventArgs e)
-        {
-            // Do not paint background.
-        }
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (PuttyHandle != IntPtr.Zero)
-            {
-                PostMessage(PuttyHandle, (uint)msg.Msg, msg.WParam, msg.LParam);
-            }
-
-            return true;
-        }
-
-        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
-        protected override void WndProc(ref Message m)
-        {
-            // Ignore Ctrl+RightClick to prevent Putty context menu
-            if (m.Msg == 516 && ((int)m.WParam & 0x0008) == 0x0008)
-                return;
-
-            switch (m.Msg)
-            {
-                case 33: //WM_MOUSEACTIVATE
-                case 160: //WM_NCMOUSEMOVE
-                case 512: //WM_MOUSEMOVE
-                case 513: //WM_LBUTTONDOWN
-                case 514: //WM_LBUTTONUP
-                case 515: //WM_LBUTTONDBLCLK
-                case 516: //WM_RBUTTONDOWN
-                case 517: //WM_RBUTTONUP
-                case 518: //WM_RBUTTONDBLCLK
-                case 519: //WM_MBUTTONDOWN
-                case 520: //WM_MBUTTONUP
-                case 521: //WM_MBUTTONDBLCLK
-                case 522: //WM_MOUSEWHEEL
-                case 526: //WM_MOUSEHWHEEL
-                case 672: //WM_NCMOUSEHOVER
-                case 673: //WM_MOUSEHOVER
-                case 674: //WM_NCMOUSELEAVE
-                case 675: //WM_MOUSELEAVE
-                    {
-                        if (PuttyHandle != IntPtr.Zero)
-                        {
-                            PostMessage(PuttyHandle, (uint)m.Msg, m.WParam, m.LParam);
-                        }
-                    }
-                    break;
-                default:
-                    base.WndProc(ref m);
-                    break;
-            }
         }
     }
 }
