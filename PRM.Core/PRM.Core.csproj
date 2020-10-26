@@ -94,6 +94,9 @@
     <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\ProtocolServerFormBase.cs" />
+    <Compile Include="Protocol\Putty\Host\KittyHost.xaml.cs">
+      <DependentUpon>KittyHost.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
     <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
       <DependentUpon>PuttyHost.xaml</DependentUpon>
@@ -210,6 +213,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Languages\zh-cn.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\Putty\Host\KittyHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

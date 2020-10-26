@@ -256,8 +256,8 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigTheme));
         }
 
-        private Dictionary<string, List<PuttyRegOptionItem>> _puttyThemes = new Dictionary<string, List<PuttyRegOptionItem>>();
-        public List<PuttyRegOptionItem> SelectedPuttyTheme
+        private Dictionary<string, List<PuttyOptionItem>> _puttyThemes = new Dictionary<string, List<PuttyOptionItem>>();
+        public List<PuttyOptionItem> SelectedPuttyTheme
         {
             get
             {
