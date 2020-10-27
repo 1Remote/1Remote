@@ -70,6 +70,8 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int SW_SHOWMAXIMIZED = 3;
 
         public const string KittyExeName = "KiTTY_PRM.exe";
+        private readonly string KittyExeFolderPath = null;
+        private readonly string KittyExeFullName = null;
 
         private const int KittyWindowMargin = 0;
         private Process _kittyProcess = null;
@@ -82,6 +84,12 @@ namespace PRM.Core.Protocol.Putty.Host
         {
             _protocolPuttyBase = iPuttyConnectable;
             InitializeComponent();
+
+
+            KittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Kitty");
+            if (!Directory.Exists(KittyExeFolderPath))
+                Directory.CreateDirectory(KittyExeFolderPath);
+            KittyExeFullName = Path.Combine(KittyExeFolderPath, KittyExeName);
         }
 
         ~KittyHost()
@@ -125,7 +133,6 @@ namespace PRM.Core.Protocol.Putty.Host
 
 
             _puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
-            SetPuttySessionConfig();
 
             _kittyHandle = IntPtr.Zero;
             //FormBorderStyle = FormBorderStyle.None;
@@ -156,25 +163,24 @@ namespace PRM.Core.Protocol.Putty.Host
             {
                 MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2,
                     _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
-                MakeItFocus();
             }
         }
 
         private void InitKitty()
         {
+            SetPuttySessionConfig();
+
             _kittyProcess = new Process();
             var ps = new ProcessStartInfo();
-            //ps.FileName = Path.Combine(Environment.CurrentDirectory, KittyExeName);
-
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Kitty");
-            if (!Directory.Exists(appDateFolder))
-                Directory.CreateDirectory(appDateFolder);
-            ps.FileName = Path.Combine(appDateFolder, KittyExeName);
-            ps.WorkingDirectory = appDateFolder;
-            if (!File.Exists(ps.FileName))
+            if (!Directory.Exists(KittyExeFolderPath))
+                Directory.CreateDirectory(KittyExeFolderPath);
+            ps.FileName = KittyExeFullName;
+            ps.WorkingDirectory = KittyExeFolderPath;
+            // TODO verify MD5
+            if (!File.Exists(KittyExeFullName))
             {
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/PuTTY_PRM.exe")).Stream;
-                using (var fileStream = File.Create(ps.FileName))
+                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/KiTTY_PRM.exe")).Stream;
+                using (var fileStream = File.Create(KittyExeFullName))
                 {
                     kitty.Seek(0, SeekOrigin.Begin);
                     kitty.CopyTo(fileStream);
@@ -183,7 +189,8 @@ namespace PRM.Core.Protocol.Putty.Host
             }
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
-            ps.Arguments = _protocolPuttyBase.GetPuttyConnString() + "-hwndparent " + ParentWindowHandle;
+            ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
+            //ps.Arguments = _protocolPuttyBase.GetPuttyConnString() + " -hwndparent " + ParentWindowHandle;
             ps.WindowStyle = ProcessWindowStyle.Minimized;
             _kittyProcess.StartInfo = ps;
             _kittyProcess.Start();
@@ -204,38 +211,14 @@ namespace PRM.Core.Protocol.Putty.Host
                 lStyle &= ~WS_BORDER;  // no border
                 lStyle &= ~WS_THICKFRAME;
                 SetWindowLong(_kittyHandle, GWL_STYLE, lStyle);
-                //MoveWindow(PuttyHandle, -KittyWindowMargin, -KittyWindowMargin, panel.Width + KittyWindowMargin, panel.Height + KittyWindowMargin, true);
                 MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2, _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
-                DelPuttySessionConfig();
-
-
-
-                //#if DEBUG
-                //                _topTransparentPanel.LostFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_topTransparentPanel.LostFocus");
-                //                };
-                //                _topTransparentPanel.GotFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_kittyMasterPanel.Focus");
-                //                };
-                //                _kittyMasterPanel.LostFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_kittyMasterPanel.LostFocus");
-                //                };
-                //                _kittyMasterPanel.GotFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_kittyMasterPanel.Focus");
-                //                    MakeItFocus();
-                //                };
-                //#endif
-                MakeItFocus();
+                DelKittySessionConfig();
             });
         }
 
         public void CloseKitty()
         {
-            DelPuttySessionConfig();
+            DelKittySessionConfig();
             try
             {
                 if (_kittyProcess?.HasExited == false)
@@ -253,15 +236,24 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void SetPuttySessionConfig()
         {
-            // set key
-            if (_protocolPuttyBase is ProtocolServerSSH server
-                && !string.IsNullOrEmpty(server.PrivateKey))
+            if (_protocolPuttyBase is ProtocolServerSSH server)
             {
-                var ppk = server.PrivateKey;
-                if (SystemConfig.Instance.DataSecurity.Rsa != null)
-                    ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk) ?? ppk;
-                Debug.Assert(ppk != null);
-                _puttyOption.Set(PuttyOptionKey.PublicKeyFile, ppk);
+                if (!string.IsNullOrEmpty(server.PrivateKey))
+                {
+                    // set key
+                    var ppk = server.PrivateKey;
+                    if (SystemConfig.Instance.DataSecurity.Rsa != null)
+                        ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk) ?? ppk;
+                    Debug.Assert(ppk != null);
+                    _puttyOption.Set(PuttyOptionKey.PublicKeyFile, ppk);
+                }
+#if UseKiTTY
+                //if (!string.IsNullOrWhiteSpace(server.StartupAutoCommand))
+                //    _puttyOption.Set(PuttyOptionKey.Autocommand, server.StartupAutoCommand);
+                _puttyOption.Set(PuttyOptionKey.HostName, server.Address);
+                _puttyOption.Set(PuttyOptionKey.PortNumber, server.GetPort());
+                _puttyOption.Set(PuttyOptionKey.Protocol, "ssh");
+#endif
             }
 
             // set color theme
@@ -286,7 +278,7 @@ namespace PRM.Core.Protocol.Putty.Host
                     }
                 }
 
-
+            _puttyOption.Set(PuttyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
@@ -365,12 +357,12 @@ namespace PRM.Core.Protocol.Putty.Host
             //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
 
 
-            _puttyOption.SaveToPuttyRegistryTable();
+            _puttyOption.SaveKittyConfig(KittyExeFolderPath);
         }
 
-        private void DelPuttySessionConfig()
+        private void DelKittySessionConfig()
         {
-            _puttyOption?.DelFromPuttyRegistryTable();
+            _puttyOption?.DelKittyConfig(KittyExeFolderPath);
             _puttyOption = null;
         }
 
@@ -391,6 +383,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override void MakeItFocus()
         {
+            SetForegroundWindow(_kittyHandle);
         }
     }
 }

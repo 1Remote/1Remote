@@ -28,12 +28,12 @@ namespace PRM.Core.Protocol
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var host = new PuttyHost(ssh);
+                        var host = new KittyHost(ssh);
                         return host;
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var host = new PuttyHost(telnet);
+                        var host = new KittyHost(telnet);
                         return host;
                     }
                 case ProtocolServerVNC vnc:

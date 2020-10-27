@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UseKiTTY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;UseKiTTY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -186,7 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Logo\author_avatar.jpg" />
-    <Resource Include="PuTTY_PRM.exe" />
+    <Resource Include="KiTTY_PRM.exe" />
     <Content Include="Protocol\VNC\VncSharpWpf.dll" />
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -199,12 +199,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVersionGenerator.ps1" />
-    <None Include="Languages\en-us.json">
+    <Resource Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Languages\zh-cn.json">
+    </Resource>
+    <Resource Include="Languages\zh-cn.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Resource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

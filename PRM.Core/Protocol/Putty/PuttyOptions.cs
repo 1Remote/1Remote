@@ -301,6 +301,12 @@ namespace PRM.Core.Protocol.Putty
         SerialStopHalfbits,
         SerialParity,
         SerialFlowControl,
+#if UseKiTTY
+        /* For KiTTY */
+        Autocommand,
+        HostName,
+        Protocol,
+#endif
         #endregion
     }
 
@@ -539,7 +545,9 @@ namespace PRM.Core.Protocol.Putty
             Options.Add(PuttyOptionItem.Create(PuttyOptionKey.SerialStopHalfbits, 0x00000002));
             Options.Add(PuttyOptionItem.Create(PuttyOptionKey.SerialParity, 0x00000000));
             Options.Add(PuttyOptionItem.Create(PuttyOptionKey.SerialFlowControl, 0x00000001));
-
+#if UseKiTTY
+            Options.Add(PuttyOptionItem.Create(PuttyOptionKey.Autocommand, ""));
+#endif
             #endregion
         }
 
@@ -609,7 +617,7 @@ namespace PRM.Core.Protocol.Putty
             }
         }
 
-        public void SaveToKittyConfig(string kittyPath)
+        public void SaveKittyConfig(string kittyPath)
         {
             try
             {

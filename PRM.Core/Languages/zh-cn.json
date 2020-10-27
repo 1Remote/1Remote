@@ -155,6 +155,7 @@
   "server_editor_advantage_printers": "打印机",
   "server_editor_advantage_smart_cards": "智能卡",
   "server_editor_advantage_ssh_version": "SSH Verison",
+  "server_editor_advantage_ssh_startup_auto_command": "自动命令",
   // server editor - RD-gateway group items
   "server_editor_gateway_mode": "连接设置",
   "server_editor_gateway_mode_automatically_detect": "自动检测RD网关服务器设置",

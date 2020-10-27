@@ -365,6 +365,22 @@ namespace PRM.Core.Model
                 return _cmdPuttyThemeCustomize;
             }
         }
+        private RelayCommand _cmdPuttyThemeReset;
+        public RelayCommand CmdPuttyThemeReset
+        {
+            get
+            {
+                if (_cmdPuttyThemeReset == null)
+                {
+                    _cmdPuttyThemeReset = new RelayCommand((o) =>
+                    {
+                        if (Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
+                            Directory.Delete(PuttyColorThemes.ThemeRegFileFolder, true);
+                    });
+                }
+                return _cmdPuttyThemeReset;
+            }
+        }
 
         private RelayCommand _cmdPrmThemeReset;
         public RelayCommand CmdPrmThemeReset

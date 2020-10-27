@@ -148,10 +148,6 @@ namespace PRM
                     //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
                     //}
 
-// Set default folder path
-#if !DEBUG
-                    SystemConfigLanguage.LanguageJsonDir = Path.Combine(appDateFolder, SystemConfigLanguage.LanguageJsonDir);
-#endif
                     PuttyColorThemes.ThemeRegFileFolder = Path.Combine(appDateFolder, PuttyColorThemes.ThemeRegFileFolder);
 
                     var language = new SystemConfigLanguage(this.Resources, ini);
@@ -180,7 +176,7 @@ namespace PRM
                     // remote window pool init.
                     RemoteWindowPool.Init();
                 }
-#endregion
+                #endregion
 
                 // kill putty process
                 foreach (var process in Process.GetProcessesByName(PuttyHost.PuttyExeName.ToLower().Replace(".exe", "")))
@@ -193,13 +189,23 @@ namespace PRM
                     {
                     }
                 }
+                foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
+                {
+                    try
+                    {
+                        process.Kill();
+                    }
+                    catch
+                    {
+                    }
+                }
 
 
 
-#endregion
+                #endregion
 
 
-#region app start
+                #region app start
                 // main window init
                 {
                     Window = new MainWindow();
@@ -234,7 +240,7 @@ namespace PRM
 
                 // quick search init 
                 InitQuickSearch();
-#endregion
+                #endregion
             }
             catch (Exception ex)
             {
@@ -299,7 +305,7 @@ namespace PRM
                 };
                 var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("button_exit"));
                 exit.Click += (sender, args) => Window.CloseMe();
-                var child = new System.Windows.Forms.MenuItem[] { title,@break,link_how_to_use,link_feedback, exit };
+                var child = new System.Windows.Forms.MenuItem[] { title, @break, link_how_to_use, link_feedback, exit };
                 //var child = new System.Windows.Forms.MenuItem[] { exit };
                 TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
             }
