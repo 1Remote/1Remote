@@ -437,7 +437,6 @@ namespace PRM.Model
                 {
                     DelProtocolHost(tabItemViewModel.Content.ConnectionId);
                 }
-                tab.Vm = null;
                 SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
             }
             CloseEmptyTab();
@@ -448,7 +447,9 @@ namespace PRM.Model
             // close un-handel protocol
             {
                 var ps = _protocolHosts.Where(p =>
-                    _tabWindows.Values.All(x => x.Vm.Items.All(y => y.Content.ConnectionId != p.Key))
+                    _tabWindows.Values.All(x => x?.Vm?.Items != null 
+                                                && x.Vm.Items.Count > 0 
+                                                && x.Vm.Items.All(y => y.Content.ConnectionId != p.Key))
                     && !_host2FullScreenWindows.ContainsKey(p.Key));
                 if (ps.Any())
                 {
@@ -458,7 +459,8 @@ namespace PRM.Model
 
             // close tab
             {
-                var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Count == 0).ToArray();
+                var tabs = _tabWindows.Values.Where(x => x?.Vm?.Items == null
+                                                         || x.Vm.Items.Count == 0).ToArray();
                 foreach (var tab in tabs)
                 {
                     SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");

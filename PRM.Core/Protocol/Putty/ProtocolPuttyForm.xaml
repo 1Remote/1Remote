@@ -139,6 +139,17 @@
                     </Grid>
                 </StackPanel>
             </Grid>
+            <Grid Style="{StaticResource ServerEditorRow}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
+                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                        <Grid.Resources>
+                            <putty:ConverterESshVersion x:Key="ConverterESshVersion"/>
+                        </Grid.Resources>
+                        <TextBox Text="{Binding StartupAutoCommand,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </StackPanel>
 </protocol:ProtocolServerFormBase>

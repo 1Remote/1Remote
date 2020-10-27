@@ -9,12 +9,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using PRM.Core.Model;
 using Shawn.Utils.DragablzTab;
 using PRM.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Size = System.Windows.Size;
 
 namespace PRM.View
@@ -25,6 +28,9 @@ namespace PRM.View
     public partial class TabWindow : Window
     {
         public VmTabWindow Vm;
+        private HwndSource _source = null;
+        private WindowState _lastWindowState = WindowState.Normal;
+
         public TabWindow(string token)
         {
             InitializeComponent();
@@ -42,15 +48,23 @@ namespace PRM.View
                     SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
                     SystemConfig.Instance.Locality.Save();
                 }
+                if(_lastWindowState != this.WindowState)
+                    Vm?.SelectedItem?.Content?.MakeItFocus();
+                _lastWindowState = this.WindowState;
             };
 
 
             WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
-
-            BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-            BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
+            BtnMaximize.Click += (sender, args) =>
+            {
+                this.WindowState = this.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+            };
+            BtnMinimize.Click += (sender, args) =>
+            {
+                this.WindowState = WindowState.Minimized;
+            };
             BtnClose.Click += (sender, args) =>
             {
                 if (Vm?.SelectedItem != null)
@@ -62,10 +76,6 @@ namespace PRM.View
                     Vm?.CmdClose.Execute();
                 }
             };
-            this.Closed += (sender, args) =>
-            {
-                Vm?.CmdClose.Execute();
-            };
             TabablzControl.ClosingItemCallback += args =>
             {
                 args.Cancel();
@@ -76,7 +86,51 @@ namespace PRM.View
                 }
             };
 
-            Activated += (sender, args) => { Vm?.SelectedItem?.Content?.MakeItFocus(); };
+            MouseUp += (sender, args) =>
+            {
+                Vm?.SelectedItem?.Content?.MakeItFocus();
+            };
+
+
+            Loaded += (sender, args) =>
+            {
+                try
+                {
+                    _source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+                    _source?.AddHook(WndProc);
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+            };
+            Closed += (sender, args) =>
+            {
+                Vm?.CmdClose.Execute();
+                try
+                {
+                    _source?.RemoveHook(WndProc);
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Keep content(like putty.exe) focus when darg resize window
+        /// </summary>
+        /// <returns></returns>
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            switch (msg)
+            {
+                case 0x00a1: // WM_NCLBUTTONDOWN //case 0x00a2: // WM_NCLBUTTONUP
+                    Vm?.SelectedItem?.Content?.MakeItFocus();
+                    break;
+            }
+            return IntPtr.Zero;
         }
 
         #region DragMove
@@ -114,6 +168,7 @@ namespace PRM.View
         {
             _isLeftMouseDown = false;
             _isDraging = false;
+            Vm?.SelectedItem?.Content?.MakeItFocus();
         }
         private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
@@ -139,14 +194,15 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
+                var si = Vm.SelectedItem;
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
                 var t = new Task(() =>
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                     Dispatcher.Invoke(() =>
                     {
-                        if (IsActive)
+                        if (IsActive && Vm.SelectedItem == si)
                             Vm?.SelectedItem?.Content?.MakeItFocus();
                     });
                 });
@@ -166,22 +222,6 @@ namespace PRM.View
                 Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
             };
         }
-
-
-        //private static RelayCommand _myCloseItemCommand = (RoutedCommand)new RoutedUICommand("Close", "Close", typeof(TabablzControl));;
-        //public static RelayCommand MyCloseItemCommand
-        //{
-        //    get
-        //    {
-        //        if (_cmdConnServer == null)
-        //            _cmdConnServer = new RelayCommand((o) =>
-        //            {
-        //                TabablzControl.CloseItemCommand
-        //                GlobalEventHelper.OnServerConnect?.Invoke(Server.Id);
-        //            });
-        //        return _cmdConnServer;
-        //    }
-        //}
     }
 
 

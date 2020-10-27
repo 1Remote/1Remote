@@ -46,7 +46,9 @@ namespace PRM.Core.Protocol.Putty
                 File.Delete(filePath);
             var sb = new StringBuilder(@"Windows Registry Editor Version 5.00
 
-[HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\Default%20Settings]");
+[HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\Default%20Settings]
+
+");
             foreach (var option in options)
             {
                 sb.AppendLine($@"""{option.Key}""=""{option.Value}""");

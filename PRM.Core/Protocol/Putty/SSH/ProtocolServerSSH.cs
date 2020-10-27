@@ -36,6 +36,14 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
         }
 
+
+        private string _startupAutoCommand = "";
+        public string StartupAutoCommand
+        {
+            get => _startupAutoCommand;
+            set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
+        }
+
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
@@ -58,7 +66,10 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string GetPuttyConnString()
         {
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            return $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptedPassWord()} -{(int)SshVersion}";
+            var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptedPassWord()} -{(int)SshVersion}";
+            if (!string.IsNullOrWhiteSpace(StartupAutoCommand))
+                arg = arg + $" -cmd \"{StartupAutoCommand}\"";
+            return arg;
         }
 
         [JsonIgnore]

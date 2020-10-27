@@ -198,17 +198,12 @@ namespace PRM.Core.Protocol.Putty.Host
 
             Dispatcher.Invoke(() =>
             {
-                SetParent(_puttyHandle, _puttyMasterPanel.Handle);
-                var wih = new WindowInteropHelper(ParentWindow);
-                IntPtr hWnd = wih.Handle;
-                SetForegroundWindow(hWnd);
                 ShowWindow(_puttyHandle, SW_SHOWMAXIMIZED);
                 int lStyle = GetWindowLong(_puttyHandle, GWL_STYLE);
                 lStyle &= ~WS_CAPTION; // no title
                 lStyle &= ~WS_BORDER;  // no border
                 lStyle &= ~WS_THICKFRAME;
                 SetWindowLong(_puttyHandle, GWL_STYLE, lStyle);
-                //MoveWindow(PuttyHandle, -PuttyWindowMargin, -PuttyWindowMargin, panel.Width + PuttyWindowMargin, panel.Height + PuttyWindowMargin, true);
                 MoveWindow(_puttyHandle, PuttyWindowMargin, PuttyWindowMargin, _puttyMasterPanel.Width - PuttyWindowMargin * 2, _puttyMasterPanel.Height - PuttyWindowMargin * 2, true);
                 DelPuttySessionConfig();
 
@@ -218,28 +213,7 @@ namespace PRM.Core.Protocol.Putty.Host
                     PuttyHandle = _puttyHandle
                 };
                 _topTransparentPanel.BringToFront();
-
-
-
-                //#if DEBUG
-                //                _topTransparentPanel.LostFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_topTransparentPanel.LostFocus");
-                //                };
-                //                _topTransparentPanel.GotFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_puttyMasterPanel.Focus");
-                //                };
-                //                _puttyMasterPanel.LostFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_puttyMasterPanel.LostFocus");
-                //                };
-                //                _puttyMasterPanel.GotFocus += (a, b) =>
-                //                {
-                //                    Console.WriteLine("_puttyMasterPanel.Focus");
-                //                    MakeItFocus();
-                //                };
-                //#endif
+                SetParent(_puttyHandle, _puttyMasterPanel.Handle);
                 MakeItFocus();
             });
         }
