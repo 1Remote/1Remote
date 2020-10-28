@@ -3,8 +3,6 @@ using System.Windows.Input;
 
 namespace Shawn.Utils
 {
-
-
     public class RelayCommand : ICommand
     {
         public event EventHandler CanExecuteChanged

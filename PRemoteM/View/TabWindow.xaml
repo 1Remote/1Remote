@@ -83,7 +83,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
-                            <Grid x:Name="templateRoot" 
+                            <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>

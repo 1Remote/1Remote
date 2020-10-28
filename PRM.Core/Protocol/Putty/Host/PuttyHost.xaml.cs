@@ -380,7 +380,7 @@ namespace PRM.Core.Protocol.Putty.Host
             {
                 lock (MakeItFocusLocker1)
                 {
-                    // hack technologyN
+                    // hack technology
                     // when tab selection changed it call MakeItFocus(), but get false by _topTransparentPanel.Focus() since the panel was not print yet.
                     // then I have not choice but set a task to wait '_topTransparentPanel.Focus()' returns 'true'.
 

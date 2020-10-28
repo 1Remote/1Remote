@@ -156,12 +156,6 @@ namespace PRM
                     var theme = new SystemConfigTheme(this.Resources, ini);
                     var dataSecurity = new SystemConfigDataSecurity(ini);
 
-
-                    //if (!File.Exists(dataSecurity.DbPath))
-                    //{
-                    //    // TODO db is not existed, then tell our user to create new one or select a new one.
-                    //}
-
                     // config create instance (settings & langs)
                     SystemConfig.Init();
                     SystemConfig.Instance.General = general;

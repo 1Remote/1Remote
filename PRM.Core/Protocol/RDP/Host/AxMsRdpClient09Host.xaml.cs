@@ -526,7 +526,6 @@ namespace Shawn.Utils.RDP
 
         private void SetRdpResolution(uint w, uint h)
         {
-            // todo: handle different rdp version of the server
             try
             {
                 //_rdp.Reconnect(nw, nh);
