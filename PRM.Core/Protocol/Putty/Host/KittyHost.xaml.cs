@@ -189,8 +189,9 @@ namespace PRM.Core.Protocol.Putty.Host
             }
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
-            ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
-            //ps.Arguments = _protocolPuttyBase.GetPuttyConnString() + " -hwndparent " + ParentWindowHandle;
+            //ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
+            SimpleLogHelper.Debug("ParentWindowHandle = " + ParentWindowHandle);
+            ps.Arguments = _protocolPuttyBase.GetPuttyConnString() + " -hwndparent " + _kittyMasterPanel.Handle;
             ps.WindowStyle = ProcessWindowStyle.Minimized;
             _kittyProcess.StartInfo = ps;
             _kittyProcess.Start();

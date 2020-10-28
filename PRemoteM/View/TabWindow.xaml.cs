@@ -104,6 +104,7 @@ namespace PRM.View
                     SimpleLogHelper.Error(e);
                 }
             };
+
             Closed += (sender, args) =>
             {
                 Vm?.CmdClose.Execute();
@@ -202,7 +203,7 @@ namespace PRM.View
                     Thread.Sleep(50);
                     Dispatcher.Invoke(() =>
                     {
-                        if (IsActive && Vm.SelectedItem == si)
+                        if (Mouse.LeftButton == MouseButtonState.Released && IsActive && Vm.SelectedItem == si)
                             Vm?.SelectedItem?.Content?.MakeItFocus();
                     });
                 });
