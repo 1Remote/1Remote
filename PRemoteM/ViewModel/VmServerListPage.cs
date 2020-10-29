@@ -24,10 +24,7 @@ namespace PRM.ViewModel
             }
 
             RebuildVmServerCardList();
-            GlobalData.Instance.VmItemList.CollectionChanged += (sender, args) =>
-            {
-                RebuildVmServerCardList();
-            };
+            GlobalData.Instance.VmItemListDataChanged += RebuildVmServerCardList;
 
             SystemConfig.Instance.General.PropertyChanged += (sender, args) =>
             {
