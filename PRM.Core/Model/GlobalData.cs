@@ -44,11 +44,16 @@ namespace PRM.Core.Model
 
         #region Server Data
 
+        public Action VmItemListDataChanged;
         private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
         public ObservableCollection<VmProtocolServer> VmItemList
         {
             get => _vmItemList;
-            set => SetAndNotifyIfChanged(nameof(VmItemList), ref _vmItemList, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(VmItemList), ref _vmItemList, value);
+                VmItemListDataChanged?.Invoke();
+            }
         }
 
 
@@ -57,11 +62,12 @@ namespace PRM.Core.Model
             // read from db
             if (protocolServer == null)
             {
-                VmItemList.Clear();
+                var tmp = new ObservableCollection<VmProtocolServer>();
                 foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
                 {
-                    VmItemList.Add(new VmProtocolServer(serverAbstract));
+                    tmp.Add(new VmProtocolServer(serverAbstract));
                 }
+                VmItemList = tmp;
             }
             // edit
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
