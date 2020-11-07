@@ -20,16 +20,16 @@
 
         <StackPanel>
 
-            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
 
-            <Grid Style="{StaticResource ServerEditorRow}">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Width="50" Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
                                  HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
@@ -41,7 +41,7 @@
 
             <Grid Name="GridPwd">
                 <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -51,17 +51,17 @@
                     </Style>
                 </Grid.Style>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                      Style="{StaticResource PasswordBoxEx}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid Style="{StaticResource ServerEditorRow}">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_window_resize_mode}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_window_resize_mode}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <Grid.Resources>
                             <local:ConverterEVncWindowResizeMode x:Key="ConverterEVncWindowResizeMode"/>
                         </Grid.Resources>

@@ -41,12 +41,12 @@
                 Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
                 <Grid>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
+                        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
                         <StackPanel>
-                            <Grid Style="{StaticResource ServerEditorRow}">
+                            <Grid Style="{StaticResource EditorRowGrid}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
-                                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
+                                    <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="DispName" 
                                                                     Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
@@ -54,10 +54,10 @@
                                     </Grid>
                                 </StackPanel>
                             </Grid>
-                            <Grid Style="{StaticResource ServerEditorRow}">
+                            <Grid Style="{StaticResource EditorRowGrid}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
-                                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
+                                    <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="TbGroup" 
                                                                     Text="{Binding Server.GroupName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding GroupSelections}"
@@ -97,11 +97,11 @@
                                 </StackPanel>
                             </Grid>
 
-                            <Grid Style="{StaticResource ServerEditorRow}" Margin="0" Height="Auto">
+                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0" Height="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
-                                        <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
+                                        <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                             <StackPanel Orientation="Horizontal">
                                                 <Grid Width="64" Height="64" 
                                                   MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp" 
@@ -111,7 +111,7 @@
                                                     <Border BorderThickness="1" BorderBrush="Black"></Border>
                                                     <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                                 </Grid>
-                                                <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
+                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                                 <colorPickerWpf:ColorPickRowPopup 
                                                     Color="{Binding Server.MarkColor}"
                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -123,8 +123,8 @@
 
                             <Grid Name="PopupLogoSelector" Height="0">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
-                                    <Grid Style="{StaticResource ServerEditorRowInput}" Width="Auto">
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                                    <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                         <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
                                             <Grid Width="362">
                                                 <Grid.ColumnDefinitions>

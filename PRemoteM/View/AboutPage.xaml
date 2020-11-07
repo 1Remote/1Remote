@@ -14,7 +14,7 @@
     <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.Resources>
             <system:Double x:Key="BottomHeight">30</system:Double>
-            <Style x:Key="ServerEditorRow" TargetType="Grid">
+            <Style x:Key="EditorRowGrid" TargetType="Grid">
                 <Setter Property="Height" Value="20"></Setter>
                 <Setter Property="Margin">
                     <Setter.Value>
@@ -28,7 +28,7 @@
                 <Setter Property="Opacity" Value="0.9"></Setter>
                 <Setter Property="Margin" Value="0 0 20 0"></Setter>
             </Style>
-            <Style x:Key="ServerEditorGroupTitle" TargetType="TextBlock">
+            <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="16"></Setter>
                 <Setter Property="FontWeight" Value="Bold"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
@@ -76,11 +76,11 @@
                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
                             <StackPanel>
-                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{x:Static model:SystemConfig.AppName}" Margin="0 10 0 0"></TextBlock>
-                                <Grid Style="{StaticResource ServerEditorRow}">
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static model:SystemConfig.AppName}" Margin="0 10 0 0"></TextBlock>
+                                <Grid Style="{StaticResource EditorRowGrid}">
                                     <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>
-                                <Grid Style="{StaticResource ServerEditorRow}">
+                                <Grid Style="{StaticResource EditorRowGrid}">
                                     <StackPanel Orientation="Horizontal">
                                         <Grid>
                                             <TextBlock Text="Version"></TextBlock>
@@ -92,7 +92,7 @@
                                 </Grid>
                                 <Grid>
                                     <Grid.Style>
-                                        <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                                        <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=TbNewVersion,Path=Text}" Value="">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -124,7 +124,7 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Author"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Author"></TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <Grid Width="32" Height="32">
                                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/author_avatar.jpg" Width="32"></Image>
@@ -147,9 +147,9 @@
                     <Grid Grid.Column="1">
                         <StackPanel Orientation="Vertical" Margin="20 0 0 0">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Support" MouseRightButtonDown="SupportText_OnMouseRightButtonDown"></TextBlock>
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support" MouseRightButtonDown="SupportText_OnMouseRightButtonDown"></TextBlock>
                                 <StackPanel>
-                                    <Grid Style="{StaticResource ServerEditorRow}">
+                                    <Grid Style="{StaticResource EditorRowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
                                                 <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
@@ -161,9 +161,9 @@
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Make contributions"></TextBlock>
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Make contributions"></TextBlock>
                                 <StackPanel>
-                                    <Grid Style="{StaticResource ServerEditorRow}">
+                                    <Grid Style="{StaticResource EditorRowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
                                                 <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
@@ -180,7 +180,7 @@
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="Included Components"></TextBlock>
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Included Components"></TextBlock>
                                 <StackPanel>
                                     <TextBlock>
                                         <Hyperlink NavigateUri="https://www.chiark.greenend.org.uk/~sgtatham/putty/" TextDecorations="{x:Null}" Click="Hyperlink_Click" >

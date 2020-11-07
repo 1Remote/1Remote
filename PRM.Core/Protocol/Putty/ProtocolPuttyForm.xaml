@@ -20,16 +20,16 @@
 
         <StackPanel>
 
-            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
 
-            <Grid Style="{StaticResource ServerEditorRow}">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
                                  Width="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
@@ -39,10 +39,10 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource ServerEditorRow}" Name="GridUserName">
+            <Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
@@ -50,7 +50,7 @@
 
             <Grid Name="GridPwd">
                 <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -60,8 +60,8 @@
                     </Style>
                 </Grid.Style>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                      Style="{StaticResource PasswordBoxEx}"/>
                     </Grid>
@@ -71,7 +71,7 @@
 
             <Grid Name="GridPrivateKey" Height="Auto">
                 <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
                                 <Setter Property="Margin" Value="0"></Setter>
@@ -80,7 +80,7 @@
                     </Style>
                 </Grid.Style>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
                     <StackPanel>
                         <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource server_editor_connection_private_key_checker}" 
                                   Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
@@ -93,7 +93,7 @@
 
             <Grid>
                 <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource ServerEditorRow}">
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
@@ -103,8 +103,8 @@
                     </Style>
                 </Grid.Style>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text=""></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}" Width="500">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
                         <StackPanel Orientation="Horizontal">
                             <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" Width="300"></TextBox>
                             <controls:ButtonEx Content="{DynamicResource button_select}" Click="ButtonOpenPrivateKey_OnClick">
@@ -124,11 +124,11 @@
 
 
         <StackPanel Name="SpSsh">
-            <TextBlock Style="{StaticResource ServerEditorGroupTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
-            <Grid Style="{StaticResource ServerEditorRow}">
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_advantage_ssh_version}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_version}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <Grid.Resources>
                             <putty:ConverterESshVersion x:Key="ConverterESshVersion"/>
                         </Grid.Resources>
@@ -139,10 +139,10 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid Style="{StaticResource ServerEditorRow}">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource ServerEditorRowTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
-                    <Grid Style="{StaticResource ServerEditorRowInput}">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
                         <Grid.Resources>
                             <putty:ConverterESshVersion x:Key="ConverterESshVersion"/>
                         </Grid.Resources>

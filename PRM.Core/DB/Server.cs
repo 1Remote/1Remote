@@ -80,7 +80,7 @@ namespace PRM.Core.DB
             var servers = ListAll<Server>();
             foreach (var server in servers)
             {
-                var tmp = ServerCreateHelper.CreateFromDbObjectServerOrm(server);
+                var tmp = ItemCreateHelper.CreateFromDbOrm(server);
                 SystemConfig.Instance.DataSecurity.DecryptInfo(tmp);
                 yield return tmp;
             }

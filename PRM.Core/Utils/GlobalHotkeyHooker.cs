@@ -151,6 +151,7 @@ namespace Shawn.Utils
                     if (!_hookedhWnd.Contains(hWnd) && hWnd != IntPtr.Zero)
                     {
                         var source = System.Windows.Interop.HwndSource.FromHwnd(hWnd);
+                        source.RemoveHook(HookHandel);
                         source.AddHook(HookHandel);
                     }
                 }

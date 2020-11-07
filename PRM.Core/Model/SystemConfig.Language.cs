@@ -96,7 +96,34 @@ namespace PRM.Core.Model
         {
             LanguageCode2Name.Clear();
             _languageCode2ResourcePath.Clear();
+#if DEBUG
+            if (Directory.Exists("Languages"))
+            {
+                var di = new DirectoryInfo("Languages");
+                var fis = di.GetFiles("*.json");
 
+                // add dynamic language resources
+                foreach (var fi in fis)
+                {
+                    try
+                    {
+                        var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
+                        if (resourceDictionary != null)
+                        {
+                            if (resourceDictionary.Contains("language_name"))
+                            {
+                                var code = fi.Name.Replace(fi.Extension, "");
+                                AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                }
+            }
+#endif
             if (Directory.Exists(LanguageJsonDir))
             {
                 var di = new DirectoryInfo(LanguageJsonDir);
