@@ -155,7 +155,7 @@
     <Compile Include="Utils\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="Protocol\ServerCreateHelper.cs" />
+    <Compile Include="Protocol\ItemCreateHelper.cs" />
     <Compile Include="DB\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ProtocolServerBase.cs" />

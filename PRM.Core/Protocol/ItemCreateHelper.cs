@@ -8,11 +8,11 @@ using PRM.Core.Protocol;
 
 namespace PRM.Core.DB
 {
-    public class ServerCreateHelper
+    public class ItemCreateHelper
     {
         private static readonly object Locker = new object();
         private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public static ProtocolServerBase CreateFromDbObjectServerOrm(Server server)
+        public static ProtocolServerBase CreateFromDbOrm(Server item)
         {
             // reflect all the child class
             lock (Locker)
@@ -21,17 +21,17 @@ namespace PRM.Core.DB
                 {
                     var assembly = typeof(ProtocolServerBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
+                    _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolServerBase)) && !x.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
                 
                 // get instance form json string
-                foreach (var serverAbstract in _baseList)
+                foreach (var @base in _baseList)
                 {
-                    if (server.Protocol == serverAbstract.Protocol &&
-                        server.ClassVersion == serverAbstract.ClassVersion)
+                    if (item.Protocol == @base.Protocol &&
+                        item.ClassVersion == @base.ClassVersion)
                     {
-                        var jsonStr = server.JsonConfigString;
+                        var jsonStr = item.JsonConfigString;
                         //if (rsa != null)
                         //{
                         //    var tmp = rsa.DecodeOrNull(jsonStr);
@@ -40,10 +40,10 @@ namespace PRM.Core.DB
                         //        jsonStr = tmp;
                         //    }
                         //}
-                        var ret = serverAbstract.CreateFromJsonString(jsonStr);
+                        var ret = @base.CreateFromJsonString(jsonStr);
                         if (ret != null)
                         {
-                            ret.Id = server.Id;
+                            ret.Id = item.Id;
                             return ret;
                         }
                     }
@@ -73,12 +73,12 @@ namespace PRM.Core.DB
             }
 
             // get instance form json string
-            foreach (var serverAbstract in _baseList)
+            foreach (var @base in _baseList)
             {
-                if (jObj.Protocol.ToString() == serverAbstract.Protocol &&
-                    jObj.ClassVersion.ToString() == serverAbstract.ClassVersion)
+                if (jObj.Protocol.ToString() == @base.Protocol &&
+                    jObj.ClassVersion.ToString() == @base.ClassVersion)
                 {
-                    var ret = serverAbstract.CreateFromJsonString(jsonString);
+                    var ret = @base.CreateFromJsonString(jsonString);
                     if (ret != null)
                     {
                         return ret;

@@ -776,7 +776,7 @@ namespace PRM.Core.Model
                                 var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(dlg.FileName, Encoding.UTF8));
                                 foreach (var json in jobj)
                                 {
-                                    var server = ServerCreateHelper.CreateFromJsonString(json.ToString());
+                                    var server = ItemCreateHelper.CreateFromJsonString(json.ToString());
                                     if (server != null)
                                     {
                                         server.Id = 0;

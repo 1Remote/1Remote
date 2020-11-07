@@ -255,13 +255,13 @@
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Grid>
                                         <Border x:Name="GridContainer">
-                                            <Border.CornerRadius>
+                                            <!--<Border.CornerRadius>
                                                 <CornerRadius 
                                                     TopLeft="{StaticResource CornerRadius}"
                                                     TopRight="{StaticResource CornerRadius}"
                                                     BottomRight="{StaticResource CornerRadius}"
                                                     BottomLeft="{StaticResource CornerRadius}"/>
-                                            </Border.CornerRadius>
+                                            </Border.CornerRadius>-->
                                         </Border>
                                         <ContentPresenter/>
                                     </Grid>

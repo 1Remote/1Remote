@@ -184,7 +184,7 @@ namespace PRM.ViewModel
                         if (dlg.ShowDialog() == true)
                         {
                             string jsonString = File.ReadAllText(dlg.FileName, Encoding.UTF8);
-                            var server = ServerCreateHelper.CreateFromJsonString(jsonString);
+                            var server = ItemCreateHelper.CreateFromJsonString(jsonString);
                             foreach (var protocolServerBase in ProtocolList)
                             {
                                 if (server.GetType() == protocolServerBase.GetType())
