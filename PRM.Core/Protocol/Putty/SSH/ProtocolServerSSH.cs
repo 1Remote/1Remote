@@ -19,7 +19,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH", false)
         {
         }
-        
+
 
         private string _privateKey = "";
         public string PrivateKey

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using PRM.Core.DB;
 using PRM.Core.Model;
@@ -164,7 +165,10 @@ namespace PRM.Model
                     tab.Vm.Items.Add(new TabItemViewModel()
                     {
                         Content = host,
-                        Header = vmProtocolServer.Server.DispName,
+                        Header = new TextBlock()
+                        {
+                            Text = vmProtocolServer.Server.DispName,
+                        },
                     });
                     tab.Vm.SelectedItem = tab.Vm.Items.Last();
                     host.ParentWindow = tab;
@@ -396,7 +400,7 @@ namespace PRM.Model
                 && _protocolHosts.ContainsKey(connectionId))
             {
                 var host = _protocolHosts[connectionId];
-                SimpleLogHelper.Debug($@"DelFromPuttyRegistryTable host({host.GetHashCode()})");
+                SimpleLogHelper.Debug($@"DelProtocolHost host({host.GetHashCode()})");
                 if (host.OnClosed != null)
                     host.OnClosed -= OnProtocolClose;
                 if (host.IsConnected())
