@@ -10,15 +10,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Interop;
-using PRM.Core.Model;
-using Shawn.Utils.DragablzTab;
-using PRM.Model;
-using PRM.ViewModel;
-using Shawn.Utils;
+using System.Windows.Media;
+using Dragablz;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Size = System.Windows.Size;
+using PRM.Model;
+using PRM.ViewModel;
+using PRM.Core.Model;
+using Shawn.Utils.DragablzTab;
+using Shawn.Utils;
 
 namespace PRM.View
 {
@@ -48,7 +51,7 @@ namespace PRM.View
                     SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
                     SystemConfig.Instance.Locality.Save();
                 }
-                if(_lastWindowState != this.WindowState)
+                if (_lastWindowState != this.WindowState)
                     Vm?.SelectedItem?.Content?.MakeItFocus();
                 _lastWindowState = this.WindowState;
             };
@@ -195,19 +198,21 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                var si = Vm.SelectedItem;
                 this.Icon =
                 this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
-                var t = new Task(() =>
+            }
+        }
+
+        private void FouseContentWhenMouseKeyUp(object sender, MouseButtonEventArgs e)
+        {
+            // to click header, then focus content when release mouse press.
+            if (sender is Grid grid)
+            {
+                var dragablzItem = GetVisualParent<DragablzItem>(grid);
+                if (dragablzItem.DataContext is TabItemViewModel tivm)
                 {
-                    Thread.Sleep(50);
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (Mouse.LeftButton == MouseButtonState.Released && IsActive && Vm.SelectedItem == si)
-                            Vm?.SelectedItem?.Content?.MakeItFocus();
-                    });
-                });
-                t.Start();
+                    tivm.Content?.MakeItFocus();
+                }
             }
         }
 
@@ -223,6 +228,42 @@ namespace PRM.View
                 Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
             };
         }
+
+        #region GetVisualParent
+        public static T GetVisualParent<T>(object childObject) where T : Visual
+        {
+            DependencyObject child = childObject as DependencyObject;
+            // iteratively traverse the visual tree
+            while ((child != null) && !(child is T))
+            {
+                child = VisualTreeHelper.GetParent(child);
+            }
+            return child as T;
+        }
+
+        public static List<T> GetVisualChildCollection<T>(object parent) where T : Visual
+        {
+            List<T> visualCollection = new List<T>();
+            GetVisualChildCollection(parent as DependencyObject, visualCollection);
+            return visualCollection;
+        }
+        private static void GetVisualChildCollection<T>(DependencyObject parent, List<T> visualCollection) where T : Visual
+        {
+            int count = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T)
+                {
+                    visualCollection.Add(child as T);
+                }
+                else if (child != null)
+                {
+                    GetVisualChildCollection(child, visualCollection);
+                }
+            }
+        } 
+        #endregion
     }
 
 

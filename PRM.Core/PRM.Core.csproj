@@ -152,6 +152,7 @@
     <Compile Include="Utils\Ini.cs" />
     <Compile Include="Utils\IOPermissionHelper.cs" />
     <Compile Include="Utils\KeyWordMatchHelper.cs" />
+    <Compile Include="Utils\MD5Helper.cs" />
     <Compile Include="Utils\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />

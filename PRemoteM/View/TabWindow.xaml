@@ -85,6 +85,7 @@
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
                                   SnapsToDevicePixels="true" 
+                                  PreviewMouseUp="FouseContentWhenMouseKeyUp"
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
                                     <ContextMenu ItemsSource="{Binding Content.MenuItems}">
@@ -231,11 +232,16 @@
                 </Style>
             </StackPanel.Resources>
 
-            <controls:ButtonEx Name="BtnMinimize" Style="{StaticResource WinTitleBarBtnStyle}" Width="35" Height="40">
+            <controls:ButtonEx Name="BtnMinimize" 
+                               PreviewMouseUp="FouseContentWhenMouseKeyUp"
+                               Style="{StaticResource WinTitleBarBtnStyle}"
+                               Width="35" Height="40">
                 <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
             </controls:ButtonEx>
 
-            <controls:ButtonEx Name="BtnMaximize" Width="35" Height="40">
+            <controls:ButtonEx Name="BtnMaximize" 
+                               PreviewMouseUp="FouseContentWhenMouseKeyUp"
+                               Width="35" Height="40">
                 <controls:ButtonEx.Style>
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
@@ -280,7 +286,8 @@
 
 
             <controls:ButtonEx Command="{Binding CmdHostGoFullScreen}" Width="35" Height="40"
-                    CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
+                               PreviewMouseUp="FouseContentWhenMouseKeyUp"
+                               CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
                 <controls:ButtonEx.Style>
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
@@ -298,7 +305,9 @@
             </controls:ButtonEx>
 
 
-            <controls:ButtonEx Name="BtnCloseAll" Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}" Width="35" Height="40">
+            <controls:ButtonEx Name="BtnCloseAll" 
+                               PreviewMouseUp="FouseContentWhenMouseKeyUp"
+                               Command="{Binding CmdClose}" Visibility="{Binding BtnCloseAllVisibility}" Width="35" Height="40">
                 <controls:ButtonEx.Style>
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="BackgroundOnMouseOver" Value="Red"/>
@@ -313,7 +322,9 @@
                 </Grid>
             </controls:ButtonEx>
 
-            <controls:ButtonEx Name="BtnClose" Width="35" Height="40">
+            <controls:ButtonEx Name="BtnClose" 
+                               PreviewMouseUp="FouseContentWhenMouseKeyUp"
+                               Width="35" Height="40">
                 <controls:ButtonEx.Style>
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="BackgroundOnMouseOver" Value="Red"/>
