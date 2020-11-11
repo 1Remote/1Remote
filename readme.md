@@ -18,11 +18,11 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="600"/>
 </p>
 
 <p align="center">
@@ -33,17 +33,16 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 ## Featutes
 ----
 - RDP with multi-screen and HiDpi(Testd on **Win10 + 4k*2** to **Win2016**)
-- SSH,Telnet support via PuTTY
+- SSH Telnet support via PuTTY, auto-cmd after connect is supported
 - Tab support
-- UI themes support
 - Opening a remote session via shortcut
 - [Migrate remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migrate-from-mRemoteNG)
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.0.2010291925
+Latest Version: 0.5.1.2011110905
 
-- [Download](https://github.com/VShawn/PRemoteM/releases/tag/0.4.8.2008150945)
+- [Download](https://github.com/VShawn/PRemoteM/releases)
 
 ## Requirements
 ----
@@ -99,7 +98,7 @@ Your name woluld be shown below as a contributor.
 
 ## Todo list
 
-- [ ] VNC
+- [x] VNC
 - [ ] sFtp
 - [ ] upload PRemoteM to Microsoft Store
 - [ ] more features
