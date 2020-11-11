@@ -18,11 +18,11 @@ PRemoteM 是一款帮助你管理远程会话的小工具，它允许你进行�
 
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="600"/>
 </p>
 
 <p align="center">
@@ -33,16 +33,15 @@ PRemoteM 是一款帮助你管理远程会话的小工具，它允许你进行�
 ## Featutes
 ----
 - RDP 支持多屏幕全屏远程(测试基于 **Win10 + 4k显示器*2** 远程至 **Win2016**)
-- 基于 PuTTY 的 SSH Telnet 会话
+- 基于 PuTTY 的 SSH Telnet 会话，支持连接后自动执行指令
 - Tab 页中管理远程会话
-- UI 颜色可自定义
 - 通过快捷键打开启动器，进而快速搜索查找开启会话
 - [可从 mRemoteNG 迁移会话](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#从-mRemoteNG-迁移数据)
 - [基于 RSA 的敏感数据保护](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#数据加密)
 
 # Lastet
 
-最新版本: 0.5.0.2010171729
+最新版本: 0.5.1.2011110905
 
 - [下载](https://github.com/VShawn/PRemoteM/releases)
   
@@ -101,7 +100,7 @@ Your name woluld be shown below as a contributor.
 
 ## Todo list
 
-- [ ] VNC
+- [x] VNC
 - [ ] sFtp
 - [ ] upload PRemoteM to Microsoft Store
 - [ ] more features

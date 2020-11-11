@@ -18,11 +18,11 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.jpg" width="300"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="600"/>
 </p>
 
 <p align="center">
@@ -33,18 +33,17 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 ## Featutes
 ----
 - RDP with multi-screen and HiDpi(Testd on **Win10 + 4k*2** to **Win2016**)
-- SSH,Telnet support via PuTTY
+- SSH Telnet support via PuTTY, auto-cmd after connect is supported
 - Tab support
-- UI themes support
 - Opening a remote session via shortcut
-- [Migare remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migare-from-mRemoteNG)
+- [Migrate remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migrate-from-mRemoteNG)
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.0.2010171729
+Latest Version: 0.5.1.2011110905
 
 - [Download](https://github.com/VShawn/PRemoteM/releases)
-  
+
 ## Requirements
 ----
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
@@ -75,8 +74,8 @@ By encrypting data, no one can get your remote password by open database directl
 1. In <kbd>Setting</kbd> -> <kbd>Data & Security</kbd> page
 2. click <kbd>Encrypt</kbd> button and select a proper place to store your **Key File**.
 
-### Migare from mRemoteNG
-<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migare.jpg"/>
+### Migrate from mRemoteNG
+<img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migrate.jpg"/>
 
 ## Make contribution
 Help to make this tool more powerful.
@@ -99,7 +98,7 @@ Your name woluld be shown below as a contributor.
 
 ## Todo list
 
-- [ ] VNC
+- [x] VNC
 - [ ] sFtp
 - [ ] upload PRemoteM to Microsoft Store
 - [ ] more features
