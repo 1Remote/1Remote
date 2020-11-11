@@ -12,55 +12,6 @@ namespace PRM.Core.Protocol.Putty
 {
     public static class PuttyColorThemes
     {
-        public static string ThemeRegFileFolder = "PuttyThemes";
-
-        public static List<PuttyOptionItem> ColorThemesFromRegFile(string filePath)
-        {
-            if (!File.Exists(filePath))
-                return null;
-            var content = File.ReadAllText(filePath);
-            var regex = new Regex(@"\""(.*?)\"".*?=.*?\""(.*?)\""", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-            var matchCollection = regex.Matches(content);
-
-            var options = new List<PuttyOptionItem>();
-            foreach (var m in matchCollection)
-            {
-                var key = Regex.Match(m.ToString(), @"Colour\d+");
-                var value = Regex.Match(m.ToString(), @"\""\d{1,3}.*?,\d{1,3}.*?,\d{1,3}.*?\""");
-                if (Enum.TryParse(key.ToString(), out PuttyOptionKey ek))
-                {
-                    options.Add(PuttyOptionItem.Create(ek, value.ToString().Replace(@"""", "").ToString()));
-                }
-            }
-            if (options.Count > 0)
-                return options;
-            return null;
-        }
-
-
-        public static FileInfo ToRegFile(this List<PuttyOptionItem> options, string filePath)
-        {
-            if (options.Count == 0)
-                return null;
-            if (File.Exists(filePath))
-                File.Delete(filePath);
-            var sb = new StringBuilder(@"Windows Registry Editor Version 5.00
-
-[HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\Default%20Settings]
-
-");
-            foreach (var option in options)
-            {
-                sb.AppendLine($@"""{option.Key}""=""{option.Value}""");
-            }
-
-            File.WriteAllText(filePath, sb.ToString());
-            if (File.Exists(filePath))
-                return new FileInfo(filePath);
-            return null;
-        }
-
-
         public static Dictionary<string, List<PuttyOptionItem>> GetThemes()
         {
             var themes = new Dictionary<string, List<PuttyOptionItem>>();
@@ -71,21 +22,7 @@ namespace PRM.Core.Protocol.Putty
                     themes.Add(theme.Item1, theme.Item2);
             }
             var tmp = new Dictionary<string, List<PuttyOptionItem>>();
-            // customize theme
-            var di = new DirectoryInfo(ThemeRegFileFolder);
-            if (di.Exists)
-            {
-                var regs = di.GetFiles("*.reg");
-                foreach (var reg in regs)
-                {
-                    var t = ColorThemesFromRegFile(reg.FullName);
-                    if (t != null
-                    && !tmp.ContainsKey(reg.Name.Replace(reg.Extension, "")))
-                    {
-                        tmp.Add(reg.Name.Replace(reg.Extension, ""), t);
-                    }
-                }
-            }
+
             // existed theme
             AddStaticThemes(tmp);
 

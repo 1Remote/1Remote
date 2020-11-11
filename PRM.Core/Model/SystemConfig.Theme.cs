@@ -345,42 +345,6 @@ namespace PRM.Core.Model
 
 
         #region CMD
-        private RelayCommand _cmdPuttyThemeCustomize;
-        public RelayCommand CmdPuttyThemeCustomize
-        {
-            get
-            {
-                if (_cmdPuttyThemeCustomize == null)
-                {
-                    _cmdPuttyThemeCustomize = new RelayCommand((o) =>
-                    {
-                        var puttyTheme = SelectedPuttyTheme;
-                        if (!Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
-                            Directory.CreateDirectory(PuttyColorThemes.ThemeRegFileFolder);
-                        var fi = puttyTheme.ToRegFile(Path.Combine(PuttyColorThemes.ThemeRegFileFolder, PuttyThemeName + ".reg"));
-                        if (fi != null)
-                            System.Diagnostics.Process.Start("notepad.exe", fi.FullName);
-                    });
-                }
-                return _cmdPuttyThemeCustomize;
-            }
-        }
-        private RelayCommand _cmdPuttyThemeReset;
-        public RelayCommand CmdPuttyThemeReset
-        {
-            get
-            {
-                if (_cmdPuttyThemeReset == null)
-                {
-                    _cmdPuttyThemeReset = new RelayCommand((o) =>
-                    {
-                        if (Directory.Exists(PuttyColorThemes.ThemeRegFileFolder))
-                            Directory.Delete(PuttyColorThemes.ThemeRegFileFolder, true);
-                    });
-                }
-                return _cmdPuttyThemeReset;
-            }
-        }
 
         private RelayCommand _cmdPrmThemeReset;
         public RelayCommand CmdPrmThemeReset

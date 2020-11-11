@@ -148,7 +148,6 @@ namespace PRM
                     //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
                     //}
 
-                    PuttyColorThemes.ThemeRegFileFolder = Path.Combine(appDateFolder, PuttyColorThemes.ThemeRegFileFolder);
 
                     var language = new SystemConfigLanguage(this.Resources, ini);
                     var general = new SystemConfigGeneral(ini);
