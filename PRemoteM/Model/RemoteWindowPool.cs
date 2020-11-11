@@ -165,10 +165,7 @@ namespace PRM.Model
                     tab.Vm.Items.Add(new TabItemViewModel()
                     {
                         Content = host,
-                        Header = new TextBlock()
-                        {
-                            Text = vmProtocolServer.Server.DispName,
-                        },
+                        Header = vmProtocolServer.Server.DispName,
                     });
                     tab.Vm.SelectedItem = tab.Vm.Items.Last();
                     host.ParentWindow = tab;

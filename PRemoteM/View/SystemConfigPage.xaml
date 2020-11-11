@@ -495,9 +495,6 @@
                                     (?)
                                 </Hyperlink>
                             </TextBlock>
-
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource system_options_data_theme_putty_customize}" Command="{Binding SystemConfig.Theme.CmdPuttyThemeCustomize}"></controls:ButtonEx>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="10 0 0 0" Content="{DynamicResource system_options_data_theme_prm_reset}" Command="{Binding SystemConfig.Theme.CmdPuttyThemeReset}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
