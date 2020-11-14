@@ -189,7 +189,7 @@
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
                             <Grid HorizontalAlignment="Center" Margin="0 4 0 0">
-                                <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
+                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
@@ -206,6 +206,14 @@
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect ShadowDepth="0"
+                                                          Direction="0"
+                                                          Color="{DynamicResource MainColor1Darker}"
+                                                          Opacity="10"
+                                                          BlurRadius="3"
+                                        />
+                                    </TextBlock.Effect>
                                 </TextBlock>
                             </Grid>
                             <Grid>
@@ -297,7 +305,7 @@
                 <Grid Name="CardNameBarMask" VerticalAlignment="Bottom" Height="20" Background="Black">
                     <Grid.Style>
                         <Style TargetType="Grid">
-                            <Setter Property="Opacity" Value="0.2"></Setter>
+                            <Setter Property="Opacity" Value="0.1"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"></Setter>
