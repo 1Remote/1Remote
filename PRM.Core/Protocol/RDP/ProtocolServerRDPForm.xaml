@@ -352,6 +352,14 @@
                     </Grid>
                 </StackPanel>
             </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </StackPanel>
 </protocol:ProtocolServerFormBase>
