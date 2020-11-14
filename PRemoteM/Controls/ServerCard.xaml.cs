@@ -11,9 +11,6 @@ using PRM.ViewModel;
 
 namespace PRM.Controls
 {
-    /// <summary>
-    /// ServerCard.xaml 的交互逻辑
-    /// </summary>
     public partial class ServerCard : UserControl
     {
         public static readonly DependencyProperty VmServerCardProperty =

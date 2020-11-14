@@ -24,9 +24,6 @@ using UserControl = System.Windows.Controls.UserControl;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// SystemConfigPage.xaml 的交互逻辑
-    /// </summary>
     public partial class SystemConfigPage : UserControl
     {
         public VmMain Host;
@@ -169,7 +166,6 @@ namespace PRM.View
     /// </summary>
     public class Key2KeyStringConverter : IValueConverter
     {
-        // 实现接口的两个方法  
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -188,7 +184,6 @@ namespace PRM.View
 
     public class StringIsEmpty2BoolConverter : IValueConverter
     {
-        // 实现接口的两个方法  
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {

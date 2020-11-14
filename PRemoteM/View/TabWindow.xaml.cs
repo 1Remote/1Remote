@@ -25,9 +25,6 @@ using Shawn.Utils;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// TabWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class TabWindow : Window
     {
         public VmTabWindow Vm;
@@ -262,7 +259,7 @@ namespace PRM.View
                     GetVisualChildCollection(child, visualCollection);
                 }
             }
-        } 
+        }
         #endregion
     }
 

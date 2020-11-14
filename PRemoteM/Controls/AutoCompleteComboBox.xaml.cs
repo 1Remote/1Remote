@@ -18,9 +18,6 @@ using System.Windows.Shapes;
 
 namespace Shawn.Utils
 {
-    /// <summary>
-    /// AutoCompleteComboBox.xaml 的交互逻辑
-    /// </summary>
     public partial class AutoCompleteComboBox : UserControl
     {
         public static readonly DependencyProperty TextProperty =

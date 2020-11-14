@@ -17,9 +17,6 @@ using Color = System.Drawing.Color;
 
 namespace PRM.Core.Protocol.VNC.Host
 {
-    /// <summary>
-    /// VncHost.xaml 的交互逻辑
-    /// </summary>
     public sealed partial class VncHost : ProtocolHostBase
     {
         private readonly ProtocolServerVNC _vncServer = null;

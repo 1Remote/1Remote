@@ -112,7 +112,7 @@ namespace PRM.Core.Resources.Controls
 
         static ButtonEx()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(ButtonEx), new FrameworkPropertyMetadata(typeof(ButtonEx)));//使KButton去读取KButton类型的样式，而不是去读取Button的样式
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(ButtonEx), new FrameworkPropertyMetadata(typeof(ButtonEx)));// Let ButtonEx use ButtonEx type style not
         }
 
 

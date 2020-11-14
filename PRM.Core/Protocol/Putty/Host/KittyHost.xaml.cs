@@ -28,9 +28,6 @@ using Path = System.IO.Path;
 
 namespace PRM.Core.Protocol.Putty.Host
 {
-    /// <summary>
-    /// KittyHost.xaml 的交互逻辑
-    /// </summary>
     public partial class KittyHost : ProtocolHostBase
     {
         [DllImport("User32.dll")]
@@ -60,10 +57,10 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private const int GWL_STYLE = (-16);
         private const int WM_CLOSE = 0x10;
-        private const int WS_CAPTION = 0x00C00000; // 	创建一个有标题框的窗口
-        private const int WS_BORDER = 0x00800000;  // 	创建一个单边框的窗口
-        private const int WS_THICKFRAME = 0x00040000; // 创建一个具有可调边框的窗口
-        private const int WS_VSCROLL = 0x00200000; // 创建一个有垂直滚动条的窗口。
+        private const int WS_CAPTION = 0x00C00000;      // 	创建一个有标题框的窗口
+        private const int WS_BORDER = 0x00800000;       // 	创建一个单边框的窗口
+        private const int WS_THICKFRAME = 0x00040000;   // 创建一个具有可调边框的窗口
+        private const int WS_VSCROLL = 0x00200000;      // 创建一个有垂直滚动条的窗口。
 
 
         private const int SW_HIDE = 0;
