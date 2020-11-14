@@ -9,6 +9,7 @@ using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.RDP.Host;
 using PRM.Core.Protocol.VNC;
 using PRM.Core.Protocol.VNC.Host;
 using Shawn.Utils.RDP;

@@ -18,9 +18,6 @@ using PRM.ViewModel;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// AboutPage.xaml 的交互逻辑
-    /// </summary>
     public partial class AboutPage : UserControl
     {
         public readonly VmMain Vm;

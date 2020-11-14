@@ -14,9 +14,6 @@ using PRM.Core.Protocol.RDP;
 
 namespace PRM.Core.Protocol.VNC
 {
-    /// <summary>
-    /// ServerRDPEditForm.xaml 的交互逻辑
-    /// </summary>
     public partial class ProtocolServerVNCForm : ProtocolServerFormBase
     {
         public readonly ProtocolServerBase Vm;

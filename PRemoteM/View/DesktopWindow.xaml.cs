@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// DesktopWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class DesktopWindow : Window
     {
         public DesktopWindow()

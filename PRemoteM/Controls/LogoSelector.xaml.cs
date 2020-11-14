@@ -24,9 +24,6 @@ using Shawn.Utils;
 
 namespace PRM.Core.Resources.Controls
 {
-    /// <summary>
-    /// LogoSelector.xaml 的交互逻辑
-    /// </summary>
     public partial class LogoSelector : UserControl, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged

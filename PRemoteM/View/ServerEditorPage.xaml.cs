@@ -26,9 +26,6 @@ using Shawn.Utils;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// ServerEditorPage.xaml 的交互逻辑
-    /// </summary>
     public partial class ServerEditorPage : UserControl
     {
         public readonly VmServerEditorPage Vm;

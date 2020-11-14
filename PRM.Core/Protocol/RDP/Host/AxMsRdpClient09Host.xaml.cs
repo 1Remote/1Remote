@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Net.Mime;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Interop;
 using AxMSTSCLib;
 using MSTSCLib;
 using PRM.Core.DB;
 using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.RDP;
+using Shawn.Utils;
+using Shawn.Utils.RDP;
 using Color = System.Drawing.Color;
 
-namespace Shawn.Utils.RDP
+namespace PRM.Core.Protocol.RDP.Host
 {
-    /// <summary>
-    /// AxMsRdpClient09Host.xaml 的交互逻辑
-    /// </summary>
     public sealed partial class AxMsRdpClient09Host : ProtocolHostBase
     {
         private readonly AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
@@ -311,7 +305,8 @@ namespace Shawn.Utils.RDP
 
             #region Gateway
             // Specifies whether Remote Desktop Gateway (RD Gateway) is supported.
-            if (_rdp.TransportSettings.GatewayIsSupported != 0)
+            if (_rdp.TransportSettings.GatewayIsSupported != 0
+                && _rdpServer.GatewayMode != EGatewayMode.DoNotUseGateway)
             {
                 // https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayprofileusagemethod
                 _rdp.TransportSettings2.GatewayProfileUsageMethod = 1; // Use explicit settings, as specified by the user.
@@ -319,22 +314,20 @@ namespace Shawn.Utils.RDP
                 // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayusagemethod
                 switch (_rdpServer.GatewayMode)
                 {
-                    case EGatewayMode.DoNotUseGateway:
-                        _rdp.TransportSettings.GatewayUsageMethod = 0;// TSC_PROXY_MODE_NONE_DIRECT , Do not use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
-                        //if(_rdpServer.GatewayBypassForLocalAddress)
-                        //    _rdp.TransportSettings.GatewayUsageMethod = 4;// TSC_PROXY_MODE_NONE_DETECT , Do not use an RD Gateway server. In the Remote Desktop Connection (RDC) client UI, the Bypass RD Gateway server for local addresses check box is cleared.
-                        //else
-                        //    _rdp.TransportSettings.GatewayUsageMethod = 0;// TSC_PROXY_MODE_NONE_DIRECT , Do not use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
-                        break;
                     case EGatewayMode.UseTheseGatewayServerSettings:
-                        _rdp.TransportSettings.GatewayUsageMethod = 1;
+                        _rdp.TransportSettings.GatewayUsageMethod = 1; // 1 : Always use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is cleared.
                         break;
                     case EGatewayMode.AutomaticallyDetectGatewayServerSettings:
-                        _rdp.TransportSettings.GatewayUsageMethod = 2;
+                        _rdp.TransportSettings.GatewayUsageMethod = 2; // 2 : Use an RD Gateway server if a direct connection cannot be made to the RD Session Host server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+
+                _rdp.TransportSettings2.GatewayHostname = _rdpServer.GatewayHostName;
+                //_rdp.TransportSettings2.GatewayDomain = "XXXXX";
+
 
                 // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewaycredssource
                 // TSC_PROXY_CREDS_MODE_USERPASS (0): Use a password (NTLM) as the authentication method for RD Gateway.
@@ -342,13 +335,13 @@ namespace Shawn.Utils.RDP
                 // TSC_PROXY_CREDS_MODE_ANY (4): Use any authentication method for RD Gateway.
                 switch (_rdpServer.GatewayLogonMethod)
                 {
+                    case EGatewayLogonMethod.SmartCard:
+                        _rdp.TransportSettings.GatewayCredsSource = 1; // TSC_PROXY_CREDS_MODE_SMARTCARD 
+                        break;
                     case EGatewayLogonMethod.Password:
                         _rdp.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
                         _rdp.TransportSettings2.GatewayUsername = _rdpServer.GatewayUserName;
                         _rdp.TransportSettings2.GatewayPassword = _rdpServer.GetDecryptedGatewayPassword();
-                        break;
-                    case EGatewayLogonMethod.SmartCard:
-                        _rdp.TransportSettings.GatewayCredsSource = 1; // TSC_PROXY_CREDS_MODE_SMARTCARD 
                         break;
                     default:
                         _rdp.TransportSettings.GatewayCredsSource = 4; // TSC_PROXY_CREDS_MODE_ANY 
@@ -356,9 +349,6 @@ namespace Shawn.Utils.RDP
                 }
 
                 _rdp.TransportSettings2.GatewayCredSharing = 0;
-
-                _rdp.TransportSettings2.GatewayHostname = _rdpServer.GatewayHostName;
-                //_rdp.TransportSettings2.GatewayDomain = "XXXXX";
             }
             #endregion
         }

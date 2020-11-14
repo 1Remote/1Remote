@@ -18,9 +18,6 @@ using PRM.Model;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// FullScreenWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class FullScreenWindow : Window
     {
         public ProtocolHostBase ProtocolHostBase { get; private set; } = null;

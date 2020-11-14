@@ -11,7 +11,7 @@ namespace PRM.Core
         public const int Major = 0;
         public const int Minor = 5;
         public const int Build = 1;
-        public const int ReleaseDate = 2011110905;
+        public const int ReleaseDate = 2011140933;
         public static string Version => $"{Major}.{Minor}.{Build}.{ReleaseDate}";
     }
 }

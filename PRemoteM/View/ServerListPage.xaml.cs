@@ -17,9 +17,6 @@ using Shawn.Utils;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// ServerListPage.xaml 的交互逻辑
-    /// </summary>
     public partial class ServerListPage : UserControl
     {
         public VmMain Host;

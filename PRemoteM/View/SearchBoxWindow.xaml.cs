@@ -13,9 +13,6 @@ using Shawn.Utils.PageHost;
 
 namespace PRM.View
 {
-    /// <summary>
-    /// SearchBoxWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class SearchBoxWindow : Window
     {
         private readonly VmSearchBox _vmSearchBox = null;

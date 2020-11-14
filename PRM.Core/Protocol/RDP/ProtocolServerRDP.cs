@@ -264,7 +264,7 @@ namespace PRM.Core.Protocol.RDP
 
 
         #region Gateway
-        private EGatewayMode _gatewayMode = EGatewayMode.AutomaticallyDetectGatewayServerSettings;
+        private EGatewayMode _gatewayMode = EGatewayMode.DoNotUseGateway;
         public EGatewayMode GatewayMode
         {
             get => _gatewayMode;

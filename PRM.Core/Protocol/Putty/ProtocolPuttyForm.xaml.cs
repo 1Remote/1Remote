@@ -15,9 +15,6 @@ using PRM.Core.Protocol.Putty.Telnet;
 
 namespace PRM.Core.Protocol.Putty
 {
-    /// <summary>
-    /// ServerRDPEditForm.xaml 的交互逻辑
-    /// </summary>
     public partial class ProtocolPuttyForm : ProtocolServerFormBase
     {
         public readonly ProtocolServerBase Vm;
