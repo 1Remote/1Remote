@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using PRM.Core.DB;
@@ -59,19 +60,31 @@ namespace PRM.Core.Protocol.VNC.Host
                     Vnc.SendSpecialKeys(SpecialKeys.AltF4);
                 }, o => IsConnected() == true)
             });
-            MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
-                Header = SystemConfig.Instance.Language.GetText("button_close"),
-                Command = new RelayCommand((o) =>
+                var tb = new TextBlock();
+                tb.SetResourceReference(TextBlock.TextProperty, "tab_button_reconnect");
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
-                    DisConn();
-                })
-            });
+                    Header = tb,
+                    Command = new RelayCommand((o) => { ReConn(); })
+                });
+            }
+            {
+                var tb = new TextBlock();
+                tb.SetResourceReference(TextBlock.TextProperty, "button_close");
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
+                {
+                    Header = tb,
+                    Command = new RelayCommand((o) => { DisConn(); })
+                });
+            }
         }
 
         #region Base Interface
         public override void Conn()
         {
+            if(IsConnected())
+                Vnc.Disconnect();
             _isConnecting = true;
             _isDisconned = false;
             GridLoading.Visibility = Visibility.Visible;
@@ -81,6 +94,13 @@ namespace PRM.Core.Protocol.VNC.Host
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             Vnc.Connect(_vncServer.Address, false, _vncServer.VncWindowResizeMode == ProtocolServerVNC.EVncWindowResizeMode.Stretch);
+        }
+
+        public override void ReConn()
+        {
+            _invokeOnClosedWhenDisconnected = false;
+            Conn();
+            _invokeOnClosedWhenDisconnected = true;
         }
 
         public override void DisConn()
@@ -135,10 +155,12 @@ namespace PRM.Core.Protocol.VNC.Host
             GridLoading.Visibility = Visibility.Collapsed;
         }
 
+        private bool _invokeOnClosedWhenDisconnected = true;
         private void OnConnectionLost(object sender, EventArgs e)
         {
             _isDisconned = true;
-            base.OnClosed?.Invoke(base.ConnectionId);
+            if (_invokeOnClosedWhenDisconnected)
+                base.OnClosed?.Invoke(base.ConnectionId);
         }
 
         #endregion

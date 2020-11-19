@@ -40,7 +40,7 @@ PRemoteM is a utility that helps you manage remote sessions with HiDpi multi-scr
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.1.2011110905
+Latest Version: 0.5.1.2011192133
 
 - [Download](https://github.com/VShawn/PRemoteM/releases)
 

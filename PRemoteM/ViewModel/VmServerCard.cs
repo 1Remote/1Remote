@@ -48,10 +48,10 @@ namespace PRM.ViewModel
         {
             get
             {
-                return _cmdEditServer ?? (_cmdEditServer = new RelayCommand((o) =>
+                return _cmdEditServer ??= new RelayCommand((o) =>
                 {
                     GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false);
-                }));
+                });
             }
         }
 
@@ -61,10 +61,10 @@ namespace PRM.ViewModel
         {
             get
             {
-                return _cmdDuplicateServer ?? (_cmdDuplicateServer = new RelayCommand((o) =>
+                return _cmdDuplicateServer ??= new RelayCommand((o) =>
                 {
                     GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true);
-                }));
+                });
             }
         }
 
@@ -73,7 +73,7 @@ namespace PRM.ViewModel
         {
             get
             {
-                return _cmdDeleteServer ?? (_cmdDeleteServer = new RelayCommand((o) =>
+                return _cmdDeleteServer ??= new RelayCommand((o) =>
                 {
                     if (MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("server_card_operate_confirm_delete"),
@@ -83,7 +83,7 @@ namespace PRM.ViewModel
                     {
                         GlobalData.Instance.ServerListRemove(Server);
                     }
-                }));
+                });
             }
         }
         #endregion

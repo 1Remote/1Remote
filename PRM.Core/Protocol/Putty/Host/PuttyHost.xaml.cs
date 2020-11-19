@@ -143,6 +143,12 @@ namespace PRM.Core.Protocol.Putty.Host
             FormsHost.Child = _puttyMasterPanel;
         }
 
+        public override void ReConn()
+        {
+            // TODO 实现
+            throw new NotImplementedException();
+        }
+
         public override void DisConn()
         {
             ClosePutty();
