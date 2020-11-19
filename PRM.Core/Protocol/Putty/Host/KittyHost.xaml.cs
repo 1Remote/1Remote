@@ -102,7 +102,6 @@ namespace PRM.Core.Protocol.Putty.Host
             Debug.Assert(ParentWindow != null);
             Debug.Assert(_protocolPuttyBase.ProtocolServerBase.Id > 0);
 
-
             // set putty bg color
             var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             GridBg.Background = new SolidColorBrush(new Color()
@@ -152,6 +151,12 @@ namespace PRM.Core.Protocol.Putty.Host
 
             var tsk = new Task(InitKitty);
             tsk.Start();
+        }
+
+        public override void ReConn()
+        {
+            CloseKitty();
+            Conn();
         }
 
         public override void DisConn()

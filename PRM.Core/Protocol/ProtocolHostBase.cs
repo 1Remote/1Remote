@@ -44,14 +44,24 @@ namespace PRM.Core.Protocol
             CanFullScreen = canFullScreen;
 
             // Add right click menu
-            MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
-                Header = SystemConfig.Instance.Language.GetText("button_close"),
-                Command = new RelayCommand((o) =>
+                var tb = new TextBlock();
+                tb.SetResourceReference(TextBlock.TextProperty, "tab_button_reconnect");
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
-                    DisConn();
-                })
-            });
+                    Header = tb,
+                    Command = new RelayCommand((o) => { ReConn(); })
+                });
+            }
+            {
+                var tb = new TextBlock();
+                tb.SetResourceReference(TextBlock.TextProperty, "button_close");
+                MenuItems.Add(new System.Windows.Controls.MenuItem()
+                {
+                    Header = tb,
+                    Command = new RelayCommand((o) => { DisConn(); })
+                });
+            }
         }
 
 
@@ -90,6 +100,7 @@ namespace PRM.Core.Protocol
 
 
         public abstract void Conn();
+        public abstract void ReConn();
 
         /// <summary>
         /// disconnect the session and close host window

@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol.RDP.Host
 {
     public sealed partial class AxMsRdpClient09Host : ProtocolHostBase
     {
-        private readonly AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
+        private AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
         private uint _primaryScaleFactor = 100;
         private bool _isDisconned = false;
@@ -29,29 +29,7 @@ namespace PRM.Core.Protocol.RDP.Host
             if (protocolServer is ProtocolServerRDP rdp)
             {
                 _rdpServer = rdp;
-                _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
-                ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
-                _rdp.Dock = DockStyle.Fill;
-                _rdp.Enabled = true;
-                _rdp.BackColor = Color.Black;
-                // set call back
-                _rdp.OnRequestGoFullScreen += (sender, args) =>
-                {
-                    MakeNormal2FullScreen();
-                };
-                _rdp.OnRequestLeaveFullScreen += (sender, args) =>
-                {
-                    MakeFullScreen2Normal();
-                };
-                _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
-                _rdp.OnDisconnected += RdpcOnDisconnected;
-                _rdp.OnConfirmClose += RdpOnConfirmClose;
-                _rdp.OnConnected += RdpOnOnConnected;
-                _rdp.OnLoginComplete += RdpOnOnLoginComplete;
-                ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
-                RdpHost.Child = _rdp;
                 InitRdp(width, height);
-
                 GlobalEventHelper.OnResolutionChanged += OnResolutionChanged;
             }
             else
@@ -68,6 +46,30 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void InitRdp(double width = 0, double height = 0)
         {
+            _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+            ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
+            _rdp.Dock = DockStyle.Fill;
+            _rdp.Enabled = true;
+            _rdp.BackColor = Color.Black;
+            // set call back
+            _rdp.OnRequestGoFullScreen += (sender, args) =>
+            {
+                MakeNormal2FullScreen();
+            };
+            _rdp.OnRequestLeaveFullScreen += (sender, args) =>
+            {
+                MakeFullScreen2Normal();
+            };
+            _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
+            _rdp.OnDisconnected += RdpcOnDisconnected;
+            _rdp.OnConfirmClose += RdpOnConfirmClose;
+            _rdp.OnConnected += RdpOnOnConnected;
+            _rdp.OnLoginComplete += RdpOnOnLoginComplete;
+            ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
+            RdpHost.Child = _rdp;
+
+
+
             _rdp.CreateControl();
             #region server info
             // server info
@@ -357,11 +359,26 @@ namespace PRM.Core.Protocol.RDP.Host
         #region Base Interface
         public override void Conn()
         {
-            _isConnecting = true;
-            _isDisconned = false;
+            if (IsConnected())
+                _rdp.Disconnect();
             GridLoading.Visibility = Visibility.Visible;
             RdpHost.Visibility = Visibility.Collapsed;
-            _rdp?.Connect();
+            _rdp.Connect();
+        }
+
+        public override void ReConn()
+        {
+            if (IsConnected())
+            {
+                double width = _rdp.DesktopWidth;
+                double height = _rdp.Height;
+                _invokeOnClosedWhenDisconnected = false;
+                _rdp.Disconnect();
+                _rdp.Dispose();
+                InitRdp(width, height);
+                Conn();
+                _invokeOnClosedWhenDisconnected = true;
+            }
         }
 
         public override void DisConn()
@@ -372,7 +389,10 @@ namespace PRM.Core.Protocol.RDP.Host
                 _isDisconned = true;
                 if (_rdp != null
                     && _rdp.Connected > 0)
+                {
                     _rdp.Disconnect();
+                    _rdp.Dispose();
+                }
             }
             base.DisConn();
         }
@@ -450,6 +470,8 @@ namespace PRM.Core.Protocol.RDP.Host
             exDiscReasonProtocolRangeEnd = 32767
         }
         #endregion
+
+        private bool _invokeOnClosedWhenDisconnected = true;
         private void RdpcOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             _isDisconned = true;
@@ -473,7 +495,9 @@ namespace PRM.Core.Protocol.RDP.Host
                 });
                 t.Start();
             }
-            base.OnClosed?.Invoke(base.ConnectionId);
+
+            if (_invokeOnClosedWhenDisconnected)
+                base.OnClosed?.Invoke(base.ConnectionId);
         }
 
         private void RdpOnOnConnected(object sender, EventArgs e)
