@@ -1,4 +1,4 @@
-﻿<protocol:ProtocolServerFormBase x:Class="PRM.Core.Protocol.Putty.ProtocolPuttyForm"
+﻿<protocol:ProtocolServerFormBase x:Class="PRM.Core.Protocol.FileTransmit.SFTP.ProtocolServerSFTPForm"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -120,30 +120,12 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-        </StackPanel>
 
-
-        <StackPanel>
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_version}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:start up path"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <Grid.Resources>
-                            <putty:ConverterESshVersion x:Key="ConverterESshVersion"/>
-                        </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding SshVersion, Converter={StaticResource ConverterESshVersion}}">
-                            <ComboBoxItem Content="V1"/>
-                            <ComboBoxItem Content="V2"/>
-                        </ComboBox>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding StartupAutoCommand,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding StartupPath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>

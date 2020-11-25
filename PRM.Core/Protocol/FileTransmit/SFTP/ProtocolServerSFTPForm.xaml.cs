@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 
-
-namespace PRM.Core.Protocol.Putty
+namespace PRM.Core.Protocol.FileTransmit.SFTP
 {
-    public partial class ProtocolPuttyForm : ProtocolServerFormBase
+    public partial class ProtocolServerSFTPForm : ProtocolServerFormBase
     {
         public readonly ProtocolServerBase Vm;
-        public ProtocolPuttyForm(ProtocolServerBase vm) : base(vm)
+        public ProtocolServerSFTPForm(ProtocolServerBase vm) : base(vm)
         {
             InitializeComponent();
             Vm = vm;
@@ -29,25 +21,18 @@ namespace PRM.Core.Protocol.Putty
             GridPrivateKey.Visibility = Visibility.Collapsed;
 
 
-            if (Vm.GetType() == typeof(ProtocolServerSSH)
+            if (Vm.GetType() == typeof(ProtocolServerSFTP)
                 || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
             {
                 GridPrivateKey.Visibility =
                 GridUserName.Visibility =
-                    GridPwd.Visibility =  Visibility.Visible;
+                    GridPwd.Visibility = Visibility.Visible;
             }
 
-
-            if (Vm.GetType() == typeof(ProtocolServerTelnet)
-                || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortBase))
-            {
-                
-            }
-
-            if (Vm.GetType() == typeof(ProtocolServerSSH))
+            if (Vm.GetType() == typeof(ProtocolServerSFTP))
             {
                 CbUsePrivateKey.IsChecked = false;
-                if (!string.IsNullOrEmpty(((ProtocolServerSSH)Vm).PrivateKey))
+                if (!string.IsNullOrEmpty(((ProtocolServerSFTP)Vm).PrivateKey))
                 {
                     CbUsePrivateKey.IsChecked = true;
                 }
@@ -78,13 +63,13 @@ namespace PRM.Core.Protocol.Putty
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm.GetType() == typeof(ProtocolServerSSH))
+            if (Vm.GetType() == typeof(ProtocolServerSFTP))
             {
                 var dlg = new OpenFileDialog();
                 dlg.Filter = "ppk|*.*";
                 if (dlg.ShowDialog() == true)
                 {
-                    ((ProtocolServerSSH)Vm).PrivateKey = dlg.FileName;
+                    ((ProtocolServerSFTP)Vm).PrivateKey = dlg.FileName;
                 }
             }
         }
@@ -93,8 +78,8 @@ namespace PRM.Core.Protocol.Putty
         {
             if (CbUsePrivateKey.IsChecked == false)
             {
-                if (Vm.GetType() == typeof(ProtocolServerSSH))
-                    ((ProtocolServerSSH)Vm).PrivateKey = "";
+                if (Vm.GetType() == typeof(ProtocolServerSFTP))
+                    ((ProtocolServerSFTP)Vm).PrivateKey = "";
             }
         }
     }
@@ -106,12 +91,12 @@ namespace PRM.Core.Protocol.Putty
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return ((int)((ProtocolServerSSH.ESshVersion)value) - 1).ToString();
+            return ((int)((ProtocolServerSFTP.ESshVersion)value) - 1).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (ProtocolServerSSH.ESshVersion)(int.Parse(value.ToString()));
+            return (ProtocolServerSFTP.ESshVersion)(int.Parse(value.ToString()));
         }
         #endregion
     }

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
-using PRM.Core.DB;
-using PRM.Core.Model;
 using Shawn.Utils;
-using Brush = System.Drawing.Brush;
 using Color = System.Windows.Media.Color;
 
 namespace PRM.Core.Protocol
