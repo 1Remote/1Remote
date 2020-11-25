@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using PRM.Core.Model;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol

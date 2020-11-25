@@ -55,6 +55,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -89,6 +92,22 @@
     <Compile Include="Model\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml.cs">
+      <DependentUpon>FileTransmitHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.cs" />
+    <Compile Include="Protocol\FileTransmit\IProtocolFileTransmittable.cs" />
+    <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml.cs">
+      <DependentUpon>ProtocolServerSFTPForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTP.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\ITransmitter.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\RemoteItem.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\ETransmissionType.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitItem.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTaskManager.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
@@ -175,6 +194,7 @@
     <Compile Include="Utils\RSA\RSA_PEM.cs" />
     <Compile Include="Utils\ScreenInfoEx.cs" />
     <Compile Include="Utils\SetSelfStartingHelper.cs" />
+    <Compile Include="Utils\SystemIconHelper.cs" />
     <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode1.cs" />
     <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode2.cs" />
     <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode3.cs" />
@@ -214,6 +234,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Languages\zh-cn.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
