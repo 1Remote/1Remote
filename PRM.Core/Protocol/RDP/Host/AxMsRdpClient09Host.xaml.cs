@@ -10,7 +10,9 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using Shawn.Utils;
 using Shawn.Utils.RDP;
+using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
+using MessageBox = System.Windows.MessageBox;
 
 namespace PRM.Core.Protocol.RDP.Host
 {

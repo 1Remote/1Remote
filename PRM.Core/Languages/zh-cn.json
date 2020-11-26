@@ -11,6 +11,7 @@
   "button_add": "添加",
   "button_save": "保存",
   "button_back": "返回",
+  "button_delete": "删除",
   "button_cancel": "取消",
   "button_select": "选择",
   "button_explore_to": "定位到...",
@@ -20,10 +21,33 @@
   "info_hotkey_already_registered": "快捷键已被占用",
   "info_hotkey_registered_fail": "快捷键注册失败",
 
+  "string_delete_confirm_title": "删除确认",
+  "string_delete_confirm": "确认要进行删除吗？",
+  "string_permission_denied": "无操作权限",
 
   // tab
   "tab_window_set_tag": "临时标签",
   "tab_button_reconnect": "重新连接",
+
+
+
+  // file transmit host
+  "file_transmit_host_list_header_name": "名称",
+  "file_transmit_host_list_header_last_update": "修改时间",
+  "file_transmit_host_list_header_type": "类型",
+  "file_transmit_host_list_header_size": "大小",
+  "file_transmit_host_message_preview_over_size": "文件超过 1 MB，确定要打开吗?",
+  "file_transmit_host_message_files_download_to": "将文件下载到所选文件夹",
+  "file_transmit_host_message_files_download_to_dir": "选择该文件夹",
+  "file_transmit_host_message_select_files_to_upload": "请选择要上传的文件",
+  "file_transmit_host_button_refresh": "刷新(F5)",
+  "file_transmit_host_button_create_folder": "新建文件夹",
+  "file_transmit_host_button_upload": "上传(Ctrl + V)",
+  "file_transmit_host_button_select_upload": "选择文件上传",
+  "file_transmit_host_button_delete": "删除(Del)",
+  "file_transmit_host_button_save_to": "保存到...(Ctrl + S)",
+  "file_transmit_host_warning_same_names_title": "替换或跳过",
+  "file_transmit_host_warning_same_names": "目标包含{0}个同名文件，需要替换吗？",
 
 
 
@@ -98,7 +122,6 @@
 
 
   // server card operate
-  "server_card_operate_confirm_delete": "确定要删除该服务器配置吗？",
   "server_card_operate_conn": "连接",
   "server_card_operate_edit": "编辑",
   "server_card_operate_duplicate": "创建副本",
@@ -156,6 +179,7 @@
   "server_editor_advantage_smart_cards": "智能卡",
   "server_editor_advantage_ssh_version": "SSH Verison",
   "server_editor_advantage_ssh_startup_auto_command": "自动命令",
+  "server_editor_advantage_sftp_startup_path": "启动位置",
   // server editor - RD-gateway group items
   "server_editor_gateway_mode": "连接设置",
   "server_editor_gateway_mode_automatically_detect": "自动检测RD网关服务器设置",

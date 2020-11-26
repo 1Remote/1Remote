@@ -11,6 +11,7 @@
   "button_add": "Add",
   "button_save": "Save",
   "button_back": "Back",
+  "button_delete": "Delete",
   "button_cancel": "Cancel",
   "button_select": "Select",
   "button_explore_to": "Explore to...",
@@ -20,10 +21,33 @@
   "info_hotkey_already_registered": "Hotkey already registered",
   "info_hotkey_registered_fail": "Failed to register hotkey",
 
+  "string_delete_confirm_title": "Delete confirm",
+  "string_delete_confirm": "Sure to delete?",
+  "string_permission_denied": "Permission denied",
 
   // tab
   "tab_window_set_tag": "temporary tag",
   "tab_button_reconnect": "Reconnect",
+
+
+
+  // file transmit host
+  "file_transmit_host_list_header_name": "Name",
+  "file_transmit_host_list_header_last_update": "Last update",
+  "file_transmit_host_list_header_type": "Type",
+  "file_transmit_host_list_header_size": "Size",
+  "file_transmit_host_message_preview_over_size": "This item is over 1 MB, sure to open?",
+  "file_transmit_host_message_files_download_to": "Please select a folder to save files",
+  "file_transmit_host_message_files_download_to_dir": "Use this folder",
+  "file_transmit_host_message_select_files_to_upload": "Please select files to upload",
+  "file_transmit_host_button_refresh": "Refresh(F5)",
+  "file_transmit_host_button_create_folder": "Create folder",
+  "file_transmit_host_button_upload": "Upload(Ctrl + V)",
+  "file_transmit_host_button_select_upload": "Select to upload",
+  "file_transmit_host_button_delete": "Delete(Del)",
+  "file_transmit_host_button_save_to": "Save to...(Ctrl + S)",
+  "file_transmit_host_warning_same_names_title": "Replace or cancel",
+  "file_transmit_host_warning_same_names": "The destination has {0} files with the same names. Do you want continue?",
 
 
 
@@ -98,7 +122,6 @@
 
 
   // server card operate
-  "server_card_operate_confirm_delete": "Sure to delete this server?",
   "server_card_operate_conn": "Connect",
   "server_card_operate_edit": "Edit",
   "server_card_operate_duplicate": "Duplicate",
@@ -156,6 +179,7 @@
   "server_editor_advantage_smart_cards": "Smart Cards",
   "server_editor_advantage_ssh_version": "SSH Verison",
   "server_editor_advantage_ssh_startup_auto_command": "Auto command",
+  "server_editor_advantage_sftp_startup_path": "Startup path",
   // server editor - RD-gateway group items
   "server_editor_gateway_mode": "Connection",
   "server_editor_gateway_mode_automatically_detect": "Automatically detect RD Gateway server settings",

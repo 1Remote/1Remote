@@ -130,9 +130,16 @@ namespace PRM.Model
                                 // delete tmp rdp file, ETA 10s
                                 var t = new Task(() =>
                                 {
-                                    Thread.Sleep(1000 * 10);
-                                    if (File.Exists(rdpFile))
-                                        File.Delete(rdpFile);
+                                    try
+                                    {
+                                        Thread.Sleep(1000 * 10);
+                                        if (File.Exists(rdpFile))
+                                            File.Delete(rdpFile);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        SimpleLogHelper.Error(e, e.StackTrace);
+                                    }
                                 });
                                 t.Start();
                             }
