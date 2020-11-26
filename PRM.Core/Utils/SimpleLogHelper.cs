@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shawn.Utils
 {
     public static class SimpleLogHelper
     {
-        public enum Level
+        public enum EnumLogLevel
         {
             Debug,
             Info,
@@ -18,27 +20,70 @@ namespace Shawn.Utils
             Fatal,
         }
 
-        public static string LogFileName
+        public enum EnumLogFileType
         {
-            get => _simpleLogHelper.LogFileName;
-            set => _simpleLogHelper.LogFileName = value;
+            Txt,
+            MarkDown,
         }
 
-        public static Level PrintLogLevel
+
+        public static string LogFileName
+        {
+            get => _simpleLogHelper.DebugFileName;
+            set
+            {
+                _simpleLogHelper.DebugFileName = value;
+                _simpleLogHelper.InfoFileName = value;
+                _simpleLogHelper.WarningFileName = value;
+                _simpleLogHelper.ErrorFileName = value;
+                _simpleLogHelper.FatalFileName = value;
+            }
+        }
+
+        public static string DebugFileName
+        {
+            get => _simpleLogHelper.DebugFileName;
+            set => _simpleLogHelper.DebugFileName = value;
+        }
+        public static string InfoFileName
+        {
+            get => _simpleLogHelper.InfoFileName;
+            set => _simpleLogHelper.InfoFileName = value;
+        }
+        public static string WarningFileName
+        {
+            get => _simpleLogHelper.WarningFileName;
+            set => _simpleLogHelper.WarningFileName = value;
+        }
+        public static string ErrorFileName
+        {
+            get => _simpleLogHelper.ErrorFileName;
+            set => _simpleLogHelper.ErrorFileName = value;
+        }
+        public static string FatalFileName
+        {
+            get => _simpleLogHelper.FatalFileName;
+            set => _simpleLogHelper.FatalFileName = value;
+        }
+        public static EnumLogLevel PrintLogEnumLogLevel
         {
             get => _simpleLogHelper.PrintLogLevel;
             set => _simpleLogHelper.PrintLogLevel = value;
         }
-
-        public static Level WriteLogLevel
+        public static EnumLogLevel WriteLogEnumLogLevel
         {
             get => _simpleLogHelper.WriteLogLevel;
             set => _simpleLogHelper.WriteLogLevel = value;
         }
         public static long LogFileMaxSizeMb
         {
-            get => _simpleLogHelper.LogFileMaxSizeMb;
-            set => _simpleLogHelper.LogFileMaxSizeMb = value;
+            get => _simpleLogHelper.LogFileMaxSizeMegabytes;
+            set => _simpleLogHelper.LogFileMaxSizeMegabytes = value;
+        }
+        public static EnumLogFileType LogFileType
+        {
+            get => _simpleLogHelper.LogFileType;
+            set => _simpleLogHelper.LogFileType = value;
         }
 
 
@@ -77,15 +122,51 @@ namespace Shawn.Utils
     {
         public SimpleLogHelperObject(string logFileName = "")
         {
-            LogFileName = logFileName;
+            if (!string.IsNullOrWhiteSpace(logFileName))
+            {
+                DebugFileName = logFileName;
+                InfoFileName = logFileName;
+                WarningFileName = logFileName;
+                ErrorFileName = logFileName;
+                FatalFileName = logFileName;
+            }
+        }
+        public SimpleLogHelperObject(
+            string debugLogFileName,
+            string infoLogFileName,
+            string warningLogFileName,
+            string errorLogFileName,
+            string fatalLogFileName)
+        {
+            if (!string.IsNullOrWhiteSpace(debugLogFileName))
+                DebugFileName = debugLogFileName;
+            if (!string.IsNullOrWhiteSpace(infoLogFileName))
+                InfoFileName = infoLogFileName;
+            if (!string.IsNullOrWhiteSpace(warningLogFileName))
+                WarningFileName = warningLogFileName;
+            if (!string.IsNullOrWhiteSpace(errorLogFileName))
+                ErrorFileName = errorLogFileName;
+            if (!string.IsNullOrWhiteSpace(fatalLogFileName))
+                FatalFileName = fatalLogFileName;
         }
 
-        public string LogFileName = "simple.log.md";
+        public string DebugFileName { get; set; } = "simple.log.md";
+        public string InfoFileName { get; set; } = "simple.log.md";
+        public string WarningFileName { get; set; } = "simple.log.md";
+        public string ErrorFileName { get; set; } = "simple.log.md";
+        public string FatalFileName { get; set; } = "simple.log.md";
 
-        public SimpleLogHelper.Level PrintLogLevel = SimpleLogHelper.Level.Debug;
-        public SimpleLogHelper.Level WriteLogLevel = SimpleLogHelper.Level.Info;
-        public long LogFileMaxSizeMb = 100;
-
+        /// <summary>
+        /// if log file size over this vale, old log file XXXXX.log will be moved to XXXXX.001.log
+        /// </summary>
+        public long LogFileMaxSizeMegabytes { get; set; } = 100;
+        public SimpleLogHelper.EnumLogLevel PrintLogLevel { get; set; } = SimpleLogHelper.EnumLogLevel.Debug;
+        public SimpleLogHelper.EnumLogLevel WriteLogLevel { get; set; } = SimpleLogHelper.EnumLogLevel.Info;
+        public SimpleLogHelper.EnumLogFileType LogFileType { get; set; } = SimpleLogHelper.EnumLogFileType.MarkDown;
+        /// <summary>
+        /// del log files created before LogFileMaxHistoryDays if LogFileMaxHistoryDays > 0
+        /// </summary>
+        public uint LogFileMaxHistoryDays { get; set; } = 60;
 
         private readonly object _obj = new object();
 
@@ -93,32 +174,36 @@ namespace Shawn.Utils
         {
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             var dt = DateTime.Now;
-            Print(SimpleLogHelper.Level.Debug, dt, o);
-            WriteLog(SimpleLogHelper.Level.Debug, dt, o);
+            var tid = Thread.CurrentThread.ManagedThreadId;
+            Print(SimpleLogHelper.EnumLogLevel.Debug, tid, dt, o);
+            WriteLog(SimpleLogHelper.EnumLogLevel.Debug, tid, dt, o);
         }
 
         public void Info(params object[] o)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             var dt = DateTime.Now;
-            Print(SimpleLogHelper.Level.Info, dt, o);
-            WriteLog(SimpleLogHelper.Level.Info, dt, o);
+            var tid = Thread.CurrentThread.ManagedThreadId;
+            Print(SimpleLogHelper.EnumLogLevel.Info, tid, dt, o);
+            WriteLog(SimpleLogHelper.EnumLogLevel.Info, tid, dt, o);
         }
 
         public void Warning(params object[] o)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             var dt = DateTime.Now;
-            Print(SimpleLogHelper.Level.Warning, dt, o);
-            WriteLog(SimpleLogHelper.Level.Warning, dt, o);
+            var tid = Thread.CurrentThread.ManagedThreadId;
+            Print(SimpleLogHelper.EnumLogLevel.Warning, tid, dt, o);
+            WriteLog(SimpleLogHelper.EnumLogLevel.Warning, tid, dt, o);
         }
 
         public void Error(params object[] o)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             var dt = DateTime.Now;
-            Print(SimpleLogHelper.Level.Error, dt, o);
-            WriteLog(SimpleLogHelper.Level.Error, dt, o);
+            var tid = Thread.CurrentThread.ManagedThreadId;
+            Print(SimpleLogHelper.EnumLogLevel.Error, tid, dt, o);
+            WriteLog(SimpleLogHelper.EnumLogLevel.Error, tid, dt, o);
         }
 
         public void Fatal(params object[] o)
@@ -126,17 +211,18 @@ namespace Shawn.Utils
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Red;
             var dt = DateTime.Now;
-            Print(SimpleLogHelper.Level.Fatal, dt, o);
-            WriteLog(SimpleLogHelper.Level.Fatal, dt, o);
+            var tid = Thread.CurrentThread.ManagedThreadId;
+            Print(SimpleLogHelper.EnumLogLevel.Fatal, tid, dt, o);
+            WriteLog(SimpleLogHelper.EnumLogLevel.Fatal, tid, dt, o);
         }
 
-        private void Print(SimpleLogHelper.Level level, DateTime? dt = null, params object[] o)
+        private void Print(SimpleLogHelper.EnumLogLevel enumLogLevel, int threadId, DateTime? dt = null, params object[] o)
         {
-            if (level >= PrintLogLevel)
+            if (enumLogLevel >= PrintLogLevel)
             {
                 if (dt == null)
                     dt = DateTime.Now;
-                Console.Write($"[{dt:o}]\t{level}\t\t\t");
+                Console.Write($"[{dt:o}][ThreadId:{threadId:D10}]\t{enumLogLevel}\t");
                 foreach (var obj in o)
                 {
                     Console.WriteLine(obj);
@@ -145,7 +231,7 @@ namespace Shawn.Utils
             Console.ResetColor();
         }
 
-        private void WriteLog(SimpleLogHelper.Level level, DateTime? dt = null, params object[] o)
+        private void WriteLog(SimpleLogHelper.EnumLogLevel enumLogLevel, int threadId, DateTime? dt = null, params object[] o)
         {
             try
             {
@@ -153,25 +239,157 @@ namespace Shawn.Utils
                     dt = DateTime.Now;
                 lock (_obj)
                 {
-                    if (File.Exists(LogFileName))
+                    string logFileName;
+                    switch (enumLogLevel)
                     {
-                        var fi = new FileInfo(LogFileName);
-                        if (fi.Length > 1024 * 1024 * LogFileMaxSizeMb)
+                        case SimpleLogHelper.EnumLogLevel.Debug:
+                            logFileName = DebugFileName;
+                            break;
+                        case SimpleLogHelper.EnumLogLevel.Info:
+                            logFileName = InfoFileName;
+                            break;
+                        case SimpleLogHelper.EnumLogLevel.Warning:
+                            logFileName = WarningFileName;
+                            break;
+                        case SimpleLogHelper.EnumLogLevel.Error:
+                            logFileName = ErrorFileName;
+                            break;
+                        case SimpleLogHelper.EnumLogLevel.Fatal:
+                            logFileName = FatalFileName;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(enumLogLevel), enumLogLevel, null);
+                    }
+                    string logFileNameWithOutExtension = logFileName;
+
+                    // append date
+                    {
+                        var fi = new FileInfo(logFileName);
+                        logFileNameWithOutExtension = fi.Name.Replace(fi.Extension, "");
+                        if (!string.IsNullOrWhiteSpace(fi.Extension))
                         {
-                            var lines = File.ReadAllLines(LogFileName);
-                            File.WriteAllLines(LogFileName, lines.Skip(lines.Length / 3).ToArray());
+                            var withOutExtension = logFileName.Substring(0, logFileName.LastIndexOf(".", StringComparison.Ordinal));
+                            logFileName = $"{withOutExtension}_{DateTime.Now.ToString("yyyyMMdd")}{fi.Extension}";
+                        }
+                        else
+                        {
+                            logFileName = $"{logFileName}_{DateTime.Now.ToString("yyyyMMdd")}{fi.Extension}";
                         }
                     }
-                    using (StreamWriter sw = new StreamWriter(new FileStream(LogFileName, FileMode.Append)))
+
+                    // craete Directory
                     {
-                        sw.WriteLine($"\r\n---");
-                        sw.WriteLine($"\r\n## {dt:o}\t\t{level}\t\t");
-                        sw.WriteLine("\r\n```");
-                        foreach (var obj in o)
+                        var fi = new FileInfo(logFileName);
+                        if (!fi.Directory.Exists)
+                            fi.Directory.Create();
+                    }
+
+                    // clean history
+                    if (LogFileMaxHistoryDays > 0)
+                    {
+                        var fi = new FileInfo(logFileName);
+                        var di = fi.Directory;
+                        var fis = di.GetFiles($"{logFileNameWithOutExtension}*{fi.Extension}");
+                        foreach (var fileInfo in fis)
                         {
-                            sw.WriteLine(obj);
+                            try
+                            {
+                                var dateStr = fileInfo.Name.Replace(fileInfo.Extension, "");
+                                dateStr = dateStr.Substring(dateStr.LastIndexOf("_") + 1);
+                                if (DateTime.TryParseExact(dateStr, "yyyyMMdd", null, DateTimeStyles.None, out var date)
+                                 && date < DateTime.Now.AddDays(-1 * LogFileMaxHistoryDays))
+                                {
+                                    fileInfo.Delete();
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                         }
-                        sw.WriteLine("\r\n```\r\n");
+                    }
+
+
+                    if (File.Exists(logFileName))
+                    {
+                        var fi = new FileInfo(logFileName);
+                        long maxLength = 1024 * 1024 * LogFileMaxSizeMegabytes;
+                        // over size then move to xxxx.md -> xxxx.001.md
+                        if (fi.Length > maxLength)
+                        {
+                            int i = 1;
+                            var d = i.ToString().Length;
+                            if (d < 3)
+                                d = 3;
+                            string newName = "";
+                            while (true)
+                            {
+                                if (!string.IsNullOrWhiteSpace(fi.Extension))
+                                {
+                                    var withOutExtension = logFileName.Substring(0, logFileName.LastIndexOf(".", StringComparison.Ordinal));
+                                    newName = $"{withOutExtension}_{i.ToString($"D{d}")}{fi.Extension}";
+                                }
+                                else
+                                {
+                                    newName = $"{logFileName}_{i.ToString($"D{d}")}{fi.Extension}";
+                                }
+
+                                if (!File.Exists($"{newName}"))
+                                {
+                                    break;
+                                }
+                                ++i;
+                            }
+                            File.Move(logFileName, newName);
+                        }
+                    }
+
+                    string levelString = enumLogLevel.ToString();
+                    if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
+                    {
+                        switch (enumLogLevel)
+                        {
+                            case SimpleLogHelper.EnumLogLevel.Debug:
+                                levelString = $"<font color=Green>{enumLogLevel}</font>";
+                                break;
+                            case SimpleLogHelper.EnumLogLevel.Info:
+                                levelString = $"<font color=Blue>{enumLogLevel}</font>";
+                                break;
+                            case SimpleLogHelper.EnumLogLevel.Warning:
+                                levelString = $"<font color=Yellow>{enumLogLevel}</font>";
+                                break;
+                            case SimpleLogHelper.EnumLogLevel.Error:
+                                levelString = $"*<font color=Red>{enumLogLevel}</font>*";
+                                break;
+                            case SimpleLogHelper.EnumLogLevel.Fatal:
+                                levelString = $"<u>**<font color=Red>{enumLogLevel}</font>**</u>";
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(enumLogLevel), enumLogLevel, null);
+                        }
+                    }
+
+                    using (var sw = new StreamWriter(new FileStream(logFileName, FileMode.Append)))
+                    {
+                        sw.Write($"{dt:o}[ThreadId:{threadId:D10}]\t\t{levelString}\t\t");
+                        if (o.Length == 1)
+                        {
+                            sw.WriteLine(o[0]);
+                            if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
+                                sw.WriteLine();
+                        }
+                        else
+                        {
+                            sw.WriteLine();
+                            if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
+                                sw.WriteLine("\r\n```\r\n");
+                            foreach (var obj in o)
+                            {
+                                sw.WriteLine(obj);
+                            }
+                            if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
+                                sw.WriteLine("\r\n```\r\n");
+                        }
                     }
                 }
             }

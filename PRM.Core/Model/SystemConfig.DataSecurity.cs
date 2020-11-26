@@ -57,7 +57,7 @@ namespace PRM.Core.Model
                 }
                 else
                 {
-                    return new Tuple<bool, string>(false, "TXT:db permission denied:" + " " + path);
+                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("string_permission_denied") + $": {path}");
                 }
             }
             catch (Exception e)

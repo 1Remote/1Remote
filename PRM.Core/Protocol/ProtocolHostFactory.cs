@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using PRM.Core.Protocol.FileTransmit.Host;
+using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Protocol.Putty.SSH;
@@ -38,10 +40,15 @@ namespace PRM.Core.Protocol
                         return host;
                     }
                 case ProtocolServerVNC vnc:
-                    {
-                        var host = new VncHost(vnc);
-                        return host;
+                {
+                    var host = new VncHost(vnc);
+                    return host;
                     }
+                case ProtocolServerSFTP sftp:
+                {
+                    var host = new FileTransmitHost(sftp);
+                    return host;
+                }
                 default:
                     throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
@@ -62,6 +69,7 @@ namespace PRM.Core.Protocol
                 case ProtocolServerVNC _:
                 case ProtocolServerSSH _:
                 case ProtocolServerTelnet _:
+                case ProtocolServerSFTP _:
                     return false;
                 default:
                     throw new NotImplementedException();

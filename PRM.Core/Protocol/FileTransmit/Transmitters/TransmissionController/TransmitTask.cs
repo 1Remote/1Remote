@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmitter;
 using PRM.Core.Protocol.FileTransmitter.TransmissionController;
 using Shawn.Utils;
@@ -38,24 +39,22 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 
         public void TryCancel()
         {
-            if (TransmissionStatus == ETransmitTaskStatus.Transmitting)
-                TransmissionStatus = ETransmitTaskStatus.Cancel;
+            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitting)
+                TransmitTaskStatus = ETransmitTaskStatus.Cancel;
         }
 
-        public Action OnTaskEnd { get; set; } = null;
+        public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception e = null);
+        public OnTaskEndDelegate OnTaskEnd { get; set; } = null;
 
-        private ETransmitTaskStatus _transmissionStatus = ETransmitTaskStatus.NotStart;
-        public ETransmitTaskStatus TransmissionStatus
+        private ETransmitTaskStatus _transmitTaskStatus = ETransmitTaskStatus.NotStart;
+        public ETransmitTaskStatus TransmitTaskStatus
         {
-            get => _transmissionStatus;
+            get => _transmitTaskStatus;
             set
             {
-                SetAndNotifyIfChanged(nameof(TransmissionStatus), ref _transmissionStatus, value);
-                if (_transmissionStatus == ETransmitTaskStatus.Transmitted)
+                SetAndNotifyIfChanged(nameof(TransmitTaskStatus), ref _transmitTaskStatus, value);
+                if (_transmitTaskStatus == ETransmitTaskStatus.Transmitted)
                     TransmittedByteLength = TotalByteLength;
-                if (_transmissionStatus == ETransmitTaskStatus.Cancel
-                || _transmissionStatus == ETransmitTaskStatus.Transmitted)
-                    OnTaskEnd?.Invoke();
             }
         }
 
@@ -194,8 +193,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             if (item.Name == ".." || item.Name == ".")
                 return;
-            if (_transmissionStatus == ETransmitTaskStatus.Transmitted
-                || _transmissionStatus == ETransmitTaskStatus.Cancel)
+            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitted
+                || TransmitTaskStatus == ETransmitTaskStatus.Cancel)
             {
                 throw new NotSupportedException();
             }
@@ -212,10 +211,10 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 if (item.IsDirectory)
                 {
                     if (!dirWithSubItems) return;
-                    var bk = _transmissionStatus;
-                    _transmissionStatus = ETransmitTaskStatus.Scanning;
+                    var bk = TransmitTaskStatus;
+                    TransmitTaskStatus = ETransmitTaskStatus.Scanning;
                     AddDirectoryServer(item, dstPath);
-                    _transmissionStatus = bk;
+                    TransmitTaskStatus = bk;
                 }
                 else
                 {
@@ -228,8 +227,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             if (!fi.Exists)
                 return;
-            if (_transmissionStatus == ETransmitTaskStatus.Transmitted
-                || _transmissionStatus == ETransmitTaskStatus.Cancel)
+            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitted
+                || TransmitTaskStatus == ETransmitTaskStatus.Cancel)
             {
                 throw new NotSupportedException();
             }
@@ -251,8 +250,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             if (!di.Exists)
                 return;
             dstPath = dstPath.Replace('\\', '/');
-            if (_transmissionStatus == ETransmitTaskStatus.Transmitted
-                || _transmissionStatus == ETransmitTaskStatus.Cancel)
+            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitted
+                || TransmitTaskStatus == ETransmitTaskStatus.Cancel)
             {
                 throw new NotSupportedException();
             }
@@ -264,10 +263,10 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 ItemsWaitForTransmit.Enqueue(ti);
                 if (dirWithSubItems)
                 {
-                    var bk = _transmissionStatus;
-                    _transmissionStatus = ETransmitTaskStatus.Scanning;
+                    var bk = TransmitTaskStatus;
+                    TransmitTaskStatus = ETransmitTaskStatus.Scanning;
                     AddDirectoryHost(di.FullName, dstPath);
-                    _transmissionStatus = bk;
+                    TransmitTaskStatus = bk;
                 }
             }
         }
@@ -330,7 +329,10 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             lock (_threadLocker)
             {
-                if (_t == null)
+                if (_t == null
+                    && TransmitTaskStatus != ETransmitTaskStatus.Transmitting
+                    && TransmitTaskStatus != ETransmitTaskStatus.Cancel
+                    && TransmitTaskStatus != ETransmitTaskStatus.Transmitted)
                 {
                     _t = new Thread(MainLoop);
                     _t.Start();
@@ -350,7 +352,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         private void MainLoop()
         {
             TransmittedByteLength = 0;
-            TransmissionStatus = ETransmitTaskStatus.Transmitting;
+            TransmitTaskStatus = ETransmitTaskStatus.Transmitting;
 
             //var transmitter = _transOrg;
             var transmitter = _transOrg.Clone();
@@ -376,8 +378,19 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                     }
                                     catch (Exception e)
                                     {
-                                        TransmissionStatus = ETransmitTaskStatus.Cancel;
-                                        MessageBox.Show(item.DstPath + ": \r\n" + e.Message, "TXT:Error", MessageBoxButton.OK, MessageBoxImage.Stop);
+                                        TransmitTaskStatus = ETransmitTaskStatus.Cancel;
+                                        Exception e2;
+                                        if (TransmissionType == ETransmissionType.HostToServer)
+                                            e2 = new Exception($"Upload to {item.DstPath}: " + e.Message, e);
+                                        else
+                                            e2 = new Exception($"Download to {item.DstPath}: " + e.Message, e);
+                                        OnTaskEnd?.Invoke(TransmitTaskStatus, e2);
+                                        //Application.Current.Dispatcher.Invoke(() =>
+                                        //{
+                                        //    MessageBox.Show(item.DstPath + ": \r\n" + e.Message,
+                                        //        SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                                        //        MessageBoxButton.OK, MessageBoxImage.Stop);
+                                        //});
                                         return;
                                     }
                                     finally
@@ -397,8 +410,13 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             }
                             catch (Exception e)
                             {
-                                TransmissionStatus = ETransmitTaskStatus.Cancel;
-                                MessageBox.Show(item.DstPath + ": \r\n" + e.Message, "TXT:Error", MessageBoxButton.OK, MessageBoxImage.Stop);
+                                TransmitTaskStatus = ETransmitTaskStatus.Cancel;
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    MessageBox.Show(item.DstPath + ": \r\n" + e.Message,
+                                        SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                                        MessageBoxButton.OK, MessageBoxImage.Stop);
+                                });
                                 return;
                             }
                             break;
@@ -407,14 +425,16 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             }
 
             if (existedFiles > 0
-            && MessageBox.Show($"TXT:The destination has {existedFiles} files with the same names. Do you want continue?", "TXT:Replace or cancel", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            && MessageBox.Show(SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names").Replace("{0}", existedFiles.ToString()),
+                                    SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names_title"),
+                MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             {
-                TransmissionStatus = ETransmitTaskStatus.Cancel;
+                TransmitTaskStatus = ETransmitTaskStatus.Cancel;
                 return;
             }
 
             while (ItemsWaitForTransmit.Count > 0
-                   && TransmissionStatus != ETransmitTaskStatus.Cancel)
+                   && TransmitTaskStatus != ETransmitTaskStatus.Cancel)
             {
                 var item = ItemsWaitForTransmit.Peek();
                 var tokenSource = new CancellationTokenSource();
@@ -436,29 +456,41 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                 {
                                     using (var fileStream = File.OpenWrite(item.DstPath))
                                     {
+                                        Exception e = null;
                                         var t = Task.Factory.StartNew(() =>
                                         {
-                                            ulong lastReadLength = 0;
-                                            transmitter.DownloadFile(item.SrcPath, fileStream, readLength =>
+                                            try
                                             {
-                                                var add = readLength - lastReadLength;
-                                                lastReadLength = readLength;
-                                                TransmittedByteLength += add;
-                                                _transmittedDataLength.Enqueue(
-                                                    new Tuple<DateTime, ulong>(DateTime.Now, add));
-                                                RaisePropertyChanged(nameof(TransmitSpeed));
-                                                SimpleLogHelper.Debug(
-                                                    $"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
-                                            });
+                                                ulong lastReadLength = 0;
+                                                transmitter.DownloadFile(item.SrcPath, fileStream, readLength =>
+                                                {
+                                                    var add = readLength - lastReadLength;
+                                                    lastReadLength = readLength;
+                                                    TransmittedByteLength += add;
+                                                    _transmittedDataLength.Enqueue(
+                                                        new Tuple<DateTime, ulong>(DateTime.Now, add));
+                                                    RaisePropertyChanged(nameof(TransmitSpeed));
+                                                    SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                                                });
+                                            }
+                                            catch (Exception e1)
+                                            {
+                                                e = e1;
+                                            }
                                         }, tokenSource.Token);
                                         while (!t.IsCompleted)
                                         {
                                             Thread.Sleep(100);
-                                            if (TransmissionStatus == ETransmitTaskStatus.Cancel)
+                                            if (TransmitTaskStatus == ETransmitTaskStatus.Cancel)
                                             {
                                                 tokenSource.Cancel(false);
                                                 break;
                                             }
+                                        }
+
+                                        if (e != null)
+                                        {
+                                            throw e;
                                         }
                                     }
                                 }
@@ -472,32 +504,45 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                 }
                                 else if (File.Exists(item.SrcPath))
                                 {
+                                    Exception e = null;
                                     var t = Task.Factory.StartNew(() =>
                                     {
-                                        if (transmitter.Exists(item.DstPath))
-                                            transmitter.Delete(item.DstPath);
-                                        using (var fileStream = File.OpenRead(item.SrcPath))
+                                        try
                                         {
-                                            ulong lastReadLength = 0;
-                                            transmitter.UploadFile(fileStream, item.DstPath, readLength =>
+                                            if (transmitter.Exists(item.DstPath))
+                                                transmitter.Delete(item.DstPath);
+                                            using (var fileStream = File.OpenRead(item.SrcPath))
                                             {
-                                                Console.WriteLine(DateTime.Now.ToString("O"));
-                                                var add = readLength - lastReadLength;
-                                                lastReadLength = readLength;
-                                                _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
-                                                RaisePropertyChanged(nameof(TransmitSpeed));
-                                                TransmittedByteLength += add;
-                                            });
+                                                ulong lastReadLength = 0;
+                                                transmitter.UploadFile(fileStream, item.DstPath, readLength =>
+                                                {
+                                                    Console.WriteLine(DateTime.Now.ToString("O"));
+                                                    var add = readLength - lastReadLength;
+                                                    lastReadLength = readLength;
+                                                    _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
+                                                    RaisePropertyChanged(nameof(TransmitSpeed));
+                                                    TransmittedByteLength += add;
+                                                });
+                                            }
+                                        }
+                                        catch (Exception e1)
+                                        {
+                                            e = e1;
                                         }
                                     }, tokenSource.Token);
                                     while (!t.IsCompleted)
                                     {
                                         Thread.Sleep(100);
-                                        if (TransmissionStatus == ETransmitTaskStatus.Cancel)
+                                        if (TransmitTaskStatus == ETransmitTaskStatus.Cancel)
                                         {
                                             tokenSource.Cancel(false);
                                             break;
                                         }
+                                    }
+
+                                    if (e != null)
+                                    {
+                                        throw e;
                                     }
                                 }
                             }
@@ -506,18 +551,32 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                     if (ItemsWaitForTransmit.Peek() == item)
                         ItemsWaitForTransmit.Dequeue();
                     ItemsHaveBeenTransmitted.Add(item);
+                    OnTaskEnd?.Invoke(TransmitTaskStatus);
                 }
                 catch (Exception e)
                 {
-                    TransmissionStatus = ETransmitTaskStatus.Cancel;
-                    MessageBox.Show(item.DstPath + ": \r\n" + e.Message, "TXT:Error", MessageBoxButton.OK, MessageBoxImage.Stop);
+                    TransmitTaskStatus = ETransmitTaskStatus.Cancel;
+                    SimpleLogHelper.Debug(e, e.StackTrace);
+                    Exception e2;
+
+                    if (TransmissionType == ETransmissionType.HostToServer)
+                        e2 = new Exception($"Upload to {item.DstPath}: " + e.Message, e);
+                    else
+                        e2 = new Exception($"Download to {item.DstPath}: " + e.Message, e);
+                    OnTaskEnd?.Invoke(TransmitTaskStatus, e2);
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
+                    //    MessageBox.Show(item.DstPath + ": \r\n" + e.Message,
+                    //        SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                    //        MessageBoxButton.OK, MessageBoxImage.Stop);
+                    //});
                     return;
                 }
             }
 
-            if (TransmissionStatus != ETransmitTaskStatus.Cancel)
+            if (TransmitTaskStatus != ETransmitTaskStatus.Cancel)
             {
-                TransmissionStatus = ETransmitTaskStatus.Transmitted;
+                TransmitTaskStatus = ETransmitTaskStatus.Transmitted;
             }
         }
 

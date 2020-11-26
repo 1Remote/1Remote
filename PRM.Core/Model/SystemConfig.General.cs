@@ -78,6 +78,10 @@ namespace PRM.Core.Model
             {
                 SetAndNotifyIfChanged(nameof(LogFilePath), ref _logFilePath, value);
                 SimpleLogHelper.LogFileName = value;
+                SimpleLogHelper.DebugFileName = value;
+                SimpleLogHelper.WarningFileName = value;
+                SimpleLogHelper.ErrorFileName = value;
+                SimpleLogHelper.FatalFileName = value;
             }
         }
 

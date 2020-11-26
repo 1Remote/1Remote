@@ -192,6 +192,32 @@
                                 <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect ShadowDepth="0"
+                                                          Direction="0"
+                                                          Color="{DynamicResource MainColor1Darker}"
+                                                          Opacity="10"
+                                                          BlurRadius="3"
+                                        />
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
@@ -206,14 +232,6 @@
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
-                                    <TextBlock.Effect>
-                                        <DropShadowEffect ShadowDepth="0"
-                                                          Direction="0"
-                                                          Color="{DynamicResource MainColor1Darker}"
-                                                          Opacity="10"
-                                                          BlurRadius="3"
-                                        />
-                                    </TextBlock.Effect>
                                 </TextBlock>
                             </Grid>
                             <Grid>

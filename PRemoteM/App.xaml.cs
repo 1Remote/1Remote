@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
@@ -30,8 +31,31 @@ namespace PRM
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
-            SimpleLogHelper.WriteLogLevel = SimpleLogHelper.Level.Warning;
-            SimpleLogHelper.PrintLogLevel = SimpleLogHelper.Level.Debug;
+            SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
+            SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+
+
+            this.DispatcherUnhandledException += (o, args) =>
+            {
+                SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
+            };
+            TaskScheduler.UnobservedTaskException += (o, args) =>
+            {
+                SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
+            };
+            AppDomain.CurrentDomain.UnhandledException += (o, args) =>
+            {
+
+                if (args.ExceptionObject is Exception e)
+                {
+                    SimpleLogHelper.Fatal(e, e.StackTrace);
+                }
+                else
+                {
+                    SimpleLogHelper.Fatal(args.ExceptionObject);
+                }
+            };
+
             try
             {
                 {
@@ -122,7 +146,7 @@ namespace PRM
 
 
 #if DEBUG
-                SimpleLogHelper.WriteLogLevel = SimpleLogHelper.Level.Debug;
+                SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 Shawn.Utils.ConsoleManager.Show();
 #endif
 
@@ -259,7 +283,6 @@ namespace PRM
                 {
                     Text = SystemConfig.AppName,
                     Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico")).Stream),
-                    //BalloonTipText = "TXT:正在后台运行...",
                     BalloonTipText = "",
                     Visible = true
                 };

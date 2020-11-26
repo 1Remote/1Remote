@@ -179,7 +179,8 @@
                 <TextBox Grid.Column="3" Text="{Binding CurrentPathEdit, UpdateSourceTrigger=PropertyChanged}" 
                      Height="30"
                      Margin="2"
-                     BorderBrush="#EEE" 
+                     BorderBrush="{DynamicResource MainColor1LighterBrush}" 
+                     BorderThickness="2"
                      Background="Transparent"
                      CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
                      Foreground="{DynamicResource MainColor1ForegroundBrush}"
@@ -297,7 +298,7 @@
                     <ListView.View>
                         <GridView ColumnHeaderTemplate="{StaticResource HeaderTemplateDefault}">
                             <GridViewColumn Width="500">
-                                <GridViewColumnHeader Content="TXT:Name">
+                                <GridViewColumnHeader Content="{DynamicResource file_transmit_host_list_header_name}" HorizontalContentAlignment="Left">
                                     <GridViewColumnHeader.Style>
                                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                             <Setter Property="CommandParameter" Value="0"/>
@@ -339,9 +340,10 @@
 
 
 
-                            <GridViewColumn Header="TXT:LastUpdate" Width="Auto" DisplayMemberBinding="{Binding Path=LastUpdate}">
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_last_update}" Width="Auto" DisplayMemberBinding="{Binding Path=LastUpdate}" >
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
                                         <Setter Property="CommandParameter" Value="4"/>
                                     </Style>
                                 </GridViewColumn.HeaderContainerStyle>
@@ -353,7 +355,7 @@
 
 
 
-                            <GridViewColumn Header="TXT:Type" Width="Auto" DisplayMemberBinding="{Binding Path=FileType}">
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_type}" Width="Auto" DisplayMemberBinding="{Binding Path=FileType}">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                         <Setter Property="CommandParameter" Value="6"/>
@@ -364,7 +366,7 @@
 
 
 
-                            <GridViewColumn Header="TXT:Size">
+                            <GridViewColumn Header="{DynamicResource file_transmit_host_list_header_size}">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                         <Setter Property="CommandParameter" Value="2"/>
@@ -523,7 +525,7 @@
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
                                                 ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
-                                                ToolTip="TXT:Show"
+                                                ToolTip="{DynamicResource button_explore_to}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdShowTransmitDstPath}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ButtonExStyleBase}"
@@ -535,7 +537,7 @@
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
                                                 ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
-                                                ToolTip="TXT:DELETE"
+                                                ToolTip="{DynamicResource button_delete}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdDeleteTransmitTask}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ButtonExStyleBase}"
@@ -555,10 +557,12 @@
             <Grid Grid.Row="3" Height="30">
                 <Grid.Style>
                     <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
                         <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="0">
                                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
                                 <Setter Property="Background" Value="Yellow"></Setter>
@@ -576,7 +580,7 @@
             </Grid>
         </Grid>
 
-        <!--<Grid 
+        <Grid 
             Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">
             <Grid.Resources>
                 <Color x:Key="FilledColor" A="255" B="255" R="255" G="255"/>
@@ -699,6 +703,6 @@
             </Grid.Resources>
             <Grid Background="Black" Opacity="{Binding GridLoadingBgOpacity}"></Grid>
             <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
-        </Grid>-->
+        </Grid>
     </Grid>
 </protocol:ProtocolHostBase>

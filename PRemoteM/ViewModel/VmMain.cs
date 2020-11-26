@@ -113,17 +113,12 @@ namespace PRM.ViewModel
 
                 DispPage = new AnimationPage()
                 {
-                    InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                    InAnimationType = AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                     Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext, isDuplicate)),
                 };
 
-                var t = new Task(() =>
-                {
-                    //Thread.Sleep(100);
-                    Window.ActivateMe();
-                });
-                t.Start();
+                Window.ActivateMe();
             };
         }
 

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ColorPickerWPF.Code;
+using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;
 using PRM.Core.Protocol.FileTransmitter;
@@ -159,7 +160,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     //Thread.Sleep(5000);
                     _trans = _protocol.GeTransmitter();
                     if (!string.IsNullOrWhiteSpace(_protocol.GetStartupPath()))
-                        ShowFolder(_protocol.GetStartupPath());
+                        ShowFolder(_protocol.GetStartupPath(), -1);
                     GridLoadingVisibility = Visibility.Collapsed;
                 });
                 task.Start();
@@ -192,7 +193,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 return;
             TransmitTasks.Add(t);
 
-            void func()
+            void func(ETransmitTaskStatus status, Exception e)
             {
                 ThreadPool.QueueUserWorkItem(delegate
                 {
@@ -200,39 +201,24 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                         return;
                     try
                     {
-                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                        SynchronizationContext.Current.Post(pl =>
+                        if (t.OnTaskEnd != null)
+                            t.OnTaskEnd -= func;
+                        if (t.TransmitTaskStatus == ETransmitTaskStatus.Cancel)
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                TransmitTasks.Remove(t);
+                            });
+                        if (e != null)
                         {
-                            try
-                            {
-                                if (t.ItemsHaveBeenTransmitted.Any(x =>
-                                        x.TransmissionType == ETransmissionType.HostToServer
-                                        && x.DstPath.IndexOf(CurrentPath, StringComparison.OrdinalIgnoreCase) >= 0))
-                                {
-                                    CmdGoToPathCurrent.Execute();
-                                }
-                                if (t.OnTaskEnd != null)
-                                    t.OnTaskEnd -= func;
-                                //TransmitTasks.Remove(t);
-                            }
-                            catch (Exception e1)
-                            {
-                                SimpleLogHelper.Error(e1);
-                            }
-                        }, null);
+                            IoMessageLevel = 2;
+                            IoMessage = e.Message;
+                        }
                     }
                     catch (Exception e2)
                     {
                         SimpleLogHelper.Error(e2);
                     }
                 });
-                if (t.TransmissionStatus == ETransmitTaskStatus.Transmitted)
-                    MessageBox.Show("DONE");
-                if (t.TransmissionStatus == ETransmitTaskStatus.Cancel)
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        TransmitTasks.Remove(t);
-                    });
             }
 
             t.OnTaskEnd += func;
@@ -321,80 +307,83 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         {
             var t = new Task(() =>
             {
-                GridLoadingVisibility = Visibility.Visible;
-                try
+                lock (this)
                 {
-                    SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) START");
-                    if (string.IsNullOrWhiteSpace(path))
-                        path = "/";
-                    if (path.EndsWith("/.."))
-                    {
-                        SimpleLogHelper.Debug($"ShowFolder after path.EndsWith(/..)");
-                        path = path.Substring(0, path.Length - 3);
-                        if (path.LastIndexOf("/") > 0)
-                        {
-                            var i = path.LastIndexOf("/");
-                            path = path.Substring(0, i);
-                        }
-                    }
-
+                    GridLoadingVisibility = Visibility.Visible;
                     try
                     {
-                        var remoteItemInfos = new ObservableCollection<RemoteItem>();
-                        SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
-                        var items = _trans.ListDirectoryItems(path);
-                        if (items.Any())
+                        SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) START");
+                        if (string.IsNullOrWhiteSpace(path))
+                            path = "/";
+                        if (path.EndsWith("/.."))
                         {
-                            remoteItemInfos = new ObservableCollection<RemoteItem>(items);
+                            SimpleLogHelper.Debug($"ShowFolder after path.EndsWith(/..)");
+                            path = path.Substring(0, path.Length - 3);
+                            if (path.LastIndexOf("/") > 0)
+                            {
+                                var i = path.LastIndexOf("/");
+                                path = path.Substring(0, i);
+                            }
                         }
 
-                        RemoteItems = remoteItemInfos;
-                        SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
-                        MakeRemoteItemsOrderBy();
-
-                        if (path != CurrentPath)
+                        try
                         {
-                            if (mode == 0)
+                            var remoteItemInfos = new ObservableCollection<RemoteItem>();
+                            SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
+                            var items = _trans.ListDirectoryItems(path);
+                            if (items.Any())
                             {
-                                _pathHistoryPrevious.Push(CurrentPath);
-                                if (_pathHistoryFollowing.Count > 0 &&
-                                    _pathHistoryFollowing.Peek() != path)
-                                    _pathHistoryFollowing.Clear();
+                                remoteItemInfos = new ObservableCollection<RemoteItem>(items);
                             }
 
-                            CurrentPath = path;
+                            RemoteItems = remoteItemInfos;
+                            SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
+                            MakeRemoteItemsOrderBy();
+
+                            if (path != CurrentPath)
+                            {
+                                if (mode == 0
+                                    && (_pathHistoryPrevious.Count == 0 || _pathHistoryPrevious.Peek() != CurrentPath))
+                                {
+                                    _pathHistoryPrevious.Push(CurrentPath);
+                                    if (_pathHistoryFollowing.Count > 0 &&
+                                        _pathHistoryFollowing.Peek() != path)
+                                        _pathHistoryFollowing.Clear();
+                                }
+
+                                CurrentPath = path;
+                            }
+
+                            if (CurrentPath != "/" && CurrentPath != "")
+                                CmdGoToPathParentEnable = true;
+                            else
+                                CmdGoToPathParentEnable = false;
+
+                            CmdGoToPathPreviousEnable = _pathHistoryPrevious.Count > 0;
+                            CmdGoToPathFollowingEnable = _pathHistoryFollowing.Count > 0;
+
+                            if (showIoMessage)
+                            {
+                                IoMessageLevel = 0;
+                                IoMessage = $"ls {CurrentPath}";
+                            }
                         }
-
-                        if (CurrentPath != "/" && CurrentPath != "")
-                            CmdGoToPathParentEnable = true;
-                        else
-                            CmdGoToPathParentEnable = false;
-
-                        CmdGoToPathPreviousEnable = _pathHistoryPrevious.Count > 0;
-                        CmdGoToPathFollowingEnable = _pathHistoryFollowing.Count > 0;
-
-                        if (showIoMessage)
+                        catch (Exception e)
                         {
-                            IoMessageLevel = 0;
-                            IoMessage = $"ls {CurrentPath}";
+                            IoMessageLevel = 2;
+                            IoMessage = $"ls {CurrentPath}: " + e.Message;
+                            if (CurrentPath != path)
+                                ShowFolder(CurrentPath);
+                            return;
                         }
+
                     }
-                    catch (Exception e)
+                    finally
                     {
-                        IoMessageLevel = 2;
-                        IoMessage = $"ls {CurrentPath}: " + e.Message;
-                        if (CurrentPath != path)
-                            ShowFolder(CurrentPath);
-                        return;
+                        GridLoadingVisibility = Visibility.Collapsed;
                     }
-
+                    SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) END"); 
                 }
-                finally
-                {
-                    GridLoadingVisibility = Visibility.Collapsed;
-                }
-
-                SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) END");
             });
             t.Start();
         }
@@ -414,8 +403,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     {
                         if (SelectedRemoteItem != null)
                         {
-                            if (MessageBox.Show("TXT: confirm delete?", "", MessageBoxButton.YesNo,
-                                    MessageBoxImage.Question) == MessageBoxResult.Yes)
+                            if (MessageBox.Show(
+                                SystemConfig.Instance.Language.GetText("string_delete_confirm"),
+                                SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
+                                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                             {
                                 foreach (var itemInfo in RemoteItems)
                                 {
@@ -582,8 +573,14 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                         }
                         else if (SelectedRemoteItem?.IsSymlink == false)
                         {
-                            if (SelectedRemoteItem.ByteSize > 1024 * 1024
-                            && MessageBox.Show("TXT:this item is over 1mb, sure to open?", "TXT:Warning", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                            const int limit = 1;
+                            var msg = SystemConfig.Instance.Language.GetText("file_transmit_host_message_preview_over_size");
+                            msg = msg.Replace("1 MB", $"{limit} MB");
+                            if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
+                            && MessageBox.Show(
+                                msg,
+                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
+                                MessageBoxButton.YesNo) != MessageBoxResult.Yes)
                             {
                                 return;
                             }
@@ -725,10 +722,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
                         var dlg = new System.Windows.Forms.SaveFileDialog
                         {
-                            Title = "TXT:please select a folder to save files",
+                            Title = SystemConfig.Instance.Language.GetText("file_transmit_host_message_files_download_to"),
                             CheckFileExists = false,
                             ValidateNames = false,
-                            FileName = "TXT select current folder"
+                            FileName = SystemConfig.Instance.Language.GetText("file_transmit_host_message_files_download_to_dir"),
                         };
                         if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
@@ -737,7 +734,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             if (!IOPermissionHelper.HasWritePermissionOnFile(dlg.FileName)
                             || !IOPermissionHelper.HasWritePermissionOnDir(path))
                             {
-                                MessageBox.Show("TXT:Permisson denide");
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("string_permission_denied") + $": {dlg.FileName}");
                                 return;
                             }
 
@@ -772,7 +769,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     {
                         List<string> fl = new List<string>();
                         var dlg = new System.Windows.Forms.OpenFileDialog();
-                        dlg.Title = "TXT:please select files to upload";
+                        dlg.Title = SystemConfig.Instance.Language.GetText("file_transmit_host_message_select_files_to_upload");
                         dlg.CheckFileExists = true;
                         dlg.Multiselect = true;
                         if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -1065,7 +1062,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
             var aMenu = new System.Windows.Controls.ContextMenu();
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = "TXT:Refresh(F5)" };
+                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_refresh") };
                 menu.Click += (o, a) =>
                 {
                     CmdGoToPathCurrent.Execute();
@@ -1073,7 +1070,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = "TXT:Create folder" };
+                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_create_folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();
@@ -1096,17 +1093,18 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 ((ListView)sender).SelectedItem = null;
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = "TXT:Upload(Ctrl + V)" };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUploadClipboard.CanExecute())
                             CmdUploadClipboard.Execute();
                     };
+                    menu.IsEnabled = CmdUploadClipboard.CanExecute();
                     aMenu.Items.Add(menu);
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = "TXT:Select to upload" };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -1118,7 +1116,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             else if (VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
             {
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = "TXT:Delete(Del)" };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_delete") };
                     menu.Click += (o, a) =>
                     {
                         CmdDelete.Execute();
@@ -1126,7 +1124,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     aMenu.Items.Add(menu);
                 }
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = "TXT:Save to...(Ctrl + S)" };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_save_to") };
                     menu.Click += (o, a) =>
                     {
                         CmdDownload.Execute();
