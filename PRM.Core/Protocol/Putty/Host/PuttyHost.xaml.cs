@@ -27,6 +27,7 @@ using Path = System.IO.Path;
 
 namespace PRM.Core.Protocol.Putty.Host
 {
+    [Obsolete]
     public partial class PuttyHost : ProtocolHostBase
     {
         [DllImport("User32.dll")]

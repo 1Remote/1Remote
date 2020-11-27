@@ -8,10 +8,12 @@ namespace PRM.Core.Model
 {
     public static class GlobalEventHelper
     {
+        public delegate void OnServerConnectDelegate(uint serverId, string assignTabToken = null);
+
         /// <summary>
-        /// Invoke to notify a new remote session is start.
+        /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
         /// </summary>
-        public static Action<uint> OnServerConnect { get; set; } = null;
+        public static OnServerConnectDelegate OnServerConnect { get; set; } = null;
 
         /// <summary>
         /// Go to server edit by server id

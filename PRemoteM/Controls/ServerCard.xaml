@@ -242,7 +242,7 @@
                                     BorderThickness="0"
                                     Click="BtnSettingMenu_OnClick">
                                     <controls:ButtonEx.Style>
-                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
+                                        <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1Button}">
                                             <Setter Property="Visibility" Value="Hidden"></Setter>
                                             <Setter Property="Template">
                                                 <Setter.Value>

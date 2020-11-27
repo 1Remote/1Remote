@@ -256,6 +256,7 @@ namespace PRM.Core.Model
                                     }
                                     catch (Exception e)
                                     {
+                                        SimpleLogHelper.Debug(e, e.StackTrace);
                                         rsa = null;
                                     }
                                 }
@@ -550,6 +551,7 @@ namespace PRM.Core.Model
                             catch (Exception ee)
                             {
                                 DbPath = oldDbPath;
+                                SimpleLogHelper.Warning(ee);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
                             }
                         }
@@ -790,6 +792,7 @@ namespace PRM.Core.Model
                             }
                             catch (Exception e)
                             {
+                                SimpleLogHelper.Debug(e, e.StackTrace);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
                             }
                         }
@@ -957,6 +960,7 @@ namespace PRM.Core.Model
                             }
                             catch (Exception e)
                             {
+                                SimpleLogHelper.Debug(e, e.StackTrace);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"));
                             }
                         }
@@ -1001,6 +1005,7 @@ namespace PRM.Core.Model
                             }
                             catch (Exception ee)
                             {
+                                SimpleLogHelper.Debug(ee, ee.StackTrace);
                                 DbPath = oldDbPath;
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
                             }

@@ -614,6 +614,7 @@ namespace PRM.Core.Protocol.Putty
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Error(e, e.StackTrace);
             }
         }
 

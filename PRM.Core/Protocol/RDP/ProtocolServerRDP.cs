@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using RdpHelper;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.RDP
 {
@@ -335,6 +336,7 @@ namespace PRM.Core.Protocol.RDP
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Debug(e, e.StackTrace);
                 return null;
             }
         }

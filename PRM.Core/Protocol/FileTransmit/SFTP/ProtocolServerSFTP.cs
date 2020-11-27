@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmitter;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.SFTP
 {
@@ -42,6 +43,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Debug(e, e.StackTrace);
                 return null;
             }
         }
