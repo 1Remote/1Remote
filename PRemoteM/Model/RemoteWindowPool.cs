@@ -90,28 +90,26 @@ namespace PRM.Model
             {
                 if (vmProtocolServer.Server.IsConnWithFullScreen())
                 {
+                    int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+                    // check if screens are in different scale factors
                     // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
                     if (Screen.AllScreens.Length > 1
                         && vmProtocolServer.Server is ProtocolServerRDP rdp
-                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
+                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                        && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2))
                     {
-                        int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-                        // check if screens are in different scale factors
-                        bool differentScaleFactorFlag = Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2);
-                        if (differentScaleFactorFlag)
+                        var tmp = Path.GetTempPath();
+                        var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{rdp.UserName}";
+                        var invalid = new string(Path.GetInvalidFileNameChars()) +
+                                  new string(Path.GetInvalidPathChars());
+                        rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
+                        var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
+                        try
                         {
-                            var tmp = Path.GetTempPath();
-                            var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{rdp.UserName}";
-                            var invalid = new string(Path.GetInvalidFileNameChars()) +
-                                      new string(Path.GetInvalidPathChars());
-                            rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
-                            var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
-                            try
+                            File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
+                            var p = new Process
                             {
-                                File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
-                                var p = new Process
-                                {
-                                    StartInfo =
+                                StartInfo =
                                     {
                                         FileName = "cmd.exe",
                                         UseShellExecute = false,
@@ -120,31 +118,30 @@ namespace PRM.Model
                                         RedirectStandardError = true,
                                         CreateNoWindow = true
                                     }
-                                };
-                                p.Start();
-                                p.StandardInput.WriteLine("mstsc -admin \"" + rdpFile + "\"");
-                                p.StandardInput.WriteLine("exit");
-                            }
-                            finally
-                            {
-                                // delete tmp rdp file, ETA 10s
-                                var t = new Task(() =>
-                                {
-                                    try
-                                    {
-                                        Thread.Sleep(1000 * 10);
-                                        if (File.Exists(rdpFile))
-                                            File.Delete(rdpFile);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        SimpleLogHelper.Error(e, e.StackTrace);
-                                    }
-                                });
-                                t.Start();
-                            }
-                            return;
+                            };
+                            p.Start();
+                            p.StandardInput.WriteLine("mstsc -admin \"" + rdpFile + "\"");
+                            p.StandardInput.WriteLine("exit");
                         }
+                        finally
+                        {
+                            // delete tmp rdp file, ETA 10s
+                            var t = new Task(() =>
+                            {
+                                try
+                                {
+                                    Thread.Sleep(1000 * 10);
+                                    if (File.Exists(rdpFile))
+                                        File.Delete(rdpFile);
+                                }
+                                catch (Exception e)
+                                {
+                                    SimpleLogHelper.Error(e, e.StackTrace);
+                                }
+                            });
+                            t.Start();
+                        }
+                        return;
                     }
                     else
                     {
@@ -469,8 +466,8 @@ namespace PRM.Model
             // close un-handel protocol
             {
                 var ps = _protocolHosts.Where(p =>
-                    _tabWindows.Values.All(x => x?.Vm?.Items != null 
-                                                && x.Vm.Items.Count > 0 
+                    _tabWindows.Values.All(x => x?.Vm?.Items != null
+                                                && x.Vm.Items.Count > 0
                                                 && x.Vm.Items.All(y => y.Content.ConnectionId != p.Key))
                     && !_host2FullScreenWindows.ContainsKey(p.Key));
                 if (ps.Any())
