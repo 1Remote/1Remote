@@ -34,6 +34,13 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="700"/>
 </p>
 
+<p align="center">
+    sFtp
+</p>
+<p align="center">
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/sFtp/sftpdemo.jpg" width="700"/>
+</p>
+
 
 ## 特性
 
@@ -41,6 +48,7 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 - 快捷方便的远程会话启动器，支持拼音检索汉字
 - 目前唯一一款支持 RDP 多显示器远程管理的第三方工具。(测试基于 **Win10 + 4k显示器*2** 远程至 **Win2016**)
 - 基于 PuTTY 的 SSH、Telnet 会话，支持连接后自动执行指令。
+- 支持 sFTP
 - [可从 mRemoteNG 迁移会话](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#从-mRemoteNG-迁移数据)
 - [基于 RSA 的敏感数据保护](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#数据加密)
 
