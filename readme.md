@@ -16,7 +16,7 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 - :disappointed_relieved:I decided make a new remote tool in WPF after I bought two 4k monitors.
 
 <p align="center">
-    Lancher(alt+M)
+    Lancher(Alt + M)
 </p>
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
@@ -33,8 +33,16 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
     RDP with Multi-monitors
 </p>
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="700"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="400"/>
 </p>
+
+<p align="center">
+    sFtp
+</p>
+<p align="center">
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/sFtp/sftpdemo.jpg" width="500"/>
+</p>
+
 
 
 ## Featutes
@@ -44,12 +52,12 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 - Quick and convenient remote session lancher.
 - Support RDP with multi-screen and HiDpi(Testd on **Win10 + 4k*2** to **Win2016**)
 - SSH Telnet support via PuTTY, auto-cmd after connect is supported
-- Tab support
+- sFtp support
 - [Migrate remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migrate-from-mRemoteNG)
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.1.2011271749
+Latest Version: 0.5.2.2011271900
 
 - [Download](https://github.com/VShawn/PRemoteM/releases)
 
