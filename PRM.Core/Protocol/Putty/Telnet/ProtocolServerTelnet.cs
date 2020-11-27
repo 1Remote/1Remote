@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty.Telnet
 {
@@ -24,6 +25,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Debug(e, e.StackTrace);
                 return null;
             }
         }

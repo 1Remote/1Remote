@@ -93,6 +93,12 @@ namespace PRM.ViewModel
                     this.Title = Tag + " - " + SelectedItem.Header;
                 else
                     this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
+#if DEBUG
+                if (!string.IsNullOrEmpty(Tag))
+                    this.Title = Tag + " - " + SelectedItem.Header;
+                else
+                    this.Title = SelectedItem.Header + " - PRemoteM";
+#endif
             }
         }
 
@@ -144,6 +150,23 @@ namespace PRM.ViewModel
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdIsTagEditToggle;
+            }
+        }
+
+
+        private RelayCommand _cmdInvokeLauncher;
+        public RelayCommand CmdInvokeLauncher
+        {
+            get
+            {
+                if (_cmdInvokeLauncher == null)
+                {
+                    _cmdInvokeLauncher = new RelayCommand((o) =>
+                    {
+                        App.SearchBoxWindow?.ShowMe(this.Token);
+                    }, o => this.SelectedItem != null);
+                }
+                return _cmdInvokeLauncher;
             }
         }
         #endregion

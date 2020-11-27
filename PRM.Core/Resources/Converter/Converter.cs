@@ -117,12 +117,12 @@ namespace PRM.Resources.Converter
 
     public class ConverterTextWidthAndContent2FontSize : IMultiValueConverter
     {
-        private static Size MeasureText(TextBlock tb, int fontsize)
+        private static Size MeasureText(TextBlock tb, int fontSize)
         {
             var formattedText = new FormattedText(tb.Text, CultureInfo.CurrentUICulture,
                 FlowDirection.LeftToRight,
                 new Typeface(tb.FontFamily, tb.FontStyle, tb.FontWeight, tb.FontStretch),
-                fontsize, Brushes.Black); // always uses MaxFontSize for desiredSize
+                fontSize, Brushes.Black); // always uses MaxFontSize for desiredSize
             return new Size(formattedText.Width, formattedText.Height);
         }
 

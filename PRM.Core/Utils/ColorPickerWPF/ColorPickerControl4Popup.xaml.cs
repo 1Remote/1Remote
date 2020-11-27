@@ -258,32 +258,6 @@ namespace ColorPickerWPF
             }
         }
 
-        public void LoadCustomPalette(string filename)
-        {
-            if (File.Exists(filename))
-            {
-                try
-                {
-                    ColorPalette = ColorPalette.LoadFromXml(filename);
-
-
-                    // Do regular one too
-
-                    ColorSwatch1.Clear();
-                    ColorSwatch2.Clear();
-                    ColorSwatch1.AddRange(ColorPalette.BuiltInColors.Take(NumColorsFirstSwatch).ToArray());
-                    ColorSwatch2.AddRange(ColorPalette.BuiltInColors.Skip(NumColorsFirstSwatch).Take(NumColorsSecondSwatch).ToArray());
-                    Swatch1.SwatchListBox.ItemsSource = ColorSwatch1;
-                    Swatch2.SwatchListBox.ItemsSource = ColorSwatch2;
-
-                }
-                catch (Exception ex)
-                {
-                }
-
-            }
-        }
-
         private void TbHex_OnKeyUp(object sender, KeyEventArgs e)
         {
             try

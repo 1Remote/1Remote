@@ -131,6 +131,7 @@ namespace Shawn.Utils
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Debug(e, e.StackTrace);
                 return @default;
             }
         }

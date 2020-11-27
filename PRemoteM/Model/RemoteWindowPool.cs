@@ -61,7 +61,7 @@ namespace PRM.Model
         private readonly Dictionary<string, ProtocolHostBase> _protocolHosts = new Dictionary<string, ProtocolHostBase>();
         private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
 
-        public void ShowRemoteHost(uint serverId)
+        public void ShowRemoteHost(uint serverId, string assignTabToken)
         {
             Debug.Assert(serverId > 0);
             Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == serverId));
@@ -162,7 +162,7 @@ namespace PRM.Model
                 else
                 {
                     var server = vmProtocolServer.Server;
-                    var tab = GetOrCreateTabWindow(server);
+                    var tab = GetOrCreateTabWindow(server, assignTabToken);
                     var size = tab.GetTabContentSize();
                     host = ProtocolHostFactory.Get(vmProtocolServer.Server, size.Width, size.Height);
                     Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
@@ -300,28 +300,44 @@ namespace PRM.Model
             return full;
         }
 
-        private TabWindow GetOrCreateTabWindow(ProtocolHostBase host)
+        /// <summary>
+        /// move ProtocolHost to Tab, if host has a FullScreenWindow Parent, then remove it from old parent first.
+        /// if assignTabToken != null, then move to assign tab.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="assignTabToken"></param>
+        /// <returns></returns>
+        private TabWindow GetOrCreateTabWindow(ProtocolHostBase host, string assignTabToken = null)
         {
-            return GetOrCreateTabWindow(host.ProtocolServer, host.ParentWindow);
-        }
-        private TabWindow GetOrCreateTabWindow(ProtocolServerBase server, Window parentWindow = null)
-        {
+            var parentWindow = host.ParentWindow;
             // remove from old parent
-            FullScreenWindow full = null;
             if (parentWindow is FullScreenWindow fullScreenWindow)
             {
-                // !importance: do not close FullScreenWindow, or RDP will lose conn bar when restore from tab to fullscreen.
+                // !importance: do not close old FullScreenWindow, or RDP will lose conn bar when restore from tab to fullscreen.
                 SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
                 fullScreenWindow.Hide();
-                full = fullScreenWindow;
+                if (string.IsNullOrEmpty(assignTabToken))
+                    assignTabToken = fullScreenWindow.LastTabToken;
             }
 
+            var tab = GetOrCreateTabWindow(host.ProtocolServer, assignTabToken);
+            return tab;
+        }
+
+        /// <summary>
+        /// get a tab for server
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="assignTabToken">if assignTabToken != null, try return _tabWindows[assignTabToken]</param>
+        /// <returns></returns>
+        private TabWindow GetOrCreateTabWindow(ProtocolServerBase server, string assignTabToken = null)
+        {
             TabWindow tab = null;
 
             // use old TabWindow
-            if (!string.IsNullOrEmpty(full?.LastTabToken)
-                && _tabWindows.ContainsKey(full?.LastTabToken))
-                tab = _tabWindows[full.LastTabToken];
+            if (!string.IsNullOrEmpty(assignTabToken)
+                && _tabWindows.ContainsKey(assignTabToken))
+                tab = _tabWindows[assignTabToken];
             else
                 switch (SystemConfig.Instance.General.TabMode)
                 {
@@ -354,9 +370,7 @@ namespace PRM.Model
                 else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
                     tab.Vm.Tag = server.ProtocolDisplayName;
 
-                var screenEx = full != null ?
-                    ScreenInfoEx.GetCurrentScreen(full)
-                    : ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
+                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
 
                 tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
                 tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;

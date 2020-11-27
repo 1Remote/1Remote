@@ -71,15 +71,18 @@ namespace PRM.Core.Protocol
                 SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
                 try
                 {
-                    var bm = NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(value));
-                    _iconImg = bm.ToBitmapSource();
-                    Icon = bm.ToIcon();
+                    if (value != null)
+                    {
+                        var bm = NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(value));
+                        _iconImg = bm.ToBitmapSource();
+                        Icon = bm.ToIcon();
+                    }
                 }
                 catch (Exception e)
                 {
+                    SimpleLogHelper.Debug(e, e.StackTrace);
                     _iconImg = null;
                     Icon = null;
-                    //Console.WriteLine(e);
                 }
             }
         }
@@ -104,11 +107,15 @@ namespace PRM.Core.Protocol
                 SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
                 try
                 {
-                    _iconBase64 = Convert.ToBase64String(value.ToBytes());
-                    Icon = value.ToIcon();
+                    if (value != null)
+                    {
+                        _iconBase64 = Convert.ToBase64String(value.ToBytes());
+                        Icon = value.ToIcon();
+                    }
                 }
                 catch (Exception e)
                 {
+                    SimpleLogHelper.Error(e, e.StackTrace);
                     _iconBase64 = null;
                     Icon = null;
                 }

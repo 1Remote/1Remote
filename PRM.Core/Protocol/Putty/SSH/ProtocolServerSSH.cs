@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty.SSH
 {
@@ -53,6 +54,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Debug(e, e.StackTrace);
                 return null;
             }
         }
@@ -68,7 +70,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
             var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptedPassWord()} -{(int)SshVersion}";
             if (!string.IsNullOrWhiteSpace(StartupAutoCommand))
-                arg = arg + $" -cmd \"{StartupAutoCommand}\"";
+                arg = arg + $" -cmd \"{StartupAutoCommand.Replace(@"""", @"\""")}\"";
             return arg;
         }
 

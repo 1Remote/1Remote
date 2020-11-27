@@ -78,11 +78,18 @@ namespace PRM.View
                 }
         }
 
+        private string _assignTabTokenThisTime = null;
 
 
 
         public void ShowMe()
         {
+            ShowMe(null);
+        }
+        public void ShowMe(string assignTabTokenThisTime)
+        {
+            _assignTabTokenThisTime = assignTabTokenThisTime;
+
             if (!SystemConfig.Instance.QuickConnect.Enable)
                 return;
 
@@ -213,12 +220,7 @@ namespace PRM.View
                             e.Handled = true;
                             break;
                         case Key.Enter:
-                            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
-                            {
-                                var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
-                                GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id);
-                            }
-                            HideMe();
+                            OpenSessionAndHide();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count - 1)
@@ -320,6 +322,51 @@ namespace PRM.View
                     }
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void ListBoxSelections_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+                OpenSessionAndHide();
+        }
+
+        private void OpenSessionAndHide()
+        {
+            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
+            {
+                var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
+                GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
+            }
+            HideMe();
+        }
+
+        private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_vmSearchBox.SelectedIndex >= 0 &&
+                _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
+            {
+                _vmSearchBox.ShowActionsList();
+            }
+        }
+
+        private void ListBoxActions_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _vmSearchBox.HideActionsList();
+        }
+
+        private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                if (_vmSearchBox.Actions.Count > 0
+                    && _vmSearchBox.SelectedActionIndex >= 0
+                    && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
+                {
+                    _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
+                }
+
+                HideMe();
             }
         }
     }

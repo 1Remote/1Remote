@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.VNC
 {
@@ -35,6 +36,7 @@ namespace PRM.Core.Protocol.VNC
             }
             catch (Exception e)
             {
+                SimpleLogHelper.Debug(e, e.StackTrace);
                 return null;
             }
         }

@@ -393,7 +393,6 @@ namespace PRM.Core.Protocol.RDP.Host
                     && _rdp.Connected > 0)
                 {
                     _rdp.Disconnect();
-                    _rdp.Dispose();
                 }
             }
             base.DisConn();

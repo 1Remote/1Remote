@@ -193,6 +193,7 @@
     <Compile Include="Utils\RSA\RSA.cs" />
     <Compile Include="Utils\RSA\RSA_PEM.cs" />
     <Compile Include="Utils\ScreenInfoEx.cs" />
+    <Compile Include="Utils\ScrollViewerExtensions.cs" />
     <Compile Include="Utils\SetSelfStartingHelper.cs" />
     <Compile Include="Utils\SystemIconHelper.cs" />
     <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode1.cs" />
