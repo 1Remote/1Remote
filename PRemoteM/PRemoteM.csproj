@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
@@ -117,6 +118,9 @@
     </Compile>
     <Compile Include="View\FullScreenWindow.xaml.cs">
       <DependentUpon>FullScreenWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
+      <DependentUpon>GuidanceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TabWindow.xaml.cs">
       <DependentUpon>TabWindow.xaml</DependentUpon>
@@ -175,6 +179,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\FullScreenWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Guidance\GuidanceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -247,6 +255,13 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Guidance\Resources\launcher_main1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Guidance\Resources\demo.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)zh-cn.xaml (

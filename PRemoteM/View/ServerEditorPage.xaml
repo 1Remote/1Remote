@@ -319,13 +319,14 @@
                                 Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
-                                Style="{StaticResource MainColor2Button}"
+                                Style="{StaticResource MainColor2ButtonRadius3}"
                                 BorderThickness="0" Content="{DynamicResource button_save}">
                         </controls:ButtonEx>
 
                         <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
+                                Style="{StaticResource MainColor1ButtonRadius3}"
                                 BorderThickness="1"
                                 Content="{DynamicResource button_cancel}">
                         </controls:ButtonEx>

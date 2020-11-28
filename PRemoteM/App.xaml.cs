@@ -160,17 +160,29 @@ namespace PRM
                         Directory.CreateDirectory(appDateFolder);
                     SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
                     var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
-                    if (Environment.CurrentDirectory.IndexOf(@"C:\Windows") < 0)
+
+                    // for portable purpose
+                    if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.Ordinal) < 0)
                         if (File.Exists(SystemConfig.AppName + ".ini")
                             || IOPermissionHelper.HasWritePermissionOnDir("./"))
                         {
                             iniPath = SystemConfig.AppName + ".ini";
                         }
+
                     var ini = new Ini(iniPath);
-                    //if (!File.Exists(iniPath))
-                    //{
-                    //    // TODO if ini is not existed, then it would be a new user, open guide to set db path
-                    //}
+                    if (!File.Exists(iniPath))
+                    {
+                        // TODO if ini is not existed, then it would be a new user, open guide to set db path
+                    }
+
+                    ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                    var gw = new GuidanceWindow();
+                    if (gw.ShowDialog() == true)
+                    {
+
+                    }
+                    Environment.Exit(0);
+                    return;
 
 
                     var language = new SystemConfigLanguage(this.Resources, ini);
@@ -225,8 +237,8 @@ namespace PRM
                 #region app start
                 // main window init
                 {
-                    Window = new MainWindow();
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
+                    Window = new MainWindow();
                     MainWindow = Window;
                     Window.Closed += (o, args) => { AppOnClose(); };
                     if (!SystemConfig.Instance.General.AppStartMinimized)
@@ -255,7 +267,7 @@ namespace PRM
                 InitTaskTray();
 
 
-                // quick search init 
+                // quick search launcher init 
                 InitQuickSearch();
                 #endregion
             }
@@ -279,6 +291,7 @@ namespace PRM
         {
             if (TaskTrayIcon == null)
             {
+                Debug.Assert(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico"))?.Stream != null);
                 TaskTrayIcon = new System.Windows.Forms.NotifyIcon
                 {
                     Text = SystemConfig.AppName,
