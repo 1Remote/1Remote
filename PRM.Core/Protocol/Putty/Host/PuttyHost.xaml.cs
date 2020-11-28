@@ -146,8 +146,8 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override void ReConn()
         {
-            // TODO 实现
-            throw new NotImplementedException();
+            ClosePutty();
+            Conn();
         }
 
         public override void DisConn()

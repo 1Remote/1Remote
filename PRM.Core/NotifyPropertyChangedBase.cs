@@ -5,6 +5,7 @@ namespace PRM.Core
 {
     public class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
         protected bool NotifyPropertyChangedEnabled = true;
 
         public void SetNotifyPropertyChangedEnabled(bool isEnabled)
@@ -28,12 +29,6 @@ namespace PRM.Core
             oldValue = newValue;
             RaisePropertyChanged(propertyName);
         }
-
-
-        protected virtual string[] GetStrArgs(object arg)
-        {
-            var paramstr = arg as string;
-            return paramstr.Split('\r');
-        }
+        #endregion
     }
 }

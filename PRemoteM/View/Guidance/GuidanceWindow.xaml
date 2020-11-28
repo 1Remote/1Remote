@@ -1,0 +1,251 @@
+﻿<Window x:Class="PRM.View.GuidanceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PRM.View"
+        xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
+        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        Background="Transparent"
+        Topmost="True"
+        Title="SearchBoxWindow" Height="600" Width="800">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" />
+    </WindowChrome.WindowChrome>
+    <Window.Template>
+        <ControlTemplate TargetType="Window">
+            <Border Padding="40" Background="Transparent">
+                <Border CornerRadius="16" Background="{StaticResource MainColor1Brush}">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="30" />
+                    </Border.Effect>
+                    <ContentPresenter ClipToBounds="True" />
+                </Border>
+            </Border>
+        </ControlTemplate>
+    </Window.Template>
+
+
+
+
+
+
+
+
+
+
+
+    <Grid Margin="16" Name="WinTitleBar" Background="{StaticResource MainColor1Brush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"  />
+        </Grid.RowDefinitions>
+
+
+        <!--<pageHost:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost:PageHost>-->
+        <Grid>
+            <Grid.Resources>
+                <Style x:Key="ShortcutStyle" TargetType="{x:Type Border}">
+                    <Style.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="11" />
+                            <Setter Property="FontWeight" Value="Medium" />
+                            <Setter Property="Foreground" Value="{StaticResource Primary300}" />
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="MinWidth" Value="17" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="Height" Value="18" />
+                    <Setter Property="CornerRadius" Value="2" />
+                    <Setter Property="Background" Value="{StaticResource Primary600}" />
+                    <Setter Property="Padding" Value="4,0,4,0" />
+                </Style>
+            </Grid.Resources>
+
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="Padding" Value="8" />
+                    </Style>
+                </Grid.Resources>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"  />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Grid.Column="0" Margin="0 20 0 0">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Grid HorizontalAlignment="Center">
+                            <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
+                        </Grid>
+                        <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{StaticResource Primary300}">PRemoteM</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontSize="8" Foreground="{StaticResource Primary300}">https://github.com/VShawn/PRemoteM</TextBlock>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid Name="Grid1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50*" />
+                            <ColumnDefinition Width="50*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto"  />
+                            <RowDefinition Height="Auto"  />
+                            <RowDefinition Height="Auto"  />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+                            <TextBlock
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            TextWrapping="WrapWithOverflow"
+                            Foreground="{StaticResource Primary300}">
+                            PRemoteM allows you to open a remote session at any time and anywhere.
+                            </TextBlock>
+                        </Border>
+
+                        <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
+                            <Image Source="Resources/launcher_main1.png" Width="200" HorizontalAlignment="Left"></Image>
+                        </Grid>
+
+                        <Border Grid.Row="1" Grid.Column="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="100" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource Gray600}">
+                                call the launcher by
+                                </TextBlock>
+                                <Grid Grid.Column="1" HorizontalAlignment="Left" Margin="5 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Style="{DynamicResource ShortcutStyle}">
+                                        <TextBlock>Alt</TextBlock>
+                                    </Border>
+                                    <Border Grid.Column="1" Margin="4,0,0,0" Style="{DynamicResource ShortcutStyle}">
+                                        <TextBlock>M</TextBlock>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+
+
+                        <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center">
+                            <Image Source="Resources/demo.png" Width="200" Margin="15 0 0 0" HorizontalAlignment="Left"></Image>
+                        </Grid>
+
+                        <Border Grid.Row="2" Grid.Column="1">
+                            <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource Gray600}">
+                            Dragable, tearable, dockable remote session.
+                            </TextBlock>
+                        </Border>
+                    </Grid>
+
+
+                    <Grid Name="Grid2" Background="Gray" Visibility="Collapsed"></Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="1" VerticalAlignment="Bottom" Height="30" Width="400">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Border CornerRadius="5" BorderBrush="Gray" BorderThickness="1"  Width="10" Height="10" Margin="5">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Step}" Value="0">
+                                    <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+                <Border CornerRadius="5" BorderBrush="Gray" BorderThickness="1"  Width="10" Height="10" Margin="5">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Step}" Value="1">
+                                    <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+            </StackPanel>
+
+            <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+                               BorderThickness="1"
+                               Click="ButtonPrevious_OnClick"
+                               Content="TXT:Previous">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Step}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Step}" Value="1">
+                                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:ButtonEx.Style>
+            </controls:ButtonEx>
+
+            <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+                               HorizontalAlignment="Right"
+                               BorderThickness="1"
+                               Click="ButtonNext_OnClick"
+                               Content="TXT:Next">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Step}" Value="1">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:ButtonEx.Style>
+            </controls:ButtonEx>
+
+            <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+                               HorizontalAlignment="Left"
+                               BorderThickness="1"
+                               Click="ButtonNext_OnClick"
+                               Content="TXT:Done">
+                <controls:ButtonEx.Style>
+                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor2ButtonRadius3}">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Step}" Value="1">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:ButtonEx.Style>
+            </controls:ButtonEx>
+        </Grid>
+    </Grid>
+</Window>
