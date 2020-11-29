@@ -15,6 +15,12 @@
   "button_cancel": "Cancel",
   "button_select": "Select",
   "button_explore_to": "Explore to...",
+  "button_previous": "Previous",
+  "button_next": "Next",
+  "button_done": "Done",
+
+
+
   "tab_all": "All",
   "info_filter": "Input your keywords",
   "info_filter_main_window": "Search (Ctrl+F)",

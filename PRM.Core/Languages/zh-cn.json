@@ -15,6 +15,12 @@
   "button_cancel": "取消",
   "button_select": "选择",
   "button_explore_to": "定位到...",
+  "button_previous": "上一页",
+  "button_next": "下一页",
+  "button_done": "完成",
+
+
+
   "tab_all": "全部",
   "info_filter": "在此输入关键词",
   "info_filter_main_window": "搜索 (Ctrl+F)",

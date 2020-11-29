@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Documents;
 using Shawn.Utils;
@@ -56,7 +57,7 @@ namespace PRM.Core.Model
         public static ResourceDictionary AppResourceDictionary { get; set; }
 
 
-
+        private readonly Timer _checkUpdateTimer;
 
         private SystemConfig()
         {
@@ -65,16 +66,33 @@ namespace PRM.Core.Model
                 this.NewVersion = s;
                 this.NewVersionUrl = s1;
             };
-            var uc = new UpdateChecker();
-            uc.CheckUpdateAsync();
+
+            // check update every hours.
+            _checkUpdateTimer = new Timer()
+            {
+                Interval = 1000 * 3600,
+                AutoReset = true,
+            };
+            _checkUpdateTimer.Elapsed += (sender, args) =>
+            {
+                var uc = new UpdateChecker();
+                uc.CheckUpdateAsync();
+            };
+
             _lastScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
             _lastScreenRectangle = GetScreenSize();
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+
+            {
+                var uc = new UpdateChecker();
+                uc.CheckUpdateAsync();
+            }
         }
 
         ~SystemConfig()
         {
             SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
+            _checkUpdateTimer?.Stop();
         }
 
         #region Resolution Watcher

@@ -17,6 +17,11 @@ using Shawn.Utils;
 
 namespace PRM
 {
+    /*
+    Defines:
+        FOR_MICROSOFT_STORE             =>  Let app try to use UWP code to fit microsoft store, if not define then app support win32 only.
+        FOR_MICROSOFT_STORE_ONLY        =>  Disable all functions store not recommend.Must define FOR_MICROSOFT_STORE first!!!
+    */
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
@@ -67,6 +72,8 @@ namespace PRM
                 }
 
                 #region single-instance app
+
+#if !FOR_MICROSOFT_STORE_ONLY
                 var startupMode = Shawn.Utils.StartupMode.Normal;
                 if (startupEvent.Args.Length > 0)
                 {
@@ -82,6 +89,9 @@ namespace PRM
                     SetSelfStartingHelper.UnsetSelfStart();
                     Environment.Exit(0);
                 }
+#endif
+
+
                 _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
                 if (!isFirst)
                 {
