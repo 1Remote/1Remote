@@ -170,21 +170,6 @@ namespace PRM
                         }
 
                     var ini = new Ini(iniPath);
-                    if (!File.Exists(iniPath))
-                    {
-                        // TODO if ini is not existed, then it would be a new user, open guide to set db path
-                    }
-
-                    ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                    var gw = new GuidanceWindow();
-                    if (gw.ShowDialog() == true)
-                    {
-
-                    }
-                    Environment.Exit(0);
-                    return;
-
-
                     var language = new SystemConfigLanguage(this.Resources, ini);
                     var general = new SystemConfigGeneral(ini);
                     var quickConnect = new SystemConfigQuickConnect(ini);
@@ -198,6 +183,20 @@ namespace PRM
                     SystemConfig.Instance.QuickConnect = quickConnect;
                     SystemConfig.Instance.DataSecurity = dataSecurity;
                     SystemConfig.Instance.Theme = theme;
+
+
+
+
+                    // if ini is not existed, then it would be a new user, open guide to set db path
+#if !DEBUG
+                    if (!File.Exists(iniPath))
+#endif
+                    {
+                        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                        var gw = new GuidanceWindow(SystemConfig.Instance);
+                        gw.ShowDialog();
+                    }
+
 
                     // server data holder init.
                     GlobalData.Init();

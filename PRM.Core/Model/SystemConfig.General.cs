@@ -32,31 +32,22 @@ namespace PRM.Core.Model
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             if (!Directory.Exists(appDateFolder))
                 Directory.CreateDirectory(appDateFolder);
+            StopAutoSave = true;
             IconFolderPath = Path.Combine(appDateFolder, "icons");
             if (!Directory.Exists(IconFolderPath))
                 Directory.CreateDirectory(IconFolderPath);
             LogFilePath = Path.Combine(appDateFolder, SystemConfig.AppName + ".log.md");
+            StopAutoSave = false;
         }
 
-        private bool _appStartAutomatically = false;
+        private bool _appStartAutomatically = true;
         public bool AppStartAutomatically
         {
             get => _appStartAutomatically;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
-                if (value == true)
-                {
-                    SetSelfStartingHelper.SetSelfStart();
-                }
-                else
-                {
-                    SetSelfStartingHelper.UnsetSelfStart();
-                }
-            }
+            set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
         }
 
-        private bool _appStartMinimized = false;
+        private bool _appStartMinimized = true;
         public bool AppStartMinimized
         {
             get => _appStartMinimized;
@@ -110,6 +101,16 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
+
+            if (AppStartAutomatically == true)
+            {
+                SetSelfStartingHelper.SetSelfStart();
+            }
+            else
+            {
+                SetSelfStartingHelper.UnsetSelfStart();
+            }
+
             StopAutoSave = false;
             _ini.Save();
         }

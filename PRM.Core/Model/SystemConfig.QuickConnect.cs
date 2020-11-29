@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -10,6 +11,32 @@ using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
+    public enum HotkeyModifierKeys
+    {
+        [Description("None")]
+        None = ModifierKeys.None,
+        [Description("Control")]
+        Control = ModifierKeys.Control,
+        [Description("Shift")]
+        Shift = ModifierKeys.Shift,
+        [Description("Alt")]
+        Alt = ModifierKeys.Alt,
+        [Description("Win")]
+        Windows = ModifierKeys.Windows,
+        [Description("Shift + Control")]
+        ShiftControl = ModifierKeys.Shift | ModifierKeys.Control,
+        [Description("Shift + Win")]
+        ShiftWindows = ModifierKeys.Shift | ModifierKeys.Windows,
+        [Description("Shift + Alt")]
+        ShiftAlt = ModifierKeys.Shift | ModifierKeys.Alt,
+        [Description("Win + Control")]
+        WindowsControl = ModifierKeys.Windows | ModifierKeys.Control,
+        [Description("Win + Alt")]
+        WindowsAlt = ModifierKeys.Windows | ModifierKeys.Alt,
+        [Description("Control + Alt")]
+        ControlAlt = ModifierKeys.Control | ModifierKeys.Alt,
+    }
+
     public sealed class SystemConfigQuickConnect : SystemConfigBase
     {
         public SystemConfigQuickConnect(Ini ini) : base(ini)
@@ -26,8 +53,8 @@ namespace PRM.Core.Model
         }
 
 
-        private ModifierKeys _hotKeyModifiers = ModifierKeys.Alt;
-        public ModifierKeys HotKeyModifiers
+        private HotkeyModifierKeys _hotKeyModifiers = HotkeyModifierKeys.Alt;
+        public HotkeyModifierKeys HotKeyModifiers
         {
             get => _hotKeyModifiers;
             set => SetAndNotifyIfChanged(nameof(HotKeyModifiers), ref _hotKeyModifiers, value);
@@ -59,11 +86,11 @@ namespace PRM.Core.Model
             uint key = 0;
             modifiers = _ini.GetValue(nameof(HotKeyModifiers).ToLower(), _sectionName, modifiers);
             key = _ini.GetValue(nameof(HotKeyKey).ToLower(), _sectionName, key);
-            HotKeyModifiers = (ModifierKeys)modifiers;
+            HotKeyModifiers = (HotkeyModifierKeys)modifiers;
             HotKeyKey = (Key)key;
-            if (HotKeyModifiers == ModifierKeys.None || HotKeyKey == Key.None)
+            if (HotKeyModifiers == HotkeyModifierKeys.None || HotKeyKey == Key.None)
             {
-                HotKeyModifiers = ModifierKeys.Alt;
+                HotKeyModifiers = HotkeyModifierKeys.Alt;
                 HotKeyKey = Key.M;
             }
             StopAutoSave = false;

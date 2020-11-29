@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using Shawn.Utils;
 using Microsoft.Win32;
 
@@ -160,17 +161,45 @@ namespace PRM.Core.Model
 
 
         private SystemConfigTheme _theme = null;
+
         public SystemConfigTheme Theme
         {
             get => _theme;
             set => SetAndNotifyIfChanged(nameof(Theme), ref _theme, value);
+        }
+
+
+        private bool _stopAutoSaveConfig;
+        public bool StopAutoSaveConfig
+        {
+            get => _stopAutoSaveConfig;
+            set
+            {
+                _stopAutoSaveConfig = value;
+
+                General.StopAutoSave = value;
+                Language.StopAutoSave = value;
+                QuickConnect.StopAutoSave = value;
+                DataSecurity.StopAutoSave = value;
+                Theme.StopAutoSave = value;
+            }
+        }
+
+        public void Save()
+        {
+            Language.Save();
+            General.Save();
+            QuickConnect.Save();
+            DataSecurity.Save();
+            Theme.Save();
+            Theme.ReloadPuttyThemes();
         }
     }
 
 
     public abstract class SystemConfigBase : NotifyPropertyChangedBase
     {
-        protected bool StopAutoSave { get; set; } = false;
+        public bool StopAutoSave { get; set; } = false;
 
         protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using PRM.Annotations;
+using PRM.Core.Model;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
 
@@ -52,24 +54,55 @@ namespace PRM.View
         #endregion
 
 
-        public GuidanceWindow()
+        public GuidanceWindow(SystemConfig _config)
         {
             InitializeComponent();
+
+            // stop auto saving configs.
+            SystemConfig = _config;
+            SystemConfig.StopAutoSaveConfig = true;
+
+            _step = 0;
+            Grid1.Visibility = Visibility.Visible;
+            Grid2.Visibility = Visibility.Collapsed;
 
             WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             DataContext = this;
-            _step = 0;
+
+            // set default language
+            var cc = CultureInfo.CurrentCulture;
+            string code = cc.Name.ToLower();
+            if (SystemConfig.Instance.Language.LanguageCode2Name.ContainsKey(code))
+            {
+                SystemConfig.Instance.Language.CurrentLanguageCode = "zh-cn";
+            }
+            else
+            {
+                // use default english
+            }
+
+
+            // saving config when this window close
+            Closed += (sender, args) =>
+            {
+                SystemConfig.StopAutoSaveConfig = false;
+                SystemConfig.Save();
+            };
         }
+
+
+
+        public SystemConfig SystemConfig { get; set; }
 
         #region DragMove
         private bool _isLeftMouseDown = false;
-        private bool _isDraging = false;
+        private bool _isDragging = false;
         private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _isDraging = false;
+            _isDragging = false;
             _isLeftMouseDown = false;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -81,7 +114,7 @@ namespace PRM.View
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            _isDraging = true;
+                            _isDragging = true;
                         });
                     }
                 }));
@@ -91,11 +124,11 @@ namespace PRM.View
         private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             _isLeftMouseDown = false;
-            _isDraging = false;
+            _isDragging = false;
         }
         private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDraging)
+            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
             {
                 if (this.WindowState == WindowState.Maximized)
                 {
@@ -153,6 +186,11 @@ namespace PRM.View
                     this.ActualWidth, this.ActualHeight);
                 sb2.Begin(Grid2);
             }
+        }
+
+        private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

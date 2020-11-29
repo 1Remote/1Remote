@@ -168,6 +168,7 @@
     <Compile Include="Utils\ConsoleManager.cs" />
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
+    <Compile Include="Utils\HyperlinkHelper.cs" />
     <Compile Include="Utils\Ini.cs" />
     <Compile Include="Utils\IOPermissionHelper.cs" />
     <Compile Include="Utils\KeyWordMatchHelper.cs" />

@@ -71,7 +71,7 @@ namespace PRM.Core.Protocol
                 SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
                 try
                 {
-                    if (value != null)
+                    if (!string.IsNullOrEmpty(value))
                     {
                         var bm = NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(value));
                         _iconImg = bm.ToBitmapSource();
