@@ -165,8 +165,9 @@ namespace Shawn.Utils
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine(e);
 #if !FOR_MICROSOFT_STORE_ONLY
                     if (File.Exists(GetShortCutPath()))
                         return true;
@@ -183,17 +184,18 @@ namespace Shawn.Utils
 
         public static void SetSelfStart()
         {
-            var t = Task.Factory.StartNew(() =>
+            var t = Task.Factory.StartNew(async () =>
             {
                 try
                 {
-                    var result = StartupTask.GetAsync(StartupTaskId).GetResults();
-                    switch (result.State)
+                    var r = await StartupTask.GetAsync(StartupTaskId);
+                    //var result = StartupTask.GetAsync(StartupTaskId).GetResults();
+                    switch (r.State)
                     {
                         case StartupTaskState.Disabled:
                         case StartupTaskState.DisabledByUser:
                         case StartupTaskState.DisabledByPolicy:
-                            result.RequestEnableAsync().GetResults();
+                            r.RequestEnableAsync().GetResults();
                             break;
                         case StartupTaskState.Enabled:
                         case StartupTaskState.EnabledByPolicy:
@@ -202,8 +204,9 @@ namespace Shawn.Utils
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine(e);
 #if !FOR_MICROSOFT_STORE_ONLY
                     if (IsSetSelfStart())
                         return;
@@ -277,6 +280,7 @@ namespace Shawn.Utils
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e);
 #if !FOR_MICROSOFT_STORE_ONLY
                     var shortcutPath = GetShortCutPath();
                     if (File.Exists(shortcutPath))

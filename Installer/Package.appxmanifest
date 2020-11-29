@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+	<Identity
+	  Name="16536Shawn.V.Workshop.PRemoteM"
+	  Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
+	  Version="1.0.0.0" />
+
+	<Properties>
+		<DisplayName>PRemoteM</DisplayName>
+		<PublisherDisplayName>Shawn.V.Workshop</PublisherDisplayName>
+		<Logo>Images\PackageLogo.png</Logo>
+	</Properties>
+
+	<Dependencies>
+		<TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+		<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14393.0" MaxVersionTested="10.0.14393.0" />
+	</Dependencies>
+
+	<Resources>
+		<Resource Language="x-generate"/>
+	</Resources>
+
+	<Applications>
+		<Application Id="App"
+		  Executable="$targetnametoken$.exe"
+		  EntryPoint="$targetentrypoint$">
+			<uap:VisualElements
+			  DisplayName="PRemoteM"
+			  Description="Your personal remote manager."
+			  BackgroundColor="transparent" Square150x150Logo="Images\Square150x150Logo.png" Square44x44Logo="Images\Square44x44Logo.png">
+				<uap:DefaultTile  Square71x71Logo="Images\SmallTile.png" Square310x310Logo="Images\LargeTile.png" ShortName="PRM" Wide310x150Logo="Images\WideTile.png">
+					<uap:ShowNameOnTiles>
+						<uap:ShowOn Tile="square310x310Logo"/>
+						<uap:ShowOn Tile="square150x150Logo"/>
+						<uap:ShowOn Tile="wide310x150Logo"/>
+					</uap:ShowNameOnTiles>
+				</uap:DefaultTile >
+				<uap:InitialRotationPreference>
+					<uap:Rotation Preference="landscape"/>
+					<uap:Rotation Preference="portrait"/>
+					<uap:Rotation Preference="landscapeFlipped"/>
+					<uap:Rotation Preference="portraitFlipped"/>
+				</uap:InitialRotationPreference>
+				<uap:LockScreen Notification="badge" BadgeLogo="Images\BadgeLogo.png"/>
+				<uap:SplashScreen Image="Images\SplashScreen.png"/>
+			</uap:VisualElements>
+			<Extensions>
+				<uap5:Extension Category="windows.startupTask">
+					<uap5:StartupTask
+						TaskId="PRemoteM"
+						Enabled="true"
+						DisplayName="PRemoteM" />
+				</uap5:Extension>
+			</Extensions>
+		</Application>
+	</Applications>
+
+	<Capabilities>
+		<Capability Name="internetClient" />
+		<rescap:Capability Name="runFullTrust" />
+	</Capabilities>
+</Package>
