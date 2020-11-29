@@ -29,12 +29,6 @@ namespace PRM.View
             TbVersion.Text = PRMVersion.Version;
         }
 
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            var link = sender as Hyperlink;
-            Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
-        }
-
         private void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 3)

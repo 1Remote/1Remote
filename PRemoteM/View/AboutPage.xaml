@@ -6,6 +6,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -103,7 +104,7 @@
                                     <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock>
-                                            <Hyperlink NavigateUri="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersionUrl}" TextDecorations="{x:Null}" Click="Hyperlink_Click">
+                                            <Hyperlink NavigateUri="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
                                                 <Grid>
                                                 <TextBlock Text="Update" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}"/>
                                                 </Grid>
@@ -131,12 +132,12 @@
                                 </Grid>
                                 <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/VShawn" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/VShawn" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             Shawn
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="mailto::singlex@foxmail.com?subject=PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="mailto::singlex@foxmail.com?subject=PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             (singlex@foxmail.com)
                                         </Hyperlink>
                                     </TextBlock>
@@ -152,7 +153,7 @@
                                     <Grid Style="{StaticResource EditorRowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                                     How to use
                                                 </Hyperlink>
                                             </TextBlock>
@@ -166,12 +167,12 @@
                                     <Grid Style="{StaticResource EditorRowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                                     Bug report
                                                 </Hyperlink>
                                             </TextBlock>
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                                     Github
                                                 </Hyperlink>
                                             </TextBlock>
@@ -183,42 +184,42 @@
                                 <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Included Components"></TextBlock>
                                 <StackPanel>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://www.chiark.greenend.org.uk/~sgtatham/putty/" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://www.chiark.greenend.org.uk/~sgtatham/putty/" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://www.chiark.greenend.org.uk/~sgtatham/putty/
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/cyd01/KiTTY" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/cyd01/KiTTY" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/cyd01/KiTTY
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/ButchersBoy/Dragablz" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/ButchersBoy/Dragablz" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/ButchersBoy/Dragablz
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/drogoganor/ColorPickerWPF" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/drogoganor/ColorPickerWPF" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/drogoganor/ColorPickerWPF
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/hstarorg/TinyPinyin.Net" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/hstarorg/TinyPinyin.Net" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/hstarorg/TinyPinyin.Net
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/praeclarum/sqlite-net
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/AlexAkulov/putty-color-themes" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/AlexAkulov/putty-color-themes" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/AlexAkulov/putty-color-themes
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/xiangyuecn/RSA-csharp" TextDecorations="{x:Null}" Click="Hyperlink_Click" >
+                                        <Hyperlink NavigateUri="https://github.com/xiangyuecn/RSA-csharp" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/xiangyuecn/RSA-csharp
                                         </Hyperlink>
                                     </TextBlock>

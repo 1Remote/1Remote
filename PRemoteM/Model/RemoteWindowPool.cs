@@ -122,6 +122,8 @@ namespace PRM.Model
                             p.Start();
                             p.StandardInput.WriteLine("mstsc -admin \"" + rdpFile + "\"");
                             p.StandardInput.WriteLine("exit");
+                            //FullTrustProcessLauncher.LaunchFullTrustProcessForAppAsync()
+                            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
                         }
                         finally
                         {

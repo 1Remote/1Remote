@@ -5,11 +5,17 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.Model;
 
+#if FOR_MICROSOFT_STORE
+using Windows.ApplicationModel;
+#endif
+
 namespace Shawn.Utils
 {
+#if !FOR_MICROSOFT_STORE_ONLY
     public enum StartupMode
     {
         /// <summary>
@@ -25,8 +31,12 @@ namespace Shawn.Utils
         /// </summary>
         UnsetSelfStart,
     }
+#endif
+
+
     public static class SetSelfStartingHelper
     {
+#if !FOR_MICROSOFT_STORE_ONLY
         private static string MD5EncryptString(string str)
         {
             var md5 = MD5.Create();
@@ -44,7 +54,6 @@ namespace Shawn.Utils
             // 返回加密的字符串
             return sb.ToString();
         }
-
         private static string GetShortCutPath()
         {
             var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
@@ -53,98 +62,6 @@ namespace Shawn.Utils
             var shortcutPath = System.IO.Path.Combine(startUpPath, string.Format("{0}_{1}.lnk", SystemConfig.AppName, md5));
             return shortcutPath;
         }
-
-        /// <summary>
-        /// 是否已经设定了开机自启
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsSetSelfStart()
-        {
-            if (File.Exists(GetShortCutPath()))
-                return true;
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// 开机自动启动
-        /// 赋值快捷方式到[启动]文件夹
-        /// </summary>
-        /// <returns>开启或停用是否成功</returns>
-        public static void SetSelfStart()
-        {
-            if (IsSetSelfStart())
-                return;
-
-            if (AppElvatedHelper.IsElvated())
-            {
-                try
-                {
-                    var exePath = Process.GetCurrentProcess().MainModule.FileName;
-                    var shortcutPath = GetShortCutPath();
-                    if (File.Exists(shortcutPath))
-                        File.Delete(shortcutPath);
-                    var shell = new IWshRuntimeLibrary.WshShell();
-                    var shortcut = (IWshRuntimeLibrary.IWshShortcut) shell.CreateShortcut(shortcutPath);
-                    shortcut.TargetPath = exePath; // exe路径
-                    shortcut.Arguments = ""; // 启动参数
-                    shortcut.IconLocation = exePath;
-                    shortcut.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath);
-                    shortcut.Description = "";
-                    shortcut.Save();
-                    // 取消其他自启动
-                    var di = new FileInfo(shortcutPath).Directory;
-                    var fis = di.GetFiles(SystemConfig.AppName +  "_*");
-                    if (fis?.Length > 0)
-                    {
-                        foreach (var fi in fis)
-                        {
-                            if (fi.FullName != shortcutPath)
-                                File.Delete(fi.FullName);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else
-            {
-                // 以高操作权限执行
-                AppElvatedHelper.RunElvatedTask(StartupMode.SetSelfStart);
-            }
-        }
-
-        public static void UnsetSelfStart()
-        {
-            var shortcutPath = GetShortCutPath();
-            if (File.Exists(shortcutPath))
-            {
-                if (AppElvatedHelper.IsElvated())
-                {
-                    try
-                    {
-                        File.Delete(shortcutPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-                else
-                {
-                    // 以高操作权限执行
-                    AppElvatedHelper.RunElvatedTask(StartupMode.UnsetSelfStart);
-                }
-            }
-        }
-
-
-
-
-
-
         /// <summary>
         /// 用于实现提权操作的类
         /// Elevated Permission 后，杀死原进程
@@ -211,5 +128,182 @@ namespace Shawn.Utils
                 }
             }
         }
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public static string StartupTaskId = "PremoteM";
+        public static bool IsSetSelfStart()
+        {
+            Task<bool> t = Task.Factory.StartNew<bool>(() =>
+            {
+                try
+                {
+                    var result = StartupTask.GetAsync(StartupTaskId).GetResults();
+                    switch (result.State)
+                    {
+                        case StartupTaskState.Disabled:
+                        case StartupTaskState.DisabledByUser:
+                        case StartupTaskState.DisabledByPolicy:
+                            return false;
+                        case StartupTaskState.Enabled:
+                        case StartupTaskState.EnabledByPolicy:
+                            return true;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (Exception)
+                {
+#if !FOR_MICROSOFT_STORE_ONLY
+                    if (File.Exists(GetShortCutPath()))
+                        return true;
+                    else
+                        return false;
+#else
+                    throw;
+#endif
+                }
+            });
+            t.Wait();
+            return t.Result;
+        }
+
+        public static void SetSelfStart()
+        {
+            var t = Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    var result = StartupTask.GetAsync(StartupTaskId).GetResults();
+                    switch (result.State)
+                    {
+                        case StartupTaskState.Disabled:
+                        case StartupTaskState.DisabledByUser:
+                        case StartupTaskState.DisabledByPolicy:
+                            result.RequestEnableAsync().GetResults();
+                            break;
+                        case StartupTaskState.Enabled:
+                        case StartupTaskState.EnabledByPolicy:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (Exception)
+                {
+#if !FOR_MICROSOFT_STORE_ONLY
+                    if (IsSetSelfStart())
+                        return;
+
+                    if (AppElvatedHelper.IsElvated())
+                    {
+                        try
+                        {
+                            var exePath = Process.GetCurrentProcess().MainModule.FileName;
+                            var shortcutPath = GetShortCutPath();
+                            if (File.Exists(shortcutPath))
+                                File.Delete(shortcutPath);
+                            var shell = new IWshRuntimeLibrary.WshShell();
+                            var shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(shortcutPath);
+                            shortcut.TargetPath = exePath; // exe路径
+                            shortcut.Arguments = ""; // 启动参数
+                            shortcut.IconLocation = exePath;
+                            shortcut.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath);
+                            shortcut.Description = "";
+                            shortcut.Save();
+                            // 取消其他自启动
+                            var di = new FileInfo(shortcutPath).Directory;
+                            var fis = di.GetFiles(SystemConfig.AppName + "_*");
+                            if (fis?.Length > 0)
+                            {
+                                foreach (var fi in fis)
+                                {
+                                    if (fi.FullName != shortcutPath)
+                                        File.Delete(fi.FullName);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        // 以高操作权限执行
+                        AppElvatedHelper.RunElvatedTask(StartupMode.SetSelfStart);
+                    }
+#else
+                    throw;
+#endif
+                }
+            });
+            t.Wait();
+        }
+
+        public static void UnsetSelfStart()
+        {
+            var t = Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    var result = StartupTask.GetAsync(StartupTaskId).GetResults();
+                    switch (result.State)
+                    {
+                        case StartupTaskState.Disabled:
+                        case StartupTaskState.DisabledByUser:
+                        case StartupTaskState.DisabledByPolicy:
+                            break;
+                        case StartupTaskState.Enabled:
+                        case StartupTaskState.EnabledByPolicy:
+                            result.Disable();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (Exception e)
+                {
+#if !FOR_MICROSOFT_STORE_ONLY
+                    var shortcutPath = GetShortCutPath();
+                    if (File.Exists(shortcutPath))
+                    {
+                        if (AppElvatedHelper.IsElvated())
+                        {
+                            try
+                            {
+                                File.Delete(shortcutPath);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
+                        }
+                        else
+                        {
+                            AppElvatedHelper.RunElvatedTask(StartupMode.UnsetSelfStart);
+                        }
+                    }
+#else
+                    throw;
+#endif
+                }
+            });
+            t.Wait();
+        }
+
     }
 }

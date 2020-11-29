@@ -352,7 +352,7 @@
             <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
                                BorderThickness="1"
                                Click="ButtonPrevious_OnClick"
-                               Content="TXT:Previous">
+                               Content="{DynamicResource button_previous}">
                 <controls:ButtonEx.Style>
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1ButtonRadius3}">
                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
@@ -369,7 +369,7 @@
                                HorizontalAlignment="Right"
                                BorderThickness="1"
                                Click="ButtonNext_OnClick"
-                               Content="TXT:Next">
+                               Content="{DynamicResource button_next}">
                 <controls:ButtonEx.Style>
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
                         <Style.Triggers>
@@ -385,7 +385,7 @@
                                HorizontalAlignment="Right"
                                BorderThickness="1"
                                Click="ButtonExit_OnClick"
-                               Content="TXT:Done">
+                               Content="{DynamicResource button_done}">
                 <controls:ButtonEx.Style>
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor2ButtonRadius3}">
                         <Setter Property="Visibility" Value="Collapsed"></Setter>
