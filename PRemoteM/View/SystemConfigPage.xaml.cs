@@ -104,7 +104,7 @@ namespace PRM.View
             }
         }
 
-        private bool SetHotkeyIsRegistered(ModifierKeys modifier, Key key)
+        private bool SetHotkeyIsRegistered(HotkeyModifierKeys modifier, Key key)
         {
             if (modifier == SystemConfig.Instance.QuickConnect.HotKeyModifiers
                 && key == SystemConfig.Instance.QuickConnect.HotKeyKey)
@@ -116,7 +116,7 @@ namespace PRM.View
 
 
             // check if HOTKEY_ALREADY_REGISTERED
-            var r = GlobalHotkeyHooker.Instance.Regist(null, modifier, key, () => { });
+            var r = GlobalHotkeyHooker.Instance.Regist(null, (uint)modifier, key, () => { });
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:

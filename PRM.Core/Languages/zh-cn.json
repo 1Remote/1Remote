@@ -201,6 +201,14 @@
   "about_page_feedback": "提意见/需求",
 
 
+  // guidance 
+  "guidance_introduce": "无论何时何地 PRemoteM 都为您管理远程会话",
+  "guidance_feature_launcher": "快速呼出启动器",
+  "guidance_feature_tab_demo": "可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体",
+  "guidance_feature_start_setting1": "开始使用前请确认一些配置",
+  "guidance_feature_start_setting2": "这些配置稍后同样可以在设置界面中修改",
+
+
 
   // other
   "logo_selecter_open_file_dialog_title": "选择图片"

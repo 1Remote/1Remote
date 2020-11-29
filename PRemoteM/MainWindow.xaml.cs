@@ -101,10 +101,10 @@ namespace PRM
 
         #region DragMove
         private bool _isLeftMouseDown = false;
-        private bool _isDraging = false;
+        private bool _isDragging = false;
         private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _isDraging = false;
+            _isDragging = false;
             _isLeftMouseDown = false;
 
             if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
@@ -123,7 +123,7 @@ namespace PRM
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            _isDraging = true;
+                            _isDragging = true;
                         });
                     }
                 }));
@@ -133,11 +133,11 @@ namespace PRM
         private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             _isLeftMouseDown = false;
-            _isDraging = false;
+            _isDragging = false;
         }
         private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDraging)
+            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
             {
                 if (this.WindowState == WindowState.Maximized)
                 {

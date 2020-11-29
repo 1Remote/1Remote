@@ -201,6 +201,14 @@
   "about_page_feedback": "Feedback",
 
 
+  // guidance 
+  "guidance_introduce": "PRemoteM allows you to open a remote session at any time and anywhere.",
+  "guidance_feature_launcher": "call the launcher by",
+  "guidance_feature_tab_demo": "Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...",
+  "guidance_feature_start_setting1": "Please confirm some settings before start use.",
+  "guidance_feature_start_setting2": "You are able to change this setting latter in Options page.",
+
+
 
   // other
   "logo_selecter_open_file_dialog_title": "select a picture"

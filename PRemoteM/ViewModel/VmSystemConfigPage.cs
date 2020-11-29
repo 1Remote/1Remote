@@ -70,12 +70,7 @@ namespace PRM.ViewModel
                         Host.DispPage = null;
 
                         /***                update config                ***/
-                        SystemConfig.Language.Save();
-                        SystemConfig.General.Save();
-                        SystemConfig.QuickConnect.Save();
-                        SystemConfig.DataSecurity.Save();
-                        SystemConfig.Theme.Save();
-                        SystemConfig.Theme.ReloadPuttyThemes();
+                        SystemConfig.Save();
                     });
                 }
                 return _cmdSaveAndGoBack;

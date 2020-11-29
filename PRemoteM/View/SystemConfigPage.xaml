@@ -240,10 +240,16 @@
                                     <ComboBox Width="100" SelectedValuePath="Tag"
                                               SelectedValue="{Binding SystemConfig.QuickConnect.HotKeyModifiers}" 
                                               SelectionChanged="Modifiers_OnSelectionChanged">
-                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Control}">Ctrl</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Alt}">Alt</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Windows}">Win</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static ModifierKeys.Shift}">Shift</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
+                                        <!--<ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.WindowsAlt}">Win + Alt</ComboBoxItem>-->
+                                        <!--<ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.WindowsControl}">Win + Ctrl</ComboBoxItem>-->
+                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
                                     </ComboBox>
                                     <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
                                     <TextBox Width="100" 

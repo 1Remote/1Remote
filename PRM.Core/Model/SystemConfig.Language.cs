@@ -92,7 +92,7 @@ namespace PRM.Core.Model
         private readonly Dictionary<string, string> _languageCode2ResourcePath = new Dictionary<string, string>();
 
 
-        public void InitLanguageCode2Name()
+        private void InitLanguageCode2Name()
         {
             LanguageCode2Name.Clear();
             _languageCode2ResourcePath.Clear();
