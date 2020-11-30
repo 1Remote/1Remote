@@ -2,9 +2,6 @@
 English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md)
 
 
-<p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/PRemoteM.png" width="50" />
-</p>
 
 ```
 PRemoteM = Personal Remote Manager
@@ -14,9 +11,16 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 
 - :smiley:I am the old user of mRemoteNG.
 - :disappointed_relieved:I decided make a new remote tool in WPF after I bought two 4k monitors.
+  
+<p align="center">
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/maindemo.png"/>
+</p>
+
+## Overview
+
 
 <p align="center">
-    Lancher(Alt + M)
+    Launcher(Alt + M)
 </p>
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
@@ -33,16 +37,8 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
     RDP with Multi-monitors
 </p>
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="400"/>
+    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="600"/>
 </p>
-
-<p align="center">
-    sFtp
-</p>
-<p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/sFtp/sftpdemo.jpg" width="500"/>
-</p>
-
 
 
 ## Featutes
