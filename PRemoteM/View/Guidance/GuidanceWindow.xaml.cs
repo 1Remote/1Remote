@@ -53,13 +53,12 @@ namespace PRM.View
         }
         #endregion
 
-
-        public GuidanceWindow(SystemConfig _config)
+        public GuidanceWindow(SystemConfig config)
         {
             InitializeComponent();
 
             // stop auto saving configs.
-            SystemConfig = _config;
+            SystemConfig = config;
             SystemConfig.StopAutoSaveConfig = true;
 
             _step = 0;
@@ -72,12 +71,21 @@ namespace PRM.View
 
             DataContext = this;
 
+
+
             // set default language
-            var cc = CultureInfo.CurrentCulture;
-            string code = cc.Name.ToLower();
+            CultureInfo ci = CultureInfo.InstalledUICulture;
+            Console.WriteLine("Default Language Info:");
+            Console.WriteLine("* Name: {0}", ci.Name);
+            Console.WriteLine("* Display Name: {0}", ci.DisplayName);
+            Console.WriteLine("* English Name: {0}", ci.EnglishName);
+            Console.WriteLine("* 2-letter ISO Name: {0}", ci.TwoLetterISOLanguageName);
+            Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
+            Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
+            string code = ci.Name.ToLower();
             if (SystemConfig.Instance.Language.LanguageCode2Name.ContainsKey(code))
             {
-                SystemConfig.Instance.Language.CurrentLanguageCode = "zh-cn";
+                SystemConfig.Instance.Language.CurrentLanguageCode = code;
             }
             else
             {

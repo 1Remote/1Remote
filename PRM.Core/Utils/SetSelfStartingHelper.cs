@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Windows.UI.Popups;
 using PRM.Core.Model;
 
 #if FOR_MICROSOFT_STORE
@@ -144,73 +145,78 @@ namespace Shawn.Utils
 
 
 
-        public static string StartupTaskId = "PremoteM";
-        public static bool IsSetSelfStart()
+        public static string StartupTaskId = "PRemoteM";
+
+        public static async Task<bool> IsSelfStart()
         {
-            Task<bool> t = Task.Factory.StartNew<bool>(() =>
+            try
             {
-                try
+                var result = await StartupTask.GetAsync(StartupTaskId);
+                switch (result.State)
                 {
-                    var result = StartupTask.GetAsync(StartupTaskId).GetResults();
-                    switch (result.State)
-                    {
-                        case StartupTaskState.Disabled:
-                        case StartupTaskState.DisabledByUser:
-                        case StartupTaskState.DisabledByPolicy:
-                            return false;
-                        case StartupTaskState.Enabled:
-                        case StartupTaskState.EnabledByPolicy:
-                            return true;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-#if !FOR_MICROSOFT_STORE_ONLY
-                    if (File.Exists(GetShortCutPath()))
-                        return true;
-                    else
+                    case StartupTaskState.Disabled:
+                    case StartupTaskState.DisabledByUser:
+                    case StartupTaskState.DisabledByPolicy:
                         return false;
-#else
-                    throw;
-#endif
+                    case StartupTaskState.Enabled:
+                    case StartupTaskState.EnabledByPolicy:
+                        return true;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-            });
-            t.Wait();
-            return t.Result;
-        }
-
-        public static void SetSelfStart()
-        {
-            var t = Task.Factory.StartNew(async () =>
+            }
+            catch (Exception e)
             {
-                try
-                {
-                    var r = await StartupTask.GetAsync(StartupTaskId);
-                    //var result = StartupTask.GetAsync(StartupTaskId).GetResults();
-                    switch (r.State)
-                    {
-                        case StartupTaskState.Disabled:
-                        case StartupTaskState.DisabledByUser:
-                        case StartupTaskState.DisabledByPolicy:
-                            r.RequestEnableAsync().GetResults();
-                            break;
-                        case StartupTaskState.Enabled:
-                        case StartupTaskState.EnabledByPolicy:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
+                Console.WriteLine(e);
 #if !FOR_MICROSOFT_STORE_ONLY
-                    if (IsSetSelfStart())
-                        return;
-
+                if (File.Exists(GetShortCutPath()))
+                    return true;
+                else
+                    return false;
+#else
+                throw;
+#endif
+            }
+        }
+        public static async void SetSelfStart(bool isSelfStart)
+        {
+            try
+            {
+                var result = await StartupTask.GetAsync(StartupTaskId);
+                switch (result.State)
+                {
+                    case StartupTaskState.Disabled:
+                        if (isSelfStart)
+                        {
+                            var newState = await result.RequestEnableAsync();
+                        }
+                        break;
+                    case StartupTaskState.DisabledByUser:
+                        MessageBox.Show(
+                            "You have disabled this app's ability to run " +
+                            "as soon as you sign in, but if you change your mind, " +
+                            "you can enable this in the Startup tab in Task Manager.",
+                            "Warning");
+                        break;
+                    case StartupTaskState.DisabledByPolicy:
+                        Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
+                        break;
+                    case StartupTaskState.Enabled:
+                        if (!isSelfStart)
+                            result.Disable();
+                        break;
+                    case StartupTaskState.EnabledByPolicy:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+#if !FOR_MICROSOFT_STORE_ONLY
+                if (isSelfStart)
+                {
                     if (AppElvatedHelper.IsElvated())
                     {
                         try
@@ -221,13 +227,12 @@ namespace Shawn.Utils
                                 File.Delete(shortcutPath);
                             var shell = new IWshRuntimeLibrary.WshShell();
                             var shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(shortcutPath);
-                            shortcut.TargetPath = exePath; // exe路径
-                            shortcut.Arguments = ""; // 启动参数
+                            shortcut.TargetPath = exePath;
+                            shortcut.Arguments = "";
                             shortcut.IconLocation = exePath;
                             shortcut.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath);
                             shortcut.Description = "";
                             shortcut.Save();
-                            // 取消其他自启动
                             var di = new FileInfo(shortcutPath).Directory;
                             var fis = di.GetFiles(SystemConfig.AppName + "_*");
                             if (fis?.Length > 0)
@@ -246,42 +251,11 @@ namespace Shawn.Utils
                     }
                     else
                     {
-                        // 以高操作权限执行
                         AppElvatedHelper.RunElvatedTask(StartupMode.SetSelfStart);
                     }
-#else
-                    throw;
-#endif
                 }
-            });
-            t.Wait();
-        }
-
-        public static void UnsetSelfStart()
-        {
-            var t = Task.Factory.StartNew(() =>
-            {
-                try
+                else
                 {
-                    var result = StartupTask.GetAsync(StartupTaskId).GetResults();
-                    switch (result.State)
-                    {
-                        case StartupTaskState.Disabled:
-                        case StartupTaskState.DisabledByUser:
-                        case StartupTaskState.DisabledByPolicy:
-                            break;
-                        case StartupTaskState.Enabled:
-                        case StartupTaskState.EnabledByPolicy:
-                            result.Disable();
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-#if !FOR_MICROSOFT_STORE_ONLY
                     var shortcutPath = GetShortCutPath();
                     if (File.Exists(shortcutPath))
                     {
@@ -301,13 +275,11 @@ namespace Shawn.Utils
                             AppElvatedHelper.RunElvatedTask(StartupMode.UnsetSelfStart);
                         }
                     }
-#else
-                    throw;
-#endif
                 }
-            });
-            t.Wait();
+#else
+                throw;
+#endif
+            }
         }
-
     }
 }

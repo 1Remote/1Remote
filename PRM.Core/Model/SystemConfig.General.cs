@@ -102,14 +102,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
-            if (AppStartAutomatically == true)
-            {
-                SetSelfStartingHelper.SetSelfStart();
-            }
-            else
-            {
-                SetSelfStartingHelper.UnsetSelfStart();
-            }
+            SetSelfStartingHelper.SetSelfStart(AppStartAutomatically);
 
             StopAutoSave = false;
             _ini.Save();

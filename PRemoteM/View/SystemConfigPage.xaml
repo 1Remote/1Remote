@@ -191,7 +191,7 @@
                     </Grid>
 
 
-                    <Grid Style="{StaticResource EditorRowGrid}" >
+                    <Grid Style="{StaticResource EditorRowGrid}" Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_log_file_path}"></TextBlock>
                             <!--<Grid Style="{StaticResource EditorRowGridInput}">
@@ -202,7 +202,7 @@
                     </Grid>
 
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0"  Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}"></TextBlock>
                             <!--<Grid Style="{StaticResource EditorRowGridInput}">
@@ -212,7 +212,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
+                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3"  Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
                             <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_item_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
