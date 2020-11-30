@@ -2,15 +2,17 @@
 
 [English](https://github.com/VShawn/PRemoteM#PRemoteM) | 中文
 
-<p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/PRemoteM.png" width="50" />
-</p>
-
 ```
 PRemoteM = Personal Remote Manager
 ```
-
 PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够在任何时候快速开启一个远程会话。目前 PRemoteM 已支持 RDP、VNC、SSH、Telnet、sFtp等多种协议。
+
+<p  align="center">
+	<img  src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/maindemo.png"/>
+</p>
+
+ 
+## Overview
 
 <p align="center">
     快速启动器(alt+M)
@@ -33,14 +35,6 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="700"/>
 </p>
-
-<p align="center">
-    sFtp
-</p>
-<p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/sFtp/sftpdemo.jpg" width="700"/>
-</p>
-
 
 ## 特性
 
