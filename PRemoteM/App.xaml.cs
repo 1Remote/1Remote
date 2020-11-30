@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Windows.ApplicationModel;
 using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
@@ -39,118 +40,130 @@ namespace PRM
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
 
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            if (!Directory.Exists(appDateFolder))
+                Directory.CreateDirectory(appDateFolder);
 
-            this.DispatcherUnhandledException += (o, args) =>
+            // init log file placement
             {
-                SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
-            };
-            TaskScheduler.UnobservedTaskException += (o, args) =>
-            {
-                SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
-            };
-            AppDomain.CurrentDomain.UnhandledException += (o, args) =>
-            {
+                var logFilePath = Path.Combine(appDateFolder, "logs/PRemoteM.log.md");
+                var fi = new FileInfo(logFilePath);
+                if (!fi.Directory.Exists)
+                    fi.Directory.Create();
+                SimpleLogHelper.LogFileName = logFilePath;
+            }
 
-                if (args.ExceptionObject is Exception e)
+            // init Exception handle
+            {
+                this.DispatcherUnhandledException += (o, args) =>
                 {
-                    SimpleLogHelper.Fatal(e, e.StackTrace);
-                }
-                else
+                    SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
+                };
+                TaskScheduler.UnobservedTaskException += (o, args) =>
                 {
-                    SimpleLogHelper.Fatal(args.ExceptionObject);
-                }
-            };
+                    SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
+                };
+                AppDomain.CurrentDomain.UnhandledException += (o, args) =>
+                {
+
+                    if (args.ExceptionObject is Exception e)
+                    {
+                        SimpleLogHelper.Fatal(e, e.StackTrace);
+                    }
+                    else
+                    {
+                        SimpleLogHelper.Fatal(args.ExceptionObject);
+                    }
+                };
+            }
 
             try
             {
-                {
-                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-                    if (!Directory.Exists(appDateFolder))
-                        Directory.CreateDirectory(appDateFolder);
-                    var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
-                    SimpleLogHelper.LogFileName = logFilePath;
-                }
-
-                #region single-instance app
-
+                // startup creation for win32
 #if !FOR_MICROSOFT_STORE_ONLY
-                var startupMode = Shawn.Utils.StartupMode.Normal;
-                if (startupEvent.Args.Length > 0)
                 {
-                    System.Enum.TryParse(startupEvent.Args[0], out startupMode);
-                }
-                if (startupMode == Shawn.Utils.StartupMode.SetSelfStart)
-                {
-                    SetSelfStartingHelper.SetSelfStart();
-                    Environment.Exit(0);
-                }
-                if (startupMode == Shawn.Utils.StartupMode.UnsetSelfStart)
-                {
-                    SetSelfStartingHelper.UnsetSelfStart();
-                    Environment.Exit(0);
+                    var startupMode = Shawn.Utils.StartupMode.Normal;
+                    if (startupEvent.Args.Length > 0)
+                    {
+                        System.Enum.TryParse(startupEvent.Args[0], out startupMode);
+                    }
+                    if (startupMode == Shawn.Utils.StartupMode.SetSelfStart)
+                    {
+                        SetSelfStartingHelper.SetSelfStart(true);
+                        Environment.Exit(0);
+                    }
+                    if (startupMode == Shawn.Utils.StartupMode.UnsetSelfStart)
+                    {
+                        SetSelfStartingHelper.SetSelfStart(false);
+                        Environment.Exit(0);
+                    }
                 }
 #endif
 
 
-                _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
-                if (!isFirst)
+                // make sure only one instance
+                #region single-instance app
                 {
-                    try
+                    _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
+                    if (!isFirst)
                     {
-                        var client = new NamedPipeClientStream(PipeName);
-                        client.Connect();
-                        StreamReader reader = new StreamReader(client);
-                        StreamWriter writer = new StreamWriter(client);
-                        writer.WriteLine("ActivateMe");
-                        writer.Flush();
-                        client.Dispose();
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Warning(e);
-                    }
-
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    Task.Factory.StartNew(() =>
-                    {
-                        NamedPipeServerStream server = null;
-                        while (true)
+                        try
                         {
-                            server?.Dispose();
-                            server = new NamedPipeServerStream(PipeName);
-                            SimpleLogHelper.Debug("NamedPipeServerStream.WaitForConnection");
-                            server.WaitForConnection();
+                            var client = new NamedPipeClientStream(PipeName);
+                            client.Connect();
+                            StreamReader reader = new StreamReader(client);
+                            StreamWriter writer = new StreamWriter(client);
+                            writer.WriteLine("ActivateMe");
+                            writer.Flush();
+                            client.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Warning(e);
+                        }
 
-                            try
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        Task.Factory.StartNew(() =>
+                        {
+                            NamedPipeServerStream server = null;
+                            while (true)
                             {
-                                var reader = new StreamReader(server);
-                                var line = reader.ReadLine();
-                                if (!string.IsNullOrEmpty(line))
+                                server?.Dispose();
+                                server = new NamedPipeServerStream(PipeName);
+                                SimpleLogHelper.Debug("NamedPipeServerStream.WaitForConnection");
+                                server.WaitForConnection();
+
+                                try
                                 {
-                                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
-                                    if (line == "ActivateMe")
+                                    var reader = new StreamReader(server);
+                                    var line = reader.ReadLine();
+                                    if (!string.IsNullOrEmpty(line))
                                     {
-                                        if (App.Window != null)
+                                        SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
+                                        if (line == "ActivateMe")
                                         {
-                                            Dispatcher.Invoke(() =>
+                                            if (App.Window != null)
                                             {
-                                                if (App.Window.WindowState == WindowState.Minimized)
-                                                    App.Window.WindowState = WindowState.Normal;
-                                                App.Window.ActivateMe();
-                                            });
+                                                Dispatcher.Invoke(() =>
+                                                {
+                                                    if (App.Window.WindowState == WindowState.Minimized)
+                                                        App.Window.WindowState = WindowState.Normal;
+                                                    App.Window.ActivateMe();
+                                                });
+                                            }
                                         }
                                     }
                                 }
+                                catch (Exception e)
+                                {
+                                    SimpleLogHelper.Warning(e);
+                                }
                             }
-                            catch (Exception e)
-                            {
-                                SimpleLogHelper.Warning(e);
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
                 #endregion
 
@@ -162,13 +175,9 @@ namespace PRM
 
                 #region system check & init
 
-
+                bool isFirstTimeUser = false;
                 #region Init
                 {
-                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-                    if (!Directory.Exists(appDateFolder))
-                        Directory.CreateDirectory(appDateFolder);
-                    SimpleLogHelper.LogFileName = Path.Combine(appDateFolder, "PRemoteM.log.md");
                     var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
 
                     // for portable purpose
@@ -202,6 +211,7 @@ namespace PRM
                     if (!File.Exists(iniPath))
 #endif
                     {
+                        isFirstTimeUser = true;
                         ShutdownMode = ShutdownMode.OnExplicitShutdown;
                         var gw = new GuidanceWindow(SystemConfig.Instance);
                         gw.ShowDialog();
@@ -250,7 +260,8 @@ namespace PRM
                     Window = new MainWindow();
                     MainWindow = Window;
                     Window.Closed += (o, args) => { AppOnClose(); };
-                    if (!SystemConfig.Instance.General.AppStartMinimized)
+                    if (!SystemConfig.Instance.General.AppStartMinimized
+                        || isFirstTimeUser)
                     {
                         ActivateWindow();
                     }
