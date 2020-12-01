@@ -79,7 +79,7 @@ namespace PRM
             BtnClose.Click += (sender, args) =>
             {
 #if DEBUG
-                CloseMe();
+                App.Close();
                 return;
 #else
                 if (Shawn.Utils.ConsoleManager.HasConsole)

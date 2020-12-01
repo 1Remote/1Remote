@@ -104,6 +104,7 @@ namespace PRM.View
                         var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
                         this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
                         this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+                        _vmSearchBox.UpdateItemsList("");
                         this.Show();
                         this.Visibility = Visibility.Visible;
                         this.Activate();
@@ -336,7 +337,7 @@ namespace PRM.View
             if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
             {
                 var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
-                GlobalEventHelper.OnServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
+                GlobalEventHelper.OnRequireServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
             }
             HideMe();
         }

@@ -26,21 +26,20 @@ namespace PRM.Core.Protocol
                 ObjectVisibility = Visibility.Collapsed;
                 return;
             }
-            OrgDispNameControl = new TextBlock()
-            {
-                Text = psb.DispName,
-            };
-            DispNameControl = OrgDispNameControl;
-
-            OrgSubTitleControl = new TextBlock()
-            {
-                Text = psb.SubTitle,
-            };
             SubTitleControl = OrgSubTitleControl;
         }
 
-        public readonly object OrgDispNameControl = null;
-        public readonly object OrgSubTitleControl = null;
+        public object OrgDispNameControl =>
+            new TextBlock()
+            {
+                Text = Server.DispName,
+            };
+
+        public object OrgSubTitleControl =>
+            new TextBlock()
+            {
+                Text = Server.SubTitle,
+            };
 
 
         private object _dispNameControl = null;

@@ -47,7 +47,7 @@ namespace PRM.ViewModel
             this._listActions = listActions;
             _cornerRadius = cornerRadius;
             GridKeywordHeight = 46;
-            RecalcWindowHeight(false);
+            ReCalcWindowHeight(false);
         }
 
 
@@ -145,14 +145,16 @@ namespace PRM.ViewModel
 
 
 
-        public void RecalcWindowHeight(bool showGridAction)
+        public void ReCalcWindowHeight(bool showGridAction)
         {
+            // show action list
             if (showGridAction)
             {
                 GridSelectionsHeight = (Actions?.Count ?? 0) * _oneActionHeight;
                 GridActionsHeight = GridKeywordHeight + GridSelectionsHeight;
                 GridMainHeight = GridActionsHeight;
             }
+            // show server list
             else
             {
                 const int nMaxCount = 8;
@@ -175,7 +177,7 @@ namespace PRM.ViewModel
                 Run = () =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnServerConnect?.Invoke(SelectedItem.Server.Id);
+                    GlobalEventHelper.OnRequireServerConnect?.Invoke(SelectedItem.Server.Id);
                 },
             });
             actions.Add(new ActionItem()
@@ -237,7 +239,7 @@ namespace PRM.ViewModel
             Actions = actions;
             SelectedActionIndex = 0;
 
-            RecalcWindowHeight(true);
+            ReCalcWindowHeight(true);
 
             _listActions.Visibility = Visibility.Visible;
 
@@ -257,12 +259,12 @@ namespace PRM.ViewModel
             sb.Completed += (o, args) =>
             {
                 _listActions.Visibility = Visibility.Hidden;
-                RecalcWindowHeight(false);
+                ReCalcWindowHeight(false);
             };
             sb.Begin(_listActions);
         }
 
-        private void UpdateItemsList(string keyword)
+        public void UpdateItemsList(string keyword)
         {
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -402,7 +404,7 @@ namespace PRM.ViewModel
                 }
             }
 
-            RecalcWindowHeight(false);
+            ReCalcWindowHeight(false);
         }
     }
 }
