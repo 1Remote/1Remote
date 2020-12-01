@@ -462,7 +462,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                             try
                                             {
                                                 ulong lastReadLength = 0;
-                                                transmitter.DownloadFile(item.SrcPath, fileStream, readLength =>
+                                                transmitter.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                                                 {
                                                     var add = readLength - lastReadLength;
                                                     lastReadLength = readLength;
@@ -511,19 +511,16 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                         {
                                             if (transmitter.Exists(item.DstPath))
                                                 transmitter.Delete(item.DstPath);
-                                            using (var fileStream = File.OpenRead(item.SrcPath))
+                                            ulong lastReadLength = 0;
+                                            transmitter.UploadFile(item.SrcPath, item.DstPath, readLength =>
                                             {
-                                                ulong lastReadLength = 0;
-                                                transmitter.UploadFile(fileStream, item.DstPath, readLength =>
-                                                {
-                                                    Console.WriteLine(DateTime.Now.ToString("O"));
-                                                    var add = readLength - lastReadLength;
-                                                    lastReadLength = readLength;
-                                                    _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
-                                                    RaisePropertyChanged(nameof(TransmitSpeed));
-                                                    TransmittedByteLength += add;
-                                                });
-                                            }
+                                                Console.WriteLine(DateTime.Now.ToString("O"));
+                                                var add = readLength - lastReadLength;
+                                                lastReadLength = readLength;
+                                                _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
+                                                RaisePropertyChanged(nameof(TransmitSpeed));
+                                                TransmittedByteLength += add;
+                                            });
                                         }
                                         catch (Exception e1)
                                         {
@@ -564,12 +561,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                     else
                         e2 = new Exception($"Download to {item.DstPath}: " + e.Message, e);
                     OnTaskEnd?.Invoke(TransmitTaskStatus, e2);
-                    //Application.Current.Dispatcher.Invoke(() =>
-                    //{
-                    //    MessageBox.Show(item.DstPath + ": \r\n" + e.Message,
-                    //        SystemConfig.Instance.Language.GetText("messagebox_title_error"),
-                    //        MessageBoxButton.OK, MessageBoxImage.Stop);
-                    //});
                     return;
                 }
             }

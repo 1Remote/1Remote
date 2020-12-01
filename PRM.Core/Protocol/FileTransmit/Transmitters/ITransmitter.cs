@@ -51,24 +51,23 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         RemoteItem Get(string path);
         List<RemoteItem> ListDirectoryItems(string path);
         bool Exists(string path);
-        void ChangeDirectory(string path);
         void Delete(string path);
         void Delete(RemoteItem item);
         void CreateDirectory(string path);
         void RenameFile(string path, string newPath);
         /// <summary>
-        /// write fileStream to server path
+        /// write local file to server path
         /// </summary>
-        /// <param name="fileStream"></param>
-        /// <param name="path"></param>
-        /// <param name="writeCallBack">callback will offer data length has been wirte</param>
-        void UploadFile(Stream fileStream, string path, Action<ulong> writeCallBack = null);
+        /// <param name="localFilePath"></param>
+        /// <param name="saveToRemotePath"></param>
+        /// <param name="writeCallBack">callback will offer data length has been written</param>
+        void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null);
         /// <summary>
-        /// read server path and wirte to local fileStream\
+        /// read server path and written to local fileStream\
         /// </summary>
-        /// <param name="fileStream"></param>
-        /// <param name="path"></param>
-        /// <param name="readCallBack">callback will offer data length has been wirte</param>
-        void DownloadFile(string path, Stream fileStream, Action<ulong> readCallBack = null);
+        /// <param name="remoteFilePath"></param>
+        /// <param name="saveToLocalPath"></param>
+        /// <param name="readCallBack">callback will offer data length has been written</param>
+        void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null);
     }
 }

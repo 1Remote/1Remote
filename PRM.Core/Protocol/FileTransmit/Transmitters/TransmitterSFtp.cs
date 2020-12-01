@@ -170,9 +170,9 @@ namespace PRM.Core.Protocol.FileTransmitter
         {
             lock (_locker)
             {
-                if (_sftp.Exists(path))
+                var item = Get(path);
+                if (item != null)
                 {
-                    var item = Get(path);
                     if (item.IsDirectory)
                     {
                         var sub = _sftp.ListDirectory(path);
@@ -217,23 +217,35 @@ namespace PRM.Core.Protocol.FileTransmitter
             }
         }
 
-        public void UploadFile(Stream fileStream, string path, Action<ulong> writeCallBack = null)
+        public void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null)
         {
             lock (_locker)
             {
-                if (!fileStream.CanRead)
+                var fi = new FileInfo(localFilePath);
+                if (!fi.Exists)
                     return;
-                _sftp.UploadFile(fileStream, path, writeCallBack);
+                using (var fileStream = File.OpenRead(fi.FullName))
+                {
+                    if (!fileStream.CanRead)
+                        return;
+                    _sftp.UploadFile(fileStream, saveToRemotePath, writeCallBack);
+                }
             }
         }
 
-        public void DownloadFile(string path, Stream fileStream, Action<ulong> readCallBack = null)
+        public void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null)
         {
             lock (_locker)
             {
-                if (!fileStream.CanWrite)
-                    return;
-                _sftp.DownloadFile(path, fileStream, readCallBack);
+                var fi = new FileInfo(remoteFilePath);
+                if (fi.Exists)
+                    fi.Delete();
+                using (var fileStream = File.OpenWrite(fi.FullName))
+                {
+                    if (!fileStream.CanWrite)
+                        return;
+                    _sftp.DownloadFile(remoteFilePath, fileStream, readCallBack);
+                }
             }
         }
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -331,81 +332,101 @@ namespace PRM.Model
         /// <returns></returns>
         private TabWindow GetOrCreateTabWindow(ProtocolServerBase server, string assignTabToken = null)
         {
-            TabWindow tab = null;
-
-            // use old TabWindow
-            if (!string.IsNullOrEmpty(assignTabToken)
-                && _tabWindows.ContainsKey(assignTabToken))
-                tab = _tabWindows[assignTabToken];
-            else
-                switch (SystemConfig.Instance.General.TabMode)
-                {
-                    case EnumTabMode.NewItemGoesToGroup:
-                        // work in tab by group mode
-                        if (_tabWindows.Any(x => x.Value.Vm.Tag == server.GroupName))
-                            tab = _tabWindows.First(x => x.Value.Vm.Tag == server.GroupName).Value;
-                        break;
-                    case EnumTabMode.NewItemGoesToProtocol:
-                        // work in tab by protocol mode
-                        if (_tabWindows.Any(x => x.Value.Vm.Tag == server.ProtocolDisplayName))
-                            tab = _tabWindows.First(x => x.Value.Vm.Tag == server.ProtocolDisplayName).Value;
-                        break;
-                    default:
-                        // work in tab by latest tab mode
-                        if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
-                            tab = _tabWindows[_lastTabToken];
-                        break;
-                }
-
-            // create new TabWindow
-            if (tab == null)
+            try
             {
-                var token = DateTime.Now.Ticks.ToString();
-                AddTab(new TabWindow(token));
-                tab = _tabWindows[token];
+                TabWindow tab = null;
 
-                if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToGroup)
-                    tab.Vm.Tag = server.GroupName;
-                else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
-                    tab.Vm.Tag = server.ProtocolDisplayName;
+                // use old TabWindow
+                if (!string.IsNullOrEmpty(assignTabToken)
+                    && _tabWindows.ContainsKey(assignTabToken))
+                    tab = _tabWindows[assignTabToken];
+                else
+                    switch (SystemConfig.Instance.General.TabMode)
+                    {
+                        case EnumTabMode.NewItemGoesToGroup:
+                            // work in tab by group mode
+                            if (_tabWindows.Any(x => x.Value.Vm.Tag == server.GroupName))
+                                tab = _tabWindows.First(x => x.Value.Vm.Tag == server.GroupName).Value;
+                            break;
+                        case EnumTabMode.NewItemGoesToProtocol:
+                            // work in tab by protocol mode
+                            if (_tabWindows.Any(x => x.Value.Vm.Tag == server.ProtocolDisplayName))
+                                tab = _tabWindows.First(x => x.Value.Vm.Tag == server.ProtocolDisplayName).Value;
+                            break;
+                        default:
+                            // work in tab by latest tab mode
+                            if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
+                                tab = _tabWindows[_lastTabToken];
+                            break;
+                    }
 
-                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
+                // create new TabWindow
+                if (tab == null)
+                {
+                    var token = DateTime.Now.Ticks.ToString();
+                    AddTab(new TabWindow(token));
+                    tab = _tabWindows[token];
 
-                tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
-                tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
-                tab.WindowStartupLocation = WindowStartupLocation.Manual;
-                tab.Show();
-                _lastTabToken = token;
+                    if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToGroup)
+                        tab.Vm.Tag = server.GroupName;
+                    else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
+                        tab.Vm.Tag = server.ProtocolDisplayName;
+
+                    var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
+
+                    tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
+                    tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
+                    tab.WindowStartupLocation = WindowStartupLocation.Manual;
+                    tab.Show();
+                    _lastTabToken = token;
+                }
+                return tab;
             }
-            return tab;
+            catch (Exception e)
+            {
+                SimpleLogHelper.Fatal(e, e.StackTrace);
+                throw;
+            }
         }
 
         public Window MoveProtocolHostToTab(string connectionId)
         {
-            if (!_protocolHosts.ContainsKey(connectionId))
-                throw new NullReferenceException($"_protocolHosts not contains {connectionId}");
-            var host = _protocolHosts[connectionId];
-            // get tab
-            var tab = GetOrCreateTabWindow(host);
-            // add host to tab
-            if (tab.Vm.Items.All(x => x.Content != host))
+            try
             {
-                tab.Vm.Items.Add(new TabItemViewModel()
+                if (!_protocolHosts.ContainsKey(connectionId))
+                    throw new NullReferenceException($"_protocolHosts not contains {connectionId}");
+                var host = _protocolHosts[connectionId];
+                // get tab
+                var tab = GetOrCreateTabWindow(host);
+                // add host to tab
+                if (tab.Vm.Items.All(x => x.Content != host))
                 {
-                    Content = host,
-                    Header = host.ProtocolServer.DispName,
-                });
-                tab.Vm.SelectedItem = tab.Vm.Items.Last();
+                    SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                    SynchronizationContext.Current.Post(pl =>
+                    {
+                        tab.Vm.Items.Add(new TabItemViewModel()
+                        {
+                            Content = host,
+                            Header = host.ProtocolServer.DispName,
+                        });
+                        tab.Vm.SelectedItem = tab.Vm.Items.Last();
+                    }, null);
+                }
+                else
+                {
+                    tab.Vm.SelectedItem = tab.Vm.Items.First(x => x.Content != host);
+                }
+                host.ParentWindow = tab;
+                tab.Activate();
+                SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
+                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                return tab;
             }
-            else
+            catch (Exception e)
             {
-                tab.Vm.SelectedItem = tab.Vm.Items.First(x => x.Content != host);
+                SimpleLogHelper.Fatal(e, e.StackTrace);
+                throw;
             }
-            host.ParentWindow = tab;
-            tab.Activate();
-            SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
-            SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-            return tab;
         }
 
         /// <summary>
@@ -413,35 +434,52 @@ namespace PRM.Model
         /// </summary>
         public void DelProtocolHost(string connectionId)
         {
-            if (!string.IsNullOrEmpty(connectionId)
-                && _protocolHosts.ContainsKey(connectionId))
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+            SynchronizationContext.Current.Post(pl =>
             {
-                var host = _protocolHosts[connectionId];
-                SimpleLogHelper.Debug($@"DelProtocolHost host({host.GetHashCode()})");
-                if (host.OnClosed != null)
-                    host.OnClosed -= OnProtocolClose;
-                if (host.IsConnected())
-                    host.DisConn();
-
-                // close full
-                if (_host2FullScreenWindows.ContainsKey(connectionId))
+                try
                 {
-                    var full = _host2FullScreenWindows[connectionId];
-                    SimpleLogHelper.Debug($@"Close full({full.GetHashCode()})");
-                    full.Close();
-                    _host2FullScreenWindows.Remove(connectionId);
-                }
+                    if (!string.IsNullOrEmpty(connectionId)
+                            && _protocolHosts.ContainsKey(connectionId))
+                    {
+                        var host = _protocolHosts[connectionId];
+                        SimpleLogHelper.Debug($@"DelProtocolHost host({host.GetHashCode()})");
+                        if (host.OnClosed != null)
+                            host.OnClosed -= OnProtocolClose;
+                        if (host.IsConnected())
+                            host.DisConn();
 
-                // remove from tab
-                var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Any(y => y.Content.ConnectionId == connectionId));
-                foreach (var tab in tabs.ToArray())
-                {
-                    tab.Vm.Items.Remove(tab.Vm.Items.First(x => x.Content.ConnectionId == connectionId));
+                        // close full
+                        if (_host2FullScreenWindows.ContainsKey(connectionId))
+                        {
+                            var full = _host2FullScreenWindows[connectionId];
+                            SimpleLogHelper.Debug($@"Close full({full.GetHashCode()})");
+                            full.Close();
+
+                            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                            SynchronizationContext.Current.Post(pl =>
+                            {
+                                _host2FullScreenWindows.Remove(connectionId);
+                            }, null);
+                        }
+
+                        // remove from tab
+                        var tabs = _tabWindows.Values.Where(x => x.Vm.Items.Any(y => y.Content.ConnectionId == connectionId));
+
+                        foreach (var tab in tabs.ToArray())
+                        {
+                            tab.Vm.Items.Remove(tab.Vm.Items.First(x => x.Content.ConnectionId == connectionId));
+                        }
+                        _protocolHosts.Remove(connectionId);
+                        SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                    }
                 }
-                _protocolHosts.Remove(connectionId);
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-            }
-            CloseEmptyTab();
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Fatal(e, e.StackTrace);
+                }
+                CloseEmptyTab();
+            }, null);
         }
 
         /// <summary>
@@ -449,47 +487,69 @@ namespace PRM.Model
         /// </summary>
         public void DelTabWindow(string token)
         {
-            // del protocol
-            if (_tabWindows.ContainsKey(token))
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+            SynchronizationContext.Current.Post(pl =>
             {
-                var tab = _tabWindows[token];
-                SimpleLogHelper.Debug($@"DelFromPuttyRegistryTable tab({tab.GetHashCode()})");
-                foreach (var tabItemViewModel in tab.Vm.Items.ToArray())
+                try
                 {
-                    DelProtocolHost(tabItemViewModel.Content.ConnectionId);
+                    // del protocol
+                    if (_tabWindows.ContainsKey(token))
+                    {
+                        var tab = _tabWindows[token];
+                        SimpleLogHelper.Debug($@"DelFromPuttyRegistryTable tab({tab.GetHashCode()})");
+                        foreach (var tabItemViewModel in tab.Vm.Items.ToArray())
+                        {
+                            DelProtocolHost(tabItemViewModel.Content.ConnectionId);
+                        }
+                        SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                    }
                 }
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-            }
-            CloseEmptyTab();
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Fatal(e, e.StackTrace);
+                }
+                CloseEmptyTab();
+            }, null);
         }
 
         private void CloseEmptyTab()
         {
-            // close un-handel protocol
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+            SynchronizationContext.Current.Post(pl =>
             {
-                var ps = _protocolHosts.Where(p =>
-                    _tabWindows.Values.All(x => x?.Vm?.Items != null
-                                                && x.Vm.Items.Count > 0
-                                                && x.Vm.Items.All(y => y.Content.ConnectionId != p.Key))
-                    && !_host2FullScreenWindows.ContainsKey(p.Key));
-                if (ps.Any())
+                try
                 {
-                    DelProtocolHost(ps.First().Key);
-                }
-            }
+                    // close un-handel protocol
+                    {
+                        var ps = _protocolHosts.Where(p =>
+                            _tabWindows.Values.All(x => x?.Vm?.Items != null
+                                                        && x.Vm.Items.Count > 0
+                                                        && x.Vm.Items.All(y => y.Content.ConnectionId != p.Key))
+                            && !_host2FullScreenWindows.ContainsKey(p.Key));
+                        if (ps.Any())
+                        {
+                            DelProtocolHost(ps.First().Key);
+                        }
+                    }
 
-            // close tab
-            {
-                var tabs = _tabWindows.Values.Where(x => x?.Vm?.Items == null
-                                                         || x.Vm.Items.Count == 0).ToArray();
-                foreach (var tab in tabs)
-                {
-                    SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
-                    _tabWindows.Remove(tab.Vm.Token);
-                    tab.Close();
-                    SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                    // close tab
+                    {
+                        var tabs = _tabWindows.Values.Where(x => x?.Vm?.Items == null
+                                                                 || x.Vm.Items.Count == 0).ToArray();
+                        foreach (var tab in tabs)
+                        {
+                            SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
+                            _tabWindows.Remove(tab.Vm.Token);
+                            tab.Close();
+                            SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                        }
+                    }
                 }
-            }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Fatal(e, e.StackTrace);
+                }
+            }, null);
         }
     }
 }
