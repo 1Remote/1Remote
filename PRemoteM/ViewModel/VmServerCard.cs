@@ -37,7 +37,7 @@ namespace PRM.ViewModel
                 if (_cmdConnServer == null)
                     _cmdConnServer = new RelayCommand((o) =>
                     {
-                        GlobalEventHelper.OnServerConnect?.Invoke(Server.Id);
+                        GlobalEventHelper.OnRequireServerConnect?.Invoke(Server.Id);
                     });
                 return _cmdConnServer;
             }

@@ -53,7 +53,7 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.2.2011261907
+Latest Version: 0.5.3.2012012220
 
 - [Download](https://github.com/VShawn/PRemoteM/releases)
 

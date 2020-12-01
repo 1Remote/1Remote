@@ -259,7 +259,7 @@ namespace PRM
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
                     Window = new MainWindow();
                     MainWindow = Window;
-                    Window.Closed += (o, args) => { AppOnClose(); };
+                    Window.Closed += (o, args) => { App.Close(); };
                     if (!SystemConfig.Instance.General.AppStartMinimized
                         || isFirstTimeUser)
                     {
@@ -298,7 +298,7 @@ namespace PRM
                 MessageBox.Show(ex.Message);
                 MessageBox.Show(ex.StackTrace);
 #endif
-                AppOnClose(-1);
+                Close(-1);
             }
         }
 
@@ -353,7 +353,7 @@ namespace PRM
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
                 };
                 var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("button_exit"));
-                exit.Click += (sender, args) => Window.CloseMe();
+                exit.Click += (sender, args) => App.Close();
                 var child = new System.Windows.Forms.MenuItem[] { title, @break, link_how_to_use, link_feedback, exit };
                 //var child = new System.Windows.Forms.MenuItem[] { exit };
                 TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
@@ -364,10 +364,17 @@ namespace PRM
         {
             SearchBoxWindow = new SearchBoxWindow();
             SearchBoxWindow.SetHotKey();
+            SearchBoxWindow.Closed += (o, args) => { App.Close(); };
         }
 
-        private static void AppOnClose(int exitCode = 0)
+        public static void Close(int exitCode = 0)
         {
+            if (App.Window != null)
+            {
+                App.Window.Close();
+                App.Window = null;
+            }
+
             if (App.SearchBoxWindow != null)
             {
                 App.SearchBoxWindow.Close();

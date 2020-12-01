@@ -53,7 +53,7 @@ namespace PRM.Model
 
         private RemoteWindowPool()
         {
-            GlobalEventHelper.OnServerConnect += ShowRemoteHost;
+            GlobalEventHelper.OnRequireServerConnect += ShowRemoteHost;
         }
 
 

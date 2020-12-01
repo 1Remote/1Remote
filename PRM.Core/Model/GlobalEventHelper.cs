@@ -13,7 +13,7 @@ namespace PRM.Core.Model
         /// <summary>
         /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
         /// </summary>
-        public static OnServerConnectDelegate OnServerConnect { get; set; } = null;
+        public static OnServerConnectDelegate OnRequireServerConnect { get; set; } = null;
 
         /// <summary>
         /// Go to server edit by server id
@@ -21,7 +21,6 @@ namespace PRM.Core.Model
         /// param2 boo: is duplicate?
         /// </summary>
         public static Action<uint, bool> OnGoToServerEditPage { get; set; } = null;
-
 
         /// <summary>
         /// Invoke to notify a newer version of te software was released
