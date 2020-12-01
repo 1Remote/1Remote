@@ -113,9 +113,6 @@
     <ProjectReference Include="..\PRemoteM\PRemoteM.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Package.StoreAssociation.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Images\BadgeLogo.scale-100.png" />
     <Content Include="Images\BadgeLogo.scale-125.png" />
     <Content Include="Images\BadgeLogo.scale-150.png" />
@@ -156,6 +153,7 @@
     <Content Include="Images\Square44x44Logo.targetsize-256.png" />
     <Content Include="Images\Square44x44Logo.targetsize-32.png" />
     <Content Include="Images\Square44x44Logo.targetsize-48.png" />
+    <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>
