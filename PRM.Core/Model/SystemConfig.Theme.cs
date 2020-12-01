@@ -24,15 +24,10 @@ namespace PRM.Core.Model
             Debug.Assert(appResourceDictionary != null);
             AppResourceDictionary = appResourceDictionary;
             Load();
-
-            //MainColor1 = "#f5cc84";
-            //MainBgColor = "#40568d";
-            //var rs1 = appResourceDictionary.MergedDictionaries.Where(o => o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Theme/Default.xaml".ToLower()) >= 0).ToArray();
-            //RebuildColorTheme();
         }
         public readonly ResourceDictionary AppResourceDictionary = null;
 
-        private int _puttyFontSize = 12;
+        private int _puttyFontSize = 14;
         public int PuttyFontSize
         {
             get => _puttyFontSize;

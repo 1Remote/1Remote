@@ -230,8 +230,6 @@
                   >
                     <ListView.Resources>
                         <host:ByteLength2ReadableStringConverter x:Key="ByteLength2ReadableStringConverter"/>
-                        <host:Bool2Visible x:Key="Bool2Visible"/>
-                        <host:Bool2VisibleInv x:Key="Bool2VisibleInv"/>
                         <Style TargetType="Grid" x:Key="HeaderGridStyle">
                             <Setter Property="Height" Value="20" />
                             <Setter Property="Background" Value="Transparent" />
@@ -309,24 +307,31 @@
                                     <DataTemplate DataType="fileTransmitter:RemoteItem">
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="{Binding Icon}" Width="16"></Image>
-                                            <TextBlock Name="TbName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" 
-                                               VerticalAlignment="Center"
-                                               Visibility="{Binding Path=IsRenaming, Converter={StaticResource Bool2VisibleInv}}"></TextBlock>
-                                            <StackPanel Visibility="{Binding Path=IsRenaming, Converter={StaticResource Bool2Visible}}"
-                                                VerticalAlignment="Center">
+                                            <TextBlock Name="TbName" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <StackPanel VerticalAlignment="Center">
                                                 <StackPanel.Style>
                                                     <Style TargetType="StackPanel">
+                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                         <Style.Triggers>
-                                                            <Trigger Property="Visibility" Value="Visible">
+                                                            <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"></Setter>
                                                                 <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=TbRenaming}" />
-                                                            </Trigger>
+                                                            </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </StackPanel.Style>
-                                                <!--Height="{Binding ElementName=TbName,Path=ActualHeight}"-->
-                                                <TextBox Name="TbRenaming" 
-                                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                                 GotFocus="TextBox_OnGotFocus"></TextBox>
+                                                <TextBox Name="TbRenaming" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_OnGotFocus"></TextBox>
                                             </StackPanel>
                                         </StackPanel>
                                     </DataTemplate>

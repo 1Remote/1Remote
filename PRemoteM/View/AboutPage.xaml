@@ -223,6 +223,16 @@
                                             https://github.com/xiangyuecn/RSA-csharp
                                         </Hyperlink>
                                     </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/robinrodricks/FluentFTP" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
+                                            https://github.com/robinrodricks/FluentFTP
+                                        </Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/sshnet/SSH.NET" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
+                                            https://github.com/sshnet/SSH.NET
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

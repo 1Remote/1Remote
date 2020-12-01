@@ -48,7 +48,7 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 - Quick and convenient remote session lancher.
 - Support RDP with multi-screen and HiDpi(Testd on **Win10 + 4k*2** to **Win2016**)
 - SSH Telnet support via PuTTY, auto-cmd after connect is supported
-- sFtp support
+- File transmit: FTP SFTP supported
 - [Migrate remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migrate-from-mRemoteNG)
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
@@ -61,6 +61,7 @@ Latest Version: 0.5.2.2011261907
 
 ----
 
+- [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 
 ## Usage

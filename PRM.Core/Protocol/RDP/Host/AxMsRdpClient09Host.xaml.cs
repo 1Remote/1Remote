@@ -63,7 +63,7 @@ namespace PRM.Core.Protocol.RDP.Host
                 MakeFullScreen2Normal();
             };
             _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
-            _rdp.OnDisconnected += RdpcOnDisconnected;
+            _rdp.OnDisconnected += RdpOnDisconnected;
             _rdp.OnConfirmClose += RdpOnConfirmClose;
             _rdp.OnConnected += RdpOnOnConnected;
             _rdp.OnLoginComplete += RdpOnOnLoginComplete;
@@ -473,7 +473,7 @@ namespace PRM.Core.Protocol.RDP.Host
         #endregion
 
         private bool _invokeOnClosedWhenDisconnected = true;
-        private void RdpcOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
+        private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             _isDisconned = true;
             ResizeEndStopFireDelegate();

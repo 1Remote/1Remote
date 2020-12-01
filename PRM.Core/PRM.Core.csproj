@@ -103,6 +103,10 @@
     <Compile Include="Model\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protocol\FileTransmit\FTP\ProtocolServerFTP.cs" />
+    <Compile Include="Protocol\FileTransmit\FTP\ProtocolServerFTPForm.xaml.cs">
+      <DependentUpon>ProtocolServerFTPForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml.cs">
       <DependentUpon>FileTransmitHost.xaml</DependentUpon>
     </Compile>
@@ -118,6 +122,7 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitItem.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTaskManager.cs" />
+    <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
@@ -247,6 +252,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Languages\zh-cn.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\FileTransmit\FTP\ProtocolServerFTPForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

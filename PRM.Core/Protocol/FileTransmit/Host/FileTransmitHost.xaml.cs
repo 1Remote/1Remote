@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
@@ -22,11 +23,14 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             {
                 _vmRemote = new VmFileTransmitHost(protocolServerSftp);
             }
+            else if (protocolServer is ProtocolServerFTP protocolServerFtp)
+            {
+                _vmRemote = new VmFileTransmitHost(protocolServerFtp);
+            }
             else
                 throw new ArgumentException($"Send {protocolServer.GetType()} to {nameof(FileTransmitHost)}!");
 
             DataContext = _vmRemote;
-
 
             _vmRemote.PropertyChanged += (sender, args) =>
             {
@@ -238,43 +242,4 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         }
         #endregion
     }
-
-
-
-    [ValueConversion(typeof(bool), typeof(string))]
-    public class Bool2Visible : IValueConverter
-    {
-        // 实现接口的两个方法  
-        #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            bool ss = (bool)value;
-            return ss ? "Visible" : "Collapsed";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return false;
-        }
-        #endregion
-    }
-
-    [ValueConversion(typeof(bool), typeof(string))]
-    public class Bool2VisibleInv : IValueConverter
-    {
-        // 实现接口的两个方法  
-        #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            bool ss = (bool)value;
-            return !ss ? "Visible" : "Collapsed";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return false;
-        }
-        #endregion
-    }
-
 }

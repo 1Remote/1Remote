@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.Host;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty;
@@ -40,15 +41,20 @@ namespace PRM.Core.Protocol
                         return host;
                     }
                 case ProtocolServerVNC vnc:
-                {
-                    var host = new VncHost(vnc);
-                    return host;
+                    {
+                        var host = new VncHost(vnc);
+                        return host;
                     }
                 case ProtocolServerSFTP sftp:
-                {
-                    var host = new FileTransmitHost(sftp);
-                    return host;
-                }
+                    {
+                        var host = new FileTransmitHost(sftp);
+                        return host;
+                    }
+                case ProtocolServerFTP ftp:
+                    {
+                        var host = new FileTransmitHost(ftp);
+                        return host;
+                    }
                 default:
                     throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
@@ -66,13 +72,8 @@ namespace PRM.Core.Protocol
                             return true;
                         return rdp.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false;
                     }
-                case ProtocolServerVNC _:
-                case ProtocolServerSSH _:
-                case ProtocolServerTelnet _:
-                case ProtocolServerSFTP _:
-                    return false;
                 default:
-                    throw new NotImplementedException();
+                    return false;
             }
         }
     }

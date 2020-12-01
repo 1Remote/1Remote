@@ -440,7 +440,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         public override void GoFullScreen()
         {
-            //throw new NotSupportedException("putty session can not go to full-screen mode!");
+            throw new NotSupportedException("kitty session can not go to full-screen mode!");
         }
 
         public override bool IsConnected()
