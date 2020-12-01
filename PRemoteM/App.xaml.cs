@@ -35,6 +35,14 @@ namespace PRM
         private const string PipeName = "PRemoteM_singlex@foxmail.com";
 #endif
 
+        private static void OnUnhandledException(Exception e)
+        {
+            SimpleLogHelper.Fatal(e, e.StackTrace);
+            MessageBox.Show("please contact me if you see these: \r\n\r\n\r\n" + e.Message, SystemConfig.AppName + " unhandled error!", MessageBoxButton.OK);
+            Process.Start("https://github.com/VShawn/PRemoteM/issues");
+            App.Close();
+        }
+
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
@@ -57,18 +65,18 @@ namespace PRM
             {
                 this.DispatcherUnhandledException += (o, args) =>
                 {
-                    SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
+                    OnUnhandledException(args.Exception);
                 };
                 TaskScheduler.UnobservedTaskException += (o, args) =>
                 {
-                    SimpleLogHelper.Fatal(args.Exception, args.Exception.StackTrace);
+                    OnUnhandledException(args.Exception);
                 };
                 AppDomain.CurrentDomain.UnhandledException += (o, args) =>
                 {
 
                     if (args.ExceptionObject is Exception e)
                     {
-                        SimpleLogHelper.Fatal(e, e.StackTrace);
+                        OnUnhandledException(e);
                     }
                     else
                     {
@@ -293,12 +301,7 @@ namespace PRM
             }
             catch (Exception ex)
             {
-                SimpleLogHelper.Fatal(ex.Message, ex.StackTrace);
-#if DEBUG
-                MessageBox.Show(ex.Message);
-                MessageBox.Show(ex.StackTrace);
-#endif
-                Close(-1);
+                OnUnhandledException(ex);
             }
         }
 
@@ -369,25 +372,31 @@ namespace PRM
 
         public static void Close(int exitCode = 0)
         {
-            if (App.Window != null)
+            try
             {
-                App.Window.Close();
-                App.Window = null;
+                if (App.Window != null)
+                {
+                    App.Window.Close();
+                    App.Window = null;
+                }
+
+                if (App.SearchBoxWindow != null)
+                {
+                    App.SearchBoxWindow.Close();
+                    App.SearchBoxWindow = null;
+                }
+
+                if (App.TaskTrayIcon != null)
+                {
+                    App.TaskTrayIcon.Visible = false;
+                    App.TaskTrayIcon.Dispose();
+                }
+            }
+            finally
+            {
+                Environment.Exit(exitCode);
             }
 
-            if (App.SearchBoxWindow != null)
-            {
-                App.SearchBoxWindow.Close();
-                App.SearchBoxWindow = null;
-            }
-
-            if (App.TaskTrayIcon != null)
-            {
-                App.TaskTrayIcon.Visible = false;
-                App.TaskTrayIcon.Dispose();
-            }
-
-            Environment.Exit(exitCode);
         }
     }
 }
