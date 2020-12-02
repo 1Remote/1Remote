@@ -74,7 +74,16 @@ namespace PRM.View
 
 
             // set default language
-            CultureInfo ci = CultureInfo.InstalledUICulture;
+            CultureInfo ci = CultureInfo.CurrentCulture;
+            Console.WriteLine("CultureInfo.CurrentCulture");
+            Console.WriteLine(CultureInfo.CurrentCulture);
+            Console.WriteLine("CultureInfo.CurrentUICulture");
+            Console.WriteLine(CultureInfo.CurrentUICulture);
+            Console.WriteLine("CultureInfo.DefaultThreadCurrentCulture");
+            Console.WriteLine(CultureInfo.DefaultThreadCurrentCulture);
+            Console.WriteLine("CultureInfo.DefaultThreadCurrentUICulture");
+            Console.WriteLine(CultureInfo.DefaultThreadCurrentUICulture);
+
             Console.WriteLine("Default Language Info:");
             Console.WriteLine("* Name: {0}", ci.Name);
             Console.WriteLine("* Display Name: {0}", ci.DisplayName);

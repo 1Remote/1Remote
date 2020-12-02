@@ -156,15 +156,17 @@
                 </Grid>
 
 
-
-                <ComboBox Grid.Row="0" ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
-                          Style="{StaticResource ComboBoxFlatStyle}"
-                          Foreground="{StaticResource MainColor1ForegroundBrush}"
-                          SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
-                          SelectedValuePath="Key"
-                          HorizontalAlignment="Right"
-                          VerticalAlignment="Top"
-                          DisplayMemberPath="Value" Height="20" Width="100"/>
+                <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock Margin="2" Foreground="{StaticResource MainColor1ForegroundBrush}">Language:</TextBlock>
+                    <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
+                              Style="{StaticResource ComboBoxFlatStyle}"
+                              Foreground="{StaticResource MainColor1ForegroundBrush}"
+                              SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
+                              SelectedValuePath="Key"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Top"
+                              DisplayMemberPath="Value" Height="20" Width="100"/>
+                </StackPanel>
 
 
 
