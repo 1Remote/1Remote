@@ -48,9 +48,10 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 
 # Lastet
 
-最新版本: 0.5.1.2011261907
+最新版本: 0.5.3.2012012220
 
-- [下载](https://github.com/VShawn/PRemoteM/releases)
+- [微软商店版(测试中)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
+- [下载 exe](https://github.com/VShawn/PRemoteM/releases)
   
 ## 系统要求
 
