@@ -46,6 +46,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             //{
             //    _transTrue?.Release();
             //});
+            _transTrue?.Release();
             OnTaskEnd?.Invoke(TransmitTaskStatus);
         }
 
@@ -444,7 +445,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                    && TransmitTaskStatus != ETransmitTaskStatus.Cancel)
             {
                 var item = ItemsWaitForTransmit.Peek();
-                var tokenSource = new CancellationTokenSource();
                 TransmittingItemName = item.ItemName;
                 TransmittingItemSrcDirectoryPath = item.SrcDirectoryPath;
                 TransmittingItemDstDirectoryPath = item.DstDirectoryPath;
@@ -463,42 +463,17 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                 {
                                     using (var fileStream = File.OpenWrite(item.DstPath))
                                     {
-                                        Exception e = null;
-                                        var t = Task.Factory.StartNew(() =>
+                                        ulong lastReadLength = 0;
+                                        _transTrue.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                                         {
-                                            try
-                                            {
-                                                ulong lastReadLength = 0;
-                                                _transTrue.DownloadFile(item.SrcPath, item.DstPath, readLength =>
-                                                {
-                                                    var add = readLength - lastReadLength;
-                                                    lastReadLength = readLength;
-                                                    TransmittedByteLength += add;
-                                                    _transmittedDataLength.Enqueue(
-                                                        new Tuple<DateTime, ulong>(DateTime.Now, add));
-                                                    RaisePropertyChanged(nameof(TransmitSpeed));
-                                                    SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
-                                                });
-                                            }
-                                            catch (Exception e1)
-                                            {
-                                                e = e1;
-                                            }
-                                        }, tokenSource.Token);
-                                        while (!t.IsCompleted)
-                                        {
-                                            Thread.Sleep(100);
-                                            if (TransmitTaskStatus == ETransmitTaskStatus.Cancel)
-                                            {
-                                                tokenSource.Cancel(false);
-                                                break;
-                                            }
-                                        }
-
-                                        if (e != null)
-                                        {
-                                            throw e;
-                                        }
+                                            var add = readLength - lastReadLength;
+                                            lastReadLength = readLength;
+                                            TransmittedByteLength += add;
+                                            _transmittedDataLength.Enqueue(
+                                                new Tuple<DateTime, ulong>(DateTime.Now, add));
+                                            RaisePropertyChanged(nameof(TransmitSpeed));
+                                            SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                                        });
                                     }
                                 }
                             }
@@ -511,43 +486,18 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                 }
                                 else if (File.Exists(item.SrcPath))
                                 {
-                                    Exception e = null;
-                                    var t = Task.Factory.StartNew(() =>
+                                    if (_transTrue.Exists(item.DstPath))
+                                        _transTrue.Delete(item.DstPath);
+                                    ulong lastReadLength = 0;
+                                    _transTrue.UploadFile(item.SrcPath, item.DstPath, readLength =>
                                     {
-                                        try
-                                        {
-                                            if (_transTrue.Exists(item.DstPath))
-                                                _transTrue.Delete(item.DstPath);
-                                            ulong lastReadLength = 0;
-                                            _transTrue.UploadFile(item.SrcPath, item.DstPath, readLength =>
-                                            {
-                                                Console.WriteLine(DateTime.Now.ToString("O"));
-                                                var add = readLength - lastReadLength;
-                                                lastReadLength = readLength;
-                                                _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
-                                                RaisePropertyChanged(nameof(TransmitSpeed));
-                                                TransmittedByteLength += add;
-                                            });
-                                        }
-                                        catch (Exception e1)
-                                        {
-                                            e = e1;
-                                        }
-                                    }, tokenSource.Token);
-                                    while (!t.IsCompleted)
-                                    {
-                                        Thread.Sleep(100);
-                                        if (TransmitTaskStatus == ETransmitTaskStatus.Cancel)
-                                        {
-                                            tokenSource.Cancel(false);
-                                            break;
-                                        }
-                                    }
-
-                                    if (e != null)
-                                    {
-                                        throw e;
-                                    }
+                                        Console.WriteLine(DateTime.Now.ToString("O"));
+                                        var add = readLength - lastReadLength;
+                                        lastReadLength = readLength;
+                                        _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
+                                        RaisePropertyChanged(nameof(TransmitSpeed));
+                                        TransmittedByteLength += add;
+                                    });
                                 }
                             }
                             break;

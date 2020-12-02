@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using PRM.Core.Protocol.FileTransmit.Transmitters;
+using PRM.Core.Protocol.FileTransmitter;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
 
-namespace PRM.Core.Protocol.FileTransmitter
+namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {
     public class TransmitterSFtp : ITransmitter
     {
@@ -19,8 +19,8 @@ namespace PRM.Core.Protocol.FileTransmitter
         public readonly string Password = "";
         public readonly string SshKey = "";
         private SftpClient _sftp = null;
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private readonly object _locker = new object();
 
         public TransmitterSFtp(string host, int port, string username, string password)
         {
@@ -45,10 +45,8 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         ~TransmitterSFtp()
         {
-            lock (_locker)
-            {
-                _sftp?.Dispose();
-            }
+            _cancellationTokenSource.Cancel(false);
+            _sftp?.Dispose();
             _timerKeepAlive.Stop();
         }
 
@@ -59,10 +57,7 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public bool IsConnected()
         {
-            lock (_locker)
-            {
-                return _sftp?.IsConnected == true;
-            }
+            return _sftp?.IsConnected == true;
         }
 
         public ITransmitter Clone()
@@ -75,20 +70,14 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public RemoteItem Get(string path)
         {
-            lock (_locker)
-            {
-                return Exists(path) ? SftpFile2RemoteItem(_sftp.Get(path)) : null;
-            }
+            return Exists(path) ? SftpFile2RemoteItem(_sftp?.Get(path)) : null;
         }
 
         public List<RemoteItem> ListDirectoryItems(string path)
         {
             var ret = new List<RemoteItem>();
             IEnumerable<SftpFile> items = new List<SftpFile>();
-            lock (_locker)
-            {
-                items = _sftp.ListDirectory(path);
-            }
+            items = _sftp?.ListDirectory(path);
             if (items == null ||
                 !items.Any())
                 return ret;
@@ -105,10 +94,7 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public bool Exists(string path)
         {
-            lock (_locker)
-            {
-                return _sftp.Exists(path);
-            }
+            return _sftp?.Exists(path) == true;
         }
 
         private RemoteItem SftpFile2RemoteItem(SftpFile item)
@@ -156,42 +142,30 @@ namespace PRM.Core.Protocol.FileTransmitter
             }
             return newItem;
         }
-
-        public void ChangeDirectory(string path)
-        {
-            lock (_locker)
-            {
-                if (_sftp.Exists(path))
-                    _sftp.ChangeDirectory(path);
-            }
-        }
-
+        
         public void Delete(string path)
         {
-            lock (_locker)
+            var item = Get(path);
+            if (item != null)
             {
-                var item = Get(path);
-                if (item != null)
+                if (item.IsDirectory)
                 {
-                    if (item.IsDirectory)
+                    var sub = _sftp?.ListDirectory(path);
+                    foreach (var file in sub)
                     {
-                        var sub = _sftp.ListDirectory(path);
-                        foreach (var file in sub)
-                        {
-                            if (string.IsNullOrWhiteSpace(
-                                file.Name
-                                    .Replace('.', ' ')
-                                    .Replace('\\', ' ')
-                                    .Replace('/', ' ')))
-                                continue;
-                            Delete(file.FullName);
-                        }
-
-                        _sftp.DeleteDirectory(path);
+                        if (string.IsNullOrWhiteSpace(
+                            file.Name
+                                .Replace('.', ' ')
+                                .Replace('\\', ' ')
+                                .Replace('/', ' ')))
+                            continue;
+                        Delete(file.FullName);
                     }
-                    else
-                        _sftp.Delete(path);
+
+                    _sftp?.DeleteDirectory(path);
                 }
+                else
+                    _sftp?.Delete(path);
             }
         }
 
@@ -202,86 +176,94 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public void CreateDirectory(string path)
         {
-            lock (_locker)
-            {
-                _sftp.CreateDirectory(path);
-            }
+            _sftp?.CreateDirectory(path);
         }
 
         public void RenameFile(string path, string newPath)
         {
-            lock (_locker)
-            {
-                if (_sftp.Exists(path))
-                    _sftp.RenameFile(path, newPath);
-            }
+            if (_sftp?.Exists(path) == true)
+                _sftp?.RenameFile(path, newPath);
         }
 
-        public void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null)
+        public async void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null)
         {
-            lock (_locker)
+            await Task.Factory.StartNew(() =>
             {
                 var fi = new FileInfo(localFilePath);
                 if (!fi.Exists)
                     return;
-                using (var fileStream = File.OpenRead(fi.FullName))
+                try
                 {
-                    if (!fileStream.CanRead)
-                        return;
-                    _sftp.UploadFile(fileStream, saveToRemotePath, writeCallBack);
+                    using (var fileStream = File.OpenRead(fi.FullName))
+                    {
+                        if (!fileStream.CanRead)
+                            return;
+                        _sftp?.UploadFile(fileStream, saveToRemotePath, obj =>
+                        {
+                            if (_cancellationTokenSource.IsCancellationRequested)
+                                fileStream.Close();
+                            writeCallBack?.Invoke(obj);
+                        });
+                    }
                 }
-            }
+                catch (Exception e)
+                {
+                    if (_cancellationTokenSource.IsCancellationRequested == false)
+                        throw;
+                }
+            });
         }
 
-        public void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null)
+        public async void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null)
         {
-            lock (_locker)
+            await Task.Factory.StartNew(() =>
             {
-                var fi = new FileInfo(remoteFilePath);
-                if (fi.Exists)
-                    fi.Delete();
-                using (var fileStream = File.OpenWrite(fi.FullName))
+                try
                 {
-                    if (!fileStream.CanWrite)
-                        return;
-                    _sftp.DownloadFile(remoteFilePath, fileStream, readCallBack);
+                    var fi = new FileInfo(remoteFilePath);
+                    if (fi.Exists)
+                        fi.Delete();
+                    using (var fileStream = File.OpenWrite(fi.FullName))
+                    {
+                        if (!fileStream.CanWrite)
+                            return;
+                        _sftp?.DownloadFile(remoteFilePath, fileStream, obj =>
+                        {
+                            if (_cancellationTokenSource.IsCancellationRequested)
+                                fileStream.Close();
+                            readCallBack?.Invoke(obj);
+                        });
+                    }
                 }
-            }
+                catch (Exception e)
+                {
+                    if (_cancellationTokenSource.IsCancellationRequested == false)
+                        throw;
+                }
+            });
         }
 
         public void Release()
         {
-            _sftp?.Disconnect();
-            _sftp?.Dispose();
+            _cancellationTokenSource.Cancel(false);
         }
-
-
-        //public async Task ReadItemAsync(string path, Stream fileStream, Action<ulong> readCallBack = null)
-        //{
-        //    if(!fileStream.CanWrite)
-        //        return;
-        //    _sftp.DownloadFile(path, fileStream, readCallBack);
-        //}
 
         private void InitClient()
         {
-            lock (_locker)
+            if (_sftp?.IsConnected != true)
             {
-                if (_sftp?.IsConnected != true)
+                _sftp?.Dispose();
+                if (string.IsNullOrEmpty(Password))
                 {
-                    _sftp?.Dispose();
-                    if (string.IsNullOrEmpty(Password))
-                    {
-                        var pkf = new PrivateKeyFile(new MemoryStream(Encoding.ASCII.GetBytes(SshKey)), Password);
-                        _sftp = new SftpClient(Hostname, Port, Username, pkf);
-                    }
-                    else
-                    {
-                        _sftp = new SftpClient(Hostname, Port, Username, Password);
-                    }
-                    _sftp.KeepAliveInterval = new TimeSpan(0, 0, 10);
-                    _sftp.Connect();
+                    var pkf = new PrivateKeyFile(new MemoryStream(Encoding.ASCII.GetBytes(SshKey)), Password);
+                    _sftp = new SftpClient(Hostname, Port, Username, pkf);
                 }
+                else
+                {
+                    _sftp = new SftpClient(Hostname, Port, Username, Password);
+                }
+                _sftp.KeepAliveInterval = new TimeSpan(0, 0, 10);
+                _sftp.Connect();
             }
         }
 
@@ -294,10 +276,7 @@ namespace PRM.Core.Protocol.FileTransmitter
             _timerKeepAlive.Elapsed += (sender, args) =>
             {
                 InitClient();
-                lock (_locker)
-                {
-                    _sftp.ListDirectory("/");
-                }
+                _sftp?.ListDirectory("/");
                 _timerKeepAlive.Interval = 10 * 1000;
                 _timerKeepAlive.Start();
             };
