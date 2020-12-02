@@ -242,4 +242,30 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         }
         #endregion
     }
+
+
+
+
+    [ValueConversion(typeof(long), typeof(string))]
+    public class WidthSub5 : IValueConverter
+    {
+        #region IValueConverter
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+                return "";
+            double w = (double)value;
+            if (w > 100)
+            {
+                return w - 16;
+            }
+            return w;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return 0;
+        }
+        #endregion
+    }
 }

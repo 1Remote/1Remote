@@ -249,6 +249,12 @@ namespace PRM.Core.Protocol.FileTransmitter
             }
         }
 
+        public void Release()
+        {
+            _sftp?.Disconnect();
+            _sftp?.Dispose();
+        }
+
 
         //public async Task ReadItemAsync(string path, Stream fileStream, Action<ulong> readCallBack = null)
         //{

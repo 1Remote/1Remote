@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UseKiTTY;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
+    <DefineConstants>TRACE;UseKiTTY;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -42,7 +42,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'R2Store|AnyCPU' ">
     <OutputPath>bin\ReleaseToStore\</OutputPath>
-    <DefineConstants>TRACE;UseKiTTY;</DefineConstants>
+    <DefineConstants>TRACE;UseKiTTY;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>

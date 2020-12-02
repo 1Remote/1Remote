@@ -217,6 +217,13 @@ namespace PRM.Core.Protocol.FileTransmitter
             }
         }
 
+        public void Release()
+        {
+            // TODO stop UploadFile DownloadFile
+            _ftp?.Disconnect();
+            _ftp?.Dispose();
+        }
+
 
         //public async Task ReadItemAsync(string path, Stream fileStream, Action<ulong> readCallBack = null)
         //{

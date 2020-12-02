@@ -22,6 +22,8 @@
     </UserControl.InputBindings>
     <UserControl.Resources>
         <ResourceDictionary>
+            <host:WidthSub5 x:Key="WidthSub5"/>
+
             <!--ButtonEx Style Start-->
             <Style TargetType="{x:Type controls:ButtonEx}" x:Key="ButtonExStyleBase">
                 <!--<Setter Property="Focusable" Value="False"/>-->
@@ -422,7 +424,8 @@
                     </ListView.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="trans:TransmitTask">
-                            <Grid Height="30" HorizontalAlignment="Stretch" MinWidth="600">
+                            <Grid Height="30" HorizontalAlignment="Stretch" MinWidth="600" 
+                                  Width="{Binding ElementName=ListViewTransmitTasks, Path=ActualWidth, Converter={StaticResource WidthSub5}}">
                                 <Grid VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" SharedSizeGroup="TaskName"></ColumnDefinition>
@@ -436,10 +439,10 @@
 
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" SharedSizeGroup="TaskName"></ColumnDefinition>
-                                            <ColumnDefinition Width="*" SharedSizeGroup="TaskProgress"></ColumnDefinition>
-                                            <ColumnDefinition Width="50" SharedSizeGroup="TaskProgress"></ColumnDefinition>
-                                            <ColumnDefinition Width="*" SharedSizeGroup="TaskOps"></ColumnDefinition>
+                                            <ColumnDefinition Width="*" SharedSizeGroup="G1"></ColumnDefinition>
+                                            <ColumnDefinition Width="*" SharedSizeGroup="G2"></ColumnDefinition>
+                                            <ColumnDefinition Width="50" SharedSizeGroup="G3"></ColumnDefinition>
+                                            <ColumnDefinition Width="*" SharedSizeGroup="G4"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock TextTrimming="CharacterEllipsis" 
@@ -465,14 +468,14 @@
                                         <Label Grid.Column="2" Foreground="{DynamicResource MainColor1ForegroundBrush}" HorizontalContentAlignment="Center">→</Label>
 
                                         <TextBlock TextTrimming="CharacterEllipsis" 
-                                       Grid.Column="3"
-                                       Margin="5 0"
-                                       Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                       HorizontalAlignment="Left" 
-                                       VerticalAlignment="Center" 
-                                       Text="{Binding TransmittingItemDstDirectoryPath, Mode=OneWay}"
-                                       ToolTip="{Binding TransmittingItemDstDirectoryPath, Mode=OneWay}"
-                                       ></TextBlock>
+                                           Grid.Column="3"
+                                           Margin="5 0"
+                                           Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           HorizontalAlignment="Left" 
+                                           VerticalAlignment="Center" 
+                                           Text="{Binding TransmittingItemDstDirectoryPath, Mode=OneWay}"
+                                           ToolTip="{Binding TransmittingItemDstDirectoryPath, Mode=OneWay}"
+                                           ></TextBlock>
                                     </Grid>
 
                                     <Grid Grid.Row="0" Grid.Column="1" Margin="2 0">
@@ -584,6 +587,14 @@
                 </TextBlock>
             </Grid>
         </Grid>
+
+
+
+
+
+
+
+
 
         <Grid 
             Name="GridLoading" Visibility="{Binding GridLoadingVisibility}">

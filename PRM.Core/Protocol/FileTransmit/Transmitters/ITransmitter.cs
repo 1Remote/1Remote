@@ -69,5 +69,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         /// <param name="saveToLocalPath"></param>
         /// <param name="readCallBack">callback will offer data length has been written</param>
         void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null);
+
+        void Release();
     }
 }

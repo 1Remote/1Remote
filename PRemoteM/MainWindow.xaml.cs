@@ -79,6 +79,7 @@ namespace PRM
             BtnClose.Click += (sender, args) =>
             {
 #if DEBUG
+                HideMe();
                 App.Close();
                 return;
 #else
