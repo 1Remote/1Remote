@@ -49,7 +49,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;FOR_MICROSOFT_STORE;</DefineConstants>
+    <DefineConstants>TRACE;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
@@ -59,6 +59,17 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>LOGO.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'R2Store|AnyCPU' ">
+    <OutputPath>bin\ReleaseToStore\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
@@ -269,10 +280,13 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)zh-cn.xaml (
-xcopy /y $(TargetDir)zh-cn.xaml $(SolutionDir)\PRM.Core\Languages\zh-cn.xaml*  /C /E /Q
+xcopy /y $(TargetDir)zh-cn.xaml $(SolutionDir)PRM.Core\Languages\zh-cn.xaml*  /C /E /Q
 )
 if exist $(TargetDir)en-us.xaml (
-xcopy /y $(TargetDir)en-us.xaml $(SolutionDir)\PRM.Core\Languages\en-us.xaml*  /C /E /Q
+xcopy /y $(TargetDir)en-us.xaml $(SolutionDir)PRM.Core\Languages\en-us.xaml*  /C /E /Q
 )</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>PowerShell  -ExecutionPolicy RemoteSigned -file "$(SolutionDir)PRM.Core\BuildVersionGenerator.ps1"</PreBuildEvent>
   </PropertyGroup>
 </Project>

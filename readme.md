@@ -55,7 +55,8 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 # Lastet
 Latest Version: 0.5.3.2012012220
 
-- [Download](https://github.com/VShawn/PRemoteM/releases)
+- [Microsoft Store(testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
+- [Download exe](https://github.com/VShawn/PRemoteM/releases)
 
 ## Requirements
 
