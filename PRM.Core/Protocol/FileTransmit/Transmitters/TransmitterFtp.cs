@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentFTP;
-using PRM.Core.Protocol.FileTransmit.Transmitters;
-using Renci.SshNet;
-using Renci.SshNet.Sftp;
+using PRM.Core.Protocol.FileTransmitter;
 
-namespace PRM.Core.Protocol.FileTransmitter
+namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {
     public class TransmitterFtp : ITransmitter
     {
@@ -20,8 +15,7 @@ namespace PRM.Core.Protocol.FileTransmitter
         public readonly string Username = "";
         public readonly string Password = "";
         private FtpClient _ftp = null;
-
-        private readonly object _locker = new object();
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public TransmitterFtp(string host, int port, string username, string password)
         {
@@ -35,10 +29,8 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         ~TransmitterFtp()
         {
-            lock (_locker)
-            {
-                _ftp?.Dispose();
-            }
+            _cancellationTokenSource.Cancel(false);
+            _ftp?.Dispose();
             _timerKeepAlive.Stop();
         }
 
@@ -49,10 +41,7 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public bool IsConnected()
         {
-            lock (_locker)
-            {
-                return _ftp?.IsConnected == true;
-            }
+            return _ftp?.IsConnected == true;
         }
 
         public ITransmitter Clone()
@@ -62,20 +51,13 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public RemoteItem Get(string path)
         {
-            lock (_locker)
-            {
-                return Exists(path) ? FtpListItem2RemoteItem(_ftp.GetObjectInfo(path)) : null;
-            }
+            return Exists(path) ? FtpListItem2RemoteItem(_ftp.GetObjectInfo(path)) : null;
         }
 
         public List<RemoteItem> ListDirectoryItems(string path)
         {
             var ret = new List<RemoteItem>();
-            IEnumerable<FtpListItem> items = new List<FtpListItem>();
-            lock (_locker)
-            {
-                items = _ftp.GetListing(path);
-            }
+            IEnumerable<FtpListItem> items = _ftp.GetListing(path);
             if (items == null ||
                 !items.Any())
                 return ret;
@@ -92,14 +74,11 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public bool Exists(string path)
         {
-            lock (_locker)
-            {
-                if (_ftp.FileExists(path))
-                    return true;
-                if (_ftp.DirectoryExists(path))
-                    return true;
-                return false;
-            }
+            if (_ftp.FileExists(path))
+                return true;
+            if (_ftp.DirectoryExists(path))
+                return true;
+            return false;
         }
 
         private RemoteItem FtpListItem2RemoteItem(FtpListItem item)
@@ -146,18 +125,15 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public void Delete(string path)
         {
-            lock (_locker)
+            var item = Get(path);
+            if (item != null)
             {
-                var item = Get(path);
-                if (item != null)
+                if (item.IsDirectory)
                 {
-                    if (item.IsDirectory)
-                    {
-                        _ftp.DeleteDirectory(path);
-                    }
-                    else
-                        _ftp.DeleteFile(path);
+                    _ftp.DeleteDirectory(path);
                 }
+                else
+                    _ftp.DeleteFile(path);
             }
         }
 
@@ -168,81 +144,60 @@ namespace PRM.Core.Protocol.FileTransmitter
 
         public void CreateDirectory(string path)
         {
-            lock (_locker)
-            {
-                _ftp.CreateDirectory(path);
-            }
+            _ftp.CreateDirectory(path);
         }
 
         public void RenameFile(string path, string newPath)
         {
-            lock (_locker)
-            {
-                if (Exists(path))
-                    _ftp.Rename(path, newPath);
-            }
+            if (Exists(path))
+                _ftp.Rename(path, newPath);
         }
 
-        public void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null)
+        public async void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null)
         {
-            lock (_locker)
-            {
-                var fi = new FileInfo(localFilePath);
-                if (!fi.Exists)
-                    return;
+            var fi = new FileInfo(localFilePath);
+            if (!fi.Exists)
+                return;
 
-                // Todo ADD resume;
-                //client.UploadFile(fileStream, path, writeCallBack);
-                _ftp.UploadFile(
-                    localFilePath, 
-                    saveToRemotePath, 
-                    FtpRemoteExists.Overwrite,
-                    true,
-                    FtpVerify.Delete, progress =>
+            // Todo ADD resume;
+            //client.UploadFile(fileStream, path, writeCallBack);
+            await _ftp.UploadFileAsync(
+                localFilePath,
+                saveToRemotePath,
+                FtpRemoteExists.Overwrite,
+                true,
+                FtpVerify.Delete, new Progress<FtpProgress>(progress =>
                 {
                     writeCallBack?.Invoke((ulong)progress.TransferredBytes);
-                });
-            }
+                })
+                , _cancellationTokenSource.Token);
         }
 
-        public void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null)
+        public async void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null)
         {
-            lock (_locker)
+            await _ftp.DownloadFileAsync(saveToLocalPath, remoteFilePath, FtpLocalExists.Overwrite, FtpVerify.None, new Progress<FtpProgress>(
+            progress =>
             {
-                _ftp.DownloadFile(saveToLocalPath, remoteFilePath, FtpLocalExists.Overwrite, FtpVerify.None,
-                    progress =>
-                    {
-                        readCallBack?.Invoke((ulong)progress.TransferredBytes);
-                    });
-            }
+                readCallBack?.Invoke((ulong)progress.TransferredBytes);
+            }), _cancellationTokenSource.Token);
         }
 
         public void Release()
         {
             // TODO stop UploadFile DownloadFile
+            _cancellationTokenSource.Cancel();
             _ftp?.Disconnect();
             _ftp?.Dispose();
         }
 
-
-        //public async Task ReadItemAsync(string path, Stream fileStream, Action<ulong> readCallBack = null)
-        //{
-        //    if(!fileStream.CanWrite)
-        //        return;
-        //    _sftp.DownloadFile(path, fileStream, readCallBack);
-        //}
-
         private void InitClient()
         {
-            lock (_locker)
+            if (_ftp?.IsConnected != true)
             {
-                if (_ftp?.IsConnected != true)
-                {
-                    _ftp?.Dispose();
-                    _ftp = new FtpClient(Hostname, Port, Username, Password);
-                    //_ftp.Credentials = new NetworkCredential(Username, Password);
-                    _ftp.Connect();
-                }
+                _ftp?.Dispose();
+                _ftp = new FtpClient(Hostname, Port, Username, Password);
+                //_ftp.Credentials = new NetworkCredential(Username, Password);
+                _ftp.Connect();
             }
         }
 
@@ -255,10 +210,7 @@ namespace PRM.Core.Protocol.FileTransmitter
             _timerKeepAlive.Elapsed += (sender, args) =>
             {
                 InitClient();
-                lock (_locker)
-                {
-                    _ftp.GetListing("/");
-                }
+                _ftp.GetListing("/");
                 _timerKeepAlive.Interval = 10 * 1000;
                 _timerKeepAlive.Start();
             };
