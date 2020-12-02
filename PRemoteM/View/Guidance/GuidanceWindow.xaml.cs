@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -207,6 +208,9 @@ namespace PRM.View
 
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
         {
+#if !DEBUG
+            Process.Start("https://github.com/VShawn/PRemoteM");
+#endif
             this.Close();
         }
     }

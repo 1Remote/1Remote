@@ -267,7 +267,6 @@ namespace PRM
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
                     Window = new MainWindow();
                     MainWindow = Window;
-                    Window.Closed += (o, args) => { App.Close(); };
                     if (!SystemConfig.Instance.General.AppStartMinimized
                         || isFirstTimeUser)
                     {
@@ -367,7 +366,6 @@ namespace PRM
         {
             SearchBoxWindow = new SearchBoxWindow();
             SearchBoxWindow.SetHotKey();
-            SearchBoxWindow.Closed += (o, args) => { App.Close(); };
         }
 
         public static void Close(int exitCode = 0)

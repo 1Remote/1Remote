@@ -38,6 +38,9 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             IsDirectory = false;
             ByteSize = (ulong)fi.Length;
             DstPath = dstPath;
+            DstDirectoryPath = dstPath.LastIndexOf("/", StringComparison.Ordinal) > 0
+                ? dstPath.Substring(0, dstPath.LastIndexOf("/", StringComparison.Ordinal))
+                : "/";
         }
 
         public TransmitItem(DirectoryInfo di, string dstPath)
@@ -49,7 +52,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             IsDirectory = true;
             ByteSize = 0;
             DstPath = dstPath;
-            DstDirectoryPath = dstPath.IndexOf("/", StringComparison.Ordinal) > 0
+            DstDirectoryPath = dstPath.LastIndexOf("/", StringComparison.Ordinal) > 0
                 ? dstPath.Substring(0, dstPath.LastIndexOf("/", StringComparison.Ordinal))
                 : "/";
         }

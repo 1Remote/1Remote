@@ -212,24 +212,35 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
             void func(ETransmitTaskStatus status, Exception e)
             {
+                if (t.OnTaskEnd != null)
+                    t.OnTaskEnd -= func;
                 ThreadPool.QueueUserWorkItem(delegate
                 {
-                    if (Application.Current == null)
-                        return;
                     try
                     {
-                        if (t.OnTaskEnd != null)
-                            t.OnTaskEnd -= func;
-                        if (t.TransmitTaskStatus == ETransmitTaskStatus.Cancel)
-                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                TransmitTasks.Remove(t);
-                            });
-                        if (e != null)
+                        if (Application.Current == null)
+                            return;
+                        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                        SynchronizationContext.Current.Post(pl =>
                         {
-                            IoMessageLevel = 2;
-                            IoMessage = e.Message;
-                        }
+                            try
+                            {
+                                // refresh after transmitted
+                                if (t.ItemsHaveBeenTransmitted.Any(x =>
+                                                                            x.TransmissionType == ETransmissionType.HostToServer
+                                                                        && x.DstPath.IndexOf(CurrentPath, StringComparison.OrdinalIgnoreCase) >= 0))
+                                {
+                                    CmdGoToPathCurrent.Execute();
+                                }
+                                if (t.TransmitTaskStatus == ETransmitTaskStatus.Cancel
+                                && TransmitTasks.Contains(t))
+                                    TransmitTasks.Remove(t);
+                            }
+                            catch (Exception e1)
+                            {
+                                SimpleLogHelper.Error(e1);
+                            }
+                        }, null);
                     }
                     catch (Exception e2)
                     {

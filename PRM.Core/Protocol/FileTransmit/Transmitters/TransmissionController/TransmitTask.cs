@@ -26,6 +26,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
     {
         private Thread _t = null;
         private readonly ITransmitter _transOrg = null;
+        private ITransmitter _transTrue = null;
 
         public TransmitTask(ITransmitter trans)
         {
@@ -41,6 +42,11 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             if (TransmitTaskStatus == ETransmitTaskStatus.Transmitting)
                 TransmitTaskStatus = ETransmitTaskStatus.Cancel;
+            //Task.Factory.StartNew(() =>
+            //{
+            //    _transTrue?.Release();
+            //});
+            OnTaskEnd?.Invoke(TransmitTaskStatus);
         }
 
         public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception e = null);
@@ -355,7 +361,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             TransmitTaskStatus = ETransmitTaskStatus.Transmitting;
 
             //var transmitter = _transOrg;
-            var transmitter = _transOrg.Clone();
+            if(_transTrue == null)
+                _transTrue = _transOrg.Clone();
 
             // check if existed
             int existedFiles = 0;
@@ -405,7 +412,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             try
                             {
                                 if (!item.IsDirectory)
-                                    if (transmitter.Exists(item.DstPath))
+                                    if (_transTrue.Exists(item.DstPath))
                                         ++existedFiles;
                             }
                             catch (Exception e)
@@ -429,7 +436,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                     SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names_title"),
                 MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             {
-                TransmitTaskStatus = ETransmitTaskStatus.Cancel;
+                TryCancel();
                 return;
             }
 
@@ -462,7 +469,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                             try
                                             {
                                                 ulong lastReadLength = 0;
-                                                transmitter.DownloadFile(item.SrcPath, item.DstPath, readLength =>
+                                                _transTrue.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                                                 {
                                                     var add = readLength - lastReadLength;
                                                     lastReadLength = readLength;
@@ -500,7 +507,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             {
                                 if (item.IsDirectory)
                                 {
-                                    transmitter.CreateDirectory(item.DstPath);
+                                    _transTrue.CreateDirectory(item.DstPath);
                                 }
                                 else if (File.Exists(item.SrcPath))
                                 {
@@ -509,10 +516,10 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                     {
                                         try
                                         {
-                                            if (transmitter.Exists(item.DstPath))
-                                                transmitter.Delete(item.DstPath);
+                                            if (_transTrue.Exists(item.DstPath))
+                                                _transTrue.Delete(item.DstPath);
                                             ulong lastReadLength = 0;
-                                            transmitter.UploadFile(item.SrcPath, item.DstPath, readLength =>
+                                            _transTrue.UploadFile(item.SrcPath, item.DstPath, readLength =>
                                             {
                                                 Console.WriteLine(DateTime.Now.ToString("O"));
                                                 var add = readLength - lastReadLength;
