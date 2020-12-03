@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PRM.Core.Protocol.FileTransmitter.TransmissionController
+﻿namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 {
     public enum ETransmissionType
     {

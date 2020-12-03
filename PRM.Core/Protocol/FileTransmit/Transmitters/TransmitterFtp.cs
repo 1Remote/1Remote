@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using FluentFTP;
 using PRM.Core.Protocol.FileTransmitter;
 
@@ -15,7 +16,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         public readonly string Username = "";
         public readonly string Password = "";
         private FtpClient _ftp = null;
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public TransmitterFtp(string host, int port, string username, string password)
         {
@@ -29,7 +29,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
 
         ~TransmitterFtp()
         {
-            _cancellationTokenSource.Cancel(false);
             _ftp?.Dispose();
             _timerKeepAlive.Stop();
         }
@@ -153,39 +152,50 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 _ftp.Rename(path, newPath);
         }
 
-        public async void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack = null)
+        public void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack, CancellationToken cancellationToken)
         {
-            var fi = new FileInfo(localFilePath);
-            if (!fi.Exists)
-                return;
+            try
+            {
+                var fi = new FileInfo(localFilePath);
+                if (!fi.Exists)
+                    return;
 
-            // Todo ADD resume;
-            //client.UploadFile(fileStream, path, writeCallBack);
-            await _ftp.UploadFileAsync(
-                localFilePath,
-                saveToRemotePath,
-                FtpRemoteExists.Overwrite,
-                true,
-                FtpVerify.Delete, new Progress<FtpProgress>(progress =>
-                {
-                    writeCallBack?.Invoke((ulong)progress.TransferredBytes);
-                })
-                , _cancellationTokenSource.Token);
+                // Todo ADD resume;
+                //client.UploadFile(fileStream, path, writeCallBack);
+                var t = _ftp.UploadFileAsync(localFilePath, saveToRemotePath, FtpRemoteExists.Overwrite, true, FtpVerify.Delete,
+                    new Progress<FtpProgress>(progress =>
+                    {
+                        writeCallBack?.Invoke((ulong)progress.TransferredBytes);
+                    }), cancellationToken);
+                t.Wait();
+            }
+            catch (Exception)
+            {
+                if (cancellationToken.IsCancellationRequested == false)
+                    throw;
+            }
         }
 
-        public async void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack = null)
+        public void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack, CancellationToken cancellationToken)
         {
-            await _ftp.DownloadFileAsync(saveToLocalPath, remoteFilePath, FtpLocalExists.Overwrite, FtpVerify.None, new Progress<FtpProgress>(
-            progress =>
+            try
             {
-                readCallBack?.Invoke((ulong)progress.TransferredBytes);
-            }), _cancellationTokenSource.Token);
+                var t = _ftp.DownloadFileAsync(saveToLocalPath, remoteFilePath, FtpLocalExists.Overwrite, FtpVerify.None,
+                    new Progress<FtpProgress>(progress =>
+                    {
+                        readCallBack?.Invoke((ulong)progress.TransferredBytes);
+                    }), cancellationToken);
+                t.Wait();
+            }
+            catch (Exception)
+            {
+                if (cancellationToken.IsCancellationRequested == false)
+                    throw;
+            }
         }
 
         public void Release()
         {
-            // TODO stop UploadFile DownloadFile
-            _cancellationTokenSource.Cancel();
             _ftp?.Disconnect();
             _ftp?.Dispose();
         }

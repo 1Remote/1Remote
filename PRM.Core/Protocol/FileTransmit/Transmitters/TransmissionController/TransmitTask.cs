@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,14 +9,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmitter;
-using PRM.Core.Protocol.FileTransmitter.TransmissionController;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 {
     public enum ETransmitTaskStatus
     {
-        NotStart,
+        WaitTransmitStart,
         Scanning,
         Transmitting,
         //Pause,
@@ -24,13 +24,49 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
     }
     public class TransmitTask : NotifyPropertyChangedBase
     {
-        private Thread _t = null;
         private readonly ITransmitter _transOrg = null;
-        private ITransmitter _transTrue = null;
+        public readonly ETransmissionType TransmissionType;
+        private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
+        private readonly string _destinationDirectoryPath;
 
-        public TransmitTask(ITransmitter trans)
+        private readonly FileInfo[] _fis = null;
+        private readonly DirectoryInfo[] _dis = null;
+        private readonly RemoteItem[] _ris = null;
+
+        public TransmitTask(ITransmitter trans, string destinationDirectoryPath, FileInfo[] fis, DirectoryInfo[] dis = null)
         {
+            Debug.Assert(fis != null || dis != null);
+            TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
+            TransmissionType = ETransmissionType.HostToServer;
             this._transOrg = trans;
+
+            _destinationDirectoryPath = destinationDirectoryPath.TrimEnd(new[] { '/', '\\' }); ;
+
+            _fis = fis;
+            _dis = dis;
+
+            TransmittingItemDstDirectoryPath = _transmittingItemDstDirectoryPath;
+            if (_fis?.Length > 0)
+                TransmittingItemDstDirectoryPath = _fis.First().DirectoryName;
+            else if (dis?.Length > 0)
+                TransmittingItemDstDirectoryPath = dis.First().FullName;
+        }
+        public TransmitTask(ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
+        {
+            Debug.Assert(ris != null);
+            TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
+            TransmissionType = ETransmissionType.ServerToHost;
+            this._transOrg = trans;
+            _destinationDirectoryPath = destinationDirectoryPath.TrimEnd(new[] { '/', '\\' }); ;
+
+            _ris = ris;
+
+            TransmittingItemDstDirectoryPath = _transmittingItemDstDirectoryPath;
+            var ri = ris.First();
+            if(ri.IsDirectory)
+                TransmittingItemDstDirectoryPath = ris.First().FullName;
+            else
+                TransmittingItemDstDirectoryPath = ris.First().FullName.Substring(0, ris.First().FullName.LastIndexOf("/", StringComparison.Ordinal) + 1);
         }
 
         ~TransmitTask()
@@ -38,22 +74,20 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             TryCancel();
         }
 
+
+
         public void TryCancel()
         {
             if (TransmitTaskStatus == ETransmitTaskStatus.Transmitting)
                 TransmitTaskStatus = ETransmitTaskStatus.Cancel;
-            //Task.Factory.StartNew(() =>
-            //{
-            //    _transTrue?.Release();
-            //});
-            _transTrue?.Release();
+            _cancellationSource.Cancel(false);
             OnTaskEnd?.Invoke(TransmitTaskStatus);
         }
 
         public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception e = null);
         public OnTaskEndDelegate OnTaskEnd { get; set; } = null;
 
-        private ETransmitTaskStatus _transmitTaskStatus = ETransmitTaskStatus.NotStart;
+        private ETransmitTaskStatus _transmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
         public ETransmitTaskStatus TransmitTaskStatus
         {
             get => _transmitTaskStatus;
@@ -65,7 +99,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
-        public ETransmissionType TransmissionType => Items?.FirstOrDefault()?.TransmissionType ?? ETransmissionType.HostToServer;
 
         /// <summary>
         /// return the parent directory full path of Transmission
@@ -154,10 +187,13 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 
         public List<TransmitItem> ItemsHaveBeenTransmitted { get; } = new List<TransmitItem>();
         public Queue<TransmitItem> ItemsWaitForTransmit { get; } = new Queue<TransmitItem>();
+        /// <summary>
+        /// all items need to be transmitted
+        /// </summary>
         public List<TransmitItem> Items { get; } = new List<TransmitItem>();
 
         /// <summary>
-        /// remember transmittedDataLength in every timespan.
+        /// remember transmittedDataLength in timespan to calculate transmit speed.
         /// </summary>
         private readonly ConcurrentQueue<Tuple<DateTime, ulong>> _transmittedDataLength = new ConcurrentQueue<Tuple<DateTime, ulong>>();
 
@@ -165,12 +201,15 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             get
             {
+                if (TransmitTaskStatus != ETransmitTaskStatus.Transmitting) 
+                    return "";
+
                 var now = DateTime.Now;
-                const int second = 5;
+                const int secondRange = 5;
 
                 // throw data length before {second}
                 while (_transmittedDataLength.TryPeek(out var p)
-                    && (now - p.Item1).Seconds > second)
+                       && (now - p.Item1).Seconds > secondRange)
                 {
                     _transmittedDataLength.TryDequeue(out _);
                 }
@@ -183,192 +222,228 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 }
 
                 // get speed
-                double ss = totalBytes / (double)second;
+                double ss = totalBytes / (double) secondRange;
                 if (ss < 1024)
-                    return ss + " bytes/s";
+                    return ss + " Bytes/s";
                 else if (ss < 1024 * 1024)
-                    return (ss / 1024.0).ToString("F2") + " kb/s";
-                else if (ss < (long)1024 * 1024 * 1024)
-                    return (ss / 1024.0 / 1024).ToString("F2") + " mb/s";
-                else if (ss < (long)1024 * 1024 * 1024 * 1024)
-                    return (ss / 1024.0 / 1024 / 1024).ToString("F2") + " gb/s";
+                    return (ss / 1024.0).ToString("F2") + " KB/s";
+                else if (ss < (long) 1024 * 1024 * 1024)
+                    return (ss / 1024.0 / 1024).ToString("F2") + " MB/s";
+                else if (ss < (long) 1024 * 1024 * 1024 * 1024)
+                    return (ss / 1024.0 / 1024 / 1024).ToString("F2") + " GB/s";
                 return "";
             }
         }
 
-        public void AddItem(RemoteItem item, string dstPath, bool dirWithSubItems = true)
+
+        private void AddTransmitItem(TransmitItem item)
         {
-            if (item.Name == ".." || item.Name == ".")
-                return;
+            if (TransmissionType != item.TransmissionType)
+            {
+                throw new MethodAccessException($"{TransmissionType} transmit task can't add a {item.TransmissionType} item!");
+            }
+
             if (TransmitTaskStatus == ETransmitTaskStatus.Transmitted
                 || TransmitTaskStatus == ETransmitTaskStatus.Cancel)
             {
                 throw new NotSupportedException();
             }
+
             if (!ItemsWaitForTransmit.Any(x =>
-                x.TransmissionType == ETransmissionType.ServerToHost
-                && string.Equals(x.SrcPath, item.FullName, StringComparison.CurrentCultureIgnoreCase)))
+                string.Equals(x.SrcPath, item.SrcPath, StringComparison.CurrentCultureIgnoreCase)
+                && string.Equals(x.DstPath, item.DstPath, StringComparison.CurrentCultureIgnoreCase)))
             {
-                var ti = new TransmitItem(item, dstPath);
-                ItemsWaitForTransmit.Enqueue(ti);
-                Items.Add(ti);
+                ItemsWaitForTransmit.Enqueue(item);
+                Items.Add(item);
                 if (string.IsNullOrWhiteSpace(TransmittingItemName))
-                    TransmittingItemName = ti.ItemName;
-
-                if (item.IsDirectory)
-                {
-                    if (!dirWithSubItems) return;
-                    var bk = TransmitTaskStatus;
-                    TransmitTaskStatus = ETransmitTaskStatus.Scanning;
-                    AddDirectoryServer(item, dstPath);
-                    TransmitTaskStatus = bk;
-                }
-                else
-                {
-                    TotalByteLength += item.ByteSize;
-                }
+                    TransmittingItemName = item.ItemName;
+                TotalByteLength += item.ByteSize;
             }
         }
 
-        public void AddItem(FileInfo fi, string dstPath)
+
+        private void AddLocalDirectory(DirectoryInfo topDirectory)
         {
-            if (!fi.Exists)
-                return;
-            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitted
-                || TransmitTaskStatus == ETransmitTaskStatus.Cancel)
-            {
-                throw new NotSupportedException();
-            }
-            if (!ItemsWaitForTransmit.Any(x =>
-                x.TransmissionType == ETransmissionType.HostToServer
-                && string.Equals(x.SrcPath, fi.FullName, StringComparison.CurrentCultureIgnoreCase)))
-            {
-                var ti = new TransmitItem(fi, dstPath);
-                ItemsWaitForTransmit.Enqueue(ti);
-                Items.Add(ti);
-                if (string.IsNullOrWhiteSpace(TransmittingItemName))
-                    TransmittingItemName = ti.ItemName;
-                TotalByteLength += ti.ByteSize;
-            }
-        }
+            Debug.Assert(TransmissionType == ETransmissionType.HostToServer);
+            Debug.Assert(!_destinationDirectoryPath.EndsWith("\\"));
+            Debug.Assert(!_destinationDirectoryPath.EndsWith("/"));
 
-        public void AddItem(DirectoryInfo di, string dstPath, bool dirWithSubItems = true)
-        {
-            if (!di.Exists)
-                return;
-            dstPath = dstPath.Replace('\\', '/');
-            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitted
-                || TransmitTaskStatus == ETransmitTaskStatus.Cancel)
+            try
             {
-                throw new NotSupportedException();
-            }
-            if (!ItemsWaitForTransmit.Any(x =>
-                x.TransmissionType == ETransmissionType.HostToServer
-                && string.Equals(x.SrcPath, di.FullName, StringComparison.CurrentCultureIgnoreCase)))
-            {
-                var ti = new TransmitItem(di, dstPath);
-                ItemsWaitForTransmit.Enqueue(ti);
-                if (dirWithSubItems)
+                if (!topDirectory.Exists)
+                    return;
+
+                var srcTopDirPath = topDirectory.FullName.TrimEnd(new[] { '/', '\\' });
+
+                var dis = new Queue<DirectoryInfo>();
+                var allItems = new Queue<TransmitItem>();
+                dis.Enqueue(topDirectory);
+                allItems.Enqueue(new TransmitItem(topDirectory, _destinationDirectoryPath));
+
+                while (dis.Any())
                 {
-                    var bk = TransmitTaskStatus;
-                    TransmitTaskStatus = ETransmitTaskStatus.Scanning;
-                    AddDirectoryHost(di.FullName, dstPath);
-                    TransmitTaskStatus = bk;
-                }
-            }
-        }
-
-        private void AddDirectoryHost(string path, string dstPath)
-        {
-            if (!Directory.Exists(path))
-                return;
-
-            var dis = new Queue<DirectoryInfo>();
-            dis.Enqueue(new DirectoryInfo(path));
-            while (dis.Any())
-            {
-                var di = dis.Dequeue();
-                foreach (var directoryInfo in di.GetDirectories())
-                {
-                    dis.Enqueue(directoryInfo);
-                    AddItem(directoryInfo, ServerPathCombine(dstPath, directoryInfo.FullName.Replace(path, "").Replace('\\', '/')), false);
-                }
-
-                foreach (var fi in di.GetFiles())
-                {
-                    AddItem(fi, ServerPathCombine(dstPath, fi.FullName.Replace(path, "").Replace('\\', '/')));
-                }
-            }
-        }
-
-        private void AddDirectoryServer(RemoteItem topDir, string dstPath)
-        {
-            var dis = new Queue<RemoteItem>();
-            dis.Enqueue(topDir);
-            var topDirPath = topDir.FullName;
-            if (!topDirPath.EndsWith("/"))
-                topDirPath = topDirPath + "/";
-            while (dis.Any())
-            {
-                var di = dis.Dequeue();
-                var rms = _transOrg.ListDirectoryItems(di.FullName);
-                foreach (var item in rms)
-                {
-                    if (item.IsDirectory && !item.IsSymlink && item.Name != "..")
+                    var di = dis.Dequeue();
+                    var subDis = di.GetDirectories();
+                    foreach (var subDi in subDis)
                     {
-                        dis.Enqueue(item);
-                        AddItem(item, Path.Combine(dstPath, item.FullName.Replace(topDirPath, "").Replace('/', '\\')), false);
+                        dis.Enqueue(subDi);
+                        var dst = ServerPathCombine(_destinationDirectoryPath, subDi.FullName.Replace(srcTopDirPath, "").Replace('\\', '/').Trim(new char[] { '/', '\\' }));
+                        allItems.Enqueue(new TransmitItem(subDi, dst));
+                    }
+                    var subFis = di.GetFiles();
+                    foreach (var fi in subFis)
+                    {
+                        var dst = ServerPathCombine(_destinationDirectoryPath, fi.FullName.Replace(srcTopDirPath, "").Replace('\\', '/').Trim(new char[] { '/', '\\' }));
+                        allItems.Enqueue(new TransmitItem(fi, dst));
                     }
                 }
-                foreach (var item in rms)
+
+                foreach (var item in allItems)
                 {
-                    if (!item.IsDirectory && !item.IsSymlink)
+                    AddTransmitItem(item);
+                }
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+            }
+        }
+
+
+        private void AddServerDirectory(RemoteItem topItem)
+        {
+            Debug.Assert(TransmissionType == ETransmissionType.ServerToHost);
+            Debug.Assert(!_destinationDirectoryPath.EndsWith("\\"));
+            Debug.Assert(!_destinationDirectoryPath.EndsWith("/"));
+
+            try
+            {
+                if (!_transOrg.Exists(topItem.FullName))
+                    return;
+
+                var srcTopDirPath = topItem.FullName.TrimEnd(new[] { '/', '\\' });
+
+                var dirPaths = new Queue<string>();
+                var allItems = new Queue<TransmitItem>();
+                dirPaths.Enqueue(topItem.FullName);
+                allItems.Enqueue(new TransmitItem(topItem, _destinationDirectoryPath));
+                while (dirPaths.Any())
+                {
+                    var path = dirPaths.Dequeue();
+                    var rms = _transOrg.ListDirectoryItems(path);
+                    foreach (var item in rms)
                     {
-                        AddItem(item, Path.Combine(dstPath, item.FullName.Replace(topDirPath, "").Replace('/', '\\')));
+                        if (item.IsDirectory && !item.IsSymlink && item.Name != "..")
+                        {
+                            dirPaths.Enqueue(item.FullName);
+                        }
+                        var dst = Path.Combine(_destinationDirectoryPath, item.FullName.Replace(srcTopDirPath, "").Replace('/', '\\').Trim(new char[] { '/', '\\' }));
+                        allItems.Enqueue(new TransmitItem(item, dst));
                     }
                 }
-            }
-        }
 
-
-        private readonly object _threadLocker = new object();
-        public void TransmitAsync()
-        {
-            lock (_threadLocker)
-            {
-                if (_t == null
-                    && TransmitTaskStatus != ETransmitTaskStatus.Transmitting
-                    && TransmitTaskStatus != ETransmitTaskStatus.Cancel
-                    && TransmitTaskStatus != ETransmitTaskStatus.Transmitted)
+                foreach (var item in allItems)
                 {
-                    _t = new Thread(MainLoop);
-                    _t.Start();
+                    AddTransmitItem(item);
                 }
             }
-        }
-
-        public void TransmitSync()
-        {
-            lock (_threadLocker)
+            catch (Exception e)
             {
-                MainLoop();
+                SimpleLogHelper.Error(e);
             }
         }
 
 
-        private void MainLoop()
+        public async void StartTransmitAsync()
         {
-            TransmittedByteLength = 0;
-            TransmitTaskStatus = ETransmitTaskStatus.Transmitting;
+            Debug.Assert(_transOrg != null);
 
-            //var transmitter = _transOrg;
-            if(_transTrue == null)
-                _transTrue = _transOrg.Clone();
+            if (TransmitTaskStatus != ETransmitTaskStatus.Scanning
+                && TransmitTaskStatus != ETransmitTaskStatus.Transmitting
+                && TransmitTaskStatus != ETransmitTaskStatus.Cancel
+                && TransmitTaskStatus != ETransmitTaskStatus.Transmitted)
+            {
+                TransmitTaskStatus = ETransmitTaskStatus.Scanning;
+                await Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        ScanTransmitItems();
 
+                        if (!CheckExistedFiles())
+                            return;
+
+                        RunTransmit();
+                    }
+                    catch (Exception e)
+                    {
+                        OnTaskEnd?.Invoke(TransmitTaskStatus, e);
+                    }
+                }, _cancellationSource.Token);
+            }
+        }
+
+
+
+        /// <summary>
+        /// scan all files to be transmitted init by class constructor
+        /// </summary>
+        private void ScanTransmitItems()
+        {
+            TransmitTaskStatus = ETransmitTaskStatus.Scanning;
+            if (TransmissionType == ETransmissionType.HostToServer)
+            {
+                Debug.Assert(_fis != null || _dis != null);
+                if (_fis != null)
+                    foreach (var fi in _fis)
+                    {
+                        var dstPath = ServerPathCombine(_destinationDirectoryPath, fi.Name);
+                        AddTransmitItem(new TransmitItem(fi, dstPath));
+                    }
+
+                if (_dis != null)
+                    foreach (var di in _dis)
+                    {
+                        AddLocalDirectory(di);
+                    }
+            }
+            else
+            {
+                Debug.Assert(_ris != null);
+                if (_ris != null)
+                    foreach (var item in _ris)
+                    {
+                        if (item.Name == ".." || item.Name == ".")
+                            return;
+                        if (item.IsDirectory)
+                        {
+                            var bk = TransmitTaskStatus;
+                            AddServerDirectory(item);
+                            TransmitTaskStatus = bk;
+                        }
+                        else
+                        {
+                            var dstPath = ServerPathCombine(_destinationDirectoryPath, item.Name);
+                            AddTransmitItem(new TransmitItem(item, dstPath));
+                            TotalByteLength += item.ByteSize;
+                        }
+                    }
+            }
+        }
+
+
+        /// <summary>
+        /// check if any same name file exited, return if can continue transmit.
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckExistedFiles()
+        {
             // check if existed
             int existedFiles = 0;
             foreach (var item in ItemsWaitForTransmit)
             {
+                TransmittingItemSrcDirectoryPath = item.SrcDirectoryPath;
+                TransmittingItemDstDirectoryPath = item.DstDirectoryPath;
                 switch (item.TransmissionType)
                 {
                     case ETransmissionType.ServerToHost:
@@ -393,13 +468,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                         else
                                             e2 = new Exception($"Download to {item.DstPath}: " + e.Message, e);
                                         OnTaskEnd?.Invoke(TransmitTaskStatus, e2);
-                                        //Application.Current.Dispatcher.Invoke(() =>
-                                        //{
-                                        //    MessageBox.Show(item.DstPath + ": \r\n" + e.Message,
-                                        //        SystemConfig.Instance.Language.GetText("messagebox_title_error"),
-                                        //        MessageBoxButton.OK, MessageBoxImage.Stop);
-                                        //});
-                                        return;
+                                        return false;
                                     }
                                     finally
                                     {
@@ -413,7 +482,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             try
                             {
                                 if (!item.IsDirectory)
-                                    if (_transTrue.Exists(item.DstPath))
+                                    if (_transOrg.Exists(item.DstPath))
                                         ++existedFiles;
                             }
                             catch (Exception e)
@@ -425,7 +494,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                         SystemConfig.Instance.Language.GetText("messagebox_title_error"),
                                         MessageBoxButton.OK, MessageBoxImage.Stop);
                                 });
-                                return;
+                                return false;
                             }
                             break;
                         }
@@ -438,11 +507,20 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             {
                 TryCancel();
-                return;
+                return false;
             }
+            return true;
+        }
+
+
+        private void RunTransmit()
+        {
+            TransmittedByteLength = 0;
+            TransmitTaskStatus = ETransmitTaskStatus.Transmitting;
 
             while (ItemsWaitForTransmit.Count > 0
-                   && TransmitTaskStatus != ETransmitTaskStatus.Cancel)
+                   && TransmitTaskStatus != ETransmitTaskStatus.Cancel
+                   && _cancellationSource.IsCancellationRequested == false)
             {
                 var item = ItemsWaitForTransmit.Peek();
                 TransmittingItemName = item.ItemName;
@@ -461,20 +539,23 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                 }
                                 else
                                 {
-                                    using (var fileStream = File.OpenWrite(item.DstPath))
+                                    var fi = new FileInfo(item.DstPath);
+                                    if (!fi.Directory.Exists)
+                                        fi.Directory.Create();
+                                    if (!fi.Exists)
+                                        fi.Delete();
+
+                                    using var fileStream = File.OpenWrite(item.DstPath);
+                                    ulong lastReadLength = 0;
+                                    _transOrg.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                                     {
-                                        ulong lastReadLength = 0;
-                                        _transTrue.DownloadFile(item.SrcPath, item.DstPath, readLength =>
-                                        {
-                                            var add = readLength - lastReadLength;
-                                            lastReadLength = readLength;
-                                            TransmittedByteLength += add;
-                                            _transmittedDataLength.Enqueue(
-                                                new Tuple<DateTime, ulong>(DateTime.Now, add));
-                                            RaisePropertyChanged(nameof(TransmitSpeed));
-                                            SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
-                                        });
-                                    }
+                                        var add = readLength - lastReadLength;
+                                        lastReadLength = readLength;
+                                        TransmittedByteLength += add;
+                                        _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
+                                        RaisePropertyChanged(nameof(TransmitSpeed));
+                                        SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                                    }, _cancellationSource.Token);
                                 }
                             }
                             break;
@@ -482,43 +563,42 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             {
                                 if (item.IsDirectory)
                                 {
-                                    _transTrue.CreateDirectory(item.DstPath);
+                                    _transOrg.CreateDirectory(item.DstPath);
                                 }
                                 else if (File.Exists(item.SrcPath))
                                 {
-                                    if (_transTrue.Exists(item.DstPath))
-                                        _transTrue.Delete(item.DstPath);
+                                    if (_transOrg.Exists(item.DstPath))
+                                        _transOrg.Delete(item.DstPath);
+
                                     ulong lastReadLength = 0;
-                                    _transTrue.UploadFile(item.SrcPath, item.DstPath, readLength =>
+                                    _transOrg.UploadFile(item.SrcPath, item.DstPath, readLength =>
                                     {
                                         Console.WriteLine(DateTime.Now.ToString("O"));
                                         var add = readLength - lastReadLength;
                                         lastReadLength = readLength;
+                                        TransmittedByteLength += add;
                                         _transmittedDataLength.Enqueue(new Tuple<DateTime, ulong>(DateTime.Now, add));
                                         RaisePropertyChanged(nameof(TransmitSpeed));
-                                        TransmittedByteLength += add;
-                                    });
+                                        SimpleLogHelper.Debug($"{DateTime.Now}: {TransmittedByteLength}done, {TransmittedPercentage}%");
+                                    }, _cancellationSource.Token);
                                 }
                             }
                             break;
                     }
+
+                    // move transmitted into ItemsHaveBeenTransmitted
                     if (ItemsWaitForTransmit.Peek() == item)
                         ItemsWaitForTransmit.Dequeue();
                     ItemsHaveBeenTransmitted.Add(item);
-                    OnTaskEnd?.Invoke(TransmitTaskStatus);
                 }
                 catch (Exception e)
                 {
                     TransmitTaskStatus = ETransmitTaskStatus.Cancel;
-                    SimpleLogHelper.Debug(e, e.StackTrace);
-                    Exception e2;
-
-                    if (TransmissionType == ETransmissionType.HostToServer)
-                        e2 = new Exception($"Upload to {item.DstPath}: " + e.Message, e);
-                    else
-                        e2 = new Exception($"Download to {item.DstPath}: " + e.Message, e);
-                    OnTaskEnd?.Invoke(TransmitTaskStatus, e2);
-                    return;
+                    SimpleLogHelper.Warning(e, e.StackTrace);
+                    var e2 = TransmissionType == ETransmissionType.HostToServer ? 
+                        new Exception($"Upload to {item.DstPath}: " + e.Message, e) : 
+                        new Exception($"Download to {item.DstPath}: " + e.Message, e);
+                    throw e2;
                 }
             }
 
@@ -537,31 +617,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 ret = ret.TrimEnd('/') + "/" + path.Replace('\\', '/').TrimStart('/');
             }
             return ret;
-        }
-
-        public static bool IsWindowsFileInUsed(string path)
-        {
-            if (!File.Exists(path))
-                return false;
-            bool inUse = true;
-
-            FileStream fs = null;
-            try
-            {
-                fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
-                inUse = false;
-            }
-            catch
-            {
-
-            }
-            finally
-            {
-                if (fs != null)
-
-                    fs.Close();
-            }
-            return inUse;//true表示正在使用,false没有使用  
         }
     }
 }

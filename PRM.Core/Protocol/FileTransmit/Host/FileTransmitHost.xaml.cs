@@ -60,7 +60,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
         public override bool IsConnected()
         {
-            return _vmRemote.IsConnected();
+            return _vmRemote?.Trans?.IsConnected() == true;
         }
 
         public override bool IsConnecting()

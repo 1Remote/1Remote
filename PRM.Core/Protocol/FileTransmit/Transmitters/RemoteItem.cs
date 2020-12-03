@@ -51,9 +51,9 @@ namespace PRM.Core.Protocol.FileTransmitter
                     {
                         FileType = "folder";
                     }
-                    else if (_fullName.IndexOf(".") > 0)
+                    else if (_fullName.IndexOf(".", StringComparison.Ordinal) > 0)
                     {
-                        var ext = _fullName.Substring(_fullName.LastIndexOf(".")).ToLower();
+                        var ext = _fullName.Substring(_fullName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
                         FileType = ext;
                     }
                 }
@@ -88,10 +88,7 @@ namespace PRM.Core.Protocol.FileTransmitter
         public DateTime LastUpdate
         {
             get => _lastUpdate;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(LastUpdate), ref _lastUpdate, value);
-            }
+            set => SetAndNotifyIfChanged(nameof(LastUpdate), ref _lastUpdate, value);
         }
     }
 }
