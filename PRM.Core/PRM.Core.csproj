@@ -25,6 +25,7 @@
     <DefineConstants>TRACE;DEBUG;UseKiTTY;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <DefineConstants>TRACE;UseKiTTY;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
@@ -46,7 +48,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -120,6 +122,9 @@
     <Compile Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml.cs">
       <DependentUpon>FileTransmitHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Properties.cs" />
+    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Commands.cs" />
+    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Tasks.cs" />
     <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.cs" />
     <Compile Include="Protocol\FileTransmit\IProtocolFileTransmittable.cs" />
     <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml.cs">
