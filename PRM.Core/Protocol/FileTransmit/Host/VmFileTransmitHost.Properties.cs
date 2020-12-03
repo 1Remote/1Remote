@@ -22,9 +22,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
         public ITransmitter Trans = null;
+        public ITransmitter Trans4Transmit = null;
         private readonly IProtocolFileTransmittable _protocol = null;
 
-
+        private readonly CancellationTokenSource _consumingTransmitTaskCancellationTokenSource = new CancellationTokenSource();
 
 
         public double GridLoadingBgOpacity { get; set; } = 1;
@@ -143,13 +144,13 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         {
             get => _remoteItems;
             set => SetAndNotifyIfChanged(nameof(RemoteItems), ref _remoteItems, value);
-        } 
+        }
         #endregion
 
 
 
 
-
+        private Stack<TransmitTask> _waitingTasks = new Stack<TransmitTask>();
         private ObservableCollection<TransmitTask> _transmitTasks = new ObservableCollection<TransmitTask>();
         public ObservableCollection<TransmitTask> TransmitTasks
         {

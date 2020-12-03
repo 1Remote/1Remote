@@ -389,9 +389,11 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 return;
                             }
 
-                            var t = new TransmitTask(Trans, destinationDirectoryPath, RemoteItems.ToArray());
+                            var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
+                            if(!Trans4Transmit.IsConnected())
+                                Trans4Transmit.Conn();
+                            var t = new TransmitTask(Trans4Transmit, destinationDirectoryPath, ris);
                             AddTransmitTask(t);
-                            t.StartTransmitAsync();
                         }
                     }, o => Trans?.IsConnected() == true);
                 }
@@ -481,12 +483,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
             if (fis.Count > 0 || dis.Count > 0)
             {
-                var t = new TransmitTask(Trans, CurrentPath, fis.ToArray(), dis.ToArray());
-                if (t.ItemsWaitForTransmit.Count > 0)
-                {
-                    AddTransmitTask(t);
-                    t.StartTransmitAsync();
-                }
+                if (!Trans4Transmit.IsConnected())
+                    Trans4Transmit.Conn();
+                var t = new TransmitTask(Trans4Transmit, CurrentPath, fis.ToArray(), dis.ToArray());
+                AddTransmitTask(t);
             }
         }
 
