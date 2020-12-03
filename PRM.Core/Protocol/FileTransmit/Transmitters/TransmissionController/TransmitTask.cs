@@ -24,7 +24,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
     }
     public class TransmitTask : NotifyPropertyChangedBase
     {
-        private readonly ITransmitter _transOrg = null;
+        private readonly ITransmitter _trans = null;
         public readonly ETransmissionType TransmissionType;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
         private readonly string _destinationDirectoryPath;
@@ -38,7 +38,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             Debug.Assert(fis != null || dis != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
             TransmissionType = ETransmissionType.HostToServer;
-            this._transOrg = trans;
+            this._trans = trans;
 
             _destinationDirectoryPath = destinationDirectoryPath.TrimEnd(new[] { '/', '\\' }); ;
 
@@ -47,16 +47,16 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 
             TransmittingItemDstDirectoryPath = _transmittingItemDstDirectoryPath;
             if (_fis?.Length > 0)
-                TransmittingItemDstDirectoryPath = _fis.First().DirectoryName;
+                TransmittingItemSrcDirectoryPath = _fis.First().DirectoryName;
             else if (dis?.Length > 0)
-                TransmittingItemDstDirectoryPath = dis.First().FullName;
+                TransmittingItemSrcDirectoryPath = dis.First().FullName;
         }
         public TransmitTask(ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
         {
             Debug.Assert(ris != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
             TransmissionType = ETransmissionType.ServerToHost;
-            this._transOrg = trans;
+            this._trans = trans;
             _destinationDirectoryPath = destinationDirectoryPath.TrimEnd(new[] { '/', '\\' }); ;
 
             _ris = ris;
@@ -64,9 +64,9 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             TransmittingItemDstDirectoryPath = _transmittingItemDstDirectoryPath;
             var ri = ris.First();
             if(ri.IsDirectory)
-                TransmittingItemDstDirectoryPath = ris.First().FullName;
+                TransmittingItemSrcDirectoryPath = ris.First().FullName;
             else
-                TransmittingItemDstDirectoryPath = ris.First().FullName.Substring(0, ris.First().FullName.LastIndexOf("/", StringComparison.Ordinal) + 1);
+                TransmittingItemSrcDirectoryPath = ris.First().FullName.Substring(0, ris.First().FullName.LastIndexOf("/", StringComparison.Ordinal) + 1);
         }
 
         ~TransmitTask()
@@ -181,9 +181,9 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 
 
         public string TransmittedPercentage =>
-            TransmittedByteLength >= TotalByteLength
-                ? "100"
-                : (100.0 * TransmittedByteLength / TotalByteLength).ToString("F");
+            TransmitTaskStatus == ETransmitTaskStatus.Transmitted ? "100" :
+                (TransmitTaskStatus != ETransmitTaskStatus.Transmitting ? "0" :
+                   (TransmittedByteLength >= TotalByteLength ? "100" : (100.0 * TransmittedByteLength / TotalByteLength).ToString("F")));
 
         public List<TransmitItem> ItemsHaveBeenTransmitted { get; } = new List<TransmitItem>();
         public Queue<TransmitItem> ItemsWaitForTransmit { get; } = new Queue<TransmitItem>();
@@ -318,7 +318,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 
             try
             {
-                if (!_transOrg.Exists(topItem.FullName))
+                if (!_trans.Exists(topItem.FullName))
                     return;
 
                 var srcTopDirPath = topItem.FullName.TrimEnd(new[] { '/', '\\' });
@@ -330,7 +330,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 while (dirPaths.Any())
                 {
                     var path = dirPaths.Dequeue();
-                    var rms = _transOrg.ListDirectoryItems(path);
+                    var rms = _trans.ListDirectoryItems(path);
                     foreach (var item in rms)
                     {
                         if (item.IsDirectory && !item.IsSymlink && item.Name != "..")
@@ -354,9 +354,9 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
 
-        public async void StartTransmitAsync()
+        public async Task StartTransmitAsync()
         {
-            Debug.Assert(_transOrg != null);
+            Debug.Assert(_trans != null);
 
             if (TransmitTaskStatus != ETransmitTaskStatus.Scanning
                 && TransmitTaskStatus != ETransmitTaskStatus.Transmitting
@@ -374,9 +374,12 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             return;
 
                         RunTransmit();
+                        SimpleLogHelper.Debug($"{nameof(TransmitTask)}: OnTaskEnd?.Invoke({TransmitTaskStatus}, null); ");
+                        OnTaskEnd?.Invoke(TransmitTaskStatus, null);
                     }
                     catch (Exception e)
                     {
+                        SimpleLogHelper.Debug($"{nameof(TransmitTask)}: OnTaskEnd?.Invoke({TransmitTaskStatus}, {e}); ");
                         OnTaskEnd?.Invoke(TransmitTaskStatus, e);
                     }
                 }, _cancellationSource.Token);
@@ -384,6 +387,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
 
+        当前问题：不应该用堆栈实现waitingtask应该用FIFO，当前结构无法及时提示文件重复，等待传输队列的文件名不显示
 
         /// <summary>
         /// scan all files to be transmitted init by class constructor
@@ -425,7 +429,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                         {
                             var dstPath = ServerPathCombine(_destinationDirectoryPath, item.Name);
                             AddTransmitItem(new TransmitItem(item, dstPath));
-                            TotalByteLength += item.ByteSize;
                         }
                     }
             }
@@ -482,7 +485,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             try
                             {
                                 if (!item.IsDirectory)
-                                    if (_transOrg.Exists(item.DstPath))
+                                    if (_trans.Exists(item.DstPath))
                                         ++existedFiles;
                             }
                             catch (Exception e)
@@ -542,12 +545,11 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                                     var fi = new FileInfo(item.DstPath);
                                     if (!fi.Directory.Exists)
                                         fi.Directory.Create();
-                                    if (!fi.Exists)
+                                    if (fi.Exists)
                                         fi.Delete();
 
-                                    using var fileStream = File.OpenWrite(item.DstPath);
                                     ulong lastReadLength = 0;
-                                    _transOrg.DownloadFile(item.SrcPath, item.DstPath, readLength =>
+                                    _trans.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                                     {
                                         var add = readLength - lastReadLength;
                                         lastReadLength = readLength;
@@ -563,15 +565,15 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             {
                                 if (item.IsDirectory)
                                 {
-                                    _transOrg.CreateDirectory(item.DstPath);
+                                    _trans.CreateDirectory(item.DstPath);
                                 }
                                 else if (File.Exists(item.SrcPath))
                                 {
-                                    if (_transOrg.Exists(item.DstPath))
-                                        _transOrg.Delete(item.DstPath);
+                                    if (_trans.Exists(item.DstPath))
+                                        _trans.Delete(item.DstPath);
 
                                     ulong lastReadLength = 0;
-                                    _transOrg.UploadFile(item.SrcPath, item.DstPath, readLength =>
+                                    _trans.UploadFile(item.SrcPath, item.DstPath, readLength =>
                                     {
                                         Console.WriteLine(DateTime.Now.ToString("O"));
                                         var add = readLength - lastReadLength;
@@ -585,6 +587,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             }
                             break;
                     }
+                    SimpleLogHelper.Debug($"ItemsWaitForTransmit.Dequeue()");
 
                     // move transmitted into ItemsHaveBeenTransmitted
                     if (ItemsWaitForTransmit.Peek() == item)

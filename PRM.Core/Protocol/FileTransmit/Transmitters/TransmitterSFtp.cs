@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PRM.Core.Protocol.FileTransmitter;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {
@@ -29,7 +30,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
             Password = password;
             SshKey = "";
             InitClient();
-            CheckMeAlive();
+            //CheckMeAlive();
         }
         public TransmitterSFtp(string host, int port, string username, byte[] ppk)
         {
@@ -39,13 +40,13 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
             Password = "";
             SshKey = Encoding.ASCII.GetString(ppk);
             InitClient();
-            CheckMeAlive();
+            //CheckMeAlive();
         }
 
         ~TransmitterSFtp()
         {
             _sftp?.Dispose();
-            _timerKeepAlive.Stop();
+            //_timerKeepAlive.Stop();
         }
 
         public void Conn()
@@ -195,7 +196,12 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 _sftp?.UploadFile(fileStream, saveToRemotePath, obj =>
                 {
                     if (cancellationToken.IsCancellationRequested)
+                    {
+                        SimpleLogHelper.Debug("SFTP Upload: cancel by CancellationToken");
+                        // TODO not a perfect solution
                         fileStream.Close();
+                        fileStream.Dispose();
+                    }
                     writeCallBack?.Invoke(obj);
                 });
             }
@@ -210,12 +216,12 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         {
             try
             {
-                var fi = new FileInfo(remoteFilePath);
+                var fi = new FileInfo(saveToLocalPath);
                 if (fi.Exists)
                     fi.Delete();
                 if (!fi.Directory.Exists)
                     fi.Directory.Create();
-                using var fileStream = File.OpenWrite(fi.FullName);
+                using var fileStream = File.OpenWrite(saveToLocalPath);
                 if (!fileStream.CanWrite)
                     return;
                 _sftp?.DownloadFile(remoteFilePath, fileStream, obj =>
@@ -258,19 +264,19 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         }
 
 
-        private readonly System.Timers.Timer _timerKeepAlive = new System.Timers.Timer();
-        private void CheckMeAlive()
-        {
-            _timerKeepAlive.Interval = 10 * 1000;
-            _timerKeepAlive.AutoReset = false;
-            _timerKeepAlive.Elapsed += (sender, args) =>
-            {
-                InitClient();
-                _sftp?.ListDirectory("/");
-                _timerKeepAlive.Interval = 10 * 1000;
-                _timerKeepAlive.Start();
-            };
-            _timerKeepAlive.Start();
-        }
+        //private readonly System.Timers.Timer _timerKeepAlive = new System.Timers.Timer();
+        //private void CheckMeAlive()
+        //{
+        //    _timerKeepAlive.Interval = 10 * 1000;
+        //    _timerKeepAlive.AutoReset = false;
+        //    _timerKeepAlive.Elapsed += (sender, args) =>
+        //    {
+        //        InitClient();
+        //        _sftp?.ListDirectory("/");
+        //        _timerKeepAlive.Interval = 10 * 1000;
+        //        _timerKeepAlive.Start();
+        //    };
+        //    _timerKeepAlive.Start();
+        //}
     }
 }
