@@ -73,6 +73,10 @@
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
+    <Reference Include="SharpRaven, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\SharpRaven.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -136,7 +140,6 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\ETransmissionType.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitItem.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTaskManager.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
@@ -199,6 +202,7 @@
     <Compile Include="Utils\ConsoleManager.cs" />
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
+    <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\HyperlinkHelper.cs" />
     <Compile Include="Utils\Ini.cs" />
     <Compile Include="Utils\IOPermissionHelper.cs" />
@@ -239,12 +243,12 @@
     <Compile Include="Utils\SimpleLogHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Logo\author_avatar.jpg" />
-    <Resource Include="KiTTY_PRM.exe" />
-    <Content Include="Protocol\VNC\VncSharpWpf.dll" />
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Logo\author_avatar.jpg" />
+    <Resource Include="KiTTY_PRM.exe" />
+    <Content Include="Protocol\VNC\VncSharpWpf.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
     <Resource Include="Resources\Logo\logo256.png" />

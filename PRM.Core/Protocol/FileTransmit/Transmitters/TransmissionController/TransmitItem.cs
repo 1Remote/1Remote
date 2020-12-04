@@ -111,5 +111,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             get => _byteSize;
             set => SetAndNotifyIfChanged(nameof(ByteSize), ref _byteSize, value);
         }
+
+        public ulong TransmittedSize { get; set; } = 0;
     }
 }

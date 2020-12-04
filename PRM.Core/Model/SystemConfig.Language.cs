@@ -110,7 +110,7 @@ namespace PRM.Core.Model
                         {
                             if (resourceDictionary.Contains("language_name"))
                             {
-                                var code = fi.Name.Replace(fi.Extension, "");
+                                var code = fi.Name.ReplaceLast(fi.Extension, "");
                                 AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
                             }
                         }
@@ -137,7 +137,7 @@ namespace PRM.Core.Model
                         {
                             if (resourceDictionary.Contains("language_name"))
                             {
-                                var code = fi.Name.Replace(fi.Extension, "");
+                                var code = fi.Name.ReplaceLast(fi.Extension, "");
                                 AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
                             }
                         }

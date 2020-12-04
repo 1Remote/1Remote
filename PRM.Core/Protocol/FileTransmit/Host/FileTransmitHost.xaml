@@ -18,7 +18,7 @@
         <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
         <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
         <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
-        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}"></KeyBinding>
+        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
     </UserControl.InputBindings>
     <UserControl.Resources>
         <ResourceDictionary>
@@ -451,8 +451,8 @@
                                            Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            HorizontalAlignment="Left" 
                                            VerticalAlignment="Center" 
-                                           Text="{Binding TransmittingItemName, Mode=OneWay}"
-                                           ToolTip="{Binding TransmittingItemName, Mode=OneWay}"
+                                           Text="{Binding TransmitItemNames, Mode=OneWay}"
+                                           ToolTip="{Binding TransmitItemNames, Mode=OneWay}"
                                            ></TextBlock>
 
                                         <TextBlock TextTrimming="CharacterEllipsis" 
@@ -461,8 +461,8 @@
                                            Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            HorizontalAlignment="Right" 
                                            VerticalAlignment="Center" 
-                                           Text="{Binding TransmittingItemSrcDirectoryPath, Mode=OneWay}"
-                                           ToolTip="{Binding TransmittingItemSrcDirectoryPath, Mode=OneWay}"
+                                           Text="{Binding TransmitItemSrcDirectoryPath, Mode=OneWay}"
+                                           ToolTip="{Binding TransmitItemSrcDirectoryPath, Mode=OneWay}"
                                            ></TextBlock>
 
                                         <Label Grid.Column="2" Foreground="{DynamicResource MainColor1ForegroundBrush}" HorizontalContentAlignment="Center">→</Label>
@@ -473,8 +473,8 @@
                                            Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            HorizontalAlignment="Left" 
                                            VerticalAlignment="Center" 
-                                           Text="{Binding TransmittingItemDstDirectoryPath, Mode=OneWay}"
-                                           ToolTip="{Binding TransmittingItemDstDirectoryPath, Mode=OneWay}"
+                                           Text="{Binding TransmitItemDstDirectoryPath, Mode=OneWay}"
+                                           ToolTip="{Binding TransmitItemDstDirectoryPath, Mode=OneWay}"
                                            ></TextBlock>
                                     </Grid>
 
