@@ -19,6 +19,7 @@ using SQLite;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
+using MessageBoxOptions = System.Windows.MessageBoxOptions;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -28,14 +29,14 @@ namespace PRM.View
     {
         public VmMain Host;
         public VmSystemConfigPage VmSystemConfigPage;
-        public SystemConfigPage(VmMain host,Type t = null)
+        public SystemConfigPage(VmMain host, Type t = null)
         {
             Host = host;
             VmSystemConfigPage = new VmSystemConfigPage(host);
             InitializeComponent();
             DataContext = VmSystemConfigPage;
 
-            
+
             if (t == typeof(SystemConfigGeneral))
                 TabItemGeneral.IsSelected = true;
             if (t == typeof(SystemConfigLanguage))
@@ -125,10 +126,10 @@ namespace PRM.View
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -174,7 +175,7 @@ namespace PRM.View
         #endregion
     }
 
-    
+
 
     public class StringIsEmpty2BoolConverter : IValueConverter
     {

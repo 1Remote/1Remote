@@ -211,7 +211,7 @@ namespace PRM.Core.Model
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
             if (!res.Item1)
             {
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 return;
             }
 
@@ -303,7 +303,7 @@ namespace PRM.Core.Model
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
             if (!res.Item1)
             {
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 return;
             }
 
@@ -546,13 +546,13 @@ namespace PRM.Core.Model
                                     GlobalData.Instance.ServerListUpdate();
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                             catch (Exception ee)
                             {
                                 DbPath = oldDbPath;
                                 SimpleLogHelper.Warning(ee);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                         }
                     });
@@ -580,7 +580,7 @@ namespace PRM.Core.Model
                             var res = CheckIfDbIsOk(dlg.FileName);
                             if (!res.Item1)
                             {
-                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                         }
                     });
@@ -618,8 +618,8 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
-                            if (MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"), SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                            if (MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"), SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.Yes)
                             {
                                 if (File.Exists(DbPath))
                                     File.Delete(DbPath);
@@ -647,7 +647,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             return;
                         }
                         var dlg = new SaveFileDialog
@@ -685,7 +685,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             return;
                         }
                         var dlg = new SaveFileDialog
@@ -761,7 +761,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             return;
                         }
                         var dlg = new OpenFileDialog()
@@ -788,12 +788,12 @@ namespace PRM.Core.Model
                                     }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e, e.StackTrace);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                         }
                     });
@@ -814,7 +814,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             return;
                         }
                         var dlg = new OpenFileDialog()
@@ -956,12 +956,12 @@ namespace PRM.Core.Model
                                         }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"));
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e, e.StackTrace);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"));
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                         }
                     });
@@ -1001,13 +1001,13 @@ namespace PRM.Core.Model
                                     GlobalData.Instance.ServerListUpdate();
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                             catch (Exception ee)
                             {
                                 SimpleLogHelper.Debug(ee, ee.StackTrace);
                                 DbPath = oldDbPath;
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                         }
                     });

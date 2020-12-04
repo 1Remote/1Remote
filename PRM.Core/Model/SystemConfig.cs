@@ -46,7 +46,7 @@ namespace PRM.Core.Model
                     }
                 }
         }
-#if DEBUG
+#if DEV
         public const string AppName = "PRemoteM_Debug";
         public const string AppFullName = "PersonalRemoteManager_Debug";
 #else

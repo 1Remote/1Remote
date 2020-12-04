@@ -93,7 +93,7 @@ namespace PRM.ViewModel
                     this.Title = Tag + " - " + SelectedItem.Header;
                 else
                     this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
-#if DEBUG
+#if DEV
                 if (!string.IsNullOrEmpty(Tag))
                     this.Title = Tag + " - " + SelectedItem.Header;
                 else

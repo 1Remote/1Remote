@@ -395,6 +395,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                     }
                     catch (Exception e)
                     {
+                        TransmitTaskStatus = ETransmitTaskStatus.Cancel;
                         SimpleLogHelper.Debug($"{nameof(TransmitTask)}: OnTaskEnd?.Invoke({TransmitTaskStatus}, {e}); ");
                         OnTaskEnd?.Invoke(TransmitTaskStatus, e);
                     }
@@ -504,13 +505,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                             catch (Exception e)
                             {
                                 TransmitTaskStatus = ETransmitTaskStatus.Cancel;
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    MessageBox.Show(item.DstPath + ": \r\n" + e.Message,
-                                        SystemConfig.Instance.Language.GetText("messagebox_title_error"),
-                                        MessageBoxButton.OK, MessageBoxImage.Stop);
-                                });
-                                return false;
+                                throw new Exception(item.DstPath + ": \r\n" + e.Message, e);
                             }
                             break;
                         }
@@ -520,7 +515,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             if (existedFiles > 0
             && MessageBox.Show(SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names").Replace("{0}", existedFiles.ToString()),
                                     SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names_title"),
-                MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.Yes)
             {
                 return false;
             }

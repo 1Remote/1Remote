@@ -13,6 +13,7 @@ using Shawn.Utils.RDP;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
 using MessageBox = System.Windows.MessageBox;
+using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace PRM.Core.Protocol.RDP.Host
 {
@@ -492,7 +493,7 @@ namespace PRM.Core.Protocol.RDP.Host
                 string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
                 var t = new Task(() =>
                 {
-                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 });
                 t.Start();
             }

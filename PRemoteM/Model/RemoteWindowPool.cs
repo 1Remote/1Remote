@@ -17,6 +17,7 @@ using Shawn.Utils.DragablzTab;
 using PRM.View;
 using Shawn.Utils;
 using MessageBox = System.Windows.MessageBox;
+using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace PRM.Model
 {
@@ -184,7 +185,7 @@ namespace PRM.Model
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 if (host != null)
                     DelProtocolHost(host.ConnectionId);
                 CloseEmptyTab();

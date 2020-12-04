@@ -78,7 +78,7 @@ namespace PRM.ViewModel
                     if (MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("string_delete_confirm"),
                             SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
-                            MessageBoxButton.YesNo, MessageBoxImage.Question) ==
+                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) ==
                         MessageBoxResult.Yes)
                     {
                         GlobalData.Instance.ServerListRemove(Server);

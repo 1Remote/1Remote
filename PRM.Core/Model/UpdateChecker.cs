@@ -14,7 +14,7 @@ namespace PRM.Core.Model
         {
             "https://github.com/VShawn/PRemoteM/wiki",
             "https://github.com/VShawn/PRemoteM",
-#if DEBUG
+#if DEV
             "https://github.com/VShawn/PRemoteM-Test/wiki",
 #endif
         };

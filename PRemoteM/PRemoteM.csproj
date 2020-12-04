@@ -40,7 +40,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
@@ -50,7 +50,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;FOR_MICROSOFT_STORE;</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
@@ -63,7 +63,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'R2Store|AnyCPU' ">
     <OutputPath>bin\ReleaseToStore\</OutputPath>
-    <DefineConstants>TRACE;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -300,6 +300,7 @@ xcopy /y $(TargetDir)en-us.xaml $(SolutionDir)PRM.Core\Languages\en-us.xaml*  /C
 )</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>PowerShell  -ExecutionPolicy RemoteSigned -file "$(SolutionDir)PRM.Core\BuildVersionGenerator.ps1"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

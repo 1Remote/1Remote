@@ -19,6 +19,7 @@ using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
 using Clipboard = System.Windows.Clipboard;
 using MessageBox = System.Windows.MessageBox;
+using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
 {
@@ -43,7 +44,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             if (MessageBox.Show(
                                 SystemConfig.Instance.Language.GetText("string_delete_confirm"),
                                 SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.Yes)
                             {
                                 foreach (var itemInfo in RemoteItems)
                                 {
@@ -225,7 +226,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             && MessageBox.Show(
                                 msg,
                                 SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
-                                MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.Yes)
                             {
                                 return;
                             }
@@ -388,7 +389,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             if (!IOPermissionHelper.HasWritePermissionOnFile(dlg.FileName)
                             || !IOPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
                             {
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("string_permission_denied") + $": {dlg.FileName}");
+                                IoMessage = SystemConfig.Instance.Language.GetText("string_permission_denied") + $": {dlg.FileName}";
+                                IoMessageLevel = 2;
                                 return;
                             }
 
