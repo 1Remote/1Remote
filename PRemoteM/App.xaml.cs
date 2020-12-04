@@ -29,7 +29,7 @@ namespace PRM
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
-#if DEBUG
+#if DEV
         private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
 #else
         private const string PipeName = "PRemoteM_singlex@foxmail.com";
@@ -38,7 +38,7 @@ namespace PRM
         private static void OnUnhandledException(Exception e)
         {
             SimpleLogHelper.Fatal(e, e.StackTrace);
-            MessageBox.Show("please contact me if you see these: \r\n\r\n\r\n" + e.Message, SystemConfig.AppName + " unhandled error!", MessageBoxButton.OK);
+            MessageBox.Show("please contact me if you see these: \r\n\r\n\r\n" + e.Message, SystemConfig.AppName + " unhandled error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
             Process.Start("https://github.com/VShawn/PRemoteM/issues");
             App.Close();
         }
@@ -176,7 +176,7 @@ namespace PRM
                 #endregion
 
 
-#if DEBUG
+#if DEV
                 SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
                 Shawn.Utils.ConsoleManager.Show();
 #endif
@@ -215,9 +215,9 @@ namespace PRM
 
 
                     // if ini is not existed, then it would be a new user, open guide to set db path
-//#if !DEBUG
+                    //#if !DEBUG
                     if (!File.Exists(iniPath))
-//#endif
+                    //#endif
                     {
                         isFirstTimeUser = true;
                         ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -278,7 +278,7 @@ namespace PRM
                     if (!res.Item1)
                     {
                         SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
-                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"));
+                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                         ActivateWindow();
                         Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
                     }

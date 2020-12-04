@@ -311,14 +311,14 @@ namespace PRM.View
                     {
                         var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
-                        MessageBox.Show(msg, title);
+                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                         break;
                     }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                     {
                         var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
-                        MessageBox.Show(msg, title);
+                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                         break;
                     }
                 default:

@@ -71,7 +71,7 @@ namespace Shawn.Utils
             EnumDisplaySettings(Screen.PrimaryScreen.DeviceName, ENUM_CURRENT_SETTINGS, ref dmMain);
             var mainLogicScaleFactor = 100.0 * dmMain.dmPelsWidth / Screen.PrimaryScreen.Bounds.Width;
             double k = mainRealScaleFactor / mainLogicScaleFactor;
-            //#if DEBUG
+            //#if DEV
             //            Console.WriteLine($@"{nameof(ScreenInfoEx)}: k = {mainRealScaleFactor } / {mainLogicScaleFactor} = {k}");
             //#endif
             return k;
@@ -87,7 +87,7 @@ namespace Shawn.Utils
             double k = GetGlobalScaleFactor();
             if (k < 1)
             {
-#if DEBUG
+#if DEV
                 Console.WriteLine($@"
 // in this case , something goes wrong and let the VirtualBounds.Width > screen.Bounds.Width.
 // ScaleFactor >= 100%, so VirtualBounds.Width = PhysicalPixWidth / ScaleFactor must <= screen.Bounds.Width

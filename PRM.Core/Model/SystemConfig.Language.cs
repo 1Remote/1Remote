@@ -18,7 +18,7 @@ namespace PRM.Core.Model
             Debug.Assert(appResourceDictionary != null);
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             LanguageJsonDir = Path.Combine(appDateFolder, "Languages");
-#if DEBUG
+#if DEV
             if (!Directory.Exists(LanguageJsonDir))
                 Directory.CreateDirectory(LanguageJsonDir);
             var zh_cn_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.json")).Stream;
@@ -94,7 +94,7 @@ namespace PRM.Core.Model
         {
             LanguageCode2Name.Clear();
             _languageCode2ResourcePath.Clear();
-#if DEBUG
+#if DEV
             if (Directory.Exists("Languages"))
             {
                 var di = new DirectoryInfo("Languages");

@@ -57,7 +57,7 @@ namespace PRM.ViewModel
                         var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
                         if (!c1.Item1)
                         {
-                            MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"));
+                            MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             //MessageBox.Show(
                             //    SystemConfig.Language
                             //        .GetText("system_options_data_security_error_can_not_open") + ": " +
