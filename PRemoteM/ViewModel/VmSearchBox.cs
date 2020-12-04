@@ -206,7 +206,14 @@ namespace PRM.ViewModel
                     Run = () =>
                     {
                         if (SelectedItem.Server is ProtocolServerWithAddrPortBase server)
-                            Clipboard.SetText($"{server.Address}:{server.GetPort()}");
+                            try
+                            {
+                                Clipboard.SetText($"{server.Address}:{server.GetPort()}");
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
                     },
                 });
             }
@@ -218,7 +225,14 @@ namespace PRM.ViewModel
                     Run = () =>
                     {
                         if (SelectedItem.Server is ProtocolServerWithAddrPortUserPwdBase server)
-                            Clipboard.SetText(server.UserName);
+                            try
+                            {
+                                Clipboard.SetText(server.UserName);
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
                     },
                 });
             }
@@ -230,10 +244,17 @@ namespace PRM.ViewModel
                     Run = () =>
                     {
                         if (SelectedItem.Server is ProtocolServerWithAddrPortUserPwdBase server)
-                            Clipboard.SetText(server.GetDecryptedPassWord());
+                            try
+                            {
+                                Clipboard.SetText(server.GetDecryptedPassWord());
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
                     },
                 });
-            } 
+            }
             #endregion
 
             Actions = actions;

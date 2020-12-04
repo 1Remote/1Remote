@@ -22,7 +22,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
         public ITransmitter Trans = null;
-        public ITransmitter Trans4Transmit = null;
         private readonly IProtocolFileTransmittable _protocol = null;
 
         private readonly CancellationTokenSource _consumingTransmitTaskCancellationTokenSource = new CancellationTokenSource();
@@ -150,7 +149,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
 
 
-        private Stack<TransmitTask> _waitingTasks = new Stack<TransmitTask>();
         private ObservableCollection<TransmitTask> _transmitTasks = new ObservableCollection<TransmitTask>();
         public ObservableCollection<TransmitTask> TransmitTasks
         {

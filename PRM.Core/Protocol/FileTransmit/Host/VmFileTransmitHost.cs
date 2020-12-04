@@ -49,12 +49,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     try
                     {
                         Trans = _protocol.GeTransmitter();
-                        Trans4Transmit = Trans.Clone();
                         if (!string.IsNullOrWhiteSpace(_protocol.GetStartupPath()))
                             ShowFolder(_protocol.GetStartupPath());
-
-                        // start thread to consuming task
-                        Task.Factory.StartNew(ConsumingTransmitTasks, _consumingTransmitTaskCancellationTokenSource.Token);
                     }
                     catch (Exception e)
                     {
@@ -76,8 +72,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         private void AddTransmitTask(TransmitTask t)
         {
             TransmitTasks.Add(t);
-            _waitingTasks.Push(t);
-
             void func(ETransmitTaskStatus status, Exception e)
             {
                 if (t.OnTaskEnd != null)
@@ -126,22 +120,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
 
             t.OnTaskEnd += func;
-        }
-
-        private void ConsumingTransmitTasks()
-        {
-            while (true)
-            {
-                while(_waitingTasks.Count == 0)
-                {
-                    Thread.Sleep(100);
-                }
-
-                var tt = _waitingTasks.Pop();
-                var task = tt.StartTransmitAsync();
-                SimpleLogHelper.Debug($"ConsumingTransmitTasks: {tt} start, {_waitingTasks.Count} left.");
-                task.Wait();
-            }
         }
 
         private int _remoteItemsOrderBy = -1;
@@ -461,11 +439,22 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_files_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
                             CmdUpload.Execute();
+                    };
+                    aMenu.Items.Add(menu);
+                }
+
+                // TODO 添加上传文件夹按钮
+                {
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_folder_upload") };
+                    menu.Click += (o, a) =>
+                    {
+                        if (CmdUpload.CanExecute())
+                            CmdUpload.Execute(1);
                     };
                     aMenu.Items.Add(menu);
                 }

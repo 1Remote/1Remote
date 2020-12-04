@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -16,6 +17,8 @@ using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;
 using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
+using Clipboard = System.Windows.Clipboard;
+using MessageBox = System.Windows.MessageBox;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
 {
@@ -390,10 +393,9 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             }
 
                             var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                            if(!Trans4Transmit.IsConnected())
-                                Trans4Transmit.Conn();
-                            var t = new TransmitTask(Trans4Transmit, destinationDirectoryPath, ris);
+                            var t = new TransmitTask(Trans, destinationDirectoryPath, ris);
                             AddTransmitTask(t);
+                            t.StartTransmitAsync();
                         }
                     }, o => Trans?.IsConnected() == true);
                 }
@@ -413,22 +415,39 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 {
                     _cmdUpload = new RelayCommand((o) =>
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        List<string> fl = new List<string>();
-                        var dlg = new System.Windows.Forms.OpenFileDialog();
-                        dlg.Title = SystemConfig.Instance.Language.GetText("file_transmit_host_message_select_files_to_upload");
-                        dlg.CheckFileExists = true;
-                        dlg.Multiselect = true;
-                        if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        if (o == null)
                         {
-                            fl = dlg.FileNames.ToList();
+                            if (Trans?.IsConnected() != true)
+                                return;
+                            List<string> fl = new List<string>();
+                            var dlg = new System.Windows.Forms.OpenFileDialog();
+                            dlg.Title = SystemConfig.Instance.Language.GetText(
+                                "file_transmit_host_message_select_files_to_upload");
+                            dlg.CheckFileExists = true;
+                            dlg.Multiselect = true;
+                            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            {
+                                fl = dlg.FileNames?.ToList();
+                                if (fl?.Count > 0)
+                                {
+                                    DoUpload(fl);
+                                }
+                            }
                         }
-                        if (fl.Count == 0)
+                        else if (o is int n)
                         {
-                            return;
+                            // upload select folder
+                            if (Trans?.IsConnected() != true)
+                                return;
+                            List<string> fl = new List<string>();
+                            var fbd = new FolderBrowserDialog();
+                            fbd.Description = SystemConfig.Instance.Language.GetText("file_transmit_host_message_select_files_to_upload");
+                            fbd.ShowNewFolderButton = false;
+                            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            {
+                                DoUpload(new List<string>(){ fbd.SelectedPath });
+                            }
                         }
-                        DoUpload(fl);
                     }, o => Trans?.IsConnected() == true);
                 }
                 return _cmdUpload;
@@ -452,8 +471,15 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                         {
                             return;
                         }
+
+                        if (fl.Any(f => !File.Exists(f) && !Directory.Exists(f)))
+                        {
+                            return;
+                        }
                         DoUpload(fl);
-                    }, o => Trans?.IsConnected() == true);
+                    }, o => Trans?.IsConnected() == true 
+                            && Clipboard.GetFileDropList().Count > 0
+                            && Clipboard.GetFileDropList().Cast<string>().All(f => File.Exists(f) || Directory.Exists(f)));
                 }
                 return _cmdUploadClipboard;
             }
@@ -483,10 +509,9 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
             if (fis.Count > 0 || dis.Count > 0)
             {
-                if (!Trans4Transmit.IsConnected())
-                    Trans4Transmit.Conn();
-                var t = new TransmitTask(Trans4Transmit, CurrentPath, fis.ToArray(), dis.ToArray());
+                var t = new TransmitTask(Trans, CurrentPath, fis.ToArray(), dis.ToArray());
                 AddTransmitTask(t);
+                t.StartTransmitAsync();
             }
         }
 

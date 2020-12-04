@@ -197,7 +197,7 @@ namespace PRM.Core.Protocol.Putty.Host
                     var md5_2 = MD5Helper.GetMd5Hash32BitString(bytes);
                     if (md5_2 != md5)
                     {
-                        foreach (var process in Process.GetProcessesByName(KittyExeName.ToLower().Replace(".exe", "")))
+                        foreach (var process in Process.GetProcessesByName(KittyExeName.ToLower().ReplaceLast(".exe", "")))
                         {
                             try
                             {
