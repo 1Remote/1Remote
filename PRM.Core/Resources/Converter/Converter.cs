@@ -115,7 +115,7 @@ namespace PRM.Resources.Converter
 
 
 
-    public class ConverterTextWidthAndContent2FontSize : IMultiValueConverter
+    public class ConverterTextWidthAndContent2PresentationSize : IMultiValueConverter
     {
         private static Size MeasureText(TextBlock tb, int fontSize)
         {
@@ -167,7 +167,7 @@ namespace PRM.Resources.Converter
 
 
 
-    public class ConverterStringIsContainXXX : IMultiValueConverter
+    public class ConverterKeywordIsMatchProtocolServerInSelectedGroup : IMultiValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -184,13 +184,6 @@ namespace PRM.Resources.Converter
 
                 if (string.IsNullOrEmpty(keyWord))
                     return true;
-                //var f1 = KeyWordMatchHelper.IsMatchPinyinKeywords(server.DispName, keyWord, out var m1);
-                //if (f1)
-                //{
-                //    return true;
-                //}
-                //return false;
-
 
                 var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
                 var keyWordIsMatch = new List<bool>(keyWords.Length);
@@ -219,6 +212,28 @@ namespace PRM.Resources.Converter
         public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+        #endregion
+    }
+
+
+
+
+
+
+    public class ConverterColorHexString2Brush : IValueConverter
+    {
+        #region IValueConverter
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string hex = value.ToString();
+            var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
+            return brush;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return "#FFFFFF";
         }
         #endregion
     }

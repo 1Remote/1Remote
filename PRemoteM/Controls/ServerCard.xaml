@@ -95,7 +95,7 @@
                                 <SolidColorBrush Color="#ccc"></SolidColorBrush>
                             </TextBlock.Foreground>
                             <TextBlock.FontSize>
-                                <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2FontSize}" ConverterParameter="FontSize">
+                                <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
                                     <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
                                     <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
                                     <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>

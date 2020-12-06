@@ -374,12 +374,14 @@ namespace PRM
             {
                 if (App.Window != null)
                 {
+                    App.Window.Hide();
                     App.Window.Close();
                     App.Window = null;
                 }
 
                 if (App.SearchBoxWindow != null)
                 {
+                    App.SearchBoxWindow.Hide();
                     App.SearchBoxWindow.Close();
                     App.SearchBoxWindow = null;
                 }
@@ -389,6 +391,8 @@ namespace PRM
                     App.TaskTrayIcon.Visible = false;
                     App.TaskTrayIcon.Dispose();
                 }
+
+                RemoteWindowPool.Instance.Release();
             }
             finally
             {

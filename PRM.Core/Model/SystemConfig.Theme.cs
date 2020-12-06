@@ -17,6 +17,11 @@ using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
+    public enum EnumTabUI
+    {
+        ChromeLike,
+        Classical,
+    }
     public sealed class SystemConfigTheme : SystemConfigBase
     {
         public SystemConfigTheme(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
@@ -195,6 +200,15 @@ namespace PRM.Core.Model
         }
 
 
+        private EnumTabUI _tabUi = EnumTabUI.ChromeLike;
+        public EnumTabUI TabUI
+        {
+            get => _tabUi;
+            set => SetAndNotifyIfChanged(nameof(TabUI), ref _tabUi, value);
+        }
+
+
+
         #region Interface
         private const string _sectionName = "Theme";
         public override void Save()
@@ -212,6 +226,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
             _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
             _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
+            _ini.WriteValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString());
             _ini.Save();
             ApplyPrmColorTheme();
         }
@@ -243,6 +258,10 @@ namespace PRM.Core.Model
             if (string.IsNullOrEmpty(PuttyThemeName))
                 PuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
+
+
+            if (Enum.TryParse<EnumTabUI>(_ini.GetValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString()), out var tu))
+                TabUI = tu;
 
             StopAutoSave = false;
             ApplyPrmColorTheme();

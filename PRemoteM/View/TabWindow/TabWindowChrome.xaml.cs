@@ -1,37 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Dragablz;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using Size = System.Windows.Size;
+using PRM.Core.Model;
 using PRM.Model;
 using PRM.ViewModel;
-using PRM.Core.Model;
-using Shawn.Utils.DragablzTab;
 using Shawn.Utils;
+using Shawn.Utils.DragablzTab;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Size = System.Windows.Size;
 
-namespace PRM.View
+namespace PRM.View.TabWindow
 {
-    public partial class TabWindow : Window
+    public partial class TabWindowChrome : Window, ITab
     {
-        public VmTabWindow Vm;
+        protected VmTabWindow Vm;
         private HwndSource _source = null;
-        private WindowState _lastWindowState = WindowState.Normal;
-
-        public TabWindow(string token)
+        public TabWindowChrome(string token)
         {
             InitializeComponent();
             Vm = new VmTabWindow(token);
@@ -40,7 +32,11 @@ namespace PRM.View
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
             this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
-            this.SizeChanged += (sender, args) =>
+            this.MinWidth = this.MinHeight = 300;
+
+            // save window size when size changed
+            var lastWindowState = WindowState.Normal;
+            this.SizeChanged += (sizeChangeSender, _) =>
             {
                 if (this.WindowState == WindowState.Normal)
                 {
@@ -48,34 +44,12 @@ namespace PRM.View
                     SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
                     SystemConfig.Instance.Locality.Save();
                 }
-                if (_lastWindowState != this.WindowState)
+                if (lastWindowState != this.WindowState)
                     Vm?.SelectedItem?.Content?.MakeItFocus();
-                _lastWindowState = this.WindowState;
+                lastWindowState = this.WindowState;
             };
 
 
-            WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
-            WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
-            WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
-            BtnMaximize.Click += (sender, args) =>
-            {
-                this.WindowState = this.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
-            };
-            BtnMinimize.Click += (sender, args) =>
-            {
-                this.WindowState = WindowState.Minimized;
-            };
-            BtnClose.Click += (sender, args) =>
-            {
-                if (Vm?.SelectedItem != null)
-                {
-                    RemoteWindowPool.Instance.DelProtocolHost(Vm?.SelectedItem?.Content?.ConnectionId);
-                }
-                else
-                {
-                    Vm?.CmdClose.Execute();
-                }
-            };
             TabablzControl.ClosingItemCallback += args =>
             {
                 args.Cancel();
@@ -86,6 +60,7 @@ namespace PRM.View
                 }
             };
 
+            // focus content when click
             MouseUp += (sender, args) =>
             {
                 Vm?.SelectedItem?.Content?.MakeItFocus();
@@ -94,6 +69,7 @@ namespace PRM.View
 
             Loaded += (sender, args) =>
             {
+                // focus content(like putty.exe) when drag resize window
                 try
                 {
                     _source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
@@ -107,7 +83,7 @@ namespace PRM.View
 
             Closed += (sender, args) =>
             {
-                Vm?.CmdClose.Execute();
+                Vm?.CmdCloseAll.Execute();
                 try
                 {
                     _source?.RemoveHook(WndProc);
@@ -118,6 +94,7 @@ namespace PRM.View
                 }
             };
         }
+
 
         /// <summary>
         /// Keep content(like putty.exe) focus when darg resize window
@@ -195,22 +172,14 @@ namespace PRM.View
         {
             if (Vm?.SelectedItem != null)
             {
-                this.Icon =
-                this.IconTitleBar.Source = Vm.SelectedItem.Content.ProtocolServer.IconImg;
+                this.Icon = Vm.SelectedItem.Content.ProtocolServer.IconImg;
             }
         }
 
-        private void FouseContentWhenMouseKeyUp(object sender, MouseButtonEventArgs e)
+        private void FocusContentWhenMouseKeyUp(object sender, MouseButtonEventArgs e)
         {
             // to click header, then focus content when release mouse press.
-            if (sender is Grid grid)
-            {
-                var dragablzItem = GetVisualParent<DragablzItem>(grid);
-                if (dragablzItem.DataContext is TabItemViewModel tivm)
-                {
-                    tivm.Content?.MakeItFocus();
-                }
-            }
+            Vm?.SelectedItem?.Content?.MakeItFocus();
         }
 
         public Size GetTabContentSize()
@@ -226,8 +195,18 @@ namespace PRM.View
             };
         }
 
+        public Window GetWindow()
+        {
+            return this;
+        }
+
+        public VmTabWindow GetViewModel()
+        {
+            return Vm;
+        }
+
         #region GetVisualParent
-        public static T GetVisualParent<T>(object childObject) where T : Visual
+        protected static T GetVisualParent<T>(object childObject) where T : Visual
         {
             DependencyObject child = childObject as DependencyObject;
             // iteratively traverse the visual tree
@@ -238,13 +217,13 @@ namespace PRM.View
             return child as T;
         }
 
-        public static List<T> GetVisualChildCollection<T>(object parent) where T : Visual
+        protected static List<T> GetVisualChildCollection<T>(object parent) where T : Visual
         {
             List<T> visualCollection = new List<T>();
             GetVisualChildCollection(parent as DependencyObject, visualCollection);
             return visualCollection;
         }
-        private static void GetVisualChildCollection<T>(DependencyObject parent, List<T> visualCollection) where T : Visual
+        protected static void GetVisualChildCollection<T>(DependencyObject parent, List<T> visualCollection) where T : Visual
         {
             int count = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < count; i++)
@@ -259,24 +238,6 @@ namespace PRM.View
                     GetVisualChildCollection(child, visualCollection);
                 }
             }
-        }
-        #endregion
-    }
-
-
-    public class Hex2Brush : IValueConverter
-    {
-        #region IValueConverter
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string hex = value.ToString();
-            var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
-            return brush;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return "#FFFFFF";
         }
         #endregion
     }

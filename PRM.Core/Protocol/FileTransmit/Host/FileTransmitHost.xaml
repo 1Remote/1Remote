@@ -168,7 +168,7 @@
 
 
                 <controls:ButtonEx Grid.Column="2"
-                    IsEnabled="{Binding CmdGoToPathParentEnable}"
+                                IsEnabled="{Binding CmdGoToPathParentEnable}"
                                BackgroundOnDisabled="Transparent"
                                ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
                                Style="{StaticResource ButtonExStyleBase}"

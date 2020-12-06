@@ -96,7 +96,7 @@
                                     <Style.Triggers>
                                         <DataTrigger>
                                             <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource ConverterStringIsContainXXX}">
+                                                <MultiBinding Converter="{StaticResource ConverterKeywordIsMatchProtocolServerInSelectedGroup}">
                                                     <Binding Path="Server"></Binding>
                                                     <Binding Path="DataContext.DispNameFilter" ElementName="ThisServerListPage"></Binding>
                                                     <Binding Path="DataContext.SelectedGroup" ElementName="ThisServerListPage"></Binding>
