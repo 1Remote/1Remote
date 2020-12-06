@@ -448,7 +448,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     aMenu.Items.Add(menu);
                 }
 
-                // TODO 添加上传文件夹按钮
                 {
                     var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_folder_upload") };
                     menu.Click += (o, a) =>

@@ -40,7 +40,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;ChromeTAB</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
@@ -150,8 +150,11 @@
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TabWindow.xaml.cs">
-      <DependentUpon>TabWindow.xaml</DependentUpon>
+    <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
+      <DependentUpon>TabWindowClassical.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TabWindow\TabWindowChrome.xaml.cs">
+      <DependentUpon>TabWindowChrome.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SearchBoxWindow.xaml.cs">
       <DependentUpon>SearchBoxWindow.xaml</DependentUpon>
@@ -166,6 +169,7 @@
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\TabItemViewModel.cs" />
+    <Compile Include="View\TabWindow\ITab.cs" />
     <Page Include="Controls\AutoCompleteComboBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -214,7 +218,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\TabWindow.xaml">
+    <Page Include="View\TabWindow\TabWindowClassical.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\TabWindow\TabWindowChrome.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

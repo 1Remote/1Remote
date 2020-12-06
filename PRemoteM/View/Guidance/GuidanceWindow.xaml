@@ -302,7 +302,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Style="{StaticResource HeaderStyle}"
-                                        Text="{DynamicResource system_options_general_item_start_when_win_login}">
+                                        Text="{DynamicResource system_options_general_start_when_win_login}">
                                     </TextBlock>
                                     <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
                                 </StackPanel>
@@ -311,7 +311,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Style="{StaticResource HeaderStyle}"
-                                        Text="{DynamicResource system_options_general_item_start_minimized}">
+                                        Text="{DynamicResource system_options_general_start_minimized}">
                                     </TextBlock>
                                     <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
                                 </StackPanel>

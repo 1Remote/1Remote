@@ -135,16 +135,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 }
                 else
                 {
-                    // TODO check if link is work.
-                    //if (item.IsSymbolicLink)
-                    //{
-                    //    isFile = false;
-                    //    newItem.IsDirectory = true;
-                    //    newItem.IsSymlink = true;
-                    //    newItem.Icon = TransmitItemIconCache.GetDictIcon(Environment.GetFolderPath(Environment.SpecialFolder.Favorites));
-                    //    newItem.ByteSize = 0;
-                    //    newItem.FileType = "folder";
-                    //}
+                    if (item.IsSymbolicLink)
+                        newItem.FileType = ".lnk";
 
                     var icon = TransmitItemIconCache.GetFileIcon("*");
                     if (item.Name.IndexOf(".", StringComparison.Ordinal) > 0)

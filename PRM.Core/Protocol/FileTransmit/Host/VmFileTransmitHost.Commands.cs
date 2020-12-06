@@ -67,7 +67,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             }
                         }
                         ShowFolder(CurrentPath, showIoMessage: false);
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdDelete;
             }
@@ -93,7 +93,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                         {
                             SelectedRemoteItem.IsRenaming = true;
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdBeginRenaming;
             }
@@ -153,7 +153,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             }
                             ShowFolder(CurrentPath, showIoMessage: false);
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdEndRenaming;
             }
@@ -188,7 +188,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 SelectedRemoteItem = item.First();
                             }
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdCancelRenaming;
             }
@@ -250,7 +250,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 IoMessage = e.Message;
                             }
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdListViewDoubleClick;
             }
@@ -279,7 +279,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                         {
                             SelectedRemoteItem = item.First();
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdGoToPathCurrent;
             }
@@ -303,7 +303,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                         {
                             ShowFolder(CurrentPath.Substring(0, CurrentPath.LastIndexOf("/")));
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdGoToParent;
             }
@@ -327,7 +327,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             _pathHistoryFollowing.Push(CurrentPath);
                             ShowFolder(p, 1);
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdGoToPathPrevious;
             }
@@ -351,7 +351,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             _pathHistoryPrevious.Push(CurrentPath);
                             ShowFolder(p, 2);
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdGoToPathFollowing;
             }
@@ -399,7 +399,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             AddTransmitTask(t);
                             t.StartTransmitAsync();
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdDownload;
             }
@@ -450,7 +450,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 DoUpload(new List<string>(){ fbd.SelectedPath });
                             }
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdUpload;
             }
@@ -479,7 +479,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             return;
                         }
                         DoUpload(fl);
-                    }, o => Trans?.IsConnected() == true 
+                    }, o => Trans?.IsConnected() == true
                             && Clipboard.GetFileDropList().Count > 0
                             && Clipboard.GetFileDropList().Cast<string>().All(f => File.Exists(f) || Directory.Exists(f)));
                 }
@@ -593,7 +593,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 }
                             }
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdShowTransmitDstPath;
             }
@@ -619,7 +619,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             t.TryCancel();
                             TransmitTasks.Remove(t);
                         }
-                    }, o => Trans?.IsConnected() == true);
+                    });
                 }
                 return _cmdDeleteTransmitTask;
             }

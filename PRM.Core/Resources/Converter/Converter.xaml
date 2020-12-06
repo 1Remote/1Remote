@@ -5,7 +5,8 @@
     <converter:ConverterIsLowerThan x:Key="ConverterIsLowerThan1" CompareValue="1"/>
     <converter:ConverterBool2Visible x:Key="ConverterBool2Visible"/>
     <converter:ConverterBool2VisibleInv x:Key="ConverterBool2VisibleInv"/>
-    <converter:ConverterTextWidthAndContent2FontSize x:Key="ConverterTextWidthAndContent2FontSize"/>
-    <converter:ConverterStringIsContainXXX x:Key="ConverterStringIsContainXXX"/>
+    <converter:ConverterTextWidthAndContent2PresentationSize x:Key="ConverterTextWidthAndContent2PresentationSize"/>
+    <converter:ConverterKeywordIsMatchProtocolServerInSelectedGroup x:Key="ConverterKeywordIsMatchProtocolServerInSelectedGroup"/>
     <converter:ConverterDouble2Half x:Key="ConverterDouble2Half"/>
+    <converter:ConverterColorHexString2Brush x:Key="ConverterColorHexString2Brush"></converter:ConverterColorHexString2Brush>
 </ResourceDictionary>

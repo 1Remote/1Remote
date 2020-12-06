@@ -109,7 +109,7 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_language}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_language}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
                                           SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
@@ -123,9 +123,9 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_start}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_start}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -135,7 +135,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_item_start_minimized}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -149,7 +149,7 @@
                                     <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
                                 </Style>
                             </StackPanel.Resources>
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_server_order_by}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_server_order_by}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
@@ -159,10 +159,10 @@
                                     <ColumnDefinition></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <RadioButton Margin="0 2" Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.Name}}" Content="{DynamicResource system_options_general_item_server_order_by_name}"/>
-                                <RadioButton Margin="0 2" Grid.Column="1" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.Protocol}}" Content="{DynamicResource system_options_general_item_server_order_by_protocol}"/>
-                                <RadioButton Margin="0 2" Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeDesc}}" Content="{DynamicResource system_options_general_item_server_order_by_add_time_asc}"/>
-                                <RadioButton Margin="0 2" Grid.Column="1" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeAsc}}" Content="{DynamicResource system_options_general_item_server_order_by_add_time_desc}"/>
+                                <RadioButton Margin="0 2" Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.Name}}" Content="{DynamicResource system_options_general_server_order_by_name}"/>
+                                <RadioButton Margin="0 2" Grid.Column="1" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.Protocol}}" Content="{DynamicResource system_options_general_server_order_by_protocol}"/>
+                                <RadioButton Margin="0 2" Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeDesc}}" Content="{DynamicResource system_options_general_server_order_by_add_time_asc}"/>
+                                <RadioButton Margin="0 2" Grid.Column="1" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeAsc}}" Content="{DynamicResource system_options_general_server_order_by_add_time_desc}"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -176,16 +176,16 @@
                                     <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
                                 </Style>
                             </StackPanel.Resources>
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_tab_mode}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_tab_mode}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <RadioButton Margin="0 2" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToLatestActivate}}" Content="{DynamicResource system_options_general_item_tab_mode_new_to_latest}"/>
-                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToGroup}}" Content="{DynamicResource system_options_general_item_tab_mode_new_to_group}"/>
-                                <RadioButton Margin="0 2" Grid.Row="2" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToProtocol}}" Content="{DynamicResource system_options_general_item_tab_mode_new_to_protocol}"/>
+                                <RadioButton Margin="0 2" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToLatestActivate}}" Content="{DynamicResource system_options_general_tab_mode_new_to_latest}"/>
+                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToGroup}}" Content="{DynamicResource system_options_general_tab_mode_new_to_group}"/>
+                                <RadioButton Margin="0 2" Grid.Row="2" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToProtocol}}" Content="{DynamicResource system_options_general_tab_mode_new_to_protocol}"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -193,7 +193,7 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}" Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_log_file_path}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_log_file_path}"></TextBlock>
                             <!--<Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
@@ -204,7 +204,7 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="0"  Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}"></TextBlock>
                             <!--<Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
@@ -214,8 +214,8 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3"  Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
-                            <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_item_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -355,7 +355,7 @@
                     </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_item_icons_folder_path}" Visibility="Hidden"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}" Visibility="Hidden"></TextBlock>
                             <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_data_security_info_encrypt_private_key_warning}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
@@ -398,16 +398,16 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Name="TabItemTheme" Header="{DynamicResource system_options_data_theme_title}">
+            <TabItem Name="TabItemTheme" Header="{DynamicResource system_options_theme_title}">
                 <StackPanel Margin="0 20 0 0">
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource system_options_data_theme_prm_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                            <TextBlock Text="{DynamicResource system_options_theme_prm_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
                     </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_theme_prm_theme}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_prm_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
                                 <ComboBox SelectedValuePath="Tag"
                                           ItemsSource="{Binding SystemConfig.Theme.PrmColorThemeNames}"
@@ -418,7 +418,7 @@
                             <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
                                 (?)
                             </TextBlock>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource system_options_data_theme_prm_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource system_options_theme_prm_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -451,25 +451,25 @@
                                 </Style>
                             </Grid.Resources>
 
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource system_options_data_theme_prm_color_normal}"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource system_options_data_theme_prm_color_lighter}"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="{DynamicResource system_options_data_theme_prm_color_darker}"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource system_options_data_theme_prm_color_foreground}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource system_options_theme_prm_color_normal}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource system_options_theme_prm_color_lighter}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="{DynamicResource system_options_theme_prm_color_darker}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource system_options_theme_prm_color_foreground}"></TextBlock>
 
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_data_theme_prm_main_color}" Width="100" TextAlignment="Right"></TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_main_color}" Width="100" TextAlignment="Right"></TextBlock>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor1}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor1Lighter}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor1Darker}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor1Foreground}"/>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_data_theme_prm_secondary_color}" Width="100" TextAlignment="Right"></TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_secondary_color}" Width="100" TextAlignment="Right"></TextBlock>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor2}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor2Lighter}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor2Darker}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}"/>
 
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource system_options_data_theme_prm_background_color}" Width="100" TextAlignment="Right"></TextBlock>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_background_color}" Width="100" TextAlignment="Right"></TextBlock>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainBgColor}"/>
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainBgColorForeground}"/>
                         </Grid>
@@ -477,12 +477,12 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource system_options_data_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                            <TextBlock Text="{DynamicResource system_options_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
                     </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_theme_putty_font_size}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
                                 <TextBox Text="{Binding SystemConfig.Theme.PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
                             </Grid>
@@ -490,7 +490,7 @@
                     </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_theme_putty_theme}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
                                 <ComboBox SelectedValuePath="Tag"
                                           ItemsSource="{Binding SystemConfig.Theme.PuttyThemeNames}"
@@ -502,6 +502,34 @@
                                     (?)
                                 </Hyperlink>
                             </TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+
+
+                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Tab" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.Resources>
+                                <Style TargetType="RadioButton">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_tab_ui}"></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <RadioButton Margin="0 2" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}"/>
+                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}"/>
+                            </Grid>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
