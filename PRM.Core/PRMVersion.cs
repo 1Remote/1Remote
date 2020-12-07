@@ -10,8 +10,8 @@ namespace PRM.Core
     {
         public const int Major = 0;
         public const int Minor = 5;
-        public const int Build = 4;
-        public const int ReleaseDate = 2012042104;
+        public const int Build = 5;
+        public const int ReleaseDate = 2012072119;
         public static string Version => $"{Major}.{Minor}.{Build}.{ReleaseDate}";
     }
 }

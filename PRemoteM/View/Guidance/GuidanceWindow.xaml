@@ -156,9 +156,10 @@
                 </Grid>
 
 
-                <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-                    <TextBlock Margin="2" Foreground="{StaticResource MainColor1ForegroundBrush}">Language:</TextBlock>
-                    <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
+                <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+                        <TextBlock Margin="2" Foreground="{StaticResource MainColor1ForegroundBrush}">Language:</TextBlock>
+                        <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
                               Style="{StaticResource ComboBoxFlatStyle}"
                               Foreground="{StaticResource MainColor1ForegroundBrush}"
                               SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
@@ -166,6 +167,30 @@
                               HorizontalAlignment="Right"
                               VerticalAlignment="Top"
                               DisplayMemberPath="Value" Height="20" Width="100"/>
+                    </StackPanel>
+                    <TextBlock>
+                        <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">
+                            <Hyperlink.Style>
+                                <Style TargetType="{x:Type Hyperlink}">
+                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                            <Setter Property="TextBlock.TextDecorations">
+                                                <Setter.Value>
+                                                    <TextDecorationCollection>
+                                                        <TextDecoration Location="Underline"/>
+                                                    </TextDecorationCollection>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Hyperlink.Style>
+                            Can't find your language?
+                        </Hyperlink>
+                    </TextBlock>
                 </StackPanel>
 
 
@@ -258,7 +283,7 @@
 
 
 
-                    <Grid Name="Grid2" Background="{StaticResource MainColor1Brush}" Visibility="Collapsed">
+                    <Grid Name="Grid2" Background="{StaticResource MainColor1Brush}" Visibility="Visible">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*"  />
@@ -298,7 +323,7 @@
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                 </Style>
                             </Grid.Resources>
-                            <StackPanel Margin="0 30 0 0">
+                            <StackPanel Margin="0 15 0 0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Style="{StaticResource HeaderStyle}"
@@ -314,6 +339,21 @@
                                         Text="{DynamicResource system_options_general_start_minimized}">
                                     </TextBlock>
                                     <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
+                                </StackPanel>
+
+
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Resources>
+                                        <local:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool"/>
+                                    </StackPanel.Resources>
+                                    <TextBlock
+                                        Style="{StaticResource HeaderStyle}"
+                                        Text="{DynamicResource system_options_theme_tab_ui}">
+                                    </TextBlock>
+                                    <StackPanel Margin="0" MinHeight="0" VerticalAlignment="Center">
+                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}"/>
+                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>

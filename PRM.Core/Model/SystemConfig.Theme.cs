@@ -200,7 +200,7 @@ namespace PRM.Core.Model
         }
 
 
-        private EnumTabUI _tabUi = EnumTabUI.ChromeLike;
+        private EnumTabUI _tabUi = EnumTabUI.Classical;
         public EnumTabUI TabUI
         {
             get => _tabUi;

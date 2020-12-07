@@ -198,7 +198,7 @@ namespace PRM.View.TabWindow
             return new Size()
             {
                 Width = TabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
-                Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
+                Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - tabContentBorder.Top - 1,
             };
         }
 

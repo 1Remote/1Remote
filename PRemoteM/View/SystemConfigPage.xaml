@@ -107,7 +107,7 @@
             <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
                 <StackPanel Margin="0 20 0 0">
 
-                    <Grid Style="{StaticResource EditorRowGrid}">
+                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_language}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
@@ -118,7 +118,34 @@
                             </Grid>
                         </StackPanel>
                     </Grid>
-
+                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                            <TextBlock Margin="0 0 0 0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="450" TextWrapping="WrapWithOverflow">
+                                <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
+                                    <Hyperlink.Style>
+                                        <Style TargetType="{x:Type Hyperlink}">
+                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                            <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                    <Setter Property="TextBlock.TextDecorations">
+                                                        <Setter.Value>
+                                                            <TextDecorationCollection>
+                                                                <TextDecoration Location="Underline"/>
+                                                            </TextDecorationCollection>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Hyperlink.Style>
+                                    Can't find your language?
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
 
 
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
@@ -527,8 +554,8 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <RadioButton Margin="0 2" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}"/>
-                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}"/>
+                                <RadioButton Margin="0 2" Grid.Row="0"  IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}"/>
+                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
