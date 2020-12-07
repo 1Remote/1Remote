@@ -185,13 +185,13 @@ namespace PRM.View.TabWindow
         public Size GetTabContentSize()
         {
             Debug.Assert(this.Resources["TabContentBorder"] != null);
-            Debug.Assert(this.Resources["TrapezoidHeight"] != null);
+            Debug.Assert(this.Resources["TitleBarHeight"] != null);
             var tabContentBorder = (Thickness)this.Resources["TabContentBorder"];
-            var trapezoidHeight = (double)this.Resources["TrapezoidHeight"];
+            var trapezoidHeight = (double)this.Resources["TitleBarHeight"];
             return new Size()
             {
                 Width = TabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
-                Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - 1,
+                Height = TabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - tabContentBorder.Top - 1,
             };
         }
 
