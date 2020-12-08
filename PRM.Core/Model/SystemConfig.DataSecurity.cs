@@ -673,81 +673,81 @@ namespace PRM.Core.Model
             }
         }
 
-        private RelayCommand _cmdExportToCsv;
-        public RelayCommand CmdExportToCsv
-        {
-            get
-            {
-                if (_cmdExportToCsv == null)
-                {
-                    _cmdExportToCsv = new RelayCommand((o) =>
-                    {
-                        var res = CheckIfDbIsOk();
-                        if (!res.Item1)
-                        {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                            return;
-                        }
-                        var dlg = new SaveFileDialog
-                        {
-                            Filter = "PRM csv data|*.csv",
-                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
-                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".csv"
-                        };
-                        if (dlg.ShowDialog() == true)
-                        {
-                            var sb = new StringBuilder();
-                            sb.AppendLine("name;protocol;panel;hostname;port;username;password");
-                            foreach (var vs in GlobalData.Instance.VmItemList)
-                            {
-                                var protocol = "";
-                                var name = "";
-                                var group = "";
-                                var user = "";
-                                var pwd = "";
-                                var address = "";
-                                string port = "";
+        //private RelayCommand _cmdExportToCsv;
+        //public RelayCommand CmdExportToCsv
+        //{
+        //    get
+        //    {
+        //        if (_cmdExportToCsv == null)
+        //        {
+        //            _cmdExportToCsv = new RelayCommand((o) =>
+        //            {
+        //                var res = CheckIfDbIsOk();
+        //                if (!res.Item1)
+        //                {
+        //                    MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+        //                    return;
+        //                }
+        //                var dlg = new SaveFileDialog
+        //                {
+        //                    Filter = "PRM csv data|*.csv",
+        //                    Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
+        //                    FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".csv"
+        //                };
+        //                if (dlg.ShowDialog() == true)
+        //                {
+        //                    var sb = new StringBuilder();
+        //                    sb.AppendLine("name;protocol;panel;hostname;port;username;password");
+        //                    foreach (var vs in GlobalData.Instance.VmItemList)
+        //                    {
+        //                        var protocol = "";
+        //                        var name = "";
+        //                        var group = "";
+        //                        var user = "";
+        //                        var pwd = "";
+        //                        var address = "";
+        //                        string port = "";
 
-                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                name = serverBase.DispName;
-                                group = serverBase.GroupName;
-                                protocol = serverBase.Protocol;
+        //                        var serverBase = (ProtocolServerBase)vs.Server.Clone();
+        //                        name = serverBase.DispName;
+        //                        group = serverBase.GroupName;
+        //                        protocol = serverBase.Protocol;
 
-                                DecryptPwd(serverBase);
+        //                        DecryptPwd(serverBase);
 
 
-                                // todo ADD RD GATEWAY
-                                if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-                                {
-                                    var obj = (ProtocolServerWithAddrPortUserPwdBase)serverBase;
-                                    user = obj.UserName;
-                                    address = obj.Address;
-                                    port = obj.Port;
-                                }
-                                else if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
-                                {
-                                    var obj = (ProtocolServerWithAddrPortBase)serverBase;
-                                    address = obj.Address;
-                                    port = obj.Port;
-                                }
+        //                        // todo ADD RD GATEWAY
+        //                        if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+        //                        {
+        //                            var obj = (ProtocolServerWithAddrPortUserPwdBase)serverBase;
+        //                            user = obj.UserName;
+        //                            address = obj.Address;
+        //                            port = obj.Port;
+        //                        }
+        //                        else if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+        //                        {
+        //                            var obj = (ProtocolServerWithAddrPortBase)serverBase;
+        //                            address = obj.Address;
+        //                            port = obj.Port;
+        //                        }
 
-                                const string mark = "%THIS_IS_A_SENUCOLON%";
-                                protocol = protocol.Replace(";", mark);
-                                name = name.Replace(";", mark);
-                                group = group.Replace(";", mark);
-                                user = user.Replace(";", mark);
-                                pwd = pwd.Replace(";", mark);
-                                address = address.Replace(";", mark);
-                                port = port.Replace(";", mark);
-                                sb.AppendLine($"{name};{protocol};{group};{address};{port};{user};{pwd}");
-                            }
-                            File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
-                        }
-                    });
-                }
-                return _cmdExportToCsv;
-            }
-        }
+        //                        const string mark = "%THIS_IS_A_SENUCOLON%";
+        //                        protocol = protocol.Replace(";", mark);
+        //                        name = name.Replace(";", mark);
+        //                        group = group.Replace(";", mark);
+        //                        user = user.Replace(";", mark);
+        //                        pwd = pwd.Replace(";", mark);
+        //                        address = address.Replace(";", mark);
+        //                        port = port.Replace(";", mark);
+        //                        sb.AppendLine($"{name};{protocol};{group};{address};{port};{user};{pwd}");
+        //                    }
+        //                    File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+        //                }
+        //            });
+        //        }
+        //        return _cmdExportToCsv;
+        //    }
+        //}
 
         private RelayCommand _cmdImportFromJson;
         public RelayCommand CmdImportFromJson
@@ -829,17 +829,27 @@ namespace PRM.Core.Model
                                 var list = new List<ProtocolServerBase>();
                                 using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
                                 {
+                                    var firstLine = sr.ReadLine();
+                                    if(string.IsNullOrWhiteSpace(firstLine))
+                                        return;
+
                                     // title
-                                    var title = sr.ReadLine().ToLower().Split(';').ToList();
-                                    int protocolIndex = title.IndexOf("protocol");
-                                    int nameIndex = title.IndexOf("name");
-                                    int groupIndex = title.IndexOf("panel");
-                                    int userIndex = title.IndexOf("username");
-                                    int pwdIndex = title.IndexOf("password");
-                                    int addressIndex = title.IndexOf("hostname");
-                                    int portIndex = title.IndexOf("port");
-                                    if (protocolIndex == 0)
-                                        throw new ArgumentException("can't find protocol field");
+                                    var title = firstLine.ToLower().Split(';').ToList();
+
+                                    //int RdpVersion = title.IndexOf("RdpVersion");
+
+                                    //int vncCompression = title.IndexOf("VNCCompression");
+                                    //int vncEncoding = title.IndexOf("VNCEncoding");
+                                    //int vncAuthMode = title.IndexOf("VNCAuthMode");
+                                    //int vncProxyType = title.IndexOf("VNCProxyType");
+                                    //int vncProxyIP = title.IndexOf("VNCProxyIP");
+                                    //int vncProxyPort = title.IndexOf("VNCProxyPort");
+                                    //int vncProxyUsername = title.IndexOf("VNCProxyUsername");
+                                    //int vncProxyPassword = title.IndexOf("VNCProxyPassword");
+                                    //int vncColors = title.IndexOf("VNCColors");
+                                    //int vncSmartSizeMode = title.IndexOf("VNCSmartSizeMode");
+                                    //int vncViewOnly = title.IndexOf("VNCViewOnly");
+
 
                                     var r = new Random();
                                     // body
@@ -849,35 +859,27 @@ namespace PRM.Core.Model
                                         var arr = line.Split(';');
                                         if (arr.Length >= 7)
                                         {
+                                            string getValue(string fieldName)
+                                            {
+                                                var i = title.IndexOf(fieldName);
+                                                if (i >= 0)
+                                                {
+                                                    var val = arr[i];
+                                                    //val = val.Replace("%THIS_IS_A_SENUCOLON%", ";");
+                                                    return val;
+                                                }
+                                                return "";
+                                            }
                                             ProtocolServerBase server = null;
-                                            var protocol = arr[protocolIndex].ToLower();
-                                            var name = "";
-                                            var group = "";
-                                            var user = "";
-                                            var pwd = "";
-                                            var address = "";
+                                            var protocol = getValue("protocol").ToLower();
+                                            var name = getValue("name");
+                                            var group = getValue("panel");
+                                            var user = getValue("username");
+                                            var pwd = getValue("password");
+                                            var address = getValue("hostname");
                                             int port = 22;
-                                            if (nameIndex >= 0)
-                                                name = arr[nameIndex];
-                                            if (groupIndex >= 0)
-                                                group = arr[groupIndex];
-                                            if (userIndex >= 0)
-                                                user = arr[userIndex];
-                                            if (pwdIndex >= 0)
-                                                pwd = arr[pwdIndex];
-                                            if (addressIndex >= 0)
-                                                address = arr[addressIndex];
-                                            if (portIndex >= 0)
-                                                port = int.Parse(arr[portIndex]);
+                                            int.TryParse(getValue("hostname"), out port);
 
-
-                                            const string mark = "%THIS_IS_A_SENUCOLON%";
-                                            protocol = protocol.Replace(mark, ";");
-                                            name = name.Replace(mark, ";");
-                                            group = group.Replace(mark, ";");
-                                            user = user.Replace(mark, ";");
-                                            pwd = pwd.Replace(mark, ";");
-                                            address = address.Replace(mark, ";");
                                             // todo ADD RD GATEWAY
                                             switch (protocol)
                                             {
@@ -890,7 +892,27 @@ namespace PRM.Core.Model
                                                         UserName = user,
                                                         Password = pwd,
                                                         Port = port.ToString(),
+                                                        RdpWindowResizeMode = ERdpWindowResizeMode.AutoResize, // string.Equals(getValue("AutomaticResize"), "TRUE", StringComparison.CurrentCultureIgnoreCase) ? ERdpWindowResizeMode.AutoResize : ERdpWindowResizeMode.Fixed,
+                                                        IsConnWithFullScreen = string.Equals(getValue("Resolution"), "Fullscreen", StringComparison.CurrentCultureIgnoreCase),
+                                                        RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen,
+                                                        DisplayPerformance = getValue("Colors")?.IndexOf("32") >= 0 ? EDisplayPerformance.High : EDisplayPerformance.Auto,
+                                                        IsAdministrativePurposes = string.Equals(getValue("ConnectToConsole"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableClipboard = string.Equals(getValue("RedirectClipboard"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableDiskDrives = string.Equals(getValue("RedirectDiskDrives"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableKeyCombinations = string.Equals(getValue("RedirectKeys"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableSounds = string.Equals(getValue("BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableAudioCapture = string.Equals(getValue("RedirectAudioCapture"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnablePorts = string.Equals(getValue("RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnablePrinters = string.Equals(getValue("RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableSmartCardsAndWinHello = string.Equals(getValue("RedirectSmartCards"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        GatewayMode = string.Equals(getValue("RDGatewayUsageMethod"), "Never", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.DoNotUseGateway:
+                                                                            (string.Equals(getValue("RDGatewayUsageMethod"), "Detect", StringComparison.CurrentCultureIgnoreCase)? EGatewayMode.AutomaticallyDetectGatewayServerSettings: EGatewayMode.UseTheseGatewayServerSettings),
+                                                        GatewayHostName = getValue("RDGatewayHostname"),
+                                                        GatewayPassword = getValue("RDGatewayPassword"),
                                                     };
+
+
+
                                                     break;
                                                 case "ssh1":
                                                     server = new ProtocolServerSSH()

@@ -155,6 +155,28 @@ namespace PRM.ViewModel
             }
         }
 
+        private RelayCommand _cmdShowTabByIndex;
+        public RelayCommand CmdShowTabByIndex
+        {
+            get
+            {
+                if (_cmdShowTabByIndex == null)
+                {
+                    _cmdShowTabByIndex = new RelayCommand((o) =>
+                    {
+                        if (int.TryParse(o.ToString(), out int i))
+                        {
+                            if (i > 0 && i <= Items.Count)
+                            {
+                                SelectedItem = Items[i - 1];
+                            }
+                        }
+                    }, o => this.SelectedItem != null);
+                }
+                return _cmdShowTabByIndex;
+            }
+        }
+
         private RelayCommand _cmdGoMinimize;
         public RelayCommand CmdGoMinimize
         {

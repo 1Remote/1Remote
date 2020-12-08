@@ -15,6 +15,17 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+1" Command="{Binding CmdShowTabByIndex}" CommandParameter="1"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+2" Command="{Binding CmdShowTabByIndex}" CommandParameter="2"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+3" Command="{Binding CmdShowTabByIndex}" CommandParameter="3"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+4" Command="{Binding CmdShowTabByIndex}" CommandParameter="4"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+5" Command="{Binding CmdShowTabByIndex}" CommandParameter="5"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+6" Command="{Binding CmdShowTabByIndex}" CommandParameter="6"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+7" Command="{Binding CmdShowTabByIndex}" CommandParameter="7"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+8" Command="{Binding CmdShowTabByIndex}" CommandParameter="8"></KeyBinding>
+        <KeyBinding Gesture="Ctrl+9" Command="{Binding CmdShowTabByIndex}" CommandParameter="9"></KeyBinding>
+    </Window.InputBindings>
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource MainColor1Brush}">
