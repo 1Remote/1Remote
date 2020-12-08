@@ -10,7 +10,7 @@
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="2450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -397,8 +397,8 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToJson}"
                                             Content="{DynamicResource system_options_data_security_export_to_json}"></controls:ButtonEx>
-                                    <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToCsv}"
-                                            Content="{DynamicResource system_options_data_security_export_to_csv}"></controls:ButtonEx>
+                                    <!--<controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdExportToCsv}"
+                                            Content="{DynamicResource system_options_data_security_export_to_csv}"></controls:ButtonEx>-->
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -414,7 +414,7 @@
                                     <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromJson}"
                                             Content="{DynamicResource system_options_data_security_import_from_json}"></controls:ButtonEx>
                                     <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdImportFromCsv}"
-                                            Content="{DynamicResource system_options_data_security_import_from_csv}"></controls:ButtonEx>
+                                            Content="{DynamicResource system_options_data_security_import_from_mremoteng_csv}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

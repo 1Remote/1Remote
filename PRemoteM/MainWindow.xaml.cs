@@ -168,8 +168,10 @@ namespace PRM
             Dispatcher?.Invoke(() =>
             {
                 this.Visibility = Visibility.Visible;
+                Topmost = true;
                 this.ShowInTaskbar = true;
                 this.Activate();
+                Topmost = false;
             });
         }
 

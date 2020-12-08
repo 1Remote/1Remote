@@ -256,6 +256,8 @@ namespace PRM.Core.Protocol.RDP.Host
 
             #endregion
 
+            _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
+
             #region Performance
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
             int nDisplayPerformanceFlag = 0;

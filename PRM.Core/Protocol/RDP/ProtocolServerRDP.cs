@@ -79,6 +79,13 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
+        private bool _isAdministrativePurposes = false;
+        public bool IsAdministrativePurposes
+        {
+            get => _isAdministrativePurposes;
+            set => SetAndNotifyIfChanged(nameof(IsAdministrativePurposes), ref _isAdministrativePurposes, value);
+        }
+
         #region Display
 
         private ERdpFullScreenFlag _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
@@ -263,7 +270,6 @@ namespace PRM.Core.Protocol.RDP
         #endregion
 
 
-
         #region Gateway
         private EGatewayMode _gatewayMode = EGatewayMode.DoNotUseGateway;
         public EGatewayMode GatewayMode
@@ -392,7 +398,7 @@ namespace PRM.Core.Protocol.RDP
                     throw new ArgumentOutOfRangeException();
             }
 
-
+            
             rdpConfig.NetworkAutodetect = 0;
             switch (this.DisplayPerformance)
             {
@@ -440,7 +446,6 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.AudioMode = 2;
             rdpConfig.AudioCaptureMode = 0;
 
-            
             if (this.EnableDiskDrives)
                 rdpConfig.RedirectDrives = 1;
             if (this.EnableClipboard)
