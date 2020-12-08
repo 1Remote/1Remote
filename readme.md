@@ -9,12 +9,18 @@ PRemoteM = Personal Remote Manager
 
 PRemoteM is a modern remote session manager and launcher, which allows you to open a remote session at any time and anywhere. Fornow PRemoteM supports multiple protocols such as RDP, VNC, SSH, Telnet, sFtp.
 
-- :smiley:I am the old user of mRemoteNG.
-- :disappointed_relieved:I decided make a new remote tool in WPF after I bought two 4k monitors.
   
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/maindemo.png"/>
 </p>
+
+
+## Make PRemoteM stronger
+If you like **PRemoeM**, let's make **PRemoeM** stronger together by
+
+1. simply star this repository.
+2. [help translation](https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation)
+3. [buy a coffee](https://ko-fi.com/VShawn)
 
 ## Overview
 
@@ -53,7 +59,7 @@ PRemoteM is a modern remote session manager and launcher, which allows you to op
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.4.2012042104
+Latest Version: 0.5.4.2012072119
 
 - [Microsoft Store(testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Download exe](https://github.com/VShawn/PRemoteM/releases)
@@ -64,6 +70,9 @@ Latest Version: 0.5.4.2012042104
 
 - [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
+
+
+
 
 ## Usage
 
@@ -95,11 +104,3 @@ By encrypting data, no one can get your remote password by open database directl
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migrate.jpg"/>
 </p>
-
-## Make contribution
-Help to make this tool more powerful.
-Your name woluld be shown below as a contributor.
-
-1. Propose new improvements, including but not limited to bugs, new requirements, design, and interactive suggestions.
-2. Help to translate, duplicate the lang file [en-us.js](https://github.com/VShawn/PRemoteM/blob/dev/PRM.Core/Languages/en-us.json), and translate it to your language.
-3. [donations are welcome.](https://www.paypal.me/ShawnVeck)
