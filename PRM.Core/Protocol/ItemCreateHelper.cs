@@ -14,50 +14,15 @@ namespace PRM.Core.DB
         private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
         public static ProtocolServerBase CreateFromDbOrm(Server item)
         {
-            // reflect all the child class
-            lock (Locker)
-            {
-                if (_baseList.Count == 0)
-                {
-                    var assembly = typeof(ProtocolServerBase).Assembly;
-                    var types = assembly.GetTypes();
-                    _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolServerBase)) && !x.IsAbstract)
-                        .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
-                }
-                
-                // get instance form json string
-                foreach (var @base in _baseList)
-                {
-                    if (item.Protocol == @base.Protocol &&
-                        item.ClassVersion == @base.ClassVersion)
-                    {
-                        var jsonStr = item.JsonConfigString;
-                        //if (rsa != null)
-                        //{
-                        //    var tmp = rsa.DecodeOrNull(jsonStr);
-                        //    if (tmp != null)
-                        //    {
-                        //        jsonStr = tmp;
-                        //    }
-                        //}
-                        var ret = @base.CreateFromJsonString(jsonStr);
-                        if (ret != null)
-                        {
-                            ret.Id = item.Id;
-                            return ret;
-                        }
-                    }
-                }
-            }
-            return null;
+            return CreateFromJsonString(item.JsonConfigString, item.Id);
         }
 
-        public static ProtocolServerBase CreateFromJsonString(string jsonString)
+        public static ProtocolServerBase CreateFromJsonString(string jsonString, uint id = 0)
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||
-                jObj.Protocol == null ||
-                jObj.ClassVersion == null)
+                jObj?.Protocol == null ||
+                jObj?.ClassVersion == null)
                 return null;
 
             // reflect all the child class
@@ -81,6 +46,7 @@ namespace PRM.Core.DB
                     var ret = @base.CreateFromJsonString(jsonString);
                     if (ret != null)
                     {
+                        ret.Id = id;
                         return ret;
                     }
                 }
