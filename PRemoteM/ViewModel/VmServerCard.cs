@@ -50,7 +50,7 @@ namespace PRM.ViewModel
             {
                 return _cmdEditServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false, true);
                 });
             }
         }
@@ -63,7 +63,7 @@ namespace PRM.ViewModel
             {
                 return _cmdDuplicateServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true, true);
                 });
             }
         }

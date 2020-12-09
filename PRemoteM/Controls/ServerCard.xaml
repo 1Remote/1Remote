@@ -10,7 +10,7 @@
     <UserControl.Resources>
         <s:Double x:Key="CardWidth">144</s:Double>
     </UserControl.Resources>
-    <Grid>
+    <Grid MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
         <Grid Name="DispServerContext">
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>

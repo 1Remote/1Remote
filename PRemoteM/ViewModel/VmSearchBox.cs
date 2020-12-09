@@ -186,7 +186,7 @@ namespace PRM.ViewModel
                 Run = () =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, false);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, false, false);
                 },
             });
             actions.Add(new ActionItem()
@@ -195,7 +195,7 @@ namespace PRM.ViewModel
                 Run = () =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, true);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, true, false);
                 },
             });
             if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))

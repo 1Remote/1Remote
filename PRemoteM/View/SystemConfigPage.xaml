@@ -122,7 +122,9 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                             <TextBlock Margin="0 0 0 0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="450" TextWrapping="WrapWithOverflow">
-                                <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
+                                <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" 
+                                           MouseRightButtonDown="ContentElement_OnMouseRightButtonDown"
+                                           NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
                                     <Hyperlink.Style>
                                         <Style TargetType="{x:Type Hyperlink}">
                                             <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>

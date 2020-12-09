@@ -59,7 +59,7 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.4.2012072119
+Latest Version: 0.5.4.2012091641
 
 - [Microsoft Store(testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Download exe](https://github.com/VShawn/PRemoteM/releases)

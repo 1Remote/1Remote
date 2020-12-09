@@ -98,7 +98,7 @@ namespace PRM.ViewModel
                 ProgressBarMaximum = arg2;
                 ProgressBarInfo = arg2 > 0 ? arg3 : "";
             };
-            GlobalEventHelper.OnGoToServerEditPage += (id, isDuplicate) =>
+            GlobalEventHelper.OnGoToServerEditPage += (id, isDuplicate, isInAnimationShow) =>
             {
                 ProtocolServerBase server;
                 if (id <= 0)
@@ -110,10 +110,9 @@ namespace PRM.ViewModel
                     Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == id));
                     server = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id).Server;
                 }
-
                 DispPage = new AnimationPage()
                 {
-                    InAnimationType = AnimationPage.InOutAnimationType.None,
+                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                     Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext, isDuplicate)),
                 };
