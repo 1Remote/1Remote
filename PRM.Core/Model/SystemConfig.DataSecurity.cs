@@ -788,7 +788,7 @@ namespace PRM.Core.Model
                                     }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                             catch (Exception e)
                             {
@@ -861,7 +861,7 @@ namespace PRM.Core.Model
                                         {
                                             string getValue(string fieldName)
                                             {
-                                                var i = title.IndexOf(fieldName);
+                                                var i = title.IndexOf(fieldName.ToLower());
                                                 if (i >= 0)
                                                 {
                                                     var val = arr[i];
@@ -878,7 +878,10 @@ namespace PRM.Core.Model
                                             var pwd = getValue("password");
                                             var address = getValue("hostname");
                                             int port = 22;
-                                            int.TryParse(getValue("hostname"), out port);
+                                            if(int.TryParse(getValue("port"), out var new_port))
+                                            {
+                                                port = new_port;
+                                            }
 
                                             // todo ADD RD GATEWAY
                                             switch (protocol)
@@ -905,8 +908,8 @@ namespace PRM.Core.Model
                                                         EnablePorts = string.Equals(getValue("RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnablePrinters = string.Equals(getValue("RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnableSmartCardsAndWinHello = string.Equals(getValue("RedirectSmartCards"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        GatewayMode = string.Equals(getValue("RDGatewayUsageMethod"), "Never", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.DoNotUseGateway:
-                                                                            (string.Equals(getValue("RDGatewayUsageMethod"), "Detect", StringComparison.CurrentCultureIgnoreCase)? EGatewayMode.AutomaticallyDetectGatewayServerSettings: EGatewayMode.UseTheseGatewayServerSettings),
+                                                        GatewayMode = string.Equals(getValue("RDGatewayUsageMethod"), "Never", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.DoNotUseGateway :
+                                                                            (string.Equals(getValue("RDGatewayUsageMethod"), "Detect", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.AutomaticallyDetectGatewayServerSettings : EGatewayMode.UseTheseGatewayServerSettings),
                                                         GatewayHostName = getValue("RDGatewayHostname"),
                                                         GatewayPassword = getValue("RDGatewayPassword"),
                                                     };
@@ -970,15 +973,16 @@ namespace PRM.Core.Model
                                 }
                                 if (list?.Count > 0)
                                 {
-                                    if (Rsa != null)
-                                        foreach (var serverBase in list)
-                                        {
-                                            EncryptPwd(serverBase);
-                                            Server.AddOrUpdate(serverBase, true);
-                                        }
+                                    foreach (var serverBase in list)
+                                    {
+                                        EncryptPwd(serverBase);
+                                        Server.AddOrUpdate(serverBase, true);
+                                    }
+                                    GlobalData.Instance.ServerListUpdate();
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                                 }
-                                GlobalData.Instance.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done"), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                else
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                             }
                             catch (Exception e)
                             {

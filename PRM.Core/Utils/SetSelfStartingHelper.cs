@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -57,10 +58,10 @@ namespace Shawn.Utils
         }
         private static string GetShortCutPath()
         {
-            var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
+            var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             var exePath = Process.GetCurrentProcess().MainModule.FileName;
             string md5 = MD5EncryptString(exePath);
-            var shortcutPath = System.IO.Path.Combine(startUpPath, string.Format("{0}_{1}.lnk", SystemConfig.AppName, md5));
+            var shortcutPath = System.IO.Path.Combine(startUpPath, $"{SystemConfig.AppName}_{md5}.lnk");
             return shortcutPath;
         }
         /// <summary>
@@ -178,7 +179,7 @@ namespace Shawn.Utils
 #endif
             }
         }
-        public static async void SetSelfStart(bool isSelfStart)
+        public static async void SetSelfStart(bool isSetSelfStart)
         {
             try
             {
@@ -186,7 +187,7 @@ namespace Shawn.Utils
                 switch (result.State)
                 {
                     case StartupTaskState.Disabled:
-                        if (isSelfStart)
+                        if (isSetSelfStart)
                         {
                             var newState = await result.RequestEnableAsync();
                         }
@@ -202,7 +203,7 @@ namespace Shawn.Utils
                         Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
                         break;
                     case StartupTaskState.Enabled:
-                        if (!isSelfStart)
+                        if (!isSetSelfStart)
                             result.Disable();
                         break;
                     case StartupTaskState.EnabledByPolicy:
@@ -215,7 +216,8 @@ namespace Shawn.Utils
             {
                 Console.WriteLine(e);
 #if !FOR_MICROSOFT_STORE_ONLY
-                if (isSelfStart)
+                var hasStartup = await IsSelfStart();
+                if (isSetSelfStart && hasStartup == false)
                 {
                     if (AppElvatedHelper.IsElvated())
                     {
@@ -254,7 +256,7 @@ namespace Shawn.Utils
                         AppElvatedHelper.RunElvatedTask(StartupMode.SetSelfStart);
                     }
                 }
-                else
+                else if(isSetSelfStart == false && hasStartup)
                 {
                     var shortcutPath = GetShortCutPath();
                     if (File.Exists(shortcutPath))

@@ -2,9 +2,9 @@
   "language_name": "English(US)",
 
 
-  "messagebox_title_warning": "Warning",
-  "messagebox_title_error": "Error",
-  "messagebox_title_info": "Info",
+  "messagebox_title_warning": "PRemote Warning",
+  "messagebox_title_error": "PRemote Error",
+  "messagebox_title_info": "PRemote Info",
 
   "button_exit": "Exit",
   "button_close": "Close",
@@ -103,7 +103,7 @@
   "system_options_data_security_import_dialog_title": "Select a file",
   "system_options_data_security_import_from_json": "from json",
   "system_options_data_security_import_from_mremoteng_csv": "from mRemoteNG csv",
-  "system_options_data_security_import_done": "The import has been successful.",
+  "system_options_data_security_import_done": "The import has been successful, add {0}.",
   "system_options_data_security_import_error": "Error data format!",
   "system_options_data_security_info_data_processing": "Data processing, do not close app.",
   "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
