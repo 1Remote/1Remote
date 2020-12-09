@@ -311,14 +311,14 @@ namespace PRM.View
                     {
                         var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
-                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;
                     }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                     {
                         var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
-                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;
                     }
                 default:
@@ -356,19 +356,20 @@ namespace PRM.View
             _vmSearchBox.HideActionsList();
         }
 
+        private void ButtonActionBack_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _vmSearchBox.HideActionsList();
+        }
+
         private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2)
+            if (_vmSearchBox.Actions.Count > 0
+                && _vmSearchBox.SelectedActionIndex >= 0
+                && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
             {
-                if (_vmSearchBox.Actions.Count > 0
-                    && _vmSearchBox.SelectedActionIndex >= 0
-                    && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
-                {
-                    _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
-                }
-
-                HideMe();
+                _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
             }
+            HideMe();
         }
     }
 }
