@@ -234,10 +234,18 @@ namespace PRM.Core.Model
             return null;
         }
 
-        private void AddOrUpdateLanguage(string code, string name, string path)
+        public void AddOrUpdateLanguage(string code, string name, string path)
         {
-            LanguageCode2Name.Add(code, name);
-            _languageCode2ResourcePath.Add(code, path);
+            if (LanguageCode2Name.ContainsKey(code))
+            {
+                LanguageCode2Name[code] = name;
+                _languageCode2ResourcePath[code] = path;
+            }
+            else
+            {
+                LanguageCode2Name.Add(code, name);
+                _languageCode2ResourcePath.Add(code, path);
+            }
         }
 
         public string GetText(string textKey)

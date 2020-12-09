@@ -71,5 +71,13 @@ namespace PRM.Controls
                 File.WriteAllText(dlg.FileName, server.ToJsonString(), Encoding.UTF8);
             }
         }
+
+        private void UIElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (VmServerCard != null && VmServerCard.CmdEditServer.CanExecute())
+            {
+                VmServerCard.CmdEditServer.Execute();
+            }
+        }
     }
 }

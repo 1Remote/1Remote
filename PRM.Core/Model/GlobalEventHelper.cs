@@ -19,8 +19,9 @@ namespace PRM.Core.Model
         /// Go to server edit by server id
         /// param1 uint: server id
         /// param2 boo: is duplicate?
+        /// param2 boo: show in animation?
         /// </summary>
-        public static Action<uint, bool> OnGoToServerEditPage { get; set; } = null;
+        public static Action<uint, bool, bool> OnGoToServerEditPage { get; set; } = null;
 
         /// <summary>
         /// Invoke to notify a newer version of te software was released

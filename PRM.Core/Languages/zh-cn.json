@@ -2,9 +2,9 @@
   "language_name": "中文(简体)",
 
 
-  "messagebox_title_warning": "警告",
-  "messagebox_title_error": "错误",
-  "messagebox_title_info": "提示",
+  "messagebox_title_warning": "PRemote 警告",
+  "messagebox_title_error": "PRemote 错误",
+  "messagebox_title_info": "PRemote 提示",
 
   "button_exit": "退出",
   "button_close": "关闭",
@@ -103,8 +103,8 @@
   "system_options_data_security_import_dialog_title": "选择导入文件",
   "system_options_data_security_import_from_json": "从 json",
   "system_options_data_security_import_from_mremoteng_csv": "从 mRemoteNG csv",
-  "system_options_data_security_import_done": "导入完成.",
-  "system_options_data_security_import_error": "导入的数据文件格式有误!",
+  "system_options_data_security_import_done": "已导入{0}条记录.",
+  "system_options_data_security_import_error": "导入0条，输入的数据文件格式有误!",
   "system_options_data_security_info_data_processing": "数据处理中，请勿关闭程序。",
   "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
   "system_options_data_security_info_clear_rebuild_database": "是否重置数据库？确认后数据将无法找回！",
