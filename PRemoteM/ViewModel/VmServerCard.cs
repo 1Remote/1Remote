@@ -75,11 +75,11 @@ namespace PRM.ViewModel
             {
                 return _cmdDeleteServer ??= new RelayCommand((o) =>
                 {
-                    if (MessageBox.Show(
+                    if (MessageBoxResult.Yes == MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("string_delete_confirm"),
                             SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
-                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) ==
-                        MessageBoxResult.Yes)
+                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
+                        )
                     {
                         GlobalData.Instance.ServerListRemove(Server);
                     }

@@ -424,6 +424,20 @@
 
 
 
+
+
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_delete_all_server}"></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" Margin="0 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdDeleteAllServer}"
+                                                       Content="{DynamicResource system_options_data_security_delete_all_server}"></controls:ButtonEx>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
                 </StackPanel>
             </TabItem>
 

@@ -185,6 +185,14 @@
                     </Grid>
                 </StackPanel>
             </Grid>
+
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="/admin"></TextBlock>
+                    <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" IsChecked="{Binding IsAdministrativePurposes}"></CheckBox>
+                </StackPanel>
+            </Grid>
         </StackPanel>
 
         <StackPanel>

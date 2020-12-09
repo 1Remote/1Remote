@@ -111,6 +111,7 @@
   "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
   "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
   "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
+  "system_options_data_security_delete_all_server": "删除所有会话",
 
   "system_options_theme_title": "外观",
   "system_options_theme_prm_title": "配色主题",
@@ -213,7 +214,10 @@
 
   // guidance 
   "guidance_introduce": "PRemoteM 为您管理远程会话，无论何时何地",
-  "guidance_feature_launcher": "快速呼出启动器",
+  "guidance_feature_launcher_key": "快速呼出启动器",
+  "guidance_feature_launcher_select": "选择项目",
+  "guidance_feature_launcher_connect": "启动会话",
+  "guidance_feature_launcher_menu": "弹出菜单",
   "guidance_feature_tab_demo": "可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体",
   "guidance_feature_start_setting1": "开始使用前请确认一些配置",
   "guidance_feature_start_setting2": "这些配置稍后同样可以在设置界面中修改",

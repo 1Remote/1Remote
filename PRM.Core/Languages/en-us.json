@@ -111,6 +111,7 @@
   "system_options_data_security_error_can_not_open": "File is not a database or file is a encrypted database!",
   "system_options_data_security_error_rsa_private_key_not_found": "Can't find the RSA private key!",
   "system_options_data_security_error_rsa_private_key_not_match": "RSA private key not match the public key!",
+  "system_options_data_security_delete_all_server": "Delete all servers",
 
   "system_options_theme_title": "Theme",
   "system_options_theme_prm_title": "Color Theme",
@@ -213,7 +214,10 @@
 
   // guidance 
   "guidance_introduce": "PRemoteM allows you to open a remote session at any time and anywhere.",
-  "guidance_feature_launcher": "call the launcher by",
+  "guidance_feature_launcher_key": "call the launcher by",
+  "guidance_feature_launcher_select": "select item by",
+  "guidance_feature_launcher_connect": "connect by",
+  "guidance_feature_launcher_menu": "menu by",
   "guidance_feature_tab_demo": "Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...",
   "guidance_feature_start_setting1": "Please confirm some settings before start use.",
   "guidance_feature_start_setting2": "You are able to change this setting latter in Options page.",
