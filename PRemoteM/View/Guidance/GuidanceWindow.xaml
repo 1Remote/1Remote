@@ -230,29 +230,52 @@
                         </Grid>
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid>
+                                <StackPanel VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Foreground="{StaticResource Gray600}"
+                                                   Text="{DynamicResource guidance_feature_launcher}">
+                                        </TextBlock>
+                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0 0 0">
+                                            <TextBlock>Alt</TextBlock>
+                                        </Border>
+                                        <TextBlock Text="+" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
+                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                                            <TextBlock>M</TextBlock>
+                                        </Border>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="select by" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
+                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                                            <TextBlock>↑</TextBlock>
+                                        </Border>
+                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                                            <TextBlock>↓</TextBlock>
+                                        </Border>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="connect by" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
+                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                                            <TextBlock>Enter</TextBlock>
+                                        </Border>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Pop menu by" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
+                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                                            <TextBlock>→</TextBlock>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="100" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{StaticResource Gray600}"
-                                    Text="{DynamicResource guidance_feature_launcher}">
-                                </TextBlock>
                                 <Grid Grid.Column="1" HorizontalAlignment="Left" Margin="8 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Style="{DynamicResource ShortcutBorderStyle}">
-                                        <TextBlock>Alt</TextBlock>
-                                    </Border>
-                                    <TextBlock Grid.Column="1"  Text="+" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
-                                    <Border Grid.Column="2" Style="{DynamicResource ShortcutBorderStyle}">
-                                        <TextBlock>M</TextBlock>
-                                    </Border>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -283,7 +306,7 @@
 
 
 
-                    <Grid Name="Grid2" Background="{StaticResource MainColor1Brush}" Visibility="Visible">
+                    <Grid Name="Grid2" Background="{StaticResource MainColor1Brush}" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*"  />

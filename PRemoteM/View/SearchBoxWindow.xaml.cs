@@ -356,19 +356,20 @@ namespace PRM.View
             _vmSearchBox.HideActionsList();
         }
 
+        private void ButtonActionBack_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _vmSearchBox.HideActionsList();
+        }
+
         private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2)
+            if (_vmSearchBox.Actions.Count > 0
+                && _vmSearchBox.SelectedActionIndex >= 0
+                && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
             {
-                if (_vmSearchBox.Actions.Count > 0
-                    && _vmSearchBox.SelectedActionIndex >= 0
-                    && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
-                {
-                    _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
-                }
-
-                HideMe();
+                _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
             }
+            HideMe();
         }
     }
 }
