@@ -19,13 +19,43 @@ using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
 using SQLite;
-
+using FreeSql.DataAnnotations;
 namespace PRM.Core.Model
 {
+    public class Blog
+    {
+        [FreeSql.DataAnnotations.Column(IsIdentity = true, IsPrimary = true)]
+        public int BlogId { get; set; }
+        public string Url { get; set; }
+        public int Rating { get; set; }
+    }
     public sealed class SystemConfigDataSecurity : SystemConfigBase
     {
         public SystemConfigDataSecurity(Ini ini) : base(ini)
         {
+
+            //IFreeSql fsql = new FreeSql.FreeSqlBuilder()
+            //    .UseConnectionString(FreeSql.DataType.Sqlite, "Data Source=db1.db", typeof(FreeSql.Sqlite.SqliteProvider<>))
+            //    .UseAutoSyncStructure(true) //自动同步实体结构到数据库
+            //    .Build(); //请务必定义成 Singleton 单例模式
+
+            //var blog = new Blog { Url = "http://sample.com" };
+            //blog.BlogId = (int)fsql.Insert<Blog>()
+            //    .AppendData(blog)
+            //    .ExecuteIdentity();
+
+            //var blogs = fsql.Select<Blog>()
+            //    .Where(b => b.Rating > 3)
+            //    .OrderBy(b => b.Url)
+            //    .Skip(100)
+            //    .Limit(10) //第100行-110行的记录
+            //    .ToList();
+
+            //fsql.Dispose();
+
+
+
+
             Load();
 
             // restore from back. (in these case .back will existed: data encrypt/decrypt processing throw exception)

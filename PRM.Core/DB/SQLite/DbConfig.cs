@@ -12,17 +12,8 @@ using SQLite;
 
 namespace PRM.Core.DB
 {
-    public class Config : OrmTableBase
+    public class DbConfig
     {
-        public static void Init()
-        {
-            using (var db = GetDb())
-            {
-                db.CreateTable<Config>();
-            }
-            IsInit = true;
-        }
-
         [PrimaryKey, AutoIncrement]
         public uint Id { get; set; }
 
@@ -30,9 +21,7 @@ namespace PRM.Core.DB
         public string Key { get; set; } = "";
 
         [NotNull]
-        public string Value { get; set; } = "";
-
-
+        public string Value { get; set;
         public static string RSA_SHA1
         {
             get

@@ -163,7 +163,7 @@ namespace PRM
 
         public void ActivateMe(bool isForceActivate = false)
         {
-            if(isForceActivate)
+            if (isForceActivate)
                 HideMe(false);
             Dispatcher?.Invoke(() =>
             {
@@ -201,7 +201,7 @@ namespace PRM
         {
             if (e.Key == Key.Escape)
             {
-                (sender as TextBox).Text = "";
+                ((TextBox) sender).Text = "";
             }
         }
 
