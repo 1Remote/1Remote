@@ -96,8 +96,6 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.AdvancedSettings5.GrabFocusOnConnect = true;
             _rdp.AdvancedSettings2.keepAliveInterval = 1000 * 60 * 5; // 1000 = 1000 ms
             _rdp.AdvancedSettings2.overallConnectionTimeout = 600; // The new time, in seconds. The maximum value is 600, which represents 10 minutes.
-                                                                   //// ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
-                                                                   //_rdp.AdvancedSettings7.ConnectToAdministerServer = true;
 
             #region Others
 
@@ -256,6 +254,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
             #endregion
 
+            // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
             _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
 
             #region Performance
