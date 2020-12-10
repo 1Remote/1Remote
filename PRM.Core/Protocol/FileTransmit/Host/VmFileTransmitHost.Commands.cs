@@ -44,7 +44,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             if (MessageBox.Show(
                                 SystemConfig.Instance.Language.GetText("string_delete_confirm"),
                                 SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.Yes)
+                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
                             {
                                 foreach (var itemInfo in RemoteItems)
                                 {
@@ -226,7 +226,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             && MessageBox.Show(
                                 msg,
                                 SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.Yes)
+                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) != MessageBoxResult.Yes)
                             {
                                 return;
                             }

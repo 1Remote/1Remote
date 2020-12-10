@@ -211,7 +211,7 @@ namespace PRM.Core.Model
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
             if (!res.Item1)
             {
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
@@ -303,7 +303,7 @@ namespace PRM.Core.Model
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
             if (!res.Item1)
             {
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
@@ -391,41 +391,6 @@ namespace PRM.Core.Model
                 }
             }
         }
-
-
-        ///// <summary>
-        ///// return a copied object of server which is decrypted Pwd
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="server"></param>
-        ///// <returns></returns>
-        //public T DecryptPwd<T>(T server) where T : ProtocolServerWithAddrPortUserPwdBase
-        //{
-        //    var ret = (T)server.Clone();
-        //    var rsa = Rsa;
-        //    if (rsa != null)
-        //    {
-        //        if (ret.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-        //        {
-        //            var s = (ProtocolServerWithAddrPortUserPwdBase)ret;
-        //            Debug.Assert(rsa.DecodeOrNull(s.Password) != null);
-        //            s.Password = rsa.DecodeOrNull(s.Password);
-        //        }
-        //        if (ret is ProtocolServerSSH ssh
-        //            && !string.IsNullOrWhiteSpace(ssh.PrivateKey))
-        //        {
-        //            Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) != null);
-        //            ssh.PrivateKey = rsa.DecodeOrNull(ssh.PrivateKey);
-        //        }
-        //        if (ret is ProtocolServerRDP rdp
-        //            && !string.IsNullOrWhiteSpace(rdp.GatewayPassword))
-        //        {
-        //            Debug.Assert(rsa.DecodeOrNull(rdp.GatewayPassword) != null);
-        //            rdp.GatewayPassword = rsa.DecodeOrNull(rdp.GatewayPassword);
-        //        }
-        //    }
-        //    return ret;
-        //}
 
         public void DecryptPwd(ProtocolServerBase server)
         {
@@ -546,13 +511,13 @@ namespace PRM.Core.Model
                                     GlobalData.Instance.ServerListUpdate();
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                             catch (Exception ee)
                             {
                                 DbPath = oldDbPath;
                                 SimpleLogHelper.Warning(ee);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -580,7 +545,7 @@ namespace PRM.Core.Model
                             var res = CheckIfDbIsOk(dlg.FileName);
                             if (!res.Item1)
                             {
-                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -618,8 +583,11 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                            if (MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"), SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.Yes)
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            if (MessageBoxResult.Yes == MessageBox.Show(
+                                SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"),
+                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, 
+                                MessageBoxImage.Warning, MessageBoxResult.None))
                             {
                                 if (File.Exists(DbPath))
                                     File.Delete(DbPath);
@@ -647,7 +615,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             return;
                         }
                         var dlg = new SaveFileDialog
@@ -673,82 +641,6 @@ namespace PRM.Core.Model
             }
         }
 
-        //private RelayCommand _cmdExportToCsv;
-        //public RelayCommand CmdExportToCsv
-        //{
-        //    get
-        //    {
-        //        if (_cmdExportToCsv == null)
-        //        {
-        //            _cmdExportToCsv = new RelayCommand((o) =>
-        //            {
-        //                var res = CheckIfDbIsOk();
-        //                if (!res.Item1)
-        //                {
-        //                    MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-        //                    return;
-        //                }
-        //                var dlg = new SaveFileDialog
-        //                {
-        //                    Filter = "PRM csv data|*.csv",
-        //                    Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
-        //                    FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".csv"
-        //                };
-        //                if (dlg.ShowDialog() == true)
-        //                {
-        //                    var sb = new StringBuilder();
-        //                    sb.AppendLine("name;protocol;panel;hostname;port;username;password");
-        //                    foreach (var vs in GlobalData.Instance.VmItemList)
-        //                    {
-        //                        var protocol = "";
-        //                        var name = "";
-        //                        var group = "";
-        //                        var user = "";
-        //                        var pwd = "";
-        //                        var address = "";
-        //                        string port = "";
-
-        //                        var serverBase = (ProtocolServerBase)vs.Server.Clone();
-        //                        name = serverBase.DispName;
-        //                        group = serverBase.GroupName;
-        //                        protocol = serverBase.Protocol;
-
-        //                        DecryptPwd(serverBase);
-
-
-        //                        // todo ADD RD GATEWAY
-        //                        if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-        //                        {
-        //                            var obj = (ProtocolServerWithAddrPortUserPwdBase)serverBase;
-        //                            user = obj.UserName;
-        //                            address = obj.Address;
-        //                            port = obj.Port;
-        //                        }
-        //                        else if (serverBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
-        //                        {
-        //                            var obj = (ProtocolServerWithAddrPortBase)serverBase;
-        //                            address = obj.Address;
-        //                            port = obj.Port;
-        //                        }
-
-        //                        const string mark = "%THIS_IS_A_SENUCOLON%";
-        //                        protocol = protocol.Replace(";", mark);
-        //                        name = name.Replace(";", mark);
-        //                        group = group.Replace(";", mark);
-        //                        user = user.Replace(";", mark);
-        //                        pwd = pwd.Replace(";", mark);
-        //                        address = address.Replace(";", mark);
-        //                        port = port.Replace(";", mark);
-        //                        sb.AppendLine($"{name};{protocol};{group};{address};{port};{user};{pwd}");
-        //                    }
-        //                    File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
-        //                }
-        //            });
-        //        }
-        //        return _cmdExportToCsv;
-        //    }
-        //}
-
         private RelayCommand _cmdImportFromJson;
         public RelayCommand CmdImportFromJson
         {
@@ -761,7 +653,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             return;
                         }
                         var dlg = new OpenFileDialog()
@@ -788,12 +680,12 @@ namespace PRM.Core.Model
                                     }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e, e.StackTrace);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -814,7 +706,7 @@ namespace PRM.Core.Model
                         var res = CheckIfDbIsOk();
                         if (!res.Item1)
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             return;
                         }
                         var dlg = new OpenFileDialog()
@@ -824,66 +716,95 @@ namespace PRM.Core.Model
                         };
                         if (dlg.ShowDialog() == true)
                         {
+                            string getValue(List<string> keyList, List<string> valueList, string fieldName)
+                            {
+                                var i = keyList.IndexOf(fieldName.ToLower());
+                                if (i >= 0)
+                                {
+                                    var val = valueList[i];
+                                    return val;
+                                }
+                                return "";
+                            }
                             try
                             {
+                                var groupNames = new Dictionary<string, string>(); // id -> name
                                 var list = new List<ProtocolServerBase>();
                                 using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
                                 {
+                                    var groupParents = new Dictionary<string, string>(); // id -> name
                                     var firstLine = sr.ReadLine();
-                                    if(string.IsNullOrWhiteSpace(firstLine))
+                                    if (string.IsNullOrWhiteSpace(firstLine))
+                                        return;
+
+                                    var title = firstLine.ToLower().Split(';').ToList();
+                                    string line;
+                                    while (!string.IsNullOrEmpty(line = sr.ReadLine()))
+                                    {
+                                        var arr = line.Split(';').ToList();
+                                        if (arr.Count >= 7)
+                                        {
+                                            var id = getValue(title, arr, "Id");
+                                            var name = getValue(title, arr, "name");
+                                            var parentId = getValue(title, arr, "Parent").ToLower();
+                                            var nodeType = getValue(title, arr, "NodeType").ToLower();
+                                            if (string.Equals("Container", nodeType, StringComparison.CurrentCultureIgnoreCase))
+                                            {
+                                                groupNames.Add(id, name);
+                                                groupParents.Add(id, parentId);
+                                            }
+                                        }
+                                    }
+
+                                    foreach (var kv in groupNames.ToArray())
+                                    {
+                                        var name = kv.Value;
+                                        var pid = groupParents[kv.Key];
+                                        while (groupNames.ContainsKey(pid))
+                                        {
+                                            name = $"{groupNames[pid]}-{name}";
+                                            pid = groupParents[pid];
+                                        }
+                                        groupNames[kv.Key] = name;
+                                    }
+                                }
+
+                                using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
+                                {
+                                    var firstLine = sr.ReadLine();
+                                    if (string.IsNullOrWhiteSpace(firstLine))
                                         return;
 
                                     // title
                                     var title = firstLine.ToLower().Split(';').ToList();
 
-                                    //int RdpVersion = title.IndexOf("RdpVersion");
-
-                                    //int vncCompression = title.IndexOf("VNCCompression");
-                                    //int vncEncoding = title.IndexOf("VNCEncoding");
-                                    //int vncAuthMode = title.IndexOf("VNCAuthMode");
-                                    //int vncProxyType = title.IndexOf("VNCProxyType");
-                                    //int vncProxyIP = title.IndexOf("VNCProxyIP");
-                                    //int vncProxyPort = title.IndexOf("VNCProxyPort");
-                                    //int vncProxyUsername = title.IndexOf("VNCProxyUsername");
-                                    //int vncProxyPassword = title.IndexOf("VNCProxyPassword");
-                                    //int vncColors = title.IndexOf("VNCColors");
-                                    //int vncSmartSizeMode = title.IndexOf("VNCSmartSizeMode");
-                                    //int vncViewOnly = title.IndexOf("VNCViewOnly");
-
 
                                     var r = new Random();
-                                    // body
-                                    var line = sr.ReadLine();
-                                    while (!string.IsNullOrEmpty(line))
+                                    string line;
+                                    while (!string.IsNullOrEmpty(line = sr.ReadLine()))
                                     {
-                                        var arr = line.Split(';');
-                                        if (arr.Length >= 7)
+                                        var arr = line.Split(';').ToList();
+                                        if (arr.Count >= 7)
                                         {
-                                            string getValue(string fieldName)
-                                            {
-                                                var i = title.IndexOf(fieldName.ToLower());
-                                                if (i >= 0)
-                                                {
-                                                    var val = arr[i];
-                                                    //val = val.Replace("%THIS_IS_A_SENUCOLON%", ";");
-                                                    return val;
-                                                }
-                                                return "";
-                                            }
                                             ProtocolServerBase server = null;
-                                            var protocol = getValue("protocol").ToLower();
-                                            var name = getValue("name");
-                                            var group = getValue("panel");
-                                            var user = getValue("username");
-                                            var pwd = getValue("password");
-                                            var address = getValue("hostname");
+                                            var name = getValue(title, arr, "name");
+                                            var parentId = getValue(title, arr, "Parent").ToLower();
+                                            var nodeType = getValue(title, arr, "NodeType").ToLower();
+                                            if (!string.Equals("Connection", nodeType, StringComparison.CurrentCultureIgnoreCase))
+                                                continue;
+                                            var group = "";
+                                            if (groupNames.ContainsKey(parentId))
+                                                group = groupNames[parentId];
+                                            var protocol = getValue(title, arr, "protocol").ToLower();
+                                            var user = getValue(title, arr, "username");
+                                            var pwd = getValue(title, arr, "password");
+                                            var address = getValue(title, arr, "hostname");
                                             int port = 22;
-                                            if(int.TryParse(getValue("port"), out var new_port))
+                                            if (int.TryParse(getValue(title, arr, "port"), out var new_port))
                                             {
                                                 port = new_port;
                                             }
 
-                                            // todo ADD RD GATEWAY
                                             switch (protocol)
                                             {
                                                 case "rdp":
@@ -895,23 +816,23 @@ namespace PRM.Core.Model
                                                         UserName = user,
                                                         Password = pwd,
                                                         Port = port.ToString(),
-                                                        RdpWindowResizeMode = ERdpWindowResizeMode.AutoResize, // string.Equals(getValue("AutomaticResize"), "TRUE", StringComparison.CurrentCultureIgnoreCase) ? ERdpWindowResizeMode.AutoResize : ERdpWindowResizeMode.Fixed,
-                                                        IsConnWithFullScreen = string.Equals(getValue("Resolution"), "Fullscreen", StringComparison.CurrentCultureIgnoreCase),
+                                                        RdpWindowResizeMode = ERdpWindowResizeMode.AutoResize, // string.Equals( getValue(title, arr, "AutomaticResize"), "TRUE", StringComparison.CurrentCultureIgnoreCase) ? ERdpWindowResizeMode.AutoResize : ERdpWindowResizeMode.Fixed,
+                                                        IsConnWithFullScreen = string.Equals( getValue(title, arr, "Resolution"), "Fullscreen", StringComparison.CurrentCultureIgnoreCase),
                                                         RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen,
-                                                        DisplayPerformance = getValue("Colors")?.IndexOf("32") >= 0 ? EDisplayPerformance.High : EDisplayPerformance.Auto,
-                                                        IsAdministrativePurposes = string.Equals(getValue("ConnectToConsole"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableClipboard = string.Equals(getValue("RedirectClipboard"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableDiskDrives = string.Equals(getValue("RedirectDiskDrives"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableKeyCombinations = string.Equals(getValue("RedirectKeys"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableSounds = string.Equals(getValue("BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableAudioCapture = string.Equals(getValue("RedirectAudioCapture"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnablePorts = string.Equals(getValue("RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnablePrinters = string.Equals(getValue("RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableSmartCardsAndWinHello = string.Equals(getValue("RedirectSmartCards"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        GatewayMode = string.Equals(getValue("RDGatewayUsageMethod"), "Never", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.DoNotUseGateway :
-                                                                            (string.Equals(getValue("RDGatewayUsageMethod"), "Detect", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.AutomaticallyDetectGatewayServerSettings : EGatewayMode.UseTheseGatewayServerSettings),
-                                                        GatewayHostName = getValue("RDGatewayHostname"),
-                                                        GatewayPassword = getValue("RDGatewayPassword"),
+                                                        DisplayPerformance = getValue(title, arr, "Colors")?.IndexOf("32") >= 0 ? EDisplayPerformance.High : EDisplayPerformance.Auto,
+                                                        IsAdministrativePurposes = string.Equals( getValue(title, arr, "ConnectToConsole"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableClipboard = string.Equals( getValue(title, arr, "RedirectClipboard"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableDiskDrives = string.Equals( getValue(title, arr, "RedirectDiskDrives"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableKeyCombinations = string.Equals( getValue(title, arr, "RedirectKeys"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableSounds = string.Equals( getValue(title, arr, "BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableAudioCapture = string.Equals( getValue(title, arr, "RedirectAudioCapture"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnablePorts = string.Equals( getValue(title, arr, "RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnablePrinters = string.Equals( getValue(title, arr, "RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        EnableSmartCardsAndWinHello = string.Equals( getValue(title, arr, "RedirectSmartCards"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        GatewayMode = string.Equals( getValue(title, arr, "RDGatewayUsageMethod"), "Never", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.DoNotUseGateway :
+                                                                            (string.Equals( getValue(title, arr, "RDGatewayUsageMethod"), "Detect", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.AutomaticallyDetectGatewayServerSettings : EGatewayMode.UseTheseGatewayServerSettings),
+                                                        GatewayHostName = getValue(title, arr, "RDGatewayHostname"),
+                                                        GatewayPassword = getValue(title, arr, "RDGatewayPassword"),
                                                     };
 
 
@@ -968,7 +889,6 @@ namespace PRM.Core.Model
                                                 list.Add(server);
                                             }
                                         }
-                                        line = sr.ReadLine();
                                     }
                                 }
                                 if (list?.Count > 0)
@@ -979,15 +899,15 @@ namespace PRM.Core.Model
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                     GlobalData.Instance.ServerListUpdate();
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e, e.StackTrace);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -1027,18 +947,64 @@ namespace PRM.Core.Model
                                     GlobalData.Instance.ServerListUpdate();
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                             catch (Exception ee)
                             {
                                 SimpleLogHelper.Debug(ee, ee.StackTrace);
                                 DbPath = oldDbPath;
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
                 }
                 return _cmdDbMigrate;
+            }
+        }
+
+
+
+        private RelayCommand _cmdDeleteAllServer;
+        public RelayCommand CmdDeleteAllServer
+        {
+            get
+            {
+                if (_cmdDeleteAllServer == null)
+                {
+                    _cmdDeleteAllServer = new RelayCommand((o) =>
+                    {
+                        if (MessageBoxResult.Yes == MessageBox.Show(
+                            SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"),
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
+                            MessageBoxImage.Question, MessageBoxResult.None))
+                        {
+                            if (File.Exists(DbPath))
+                                File.Delete(DbPath);
+                            GlobalData.Instance.ServerListUpdate();
+                            Load();
+
+
+                            var protocolServerBases = GlobalData.Instance.VmItemList;
+                            int max = protocolServerBases.Count() + 1;
+                            int val = 0;
+
+                            OnRsaProgress(val, max);
+
+                            // delete
+                            foreach (var psb in protocolServerBases)
+                            {
+                                EncryptPwd(psb.Server);
+                                Server.Delete(psb.Server.Id);
+                                OnRsaProgress(++val, max);
+                            }
+                            GlobalData.Instance.ServerListUpdate();
+                            OnRsaProgress(++val, max);
+                            // done
+                            OnRsaProgress(0, 0);
+                        }
+                    });
+                }
+                return _cmdDeleteAllServer;
             }
         }
         #endregion

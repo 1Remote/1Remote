@@ -230,53 +230,63 @@
                         </Grid>
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid>
-                                <StackPanel VerticalAlignment="Center">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock VerticalAlignment="Center"
-                                                   Foreground="{StaticResource Gray600}"
-                                                   Text="{DynamicResource guidance_feature_launcher}">
-                                        </TextBlock>
-                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0 0 0">
-                                            <TextBlock>Alt</TextBlock>
-                                        </Border>
-                                        <TextBlock Text="+" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
-                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
-                                            <TextBlock>M</TextBlock>
-                                        </Border>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="select by" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
-                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
-                                            <TextBlock>↑</TextBlock>
-                                        </Border>
-                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
-                                            <TextBlock>↓</TextBlock>
-                                        </Border>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="connect by" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
-                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
-                                            <TextBlock>Enter</TextBlock>
-                                        </Border>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Pop menu by" VerticalAlignment="Center" Margin="3 0" Foreground="{StaticResource Gray600}"></TextBlock>
-                                        <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
-                                            <TextBlock>→</TextBlock>
-                                        </Border>
-                                    </StackPanel>
-                                </StackPanel>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="10"/>
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="100" />
                                 </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="1" HorizontalAlignment="Left" Margin="8 0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                           Foreground="{StaticResource Gray600}"
+                                           Text="{DynamicResource guidance_feature_launcher_key}">
+                                </TextBlock>
+
+                                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                                    <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0 0 0">
+                                        <TextBlock>Alt</TextBlock>
+                                    </Border>
+                                    <TextBlock Text="+" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" Margin="5 0"></TextBlock>
+                                    <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                                        <TextBlock>M</TextBlock>
+                                    </Border>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" HorizontalAlignment="Right"
+                                           Text="{DynamicResource guidance_feature_launcher_select}"></TextBlock>
+
+                                <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                                    <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                                        <TextBlock>↑</TextBlock>
+                                    </Border>
+                                    <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
+                                        <TextBlock>↓</TextBlock>
+                                    </Border>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" HorizontalAlignment="Right"
+                                           Text="{DynamicResource guidance_feature_launcher_connect}"></TextBlock>
+                                <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                                    <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                                        <TextBlock>Enter</TextBlock>
+                                    </Border>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" HorizontalAlignment="Right"
+                                           Text="{DynamicResource guidance_feature_launcher_menu}"></TextBlock>
+                                <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
+                                    <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
+                                        <TextBlock>→</TextBlock>
+                                    </Border>
+                                </StackPanel>
+
                             </Grid>
                         </Grid>
 

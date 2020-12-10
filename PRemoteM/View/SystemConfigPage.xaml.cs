@@ -127,10 +127,10 @@ namespace PRM.View
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -165,7 +165,7 @@ namespace PRM.View
                             }
                             else
                             {
-                                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     }
@@ -173,7 +173,7 @@ namespace PRM.View
                 catch (Exception ee)
                 {
                     SimpleLogHelper.Warning(ee, ee.StackTrace);
-                    MessageBox.Show(ee.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                    MessageBox.Show(ee.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 }
             }
         }
