@@ -103,7 +103,7 @@
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
                                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                             <StackPanel Orientation="Horizontal">
-                                                <Grid Width="64" Height="64" 
+                                                <Grid Name="GridLogo" Width="64" Height="64" 
                                                   MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp" 
                                                   Background="Transparent" 
                                                   Cursor="Hand"
@@ -138,10 +138,10 @@
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
-                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource button_done}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
                                                         </controls:ButtonEx>
 
-                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource button_reset}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                         </controls:ButtonEx>
                                                     </Grid>
                                                 </StackPanel>
