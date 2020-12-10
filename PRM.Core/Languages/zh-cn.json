@@ -18,6 +18,7 @@
   "button_previous": "上一页",
   "button_next": "下一页",
   "button_done": "完成",
+  "button_reset": "重置",
 
 
 
@@ -116,7 +117,6 @@
   "system_options_theme_title": "外观",
   "system_options_theme_prm_title": "配色主题",
   "system_options_theme_prm_theme": "主题",
-  "system_options_theme_prm_reset": "重置",
   "system_options_theme_prm_main_color": "主色",
   "system_options_theme_prm_secondary_color": "副色",
   "system_options_theme_prm_background_color": "背景色",

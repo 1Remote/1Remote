@@ -29,6 +29,7 @@ namespace PRM.View
     public partial class ServerEditorPage : UserControl
     {
         public readonly VmServerEditorPage Vm;
+        private readonly BitmapSource _oldLogo;
         public ServerEditorPage(VmServerEditorPage vm)
         {
             Debug.Assert(vm?.Server != null);
@@ -51,8 +52,10 @@ namespace PRM.View
                     vm.Server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                 }
             }
-            
+
+            _oldLogo = vm.Server.IconImg;
             LogoSelector.SetImg(vm.Server.IconImg);
+            LogoSelector.OnLogoChanged += () => Vm.Server.IconImg = LogoSelector.Logo;
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -68,13 +71,13 @@ namespace PRM.View
             if (Vm?.Server != null && Vm.Server.GetType() != typeof(ProtocolServerNone))
             {
                 Vm.Server.IconImg = LogoSelector.Logo;
-                //File.WriteAllText("img.txt",_vmServerEditorPage.Server.IconBase64);
             }
             PopupLogoSelectorClose();
         }
 
         private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
         {
+            Vm.Server.IconImg = _oldLogo;
             PopupLogoSelectorClose();
         }
         
@@ -111,7 +114,7 @@ namespace PRM.View
         }
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LogoSelector.Logo = (BitmapSource) (((ListView) sender).SelectedItem);
+            LogoSelector.SetImg((BitmapSource) (((ListView) sender).SelectedItem));
         }
     }
 }

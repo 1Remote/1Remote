@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         BorderThickness="0"
         BorderBrush="Transparent"
+        KeyDown="MainWindow_OnKeyDown"
         x:Name="Window"
         Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
     <WindowChrome.WindowChrome>
@@ -72,7 +73,6 @@
             <Grid Height="{Binding ElementName=BtnSetting,Path=Height}" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
-                        Foreground="{DynamicResource MainColor1ForegroundBrush}"
                         KeyUp="TbFilter_OnKeyUp"
                         VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>

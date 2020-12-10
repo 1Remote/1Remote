@@ -461,7 +461,7 @@
                             <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
                                 (?)
                             </TextBlock>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource system_options_theme_prm_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource button_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 

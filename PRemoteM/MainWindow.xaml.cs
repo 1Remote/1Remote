@@ -209,5 +209,11 @@ namespace PRM
         {
             CloseMe();
         }
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if(VmMain.DispPage == null && TbFilter.IsFocused == false)
+                TbFilter.Focus();
+        }
     }
 }
