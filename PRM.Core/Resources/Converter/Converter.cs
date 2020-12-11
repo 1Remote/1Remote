@@ -167,55 +167,6 @@ namespace PRM.Resources.Converter
 
 
 
-    public class ConverterKeywordIsMatchProtocolServerInSelectedGroup : IMultiValueConverter
-    {
-        #region IValueConverter 成员  
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            try
-            {
-                var server = (ProtocolServerBase)values[0];
-                string keyWord = values[1].ToString();
-                string selectedGroup = values[2].ToString();
-
-                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup || server.GetType() == typeof(ProtocolServerNone);
-                if (!bGroupMatched)
-                    return false;
-
-                if (string.IsNullOrEmpty(keyWord))
-                    return true;
-
-                var keyWords = keyWord.Split(new string[]{" "}, StringSplitOptions.RemoveEmptyEntries);
-                var keyWordIsMatch = new List<bool>(keyWords.Length);
-                for (var i = 0; i < keyWords.Length; i++)
-                    keyWordIsMatch.Add(false);
-
-                var dispName = server.DispName;
-                var subTitle = server.SubTitle;
-                for (var i = 0; i < keyWordIsMatch.Count; i++)
-                {
-                    var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
-                    var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
-                    keyWordIsMatch[i] = f1 || f2;
-                }
-
-                if (keyWordIsMatch.All(x => x == true))
-                    return true;
-                return false;
-            }
-            catch (Exception)
-            {
-                return true;
-            }
-        }
-
-        public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
-        #endregion
-    }
-
 
 
 

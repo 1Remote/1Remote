@@ -144,7 +144,7 @@ namespace PRM.ViewModel
                         // encrypt pwd
                         SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
                         GlobalData.Instance.ServerListUpdate(Server);
-                        Host.Vm.DispPage = null;
+                        Host.VmMain.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -161,7 +161,7 @@ namespace PRM.ViewModel
                 if (_cmdCancel == null)
                     _cmdCancel = new RelayCommand((o) =>
                     {
-                        Host.Vm.DispPage = null;
+                        Host.VmMain.DispPage = null;
                     });
                 return _cmdCancel;
             }

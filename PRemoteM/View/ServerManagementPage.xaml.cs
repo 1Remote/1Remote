@@ -12,30 +12,31 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
 
 namespace PRM.View
 {
-    public partial class ServerListPage : UserControl
+    public partial class ServerManagementPage : UserControl
     {
         public VmMain Host;
         public VmServerListPage VmDataContext;
-        public ServerListPage(VmMain host)
+        public ServerManagementPage(VmMain host)
         {
             Host = host;
             VmDataContext = new VmServerListPage(host);
             InitializeComponent();
             DataContext = VmDataContext;
 
-            // hide GridBottom when hover.
-            MouseMove += (sender, args) =>
-            {
-                var p = args.GetPosition(GridBottom);
-                GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
-            };
+            //// hide GridBottom when hover.
+            //MouseMove += (sender, args) =>
+            //{
+            //    var p = args.GetPosition(GridBottom);
+            //    GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
+            //};
         }
-        public ServerListPage(VmServerListPage vmDataContext)
+        public ServerManagementPage(VmServerListPage vmDataContext)
         {
             Host = vmDataContext.VmMain;
             VmDataContext = vmDataContext;
@@ -47,6 +48,20 @@ namespace PRM.View
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
             VmDataContext.SelectedGroup = "";
+        }
+
+        private void LvServerCards_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var items = VmDataContext.ServerListItems.Where(x => x.IsDispNameEditing);
+            foreach (var item in items)
+            {
+                item.CmdIsEditingToggle.Execute();
+            }
+        }
+
+        private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
+        {
+            VmDataContext.VmMain.BottomPage = null;
         }
     }
 }

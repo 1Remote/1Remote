@@ -42,8 +42,8 @@
         <Grid Margin="0 21 0 0" Background="{DynamicResource MainBgColorBrush}">
             <ListView 
                 Name="LvServerCards"
-                SelectedItem="{Binding SelectedServerCard}"
-                ItemsSource="{Binding ServerCards}" 
+                SelectedItem="{Binding SelectedServerListItem}"
+                ItemsSource="{Binding ServerListItems}" 
                       Padding="10 0 0 0" Margin="0 2 0 0"
                       BorderThickness="0"
                       Background="Transparent"
@@ -89,29 +89,13 @@
                         <Grid>
                             <Grid.Style>
                                 <Style TargetType="Grid">
-                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    <Setter Property="Visibility" Value="{Binding Visible}"></Setter>
                                     <Setter Property="Height" Value="164"></Setter>
-                                    <!--determine this item's visibility-->
-                                    <Setter Property="Width" Value="0"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger>
-                                            <DataTrigger.Binding>
-                                                <MultiBinding Converter="{StaticResource ConverterKeywordIsMatchProtocolServerInSelectedGroup}">
-                                                    <Binding Path="Server"></Binding>
-                                                    <Binding Path="DataContext.DispNameFilter" ElementName="ThisServerListPage"></Binding>
-                                                    <Binding Path="DataContext.SelectedGroup" ElementName="ThisServerListPage"></Binding>
-                                                </MultiBinding>
-                                            </DataTrigger.Binding>
-                                            <DataTrigger.Value>True</DataTrigger.Value>
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                            <Setter Property="Width" Value="165"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <!--determine this item's visibility end -->
+                                    <Setter Property="Width" Value="165"></Setter>
                                 </Style>
                             </Grid.Style>
 
-                            <controls:ServerCard VmServerCard="{Binding}">
+                            <controls:ServerCard VmServerListItem="{Binding}">
                             </controls:ServerCard>
                         </Grid>
                     </DataTemplate>
@@ -300,8 +284,8 @@
                         <Setter Property="Margin" Value="0 0 5 0"></Setter>
                     </Style>
                 </StackPanel.Resources>
-                <TextBlock Text="{Binding SelectedServerCard.Server.DispName}"></TextBlock>
-                <TextBlock Text="{Binding SelectedServerCard.Server.SubTitle}"></TextBlock>
+                <TextBlock Text="{Binding SelectedServerListItem.Server.DispName}"></TextBlock>
+                <TextBlock Text="{Binding SelectedServerListItem.Server.SubTitle}"></TextBlock>
             </StackPanel>
         </Grid>
     </Grid>

@@ -26,14 +26,28 @@ namespace PRM.ViewModel
                     PageServerList.VmDataContext.DispNameFilter = value;
             }
         }
+        private AnimationPage _bottomPage = null;
+        public AnimationPage BottomPage
+        {
+            get => _bottomPage;
+            set => SetAndNotifyIfChanged(nameof(BottomPage), ref _bottomPage, value);
+        }
+
 
         private AnimationPage _dispPage = null;
-
         public AnimationPage DispPage
         {
             get => _dispPage;
             set => SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
         }
+        private AnimationPage _topPage = null;
+
+        public AnimationPage TopPage
+        {
+            get => _topPage;
+            set => SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
+        }
+
 
         private ServerListPage _pageServerList;
         public ServerListPage PageServerList
@@ -91,6 +105,14 @@ namespace PRM.ViewModel
         {
             Window = window;
             PageServerList = new ServerListPage(this);
+            BottomPage = new AnimationPage()
+            {
+                InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+#if DEBUG
+                Page = new ServerManagementPage(this),
+#endif
+            };
 
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {

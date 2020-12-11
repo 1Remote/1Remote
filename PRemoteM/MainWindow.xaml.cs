@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.View;
 using PRM.ViewModel;
 using Shawn.Utils;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -212,7 +213,8 @@ namespace PRM
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if(VmMain.DispPage == null && TbFilter.IsFocused == false)
+            if(VmMain.PageServerList is ServerListPage
+               && VmMain.DispPage == null && TbFilter.IsFocused == false)
                 TbFilter.Focus();
         }
     }

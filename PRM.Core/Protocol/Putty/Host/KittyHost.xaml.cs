@@ -68,6 +68,7 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int SW_SHOWMAXIMIZED = 3;
 
         public const string KittyExeName = "KiTTY_PRM.exe";
+        public const string KittyIniName = "kitty.ini";
         private readonly string KittyExeFolderPath = null;
         private readonly string KittyExeFullName = null;
 
@@ -225,6 +226,54 @@ namespace PRM.Core.Protocol.Putty.Host
                     }
                     kitty.Close();
                 }
+
+                File.WriteAllText(Path.Combine(KittyExeFolderPath, KittyIniName),
+                    @"
+[Agent]
+[ConfigBox]
+dblclick=open
+filter=yes
+height=21
+[KiTTY]
+adb=yes
+; antiidle: character string regularly sent to maintain the connection alive
+antiidle== \k08\
+; antiidledelay: time delay between two sending
+antiidledelay=60
+; autoreconnect: enable/disable the automatic reconnection feature
+autoreconnect=yes
+backgroundimage=no
+capslock=no
+conf=yes
+ctrltab=no
+cygterm=no
+hyperlink=yes
+icon=no
+maxblinkingtime=5
+mouseshortcuts=yes
+paste=no
+ReconnectDelay=5
+size=no
+transparency=yes
+userpasssshnosave=no
+winrol=yes
+wintitle=yes
+zmodem=yes
+[Shortcuts]
+;input=SHIFT+CONTROL+ALT+F11
+;inputm=SHIFT+CONTROL+ALT+F12
+;rollup=SHIFT+CONTROL+ALT+F10
+[Print]
+height=100
+maxline=60
+maxchar=85
+[Launcher]
+reload=yes
+");
+
+
+
+
                 // var arg = $"-ssh {port} {user} {pw} {server}";
                 // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
                 //ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
