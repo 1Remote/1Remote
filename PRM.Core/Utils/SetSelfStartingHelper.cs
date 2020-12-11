@@ -64,6 +64,14 @@ namespace Shawn.Utils
             var shortcutPath = System.IO.Path.Combine(startUpPath, $"{SystemConfig.AppName}_{md5}.lnk");
             return shortcutPath;
         }
+        private static string GetShortCutPathOld()
+        {
+            var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
+            var exePath = Process.GetCurrentProcess().MainModule.FileName;
+            string md5 = MD5EncryptString(exePath);
+            var shortcutPath = System.IO.Path.Combine(startUpPath, string.Format("{0}_{1}.lnk", SystemConfig.AppName, md5));
+            return shortcutPath;
+        }
         /// <summary>
         /// 用于实现提权操作的类
         /// Elevated Permission 后，杀死原进程
@@ -170,6 +178,9 @@ namespace Shawn.Utils
             {
                 Console.WriteLine(e);
 #if !FOR_MICROSOFT_STORE_ONLY
+                var shortcutPathOld = GetShortCutPathOld();
+                if (File.Exists(shortcutPathOld))
+                    File.Delete(shortcutPathOld);
                 if (File.Exists(GetShortCutPath()))
                     return true;
                 else
