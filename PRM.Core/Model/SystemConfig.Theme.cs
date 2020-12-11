@@ -305,7 +305,7 @@ namespace PRM.Core.Model
                     rd[key] = value;
             }
             var rs = AppResourceDictionary.MergedDictionaries.Where(o =>
-                (o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Theme/Default.xaml".ToLower()) >= 0)
+                (o.Source != null && o.Source.IsAbsoluteUri && o.Source.AbsolutePath.ToLower().IndexOf("Theme/Default.xaml".ToLower()) >= 0)
                 || o[resourceTypeKey]?.ToString() == resourceTypeValue).ToArray();
             try
             {

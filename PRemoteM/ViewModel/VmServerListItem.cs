@@ -4,13 +4,11 @@ using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.View;
 using Shawn.Utils;
-using Shawn.Utils.PageHost;
 
 namespace PRM.ViewModel
 {
-    public class VmServerCard : NotifyPropertyChangedBase
+    public class VmServerListItem : NotifyPropertyChangedBase
     {
         private ProtocolServerBase _server = null;
         public ProtocolServerBase Server
@@ -19,13 +17,61 @@ namespace PRM.ViewModel
             private set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
         }
 
-        public readonly VmServerListPage Host;
-
-        public VmServerCard(ProtocolServerBase server, VmServerListPage host)
+        public VmServerListItem(ProtocolServerBase server)
         {
             Server = server;
-            Host = host;
         }
+
+
+        private Visibility _visible = Visibility.Collapsed;
+        public Visibility Visible
+        {
+            get => _visible;
+            set => SetAndNotifyIfChanged(nameof(Visible), ref _visible, value);
+        }
+
+
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
+        }
+
+        public bool IsDispNameEditing { get; set; } = false;
+
+        private RelayCommand _cmdIsEditingToggle;
+        public RelayCommand CmdIsEditingToggle
+        {
+            get
+            {
+                if (_cmdIsEditingToggle == null)
+                {
+                    _cmdIsEditingToggle = new RelayCommand((o) =>
+                    {
+                        string param = o?.ToString();
+                        if (string.IsNullOrEmpty(param))
+                        {
+                            IsDispNameEditing = false;
+                            RaisePropertyChanged(nameof(IsDispNameEditing));
+                        }
+                        else
+                            switch (param)
+                            {
+                                case nameof(Server.DispName):
+                                    IsDispNameEditing = !IsDispNameEditing;
+                                    RaisePropertyChanged(nameof(IsDispNameEditing));
+                                    break;
+                            }
+                    }, o => this.Server.Id > 0);
+                }
+                return _cmdIsEditingToggle;
+            }
+        }
+
+
+
 
 
         #region CMD
@@ -69,6 +115,7 @@ namespace PRM.ViewModel
         }
 
         private RelayCommand _cmdDeleteServer;
+
         public RelayCommand CmdDeleteServer
         {
             get

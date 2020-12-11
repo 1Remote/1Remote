@@ -292,7 +292,9 @@
 
         <Grid Grid.Row="1">
             <ContentControl Content="{Binding PageServerList}"></ContentControl>
-            <pageHost1:PageHost x:Name="PageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
+            <pageHost1:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost1:PageHost>
+            <pageHost1:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
+            <pageHost1:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost1:PageHost>
 
             <Grid>
                 <Grid.Resources>

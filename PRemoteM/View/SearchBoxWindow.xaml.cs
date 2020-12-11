@@ -34,7 +34,7 @@ namespace PRM.View
             Loaded += (sender, args) =>
             {
                 HideMe();
-                Deactivated += (sender1, args1) => { Dispatcher.Invoke(HideMe); };
+                //Deactivated += (sender1, args1) => { Dispatcher.Invoke(HideMe); };
                 KeyDown += (sender1, args1) =>
                 {
                     if (args1.Key == Key.Escape) HideMe();

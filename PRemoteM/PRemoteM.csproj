@@ -136,7 +136,7 @@
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
     <Compile Include="ViewModel\VmServerEditorPage.cs" />
-    <Compile Include="ViewModel\VmServerCard.cs" />
+    <Compile Include="ViewModel\VmServerListItem.cs" />
     <Compile Include="ViewModel\VmServerListPage.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
@@ -149,6 +149,9 @@
     </Compile>
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ServerManagementPage.xaml.cs">
+      <DependentUpon>ServerManagementPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
       <DependentUpon>TabWindowClassical.xaml</DependentUpon>
@@ -217,6 +220,10 @@
     <Page Include="View\Guidance\GuidanceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ServerManagementPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\TabWindow\TabWindowClassical.xaml">
       <Generator>MSBuild:Compile</Generator>
