@@ -23,15 +23,12 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        public readonly VmServerListPage Host;
-
-        public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host, bool isDuplicate = false)
+        public VmServerEditorPage(ProtocolServerBase server, string groupName = "", bool isDuplicate = false)
         {
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
             if (_isDuplicate)
                 Server.Id = 0;
-            Host = host;
             IsAddMode = server.GetType() == typeof(ProtocolServerNone) || Server.Id == 0;
 
             // decrypt pwd
@@ -65,8 +62,8 @@ namespace PRM.ViewModel
             }
             else
             {
-                if (string.IsNullOrEmpty(Server.GroupName))
-                    Server.GroupName = Host.SelectedGroup;
+                if (string.IsNullOrEmpty(groupName))
+                    Server.GroupName = groupName;
             }
 
             NameSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.DispName)
@@ -128,7 +125,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ProtocolEditControl), ref _protocolEditControl, value);
         }
 
-        
+
         public List<string> NameSelections { get; set; }
         public List<string> GroupSelections { get; set; }
 
@@ -144,7 +141,7 @@ namespace PRM.ViewModel
                         // encrypt pwd
                         SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
                         GlobalData.Instance.ServerListUpdate(Server);
-                        Host.VmMain.DispPage = null;
+                        App.Window.Vm.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -161,7 +158,7 @@ namespace PRM.ViewModel
                 if (_cmdCancel == null)
                     _cmdCancel = new RelayCommand((o) =>
                     {
-                        Host.VmMain.DispPage = null;
+                        App.Window.Vm.DispPage = null;
                     });
                 return _cmdCancel;
             }

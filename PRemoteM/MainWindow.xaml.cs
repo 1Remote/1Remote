@@ -16,15 +16,14 @@ namespace PRM
 {
     public partial class MainWindow : Window
     {
-        public VmMain VmMain { get; private set; }
+        public VmMain Vm { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
-            VmMain = new VmMain(this);
-            this.DataContext = VmMain;
+            Vm = new VmMain(this);
+            this.DataContext = Vm;
             Title = SystemConfig.AppName;
-
-
             this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
             this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
             WinTitleBar.MouseUp += (sender, e) =>
@@ -159,7 +158,7 @@ namespace PRM
 
         private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
         {
-            VmMain.SysOptionsMenuIsOpen = true;
+            Vm.SysOptionsMenuIsOpen = true;
         }
 
         public void ActivateMe(bool isForceActivate = false)
@@ -213,8 +212,8 @@ namespace PRM
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if(VmMain.PageServerList is ServerListPage
-               && VmMain.DispPage == null && TbFilter.IsFocused == false)
+            if(Vm.PageServerList is ServerListPage
+               && Vm.DispPage == null && TbFilter.IsFocused == false)
                 TbFilter.Focus();
         }
     }

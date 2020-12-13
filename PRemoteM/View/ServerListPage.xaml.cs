@@ -19,14 +19,12 @@ namespace PRM.View
 {
     public partial class ServerListPage : UserControl
     {
-        public VmMain Host;
-        public VmServerListPage VmDataContext;
+        public VmServerListPage Vm;
         public ServerListPage(VmMain host)
         {
-            Host = host;
-            VmDataContext = new VmServerListPage(host);
+            Vm = new VmServerListPage();
             InitializeComponent();
-            DataContext = VmDataContext;
+            DataContext = Vm;
 
             // hide GridBottom when hover.
             MouseMove += (sender, args) =>
@@ -35,18 +33,11 @@ namespace PRM.View
                 GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
             };
         }
-        public ServerListPage(VmServerListPage vmDataContext)
-        {
-            Host = vmDataContext.VmMain;
-            VmDataContext = vmDataContext;
-            InitializeComponent();
-            DataContext = VmDataContext;
-        }
 
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            VmDataContext.SelectedGroup = "";
+            Vm.SelectedGroup = "";
         }
     }
 }

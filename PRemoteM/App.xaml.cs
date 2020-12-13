@@ -14,7 +14,9 @@ using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Model;
 using PRM.View;
+using PRM.ViewModel;
 using Shawn.Utils;
+using Shawn.Utils.PageHost;
 
 namespace PRM
 {
@@ -28,6 +30,8 @@ namespace PRM
         private Mutex _singleAppMutex = null;
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
+        public static ServerListPage ServerListPage { get; private set; } = null;
+
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEV
         private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
@@ -265,13 +269,25 @@ namespace PRM
                 // main window init
                 {
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
-                    Window = new MainWindow();
                     MainWindow = Window;
+
+                    Window = new MainWindow();
+                    ServerListPage = new ServerListPage(Window.Vm);
+                    Window.Vm.PageServerList = ServerListPage;
                     if (!SystemConfig.Instance.General.AppStartMinimized
                         || isFirstTimeUser)
                     {
                         ActivateWindow();
                     }
+
+#if DEBUG
+                    Window.Vm.BottomPage = new AnimationPage()
+                    {
+                        InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                        Page = new ServerManagementPage(),
+                    };
+#endif
 
                     // check if Db is ok
                     var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
@@ -280,7 +296,7 @@ namespace PRM
                         SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
                         MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                         ActivateWindow();
-                        Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
+                        Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
                     }
                     else
                     {
