@@ -10,7 +10,7 @@ using PRM.Core.Protocol.FileTransmit.SFTP;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
 {
-    public partial class FileTransmitHost : ProtocolHostBase
+    public partial class FileTransmitHost : ProtocolHostBase, IDisposable
     {
         private readonly VmFileTransmitHost _vmRemote;
         public FileTransmitHost(ProtocolServerBase protocolServer) : base(protocolServer, false)
@@ -213,6 +213,11 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         public override void ReConn()
         {
             _vmRemote?.Conn();
+        }
+
+        public void Dispose()
+        {
+            _vmRemote?.Release();
         }
     }
 

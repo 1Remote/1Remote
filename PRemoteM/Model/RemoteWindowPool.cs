@@ -147,8 +147,6 @@ namespace PRM.Model
                             string admin = rdp.IsAdministrativePurposes ? " /admin " : "";
                             p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
                             p.StandardInput.WriteLine("exit");
-                            //FullTrustProcessLauncher.LaunchFullTrustProcessForAppAsync()
-                            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
                         }
                         finally
                         {
@@ -477,9 +475,6 @@ namespace PRM.Model
                         SimpleLogHelper.Debug($@"DelProtocolHost host({host.GetHashCode()})");
                         if (host.OnClosed != null)
                             host.OnClosed -= OnProtocolClose;
-                        if (host.IsConnected())
-                            host.DisConn();
-
                         // close full
                         if (_host2FullScreenWindows.ContainsKey(connectionId))
                         {
@@ -503,6 +498,18 @@ namespace PRM.Model
                         }
                         _protocolHosts.Remove(connectionId);
                         SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+
+                        // Dispose
+                        Task.Factory.StartNew(() =>
+                        {
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                if (host.IsConnected())
+                                    host.DisConn();
+                                if (host is IDisposable dp)
+                                    dp.Dispose();
+                            });
+                        });
                     }
                 }
                 catch (Exception e)
