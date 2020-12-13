@@ -28,7 +28,7 @@ using Path = System.IO.Path;
 
 namespace PRM.Core.Protocol.Putty.Host
 {
-    public partial class KittyHost : ProtocolHostBase
+    public partial class KittyHost : ProtocolHostBase, IDisposable
     {
         [DllImport("User32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
@@ -94,7 +94,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         ~KittyHost()
         {
-            CloseKitty();
+            Dispose(false);
         }
 
         public override void Conn()
@@ -456,6 +456,29 @@ namespace PRM.Core.Protocol.Putty.Host
         public override void MakeItFocus()
         {
             SetForegroundWindow(_kittyHandle);
+        }
+
+        private void ReleaseUnmanagedResources()
+        {
+            // TODO release unmanaged resources here
+        }
+
+        private void Dispose(bool disposing)
+        {
+            ReleaseUnmanagedResources();
+            if (disposing)
+            {
+                CloseKitty();
+                _kittyProcess?.Dispose();
+                _kittyMasterPanel?.Dispose();
+                FormsHost?.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
