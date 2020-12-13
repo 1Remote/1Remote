@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -17,7 +18,7 @@ using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace PRM.Core.Protocol.RDP.Host
 {
-    public sealed partial class AxMsRdpClient09Host : ProtocolHostBase
+    public sealed partial class AxMsRdpClient09Host : ProtocolHostBase, IDisposable
     {
         private AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
@@ -39,6 +40,23 @@ namespace PRM.Core.Protocol.RDP.Host
                 throw new ArgumentException($"Send {protocolServer.GetType()} to RdpHost!");
         }
 
+        public void Dispose()
+        {
+            try
+            {
+                GlobalEventHelper.OnResolutionChanged -= OnResolutionChanged;
+            }
+            catch
+            {
+            }
+            RdpHost.Child = null;
+            _rdp?.Dispose();
+            _rdp = null;
+            _resizeEndTimer?.Dispose();
+            RdpHost?.Dispose();
+            RdpHost = null;
+        }
+
         private void OnResolutionChanged()
         {
             if (_rdp.FullScreen == true)
@@ -47,7 +65,7 @@ namespace PRM.Core.Protocol.RDP.Host
             }
         }
 
-        private void InitRdp(double width = 0, double height = 0)
+        private void InitRdp(double width = 0, double height = 0, bool isReconn = false)
         {
             _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
             ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
@@ -192,13 +210,14 @@ namespace PRM.Core.Protocol.RDP.Host
             // to enhance user experience, i let the form handled full screen
             _rdp.AdvancedSettings6.ContainerHandledFullScreen = 1;
 
+
             if (_rdpServer.RdpFullScreenFlag != ERdpFullScreenFlag.EnableFullAllScreens)
                 switch (_rdpServer.RdpWindowResizeMode)
                 {
                     case ERdpWindowResizeMode.Stretch:
                     case ERdpWindowResizeMode.Fixed:
-                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth / (_primaryScaleFactor / 100.0));
-                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight / (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth);
+                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight);
                         break;
                     case ERdpWindowResizeMode.StretchFullScreen:
                     case ERdpWindowResizeMode.FixedFullScreen:
@@ -210,6 +229,10 @@ namespace PRM.Core.Protocol.RDP.Host
                     default:
                         if (width > 100 && height > 100)
                         {
+                            // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
+                            // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
+                            if (isReconn)
+                                _primaryScaleFactor = 100;
                             _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
                             _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
                         }
@@ -364,10 +387,10 @@ namespace PRM.Core.Protocol.RDP.Host
         public override void Conn()
         {
             if (IsConnected())
-                _rdp.Disconnect();
+                _rdp?.Disconnect();
             GridLoading.Visibility = Visibility.Visible;
             RdpHost.Visibility = Visibility.Collapsed;
-            _rdp.Connect();
+            _rdp?.Connect();
         }
 
         public override void ReConn()
@@ -379,7 +402,7 @@ namespace PRM.Core.Protocol.RDP.Host
                 _invokeOnClosedWhenDisconnected = false;
                 _rdp.Disconnect();
                 _rdp?.Dispose();
-                InitRdp(width, height);
+                InitRdp(width, height, true);
                 Conn();
                 _invokeOnClosedWhenDisconnected = true;
             }
