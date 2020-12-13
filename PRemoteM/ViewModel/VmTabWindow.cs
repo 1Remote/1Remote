@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils.DragablzTab;
 using PRM.Model;
 using PRM.View;
@@ -16,14 +18,32 @@ using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
 {
-    public class VmTabWindow : NotifyPropertyChangedBase
+    public class VmTabWindow : NotifyPropertyChangedBase, IDisposable
     {
         public readonly string Token;
         public VmTabWindow(string token)
         {
             Token = token;
-            Items.CollectionChanged += (sender, args) =>
-                RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+            Items.CollectionChanged += ItemsOnCollectionChanged;
+        }
+
+        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+        }
+
+        public void Dispose()
+        {
+            SelectedItem = null;
+            foreach (var item in Items.ToArray())
+            {
+                if (item.Content is IDisposable dp)
+                {
+                    dp.Dispose();
+                }
+            }
+            Items.CollectionChanged -= ItemsOnCollectionChanged;
+            Items.Clear();
         }
 
         private string _tag = "";

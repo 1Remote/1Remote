@@ -49,7 +49,6 @@ namespace PRM.View.TabWindow
                 lastWindowState = this.WindowState;
             };
 
-
             TabablzControl.ClosingItemCallback += args =>
             {
                 args.Cancel();
@@ -83,7 +82,9 @@ namespace PRM.View.TabWindow
 
             Closed += (sender, args) =>
             {
+                DataContext = null;
                 Vm?.CmdCloseAll.Execute();
+                Vm?.Dispose();
                 try
                 {
                     _source?.RemoveHook(WndProc);

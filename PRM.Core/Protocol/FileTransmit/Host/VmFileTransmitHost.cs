@@ -37,6 +37,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             {
                 t.TryCancel();
             }
+            Trans?.Release();
+            Trans = null;
         }
 
         public void Conn()
