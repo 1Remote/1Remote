@@ -504,10 +504,24 @@ namespace PRM.Model
                         {
                             App.Current.Dispatcher.Invoke(() =>
                             {
-                                if (host.IsConnected())
-                                    host.DisConn();
-                                if (host is IDisposable dp)
-                                    dp.Dispose();
+                                try
+                                {
+                                    if (host.IsConnected())
+                                        host.DisConn();
+                                }
+                                catch (Exception e)
+                                {
+                                    SimpleLogHelper.Error(e, e.StackTrace);
+                                }
+                                try
+                                {
+                                    if (host is IDisposable dp)
+                                        dp.Dispose();
+                                }
+                                catch (Exception e)
+                                {
+                                    SimpleLogHelper.Error(e, e.StackTrace);
+                                }
                             });
                         });
                     }
