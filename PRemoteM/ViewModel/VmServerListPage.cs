@@ -14,12 +14,8 @@ namespace PRM.ViewModel
 {
     public class VmServerListPage : NotifyPropertyChangedBase
     {
-        public readonly VmMain VmMain;
-        public VmServerListPage(VmMain vmMainMain)
+        public VmServerListPage()
         {
-            Debug.Assert(vmMainMain != null);
-            VmMain = vmMainMain;
-
             var lastSelectedGroup = "";
             if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected))
             {
@@ -39,6 +35,11 @@ namespace PRM.ViewModel
             {
                 SelectedGroup = lastSelectedGroup;
             }
+
+            App.Window.Vm.OnFilterChanged += s =>
+            {
+                CalcVisible();
+            };
         }
 
         private VmServerListItem _selectedServerListItem = null;
@@ -77,8 +78,7 @@ namespace PRM.ViewModel
             get => _selectedGroup;
             set
             {
-                _dispNameFilter = "";
-                RaisePropertyChanged(nameof(DispNameFilter));
+                App.Window.Vm.DispNameFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
                 SystemConfig.Instance.Locality.MainWindowTabSelected = value;
                 SystemConfig.Instance.Locality.Save();
@@ -87,16 +87,16 @@ namespace PRM.ViewModel
         }
 
 
-        private string _dispNameFilter = "";
-        public string DispNameFilter
-        {
-            get => _dispNameFilter;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                CalcVisible();
-            }
-        }
+        //private string _dispNameFilter = "";
+        //public string DispNameFilter
+        //{
+        //    get => _dispNameFilter;
+        //    set
+        //    {
+        //        SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
+        //        CalcVisible();
+        //    }
+        //}
 
 
         private bool _isSelectedAll;
@@ -197,7 +197,7 @@ namespace PRM.ViewModel
             foreach (var card in ServerListItems)
             {
                 var server = card.Server;
-                string keyWord = DispNameFilter;
+                string keyWord = App.Window.Vm.DispNameFilter;
                 string selectedGroup = SelectedGroup;
 
 

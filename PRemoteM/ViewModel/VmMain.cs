@@ -15,15 +15,19 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
+        public Action<string> OnFilterChanged;
+
         private string _dispNameFilter = "";
         public string DispNameFilter
         {
             get => _dispNameFilter;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                if (PageServerList?.VmDataContext?.DispNameFilter != null)
-                    PageServerList.VmDataContext.DispNameFilter = value;
+                if (value != _dispNameFilter)
+                {
+                    SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
+                    OnFilterChanged?.Invoke(value);
+                }
             }
         }
         private AnimationPage _bottomPage = null;
@@ -104,15 +108,6 @@ namespace PRM.ViewModel
         public VmMain(MainWindow window)
         {
             Window = window;
-            PageServerList = new ServerListPage(this);
-            BottomPage = new AnimationPage()
-            {
-                InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-#if DEBUG
-                Page = new ServerManagementPage(this),
-#endif
-            };
 
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
@@ -136,7 +131,7 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext, isDuplicate)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.Vm.SelectedGroup, isDuplicate)),
                 };
 
                 Window.ActivateMe();

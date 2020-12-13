@@ -378,7 +378,7 @@ namespace PRM.Core.Protocol.RDP.Host
                 double height = _rdp.Height;
                 _invokeOnClosedWhenDisconnected = false;
                 _rdp.Disconnect();
-                _rdp.Dispose();
+                _rdp?.Dispose();
                 InitRdp(width, height);
                 Conn();
                 _invokeOnClosedWhenDisconnected = true;
@@ -394,7 +394,8 @@ namespace PRM.Core.Protocol.RDP.Host
                 if (_rdp != null
                     && _rdp.Connected > 0)
                 {
-                    _rdp.Disconnect();
+                    _rdp?.Disconnect();
+                    _rdp?.Dispose();
                 }
             }
             base.DisConn();
@@ -498,6 +499,8 @@ namespace PRM.Core.Protocol.RDP.Host
                 });
                 t.Start();
             }
+
+            _rdp?.Dispose();
 
             if (_invokeOnClosedWhenDisconnected)
                 base.OnClosed?.Invoke(base.ConnectionId);
