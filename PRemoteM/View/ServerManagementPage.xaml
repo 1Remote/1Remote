@@ -16,6 +16,55 @@
         <ResourceDictionary>
             <system:Double x:Key="OneItemHeight">40</system:Double>
 
+            <Style x:Key="ContextMenuStyle" TargetType="{x:Type ContextMenu}">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+                <Setter Property="HasDropShadow" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ContextMenu">
+                            <Border x:Name="Border" Background="{DynamicResource MainColor1DarkerBrush}" BorderThickness="0" BorderBrush="{DynamicResource MainColor2Brush}">
+                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem}">
+                <Setter Property="Background" Value="{StaticResource MainColor1Brush}"/>
+                <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="MenuItem">
+                            <Border Name="Border" >
+                                <Grid>
+                                    <ContentPresenter Margin="6,3,6,3" ContentSource="Header" RecognizesAccessKey="True" />
+                                    <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsSubmenuOpen}"
+                                                                               AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                        <Border Name="SubmenuBorder" SnapsToDevicePixels="True" BorderThickness="0"
+                                                                                    Background="{StaticResource MainColor1Brush}">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsHighlighted" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource MainColor1LighterBrush}"/>
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource MainColor1LighterBrush}"/>
+                                </Trigger>
+                                <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True">
+                                    <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="0,0,4,4"/>
+                                    <Setter TargetName="SubmenuBorder" Property="Padding" Value="0,0,0,3"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style TargetType="ListBoxItem">
                 <Setter Property="IsSelected" Value="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -23,6 +72,13 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
                             <Grid Name="Grid" FocusVisualStyle="{x:Null}" Visibility="{Binding Visible}">
+                                <Grid.ContextMenu>
+                                    <ContextMenu Style="{StaticResource ContextMenuStyle}">
+                                        <MenuItem Header="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}" Style="{StaticResource MenuItemStyle}"/>
+                                        <MenuItem Header="{DynamicResource server_card_operate_duplicate}" Command="{Binding CmdDuplicateServer}" Style="{StaticResource MenuItemStyle}"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+
                                 <Border x:Name="GridContainer"></Border>
                                 <!--<ContentPresenter/>-->
                                 <Grid Visibility="{Binding ObjectVisibility}"  Height="{StaticResource OneItemHeight}">
@@ -31,39 +87,42 @@
                                     </Grid.Margin>
                                     <Grid VerticalAlignment="Center">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="40"></ColumnDefinition>
-                                            <ColumnDefinition Width="40"></ColumnDefinition>
-                                            <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
+                                            <ColumnDefinition Width="40" SharedSizeGroup="CheckBox"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
+                                            <ColumnDefinition Width="40" SharedSizeGroup="Name"></ColumnDefinition>
                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="Edit"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
 
-                                        <Grid Grid.Column="0" Width="30" HorizontalAlignment="Center" Margin="5 0">
-                                            <CheckBox Name="CbIsSelected" IsChecked="{Binding IsSelected}"></CheckBox>
-                                        </Grid>
-                                        <Grid Grid.Column="1" Width="30" HorizontalAlignment="Center" Margin="5 0">
+                                        <CheckBox Name="CbIsSelected" IsChecked="{Binding IsSelected}" HorizontalAlignment="Center">
+                                            <CheckBox.LayoutTransform>
+                                                <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                            </CheckBox.LayoutTransform>
+                                        </CheckBox>
+
+                                        <TextBlock Grid.Column="1" Margin="5 0"
+                                                   Text="{Binding Server.ProtocolDisplayName}" 
+                                                   FontSize="14" FontWeight="Bold"
+                                                   HorizontalAlignment="Left"
+                                                   Opacity="0.4"
+                                                   Foreground="{DynamicResource MainColor1Brush}"
+                                                   VerticalAlignment="Center"></TextBlock>
+                                        <TextBlock Grid.Column="1" Margin="5 0"
+                                                   Text="{Binding Server.ProtocolDisplayName}" 
+                                                   FontSize="14" FontWeight="Bold"
+                                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                                   Opacity="0.2"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center">
+                                        </TextBlock>
+
+                                        <Grid Grid.Column="2" Width="30" HorizontalAlignment="Center" Margin="5 0">
                                             <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                                         </Grid>
 
-                                        <TextBlock Grid.Column="2" Margin="5 0"
-                                                               Text="{Binding Server.ProtocolDisplayName}" 
-                                                               FontSize="18" FontWeight="Bold"
-                                                               HorizontalAlignment="Right"
-                                                               Opacity="0.4"
-                                                               Foreground="{DynamicResource MainColor1Brush}"
-                                                               VerticalAlignment="Center"></TextBlock>
-                                        <TextBlock Grid.Column="2" Margin="5 0"
-                                                               Text="{Binding Server.ProtocolDisplayName}" 
-                                                               FontSize="18" FontWeight="Bold"
-                                                               Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                                               Opacity="0.2"
-                                                               HorizontalAlignment="Right"
-                                                               VerticalAlignment="Center">
-                                        </TextBlock>
-
                                         <Grid Grid.Column="3" Margin="5 0">
-
                                             <Grid.InputBindings>
                                                 <KeyBinding Key="Enter" Command="{Binding CmdIsEditingToggle}" CommandParameter="DispName"></KeyBinding>
                                                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdIsEditingToggle}" CommandParameter="DispName"></MouseBinding>
@@ -92,6 +151,11 @@
 
                                         <TextBlock Grid.Column="5" Opacity="0.5" FontSize="12" VerticalAlignment="Center"  TextTrimming="CharacterEllipsis"
                                                    Text="{Binding Server.SubTitle}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+
+                                        <controls1:ButtonEx Grid.Column="6" Margin="0 0 5 0" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}"></controls1:ButtonEx>
+                                        <!--<TextBlock Grid.Column="6">
+                                            <Hyperlink Command="{Binding CmdEditServer}" >eDIT</Hyperlink>
+                                        </TextBlock>-->
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -130,17 +194,18 @@
                                             </Grid.Margin>
                                             <Grid VerticalAlignment="Center">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="40"></ColumnDefinition>
-                                                    <ColumnDefinition Width="40"></ColumnDefinition>
-                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
+                                                    <ColumnDefinition Width="40"   SharedSizeGroup="CheckBox"></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
+                                                    <ColumnDefinition Width="40"   SharedSizeGroup="Name"></ColumnDefinition>
                                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                                     <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
                                                     <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Edit"></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
 
-                                                <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsSelectedAll}"></CheckBox>
-                                                <TextBlock Grid.Column="1" Margin="5" HorizontalAlignment="Left"></TextBlock>
-                                                <TextBlock Grid.Column="2" Margin="5" HorizontalAlignment="Left">TXT:protocol</TextBlock>
+                                                <CheckBox IsChecked="{Binding IsSelectedAll}" HorizontalAlignment="Center"></CheckBox>
+                                                <TextBlock Grid.Column="1" Margin="5" HorizontalAlignment="Left">Txt:Type</TextBlock>
+                                                <TextBlock Grid.Column="2" Margin="5" HorizontalAlignment="Left"></TextBlock>
                                                 <TextBlock Grid.Column="3" Margin="5" HorizontalAlignment="Left">TXT:name</TextBlock>
                                                 <TextBlock Grid.Column="4" Margin="5" HorizontalAlignment="Left">TXT:GroupName</TextBlock>
                                                 <TextBlock Grid.Column="5" Margin="5" HorizontalAlignment="Left">TXT:address</TextBlock>
@@ -156,6 +221,24 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.RowDefinitions>
@@ -338,7 +421,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="1" Background="{DynamicResource MainColor1Brush}">
+        <Grid Grid.Row="1" Background="{DynamicResource MainColor1Brush}" Height="40">
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>
                     <Style x:Key="ContextMenuStyle" TargetType="{x:Type ContextMenu}">
@@ -391,37 +474,55 @@
                         </Setter>
                     </Style>
                 </StackPanel.Resources>
-                <controls1:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Click="ButtonBack_OnClick" Content="{DynamicResource button_back}"></controls1:ButtonEx>
-                <controls1:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0">Txt:MoveTo</controls1:ButtonEx>
-                <controls1:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0">Txt:Delete</controls1:ButtonEx>
-                <controls1:ButtonEx Margin="5 0" Content="Txt:Import &amp; Export">
-                    <controls1:ButtonEx.Style>
-                        <Style TargetType="{x:Type controls1:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
-                            <Style.Triggers>
-                                <EventTrigger RoutedEvent="Click">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
-                                                </BooleanAnimationUsingKeyFrames>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger.Actions>
-                                </EventTrigger>
-                            </Style.Triggers>
-                            <Setter Property="ContextMenu">
-                                <Setter.Value>
-                                    <ContextMenu Style="{StaticResource ContextMenuStyle}">
-                                        <MenuItem Header="{DynamicResource system_options_data_security_export_to_json}" Style="{StaticResource MenuItemStyle}" Command="{Binding Source={x:Static model:SystemConfig.Instance}, Path=DataSecurity.CmdExportToJson}"></MenuItem>
-                                        <MenuItem Header="{DynamicResource system_options_data_security_import_from_json}" Style="{StaticResource MenuItemStyle}" Command="{Binding Source={x:Static model:SystemConfig.Instance}, Path=DataSecurity.CmdImportFromJson}"></MenuItem>
-                                        <MenuItem Header="{DynamicResource system_options_data_security_import_from_mremoteng_csv}" Style="{StaticResource MenuItemStyle}" Command="{Binding Source={x:Static model:SystemConfig.Instance}, Path=DataSecurity.CmdImportFromCsv}"></MenuItem>
-                                    </ContextMenu>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </controls1:ButtonEx.Style>
-                </controls1:ButtonEx>
+                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Click="ButtonBack_OnClick" Content="{DynamicResource button_back}"></controls1:ButtonEx>
+                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0">Txt:MoveTo</controls1:ButtonEx>
+                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Content="{DynamicResource button_delete}" Command="{Binding CmdDeleteSelected}"></controls1:ButtonEx>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <CheckBox Name="CbPop" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}">
+                    <CheckBox.Template>
+                        <ControlTemplate>
+                            <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
+                                <Grid Margin="5" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Name="Tb0" Fill="{DynamicResource MainColor1ForegroundBrush}"  Width="8" Height="8" Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
+                                                -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
+                                              StrokeThickness="1" Stretch="Fill" />
+                                        <TextBlock Name="Tb1" Margin="5 0 0 0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_import}"></TextBlock>
+                                        <TextBlock Name="Tb2" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="&amp;" Margin="5 0"></TextBlock>
+                                        <TextBlock Name="Tb3" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_export}"></TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="CheckBox.IsMouseOver" Value="True">
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter TargetName="Tb0" Property="Fill" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                    <Setter TargetName="Tb1" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                    <Setter TargetName="Tb2" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                    <Setter TargetName="Tb3" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                </Trigger>
+                                <Trigger Property="CheckBox.IsChecked" Value="True">
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </CheckBox.Template>
+                </CheckBox>
+                <Popup Name="PopupMenuInExport" 
+                       IsOpen="{Binding ElementName=CbPop, Path=IsChecked}" 
+                       StaysOpen="False"
+                       PlacementTarget="{Binding ElementName=CbPop}">
+                    <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
+                        <StackPanel>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource system_options_data_security_export}" Command="{Binding CmdExportSelectedToJson}"></controls1:ButtonEx>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource system_options_data_security_import}" Command="{Binding CmdImportFromJson}"></controls1:ButtonEx>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource system_options_data_security_import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></controls1:ButtonEx>
+                        </StackPanel>
+                    </Grid>
+                </Popup>
             </StackPanel>
         </Grid>
     </Grid>
