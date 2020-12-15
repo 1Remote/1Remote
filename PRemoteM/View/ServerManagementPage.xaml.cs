@@ -40,15 +40,6 @@ namespace PRM.View
             VmDataContext.SelectedGroup = "";
         }
 
-        private void LvServerCards_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var items = VmDataContext.ServerListItems.Where(x => x.IsDispNameEditing);
-            foreach (var item in items)
-            {
-                item.CmdIsEditingToggle.Execute();
-            }
-        }
-
         private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
         {
             App.Window.Vm.BottomPage = null;

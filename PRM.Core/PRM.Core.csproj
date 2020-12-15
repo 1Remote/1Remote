@@ -196,6 +196,9 @@
       <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ConsoleManager.cs" />
+    <Compile Include="Utils\EditableTextBlock\EditableTextBlock.xaml.cs">
+      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\StringHelper.cs" />
@@ -340,6 +343,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Utils\ColorPickerWPF\SliderRow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Utils\EditableTextBlock\EditableTextBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
