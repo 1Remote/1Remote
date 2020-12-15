@@ -47,7 +47,13 @@ namespace PRM.Core.Protocol
         public string DispName
         {
             get => _dispName;
-            set => SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
+                }
+            }
         }
 
         [JsonIgnore]

@@ -9,6 +9,7 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d" 
              Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -122,28 +123,10 @@
                                             <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                                         </Grid>
 
-                                        <Grid Grid.Column="3" Margin="5 0">
-                                            <Grid.InputBindings>
-                                                <KeyBinding Key="Enter" Command="{Binding CmdIsEditingToggle}" CommandParameter="DispName"></KeyBinding>
-                                                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdIsEditingToggle}" CommandParameter="DispName"></MouseBinding>
-                                            </Grid.InputBindings>
 
-                                            <TextBlock FontSize="14" VerticalAlignment="Center"  TextTrimming="CharacterEllipsis"
-                                                       Text="{Binding Server.DispName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
-
-                                            <TextBox Text="{Binding Server.DispName}">
-                                                <TextBox.Style>
-                                                    <Style TargetType="TextBox">
-                                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsDispNameEditing}" Value="True">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBox.Style>
-                                            </TextBox>
-                                        </Grid>
+                                        <utils:EditableTextBlock Grid.Column="3" Margin="5 0" IsEnabled="{Binding IsSelected}" OnTextModifiedCommand="{Binding CmdSave}"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.DispName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
 
 
                                         <TextBlock Grid.Column="4" FontSize="14" VerticalAlignment="Center"  TextTrimming="CharacterEllipsis"
@@ -252,7 +235,6 @@
                 <Grid Grid.IsSharedSizeScope="True">
                     <ListBox Name="LvServerCards" SelectionMode="Extended" Style="{StaticResource SearchBoxSelectionList}"
                          Grid.IsSharedSizeScope="True" HorizontalContentAlignment="Stretch"
-                         SelectionChanged="LvServerCards_OnSelectionChanged"
                          SelectedIndex="{Binding SelectedIndex}" 
                          ItemsSource="{Binding ServerListItems}" 
                          Margin="0 2 0 0" BorderThickness="0" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
