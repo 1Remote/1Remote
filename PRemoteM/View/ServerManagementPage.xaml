@@ -72,7 +72,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
-                            <Grid Name="Grid" FocusVisualStyle="{x:Null}" Visibility="{Binding Visible}">
+                            <Grid Name="Grid" FocusVisualStyle="{x:Null}" Visibility="{Binding Visible}" Background="{DynamicResource MainBgColorBrush}">
                                 <Grid.ContextMenu>
                                     <ContextMenu Style="{StaticResource ContextMenuStyle}">
                                         <MenuItem Header="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}" Style="{StaticResource MenuItemStyle}"/>
@@ -82,7 +82,7 @@
 
                                 <Border x:Name="GridContainer"></Border>
                                 <!--<ContentPresenter/>-->
-                                <Grid Visibility="{Binding ObjectVisibility}"  Height="{StaticResource OneItemHeight}">
+                                <Grid Height="{StaticResource OneItemHeight}">
                                     <Grid.Margin>
                                         <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
                                     </Grid.Margin>
@@ -92,8 +92,9 @@
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
                                             <ColumnDefinition Width="40" SharedSizeGroup="Name"></ColumnDefinition>
                                             <ColumnDefinition Width="*"></ColumnDefinition>
-                                            <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
-                                            <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto" MaxWidth="150" SharedSizeGroup="GroupName"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto" MaxWidth="200" SharedSizeGroup="Address"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto" MaxWidth="100" SharedSizeGroup="Port"></ColumnDefinition>
                                             <ColumnDefinition Width="Auto" SharedSizeGroup="Edit"></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
 
@@ -129,16 +130,21 @@
                                                                  Text="{Binding Server.DispName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
 
 
-                                        <TextBlock Grid.Column="4" FontSize="14" VerticalAlignment="Center"  TextTrimming="CharacterEllipsis"
-                                                   Text="{Binding Server.GroupName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+                                        <utils:EditableTextBlock Grid.Column="4" Margin="5 0" IsEnabled="{Binding IsSelected}" OnTextModifiedCommand="{Binding CmdSave}"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.GroupName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
 
-                                        <TextBlock Grid.Column="5" Opacity="0.5" FontSize="12" VerticalAlignment="Center"  TextTrimming="CharacterEllipsis"
-                                                   Text="{Binding Server.SubTitle}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
 
-                                        <controls1:ButtonEx Grid.Column="6" Margin="0 0 5 0" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}"></controls1:ButtonEx>
-                                        <!--<TextBlock Grid.Column="6">
-                                            <Hyperlink Command="{Binding CmdEditServer}" >eDIT</Hyperlink>
-                                        </TextBlock>-->
+                                        <utils:EditableTextBlock Grid.Column="5" Margin="5 0" IsEnabled="{Binding IsSelected}" OnTextModifiedCommand="{Binding CmdSave}"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.Address}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+
+                                        <utils:EditableTextBlock Grid.Column="6" Margin="5 0" IsEnabled="{Binding IsSelected}" OnTextModifiedCommand="{Binding CmdSave}"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.Port}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+
+
+                                        <controls1:ButtonEx Grid.Column="7" Margin="0 0 5 0" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}"></controls1:ButtonEx>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -176,22 +182,155 @@
                                                 <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
                                             </Grid.Margin>
                                             <Grid VerticalAlignment="Center">
+                                                <Grid.Resources>
+                                                    <Style TargetType="Path" x:Key="HeaderPathStyle">
+                                                        <Setter Property="Visibility" Value="Hidden" />
+                                                        <Setter Property="StrokeThickness" Value="1" />
+                                                        <Setter Property="Fill" Value="Gray" />
+                                                        <Setter Property="Width" Value="20" />
+                                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                                        <Setter Property="Margin" Value="5,0,5,0" />
+                                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                    </Style>
+                                                </Grid.Resources>
+
+
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="40"   SharedSizeGroup="CheckBox"></ColumnDefinition>
                                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
                                                     <ColumnDefinition Width="40"   SharedSizeGroup="Name"></ColumnDefinition>
                                                     <ColumnDefinition Width="*"></ColumnDefinition>
-                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
-                                                    <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto" MaxWidth="150" SharedSizeGroup="GroupName"></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto" MaxWidth="200" SharedSizeGroup="Address"></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto" MaxWidth="100" SharedSizeGroup="Port"></ColumnDefinition>
                                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Edit"></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
 
                                                 <CheckBox IsChecked="{Binding IsSelectedAll}" HorizontalAlignment="Center"></CheckBox>
-                                                <TextBlock Grid.Column="1" Margin="5" HorizontalAlignment="Left">Txt:Type</TextBlock>
+
+                                                <Grid Grid.Column="1" Background="{DynamicResource MainBgColorBrush}">
+                                                    <Grid.InputBindings>
+                                                        <MouseBinding Gesture="LeftClick" Command="{Binding CmdReOrder}" CommandParameter="0">
+                                                        </MouseBinding>
+                                                    </Grid.InputBindings>
+                                                    <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="0">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="1">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left">Txt:Type</TextBlock>
+                                                </Grid>
+
                                                 <TextBlock Grid.Column="2" Margin="5" HorizontalAlignment="Left"></TextBlock>
-                                                <TextBlock Grid.Column="3" Margin="5" HorizontalAlignment="Left">TXT:name</TextBlock>
-                                                <TextBlock Grid.Column="4" Margin="5" HorizontalAlignment="Left">TXT:GroupName</TextBlock>
-                                                <TextBlock Grid.Column="5" Margin="5" HorizontalAlignment="Left">TXT:address</TextBlock>
+
+                                                <Grid Grid.Column="3" Background="{DynamicResource MainBgColorBrush}">
+                                                    <Grid.InputBindings>
+                                                        <MouseBinding Gesture="LeftClick" Command="{Binding CmdReOrder}" CommandParameter="2">
+                                                        </MouseBinding>
+                                                    </Grid.InputBindings>
+                                                    <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="2">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="3">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left">TXT:name</TextBlock>
+                                                </Grid>
+
+                                                <Grid Grid.Column="4" Background="{DynamicResource MainBgColorBrush}">
+                                                    <Grid.InputBindings>
+                                                        <MouseBinding Gesture="LeftClick" Command="{Binding CmdReOrder}" CommandParameter="4">
+                                                        </MouseBinding>
+                                                    </Grid.InputBindings>
+                                                    <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="4">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="5">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left">TXT:GroupName</TextBlock>
+                                                </Grid>
+
+                                                <Grid Grid.Column="5" Background="{DynamicResource MainBgColorBrush}">
+                                                    <Grid.InputBindings>
+                                                        <MouseBinding Gesture="LeftClick" Command="{Binding CmdReOrder}" CommandParameter="6">
+                                                        </MouseBinding>
+                                                    </Grid.InputBindings>
+                                                    <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="6">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                                        <Path.Style>
+                                                            <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemsOrderByType}" Value="7">
+                                                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Path.Style>
+                                                    </Path>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left">TXT:address</TextBlock>
+                                                </Grid>
+
+                                                <TextBlock Grid.Column="6" Margin="5" HorizontalAlignment="Left">TXT:Port</TextBlock>
                                             </Grid>
                                         </Grid>
                                         <ItemsPresenter Grid.Row="1" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -235,9 +374,8 @@
                 <Grid Grid.IsSharedSizeScope="True">
                     <ListBox Name="LvServerCards" SelectionMode="Extended" Style="{StaticResource SearchBoxSelectionList}"
                          Grid.IsSharedSizeScope="True" HorizontalContentAlignment="Stretch"
-                         SelectedIndex="{Binding SelectedIndex}" 
                          ItemsSource="{Binding ServerListItems}" 
-                         Margin="0 2 0 0" BorderThickness="0" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                         Margin="0 2 0 0" BorderThickness="0" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     </ListBox>
                 </Grid>
             </Grid>

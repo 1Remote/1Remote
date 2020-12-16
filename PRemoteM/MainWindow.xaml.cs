@@ -212,9 +212,18 @@ namespace PRM
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if(Vm.PageServerList is ServerListPage
-               && Vm.DispPage == null && TbFilter.IsFocused == false)
+            //if(Vm.BottomPage == null
+            //   && Vm.DispPage == null 
+            //   && TbFilter.IsFocused == false)
+            //    TbFilter.Focus();
+
+            if (Keyboard.FocusedElement is TextBox)
+            {
+            }
+            else
+            {
                 TbFilter.Focus();
+            }
         }
     }
 }
