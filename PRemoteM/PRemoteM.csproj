@@ -40,7 +40,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;ChromeTAB</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
