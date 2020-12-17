@@ -585,7 +585,7 @@ namespace PRM.Core.Model
                         {
                             MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             if (MessageBoxResult.Yes == MessageBox.Show(
-                                SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"),
+                                SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rsa"),
                                 SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, 
                                 MessageBoxImage.Warning, MessageBoxResult.None))
                             {
@@ -645,52 +645,6 @@ namespace PRM.Core.Model
                     });
                 }
                 return _cmdDbMigrate;
-            }
-        }
-
-
-
-        private RelayCommand _cmdDeleteAllServer;
-        public RelayCommand CmdDeleteAllServer
-        {
-            get
-            {
-                if (_cmdDeleteAllServer == null)
-                {
-                    _cmdDeleteAllServer = new RelayCommand((o) =>
-                    {
-                        if (MessageBoxResult.Yes == MessageBox.Show(
-                            SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rebuild_database"),
-                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
-                            MessageBoxImage.Question, MessageBoxResult.None))
-                        {
-                            if (File.Exists(DbPath))
-                                File.Delete(DbPath);
-                            GlobalData.Instance.ServerListUpdate();
-                            Load();
-
-
-                            var protocolServerBases = GlobalData.Instance.VmItemList;
-                            int max = protocolServerBases.Count() + 1;
-                            int val = 0;
-
-                            OnRsaProgress(val, max);
-
-                            // delete
-                            foreach (var psb in protocolServerBases)
-                            {
-                                EncryptPwd(psb.Server);
-                                Server.Delete(psb.Server.Id);
-                                OnRsaProgress(++val, max);
-                            }
-                            GlobalData.Instance.ServerListUpdate();
-                            OnRsaProgress(++val, max);
-                            // done
-                            OnRsaProgress(0, 0);
-                        }
-                    });
-                }
-                return _cmdDeleteAllServer;
             }
         }
         #endregion

@@ -39,13 +39,13 @@ namespace PRM.View
             // add mode
             if (vm.IsAddMode)
             {
-                ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
+                ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
                 ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.MainColor1);
             }
 
             if (vm.Server.IconImg == null)
             {
-                ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
+                ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
                 if (ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);

@@ -226,7 +226,7 @@
                             <!--<Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -237,7 +237,7 @@
                             <!--<Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>-->
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource button_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -311,7 +311,7 @@
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath}"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></controls:ButtonEx>
                             <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
@@ -369,7 +369,7 @@
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Content="{DynamicResource button_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
+                            <controls:ButtonEx Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
                                 <controls:ButtonEx.Style>
                                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
                                         <Style.Triggers>
@@ -411,7 +411,7 @@
                             <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
                                 (?)
                             </TextBlock>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource button_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
+                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
 
@@ -544,7 +544,7 @@
                 ForegroundOnPressed="{DynamicResource MainColor2ForegroundBrush}"
                 OpacityOnPressed="0.5"
                 Command="{Binding CmdSaveAndGoBack}"
-                Content="{DynamicResource button_back}">
+                Content="{DynamicResource word_back}">
         </controls:ButtonEx>
     </Grid>
 </UserControl>

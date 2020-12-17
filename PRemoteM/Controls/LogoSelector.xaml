@@ -132,7 +132,7 @@
                 </Grid>
             </Grid>
 
-            <controls:ButtonEx Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource button_select}" Style="{StaticResource ButtonExStyleBase}"/>
+            <controls:ButtonEx Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource word_select}" Style="{StaticResource ButtonExStyleBase}"/>
         </Grid>
     </Grid>
 </UserControl>
