@@ -2,44 +2,48 @@
   "language_name": "中文(简体)",
 
 
-  "messagebox_title_warning": "PRemote 警告",
-  "messagebox_title_error": "PRemote 错误",
-  "messagebox_title_info": "PRemote 提示",
+  "messagebox_title_warning": "PRemoteM 警告",
+  "messagebox_title_error": "PRemoteM 错误",
+  "messagebox_title_info": "PRemoteM 提示",
 
-  "button_exit": "退出",
-  "button_close": "关闭",
-  "button_add": "添加",
-  "button_save": "保存",
-  "button_back": "返回",
-  "button_delete": "删除",
-  "button_cancel": "取消",
-  "button_select": "选择",
-  "button_explore_to": "定位到...",
-  "button_previous": "上一页",
-  "button_next": "下一页",
-  "button_done": "完成",
-  "button_reset": "重置",
+  "word_exit": "退出",
+  "word_close": "关闭",
+  "word_add": "添加",
+  "word_save": "保存",
+  "word_back": "返回",
+  "word_delete": "删除",
+  "word_cancel": "取消",
+  "word_select": "选择",
+  "word_explore_to": "定位到...",
+  "word_previous": "上一页",
+  "word_next": "下一页",
+  "word_done": "完成",
+  "word_reset": "重置",
+  "word_import": "导入",
+  "word_export": "导出",
+  "word_name": "名称",
+  "word_filename": "文件名",
 
 
 
-  "tab_all": "全部",
-  "info_filter": "在此输入关键词",
-  "info_filter_main_window": "搜索 (Ctrl+F)",
-  "info_hotkey_already_registered": "快捷键已被占用",
-  "info_hotkey_registered_fail": "快捷键注册失败",
+  "filter_mainwindow": "在此输入关键词",
+  "filter_searchbox": "搜索 (Ctrl+F)",
 
-  "string_delete_confirm_title": "删除确认",
-  "string_delete_confirm": "确认要进行删除吗？",
+  "hotkey_already_registered": "快捷键已被占用",
+  "hotkey_registered_fail": "快捷键注册失败",
+
   "string_permission_denied": "无操作权限",
 
   // tab
+  "tab_all": "全部",
   "tab_window_set_tag": "临时标签",
-  "tab_button_reconnect": "重新连接",
+  "tab_reconnect": "重新连接",
 
+  // server protocol relate
+  "server_protocol": "协议",
 
 
   // file transmit host
-  "file_transmit_host_list_header_name": "名称",
   "file_transmit_host_list_header_last_update": "修改时间",
   "file_transmit_host_list_header_type": "类型",
   "file_transmit_host_list_header_size": "大小",
@@ -47,13 +51,13 @@
   "file_transmit_host_message_files_download_to": "将文件下载到所选文件夹",
   "file_transmit_host_message_files_download_to_dir": "选择该文件夹",
   "file_transmit_host_message_select_files_to_upload": "请选择要上传的文件",
-  "file_transmit_host_button_refresh": "刷新(F5)",
-  "file_transmit_host_button_create_folder": "新建文件夹",
-  "file_transmit_host_button_upload": "上传(Ctrl + V)",
-  "file_transmit_host_button_select_files_upload": "选择文件上传",
-  "file_transmit_host_button_select_folder_upload": "选择文件夹上传",
-  "file_transmit_host_button_delete": "删除(Del)",
-  "file_transmit_host_button_save_to": "保存到...(Ctrl + S)",
+  "file_transmit_host_command_refresh": "刷新(F5)",
+  "file_transmit_host_command_create_folder": "新建文件夹",
+  "file_transmit_host_command_upload": "上传(Ctrl + V)",
+  "file_transmit_host_command_select_files_upload": "选择文件上传",
+  "file_transmit_host_command_select_folder_upload": "选择文件夹上传",
+  "file_transmit_host_command_delete": "删除(Del)",
+  "file_transmit_host_command_save_to": "保存到...(Ctrl + S)",
   "file_transmit_host_warning_same_names_title": "替换或跳过",
   "file_transmit_host_warning_same_names": "目标包含{0}个同名文件，需要替换吗？",
 
@@ -62,6 +66,7 @@
   // sys menu
   "system_menu_options_title": "设置",
   "system_menu_about_title": "关于",
+  "system_menu_management_title": "管理",
 
   // system options
   "system_options_general_title": "常规",
@@ -96,23 +101,13 @@
   "system_options_data_security_rsa_decrypt": "清除加密",
   "system_options_data_security_rsa_public_key": "公钥",
   "system_options_data_security_rsa_private_key_path": "私钥",
-  "system_options_data_security_export": "导出",
   "system_options_data_security_export_dialog_title": "导出数据将以明文显示，请妥善保管！",
-  "system_options_data_security_export_to_json": "到 json",
-  "system_options_data_security_export_to_csv": "到 csv",
-  "system_options_data_security_import": "导入",
-  "system_options_data_security_import_dialog_title": "选择导入文件",
-  "system_options_data_security_import_from_json": "从 json",
-  "system_options_data_security_import_from_mremoteng_csv": "从 mRemoteNG csv",
-  "system_options_data_security_import_done": "已导入{0}条记录.",
-  "system_options_data_security_import_error": "导入0条，输入的数据文件格式有误!",
   "system_options_data_security_info_data_processing": "数据处理中，请勿关闭程序。",
   "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
-  "system_options_data_security_info_clear_rebuild_database": "是否重置数据库？确认后数据将无法找回！",
+  "system_options_data_security_info_clear_rsa": "是否清除RSA加密?",
   "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
   "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
   "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
-  "system_options_data_security_delete_all_server": "删除所有会话",
 
   "system_options_theme_title": "外观",
   "system_options_theme_prm_title": "配色主题",
@@ -124,7 +119,7 @@
   "system_options_theme_prm_color_lighter": "亮色",
   "system_options_theme_prm_color_darker": "暗色",
   "system_options_theme_prm_color_foreground": "字体",
-  "system_options_theme_putty_title": "Putty",
+  "system_options_theme_putty_title": "Kitty",
   "system_options_theme_putty_font_size": "字体大小",
   "system_options_theme_putty_theme": "主题",
   "system_options_theme_tab_ui": "Tab外观",
@@ -132,7 +127,7 @@
   "system_options_theme_tab_ui_classical": "经典",
 
 
-  // server card operate
+  // server operate
   "server_card_operate_conn": "连接",
   "server_card_operate_edit": "编辑",
   "server_card_operate_duplicate": "创建副本",
@@ -140,6 +135,16 @@
   "server_card_operate_copy_address": "复制地址到剪贴板",
   "server_card_operate_copy_username": "复制用户名到剪贴板",
   "server_card_operate_copy_password": "复制密码到剪贴板",
+  "string_delete_confirm": "确认要删除吗？",
+  "managementpage_delete_selected_confirm": "确认要删除所选全部项目吗？",
+  "managementpage_import_dialog_title": "选择导入文件",
+  "managementpage_import_from_json": "从 json",
+  "managementpage_import_from_mremoteng_csv": "从 mRemoteNG csv",
+  "managementpage_import_done": "已导入{0}条记录.",
+  "managementpage_import_error": "导入0条，输入的数据文件格式有误!",
+  "managementpage_move_to_group": "移动到...",
+  "managementpage_move_to_group_info": "将所选移动到组:",
+  "managementpage_move_to_group_confirm": "确认要将所选项目组别变更为 ",
 
 
   // server editor
@@ -149,7 +154,6 @@
   "server_editor_group_title_advantage": "高级",
   "server_editor_group_title_gateway": "RD 网关服务器",
   // server editor - common group items
-  "server_editor_display_name": "名称",
   "server_editor_group": "分组",
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
@@ -203,7 +207,6 @@
   "server_editor_gateway_bypass_gateway_for_loacl_address": "不对本地地址使用RD网关",
 
 
-  "server_editor_type_import_from_prmj": "导入",
 
 
 

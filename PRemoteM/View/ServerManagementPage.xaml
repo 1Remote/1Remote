@@ -10,6 +10,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+             xmlns:utils1="clr-namespace:Shawn.Utils"
              mc:Ignorable="d" 
              Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -235,7 +236,7 @@
                                                             </Style>
                                                         </Path.Style>
                                                     </Path>
-                                                    <TextBlock Margin="5" HorizontalAlignment="Left">Txt:Type</TextBlock>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_protocol}"></TextBlock>
                                                 </Grid>
 
                                                 <TextBlock Grid.Column="2" Margin="5" HorizontalAlignment="Left"></TextBlock>
@@ -267,7 +268,7 @@
                                                             </Style>
                                                         </Path.Style>
                                                     </Path>
-                                                    <TextBlock Margin="5" HorizontalAlignment="Left">TXT:name</TextBlock>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource word_name}"></TextBlock>
                                                 </Grid>
 
                                                 <Grid Grid.Column="4" Background="{DynamicResource MainBgColorBrush}">
@@ -297,7 +298,7 @@
                                                             </Style>
                                                         </Path.Style>
                                                     </Path>
-                                                    <TextBlock Margin="5" HorizontalAlignment="Left">TXT:GroupName</TextBlock>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_group}"></TextBlock>
                                                 </Grid>
 
                                                 <Grid Grid.Column="5" Background="{DynamicResource MainBgColorBrush}">
@@ -327,10 +328,10 @@
                                                             </Style>
                                                         </Path.Style>
                                                     </Path>
-                                                    <TextBlock Margin="5" HorizontalAlignment="Left">TXT:address</TextBlock>
+                                                    <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_address}"/>
                                                 </Grid>
 
-                                                <TextBlock Grid.Column="6" Margin="5" HorizontalAlignment="Left">TXT:Port</TextBlock>
+                                                <TextBlock Grid.Column="6" Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                                             </Grid>
                                         </Grid>
                                         <ItemsPresenter Grid.Row="1" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -403,7 +404,7 @@
                                     <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type Button}">
+                                            <ControlTemplate TargetType="{x:Type controls1:ButtonEx}">
                                                 <Grid>
                                                     <Border Background="{TemplateBinding Background}" 
                                                     BorderBrush="{TemplateBinding BorderBrush}" 
@@ -594,14 +595,63 @@
                         </Setter>
                     </Style>
                 </StackPanel.Resources>
-                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Click="ButtonBack_OnClick" Content="{DynamicResource button_back}"></controls1:ButtonEx>
-                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0">Txt:MoveTo</controls1:ButtonEx>
-                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Content="{DynamicResource button_delete}" Command="{Binding CmdDeleteSelected}"></controls1:ButtonEx>
-
+                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Click="ButtonBack_OnClick" Content="{DynamicResource word_back}"></controls1:ButtonEx>
             </StackPanel>
 
+
+
+
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <CheckBox Name="CbPop" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}">
+
+                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_delete}" Command="{Binding CmdDeleteSelected}"></controls1:ButtonEx>
+
+                <CheckBox Name="CbPopForMoveGroup" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}">
+                    <CheckBox.Template>
+                        <ControlTemplate>
+                            <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
+                                <Grid Margin="5" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Name="Tb1" Margin="5 0 0 0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_move_to_group}"></TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="CheckBox.IsMouseOver" Value="True">
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter TargetName="Tb1" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                </Trigger>
+                                <Trigger Property="CheckBox.IsChecked" Value="True">
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </CheckBox.Template>
+                </CheckBox>
+                <Popup Name="PopupMenuMoveTo" 
+                       IsOpen="{Binding ElementName=CbPopForMoveGroup, Path=IsChecked}" 
+                       StaysOpen="False"
+                       PlacementTarget="{Binding ElementName=CbPopForMoveGroup}">
+                    <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
+                        <StackPanel>
+                            <TextBlock Margin="10 5" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_move_to_group_info}"></TextBlock>
+                            <utils1:AutoCompleteComboBox x:Name="TbGroup"
+                                                         Margin="10 5"
+                                                        Text="{Binding MoveToGroup, UpdateSourceTrigger=PropertyChanged}"
+                                                        Selections="{Binding GroupSelections}"
+                            ></utils1:AutoCompleteComboBox>
+                            <controls1:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" 
+                                                Margin="10 5"
+                                                Background="{DynamicResource MainColor1DarkerBrush}" 
+                                                Content="{DynamicResource word_save}" Command="{Binding CmdMoveSelected}"></controls1:ButtonEx>
+                        </StackPanel>
+                    </Grid>
+                </Popup>
+
+
+
+
+                <CheckBox Name="CbPopForInExport" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}">
                     <CheckBox.Template>
                         <ControlTemplate>
                             <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
@@ -610,9 +660,9 @@
                                         <Path Name="Tb0" Fill="{DynamicResource MainColor1ForegroundBrush}"  Width="8" Height="8" Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
                                                 -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
                                               StrokeThickness="1" Stretch="Fill" />
-                                        <TextBlock Name="Tb1" Margin="5 0 0 0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_import}"></TextBlock>
+                                        <TextBlock Name="Tb1" Margin="5 0 0 0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource word_import}"></TextBlock>
                                         <TextBlock Name="Tb2" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="&amp;" Margin="5 0"></TextBlock>
-                                        <TextBlock Name="Tb3" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource system_options_data_security_export}"></TextBlock>
+                                        <TextBlock Name="Tb3" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource word_export}"></TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -632,14 +682,14 @@
                     </CheckBox.Template>
                 </CheckBox>
                 <Popup Name="PopupMenuInExport" 
-                       IsOpen="{Binding ElementName=CbPop, Path=IsChecked}" 
+                       IsOpen="{Binding ElementName=CbPopForInExport, Path=IsChecked}" 
                        StaysOpen="False"
-                       PlacementTarget="{Binding ElementName=CbPop}">
+                       PlacementTarget="{Binding ElementName=CbPopForInExport}">
                     <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                         <StackPanel>
-                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource system_options_data_security_export}" Command="{Binding CmdExportSelectedToJson}"></controls1:ButtonEx>
-                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource system_options_data_security_import}" Command="{Binding CmdImportFromJson}"></controls1:ButtonEx>
-                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource system_options_data_security_import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></controls1:ButtonEx>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_export}" Command="{Binding CmdExportSelectedToJson}"></controls1:ButtonEx>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_import}" Command="{Binding CmdImportFromJson}"></controls1:ButtonEx>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource managementpage_import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></controls1:ButtonEx>
                         </StackPanel>
                     </Grid>
                 </Popup>

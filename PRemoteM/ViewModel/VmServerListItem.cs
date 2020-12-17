@@ -92,7 +92,7 @@ namespace PRM.ViewModel
                 {
                     if (MessageBoxResult.Yes == MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("string_delete_confirm"),
-                            SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
                             MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
                         )
                     {

@@ -83,6 +83,20 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
 
+        private string _moveToGroup = "";
+        public string MoveToGroup
+        {
+            get => _moveToGroup;
+            set => SetAndNotifyIfChanged(nameof(MoveToGroup), ref _moveToGroup, value);
+        }
+
+        private List<string> _groupSelections;
+        public List<string> GroupSelections
+        {
+            get => _groupSelections;
+            set => SetAndNotifyIfChanged(nameof(GroupSelections), ref _groupSelections, value);
+        }
+
         private string _selectedGroup = "";
         public string SelectedGroup
         {
@@ -144,6 +158,7 @@ namespace PRM.ViewModel
             }
             OrderServerList();
             RebuildGroupList();
+            GroupSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
         }
 
         private void RebuildGroupList()
@@ -231,7 +246,6 @@ namespace PRM.ViewModel
                 base.RaisePropertyChanged(nameof(ServerListItems));
             }
         }
-
 
         private void CalcVisible()
         {
@@ -355,7 +369,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
-                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
+                            Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
                             FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
                         };
                         if (dlg.ShowDialog() == true)
@@ -376,12 +390,12 @@ namespace PRM.ViewModel
                                     }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e, e.StackTrace);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -410,7 +424,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "csv|*.csv",
-                            Title = SystemConfig.Instance.Language.GetText("system_options_data_security_import_dialog_title"),
+                            Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -597,15 +611,15 @@ namespace PRM.ViewModel
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                     GlobalData.Instance.ServerListUpdate();
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e, e.StackTrace);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -627,7 +641,7 @@ namespace PRM.ViewModel
                     _cmdDeleteSelected = new RelayCommand((o) =>
                     {
                         if (MessageBoxResult.Yes == MessageBox.Show(
-                            "TXT: delete all selected?",
+                            SystemConfig.Instance.Language.GetText("managementpage_delete_selected_confirm"),
                             SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {
@@ -644,6 +658,39 @@ namespace PRM.ViewModel
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
                 }
                 return _cmdDeleteSelected;
+            }
+        }
+
+
+
+        private RelayCommand _cmdMoveSelected;
+        public RelayCommand CmdMoveSelected
+        {
+            get
+            {
+                if (_cmdMoveSelected == null)
+                {
+                    _cmdMoveSelected = new RelayCommand((o) =>
+                    {
+                        if (MessageBoxResult.Yes == MessageBox.Show(
+                            SystemConfig.Instance.Language.GetText("managementpage_move_to_group_confirm") + MoveToGroup + "'?",
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
+                            MessageBoxImage.Question, MessageBoxResult.None))
+                        {
+                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                            if (ss?.Count > 0)
+                            {
+                                foreach (var vs in ss)
+                                {
+                                    vs.Server.GroupName = MoveToGroup;
+                                    Server.AddOrUpdate(vs.Server);
+                                }
+                                GlobalData.Instance.ServerListUpdate();
+                            }
+                        }
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
+                }
+                return _cmdMoveSelected;
             }
         }
 
@@ -684,6 +731,7 @@ namespace PRM.ViewModel
 
 
         private int _itemsOrderByType = -1;
+
         /// <summary>
         /// -1: by name asc(default)
         /// 0: by name asc

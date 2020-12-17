@@ -165,6 +165,33 @@ namespace PRM.ViewModel
         }
 
 
+        private RelayCommand _cmdGoManagementPage;
+        public RelayCommand CmdGoManagementPage
+        {
+            get
+            {
+                if (_cmdGoManagementPage == null)
+                {
+                    _cmdGoManagementPage = new RelayCommand((o) =>
+                    {
+                        if (DispPage != null)
+                        {
+                            DispPage = null;
+                        }
+                        BottomPage = new AnimationPage()
+                        {
+                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                            Page = new ServerManagementPage(),
+                        };
+                        SysOptionsMenuIsOpen = false;
+                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                }
+                return _cmdGoManagementPage;
+            }
+        }
+
+
         private RelayCommand _cmdGoAboutPage;
         public RelayCommand CmdGoAboutPage
         {

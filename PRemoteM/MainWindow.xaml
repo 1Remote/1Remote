@@ -78,7 +78,7 @@
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>
-                                <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter_main_window}" 
+                                <TextBlock FontStyle="Italic" Text="{DynamicResource filter_searchbox}" 
                                            Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                            />
                             </VisualBrush.Visual>
@@ -196,6 +196,11 @@
                                            Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
                                 </TextBlock>
                             </controls:ButtonEx>
+                            <controls:ButtonEx Command="{Binding CmdGoManagementPage}">
+                                <TextBlock Text="{DynamicResource system_menu_management_title}" Margin="20 0 0 0"
+                                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
+                                </TextBlock>
+                            </controls:ButtonEx>
                             <controls:ButtonEx Command="{Binding CmdGoAboutPage}">
                                 <Grid>
                                     <Grid Width="20" HorizontalAlignment="Left">
@@ -223,7 +228,7 @@
                                 </Grid>
                             </controls:ButtonEx>
                             <controls:ButtonEx Click="ButtonExit_OnClick">
-                                <TextBlock Text="{DynamicResource button_exit}" Margin="20 0 0 0"
+                                <TextBlock Text="{DynamicResource word_exit}" Margin="20 0 0 0"
                                            Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
                                 </TextBlock>
                             </controls:ButtonEx>

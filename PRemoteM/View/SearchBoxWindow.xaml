@@ -36,8 +36,8 @@
         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
             <VisualBrush.Visual>
                 <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" Foreground="Black" Opacity="0.5" FontSize="18"/>
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" Foreground="White" Opacity="0.5" FontSize="18"/>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18"/>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18"/>
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>

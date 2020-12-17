@@ -399,7 +399,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
             var aMenu = new System.Windows.Controls.ContextMenu();
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_refresh") };
+                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_refresh") };
                 menu.Click += (o, a) =>
                 {
                     CmdGoToPathCurrent.Execute();
@@ -407,7 +407,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_create_folder") };
+                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_create_folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();
@@ -430,7 +430,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 ((ListView)sender).SelectedItem = null;
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUploadClipboard.CanExecute())
@@ -441,7 +441,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_files_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_select_files_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -451,7 +451,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_folder_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_select_folder_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -463,7 +463,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             else if (VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
             {
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_delete") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_delete") };
                     menu.Click += (o, a) =>
                     {
                         CmdDelete.Execute();
@@ -471,7 +471,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     aMenu.Items.Add(menu);
                 }
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_save_to") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_save_to") };
                     menu.Click += (o, a) =>
                     {
                         CmdDownload.Execute();
