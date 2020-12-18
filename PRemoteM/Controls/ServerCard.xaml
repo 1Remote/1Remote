@@ -47,8 +47,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Grid.RowSpan="3">
-                        <Image Source="{Binding Server.IconImg}" 
-                               Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}" 
+                        <Image Source="{Binding Server.IconImg}" Width="110" Height="110"
                                Stretch="UniformToFill">
                             <Image.Style>
                                 <Style TargetType="Image">
@@ -65,7 +64,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="72" CenterY="72"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.2" ScaleY="1.2" CenterX="65" CenterY="65"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>
@@ -74,7 +73,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="72" CenterY="72"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.2" ScaleY="1.2" CenterX="65" CenterY="65"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>

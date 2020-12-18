@@ -150,6 +150,9 @@
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ServerListPage.xaml.cs">
+      <DependentUpon>ServerListPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ServerManagementPage.xaml.cs">
       <DependentUpon>ServerManagementPage.xaml</DependentUpon>
     </Compile>
@@ -164,9 +167,6 @@
     </Compile>
     <Compile Include="View\ServerEditorPage.xaml.cs">
       <DependentUpon>ServerEditorPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ServerListPage.xaml.cs">
-      <DependentUpon>ServerListPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SystemConfigPage.xaml.cs">
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
@@ -221,6 +221,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ServerListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\ServerManagementPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -238,10 +242,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ServerEditorPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ServerListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

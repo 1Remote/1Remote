@@ -70,7 +70,8 @@
         <!-- System Button Area -->
         <StackPanel Grid.Row="0" 
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
-            <Grid Height="{Binding ElementName=BtnSetting,Path=Height}" VerticalAlignment="Top" Margin="0 0 4 0">
+
+            <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
                         KeyUp="TbFilter_OnKeyUp"
@@ -129,29 +130,37 @@
             </Grid>
 
 
-            <controls:ButtonEx Name="BtnSetting" 
-                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
-                               Click="BtnSetting_OnClick">
-                <controls:ButtonEx.Style>
-                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=PopupSettingMenu,Path=IsOpen}" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </controls:ButtonEx.Style>
-                <Grid Width="15" Height="15">
-                    <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000 
-                          -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
-                          Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
+            <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">
+                <CheckBox Name="CbPopForMenu" Width="35" Height="35" VerticalAlignment="Top" Margin="0">
+                    <CheckBox.Template>
+                        <ControlTemplate>
+                            <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
+                                <Grid VerticalAlignment="Center">
+                                    <Grid Width="15" Height="15">
+                                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
+                                              Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="CheckBox.IsMouseOver" Value="True">
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
+                                </Trigger>
+                                <Trigger Property="CheckBox.IsChecked" Value="True">
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </CheckBox.Template>
+                </CheckBox>
 
+                <Grid Width="15" Height="15">
                     <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
-                          Fill="Red" 
-                          Stretch="Uniform"
-                          Width="6"
-                          Margin="0 -3 -3 0"
-                          VerticalAlignment="Top" HorizontalAlignment="Right" >
+                                      Fill="Red" 
+                                      Stretch="Uniform"
+                                      Width="6"
+                                      Margin="0 -3 -3 0"
+                                      VerticalAlignment="Top" HorizontalAlignment="Right" >
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Style.Triggers>
@@ -163,12 +172,13 @@
                         </Path.Style>
                     </Path>
                 </Grid>
-            </controls:ButtonEx>
-            <Popup Name="PopupSettingMenu" 
+            </Grid>
+
+            <Popup Name="PopupMenu" 
                    AllowsTransparency="True"
-                   PlacementTarget="{Binding ElementName=BtnSetting}"
-                   IsOpen="{Binding SysOptionsMenuIsOpen}"
-                   StaysOpen="False">
+                   IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}" 
+                   StaysOpen="False"
+                   PlacementTarget="{Binding ElementName=CbPopForMenu}">
                 <Popup.Resources>
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
@@ -238,8 +248,7 @@
             </Popup>
 
             <controls:ButtonEx Name="BtnMinimize"
-                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
-                               Click="BtnSetting_OnClick">
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
                 <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
             </controls:ButtonEx>
 
@@ -277,8 +286,7 @@
             </controls:ButtonEx>
 
             <controls:ButtonEx Name="BtnClose" 
-                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
-                               Click="BtnSetting_OnClick">
+                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
                 <controls:ButtonEx.Style>
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="BackgroundOnMouseOver" Value="Red"/>
@@ -296,7 +304,7 @@
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <ContentControl Content="{Binding PageServerList}"></ContentControl>
+            <ContentControl Content="{Binding OperatePage}"></ContentControl>
             <pageHost1:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost1:PageHost>

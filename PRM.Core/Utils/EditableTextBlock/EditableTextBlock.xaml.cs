@@ -158,5 +158,21 @@ namespace Shawn.Utils
             get => (TextTrimming)GetValue(TextTrimmingProperty);
             set => SetValue(TextTrimmingProperty, value);
         }
+
+
+        public static readonly DependencyProperty IsEditableProperty = DependencyProperty.Register("IsEditable", typeof(bool), typeof(EditableTextBlock),
+            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnIsEditableChanged)));
+        private static void OnIsEditableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is EditableTextBlock etb)
+            {
+                etb.Button.IsEnabled = (bool)e.NewValue;
+            }
+        }
+        public bool IsEditable
+        {
+            get => (bool)GetValue(IsEditableProperty);
+            set => SetValue(IsEditableProperty, value);
+        }
     }
 }
