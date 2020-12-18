@@ -23,7 +23,7 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        public VmServerEditorPage(ProtocolServerBase server, string groupName = "", bool isDuplicate = false)
+        public VmServerEditorPage(ProtocolServerBase server, bool isDuplicate = false)
         {
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
@@ -59,11 +59,6 @@ namespace PRM.ViewModel
             {
                 ProtocolList.Clear();
                 ProtocolList.Add(ProtocolSelected);
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(groupName))
-                    Server.GroupName = groupName;
             }
 
             NameSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.DispName)

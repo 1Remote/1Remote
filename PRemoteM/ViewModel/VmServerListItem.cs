@@ -64,7 +64,10 @@ namespace PRM.ViewModel
             {
                 return _cmdEditServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false, true);
+                    if (this.Server is ProtocolServerNone)
+                        GlobalEventHelper.OnGoToServerAddPage?.Invoke();
+                    else
+                        GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false, true);
                 });
             }
         }

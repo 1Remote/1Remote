@@ -53,20 +53,11 @@ namespace PRM.ViewModel
         }
 
 
-        private ServerListPage _pageServerList;
-        public ServerListPage PageServerList
+        private object _pageServerCard;
+        public object OperatePage
         {
-            get => _pageServerList;
-            set => SetAndNotifyIfChanged(nameof(PageServerList), ref _pageServerList, value);
-        }
-
-
-
-        private bool _sysOptionsMenuIsOpen = false;
-        public bool SysOptionsMenuIsOpen
-        {
-            get => _sysOptionsMenuIsOpen;
-            set => SetAndNotifyIfChanged(nameof(SysOptionsMenuIsOpen), ref _sysOptionsMenuIsOpen, value);
+            get => _pageServerCard;
+            set => SetAndNotifyIfChanged(nameof(OperatePage), ref _pageServerCard, value);
         }
 
         private int _progressBarValue = 0;
@@ -115,12 +106,12 @@ namespace PRM.ViewModel
                 ProgressBarMaximum = arg2;
                 ProgressBarInfo = arg2 > 0 ? arg3 : "";
             };
-            GlobalEventHelper.OnGoToServerEditPage += (id, isDuplicate, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerEditPage += new GlobalEventHelper.OnGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
                 ProtocolServerBase server;
                 if (id <= 0)
                 {
-                    server = new ProtocolServerNone();
+                    return;
                 }
                 else
                 {
@@ -131,11 +122,23 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.Vm.SelectedGroup, isDuplicate)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
-            };
+            });
+
+            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
+            {
+                var server = new ProtocolServerNone();
+                server.GroupName = groupName;
+                DispPage = new AnimationPage()
+                {
+                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    Page = new ServerEditorPage(new VmServerEditorPage(server)),
+                };
+            });
         }
 
 
@@ -157,7 +160,7 @@ namespace PRM.ViewModel
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                             Page = new SystemConfigPage(this, (Type)o),
                         };
-                        SysOptionsMenuIsOpen = false;
+                        Window.PopupMenu.IsOpen = false;
                     }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
@@ -184,8 +187,8 @@ namespace PRM.ViewModel
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                             Page = new ServerManagementPage(),
                         };
-                        SysOptionsMenuIsOpen = false;
-                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                        Window.PopupMenu.IsOpen = false;
+                    }, o => BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
                 }
                 return _cmdGoManagementPage;
             }
@@ -207,8 +210,7 @@ namespace PRM.ViewModel
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                             Page = new AboutPage(this),
                         };
-                        SysOptionsMenuIsOpen = false;
-
+                        Window.PopupMenu.IsOpen = false;
                     }, o => DispPage?.Page?.GetType() != typeof(AboutPage));
                 }
                 return _cmdGoAboutPage;
@@ -229,6 +231,7 @@ namespace PRM.ViewModel
                     {
                         if (DispPage?.Page?.GetType() != null)
                             DispPage = null;
+                        Window.PopupMenu.IsOpen = false;
                     }, o => DispPage?.Page?.GetType() != null && DispPage?.Page?.GetType() != typeof(ServerListPage));
                 }
                 return _cmdGoServerListPage;

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using Windows.ApplicationModel.Store;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -82,6 +84,14 @@ namespace PRM.ViewModel
             get => _serverGroupList;
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
+
+        private int _listMode = 1;
+        public int ListMode
+        {
+            get => _listMode;
+            set => SetAndNotifyIfChanged(nameof(ListMode), ref _listMode, value);
+        }
+
 
         private string _moveToGroup = "";
         public string MoveToGroup
@@ -255,6 +265,11 @@ namespace PRM.ViewModel
                 string keyWord = App.Window.Vm.DispNameFilter;
                 string selectedGroup = SelectedGroup;
 
+                if (server is ProtocolServerNone)
+                {
+                    card.Visible = Visibility.Visible;
+                    continue;
+                }
 
                 if (server.Id <= 0)
                 {
@@ -303,6 +318,18 @@ namespace PRM.ViewModel
         }
 
 
+
+        private RelayCommand _cmdAdd;
+        public RelayCommand CmdAdd
+        {
+            get
+            {
+                return _cmdAdd ??= new RelayCommand((o) =>
+                {
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedGroup);
+                });
+            }
+        }
 
         private RelayCommand _cmdExportSelectedToJson;
         public RelayCommand CmdExportSelectedToJson
@@ -685,7 +712,6 @@ namespace PRM.ViewModel
                                     vs.Server.GroupName = MoveToGroup;
                                     Server.AddOrUpdate(vs.Server);
                                 }
-                                GlobalData.Instance.ServerListUpdate();
                             }
                         }
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));

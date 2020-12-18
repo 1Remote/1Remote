@@ -30,7 +30,6 @@ namespace PRM
         private Mutex _singleAppMutex = null;
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
-        public static ServerListPage ServerListPage { get; private set; } = null;
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEV
@@ -272,28 +271,19 @@ namespace PRM
                     MainWindow = Window;
 
                     Window = new MainWindow();
-                    ServerListPage = new ServerListPage(Window.Vm);
-                    Window.Vm.PageServerList = ServerListPage;
+                    var page = new ServerListPage(Window.Vm);
+                    Window.Vm.OperatePage = page;
                     if (!SystemConfig.Instance.General.AppStartMinimized
                         || isFirstTimeUser)
                     {
                         ActivateWindow();
                     }
 
-#if DEBUG
-                    Window.Vm.BottomPage = new AnimationPage()
-                    {
-                        InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new ServerManagementPage(),
-                    };
-#endif
-
                     // check if Db is ok
                     var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
                     if (!res.Item1)
                     {
-                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
+                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErrorFlag'.");
                         MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                         ActivateWindow();
                         Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));

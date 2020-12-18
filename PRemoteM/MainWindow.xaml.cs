@@ -156,11 +156,6 @@ namespace PRM
         }
         #endregion
 
-        private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
-        {
-            Vm.SysOptionsMenuIsOpen = true;
-        }
-
         public void ActivateMe(bool isForceActivate = false)
         {
             if(isForceActivate)
