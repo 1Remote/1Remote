@@ -97,6 +97,11 @@ namespace PRM.Core.Protocol
         /// </summary>
         public Action OnCanResizeNowChanged { get; set; } = null;
 
+        public virtual void ToggleAutoResize(bool isEnable)
+        {
+
+        }
+
 
         public abstract void Conn();
         public abstract void ReConn();

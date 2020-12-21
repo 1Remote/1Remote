@@ -298,7 +298,7 @@
                     <Border x:Name="GridContainer"></Border>
                     <Grid Height="{StaticResource OneItemHeight}">
                         <Grid.Margin>
-                            <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
+                            <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
                         </Grid.Margin>
                         <Grid VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
@@ -363,6 +363,7 @@
 
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="{x:Static model:EnumServerListPageUI.List}">
+                        <Setter Property="Padding" Value="0 0 0 0"></Setter>
                         <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
                         <Setter Property="ItemsPanel" Value="{StaticResource ItemsPanelTemplateForServerList}"></Setter>
                         <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>

@@ -572,8 +572,11 @@ namespace PRM.Core.Protocol.RDP.Host
             try
             {
                 //_rdp.Reconnect(nw, nh);
+                Console.WriteLine($@"RDP resize:W ={w},  H = {h}");
+                var p = _primaryScaleFactor;
                 ReadScaleFactor();
-                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _primaryScaleFactor, 100);
+                if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || p != _primaryScaleFactor)
+                    _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _primaryScaleFactor, 100);
             }
             catch (Exception e)
             {
@@ -731,8 +734,11 @@ namespace PRM.Core.Protocol.RDP.Host
         }
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _resizeEndTimer.Stop();
-            _resizeEndTimer.Start();
+            if (_canAutoResize)
+            {
+                _resizeEndTimer.Stop();
+                _resizeEndTimer.Start();
+            }
         }
         private void _InvokeResizeEndEnd(object sender, ElapsedEventArgs e)
         {
@@ -740,5 +746,18 @@ namespace PRM.Core.Protocol.RDP.Host
             _onResizeEnd?.Invoke();
         }
         #endregion
+
+
+        private bool _canAutoResize = true;
+
+        /// <summary>
+        /// when tab window goes to min from max, base.SizeChanged invoke and size will get bigger, normal to min will not tiger this issue, don't know why.
+        /// so stop resize when window status change to min until status restore.
+        /// </summary>
+        /// <param name="isEnable"></param>
+        public override void ToggleAutoResize(bool isEnable)
+        {
+            _canAutoResize = isEnable;
+        }
     }
 }
