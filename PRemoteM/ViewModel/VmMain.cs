@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.RDP;
 using PRM.View;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
@@ -115,7 +116,7 @@ namespace PRM.ViewModel
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
             {
-                var server = new ProtocolServerNone();
+                var server = new ProtocolServerRDP();
                 server.GroupName = groupName;
                 DispPage = new AnimationPage()
                 {

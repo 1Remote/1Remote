@@ -298,8 +298,7 @@ namespace PRM.ViewModel
                     keyWordIsMatch.Add(false);
 
                 // match keyword
-                foreach (var vm in GlobalData.Instance.VmItemList.Where(x =>
-                    x.GetType() != typeof(ProtocolServerNone)))
+                foreach (var vm in GlobalData.Instance.VmItemList)
                 {
                     Debug.Assert(vm != null);
                     Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));

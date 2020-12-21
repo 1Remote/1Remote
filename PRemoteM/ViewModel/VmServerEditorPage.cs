@@ -29,11 +29,10 @@ namespace PRM.ViewModel
             _isDuplicate = isDuplicate;
             if (_isDuplicate)
                 Server.Id = 0;
-            IsAddMode = server.GetType() == typeof(ProtocolServerNone) || Server.Id == 0;
+            IsAddMode = Server.Id <= 0;
 
             // decrypt pwd
-            if (Server.GetType() != typeof(ProtocolServerNone))
-                SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
+            SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -41,7 +40,6 @@ namespace PRM.ViewModel
             {
                 ProtocolList.Clear();
                 ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
-                    .Where(x => x.FullName != typeof(ProtocolServerNone).FullName)
                     .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
             }
 
@@ -68,8 +66,6 @@ namespace PRM.ViewModel
             GroupSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.GroupName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
-
-            Debug.Assert(Server.GetType() != typeof(ProtocolServerNone));
         }
 
 

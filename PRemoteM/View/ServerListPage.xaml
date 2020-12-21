@@ -154,7 +154,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="0">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Protocol}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -165,7 +165,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="1">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.ProtocolDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -186,7 +186,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="2">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Name}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -197,7 +197,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="3">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.NameDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -217,7 +217,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="4">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupName}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -228,7 +228,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="5">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupNameDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -248,7 +248,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="6">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Address}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -259,7 +259,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ItemsOrderByType}" Value="7">
+                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.AddressDesc}">
                                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
