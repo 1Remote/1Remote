@@ -47,6 +47,13 @@ namespace PRM.View.TabWindow
                 if (lastWindowState != this.WindowState)
                     Vm?.SelectedItem?.Content?.MakeItFocus();
                 lastWindowState = this.WindowState;
+
+                SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
+            };
+            this.StateChanged += delegate(object sender, EventArgs args)
+            {
+                if(this.WindowState != WindowState.Minimized)
+                    Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
             };
 
             TabablzControl.ClosingItemCallback += args =>

@@ -207,7 +207,10 @@ namespace PRM.ViewModel
                     _cmdGoMinimize = new RelayCommand((o) =>
                     {
                         if (o is Window window)
+                        {
                             window.WindowState = WindowState.Minimized;
+                            SelectedItem.Content.ToggleAutoResize(false);
+                        }
                     });
                 }
                 return _cmdGoMinimize;
