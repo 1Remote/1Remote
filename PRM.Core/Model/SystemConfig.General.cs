@@ -24,6 +24,8 @@ namespace PRM.Core.Model
         NewItemGoesToGroup,
         NewItemGoesToProtocol,
     }
+
+
     public sealed class SystemConfigGeneral : SystemConfigBase
     {
         public SystemConfigGeneral(Ini ini) : base(ini)
@@ -82,7 +84,7 @@ namespace PRM.Core.Model
             get => _serverOrderBy;
             set => SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
         }
-        
+
 
         private EnumTabMode _tabMode = EnumTabMode.NewItemGoesToLatestActivate;
         public EnumTabMode TabMode

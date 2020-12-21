@@ -10,10 +10,11 @@
     <UserControl.Resources>
         <s:Double x:Key="CardWidth">144</s:Double>
     </UserControl.Resources>
-    <Grid MouseRightButtonDown="UIElement_OnMouseRightButtonDown">
+    <Grid>
         <Grid Name="DispServerContext">
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
+                <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
             </Grid.InputBindings>
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -54,7 +55,7 @@
                                     <Setter Property="RenderTransform">
                                         <Setter.Value>
                                             <TransformGroup>
-                                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" CenterX="50" CenterY="50"></ScaleTransform>
+                                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" CenterX="65" CenterY="65"></ScaleTransform>
                                                 <RotateTransform Angle="0"></RotateTransform>
                                             </TransformGroup>
                                         </Setter.Value>
@@ -64,7 +65,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.2" ScaleY="1.2" CenterX="65" CenterY="65"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="65" CenterY="65"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>
@@ -73,7 +74,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.2" ScaleY="1.2" CenterX="65" CenterY="65"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="65" CenterY="65"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>

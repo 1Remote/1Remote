@@ -20,7 +20,7 @@ namespace PRM.View
     public partial class ServerListPage : UserControl
     {
         public VmServerListPage Vm;
-        public ServerListPage(VmMain host)
+        public ServerListPage()
         {
             Vm = new VmServerListPage();
             InitializeComponent();

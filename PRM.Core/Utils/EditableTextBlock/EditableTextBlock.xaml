@@ -7,8 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="30">
     <Grid>
-        <Button Name="Button" BorderThickness="0" 
-                Background="Aqua"
+        <Button Name="Button" BorderThickness="0" Background="{Binding Background, RelativeSource={RelativeSource AncestorType=utils:EditableTextBlock}}"
                 IsEnabled="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=utils:EditableTextBlock}}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
@@ -34,6 +33,6 @@
                 </Style>
             </Button.Style>
         </Button>
-        <TextBox Name="TextBox0" VerticalContentAlignment="Center" VerticalAlignment="Stretch"></TextBox>
+        <TextBox Name="TextBox0" VerticalContentAlignment="Center" VerticalAlignment="Stretch" Visibility="Collapsed"></TextBox>
     </Grid>
 </UserControl>

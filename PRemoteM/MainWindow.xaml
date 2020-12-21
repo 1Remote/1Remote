@@ -73,7 +73,7 @@
 
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
-                        Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"
+                        Text="{Binding Source={x:Static model:GlobalData.Instance}, Path=MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
                         KeyUp="TbFilter_OnKeyUp"
                         VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
@@ -180,7 +180,7 @@
                    StaysOpen="False"
                    PlacementTarget="{Binding ElementName=CbPopForMenu}">
                 <Popup.Resources>
-                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                    <Style x:Key="ButtonExStyle0" TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
                         <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
@@ -189,11 +189,10 @@
                         <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
                         <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
                         <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                        <!--<Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>-->
-                        <!--<Setter Property="ForegroundOnDisabled" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                        <Setter Property="OpacityOnDisabled" Value="0.5"/>-->
                         <Setter Property="OpacityOnPressed" Value="1"></Setter>
                     </Style>
+
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyle0}"/>
                 </Popup.Resources>
                 <Border Padding="0 0 4 4">
                     <Border.Effect>
@@ -236,6 +235,28 @@
                                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="16" Margin="10 0 0 0"></Image>
                                     </StackPanel>
                                 </Grid>
+                            </controls:ButtonEx>
+                            <controls:ButtonEx Click="ButtonToggleServerListViewUi_OnClick">
+                                <controls:ButtonEx.Style>
+                                    <Style TargetType="controls:ButtonEx"  BasedOn="{StaticResource ButtonExStyle0}">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding BottomPage}" Value="{x:Null}"></Condition>
+                                                    <Condition Binding="{Binding DispPage}" Value="{x:Null}"></Condition>
+                                                    <Condition Binding="{Binding TopPage}" Value="{x:Null}"></Condition>
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.Setters>
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </MultiDataTrigger.Setters>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:ButtonEx.Style>
+                                <TextBlock Text="TXT:Toggle ListView" Margin="20 0 0 0"
+                                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
+                                </TextBlock>
                             </controls:ButtonEx>
                             <controls:ButtonEx Click="ButtonExit_OnClick">
                                 <TextBlock Text="{DynamicResource word_exit}" Margin="20 0 0 0"
@@ -304,7 +325,7 @@
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <ContentControl Content="{Binding OperatePage}"></ContentControl>
+            <ContentControl Content="{Binding ListViewPageForServerList}"></ContentControl>
             <pageHost1:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost1:PageHost>

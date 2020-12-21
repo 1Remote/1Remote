@@ -220,5 +220,11 @@ namespace PRM
                 TbFilter.Focus();
             }
         }
+
+        private void ButtonToggleServerListViewUi_OnClick(object sender, RoutedEventArgs e)
+        {
+            SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
+            PopupMenu.IsOpen = false;
+        }
     }
 }

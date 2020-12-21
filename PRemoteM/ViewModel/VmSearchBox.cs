@@ -95,14 +95,17 @@ namespace PRM.ViewModel
         }
 
 
-        private string _dispNameFilter;
-        public string DispNameFilter
+        private string _filter = "";
+        public string Filter
         {
-            get => _dispNameFilter;
+            get => _filter;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                UpdateItemsList(value);
+                if (_filter != value)
+                {
+                    SetAndNotifyIfChanged(nameof(Filter), ref _filter, value);
+                    UpdateItemsList(value);
+                }
             }
         }
 

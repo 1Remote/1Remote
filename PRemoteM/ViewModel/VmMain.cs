@@ -15,21 +15,14 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-        public Action<string> OnFilterChanged;
-
-        private string _dispNameFilter = "";
-        public string DispNameFilter
+        private object _listViewPageForServerList;
+        public object ListViewPageForServerList
         {
-            get => _dispNameFilter;
-            set
-            {
-                if (value != _dispNameFilter)
-                {
-                    SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                    OnFilterChanged?.Invoke(value);
-                }
-            }
+            get => _listViewPageForServerList;
+            set => SetAndNotifyIfChanged(nameof(ListViewPageForServerList), ref _listViewPageForServerList, value);
         }
+
+        private readonly ServerManagementPage _managementPage = null;
         private AnimationPage _bottomPage = null;
         public AnimationPage BottomPage
         {
@@ -44,20 +37,12 @@ namespace PRM.ViewModel
             get => _dispPage;
             set => SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
         }
-        private AnimationPage _topPage = null;
 
+        private AnimationPage _topPage = null;
         public AnimationPage TopPage
         {
             get => _topPage;
             set => SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
-        }
-
-
-        private object _pageServerCard;
-        public object OperatePage
-        {
-            get => _pageServerCard;
-            set => SetAndNotifyIfChanged(nameof(OperatePage), ref _pageServerCard, value);
         }
 
         private int _progressBarValue = 0;
@@ -139,6 +124,8 @@ namespace PRM.ViewModel
                     Page = new ServerEditorPage(new VmServerEditorPage(server)),
                 };
             });
+
+            _managementPage = new ServerManagementPage();
         }
 
 
@@ -185,7 +172,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new ServerManagementPage(),
+                            Page = _managementPage,
                         };
                         Window.PopupMenu.IsOpen = false;
                     }, o => BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
