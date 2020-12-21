@@ -68,7 +68,7 @@ namespace PRM.View
 
         private void ButtonLogoSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm?.Server != null && Vm.Server.GetType() != typeof(ProtocolServerNone))
+            if (Vm?.Server != null)
             {
                 Vm.Server.IconImg = LogoSelector.Logo;
             }

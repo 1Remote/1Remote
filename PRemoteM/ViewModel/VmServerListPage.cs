@@ -169,60 +169,39 @@ namespace PRM.ViewModel
             if (ServerListItems?.Count > 0)
             {
                 var items = new ObservableCollection<VmServerListItem>();
-                switch (ItemsOrderByType)
+                switch (SystemConfig.Instance.General.ServerOrderBy)
                 {
-                    case -1:
+                    case EnumServerOrderBy.IdAsc:
                     default:
-                        switch (SystemConfig.Instance.General.ServerOrderBy)
-                        {
-                            case EnumServerOrderBy.Name:
-                                items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(s => s.Server.DispName).ThenBy(s => s.Server.Id));
-                                break;
-                            case EnumServerOrderBy.AddTimeAsc:
-                                items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(s => s.Server.Id));
-                                break;
-                            case EnumServerOrderBy.AddTimeDesc:
-                                items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(s => s.Server.Id));
-                                break;
-                            case EnumServerOrderBy.Protocol:
-                                items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(s => s.Server.Protocol).ThenBy(s => s.Server.DispName));
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
+                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.Id));
                         break;
-                    case 0:
+                    case EnumServerOrderBy.Protocol:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.Protocol).ThenBy(x => x.Server.Id));
                         break;
-                    case 1:
+                    case EnumServerOrderBy.ProtocolDesc:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => x.Server.Protocol).ThenBy(x => x.Server.Id));
                         break;
-                    case 2:
+                    case EnumServerOrderBy.Name:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.DispName).ThenBy(x => x.Server.Id));
                         break;
-                    case 3:
+                    case EnumServerOrderBy.NameDesc:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => x.Server.DispName).ThenBy(x => x.Server.Id));
                         break;
-                    case 4:
+                    case EnumServerOrderBy.GroupName:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.GroupName).ThenBy(x => x.Server.Id));
                         break;
-                    case 5:
+                    case EnumServerOrderBy.GroupNameDesc:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => x.Server.GroupName).ThenBy(x => x.Server.Id));
                         break;
-                    case 6:
+                    case EnumServerOrderBy.Address:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => (x.Server is ProtocolServerWithAddrPortBase p) ? p.Address : "").ThenBy(x => x.Server.Id));
                         break;
-                    case 7:
+                    case EnumServerOrderBy.AddressDesc:
                         items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => (x.Server is ProtocolServerWithAddrPortBase p) ? p.Address : "").ThenBy(x => x.Server.Id));
                         break;
                 }
 
 
-                // add a 'ProtocolServerNone' so that 'add server' button will be shown
-                var addServerCard = new VmServerListItem(new ProtocolServerNone());
-                addServerCard.Server.GroupName = SelectedGroup;
-                //addServerCard.OnAction += VmServerCardOnAction;
-                items.Add(addServerCard);
                 _serverListItems = items;
 
                 CalcVisible();
@@ -239,22 +218,13 @@ namespace PRM.ViewModel
                 string keyWord = GlobalData.Instance.MainWindowServerFilter;
                 string selectedGroup = SelectedGroup;
 
-                //if (server is ProtocolServerNone)
-                //{
-                //    if (ServerListPageUI == 0)
-                //        card.Visible = Visibility.Visible;
-                //    else
-                //        card.Visible = Visibility.Collapsed;
-                //    continue;
-                //}
-
                 if (server.Id <= 0)
                 {
                     card.Visible = Visibility.Collapsed;
                     continue;
                 }
 
-                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup || server.GetType() == typeof(ProtocolServerNone);
+                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup;
                 if (!bGroupMatched)
                 {
                     card.Visible = Visibility.Collapsed;
@@ -713,16 +683,17 @@ namespace PRM.ViewModel
                             if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
                             {
                                 // cancel order
-                                if (ItemsOrderByType == (ot + 1))
+                                if (SystemConfig.Instance.General.ServerOrderBy == (EnumServerOrderBy)(ot + 1))
                                 {
                                     ot = -1;
                                 }
-                                else if (ItemsOrderByType == ot)
+                                else if (SystemConfig.Instance.General.ServerOrderBy == (EnumServerOrderBy)ot)
                                 {
                                     ++ot;
                                 }
 
-                                ItemsOrderByType = ot;
+                                SystemConfig.Instance.General.ServerOrderBy = (EnumServerOrderBy)ot;
+                                OrderServerList();
                                 _lastCmdReOrder = DateTime.Now;
                             }
                         }
@@ -733,30 +704,18 @@ namespace PRM.ViewModel
         }
 
 
-        private int _itemsOrderByType = -1;
-
-        /// <summary>
-        /// -1: by name asc(default)
-        /// 0: by name asc
-        /// 1: by name desc
-        /// 2: by size asc
-        /// 3: by size desc
-        /// 4: by LastUpdate asc
-        /// 5: by LastUpdate desc
-        /// 6: by FileType asc
-        /// 7: by FileType desc
-        /// </summary>
-        public int ItemsOrderByType
-        {
-            get => _itemsOrderByType;
-            set
-            {
-                if (_itemsOrderByType != value)
-                {
-                    SetAndNotifyIfChanged(nameof(ItemsOrderByType), ref _itemsOrderByType, value);
-                    OrderServerList();
-                }
-            }
-        }
+        //private int _itemsOrderByType = -1;
+        //public int ItemsOrderByType
+        //{
+        //    get => _itemsOrderByType;
+        //    set
+        //    {
+        //        if (_itemsOrderByType != value)
+        //        {
+        //            SetAndNotifyIfChanged(nameof(ItemsOrderByType), ref _itemsOrderByType, value);
+        //            OrderServerList();
+        //        }
+        //    }
+        //}
     }
 }

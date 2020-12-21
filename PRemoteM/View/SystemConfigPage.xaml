@@ -178,33 +178,6 @@
                                     <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
                                 </Style>
                             </StackPanel.Resources>
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_server_order_by}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <RadioButton Margin="0 2" Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.Name}}" Content="{DynamicResource system_options_general_server_order_by_name}"/>
-                                <RadioButton Margin="0 2" Grid.Column="1" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.Protocol}}" Content="{DynamicResource system_options_general_server_order_by_protocol}"/>
-                                <RadioButton Margin="0 2" Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeDesc}}" Content="{DynamicResource system_options_general_server_order_by_add_time_asc}"/>
-                                <RadioButton Margin="0 2" Grid.Column="1" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.ServerOrderBy, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumServerOrderBy.AddTimeAsc}}" Content="{DynamicResource system_options_general_server_order_by_add_time_desc}"/>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-
-
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel.Resources>
-                                <Style TargetType="RadioButton">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
-                                </Style>
-                            </StackPanel.Resources>
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_tab_mode}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
