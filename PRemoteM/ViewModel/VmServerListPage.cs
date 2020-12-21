@@ -49,7 +49,7 @@ namespace PRM.ViewModel
                 SelectedGroup = lastSelectedGroup;
             }
 
-            App.Window.Vm.OnFilterChanged += new Action<string>(s =>
+            GlobalData.Instance.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
             });
@@ -85,13 +85,6 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
 
-        private int _listMode = 1;
-        public int ListMode
-        {
-            get => _listMode;
-            set => SetAndNotifyIfChanged(nameof(ListMode), ref _listMode, value);
-        }
-
 
         private string _moveToGroup = "";
         public string MoveToGroup
@@ -113,26 +106,16 @@ namespace PRM.ViewModel
             get => _selectedGroup;
             set
             {
-                App.Window.Vm.DispNameFilter = "";
-                SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
-                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
-                SystemConfig.Instance.Locality.Save();
-                CalcVisible();
+                if (_selectedGroup != value)
+                {
+                    GlobalData.Instance.MainWindowServerFilter = "";
+                    SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
+                    SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+                    SystemConfig.Instance.Locality.Save();
+                    CalcVisible();
+                }
             }
         }
-
-
-        //private string _dispNameFilter = "";
-        //public string DispNameFilter
-        //{
-        //    get => _dispNameFilter;
-        //    set
-        //    {
-        //        SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-        //        CalcVisible();
-        //    }
-        //}
-
 
         private bool _isSelectedAll;
         public bool IsSelectedAll
@@ -155,15 +138,6 @@ namespace PRM.ViewModel
             _serverListItems.Clear();
             foreach (var vs in GlobalData.Instance.VmItemList)
             {
-                vs.Server.PropertyChanged += (sender, args) =>
-                {
-                    switch (args.PropertyName)
-                    {
-                        case nameof(ProtocolServerBase.GroupName):
-                            RebuildGroupList();
-                            break;
-                    }
-                };
                 ServerListItems.Add(new VmServerListItem(vs.Server));
             }
             OrderServerList();
@@ -249,10 +223,10 @@ namespace PRM.ViewModel
                 addServerCard.Server.GroupName = SelectedGroup;
                 //addServerCard.OnAction += VmServerCardOnAction;
                 items.Add(addServerCard);
+                _serverListItems = items;
 
                 CalcVisible();
 
-                _serverListItems = items;
                 base.RaisePropertyChanged(nameof(ServerListItems));
             }
         }
@@ -262,14 +236,17 @@ namespace PRM.ViewModel
             foreach (var card in ServerListItems)
             {
                 var server = card.Server;
-                string keyWord = App.Window.Vm.DispNameFilter;
+                string keyWord = GlobalData.Instance.MainWindowServerFilter;
                 string selectedGroup = SelectedGroup;
 
-                if (server is ProtocolServerNone)
-                {
-                    card.Visible = Visibility.Visible;
-                    continue;
-                }
+                //if (server is ProtocolServerNone)
+                //{
+                //    if (ServerListPageUI == 0)
+                //        card.Visible = Visibility.Visible;
+                //    else
+                //        card.Visible = Visibility.Collapsed;
+                //    continue;
+                //}
 
                 if (server.Id <= 0)
                 {

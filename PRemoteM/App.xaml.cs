@@ -271,8 +271,8 @@ namespace PRM
                     MainWindow = Window;
 
                     Window = new MainWindow();
-                    var page = new ServerListPage(Window.Vm);
-                    Window.Vm.OperatePage = page;
+                    var page = new ServerListPage();
+                    Window.Vm.ListViewPageForServerList = page;
                     if (!SystemConfig.Instance.General.AppStartMinimized
                         || isFirstTimeUser)
                     {

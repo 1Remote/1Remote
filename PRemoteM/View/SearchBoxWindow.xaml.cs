@@ -73,7 +73,7 @@ namespace PRM.View
                         _isHidden = true;
                         this.Hide();
                         _vmSearchBox.HideActionsList();
-                        _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.Filter = "";
                     }
                 }
         }
@@ -99,7 +99,7 @@ namespace PRM.View
                 {
                     if (_isHidden == true)
                     {
-                        _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.Filter = "";
                         var p = ScreenInfoEx.GetMouseSystemPosition();
                         var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
                         this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;

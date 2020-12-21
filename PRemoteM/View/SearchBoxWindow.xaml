@@ -375,7 +375,7 @@
                          CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
                          Height="44" 
                          FontSize="18"
-                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
+                         Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"  
                          PreviewKeyDown="TbKeyWord_OnKeyDown"
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
