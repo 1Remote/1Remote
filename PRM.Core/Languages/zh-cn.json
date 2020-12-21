@@ -67,6 +67,7 @@
   "system_menu_options_title": "设置",
   "system_menu_about_title": "关于",
   "system_menu_management_title": "管理",
+  "system_menu_toggle_server_list": "切换卡片/列表",
 
   // system options
   "system_options_general_title": "常规",
