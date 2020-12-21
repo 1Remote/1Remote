@@ -254,7 +254,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </controls:ButtonEx.Style>
-                                <TextBlock Text="TXT:Toggle ListView" Margin="20 0 0 0"
+                                <TextBlock Text="{DynamicResource system_menu_toggle_server_list}" Margin="20 0 0 0"
                                            Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
                                 </TextBlock>
                             </controls:ButtonEx>

@@ -67,6 +67,7 @@
   "system_menu_options_title": "Options",
   "system_menu_about_title": "About",
   "system_menu_management_title": "Management",
+  "system_menu_toggle_server_list": "Toggle Cards/List",
 
   // system options
   "system_options_general_title": "General",
