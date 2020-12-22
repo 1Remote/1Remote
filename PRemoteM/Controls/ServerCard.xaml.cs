@@ -55,21 +55,5 @@ namespace PRM.Controls
                 VmServerListItem.CmdDuplicateServer.Execute();
             }
         }
-
-        private void ButtonExportToFile_OnClick(object sender, RoutedEventArgs e)
-        {
-            PopupCardSettingMenu.IsOpen = false;
-            var dlg = new SaveFileDialog
-            {
-                Filter = "PRM json|*.prmj",
-                FileName = VmServerListItem.Server.DispName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".prmj"
-            };
-            if (dlg.ShowDialog() == true)
-            {
-                var server = (ProtocolServerBase)VmServerListItem.Server.Clone();
-                SystemConfig.Instance.DataSecurity.DecryptPwd(server);
-                File.WriteAllText(dlg.FileName, server.ToJsonString(), Encoding.UTF8);
-            }
-        }
     }
 }

@@ -10,7 +10,7 @@
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1000" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -294,10 +294,6 @@
                             </ListBox>
                         </StackPanel>
                     </ScrollViewer>
-                    <controls:ButtonEx Style="{StaticResource MainColor1Button}" Grid.Column="1" Padding="0 1 0 0" MinWidth="80" 
-                            Command="{Binding CmdImportFromFile}"
-                            Content="{DynamicResource word_import}">
-                    </controls:ButtonEx>
                 </Grid>
             </Border>
         </Grid>

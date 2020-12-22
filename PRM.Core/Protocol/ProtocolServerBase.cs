@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Media;
@@ -271,6 +272,28 @@ namespace PRM.Core.Protocol
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public virtual bool EqualTo(ProtocolServerBase compare)
+        {
+            var t1 = this.GetType();
+            var t2 = compare.GetType();
+            if (t1 == t2)
+            {
+                var properties = t1.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var property in properties)
+                {
+                    if (property.CanWrite && property.SetMethod != null)
+                    {
+                        var v1 = property.GetValue(this)?.ToString();
+                        var v2 = property.GetValue(compare)?.ToString();
+                        if (v1 != v2)
+                            return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 }
