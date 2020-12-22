@@ -309,7 +309,6 @@
                                             <StackPanel>
                                                 <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></controls:ButtonEx>
                                                 <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
-                                                <controls:ButtonEx Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></controls:ButtonEx>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

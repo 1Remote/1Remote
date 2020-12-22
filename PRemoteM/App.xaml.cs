@@ -12,6 +12,8 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
+using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.RDP;
 using PRM.Model;
 using PRM.View;
 using PRM.ViewModel;
@@ -57,7 +59,7 @@ namespace PRM
 
             // init log file placement
             {
-                var logFilePath = Path.Combine(appDateFolder, "logs/PRemoteM.log.md");
+                var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
                 var fi = new FileInfo(logFilePath);
                 if (!fi.Directory.Exists)
                     fi.Directory.Create();
@@ -262,7 +264,6 @@ namespace PRM
 
 
                 #endregion
-
 
                 #region app start
                 // main window init

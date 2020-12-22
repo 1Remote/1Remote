@@ -127,7 +127,6 @@
   "server_card_operate_conn": "连接",
   "server_card_operate_edit": "编辑",
   "server_card_operate_duplicate": "创建副本",
-  "server_card_operate_export_to_prmj": "导出配置",
   "server_card_operate_copy_address": "复制地址到剪贴板",
   "server_card_operate_copy_username": "复制用户名到剪贴板",
   "server_card_operate_copy_password": "复制密码到剪贴板",

@@ -40,6 +40,7 @@ namespace PRM.View.TabWindow
             this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
             this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
             this.MinWidth = this.MinHeight = 300;
+            this.WindowState = SystemConfig.Instance.Locality.TabWindowState;
 
             // save window size when size changed
             var lastWindowState = WindowState.Normal;
@@ -49,11 +50,24 @@ namespace PRM.View.TabWindow
                 {
                     SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
                     SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
                     SystemConfig.Instance.Locality.Save();
                 }
                 if (lastWindowState != this.WindowState)
                     Vm?.SelectedItem?.Content?.MakeItFocus();
                 lastWindowState = this.WindowState;
+                SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
+            };
+            this.StateChanged += delegate (object sender, EventArgs args)
+            {
+                if (this.WindowState != WindowState.Minimized)
+                {
+                    Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
+                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
+                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                    SystemConfig.Instance.Locality.Save();
+                }
             };
 
 

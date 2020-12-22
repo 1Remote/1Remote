@@ -685,7 +685,7 @@
                         </Setter>
                     </Style>
                 </StackPanel.Resources>
-                <controls1:ButtonEx Height="30" Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0" Click="ButtonBack_OnClick" Content="{DynamicResource word_back}"></controls1:ButtonEx>
+                <controls1:ButtonEx Style="{StaticResource MainColor2Button}" Margin="0 0" Width="80" Click="ButtonBack_OnClick" Content="{DynamicResource word_back}"></controls1:ButtonEx>
             </StackPanel>
 
 
