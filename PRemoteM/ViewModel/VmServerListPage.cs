@@ -85,19 +85,18 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
 
-
-        private string _moveToGroup = "";
-        public string MoveToGroup
+        private string _multiEditPropertyName = "Group";
+        public string MultiEditPropertyName
         {
-            get => _moveToGroup;
-            set => SetAndNotifyIfChanged(nameof(MoveToGroup), ref _moveToGroup, value);
+            get => _multiEditPropertyName;
+            set => SetAndNotifyIfChanged(nameof(MultiEditPropertyName), ref _multiEditPropertyName, value);
         }
 
-        private List<string> _groupSelections;
-        public List<string> GroupSelections
+        private string _multiEditNewValue = "";
+        public string MultiEditNewValue
         {
-            get => _groupSelections;
-            set => SetAndNotifyIfChanged(nameof(GroupSelections), ref _groupSelections, value);
+            get => _multiEditNewValue;
+            set => SetAndNotifyIfChanged(nameof(MultiEditNewValue), ref _multiEditNewValue, value);
         }
 
         private string _selectedGroup = "";
@@ -142,7 +141,6 @@ namespace PRM.ViewModel
             }
             OrderServerList();
             RebuildGroupList();
-            GroupSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.GroupName).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
         }
 
         private void RebuildGroupList()
@@ -637,33 +635,135 @@ namespace PRM.ViewModel
 
 
 
-        private RelayCommand _cmdMoveSelected;
-        public RelayCommand CmdMoveSelected
+        private RelayCommand _cmdMultiEditSelected;
+        public RelayCommand CmdMultiEditSelectedSave
         {
             get
             {
-                if (_cmdMoveSelected == null)
+                if (_cmdMultiEditSelected == null)
                 {
-                    _cmdMoveSelected = new RelayCommand((o) =>
+                    _cmdMultiEditSelected = new RelayCommand((o) =>
                     {
-                        if (MessageBoxResult.Yes == MessageBox.Show(
-                            SystemConfig.Instance.Language.GetText("managementpage_move_to_group_confirm") + MoveToGroup + "'?",
-                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
-                            MessageBoxImage.Question, MessageBoxResult.None))
+                        _multiEditNewValue = MultiEditNewValue.Trim();
+                        if (MultiEditPropertyName == "Name" || MultiEditPropertyName == "Address"
+                                                            || MultiEditPropertyName == "Port")
                         {
-                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                            if (ss?.Count > 0)
+                            if (string.IsNullOrWhiteSpace(MultiEditNewValue))
                             {
-                                foreach (var vs in ss)
-                                {
-                                    vs.Server.GroupName = MoveToGroup;
-                                    Server.AddOrUpdate(vs.Server);
-                                }
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_edit_selected_error_empty_string"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                return;
+                            }
+
+                            if (MultiEditPropertyName == "Port"
+                            && !int.TryParse(MultiEditNewValue, out var port))
+                            {
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_edit_selected_error_port"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                return;
+                            }
+                        }
+
+                        if (MessageBoxResult.Yes == MessageBox.Show(
+                        SystemConfig.Instance.Language.GetText("managementpage_edit_selected_confirm") + MultiEditNewValue + "'?",
+                        SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        MessageBoxImage.Question, MessageBoxResult.None))
+                        {
+                            switch (MultiEditPropertyName)
+                            {
+                                case "Name":
+                                    {
+                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                                        if (ss?.Count > 0)
+                                        {
+                                            foreach (var vs in ss)
+                                            {
+                                                vs.Server.DispName = MultiEditNewValue;
+                                                Server.AddOrUpdate(vs.Server);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case "Group":
+                                    {
+                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                                        if (ss?.Count > 0)
+                                        {
+                                            foreach (var vs in ss)
+                                            {
+                                                vs.Server.GroupName = MultiEditNewValue;
+                                                Server.AddOrUpdate(vs.Server);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case "Address":
+                                    {
+                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                                        if (ss?.Count > 0 && int.TryParse(MultiEditNewValue, out var port))
+                                        {
+                                            foreach (var vs in ss)
+                                            {
+                                                if (vs.Server is ProtocolServerWithAddrPortBase p)
+                                                {
+                                                    p.Port = MultiEditNewValue;
+                                                    Server.AddOrUpdate(p);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case "Port":
+                                    {
+                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                                        if (ss?.Count > 0)
+                                        {
+                                            foreach (var vs in ss)
+                                            {
+                                                if (vs.Server is ProtocolServerWithAddrPortBase p)
+                                                {
+                                                    p.Port = MultiEditNewValue;
+                                                    Server.AddOrUpdate(p);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case "UserName":
+                                    {
+                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                                        if (ss?.Count > 0)
+                                        {
+                                            foreach (var vs in ss)
+                                            {
+                                                if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
+                                                {
+                                                    p.UserName = MultiEditNewValue;
+                                                    Server.AddOrUpdate(p);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                case "Password":
+                                    {
+                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                                        if (ss?.Count > 0)
+                                        {
+                                            foreach (var vs in ss)
+                                            {
+                                                if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
+                                                {
+                                                    p.Password = MultiEditNewValue;
+                                                    Server.AddOrUpdate(p);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
                             }
                         }
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
                 }
-                return _cmdMoveSelected;
+                return _cmdMultiEditSelected;
             }
         }
 
@@ -702,20 +802,5 @@ namespace PRM.ViewModel
                 return _cmdReOrder;
             }
         }
-
-
-        //private int _itemsOrderByType = -1;
-        //public int ItemsOrderByType
-        //{
-        //    get => _itemsOrderByType;
-        //    set
-        //    {
-        //        if (_itemsOrderByType != value)
-        //        {
-        //            SetAndNotifyIfChanged(nameof(ItemsOrderByType), ref _itemsOrderByType, value);
-        //            OrderServerList();
-        //        }
-        //    }
-        //}
     }
 }

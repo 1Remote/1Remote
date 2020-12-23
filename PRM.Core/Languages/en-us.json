@@ -135,11 +135,14 @@
   "managementpage_import_dialog_title": "Select a file",
   "managementpage_import_from_json": "from json",
   "managementpage_import_from_mremoteng_csv": "from mRemoteNG csv",
-  "managementpage_import_done": "The import has been successful, add {0}.",
+  "managementpage_import_done": "Imported successfully, {0} item added.",
   "managementpage_import_error": "Error data format!",
-  "managementpage_move_to_group": "Move to...",
-  "managementpage_move_to_group_info": "Move selected to group:",
-  "managementpage_move_to_group_confirm": "Sure to move all selected to group ",
+  "managementpage_edit_selected": "Edit selected",
+  "managementpage_edit_selected_info": "Edit selected property:",
+  "managementpage_edit_selected_info_to": "To",
+  "managementpage_edit_selected_error_empty_string": "New value can not be empty string!",
+  "managementpage_edit_selected_error_port": "Port should be 1 - 65535!",
+  "managementpage_edit_selected_confirm": "Sure to move all selected to new value: '",
 
 
   // server editor
