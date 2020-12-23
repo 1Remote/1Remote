@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -23,12 +24,24 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ListViewPageForServerList), ref _listViewPageForServerList, value);
         }
 
+
+        private Visibility _tbFilterVisible = Visibility.Visible;
+        public Visibility TbFilterVisible
+        {
+            get => _tbFilterVisible;
+            set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
+        }
+
         private readonly ServerManagementPage _managementPage = null;
         private AnimationPage _bottomPage = null;
         public AnimationPage BottomPage
         {
             get => _bottomPage;
-            set => SetAndNotifyIfChanged(nameof(BottomPage), ref _bottomPage, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(BottomPage), ref _bottomPage, value);
+                CalcTbFilterVisible();
+            }
         }
 
 
@@ -36,14 +49,22 @@ namespace PRM.ViewModel
         public AnimationPage DispPage
         {
             get => _dispPage;
-            set => SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
+                CalcTbFilterVisible();
+            }
         }
 
         private AnimationPage _topPage = null;
         public AnimationPage TopPage
         {
             get => _topPage;
-            set => SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
+                CalcTbFilterVisible();
+            }
         }
 
         private int _progressBarValue = 0;
@@ -130,6 +151,14 @@ namespace PRM.ViewModel
         }
 
 
+        private void CalcTbFilterVisible()
+        {
+            if (TopPage == null && DispPage == null)
+                TbFilterVisible = Visibility.Visible;
+            else
+                TbFilterVisible = Visibility.Collapsed;
+        }
+
 
         #region CMD
 
@@ -149,7 +178,7 @@ namespace PRM.ViewModel
                             Page = new SystemConfigPage(this, (Type)o),
                         };
                         Window.PopupMenu.IsOpen = false;
-                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                    }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
             }
@@ -176,7 +205,7 @@ namespace PRM.ViewModel
                             Page = _managementPage,
                         };
                         Window.PopupMenu.IsOpen = false;
-                    }, o => BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
+                    }, o => TopPage == null && BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
                 }
                 return _cmdGoManagementPage;
             }
@@ -192,37 +221,16 @@ namespace PRM.ViewModel
                 {
                     _cmdGoAboutPage = new RelayCommand((o) =>
                     {
-                        DispPage = new AnimationPage()
+                        TopPage = new AnimationPage()
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                             Page = new AboutPage(this),
                         };
                         Window.PopupMenu.IsOpen = false;
-                    }, o => DispPage?.Page?.GetType() != typeof(AboutPage));
+                    }, o => TopPage?.Page?.GetType() != typeof(AboutPage));
                 }
                 return _cmdGoAboutPage;
-            }
-        }
-
-
-
-
-        private RelayCommand _cmdGoServerListPage;
-        public RelayCommand CmdGoServerListPage
-        {
-            get
-            {
-                if (_cmdGoServerListPage == null)
-                {
-                    _cmdGoServerListPage = new RelayCommand((o) =>
-                    {
-                        if (DispPage?.Page?.GetType() != null)
-                            DispPage = null;
-                        Window.PopupMenu.IsOpen = false;
-                    }, o => DispPage?.Page?.GetType() != null && DispPage?.Page?.GetType() != typeof(ServerListPage));
-                }
-                return _cmdGoServerListPage;
             }
         }
         #endregion
