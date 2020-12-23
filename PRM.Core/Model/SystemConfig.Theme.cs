@@ -215,10 +215,7 @@ namespace PRM.Core.Model
         }
 
 
-        private EnumServerListPageUI _serverListPageUi = EnumServerListPageUI.List;
-        /// <summary>
-        /// 0: Cards, 1: List
-        /// </summary>
+        private EnumServerListPageUI _serverListPageUi = EnumServerListPageUI.Card;
         public EnumServerListPageUI ServerListPageUI
         {
             get => _serverListPageUi;

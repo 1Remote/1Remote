@@ -73,9 +73,9 @@
 
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
-                        Text="{Binding Source={x:Static model:GlobalData.Instance}, Path=MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
-                        KeyUp="TbFilter_OnKeyUp"
-                        VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
+                         Visibility="{Binding TbFilterVisible}"
+                         Text="{Binding Source={x:Static model:GlobalData.Instance}, Path=MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
+                         KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>

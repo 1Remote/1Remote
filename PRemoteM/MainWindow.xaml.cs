@@ -158,7 +158,7 @@ namespace PRM
 
         public void ActivateMe(bool isForceActivate = false)
         {
-            if(isForceActivate)
+            if (isForceActivate)
                 HideMe(false);
             Dispatcher?.Invoke(() =>
             {
@@ -194,9 +194,14 @@ namespace PRM
 
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape
+                && sender is TextBox textBox)
             {
-                (sender as TextBox).Text = "";
+                textBox.Text = "";
+                // Kill logical focus
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
+                // Kill keyboard focus
+                Keyboard.ClearFocus();
             }
         }
 
@@ -214,6 +219,17 @@ namespace PRM
 
             if (Keyboard.FocusedElement is TextBox)
             {
+            }
+            else if (e.Key == Key.Escape)
+            {
+                if (Vm.TopPage != null)
+                {
+                    Vm.TopPage = null;
+                }
+                else if (Vm.DispPage?.Page is SystemConfigPage scp)
+                {
+                    Vm.DispPage = null;
+                }
             }
             else
             {

@@ -255,7 +255,7 @@
                         <controls:ButtonEx Style="{StaticResource MainColor2Button}"
                                 Padding="0 1 0 0" Width="80" Height="20"
                                 HorizontalAlignment="Center"
-                                Command="{Binding CmdGoServerListPage}"
+                                Click="ButtonBack_OnClick"
                                 BorderThickness="0" Content="Back">
                         </controls:ButtonEx>
                     </Grid>
