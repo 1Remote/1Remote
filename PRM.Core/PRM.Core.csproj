@@ -377,7 +377,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties languages_4en-us_1json__JsonSchema="https://json-stat.org/format/schema/2.0/" />
+      <UserProperties languages_4en-us_1json__JsonSchema="https://json.schemastore.org/apibuilder.json" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>

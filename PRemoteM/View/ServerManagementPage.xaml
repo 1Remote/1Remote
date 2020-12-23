@@ -725,7 +725,7 @@
                             <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
                                 <Grid Margin="5" VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Name="Tb1" Margin="5 0 0 0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_move_to_group}"></TextBlock>
+                                        <TextBlock Name="Tb1" Margin="5 0 0 0" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_edit_selected}"></TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -751,15 +751,20 @@
                         </Border.Effect>
                         <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
                             <StackPanel>
-                                <TextBlock Margin="10 5" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_move_to_group_info}"></TextBlock>
-                                <utils1:AutoCompleteComboBox x:Name="TbGroup" 
-                                                             Margin="10 5" 
-                                                             Text="{Binding MoveToGroup, UpdateSourceTrigger=PropertyChanged}"
-                                                             Selections="{Binding GroupSelections}"/>
+                                <TextBlock Margin="10 5" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_edit_selected_info}"></TextBlock>
+                                <ComboBox Margin="10 5" SelectedValue="{Binding MultiEditPropertyName}" SelectedValuePath="Tag">
+                                    <ComboBoxItem Tag="Name" Content="{DynamicResource word_name}"></ComboBoxItem>
+                                    <ComboBoxItem Tag="Group" IsSelected="True" Content="{DynamicResource server_editor_group}"></ComboBoxItem>
+                                    <ComboBoxItem Tag="Address" Content="{DynamicResource server_editor_connection_address}"></ComboBoxItem>
+                                    <ComboBoxItem Tag="Port" Content="{DynamicResource server_editor_connection_port}"></ComboBoxItem>
+                                    <ComboBoxItem Tag="UserName" Content="{DynamicResource server_editor_connection_username}"></ComboBoxItem>
+                                    <ComboBoxItem Tag="Password" Content="{DynamicResource server_editor_connection_password}"></ComboBoxItem>
+                                </ComboBox>
+                                <TextBlock Margin="10 5" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{DynamicResource managementpage_edit_selected_info_to}"></TextBlock>
+                                <TextBox Margin="10 5" Height="20" VerticalContentAlignment="Center" Text="{Binding MultiEditNewValue, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                 <controls1:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}" 
-                                                    Margin="10 5"
-                                                    Background="{DynamicResource MainColor1DarkerBrush}" 
-                                                    Content="{DynamicResource word_save}" Command="{Binding CmdMoveSelected}"/>
+                                                    Margin="10 5 10 15"
+                                                    Content="{DynamicResource word_save}" Command="{Binding CmdMultiEditSelectedSave}"/>
                             </StackPanel>
                         </Grid>
                     </Border>

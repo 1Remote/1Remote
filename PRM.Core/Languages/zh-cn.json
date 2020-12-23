@@ -137,9 +137,12 @@
   "managementpage_import_from_mremoteng_csv": "从 mRemoteNG csv",
   "managementpage_import_done": "已导入{0}条记录.",
   "managementpage_import_error": "导入0条，输入的数据文件格式有误!",
-  "managementpage_move_to_group": "移动到...",
-  "managementpage_move_to_group_info": "将所选移动到组:",
-  "managementpage_move_to_group_confirm": "确认要将所选项目组别变更为 ",
+  "managementpage_edit_selected": "编辑选中",
+  "managementpage_edit_selected_info": "将所选项目的属性：",
+  "managementpage_edit_selected_info_to": "修改为",
+  "managementpage_edit_selected_error_empty_string": "不能输入空字符串",
+  "managementpage_edit_selected_error_port": "端口号应当为：1 - 65535!",
+  "managementpage_edit_selected_confirm": "确认要将所选项目变更为 '",
 
 
   // server editor
