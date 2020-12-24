@@ -48,8 +48,6 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 
 # Lastet
 
-最新版本: 0.5.3.2012012220
-
 - [微软商店版(测试中)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [下载 exe](https://github.com/VShawn/PRemoteM/releases)
   
@@ -95,9 +93,9 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 
 1. 提出新的改进点，包括但不限于提Bug、提新需求、设计、交互建议。
 
-2. 帮助翻译，复制一份[en-us.js](https://github.com/VShawn/PRemoteM/blob/dev/PRM.Core/Languages/en-us.json)，将其中的英文翻译成其他语言 Pull request 给我。
+2. 帮助翻译，复制一份[en-us.js](https://github.com/VShawn/PRemoteM/blob/dev/PRM.Core/Languages/en-us.json)，将其中的英文翻译成其他语言并发起 PR。
 
-3. 帮写文档（~~写文档真是太痛苦了~~），现在需要帮写使用说明、翻译文档等工作，我主要把时间分配给功能实现上了，文档上常常跟不上新功能。
+3. 帮写文档（~~写文档真是太痛苦了~~），包括不限于使用说明、翻译文档等。
 
 4. 欢迎捐赠
 
