@@ -202,6 +202,7 @@ namespace PRM
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
                 // Kill keyboard focus
                 Keyboard.ClearFocus();
+                this.Focus();
             }
         }
 

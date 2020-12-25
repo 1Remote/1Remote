@@ -106,11 +106,6 @@ namespace Shawn.Utils
                 else
                     TextBox0.Text = Text = _oldText;
                 TextBox0.Visibility = Visibility.Collapsed;
-
-                // Kill logical focus
-                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(TextBox0), null);
-                // Kill keyboard focus
-                Keyboard.ClearFocus();
             }
         }
 
