@@ -39,38 +39,6 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
         }
 
-        public bool IsDispNameEditing { get; set; } = false;
-
-        private RelayCommand _cmdIsEditingToggle;
-        public RelayCommand CmdIsEditingToggle
-        {
-            get
-            {
-                if (_cmdIsEditingToggle == null)
-                {
-                    _cmdIsEditingToggle = new RelayCommand((o) =>
-                    {
-                        string param = o?.ToString();
-                        if (string.IsNullOrEmpty(param))
-                        {
-                            IsDispNameEditing = false;
-                            RaisePropertyChanged(nameof(IsDispNameEditing));
-                        }
-                        else
-                            switch (param)
-                            {
-                                case nameof(Server.DispName):
-                                    IsDispNameEditing = !IsDispNameEditing;
-                                    RaisePropertyChanged(nameof(IsDispNameEditing));
-                                    break;
-                            }
-                    }, o => this.Server.Id > 0);
-                }
-                return _cmdIsEditingToggle;
-            }
-        }
-
-
 
 
 
@@ -124,13 +92,33 @@ namespace PRM.ViewModel
                 {
                     if (MessageBoxResult.Yes == MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("string_delete_confirm"),
-                            SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
                             MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
                         )
                     {
                         GlobalData.Instance.ServerListRemove(Server);
                     }
                 });
+            }
+        }
+
+
+        private RelayCommand _cmdSave;
+        public RelayCommand CmdSave
+        {
+            get
+            {
+                if (_cmdSave == null)
+                    _cmdSave = new RelayCommand((o) =>
+                    {
+                        if (!string.IsNullOrWhiteSpace(this.Server.DispName))
+                        {
+                            // encrypt pwd
+                            SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
+                            GlobalData.Instance.ServerListUpdate(Server);
+                        }
+                    }, o => (this.Server.DispName.Trim() != ""));
+                return _cmdSave;
             }
         }
         #endregion

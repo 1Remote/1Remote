@@ -36,5 +36,10 @@ namespace PRM.View
                 Shawn.Utils.ConsoleManager.Toggle();
             }
         }
+
+        private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
+        {
+            Vm.TopPage = null;
+        }
     }
 }

@@ -22,6 +22,13 @@ namespace PRM.Core.Model
         ChromeLike,
         Classical,
     }
+
+    public enum EnumServerListPageUI
+    {
+        Card,
+        List,
+    }
+
     public sealed class SystemConfigTheme : SystemConfigBase
     {
         public SystemConfigTheme(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
@@ -208,6 +215,12 @@ namespace PRM.Core.Model
         }
 
 
+        private EnumServerListPageUI _serverListPageUi = EnumServerListPageUI.Card;
+        public EnumServerListPageUI ServerListPageUI
+        {
+            get => _serverListPageUi;
+            set => SetAndNotifyIfChanged(nameof(ServerListPageUI), ref _serverListPageUi, value);
+        }
 
         #region Interface
         private const string _sectionName = "Theme";
@@ -227,6 +240,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
             _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             _ini.WriteValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString());
+            _ini.WriteValue(nameof(ServerListPageUI).ToLower(), _sectionName, ServerListPageUI.ToString());
             _ini.Save();
             ApplyPrmColorTheme();
         }
@@ -262,6 +276,9 @@ namespace PRM.Core.Model
 
             if (Enum.TryParse<EnumTabUI>(_ini.GetValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString()), out var tu))
                 TabUI = tu;
+
+            if (Enum.TryParse<EnumServerListPageUI>(_ini.GetValue(nameof(ServerListPageUI).ToLower(), _sectionName, ServerListPageUI.ToString()), out var slu))
+                ServerListPageUI = slu;
 
             StopAutoSave = false;
             ApplyPrmColorTheme();
@@ -375,6 +392,32 @@ namespace PRM.Core.Model
                     });
                 }
                 return _cmdPrmThemeReset;
+            }
+        }
+
+
+        private RelayCommand _cmdToggleServerListPageUi;
+        public RelayCommand CmdToggleServerListPageUI
+        {
+            get
+            {
+                if (_cmdToggleServerListPageUi == null)
+                {
+                    _cmdToggleServerListPageUi = new RelayCommand((o) =>
+                    {
+                        var array = (EnumServerListPageUI[]) Enum.GetValues(typeof(EnumServerListPageUI));
+                        for (var i = 0; i < array.Length; i++)
+                        {
+                            var e = array[i];
+                            if (ServerListPageUI == e)
+                            {
+                                ServerListPageUI = i + 1 < array.Length ? array[i + 1] : array[0];
+                                break;
+                            }
+                        }
+                    });
+                }
+                return _cmdToggleServerListPageUi;
             }
         }
         #endregion

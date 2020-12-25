@@ -43,7 +43,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 return;
                             if (MessageBox.Show(
                                 SystemConfig.Instance.Language.GetText("string_delete_confirm"),
-                                SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
+                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
                             {
                                 foreach (var itemInfo in RemoteItems)

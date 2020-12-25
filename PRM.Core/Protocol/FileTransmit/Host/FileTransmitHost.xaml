@@ -298,7 +298,7 @@
                     <ListView.View>
                         <GridView ColumnHeaderTemplate="{StaticResource HeaderTemplateDefault}">
                             <GridViewColumn Width="500">
-                                <GridViewColumnHeader Content="{DynamicResource file_transmit_host_list_header_name}" HorizontalContentAlignment="Left">
+                                <GridViewColumnHeader Content="{DynamicResource word_filename}" HorizontalContentAlignment="Left">
                                     <GridViewColumnHeader.Style>
                                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                             <Setter Property="CommandParameter" Value="0"/>
@@ -533,7 +533,7 @@
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
                                                 ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
-                                                ToolTip="{DynamicResource button_explore_to}"
+                                                ToolTip="{DynamicResource word_explore_to}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdShowTransmitDstPath}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ButtonExStyleBase}"
@@ -545,7 +545,7 @@
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
                                                 ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
-                                                ToolTip="{DynamicResource button_delete}"
+                                                ToolTip="{DynamicResource word_delete}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdDeleteTransmitTask}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ButtonExStyleBase}"

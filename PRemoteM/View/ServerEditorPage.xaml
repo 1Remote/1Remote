@@ -10,7 +10,7 @@
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1000" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -45,7 +45,7 @@
                         <StackPanel>
                             <Grid Style="{StaticResource EditorRowGrid}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="DispName" 
                                                                     Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
@@ -138,10 +138,10 @@
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
-                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource button_done}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource word_done}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
                                                         </controls:ButtonEx>
 
-                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource button_reset}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource word_reset}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                         </controls:ButtonEx>
                                                     </Grid>
                                                 </StackPanel>
@@ -294,10 +294,6 @@
                             </ListBox>
                         </StackPanel>
                     </ScrollViewer>
-                    <controls:ButtonEx Style="{StaticResource MainColor1Button}" Grid.Column="1" Padding="0 1 0 0" MinWidth="80" 
-                            Command="{Binding CmdImportFromFile}"
-                            Content="{DynamicResource server_editor_type_import_from_prmj}">
-                    </controls:ButtonEx>
                 </Grid>
             </Border>
         </Grid>
@@ -320,7 +316,7 @@
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
                                 Style="{StaticResource MainColor2ButtonRadius3}"
-                                BorderThickness="0" Content="{DynamicResource button_save}">
+                                BorderThickness="0" Content="{DynamicResource word_save}">
                         </controls:ButtonEx>
 
                         <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
@@ -328,7 +324,7 @@
                                 Command="{Binding CmdCancel}"
                                 Style="{StaticResource MainColor1ButtonRadius3}"
                                 BorderThickness="1"
-                                Content="{DynamicResource button_cancel}">
+                                Content="{DynamicResource word_cancel}">
                         </controls:ButtonEx>
                     </Grid>
                 </Grid>

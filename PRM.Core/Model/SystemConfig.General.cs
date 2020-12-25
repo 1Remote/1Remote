@@ -13,10 +13,15 @@ namespace PRM.Core.Model
 {
     public enum EnumServerOrderBy
     {
-        Name,
-        AddTimeAsc,
-        AddTimeDesc,
-        Protocol,
+        IdAsc = -1,
+        Protocol = 0,
+        ProtocolDesc = 1,
+        Name = 2,
+        NameDesc = 3,
+        GroupName = 4,
+        GroupNameDesc = 5,
+        Address = 6,
+        AddressDesc = 7,
     }
     public enum EnumTabMode
     {
@@ -24,6 +29,8 @@ namespace PRM.Core.Model
         NewItemGoesToGroup,
         NewItemGoesToProtocol,
     }
+
+
     public sealed class SystemConfigGeneral : SystemConfigBase
     {
         public SystemConfigGeneral(Ini ini) : base(ini)
@@ -82,7 +89,7 @@ namespace PRM.Core.Model
             get => _serverOrderBy;
             set => SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
         }
-        
+
 
         private EnumTabMode _tabMode = EnumTabMode.NewItemGoesToLatestActivate;
         public EnumTabMode TabMode

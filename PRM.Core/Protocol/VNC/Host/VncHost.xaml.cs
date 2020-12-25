@@ -62,7 +62,7 @@ namespace PRM.Core.Protocol.VNC.Host
             });
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "tab_button_reconnect");
+                tb.SetResourceReference(TextBlock.TextProperty, "tab_reconnect");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
@@ -71,7 +71,7 @@ namespace PRM.Core.Protocol.VNC.Host
             }
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "button_close");
+                tb.SetResourceReference(TextBlock.TextProperty, "word_close");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,

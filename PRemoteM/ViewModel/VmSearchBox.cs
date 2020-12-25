@@ -95,14 +95,17 @@ namespace PRM.ViewModel
         }
 
 
-        private string _dispNameFilter;
-        public string DispNameFilter
+        private string _filter = "";
+        public string Filter
         {
-            get => _dispNameFilter;
+            get => _filter;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                UpdateItemsList(value);
+                if (_filter != value)
+                {
+                    SetAndNotifyIfChanged(nameof(Filter), ref _filter, value);
+                    UpdateItemsList(value);
+                }
             }
         }
 
@@ -295,8 +298,7 @@ namespace PRM.ViewModel
                     keyWordIsMatch.Add(false);
 
                 // match keyword
-                foreach (var vm in GlobalData.Instance.VmItemList.Where(x =>
-                    x.GetType() != typeof(ProtocolServerNone)))
+                foreach (var vm in GlobalData.Instance.VmItemList)
                 {
                     Debug.Assert(vm != null);
                     Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));

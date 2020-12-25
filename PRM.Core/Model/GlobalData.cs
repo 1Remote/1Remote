@@ -42,6 +42,24 @@ namespace PRM.Core.Model
         {
         }
 
+
+        public Action<string> OnMainWindowServerFilterChanged;
+
+        private string _mainWindowServerFilter = "";
+        public string MainWindowServerFilter
+        {
+            get => _mainWindowServerFilter;
+            set
+            {
+                if (value != _mainWindowServerFilter)
+                {
+                    SetAndNotifyIfChanged(nameof(MainWindowServerFilter), ref _mainWindowServerFilter, value);
+                    OnMainWindowServerFilterChanged?.Invoke(value);
+                }
+            }
+        }
+
+
         #region Server Data
 
         public Action VmItemListDataChanged;
