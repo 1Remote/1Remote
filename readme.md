@@ -1,7 +1,4 @@
 # PRemoteM
-
-[![Join the chat at https://gitter.im/PRemoteM/PRemoteM](https://badges.gitter.im/PRemoteM/PRemoteM.svg)](https://gitter.im/PRemoteM/PRemoteM?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md)
 
 
