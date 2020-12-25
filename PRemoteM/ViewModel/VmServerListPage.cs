@@ -704,7 +704,7 @@ namespace PRM.ViewModel
                                             {
                                                 if (vs.Server is ProtocolServerWithAddrPortBase p)
                                                 {
-                                                    p.Port = MultiEditNewValue;
+                                                    p.Address = MultiEditNewValue;
                                                     Server.AddOrUpdate(p);
                                                 }
                                             }
