@@ -12,9 +12,13 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
+using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.RDP;
 using PRM.Model;
 using PRM.View;
+using PRM.ViewModel;
 using Shawn.Utils;
+using Shawn.Utils.PageHost;
 
 namespace PRM
 {
@@ -28,6 +32,7 @@ namespace PRM
         private Mutex _singleAppMutex = null;
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
+
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEV
         private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
@@ -54,7 +59,7 @@ namespace PRM
 
             // init log file placement
             {
-                var logFilePath = Path.Combine(appDateFolder, "logs/PRemoteM.log.md");
+                var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
                 var fi = new FileInfo(logFilePath);
                 if (!fi.Directory.Exists)
                     fi.Directory.Create();
@@ -260,13 +265,15 @@ namespace PRM
 
                 #endregion
 
-
                 #region app start
                 // main window init
                 {
                     ShutdownMode = ShutdownMode.OnMainWindowClose;
-                    Window = new MainWindow();
                     MainWindow = Window;
+
+                    Window = new MainWindow();
+                    var page = new ServerListPage();
+                    Window.Vm.ListViewPageForServerList = page;
                     if (!SystemConfig.Instance.General.AppStartMinimized
                         || isFirstTimeUser)
                     {
@@ -277,10 +284,10 @@ namespace PRM
                     var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
                     if (!res.Item1)
                     {
-                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErroFlag'.");
+                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErrorFlag'.");
                         MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                         ActivateWindow();
-                        Window.VmMain.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
+                        Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
                     }
                     else
                     {
@@ -354,7 +361,7 @@ namespace PRM
                 {
                     System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
                 };
-                var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("button_exit"));
+                var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("word_exit"));
                 exit.Click += (sender, args) => App.Close();
                 var child = new System.Windows.Forms.MenuItem[] { title, @break, link_how_to_use, link_feedback, exit };
                 //var child = new System.Windows.Forms.MenuItem[] { exit };

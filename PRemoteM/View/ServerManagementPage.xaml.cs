@@ -20,12 +20,10 @@ namespace PRM.View
 {
     public partial class ServerManagementPage : UserControl
     {
-        public VmMain Host;
         public VmServerListPage VmDataContext;
-        public ServerManagementPage(VmMain host)
+        public ServerManagementPage()
         {
-            Host = host;
-            VmDataContext = new VmServerListPage(host);
+            VmDataContext = new VmServerListPage();
             InitializeComponent();
             DataContext = VmDataContext;
 
@@ -36,32 +34,15 @@ namespace PRM.View
             //    GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
             //};
         }
-        public ServerManagementPage(VmServerListPage vmDataContext)
-        {
-            Host = vmDataContext.VmMain;
-            VmDataContext = vmDataContext;
-            InitializeComponent();
-            DataContext = VmDataContext;
-        }
-
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
             VmDataContext.SelectedGroup = "";
         }
 
-        private void LvServerCards_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var items = VmDataContext.ServerListItems.Where(x => x.IsDispNameEditing);
-            foreach (var item in items)
-            {
-                item.CmdIsEditingToggle.Execute();
-            }
-        }
-
         private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
         {
-            VmDataContext.VmMain.BottomPage = null;
+            App.Window.Vm.BottomPage = null;
         }
     }
 }

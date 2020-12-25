@@ -83,6 +83,20 @@ namespace PRM.Core.Model
             get => _tabWindowHeight;
             set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
         }
+
+
+        private WindowState _tabWindowState = WindowState.Normal;
+        public WindowState TabWindowState
+        {
+            get => _tabWindowState;
+            set
+            {
+                if (value != WindowState.Minimized)
+                    SetAndNotifyIfChanged(nameof(TabWindowState), ref _tabWindowState, value);
+            }
+        }
+
+
         #region Interface
         private const string _sectionName = "Locality";
         public void Save()

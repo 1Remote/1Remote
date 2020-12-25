@@ -73,7 +73,7 @@ namespace PRM.View
                         _isHidden = true;
                         this.Hide();
                         _vmSearchBox.HideActionsList();
-                        _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.Filter = "";
                     }
                 }
         }
@@ -99,7 +99,7 @@ namespace PRM.View
                 {
                     if (_isHidden == true)
                     {
-                        _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.Filter = "";
                         var p = ScreenInfoEx.GetMouseSystemPosition();
                         var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
                         this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
@@ -309,14 +309,14 @@ namespace PRM.View
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     {
-                        var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
+                        var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_registered_fail")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
                         MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;
                     }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                     {
-                        var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
+                        var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_already_registered")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
                         MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;

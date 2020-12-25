@@ -28,7 +28,7 @@ using Path = System.IO.Path;
 namespace PRM.Core.Protocol.Putty.Host
 {
     [Obsolete]
-    public partial class PuttyHost : ProtocolHostBase
+    public partial class PuttyHost : ProtocolHostBase, IDisposable
     {
         [DllImport("User32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
@@ -86,7 +86,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         ~PuttyHost()
         {
-            ClosePutty();
+            Dispose(false);
         }
 
         public override void Conn()
@@ -411,6 +411,31 @@ namespace PRM.Core.Protocol.Putty.Host
                     }
                 }
             }
+        }
+
+        private void ReleaseUnmanagedResources()
+        {
+            // TODO release unmanaged resources here
+        }
+
+        private void Dispose(bool disposing)
+        {
+            ReleaseUnmanagedResources();
+            if (disposing)
+            {
+                ClosePutty();
+                _puttyProcess?.Dispose();
+                _puttyMasterPanel?.Dispose();
+                _topTransparentPanel?.Dispose();
+                _taksTopPanelFocus?.Dispose();
+                FormsHost?.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 

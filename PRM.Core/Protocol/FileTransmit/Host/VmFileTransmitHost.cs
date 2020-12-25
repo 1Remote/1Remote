@@ -37,6 +37,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             {
                 t.TryCancel();
             }
+            Trans?.Release();
+            Trans = null;
         }
 
         public void Conn()
@@ -282,85 +284,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
 
 
-        #region Static Func
-        private static T FindAncestor<T>(DependencyObject obj) where T : DependencyObject
-        {
-            while (obj != null)
-            {
-                if (obj is T o)
-                {
-                    return o;
-                }
-
-                obj = VisualTreeHelper.GetParent(obj);
-            }
-            return default(T);
-        }
-
-        /// <summary>
-        /// 取得指定位置处的 ListViewItem
-        /// </summary>
-        /// <param name="lvSender"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        private static ListViewItem GetItemOnPosition(ScrollContentPresenter lvSender, Point position)
-        {
-            HitTestResult r = VisualTreeHelper.HitTest(lvSender, position);
-            if (r == null)
-            {
-                return null;
-            }
-            var obj = r.VisualHit;
-            while (!(obj is ListView) && (obj != null))
-            {
-                obj = VisualTreeHelper.GetParent(obj);
-                if (obj is ListViewItem item)
-                {
-                    return item;
-                }
-            }
-            return null;
-        }
-
-        private static DependencyObject VisualUpwardSearch<T>(DependencyObject source)
-        {
-            try
-            {
-                while (source != null && !(source is T))
-                    source = System.Windows.Media.VisualTreeHelper.GetParent(source);
-                return source;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return null;
-        }
-
-        //http://stackoverflow.com/questions/665719/wpf-animate-listbox-scrollviewer-horizontaloffset
-        public static T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
-        {
-            // Search immediate children first (breadth-first)
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(obj, i);
-                if (child is T o)
-                {
-                    return o;
-                }
-                else
-                {
-                    T childOfChild = FindVisualChild<T>(child);
-                    if (childOfChild != null)
-                    {
-                        return childOfChild;
-                    }
-                }
-            }
-            return null;
-        }
-        #endregion
-
 
         public void TvFileList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -369,12 +292,12 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             if (sender is ListView lv)
             {
                 view = lv;
-                var ip = FindVisualChild<ItemsPresenter>(view);
-                p = FindAncestor<ScrollContentPresenter>((DependencyObject)ip);
+                var ip = MyVisualTreeHelper.FindVisualChild<ItemsPresenter>(view);
+                p = MyVisualTreeHelper.FindVisualChild<ScrollContentPresenter>((DependencyObject)ip);
             }
             if (view == null || p == null)
                 return;
-            var curSelectedItem = GetItemOnPosition(p, e.GetPosition(p));
+            var curSelectedItem = MyVisualTreeHelper.GetItemOnPosition(p, e.GetPosition(p));
             if (curSelectedItem == null)
             {
                 ((ListView)sender).SelectedItem = null;
@@ -389,15 +312,15 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             if (sender is ListView lv)
             {
                 view = lv;
-                var ip = FindVisualChild<ItemsPresenter>(view);
-                p = FindAncestor<ScrollContentPresenter>((DependencyObject)ip);
+                var ip = MyVisualTreeHelper.FindVisualChild<ItemsPresenter>(view);
+                p = MyVisualTreeHelper.FindAncestor<ScrollContentPresenter>((DependencyObject)ip);
             }
             if (view == null || p == null)
                 return;
 
             var aMenu = new System.Windows.Controls.ContextMenu();
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_refresh") };
+                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_refresh") };
                 menu.Click += (o, a) =>
                 {
                     CmdGoToPathCurrent.Execute();
@@ -405,7 +328,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_create_folder") };
+                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_create_folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();
@@ -422,13 +345,13 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 aMenu.Items.Add(menu);
             }
 
-            var curSelectedItem = GetItemOnPosition(p, e.GetPosition(p));
+            var curSelectedItem = MyVisualTreeHelper.GetItemOnPosition(p, e.GetPosition(p));
             if (curSelectedItem == null)
             {
                 ((ListView)sender).SelectedItem = null;
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUploadClipboard.CanExecute())
@@ -439,7 +362,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_files_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_select_files_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -449,7 +372,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_select_folder_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_select_folder_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -458,10 +381,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     aMenu.Items.Add(menu);
                 }
             }
-            else if (VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
+            else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
             {
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_delete") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_delete") };
                     menu.Click += (o, a) =>
                     {
                         CmdDelete.Execute();
@@ -469,7 +392,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     aMenu.Items.Add(menu);
                 }
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_button_save_to") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_save_to") };
                     menu.Click += (o, a) =>
                     {
                         CmdDownload.Execute();

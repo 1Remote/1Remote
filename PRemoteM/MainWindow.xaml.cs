@@ -16,15 +16,14 @@ namespace PRM
 {
     public partial class MainWindow : Window
     {
-        public VmMain VmMain { get; private set; }
+        public VmMain Vm { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
-            VmMain = new VmMain(this);
-            this.DataContext = VmMain;
+            Vm = new VmMain(this);
+            this.DataContext = Vm;
             Title = SystemConfig.AppName;
-
-
             this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
             this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
             WinTitleBar.MouseUp += (sender, e) =>
@@ -157,14 +156,9 @@ namespace PRM
         }
         #endregion
 
-        private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
-        {
-            VmMain.SysOptionsMenuIsOpen = true;
-        }
-
         public void ActivateMe(bool isForceActivate = false)
         {
-            if(isForceActivate)
+            if (isForceActivate)
                 HideMe(false);
             Dispatcher?.Invoke(() =>
             {
@@ -200,9 +194,14 @@ namespace PRM
 
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape
+                && sender is TextBox textBox)
             {
-                (sender as TextBox).Text = "";
+                textBox.Text = "";
+                // Kill logical focus
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
+                // Kill keyboard focus
+                Keyboard.ClearFocus();
             }
         }
 
@@ -213,9 +212,35 @@ namespace PRM
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if(VmMain.PageServerList is ServerListPage
-               && VmMain.DispPage == null && TbFilter.IsFocused == false)
+            //if(Vm.BottomPage == null
+            //   && Vm.DispPage == null 
+            //   && TbFilter.IsFocused == false)
+            //    TbFilter.Focus();
+
+            if (Keyboard.FocusedElement is TextBox)
+            {
+            }
+            else if (e.Key == Key.Escape)
+            {
+                if (Vm.TopPage != null)
+                {
+                    Vm.TopPage = null;
+                }
+                else if (Vm.DispPage?.Page is SystemConfigPage scp)
+                {
+                    Vm.DispPage = null;
+                }
+            }
+            else
+            {
                 TbFilter.Focus();
+            }
+        }
+
+        private void ButtonToggleServerListViewUi_OnClick(object sender, RoutedEventArgs e)
+        {
+            SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
+            PopupMenu.IsOpen = false;
         }
     }
 }

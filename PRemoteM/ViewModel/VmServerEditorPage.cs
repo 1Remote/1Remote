@@ -23,20 +23,16 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        public readonly VmServerListPage Host;
-
-        public VmServerEditorPage(ProtocolServerBase server, VmServerListPage host, bool isDuplicate = false)
+        public VmServerEditorPage(ProtocolServerBase server, bool isDuplicate = false)
         {
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
             if (_isDuplicate)
                 Server.Id = 0;
-            Host = host;
-            IsAddMode = server.GetType() == typeof(ProtocolServerNone) || Server.Id == 0;
+            IsAddMode = Server.Id <= 0;
 
             // decrypt pwd
-            if (Server.GetType() != typeof(ProtocolServerNone))
-                SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
+            SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -44,7 +40,6 @@ namespace PRM.ViewModel
             {
                 ProtocolList.Clear();
                 ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
-                    .Where(x => x.FullName != typeof(ProtocolServerNone).FullName)
                     .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
             }
 
@@ -58,15 +53,10 @@ namespace PRM.ViewModel
                 ProtocolSelected = ProtocolList.First();
             }
 
-            if (!IsAddMode)
+            if (!IsAddMode || isDuplicate)
             {
                 ProtocolList.Clear();
                 ProtocolList.Add(ProtocolSelected);
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(Server.GroupName))
-                    Server.GroupName = Host.SelectedGroup;
             }
 
             NameSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.DispName)
@@ -76,8 +66,6 @@ namespace PRM.ViewModel
             GroupSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.GroupName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
-
-            Debug.Assert(Server.GetType() != typeof(ProtocolServerNone));
         }
 
 
@@ -111,7 +99,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ProtocolList), ref _protocolList, value);
         }
 
-        private bool _isDuplicate = false;
+        private readonly bool _isDuplicate = false;
 
         private bool _isAddMode = true;
         public bool IsAddMode
@@ -128,7 +116,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ProtocolEditControl), ref _protocolEditControl, value);
         }
 
-        
+
         public List<string> NameSelections { get; set; }
         public List<string> GroupSelections { get; set; }
 
@@ -144,7 +132,7 @@ namespace PRM.ViewModel
                         // encrypt pwd
                         SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
                         GlobalData.Instance.ServerListUpdate(Server);
-                        Host.VmMain.DispPage = null;
+                        App.Window.Vm.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -161,7 +149,7 @@ namespace PRM.ViewModel
                 if (_cmdCancel == null)
                     _cmdCancel = new RelayCommand((o) =>
                     {
-                        Host.VmMain.DispPage = null;
+                        App.Window.Vm.DispPage = null;
                     });
                 return _cmdCancel;
             }
@@ -169,41 +157,6 @@ namespace PRM.ViewModel
 
 
 
-
-
-        private RelayCommand _cmdImportFromFile;
-        public RelayCommand CmdImportFromFile
-        {
-            get
-            {
-                if (_cmdImportFromFile == null)
-                    _cmdImportFromFile = new RelayCommand((o) =>
-                    {
-                        var dlg = new OpenFileDialog();
-                        dlg.Filter = "PRM json|*.prmj";
-                        if (dlg.ShowDialog() == true)
-                        {
-                            string jsonString = File.ReadAllText(dlg.FileName, Encoding.UTF8);
-                            var server = ItemCreateHelper.CreateFromJsonString(jsonString);
-                            foreach (var protocolServerBase in ProtocolList)
-                            {
-                                if (server.GetType() == protocolServerBase.GetType())
-                                {
-                                    ProtocolSelected = protocolServerBase;
-                                    break;
-                                }
-                            }
-                            if (server != null)
-                            {
-                                server.Id = 0;
-                                Server = server;
-                                ReflectProtocolEditControl();
-                            }
-                        }
-                    }, o => Server.Id == 0);
-                return _cmdImportFromFile;
-            }
-        }
 
 
 
@@ -219,7 +172,7 @@ namespace PRM.ViewModel
                 if (IsAddMode && !_isDuplicate)
                 {
                     server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
-                    // switch protocol and hold uname pwd.
+                    // switch protocol and hold user name & pwd.
                     if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
                         && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                         server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
@@ -230,27 +183,6 @@ namespace PRM.ViewModel
                     else
                         server.Update(Server, typeof(ProtocolServerBase));
                 }
-
-
-                //switch (server)
-                //{
-                //    case ProtocolServerRDP _:
-                //        ProtocolEditControl = new ProtocolServerRDPForm(server);
-                //        break;
-                //    case ProtocolServerSSH _:
-                //        ProtocolEditControl = new ProtocolServerSSHForm(server);
-                //        break;
-                //    case ProtocolServerTelnet _:
-                //        ProtocolEditControl = new ProtocolServerTelnetForm(server);
-                //        break;
-                //    case ProtocolServerVNC _:
-                //        ProtocolEditControl = new ProtocolServerVNCForm(server);
-                //        break;
-                //    default:
-                //        throw new NotImplementedException();
-                //}
-                //Server = server;
-
 
                 var types = assembly.GetTypes();
                 var formName = ProtocolSelected.GetType().Name + "Form";

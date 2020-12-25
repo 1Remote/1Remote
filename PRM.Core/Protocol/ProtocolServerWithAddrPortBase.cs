@@ -38,8 +38,6 @@ namespace PRM.Core.Protocol
                         return;
                     }
                 }
-                SetAndNotifyIfChanged(nameof(Port), ref _port, "0");
-                throw new ArgumentException("Port value error");
             }
         }
 

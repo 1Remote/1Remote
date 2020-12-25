@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.RDP;
 using PRM.View;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
@@ -15,22 +17,31 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-        private string _dispNameFilter = "";
-        public string DispNameFilter
+        private object _listViewPageForServerList;
+        public object ListViewPageForServerList
         {
-            get => _dispNameFilter;
-            set
-            {
-                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                if (PageServerList?.VmDataContext?.DispNameFilter != null)
-                    PageServerList.VmDataContext.DispNameFilter = value;
-            }
+            get => _listViewPageForServerList;
+            set => SetAndNotifyIfChanged(nameof(ListViewPageForServerList), ref _listViewPageForServerList, value);
         }
+
+
+        private Visibility _tbFilterVisible = Visibility.Visible;
+        public Visibility TbFilterVisible
+        {
+            get => _tbFilterVisible;
+            set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
+        }
+
+        private readonly ServerManagementPage _managementPage = null;
         private AnimationPage _bottomPage = null;
         public AnimationPage BottomPage
         {
             get => _bottomPage;
-            set => SetAndNotifyIfChanged(nameof(BottomPage), ref _bottomPage, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(BottomPage), ref _bottomPage, value);
+                CalcTbFilterVisible();
+            }
         }
 
 
@@ -38,31 +49,22 @@ namespace PRM.ViewModel
         public AnimationPage DispPage
         {
             get => _dispPage;
-            set => SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
+                CalcTbFilterVisible();
+            }
         }
-        private AnimationPage _topPage = null;
 
+        private AnimationPage _topPage = null;
         public AnimationPage TopPage
         {
             get => _topPage;
-            set => SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
-        }
-
-
-        private ServerListPage _pageServerList;
-        public ServerListPage PageServerList
-        {
-            get => _pageServerList;
-            set => SetAndNotifyIfChanged(nameof(PageServerList), ref _pageServerList, value);
-        }
-
-
-
-        private bool _sysOptionsMenuIsOpen = false;
-        public bool SysOptionsMenuIsOpen
-        {
-            get => _sysOptionsMenuIsOpen;
-            set => SetAndNotifyIfChanged(nameof(SysOptionsMenuIsOpen), ref _sysOptionsMenuIsOpen, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
+                CalcTbFilterVisible();
+            }
         }
 
         private int _progressBarValue = 0;
@@ -104,15 +106,6 @@ namespace PRM.ViewModel
         public VmMain(MainWindow window)
         {
             Window = window;
-            PageServerList = new ServerListPage(this);
-            BottomPage = new AnimationPage()
-            {
-                InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-#if DEBUG
-                Page = new ServerManagementPage(this),
-#endif
-            };
 
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
@@ -120,12 +113,12 @@ namespace PRM.ViewModel
                 ProgressBarMaximum = arg2;
                 ProgressBarInfo = arg2 > 0 ? arg3 : "";
             };
-            GlobalEventHelper.OnGoToServerEditPage += (id, isDuplicate, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerEditPage += new GlobalEventHelper.OnGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
                 ProtocolServerBase server;
                 if (id <= 0)
                 {
-                    server = new ProtocolServerNone();
+                    return;
                 }
                 else
                 {
@@ -136,13 +129,35 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server, PageServerList.VmDataContext, isDuplicate)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
-            };
+            });
+
+            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
+            {
+                var server = new ProtocolServerRDP();
+                server.GroupName = groupName;
+                DispPage = new AnimationPage()
+                {
+                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    Page = new ServerEditorPage(new VmServerEditorPage(server)),
+                };
+            });
+
+            _managementPage = new ServerManagementPage();
         }
 
+
+        private void CalcTbFilterVisible()
+        {
+            if (TopPage == null && DispPage == null)
+                TbFilterVisible = Visibility.Visible;
+            else
+                TbFilterVisible = Visibility.Collapsed;
+        }
 
 
         #region CMD
@@ -162,10 +177,37 @@ namespace PRM.ViewModel
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                             Page = new SystemConfigPage(this, (Type)o),
                         };
-                        SysOptionsMenuIsOpen = false;
-                    }, o => DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                        Window.PopupMenu.IsOpen = false;
+                    }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
+            }
+        }
+
+
+        private RelayCommand _cmdGoManagementPage;
+        public RelayCommand CmdGoManagementPage
+        {
+            get
+            {
+                if (_cmdGoManagementPage == null)
+                {
+                    _cmdGoManagementPage = new RelayCommand((o) =>
+                    {
+                        if (DispPage != null)
+                        {
+                            DispPage = null;
+                        }
+                        BottomPage = new AnimationPage()
+                        {
+                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                            Page = _managementPage,
+                        };
+                        Window.PopupMenu.IsOpen = false;
+                    }, o => TopPage == null && BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
+                }
+                return _cmdGoManagementPage;
             }
         }
 
@@ -179,37 +221,16 @@ namespace PRM.ViewModel
                 {
                     _cmdGoAboutPage = new RelayCommand((o) =>
                     {
-                        DispPage = new AnimationPage()
+                        TopPage = new AnimationPage()
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                             Page = new AboutPage(this),
                         };
-                        SysOptionsMenuIsOpen = false;
-
-                    }, o => DispPage?.Page?.GetType() != typeof(AboutPage));
+                        Window.PopupMenu.IsOpen = false;
+                    }, o => TopPage?.Page?.GetType() != typeof(AboutPage));
                 }
                 return _cmdGoAboutPage;
-            }
-        }
-
-
-
-
-        private RelayCommand _cmdGoServerListPage;
-        public RelayCommand CmdGoServerListPage
-        {
-            get
-            {
-                if (_cmdGoServerListPage == null)
-                {
-                    _cmdGoServerListPage = new RelayCommand((o) =>
-                    {
-                        if (DispPage?.Page?.GetType() != null)
-                            DispPage = null;
-                    }, o => DispPage?.Page?.GetType() != null && DispPage?.Page?.GetType() != typeof(ServerListPage));
-                }
-                return _cmdGoServerListPage;
             }
         }
         #endregion
