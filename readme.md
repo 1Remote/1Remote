@@ -63,6 +63,7 @@ Latest Version: 0.5.5.2012240828
 
 - [Microsoft Store(testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Download exe](https://github.com/VShawn/PRemoteM/releases)
+- Install using [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
 ## Requirements
 
