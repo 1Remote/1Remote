@@ -85,7 +85,6 @@
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
                                   SnapsToDevicePixels="true" 
-                                  PreviewMouseUp="FocusContentWhenMouseKeyUp"
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
                                     <ContextMenu ItemsSource="{Binding Content.MenuItems}">

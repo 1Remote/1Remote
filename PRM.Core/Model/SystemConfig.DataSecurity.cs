@@ -400,7 +400,10 @@ namespace PRM.Core.Model
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
                     var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                    Debug.Assert(rsa.DecodeOrNull(s.Password) != null);
+                   if(rsa.DecodeOrNull(s.Password) == null)
+                   {
+                       return;
+                   }
                     s.Password = rsa.DecodeOrNull(s.Password);
                 }
                 if (server is ProtocolServerSSH ssh
