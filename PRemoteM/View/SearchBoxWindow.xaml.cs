@@ -34,7 +34,7 @@ namespace PRM.View
             Loaded += (sender, args) =>
             {
                 HideMe();
-                //Deactivated += (sender1, args1) => { Dispatcher.Invoke(HideMe); };
+                Deactivated += (sender1, args1) => { Dispatcher.Invoke(HideMe); };
                 KeyDown += (sender1, args1) =>
                 {
                     if (args1.Key == Key.Escape) HideMe();
@@ -97,6 +97,8 @@ namespace PRM.View
             if (_isHidden == true)
                 lock (_hideToggleLocker)
                 {
+                    if (this.WindowState != WindowState.Normal)
+                        this.WindowState = WindowState.Normal;
                     if (_isHidden == true)
                     {
                         _vmSearchBox.Filter = "";
@@ -130,7 +132,13 @@ namespace PRM.View
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                this.DragMove();
+                try
+                {
+                    this.DragMove();
+                }
+                catch
+                {
+                }
             }
         }
 

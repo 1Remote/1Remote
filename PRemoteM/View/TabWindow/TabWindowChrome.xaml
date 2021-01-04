@@ -86,11 +86,9 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
-                            <Grid Background="{DynamicResource MainColor1Brush}" Height="{StaticResource TabHeaderBarHeight}"
-                                  MouseDown="WinTitleBar_MouseDown" 
-                                  MouseUp="WinTitleBar_OnMouseUp" 
-                                  PreviewMouseMove="WinTitleBar_OnPreviewMouseMove">
+                            <Grid Background="{DynamicResource MainColor1Brush}" Height="{StaticResource TabHeaderBarHeight}">
                                 <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True"
+                                      PreviewMouseDown="FocusContentWhenPreviewMouseDown"
                                       SnapsToDevicePixels="true" 
                                       VerticalAlignment="Bottom">
                                     <Grid.ContextMenu>
@@ -224,8 +222,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItemsControl}">
-                            <Grid MouseDown="WinTitleBar_MouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
-                                  Background="{DynamicResource MainColor1Brush}"
+                            <Grid Background="{DynamicResource MainColor1Brush}"
                                   Height="{StaticResource TitleBarHeight}">
                                 <!--<Border BorderThickness="{TemplateBinding Border.BorderThickness}" 
                                         Padding="{TemplateBinding Control.Padding}" BorderBrush="{TemplateBinding Border.BorderBrush}" 
