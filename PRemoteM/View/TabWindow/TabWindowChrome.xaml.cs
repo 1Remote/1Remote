@@ -178,7 +178,13 @@ namespace PRM.View.TabWindow
                     this.Top = top - 15;
                     this.Left = left - this.Width / 2;
                 }
-                this.DragMove();
+                try
+                {
+                    this.DragMove();
+                }
+                catch
+                {
+                }
             }
         }
         #endregion
@@ -191,10 +197,11 @@ namespace PRM.View.TabWindow
             }
         }
 
-        private void FocusContentWhenMouseKeyUp(object sender, MouseButtonEventArgs e)
+        private void FocusContentWhenPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             // to click header, then focus content when release mouse press.
             Vm?.SelectedItem?.Content?.MakeItFocus();
+            e.Handled = false;
         }
 
         public Size GetTabContentSize()

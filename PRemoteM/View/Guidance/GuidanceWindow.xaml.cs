@@ -159,7 +159,13 @@ namespace PRM.View
                     this.Top = top - 15;
                     this.Left = left - this.Width / 2;
                 }
-                this.DragMove();
+                try
+                {
+                    this.DragMove();
+                }
+                catch
+                {
+                }
             }
         }
         #endregion

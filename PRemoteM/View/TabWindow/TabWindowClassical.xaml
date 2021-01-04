@@ -84,6 +84,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
+                                  PreviewMouseDown="FocusContentWhenPreviewMouseDown"
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
@@ -244,7 +245,7 @@
                 <!--Add button to right of header items-->
                 <Setter Property="HeaderSuffixContent">
                     <Setter.Value>
-                        <Grid MouseDown="WinTitleBar_MouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource MainColor1Brush}">
+                        <Grid Background="{DynamicResource MainColor1Brush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -417,7 +418,7 @@
 
 
 
-    <Grid Background="{DynamicResource MainColor1Brush}" PreviewMouseUp="FocusContentWhenMouseKeyUp">
+    <Grid Background="{DynamicResource MainColor1Brush}" PreviewMouseDown="FocusContentWhenPreviewMouseDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
