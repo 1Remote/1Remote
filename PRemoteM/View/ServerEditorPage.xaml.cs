@@ -80,7 +80,7 @@ namespace PRM.View
             Vm.Server.IconImg = _oldLogo;
             PopupLogoSelectorClose();
         }
-        
+
         private void PopupLogoSelectorOpen()
         {
             if (Math.Abs(PopupLogoSelector.Height) < 1)
@@ -114,7 +114,24 @@ namespace PRM.View
         }
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LogoSelector.SetImg((BitmapSource) (((ListView) sender).SelectedItem));
+            LogoSelector.SetImg((BitmapSource)(((ListView)sender).SelectedItem));
+        }
+
+        private void ButtonTryCommandBeforeConnected_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string cmd = Vm.Server.CommandBeforeConnected;
+                if (!string.IsNullOrWhiteSpace(cmd))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(cmd);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+            }
         }
     }
 }

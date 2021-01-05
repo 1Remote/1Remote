@@ -26,10 +26,17 @@ namespace PRM.Core.Protocol.RDP.Host
         private bool _isDisconned = false;
         private bool _isConnecting = false;
 
+        private bool _flagHasConnected = false;
+
+        private int _retryCount = 0;
+        private const int MaxRetryCount = 20;
+
 
         public AxMsRdpClient09Host(ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(protocolServer, true)
         {
             InitializeComponent();
+
+
             if (protocolServer is ProtocolServerRDP rdp)
             {
                 _rdpServer = rdp;
@@ -395,17 +402,19 @@ namespace PRM.Core.Protocol.RDP.Host
 
         public override void ReConn()
         {
+            GridLoading.Visibility = Visibility.Visible;
+            RdpHost.Visibility = Visibility.Collapsed;
+            double width = _rdp.DesktopWidth;
+            double height = _rdp.Height;
             if (IsConnected())
             {
-                double width = _rdp.DesktopWidth;
-                double height = _rdp.Height;
                 _invokeOnClosedWhenDisconnected = false;
                 _rdp.Disconnect();
                 _rdp?.Dispose();
-                InitRdp(width, height, true);
-                Conn();
-                _invokeOnClosedWhenDisconnected = true;
             }
+            InitRdp(width, height, true);
+            Conn();
+            _invokeOnClosedWhenDisconnected = true;
         }
 
         public override void DisConn()
@@ -498,6 +507,8 @@ namespace PRM.Core.Protocol.RDP.Host
         }
         #endregion
 
+        // TODO https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
+
         private bool _invokeOnClosedWhenDisconnected = true;
         private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
@@ -510,39 +521,59 @@ namespace PRM.Core.Protocol.RDP.Host
             string reason = _rdp.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
                 SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
+
+            // disconnectReasonByServer (3 (0x3))
+
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
-                && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedDisconnect
-                && e.discReason != (int)EDiscReason.exDiscReasonAPIInitiatedLogoff
+                && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
+                && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
-                string disconnectedText = $"{_rdpServer.DispName}({_rdpServer.Address}) : {reason}";
-                var t = new Task(() =>
+                RdpHost.Visibility = Visibility.Collapsed;
+                GridMessageBox.Visibility = Visibility.Visible;
+                if (_flagHasConnected == true
+                    && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
+                    && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
+                    && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser
+                    && _retryCount < MaxRetryCount)
                 {
-                    System.Windows.MessageBox.Show(disconnectedText, SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                });
-                t.Start();
+                    ++_retryCount;
+                    TbMessageTitle.Text = $"TXT: Reconnecting...({_retryCount}/{MaxRetryCount})";
+                    TbMessage.Text = reason;
+                    ReConn();
+                }
+                else
+                {
+                    TbMessageTitle.Text = SystemConfig.Instance.Language.GetText("messagebox_title_info");
+                    TbMessage.Text = reason;
+                }
             }
-
-            _rdp?.Dispose();
-
-            if (_invokeOnClosedWhenDisconnected)
-                base.OnClosed?.Invoke(base.ConnectionId);
+            else
+            {
+                _rdp?.Dispose();
+                if (_invokeOnClosedWhenDisconnected)
+                    base.OnClosed?.Invoke(base.ConnectionId);
+            }
         }
 
         private void RdpOnOnConnected(object sender, EventArgs e)
         {
+            _flagHasConnected = true;
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
+            GridMessageBox.Visibility = Visibility.Collapsed;
         }
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
         {
-            _isConnecting = false;
+            RdpHost.Visibility = Visibility.Visible;
+            GridLoading.Visibility = Visibility.Collapsed;
+            GridMessageBox.Visibility = Visibility.Collapsed;
 
+            _isConnecting = false;
             ResizeEndStartFireDelegate();
             if (this._onResizeEnd == null)
                 this._onResizeEnd += ReSizeRdp;
-
             base.OnCanResizeNowChanged?.Invoke();
         }
 
@@ -758,6 +789,13 @@ namespace PRM.Core.Protocol.RDP.Host
         public override void ToggleAutoResize(bool isEnable)
         {
             _canAutoResize = isEnable;
+        }
+
+        private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
+        {
+            _rdp?.Dispose();
+            if (_invokeOnClosedWhenDisconnected)
+                base.OnClosed?.Invoke(base.ConnectionId);
         }
     }
 }

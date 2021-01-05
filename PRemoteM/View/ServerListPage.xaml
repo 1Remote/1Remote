@@ -613,12 +613,11 @@
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
                             <Setter Property="Opacity" Value="0"></Setter>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding ServerListPageUI}" Value="0">
+                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="0">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding ServerListPageUI}" Value="1">
+                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="1">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Setter Property="Opacity" Value="0"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
