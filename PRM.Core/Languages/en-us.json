@@ -23,6 +23,7 @@
   "word_export": "Export",
   "word_name": "Name",
   "word_filename": "File Name",
+  "word_test": "Test",
 
 
 
@@ -155,6 +156,7 @@
   "server_editor_group": "Group",
   "server_editor_icon": "Logo",
   "server_editor_color_mark": "Color",
+  "server_editor_cmd_before_connected": "Before cmd",
   // server editor - connection group items
   "server_editor_connection_address": "Address",
   "server_editor_connection_port": "Port",

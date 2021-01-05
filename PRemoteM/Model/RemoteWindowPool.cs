@@ -110,6 +110,24 @@ namespace PRM.Model
 
             // create new remote session
             ProtocolHostBase host = null;
+
+            // run script before connected
+            try
+            {
+                string cmd = vmProtocolServer.Server.CommandBeforeConnected;
+                if (!string.IsNullOrWhiteSpace(cmd))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(cmd);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+
+
             try
             {
                 if (vmProtocolServer.Server.IsConnWithFullScreen())

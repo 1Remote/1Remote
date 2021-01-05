@@ -23,6 +23,7 @@
   "word_export": "导出",
   "word_name": "名称",
   "word_filename": "文件名",
+  "word_test": "测试",
 
 
 
@@ -155,6 +156,7 @@
   "server_editor_group": "分组",
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
+  "server_editor_cmd_before_connected": "连接前cmd",
   // server editor - connection group items
   "server_editor_connection_address": "地址",
   "server_editor_connection_port": "端口",

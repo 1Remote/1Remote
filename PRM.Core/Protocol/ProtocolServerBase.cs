@@ -168,6 +168,32 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
         }
 
+
+        private string _commandBeforeConnected = "";
+        public string CommandBeforeConnected
+        {
+            get => _commandBeforeConnected;
+            set => SetAndNotifyIfChanged(nameof(CommandBeforeConnected), ref _commandBeforeConnected, value);
+        }
+
+
+        //private string _commandAfterConnected = "";
+        //public string CommandAfterConnected
+        //{
+        //    get => _commandAfterConnected;
+        //    set => SetAndNotifyIfChanged(nameof(CommandAfterConnected), ref _commandAfterConnected, value);
+        //}
+
+
+        //private string _commandAfterDisconnected = "";
+        //public string CommandAfterDisconnected
+        //{
+        //    get => _commandAfterDisconnected;
+        //    set => SetAndNotifyIfChanged(nameof(CommandAfterDisconnected), ref _commandAfterDisconnected, value);
+        //}
+
+
+
         /// <summary>
         /// copy all value type fields
         /// </summary>

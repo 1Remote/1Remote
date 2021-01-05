@@ -200,6 +200,7 @@
     </Compile>
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
+    <Compile Include="Utils\CmdRunner.cs" />
     <Compile Include="Utils\MyVisualTreeHelper.cs" />
     <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\HyperlinkHelper.cs" />
@@ -375,11 +376,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties languages_4en-us_1json__JsonSchema="https://json.schemastore.org/apibuilder.json" />
-    </VisualStudio>
-  </ProjectExtensions>
+  <ProjectExtensions />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

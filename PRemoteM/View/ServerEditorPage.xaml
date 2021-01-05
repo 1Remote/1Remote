@@ -180,6 +180,16 @@
                                     </Grid>
                                 </StackPanel>
                             </Grid>
+
+                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0 20 0 0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
+                                    <Grid Style="{StaticResource EditorRowGridInput}">
+                                        <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                    </Grid>
+                                    <controls:ButtonEx Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                         <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
                     </StackPanel>
