@@ -126,7 +126,7 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                         <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
-                                            <Grid Width="362">
+                                            <Grid Width="510">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                                                     <ColumnDefinition></ColumnDefinition>
@@ -147,13 +147,14 @@
                                                 </StackPanel>
                                                 <Grid Grid.Column="1">
                                                     <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
-                                                    <ScrollViewer Height="190" Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                                                    <ScrollViewer Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
                                                         <StackPanel >
                                                             <ListView BorderThickness="0"
-                                                                          SelectionChanged="Selector_OnSelectionChanged"
-                                                                          ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
-                                                                          Background="Transparent"
-                                                                          ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                                                                      SelectionChanged="Selector_OnSelectionChanged"
+                                                                      MouseDoubleClick="LogoList_OnMouseDoubleClick"
+                                                                      ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
+                                                                      Background="Transparent"
+                                                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                                                                 <ListView.Resources>
                                                                     <Style TargetType="ScrollViewer">
                                                                         <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>

@@ -31,7 +31,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
                 var ret = JsonConvert.DeserializeObject<ProtocolServerFTP>(jsonString);
                 return ret;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }

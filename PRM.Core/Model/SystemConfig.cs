@@ -106,7 +106,7 @@ namespace PRM.Core.Model
             if (newScreenCount != _lastScreenCount
                || newScreenRectangle.Width != _lastScreenRectangle.Width
                || newScreenRectangle.Height != _lastScreenRectangle.Height)
-                GlobalEventHelper.OnResolutionChanged?.Invoke();
+                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
             _lastScreenCount = newScreenCount;
             _lastScreenRectangle = newScreenRectangle;
         }

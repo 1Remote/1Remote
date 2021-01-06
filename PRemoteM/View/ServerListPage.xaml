@@ -605,19 +605,12 @@
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Opacity" Value="0.9"></Setter>
-                    <Setter Property="Visibility" Value="Collapsed"></Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
                             <Setter Property="Opacity" Value="0"></Setter>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
                             <Setter Property="Opacity" Value="0"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="0">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="1">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

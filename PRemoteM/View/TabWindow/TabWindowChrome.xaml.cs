@@ -29,6 +29,11 @@ namespace PRM.View.TabWindow
             Vm = new VmTabWindow(token);
             DataContext = Vm;
 
+            this.Activated += (sender, args) =>
+            {
+                this.StopFlashingWindow();
+            };
+
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
             this.Height = SystemConfig.Instance.Locality.TabWindowHeight;

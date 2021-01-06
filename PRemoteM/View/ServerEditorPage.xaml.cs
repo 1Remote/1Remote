@@ -133,5 +133,14 @@ namespace PRM.View
                 MessageBox.Show(ex.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
             }
         }
+
+        private void LogoList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (Vm?.Server != null)
+            {
+                Vm.Server.IconImg = LogoSelector.Logo;
+            }
+            PopupLogoSelectorClose();
+        }
     }
 }
