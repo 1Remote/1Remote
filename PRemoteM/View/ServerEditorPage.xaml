@@ -147,34 +147,30 @@
                                                 </StackPanel>
                                                 <Grid Grid.Column="1">
                                                     <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
-                                                    <ScrollViewer Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
-                                                        <StackPanel >
-                                                            <ListView BorderThickness="0"
-                                                                      SelectionChanged="Selector_OnSelectionChanged"
-                                                                      MouseDoubleClick="LogoList_OnMouseDoubleClick"
-                                                                      ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
-                                                                      Background="Transparent"
-                                                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                                                                <ListView.Resources>
-                                                                    <Style TargetType="ScrollViewer">
-                                                                        <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-                                                                    </Style>
-                                                                </ListView.Resources>
-                                                                <ListView.ItemsPanel>
-                                                                    <ItemsPanelTemplate>
-                                                                        <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
-                                                                    </ItemsPanelTemplate>
-                                                                </ListView.ItemsPanel>
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <Grid Margin="5">
-                                                                            <Image Source="{Binding}" Height="30"></Image>
-                                                                        </Grid>
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ListView>
-                                                        </StackPanel>
-                                                    </ScrollViewer>
+                                                    <ListView BorderThickness="0"
+                                                              SelectionChanged="Selector_OnSelectionChanged"
+                                                              MouseDoubleClick="LogoList_OnMouseDoubleClick"
+                                                              ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
+                                                              Background="Transparent"
+                                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                                                        <ListView.Resources>
+                                                            <Style TargetType="ScrollViewer">
+                                                                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
+                                                            </Style>
+                                                        </ListView.Resources>
+                                                        <ListView.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
+                                                            </ItemsPanelTemplate>
+                                                        </ListView.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Grid Margin="5">
+                                                                    <Image Source="{Binding}" Height="30"></Image>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ListView>
                                                 </Grid>
                                             </Grid>
                                         </Border>
