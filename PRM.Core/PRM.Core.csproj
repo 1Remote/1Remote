@@ -147,9 +147,6 @@
       <DependentUpon>KittyHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
-    <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
-      <DependentUpon>PuttyHost.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
     <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
       <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
@@ -241,6 +238,7 @@
     <Compile Include="Utils\TinyPinyin.Net\PinyinDict.cs" />
     <Compile Include="Utils\TinyPinyin.Net\PinyinHelper.cs" />
     <Compile Include="Utils\SimpleLogHelper.cs" />
+    <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="sqlite3.dll">
@@ -302,10 +300,6 @@
     <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Protocol\Putty\Host\PuttyHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Protocol\VNC\Host\VncHost.xaml">
       <Generator>MSBuild:Compile</Generator>

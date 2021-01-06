@@ -2,9 +2,9 @@
   "language_name": "English(US)",
 
 
-  "messagebox_title_warning": "PRemote Warning",
-  "messagebox_title_error": "PRemote Error",
-  "messagebox_title_info": "PRemote Info",
+  "messagebox_title_warning": "PRemoteM Warning",
+  "messagebox_title_error": "PRemoteM Error",
+  "messagebox_title_info": "PRemoteM Info",
 
   "word_exit": "Exit",
   "word_close": "Close",
@@ -24,6 +24,8 @@
   "word_name": "Name",
   "word_filename": "File Name",
   "word_test": "Test",
+  "word_reconnect": "Reconnect",
+  "word_dismiss": "Dismiss",
 
 
 
@@ -38,7 +40,6 @@
   // tab
   "tab_all": "All",
   "tab_window_set_tag": "temporary tag",
-  "tab_reconnect": "Reconnect",
 
   // server protocol relate
   "server_protocol": "Protocol",
@@ -62,6 +63,7 @@
   "file_transmit_host_warning_same_names_title": "Replace or cancel",
   "file_transmit_host_warning_same_names": "The destination has {0} files with the same names. Do you want continue?",
 
+  "host_reconecting_info": "Reconnecting...",
 
 
   // sys menu

@@ -47,25 +47,15 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             _vmRemote?.Conn();
         }
 
-        public override void DisConn()
+        public override void Close()
         {
             _vmRemote?.Release();
-            base.DisConn();
+            base.Close();
         }
 
         public override void GoFullScreen()
         {
             throw new NotImplementedException();
-        }
-
-        public override bool IsConnected()
-        {
-            return _vmRemote?.Trans?.IsConnected() == true;
-        }
-
-        public override bool IsConnecting()
-        {
-            return _vmRemote.GridLoadingVisibility == Visibility.Visible;
         }
 
         public override void MakeItFocus()

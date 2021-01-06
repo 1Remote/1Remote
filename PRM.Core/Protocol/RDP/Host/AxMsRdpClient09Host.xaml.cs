@@ -23,25 +23,26 @@ namespace PRM.Core.Protocol.RDP.Host
         private AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
         private uint _primaryScaleFactor = 100;
-        private bool _isDisconned = false;
-        private bool _isConnecting = false;
 
+        //private bool _isDisconned = false;
+        //private bool _isConnecting = false;
         private bool _flagHasConnected = false;
 
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
 
-
         public AxMsRdpClient09Host(ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(protocolServer, true)
         {
             InitializeComponent();
 
+            GridMessageBox.Visibility = Visibility.Collapsed;
+            GridLoading.Visibility = Visibility.Visible;
 
             if (protocolServer is ProtocolServerRDP rdp)
             {
                 _rdpServer = rdp;
                 InitRdp(width, height);
-                GlobalEventHelper.OnResolutionChanged += OnResolutionChanged;
+                GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
             }
             else
                 throw new ArgumentException($"Send {protocolServer.GetType()} to RdpHost!");
@@ -51,20 +52,19 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             try
             {
-                GlobalEventHelper.OnResolutionChanged -= OnResolutionChanged;
+                GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
             }
             catch
             {
             }
             RdpHost.Child = null;
-            _rdp?.Dispose();
-            _rdp = null;
+            RdpDispose();
             _resizeEndTimer?.Dispose();
             RdpHost?.Dispose();
             RdpHost = null;
         }
 
-        private void OnResolutionChanged()
+        private void OnScreenResolutionChanged()
         {
             if (_rdp.FullScreen == true)
             {
@@ -74,7 +74,17 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void InitRdp(double width = 0, double height = 0, bool isReconn = false)
         {
+            if (Status != ProtocolHostStatus.NotInit)
+                return;
+
+            Status = ProtocolHostStatus.Initializing;
+
+
+            RdpDispose();
             _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+
+            SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
+
             ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
             _rdp.Dock = DockStyle.Fill;
             _rdp.Enabled = true;
@@ -97,8 +107,10 @@ namespace PRM.Core.Protocol.RDP.Host
             RdpHost.Child = _rdp;
 
 
-
+            SimpleLogHelper.Debug("RDP Host: init CreateControl();");
             _rdp.CreateControl();
+
+            SimpleLogHelper.Debug("RDP Host: init server info");
             #region server info
             // server info
             _rdp.Server = _rdpServer.Address;
@@ -110,6 +122,9 @@ namespace PRM.Core.Protocol.RDP.Host
             #endregion
 
 
+            SimpleLogHelper.Debug("RDP Host: init Others");
+            #region Others
+
             // enable CredSSP, will use CredSsp if the client supports.
             _rdp.AdvancedSettings7.EnableCredSspSupport = true;
             _rdp.AdvancedSettings2.EncryptionEnabled = 1;
@@ -119,10 +134,9 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.AdvancedSettings6.PublicMode = false;
             _rdp.AdvancedSettings5.EnableWindowsKey = 1;
             _rdp.AdvancedSettings5.GrabFocusOnConnect = true;
-            _rdp.AdvancedSettings2.keepAliveInterval = 1000 * 60 * 5; // 1000 = 1000 ms
+            _rdp.AdvancedSettings2.keepAliveInterval = 1000 * 60 * 1; // 1000 = 1000 ms
             _rdp.AdvancedSettings2.overallConnectionTimeout = 600; // The new time, in seconds. The maximum value is 600, which represents 10 minutes.
 
-            #region Others
 
             // enable CredSSP, will use CredSsp if the client supports.
             _rdp.AdvancedSettings9.EnableCredSspSupport = true;
@@ -133,9 +147,6 @@ namespace PRM.Core.Protocol.RDP.Host
             //- 3: No authentication requirement specified.
             _rdp.AdvancedSettings9.AuthenticationLevel = 0;
 
-            // setting PublicMode to false allows the saving of credentials, which prevents
-            _rdp.AdvancedSettings9.PublicMode = false;
-            _rdp.AdvancedSettings9.EnableAutoReconnect = true;
 
 
             // - 0 Apply key combinations only locally at the client computer.
@@ -145,6 +156,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
             #endregion
 
+            SimpleLogHelper.Debug("RDP Host: init conn bar");
             #region conn bar
             _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar;
             _rdp.AdvancedSettings6.ConnectionBarShowPinButton = true;
@@ -154,6 +166,7 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;
             #endregion
 
+            SimpleLogHelper.Debug("RDP Host: init Redirect");
             #region Redirect
 
             _rdp.AdvancedSettings9.RedirectDrives = _rdpServer.EnableDiskDrives;
@@ -206,6 +219,7 @@ namespace PRM.Core.Protocol.RDP.Host
             }
             #endregion
 
+            SimpleLogHelper.Debug("RDP Host: init Display");
             #region Display
 
             ReadScaleFactor();
@@ -287,6 +301,7 @@ namespace PRM.Core.Protocol.RDP.Host
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
             _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
 
+            SimpleLogHelper.Debug("RDP Host: init Performance");
             #region Performance
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
             int nDisplayPerformanceFlag = 0;
@@ -339,6 +354,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
             #endregion
 
+            SimpleLogHelper.Debug("RDP Host: init Gateway");
             #region Gateway
             // Specifies whether Remote Desktop Gateway (RD Gateway) is supported.
             if (_rdp.TransportSettings.GatewayIsSupported != 0
@@ -387,50 +403,54 @@ namespace PRM.Core.Protocol.RDP.Host
                 _rdp.TransportSettings2.GatewayCredSharing = 0;
             }
             #endregion
+
+
+            Status = ProtocolHostStatus.Initialized;
         }
 
 
         #region Base Interface
         public override void Conn()
         {
-            if (IsConnected())
-                _rdp?.Disconnect();
+            if (Status == ProtocolHostStatus.Connected
+            || Status == ProtocolHostStatus.Connecting)
+            {
+                return;
+            }
+            Status = ProtocolHostStatus.Connecting;
             GridLoading.Visibility = Visibility.Visible;
             RdpHost.Visibility = Visibility.Collapsed;
-            _rdp?.Connect();
+            _rdp.Connect();
         }
 
         public override void ReConn()
         {
-            GridLoading.Visibility = Visibility.Visible;
-            RdpHost.Visibility = Visibility.Collapsed;
+            SimpleLogHelper.Debug("RDP Host: RDP ReConn, Status = " + Status);
+            if (Status != ProtocolHostStatus.Connected
+                && Status != ProtocolHostStatus.Disconnected)
+            {
+                return;
+            }
+            Status = ProtocolHostStatus.WaitingForReconnect;
+
             double width = _rdp.DesktopWidth;
             double height = _rdp.Height;
-            if (IsConnected())
-            {
-                _invokeOnClosedWhenDisconnected = false;
-                _rdp.Disconnect();
-                _rdp?.Dispose();
-            }
+            GridLoading.Visibility = Visibility.Visible;
+            RdpHost.Visibility = Visibility.Collapsed;
+            _invokeOnClosedWhenDisconnected = false;
+            RdpDispose();
+
+            Status = ProtocolHostStatus.NotInit;
             InitRdp(width, height, true);
             Conn();
+
             _invokeOnClosedWhenDisconnected = true;
         }
 
-        public override void DisConn()
+        public override void Close()
         {
-            _isConnecting = false;
-            if (!_isDisconned)
-            {
-                _isDisconned = true;
-                if (_rdp != null
-                    && _rdp.Connected > 0)
-                {
-                    _rdp?.Disconnect();
-                    _rdp?.Dispose();
-                }
-            }
-            base.DisConn();
+            RdpDispose();
+            base.Close();
         }
 
         public override void GoFullScreen()
@@ -449,21 +469,8 @@ namespace PRM.Core.Protocol.RDP.Host
 
         public override bool CanResizeNow()
         {
-            if (IsConnecting() == true)
-                return false;
-            return IsConnected();
+            return Status != ProtocolHostStatus.Connected;
         }
-
-        public override bool IsConnected()
-        {
-            return this._isDisconned == false && _rdp?.Connected > 0;
-        }
-
-        public override bool IsConnecting()
-        {
-            return _isConnecting;
-        }
-
         #endregion
 
 
@@ -472,47 +479,13 @@ namespace PRM.Core.Protocol.RDP.Host
 
         #region connection
 
-        #region Disconn Reason
-        enum EDiscReason
-        {
-            // https://docs.microsoft.com/en-us/windows/win32/termserv/extendeddisconnectreasoncode
-            exDiscReasonNoInfo = 0,
-            exDiscReasonAPIInitiatedDisconnect = 1,
-            exDiscReasonAPIInitiatedLogoff = 2,
-            exDiscReasonServerIdleTimeout = 3,
-            exDiscReasonServerLogonTimeout = 4,
-            exDiscReasonReplacedByOtherConnection = 5,
-            exDiscReasonOutOfMemory = 6,
-            exDiscReasonServerDeniedConnection = 7,
-            exDiscReasonServerDeniedConnectionFips = 8,
-            exDiscReasonServerInsufficientPrivileges = 9,
-            exDiscReasonServerFreshCredsRequired = 10,
-            exDiscReasonRpcInitiatedDisconnectByUser = 11,
-            exDiscReasonLogoffByUser = 2,
-            exDiscReasonLicenseInternal = 256,
-            exDiscReasonLicenseNoLicenseServer = 257,
-            exDiscReasonLicenseNoLicense = 258,
-            exDiscReasonLicenseErrClientMsg = 259,
-            exDiscReasonLicenseHwidDoesntMatchLicense = 260,
-            exDiscReasonLicenseErrClientLicense = 261,
-            exDiscReasonLicenseCantFinishProtocol = 262,
-            exDiscReasonLicenseClientEndedProtocol = 263,
-            exDiscReasonLicenseErrClientEncryption = 264,
-            exDiscReasonLicenseCantUpgradeLicense = 265,
-            exDiscReasonLicenseNoRemoteConnections = 266,
-            exDiscReasonLicenseCreatingLicStoreAccDenied = 267,
-            exDiscReasonRdpEncInvalidCredentials = 768,
-            exDiscReasonProtocolRangeStart = 4096,
-            exDiscReasonProtocolRangeEnd = 32767
-        }
-        #endregion
-
-        // TODO https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
 
         private bool _invokeOnClosedWhenDisconnected = true;
         private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
-            _isDisconned = true;
+            SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
+
+            Status = ProtocolHostStatus.Disconnected;
             ResizeEndStopFireDelegate();
             if (this._onResizeEnd != null)
                 this._onResizeEnd -= ReSizeRdp;
@@ -523,12 +496,14 @@ namespace PRM.Core.Protocol.RDP.Host
                 SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
 
             // disconnectReasonByServer (3 (0x3))
+            // https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
 
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
                 && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
                 && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
                 && reason != "")
             {
+                BtnReconn.Visibility = Visibility.Collapsed;
                 RdpHost.Visibility = Visibility.Collapsed;
                 GridMessageBox.Visibility = Visibility.Visible;
                 if (_flagHasConnected == true
@@ -538,19 +513,22 @@ namespace PRM.Core.Protocol.RDP.Host
                     && _retryCount < MaxRetryCount)
                 {
                     ++_retryCount;
-                    TbMessageTitle.Text = $"TXT: Reconnecting...({_retryCount}/{MaxRetryCount})";
+                    TbMessageTitle.Visibility = Visibility.Visible;
+                    TbMessageTitle.Text = SystemConfig.Instance.Language.GetText("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
                     TbMessage.Text = reason;
                     ReConn();
                 }
                 else
                 {
-                    TbMessageTitle.Text = SystemConfig.Instance.Language.GetText("messagebox_title_info");
+                    TbMessageTitle.Visibility = Visibility.Collapsed;
+                    BtnReconn.Visibility = Visibility.Visible;
                     TbMessage.Text = reason;
                 }
+                this.ParentWindow.FlashIfNotActive();
             }
             else
             {
-                _rdp?.Dispose();
+                RdpDispose();
                 if (_invokeOnClosedWhenDisconnected)
                     base.OnClosed?.Invoke(base.ConnectionId);
             }
@@ -558,7 +536,12 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void RdpOnOnConnected(object sender, EventArgs e)
         {
+            SimpleLogHelper.Debug("RDP Host:  RdpOnOnConnected");
+            this.ParentWindow.FlashIfNotActive();
+
             _flagHasConnected = true;
+            Status = ProtocolHostStatus.Connected;
+
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
@@ -566,11 +549,12 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void RdpOnOnLoginComplete(object sender, EventArgs e)
         {
+            SimpleLogHelper.Debug("RDP Host:  RdpOnOnLoginComplete");
+
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
 
-            _isConnecting = false;
             ResizeEndStartFireDelegate();
             if (this._onResizeEnd == null)
                 this._onResizeEnd += ReSizeRdp;
@@ -579,6 +563,8 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void RdpOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
         {
+            SimpleLogHelper.Debug("RDP Host:  RdpOnConfirmClose");
+
             base.OnClosed?.Invoke(base.ConnectionId);
         }
 
@@ -793,9 +779,32 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
         {
-            _rdp?.Dispose();
+            RdpDispose();
             if (_invokeOnClosedWhenDisconnected)
                 base.OnClosed?.Invoke(base.ConnectionId);
+        }
+
+        private void BtnReconn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ReConn();
+        }
+
+        private void RdpDispose()
+        {
+            if (_rdp != null)
+            {
+                var tmp = _rdp;
+                var t = new Task(() =>
+                {
+                    if (tmp.Connected > 0)
+                        tmp.Disconnect();
+                    tmp.Dispose();
+                    tmp = null;
+                });
+                t.Start();
+                _rdp = null;
+            }
+            SimpleLogHelper.Debug("RDP Host: _rdp.Dispose()");
         }
     }
 }

@@ -104,6 +104,8 @@ namespace PRM.Model
                     if (s != null)
                         t.GetViewModel().SelectedItem = s;
                     t.GetWindow().Activate();
+                    if(s.Content.Status != ProtocolHostStatus.Connected)
+                        s.Content.ReConn();
                 }
                 return;
             }
@@ -524,8 +526,8 @@ namespace PRM.Model
                             {
                                 try
                                 {
-                                    if (host.IsConnected())
-                                        host.DisConn();
+                                    if (host.Status == ProtocolHostStatus.Connected)
+                                        host.Close();
                                 }
                                 catch (Exception e)
                                 {

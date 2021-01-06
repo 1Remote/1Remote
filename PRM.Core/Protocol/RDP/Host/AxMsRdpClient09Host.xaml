@@ -136,19 +136,19 @@
         </Grid.Resources>
         <WindowsFormsHost x:Name="RdpHost"/>
         <Control Name="GridLoading" Style="{StaticResource BusyAnimationStyle}" Background="Black"/>
-        <Grid Name="GridMessageBox" Visibility="Collapsed"
-              Background="Black">
+        <Grid Name="GridMessageBox" Background="Black">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="0.1*" MaxWidth="100" MinWidth="20"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="0.1*" MaxWidth="100" MinWidth="20"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Name="TbMessageTitle" FontSize="20" HorizontalAlignment="Center" Text="Title" Foreground="White" Margin="10"></TextBlock>
-                <TextBlock Name="TbMessage" FontSize="18" HorizontalAlignment="Center" Text="Say something" Foreground="White" Margin="5"></TextBlock>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Name="TbMessage" FontSize="14" HorizontalAlignment="Center" Text="Say something:blablablablablablablablablablablablablablablablablabla" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow"></TextBlock>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 0">
                     <!--<controls:ButtonEx x:Name="BtnOk" Style="{StaticResource MainColor1ButtonRadius3}" Width="60" Margin="5">OK</controls:ButtonEx>-->
-                    <controls:ButtonEx x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Width="60" Margin="5">Cancel</controls:ButtonEx>
+                    <controls:ButtonEx x:Name="BtnReconn" Click="BtnReconn_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Width="80" Margin="5" Content="{DynamicResource word_reconnect}"></controls:ButtonEx>
+                    <controls:ButtonEx x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Width="80" Margin="5" Content="{DynamicResource word_dismiss}"></controls:ButtonEx>
                 </StackPanel>
             </StackPanel>
         </Grid>

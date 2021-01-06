@@ -21,8 +21,6 @@ namespace PRM.Core.Protocol.VNC.Host
     public sealed partial class VncHost : ProtocolHostBase
     {
         private readonly ProtocolServerVNC _vncServer = null;
-        private bool _isDisconned = false;
-        private bool _isConnecting = false;
 
 
         public VncHost(ProtocolServerBase protocolServer) : base(protocolServer, false)
@@ -42,7 +40,7 @@ namespace PRM.Core.Protocol.VNC.Host
                 Command = new RelayCommand((o) =>
                 {
                     Vnc.SendSpecialKeys(SpecialKeys.CtrlAltDel);
-                }, o => IsConnected() == true)
+                }, o => Status == ProtocolHostStatus.Connected)
             });
             MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
@@ -50,7 +48,7 @@ namespace PRM.Core.Protocol.VNC.Host
                 Command = new RelayCommand((o) =>
                 {
                     Vnc.SendSpecialKeys(SpecialKeys.CtrlEsc);
-                }, o => IsConnected() == true)
+                }, o => Status == ProtocolHostStatus.Connected)
             });
             MenuItems.Add(new System.Windows.Controls.MenuItem()
             {
@@ -58,11 +56,11 @@ namespace PRM.Core.Protocol.VNC.Host
                 Command = new RelayCommand((o) =>
                 {
                     Vnc.SendSpecialKeys(SpecialKeys.AltF4);
-                }, o => IsConnected() == true)
+                }, o => Status == ProtocolHostStatus.Connected)
             });
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "tab_reconnect");
+                tb.SetResourceReference(TextBlock.TextProperty, "word_reconnect");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
@@ -75,7 +73,7 @@ namespace PRM.Core.Protocol.VNC.Host
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
-                    Command = new RelayCommand((o) => { DisConn(); })
+                    Command = new RelayCommand((o) => { Close(); })
                 });
             }
         }
@@ -83,10 +81,9 @@ namespace PRM.Core.Protocol.VNC.Host
         #region Base Interface
         public override void Conn()
         {
-            if(IsConnected())
+            if (Vnc.IsConnected)
                 Vnc.Disconnect();
-            _isConnecting = true;
-            _isDisconned = false;
+            Status = ProtocolHostStatus.Connecting;
             GridLoading.Visibility = Visibility.Visible;
             Vnc.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncServer.GetPort();
@@ -103,42 +100,17 @@ namespace PRM.Core.Protocol.VNC.Host
             _invokeOnClosedWhenDisconnected = true;
         }
 
-        public override void DisConn()
+        public override void Close()
         {
-            _isConnecting = false;
-            if (!_isDisconned)
-            {
-                _isDisconned = true;
-                if (Vnc.IsConnected)
-                    Vnc.Disconnect();
-            }
-            base.DisConn();
+            Status = ProtocolHostStatus.Disconnected;
+            if (Vnc.IsConnected)
+                Vnc.Disconnect();
+            base.Close();
         }
 
         public override void GoFullScreen()
         {
-            if (CanFullScreen)
-            {
-                //Debug.Assert(this.ParentWindow != null);
-                //if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
-                //{
-                //    _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
-                //}
-                //else
-                //    _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-                //Server.AddOrUpdate(_rdpServer);
-                //MakeNormal2FullScreen()
-            }
-        }
-
-        public override bool IsConnected()
-        {
-            return this._isDisconned == false && Vnc.IsConnected;
-        }
-
-        public override bool IsConnecting()
-        {
-            return _isConnecting;
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -151,6 +123,7 @@ namespace PRM.Core.Protocol.VNC.Host
 
         private void OnConnected(object sender, EventArgs e)
         {
+            Status = ProtocolHostStatus.Connected;
             Vnc.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
         }
@@ -158,7 +131,7 @@ namespace PRM.Core.Protocol.VNC.Host
         private bool _invokeOnClosedWhenDisconnected = true;
         private void OnConnectionLost(object sender, EventArgs e)
         {
-            _isDisconned = true;
+            Status = ProtocolHostStatus.Disconnected;
             if (_invokeOnClosedWhenDisconnected)
                 base.OnClosed?.Invoke(base.ConnectionId);
         }

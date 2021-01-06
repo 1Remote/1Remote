@@ -81,7 +81,7 @@ Latest Version: 0.5.5.2101041110
 
 ### open remote connection
 
-1. run PRemote.exe.
+1. run PRemoteM.exe.
 
 2. click "+" button to add connection info.
 

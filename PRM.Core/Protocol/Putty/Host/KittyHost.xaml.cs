@@ -160,10 +160,10 @@ namespace PRM.Core.Protocol.Putty.Host
             Conn();
         }
 
-        public override void DisConn()
+        public override void Close()
         {
             CloseKitty();
-            base.DisConn();
+            base.Close();
         }
 
         private void KittyMasterPanelOnSizeChanged(object sender, EventArgs e)
@@ -208,7 +208,7 @@ namespace PRM.Core.Protocol.Putty.Host
                             {
                             }
                         }
-                        File.Delete(KittyExeFullName); 
+                        File.Delete(KittyExeFullName);
                         using (var fileStream = File.Create(KittyExeFullName))
                         {
                             kitty.Seek(0, SeekOrigin.Begin);
@@ -308,26 +308,6 @@ reload=yes
                 SimpleLogHelper.Debug("MoveWindow");
                 DelKittySessionConfig();
                 SimpleLogHelper.Debug("Del KiTTY session config");
-
-                //Dispatcher.Invoke(() =>
-                //{
-                //    SimpleLogHelper.Debug("SetParent");
-                //    SetParent(_kittyHandle, KittyMasterPanelHandle);
-                //    SimpleLogHelper.Debug("SetParent");
-                //    ShowWindow(_kittyHandle, SW_SHOWMAXIMIZED);
-                //    SimpleLogHelper.Debug("ShowWindow");
-                //    int lStyle = GetWindowLong(_kittyHandle, GWL_STYLE);
-                //    SimpleLogHelper.Debug("GetWindowLong");
-                //    lStyle &= ~WS_CAPTION; // no title
-                //    lStyle &= ~WS_BORDER;  // no border
-                //    lStyle &= ~WS_THICKFRAME;
-                //    SetWindowLong(_kittyHandle, GWL_STYLE, lStyle);
-                //    SimpleLogHelper.Debug("SetWindowLong");
-                //    MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2, _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
-                //    SimpleLogHelper.Debug("MoveWindow");
-                //    DelKittySessionConfig();
-                //    SimpleLogHelper.Debug("Del KiTTY session config");
-                //});
             }
             catch (Exception e)
             {
@@ -369,8 +349,6 @@ reload=yes
                     _puttyOption.Set(PuttyOptionKey.PublicKeyFile, ppk);
                 }
 #if UseKiTTY
-                //if (!string.IsNullOrWhiteSpace(server.StartupAutoCommand))
-                //    _puttyOption.Set(PuttyOptionKey.Autocommand, server.StartupAutoCommand);
                 _puttyOption.Set(PuttyOptionKey.HostName, server.Address);
                 _puttyOption.Set(PuttyOptionKey.PortNumber, server.GetPort());
                 _puttyOption.Set(PuttyOptionKey.Protocol, "ssh");
@@ -490,16 +468,6 @@ reload=yes
         public override void GoFullScreen()
         {
             throw new NotSupportedException("kitty session can not go to full-screen mode!");
-        }
-
-        public override bool IsConnected()
-        {
-            return true;
-        }
-
-        public override bool IsConnecting()
-        {
-            return false;
         }
 
         public override void MakeItFocus()
