@@ -38,6 +38,39 @@ namespace Shawn.Utils
             storyboard.AddThicknessAnimation(seconds, from, to, "Margin", decelerationRatio);
         }
 
+
+        public static void AddSlideFromTop(this Storyboard storyboard, double seconds, double parentHeight,
+            float decelerationRatio = 0.9f)
+        {
+            var from = new Thickness(0, -parentHeight, 0, parentHeight);
+            var to = new Thickness(0);
+            storyboard.AddThicknessAnimation(seconds, from, to, "Margin", decelerationRatio);
+        }
+
+        public static void AddSlideFromBottom(this Storyboard storyboard, double seconds, double parentHeight,
+            float decelerationRatio = 0.9f)
+        {
+            var from = new Thickness(0, parentHeight, 0, -parentHeight);
+            var to = new Thickness(0);
+            storyboard.AddThicknessAnimation(seconds, from, to, "Margin", decelerationRatio);
+        }
+
+        public static void AddSlideToTop(this Storyboard storyboard, double seconds, double parentHeight,
+            float decelerationRatio = 0.9f)
+        {
+            var from = new Thickness(0);
+            var to = new Thickness(0, -parentHeight, 0, parentHeight);
+            storyboard.AddThicknessAnimation(seconds, from, to, "Margin", decelerationRatio);
+        }
+
+        public static void AddSlideToBottom(this Storyboard storyboard, double seconds, double parentHeight,
+            float decelerationRatio = 0.9f)
+        {
+            var from = new Thickness(0);
+            var to = new Thickness(0, parentHeight, 0, -parentHeight);
+            storyboard.AddThicknessAnimation(seconds, from, to, "Margin", decelerationRatio);
+        }
+
         public static void AddFadeIn(this Storyboard storyboard, double seconds)
         {
             AddDoubleAnimation(storyboard, seconds, 0, 1, "Opacity");

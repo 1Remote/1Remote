@@ -144,26 +144,25 @@ namespace PRM.View.TabWindow
             _isDragging = false;
             _isLeftMouseDown = false;
 
-            if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton != MouseButtonState.Pressed)
             {
-                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
                 return;
             }
-
-            if (e.LeftButton == MouseButtonState.Pressed)
+            else if (e.ClickCount == 2)
+            {
+                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            }
+            else
             {
                 _isLeftMouseDown = true;
-                var th = new Thread(new ThreadStart(() =>
+                var th = new Thread(() =>
                 {
                     Thread.Sleep(50);
                     if (_isLeftMouseDown)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            _isDragging = true;
-                        });
+                        _isDragging = true;
                     }
-                }));
+                });
                 th.Start();
             }
         }
@@ -175,26 +174,30 @@ namespace PRM.View.TabWindow
         }
         private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
+            if (e.LeftButton != MouseButtonState.Pressed || !_isDragging)
             {
-                if (this.WindowState == WindowState.Maximized)
-                {
-                    var p = ScreenInfoEx.GetMouseVirtualPosition();
-                    var top = p.Y;
-                    var left = p.X;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                    this.WindowState = WindowState.Normal;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                }
-                try
-                {
-                    this.DragMove();
-                }
-                catch
-                {
-                }
+                return;
+            }
+
+            if (this.WindowState == WindowState.Maximized)
+            {
+                var p = ScreenInfoEx.GetMouseVirtualPosition();
+                var top = p.Y;
+                var left = p.X;
+                this.Top = top - 15;
+                this.Left = left - this.Width / 2;
+                this.WindowState = WindowState.Normal;
+                this.Top = top - 15;
+                this.Left = left - this.Width / 2;
+            }
+
+            try
+            {
+                this.DragMove();
+            }
+            catch
+            {
+                // ignored
             }
         }
         #endregion
@@ -237,41 +240,5 @@ namespace PRM.View.TabWindow
         {
             return Vm;
         }
-
-        #region GetVisualParent
-        public static T GetVisualParent<T>(object childObject) where T : Visual
-        {
-            DependencyObject child = childObject as DependencyObject;
-            // iteratively traverse the visual tree
-            while ((child != null) && !(child is T))
-            {
-                child = VisualTreeHelper.GetParent(child);
-            }
-            return child as T;
-        }
-
-        public static List<T> GetVisualChildCollection<T>(object parent) where T : Visual
-        {
-            List<T> visualCollection = new List<T>();
-            GetVisualChildCollection(parent as DependencyObject, visualCollection);
-            return visualCollection;
-        }
-        private static void GetVisualChildCollection<T>(DependencyObject parent, List<T> visualCollection) where T : Visual
-        {
-            int count = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < count; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T)
-                {
-                    visualCollection.Add(child as T);
-                }
-                else if (child != null)
-                {
-                    GetVisualChildCollection(child, visualCollection);
-                }
-            }
-        }
-        #endregion
     }
 }

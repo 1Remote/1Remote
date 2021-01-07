@@ -108,29 +108,29 @@ namespace PRM
             _isDragging = false;
             _isLeftMouseDown = false;
 
-            if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton != MouseButtonState.Pressed)
             {
-                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
                 return;
             }
-
-            if (e.LeftButton == MouseButtonState.Pressed)
+            else if (e.ClickCount == 2)
+            {
+                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            }
+            else
             {
                 _isLeftMouseDown = true;
-                var th = new Thread(new ThreadStart(() =>
+                var th = new Thread(() =>
                 {
                     Thread.Sleep(50);
                     if (_isLeftMouseDown)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            _isDragging = true;
-                        });
+                        _isDragging = true;
                     }
-                }));
+                });
                 th.Start();
             }
         }
+
         private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             _isLeftMouseDown = false;
@@ -138,20 +138,30 @@ namespace PRM
         }
         private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
+            if (e.LeftButton != MouseButtonState.Pressed || !_isDragging)
             {
-                if (this.WindowState == WindowState.Maximized)
-                {
-                    var p = ScreenInfoEx.GetMouseVirtualPosition();
-                    var top = p.Y;
-                    var left = p.X;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                    this.WindowState = WindowState.Normal;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                }
+                return;
+            }
+
+            if (this.WindowState == WindowState.Maximized)
+            {
+                var p = ScreenInfoEx.GetMouseVirtualPosition();
+                var top = p.Y;
+                var left = p.X;
+                this.Top = top - 15;
+                this.Left = left - this.Width / 2;
+                this.WindowState = WindowState.Normal;
+                this.Top = top - 15;
+                this.Left = left - this.Width / 2;
+            }
+
+            try
+            {
                 this.DragMove();
+            }
+            catch
+            {
+                // ignored
             }
         }
         #endregion

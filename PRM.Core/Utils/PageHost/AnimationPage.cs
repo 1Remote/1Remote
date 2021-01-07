@@ -11,14 +11,12 @@ namespace Shawn.Utils.PageHost
 {
     public class AnimationPage
     {
-        public InOutAnimationType InAnimationType = InOutAnimationType.None;
-        public InOutAnimationType OutAnimationType = InOutAnimationType.None;
-        public UserControl Page = null;
+        public InOutAnimationType InAnimationType { get; set; } = InOutAnimationType.None;
+        public InOutAnimationType OutAnimationType { get; set; } = InOutAnimationType.None;
+        public UserControl Page { get; set; } = null;
 
-
-
-
-
+        private const double AnimationSeconds = 0.3;
+        private const float AnimationDecelerationRatio = 0.9f;
 
 
         public enum InOutAnimationType
@@ -36,63 +34,51 @@ namespace Shawn.Utils.PageHost
             FadeOut
         }
 
-        public static Storyboard GetInOutStoryboard(double seconds,
-            InOutAnimationType animationType,
-            double parentWidth, double parentHeight,
-            float decelerationRatio = 0.9f)
+        public Storyboard GetInAnimationStoryboard(double parentWidth, double parentHeight)
         {
             var storyboard = new Storyboard();
-            var from = new Thickness(0);
-            var to = new Thickness(0);
-            switch (animationType)
+            switch (InAnimationType)
             {
-                case InOutAnimationType.None:
-                    return null;
-                case InOutAnimationType.SlideFromRight:
-                case InOutAnimationType.SlideToRight:
                 case InOutAnimationType.SlideFromLeft:
-                case InOutAnimationType.SlideToLeft:
+                    storyboard.AddSlideFromLeft(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
+                    break;
+                case InOutAnimationType.SlideFromRight:
+                    storyboard.AddSlideFromRight(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
+                    break;
                 case InOutAnimationType.SlideFromTop:
-                case InOutAnimationType.SlideToTop:
+                    storyboard.AddSlideFromTop(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
+                    break;
                 case InOutAnimationType.SlideFromBottom:
-                case InOutAnimationType.SlideToBottom:
-                    switch (animationType)
-                    {
-                        case InOutAnimationType.SlideFromLeft:
-                            from = new Thickness(-parentWidth, 0, parentWidth, 0);
-                            break;
-                        case InOutAnimationType.SlideFromRight:
-                            from = new Thickness(parentWidth, 0, -parentWidth, 0);
-                            break;
-                        case InOutAnimationType.SlideFromTop:
-                            from = new Thickness(0, -parentHeight, 0, parentHeight);
-                            break;
-                        case InOutAnimationType.SlideFromBottom:
-                            from = new Thickness(0, parentHeight, 0, -parentHeight);
-                            break;
-                        case InOutAnimationType.SlideToLeft:
-                            to = new Thickness(-parentWidth, 0, parentWidth, 0);
-                            break;
-                        case InOutAnimationType.SlideToRight:
-                            to = new Thickness(parentWidth, 0, -parentWidth, 0);
-                            break;
-                        case InOutAnimationType.SlideToTop:
-                            to = new Thickness(0, -parentHeight, 0, parentHeight);
-                            break;
-                        case InOutAnimationType.SlideToBottom:
-                            to = new Thickness(0, parentHeight, 0, -parentHeight);
-                            break;
-                    }
-                    StoryboardHelpers.AddThicknessAnimation(storyboard, seconds, from, to, "Margin", decelerationRatio);
+                    storyboard.AddSlideFromBottom(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
                     break;
                 case InOutAnimationType.FadeIn:
-                    StoryboardHelpers.AddFadeIn(storyboard, seconds);
+                    storyboard.AddFadeIn(AnimationSeconds);
+                    break;
+            }
+            return storyboard;
+        }
+
+        
+        public Storyboard GetOutAnimationStoryboard(double parentWidth, double parentHeight)
+        {
+            var storyboard = new Storyboard();
+            switch (OutAnimationType)
+            {
+                case InOutAnimationType.SlideToLeft:
+                    storyboard.AddSlideToLeft(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
+                    break;
+                case InOutAnimationType.SlideToRight:
+                    storyboard.AddSlideToRight(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
+                    break;
+                case InOutAnimationType.SlideToTop:
+                    storyboard.AddSlideToTop(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
+                    break;
+                case InOutAnimationType.SlideToBottom:
+                    storyboard.AddSlideToBottom(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
                     break;
                 case InOutAnimationType.FadeOut:
-                    StoryboardHelpers.AddFadeOut(storyboard, seconds);
+                    storyboard.AddFadeOut(AnimationSeconds);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(animationType), animationType, null);
             }
             return storyboard;
         }

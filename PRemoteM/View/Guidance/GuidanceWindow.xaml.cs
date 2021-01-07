@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using PRM.Annotations;
@@ -122,20 +123,26 @@ namespace PRM.View
         {
             _isDragging = false;
             _isLeftMouseDown = false;
-            if (e.LeftButton == MouseButtonState.Pressed)
+
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+            else if (e.ClickCount == 2)
+            {
+                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+            }
+            else
             {
                 _isLeftMouseDown = true;
-                var th = new Thread(new ThreadStart(() =>
+                var th = new Thread(() =>
                 {
                     Thread.Sleep(50);
                     if (_isLeftMouseDown)
                     {
-                        Dispatcher.Invoke(() =>
-                        {
-                            _isDragging = true;
-                        });
+                        _isDragging = true;
                     }
-                }));
+                });
                 th.Start();
             }
         }
@@ -146,26 +153,30 @@ namespace PRM.View
         }
         private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
+            if (e.LeftButton != MouseButtonState.Pressed || !_isDragging)
             {
-                if (this.WindowState == WindowState.Maximized)
-                {
-                    var p = ScreenInfoEx.GetMouseVirtualPosition();
-                    var top = p.Y;
-                    var left = p.X;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                    this.WindowState = WindowState.Normal;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                }
-                try
-                {
-                    this.DragMove();
-                }
-                catch
-                {
-                }
+                return;
+            }
+
+            if (this.WindowState == WindowState.Maximized)
+            {
+                var p = ScreenInfoEx.GetMouseVirtualPosition();
+                var top = p.Y;
+                var left = p.X;
+                this.Top = top - 15;
+                this.Left = left - this.Width / 2;
+                this.WindowState = WindowState.Normal;
+                this.Top = top - 15;
+                this.Left = left - this.Width / 2;
+            }
+
+            try
+            {
+                this.DragMove();
+            }
+            catch
+            {
+                // ignored
             }
         }
         #endregion
@@ -184,14 +195,22 @@ namespace PRM.View
             {
                 Step = 1;
                 Grid2.Visibility = Visibility.Visible;
-                var sb = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideToLeft,
-                    this.ActualWidth, this.ActualHeight);
+
+                var sb = new Storyboard();
+                sb.AddSlideToLeft(0.5, ActualWidth);
                 sb.Begin(Grid1);
-                var sb2 = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideFromRight,
-                    this.ActualWidth, this.ActualHeight);
+                var sb2 = new Storyboard();
+                sb2.AddSlideFromRight(0.5, ActualWidth);
                 sb2.Begin(Grid2);
+
+                //var sb = AnimationPage.GetInOutStoryboard(0.5,
+                //    AnimationPage.InOutAnimationType.SlideToLeft,
+                //    this.ActualWidth, this.ActualHeight);
+                //sb.Begin(Grid1);
+                //var sb2 = AnimationPage.GetInOutStoryboard(0.5,
+                //    AnimationPage.InOutAnimationType.SlideFromRight,
+                //    this.ActualWidth, this.ActualHeight);
+                //sb2.Begin(Grid2);
             }
         }
 
@@ -201,13 +220,11 @@ namespace PRM.View
             {
                 Step = 0;
                 Grid2.Visibility = Visibility.Visible;
-                var sb = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideFromLeft,
-                    this.ActualWidth, this.ActualHeight);
+                var sb = new Storyboard();
+                sb.AddSlideFromLeft(0.5, ActualWidth);
                 sb.Begin(Grid1);
-                var sb2 = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideToRight,
-                    this.ActualWidth, this.ActualHeight);
+                var sb2 = new Storyboard();
+                sb2.AddSlideToRight(0.5, ActualWidth);
                 sb2.Begin(Grid2);
             }
         }

@@ -56,8 +56,8 @@ namespace Shawn.Utils.PageHost
             {
                 NewPageHost.Content = null;
                 OldPageHost.Content = null;
-                int w = (int) (this.ActualWidth * 1.2);
-                int h = (int) (this.ActualHeight * 1.2);
+                int w = (int)(this.ActualWidth * 1.2);
+                int h = (int)(this.ActualHeight * 1.2);
 
 
                 if (_oldPage?.Page != null)
@@ -71,7 +71,7 @@ namespace Shawn.Utils.PageHost
                         // ignored
                     }
 
-                    _animationNewPageUnload = AnimationPage.GetInOutStoryboard(0.5, _oldPage.OutAnimationType, w, h);
+                    _animationNewPageUnload = _oldPage.GetOutAnimationStoryboard(w, h);
                     if (_animationNewPageUnload != null)
                     {
                         OldPageHost.Content = _oldPage.Page;
@@ -84,7 +84,7 @@ namespace Shawn.Utils.PageHost
 
                 if (_newPage?.Page != null)
                 {
-                    _animationNewPageOnload = AnimationPage.GetInOutStoryboard(0.5, _newPage.InAnimationType, w, h);
+                    _animationNewPageOnload = _newPage.GetInAnimationStoryboard(w, h);
                     _newPage.Page.Loaded += PageLoaded;
                     NewPageHost.Content = _newPage.Page;
                 }

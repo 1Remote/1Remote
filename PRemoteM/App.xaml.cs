@@ -221,9 +221,7 @@ namespace PRM
 
 
                     // if ini is not existed, then it would be a new user, open guide to set db path
-                    //#if !DEBUG
                     if (!File.Exists(iniPath))
-                    //#endif
                     {
                         isFirstTimeUser = true;
                         ShutdownMode = ShutdownMode.OnExplicitShutdown;

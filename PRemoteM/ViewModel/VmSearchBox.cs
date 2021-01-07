@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -267,19 +268,15 @@ namespace PRM.ViewModel
 
             _listActions.Visibility = Visibility.Visible;
 
-            var sb = AnimationPage.GetInOutStoryboard(0.3,
-                AnimationPage.InOutAnimationType.SlideFromLeft,
-                _gridMainWidth,
-                GridMainHeight);
+            var sb = new Storyboard();
+            sb.AddSlideFromLeft(0.3, _gridMainWidth);
             sb.Begin(_listActions);
         }
 
         public void HideActionsList()
         {
-            var sb = AnimationPage.GetInOutStoryboard(0.3,
-                AnimationPage.InOutAnimationType.SlideToLeft,
-                _gridMainWidth,
-                GridMainHeight);
+            var sb = new Storyboard();
+            sb.AddSlideToLeft(0.3, _gridMainWidth);
             sb.Completed += (o, args) =>
             {
                 _listActions.Visibility = Visibility.Hidden;

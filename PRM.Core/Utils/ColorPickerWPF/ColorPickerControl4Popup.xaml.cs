@@ -262,7 +262,7 @@ namespace ColorPickerWPF
         {
             try
             {
-                var (a, r, g, b) = HexColorToArgb(TbHex.Text);
+                var (a, r, g, b) = ColorAndBrushHelper.HexColorToArgb(TbHex.Text);
                 var color = Color.FromArgb(a, r, g, b);
                 SetColor(color);
             }
@@ -270,46 +270,6 @@ namespace ColorPickerWPF
             {
                 Console.WriteLine(exception);
             }
-        }
-        /// <summary>
-        /// color in hex string to (a,r,g,b);
-        /// #FFFEFDFC   ->  Tuple(255,254,253,252),
-        /// #FEFDFC     ->  Tuple(255,254,253,252)
-        /// </summary>
-        /// <param name="hexColor"></param>
-        /// <returns></returns>
-        private static Tuple<byte, byte, byte, byte> HexColorToArgb(string hexColor)
-        {
-            //remove the # at the front
-            var hex = hexColor.Replace("#", "");
-
-            byte a = 255;
-            byte r = 255;
-            byte g = 255;
-            byte b = 255;
-
-            int start = 0;
-
-            try
-            {
-                if (hex.Length != 8 && hex.Length != 6)
-                    throw new ArgumentException("Error hex color string length.");
-                //handle ARGB strings (8 characters long)
-                if (hex.Length == 8)
-                {
-                    a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-                    start = 2;
-                }
-                //convert RGB characters to bytes
-                r = byte.Parse(hex.Substring(start, 2), System.Globalization.NumberStyles.HexNumber);
-                g = byte.Parse(hex.Substring(start + 2, 2), System.Globalization.NumberStyles.HexNumber);
-                b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return new Tuple<byte, byte, byte, byte>(a, r, g, b);
         }
     }
 }
