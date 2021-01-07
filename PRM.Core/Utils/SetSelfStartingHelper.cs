@@ -1,7 +1,12 @@
-﻿using System;
+﻿#define SHORTCUT_METHOD
+#define REGISTRY_METHOD
+#define STORE_METHOD
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -17,28 +22,66 @@ using Windows.ApplicationModel;
 
 namespace Shawn.Utils
 {
-#if !FOR_MICROSOFT_STORE_ONLY
-    public enum StartupMode
-    {
-        /// <summary>
-        /// 正常启动
-        /// </summary>
-        Normal,
-        /// <summary>
-        /// 高权限启动，并设置软件自启动
-        /// </summary>
-        SetSelfStart,
-        /// <summary>
-        /// 高权限启动，并取消软件自启动
-        /// </summary>
-        UnsetSelfStart,
-    }
-#endif
-
-
     public static class SetSelfStartingHelper
     {
-#if !FOR_MICROSOFT_STORE_ONLY
+
+#if DEBUG
+        public static string StartupTaskId = "PRemoteM_Debug";
+#else
+        public static string StartupTaskId = "PRemoteM";
+#endif
+
+#if SHORTCUT_METHOD
+
+        public enum StartupMode
+        {
+            /// <summary>
+            /// 正常启动
+            /// </summary>
+            Normal,
+            /// <summary>
+            /// 高权限启动，并设置软件自启动
+            /// </summary>
+            SetSelfStart,
+            /// <summary>
+            /// 高权限启动，并取消软件自启动
+            /// </summary>
+            UnsetSelfStart,
+        }
+
+        public static bool IsElvated()
+        {
+            var wi = WindowsIdentity.GetCurrent();
+            var wp = new WindowsPrincipal(wi);
+            var runAsAdmin = wp.IsInRole(WindowsBuiltInRole.Administrator);
+            return runAsAdmin;
+        }
+
+        /// <summary>
+        /// 以高权限执行某些任务
+        /// </summary>
+        /// <param name="startupMode"></param>
+        public static void RunElvatedTask(StartupMode startupMode)
+        {
+            // It is not possible to launch a ClickOnce app as administrator directly,  
+            // so instead we launch the app as administrator in a new process.  
+            var processInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName);
+
+            // The following properties run the new process as administrator  
+            processInfo.UseShellExecute = true;
+            processInfo.Verb = "runas";
+            processInfo.Arguments = startupMode.ToString();
+            // Start the new process  
+            try
+            {
+                Process.Start(processInfo);
+            }
+            catch
+            {
+            }
+        }
+
+
         private static string MD5EncryptString(string str)
         {
             var md5 = MD5.Create();
@@ -56,7 +99,7 @@ namespace Shawn.Utils
             // 返回加密的字符串
             return sb.ToString();
         }
-        private static string GetShortCutPath()
+        private static string GetStartupShortcutPath()
         {
             var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             var exePath = Process.GetCurrentProcess().MainModule.FileName;
@@ -64,77 +107,99 @@ namespace Shawn.Utils
             var shortcutPath = System.IO.Path.Combine(startUpPath, $"{SystemConfig.AppName}_{md5}.lnk");
             return shortcutPath;
         }
-        private static string GetShortCutPathOld()
+
+        private static void CleanUpShortcut(string exceptionShortcutPath)
         {
-            var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
-            var exePath = Process.GetCurrentProcess().MainModule.FileName;
-            string md5 = MD5EncryptString(exePath);
-            var shortcutPath = System.IO.Path.Combine(startUpPath, string.Format("{0}_{1}.lnk", SystemConfig.AppName, md5));
-            return shortcutPath;
+            if (IsElvated())
+            {
+                var di = new FileInfo(exceptionShortcutPath).Directory;
+                var fis = di.GetFiles(SystemConfig.AppName + "_*");
+                if (fis?.Length > 0)
+                {
+                    foreach (var fi in fis)
+                    {
+                        if (fi.FullName != exceptionShortcutPath)
+                            File.Delete(fi.FullName);
+                    }
+                }
+            }
         }
-        /// <summary>
-        /// 用于实现提权操作的类
-        /// Elevated Permission 后，杀死原进程
-        /// </summary>
-        private class AppElvatedHelper
+
+        private static async void UnsetSelfStartByStartupByShortcut(string shortcutPath)
         {
-            public static bool IsElvated()
+            var hasStartup = await IsSelfStartByShortcut();
+            if (!hasStartup) return;
+            if (IsElvated())
+                File.Delete(shortcutPath);
+            else
+                RunElvatedTask(StartupMode.UnsetSelfStart);
+        }
+        private static async void SetSelfStartByStartupByShortcut(string shortcutPath)
+        {
+            var hasStartup = await IsSelfStartByShortcut();
+            if (hasStartup) return;
+
+            if (IsElvated())
             {
-                var wi = WindowsIdentity.GetCurrent();
-                var wp = new WindowsPrincipal(wi);
-                var runAsAdmin = wp.IsInRole(WindowsBuiltInRole.Administrator);
-                return runAsAdmin;
+                var exePath = Process.GetCurrentProcess().MainModule.FileName;
+                if (File.Exists(shortcutPath))
+                    File.Delete(shortcutPath);
+                var shell = new IWshRuntimeLibrary.WshShell();
+                var shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(shortcutPath);
+                shortcut.TargetPath = exePath;
+                shortcut.Arguments = "";
+                shortcut.IconLocation = exePath;
+                shortcut.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath);
+                shortcut.Description = "";
+                shortcut.Save();
             }
-            /// <summary>
-            /// 判断app是否以管理员权限运行，不是的话提升权限重启app
-            /// </summary>
-            /// <param name="startupMode"></param>
-            public static void ElvateApp(StartupMode startupMode)
+            else
             {
-                if (!IsElvated())
+                RunElvatedTask(StartupMode.SetSelfStart);
+            }
+        }
+
+        public static async Task<bool> IsSelfStartByShortcut()
+        {
+            return File.Exists(GetStartupShortcutPath());
+        }
+
+        public static async void SetSelfStartByShortcut(bool isSetSelfStart)
+        {
+            var shortcutPath = GetStartupShortcutPath();
+            CleanUpShortcut(shortcutPath);
+
+            if (isSetSelfStart)
+                SetSelfStartByStartupByShortcut(shortcutPath);
+            else
+                UnsetSelfStartByStartupByShortcut(shortcutPath);
+        }
+#endif
+
+
+#if REGISTRY_METHOD
+        public static async Task<bool> IsSelfStartByRegistryKey()
+        {
+            var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            return key?.GetValueNames().Contains(StartupTaskId) == true;
+        }
+
+
+        public static async void SetSelfStartByRegistryKey(bool isSetSelfStart)
+        {
+            var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (await IsSelfStartByRegistryKey())
+            {
+                if (!isSetSelfStart)
                 {
-                    // It is not possible to launch a ClickOnce app as administrator directly,  
-                    // so instead we launch the app as administrator in a new process.  
-                    var processInfo = new ProcessStartInfo(Assembly.GetExecutingAssembly().CodeBase);
-
-                    // The following properties run the new process as administrator  
-                    processInfo.UseShellExecute = true;
-                    processInfo.Verb = "runas";
-                    processInfo.Arguments = startupMode.ToString();
-                    // Start the new process  
-                    try
-                    {
-                        Process.Start(processInfo);
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    // Shut down the current process  
-                    Environment.Exit(0);
+                    key.DeleteValue(StartupTaskId, false);
                 }
             }
-            /// <summary>
-            /// 以高权限执行某些任务
-            /// </summary>
-            /// <param name="startupMode"></param>
-            public static void RunElvatedTask(StartupMode startupMode)
+            else
             {
-                // It is not possible to launch a ClickOnce app as administrator directly,  
-                // so instead we launch the app as administrator in a new process.  
-                var processInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName);
-
-                // The following properties run the new process as administrator  
-                processInfo.UseShellExecute = true;
-                processInfo.Verb = "runas";
-                processInfo.Arguments = startupMode.ToString();
-                // Start the new process  
-                try
+                if (isSetSelfStart)
                 {
-                    Process.Start(processInfo);
-                }
-                catch
-                {
+                    key.SetValue(StartupTaskId, Process.GetCurrentProcess().MainModule.FileName);
                 }
             }
         }
@@ -145,154 +210,58 @@ namespace Shawn.Utils
 
 
 
-
-
-
-
-
-
-
-
-
-        public static string StartupTaskId = "PRemoteM";
-
-        public static async Task<bool> IsSelfStart()
+#if STORE_METHOD
+        public static async Task<bool> IsSelfStartByStartupTask()
         {
-            try
+            var result = await StartupTask.GetAsync(StartupTaskId);
+            switch (result.State)
             {
-                var result = await StartupTask.GetAsync(StartupTaskId);
-                switch (result.State)
-                {
-                    case StartupTaskState.Disabled:
-                    case StartupTaskState.DisabledByUser:
-                    case StartupTaskState.DisabledByPolicy:
-                        return false;
-                    case StartupTaskState.Enabled:
-                    case StartupTaskState.EnabledByPolicy:
-                        return true;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-#if !FOR_MICROSOFT_STORE_ONLY
-                var shortcutPathOld = GetShortCutPathOld();
-                if (File.Exists(shortcutPathOld))
-                    File.Delete(shortcutPathOld);
-                if (File.Exists(GetShortCutPath()))
-                    return true;
-                else
+                case StartupTaskState.Disabled:
+                case StartupTaskState.DisabledByUser:
+                case StartupTaskState.DisabledByPolicy:
                     return false;
-#else
-                throw;
-#endif
+                case StartupTaskState.Enabled:
+                case StartupTaskState.EnabledByPolicy:
+                    return true;
+                default:
+                    return false;
             }
         }
-        public static async void SetSelfStart(bool isSetSelfStart)
+
+
+        public static async void SetSelfStartByStartupTask(bool isSetSelfStart)
         {
-            try
+            var result = await StartupTask.GetAsync(StartupTaskId);
+            switch (result.State)
             {
-                var result = await StartupTask.GetAsync(StartupTaskId);
-                switch (result.State)
-                {
-                    case StartupTaskState.Disabled:
-                        if (isSetSelfStart)
-                        {
-                            var newState = await result.RequestEnableAsync();
-                        }
-                        break;
-                    case StartupTaskState.DisabledByUser:
-                        MessageBox.Show(
-                            "You have disabled this app's ability to run " +
-                            "as soon as you sign in, but if you change your mind, " +
-                            "you can enable this in the Startup tab in Task Manager.",
-                            "Warning");
-                        break;
-                    case StartupTaskState.DisabledByPolicy:
-                        Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
-                        break;
-                    case StartupTaskState.Enabled:
-                        if (!isSetSelfStart)
-                            result.Disable();
-                        break;
-                    case StartupTaskState.EnabledByPolicy:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-#if !FOR_MICROSOFT_STORE_ONLY
-                var hasStartup = await IsSelfStart();
-                if (isSetSelfStart && hasStartup == false)
-                {
-                    if (AppElvatedHelper.IsElvated())
+                case StartupTaskState.Disabled:
+                    if (isSetSelfStart)
                     {
-                        try
-                        {
-                            var exePath = Process.GetCurrentProcess().MainModule.FileName;
-                            var shortcutPath = GetShortCutPath();
-                            if (File.Exists(shortcutPath))
-                                File.Delete(shortcutPath);
-                            var shell = new IWshRuntimeLibrary.WshShell();
-                            var shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(shortcutPath);
-                            shortcut.TargetPath = exePath;
-                            shortcut.Arguments = "";
-                            shortcut.IconLocation = exePath;
-                            shortcut.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath);
-                            shortcut.Description = "";
-                            shortcut.Save();
-                            var di = new FileInfo(shortcutPath).Directory;
-                            var fis = di.GetFiles(SystemConfig.AppName + "_*");
-                            if (fis?.Length > 0)
-                            {
-                                foreach (var fi in fis)
-                                {
-                                    if (fi.FullName != shortcutPath)
-                                        File.Delete(fi.FullName);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
+                        var newState = await result.RequestEnableAsync();
                     }
-                    else
-                    {
-                        AppElvatedHelper.RunElvatedTask(StartupMode.SetSelfStart);
-                    }
-                }
-                else if(isSetSelfStart == false && hasStartup)
-                {
-                    var shortcutPath = GetShortCutPath();
-                    if (File.Exists(shortcutPath))
-                    {
-                        if (AppElvatedHelper.IsElvated())
-                        {
-                            try
-                            {
-                                File.Delete(shortcutPath);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
-                            }
-                        }
-                        else
-                        {
-                            AppElvatedHelper.RunElvatedTask(StartupMode.UnsetSelfStart);
-                        }
-                    }
-                }
-#else
-                throw;
-#endif
+                    break;
+                case StartupTaskState.DisabledByUser:
+                    MessageBox.Show(
+                        "You have disabled this app's ability to run " +
+                        "as soon as you sign in, but if you change your mind, " +
+                        "you can enable this in the Startup tab in Task Manager.",
+                        "Warning");
+                    break;
+                case StartupTaskState.DisabledByPolicy:
+                    Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
+                    break;
+                case StartupTaskState.Enabled:
+                    if (!isSetSelfStart)
+                        result.Disable();
+                    break;
+                case StartupTaskState.EnabledByPolicy:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
+#endif
+
+
     }
 }
