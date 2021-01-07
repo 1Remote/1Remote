@@ -96,19 +96,19 @@ namespace PRM
                 // startup creation for win32
 #if !FOR_MICROSOFT_STORE_ONLY
                 {
-                    var startupMode = Shawn.Utils.StartupMode.Normal;
+                    var startupMode = Shawn.Utils.SetSelfStartingHelper.StartupMode.Normal;
                     if (startupEvent.Args.Length > 0)
                     {
                         System.Enum.TryParse(startupEvent.Args[0], out startupMode);
                     }
-                    if (startupMode == Shawn.Utils.StartupMode.SetSelfStart)
+                    if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.SetSelfStart)
                     {
-                        SetSelfStartingHelper.SetSelfStart(true);
+                        SetSelfStartingHelper.SetSelfStartByShortcut(true);
                         Environment.Exit(0);
                     }
-                    if (startupMode == Shawn.Utils.StartupMode.UnsetSelfStart)
+                    if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.UnsetSelfStart)
                     {
-                        SetSelfStartingHelper.SetSelfStart(false);
+                        SetSelfStartingHelper.SetSelfStartByShortcut(false);
                         Environment.Exit(0);
                     }
                 }

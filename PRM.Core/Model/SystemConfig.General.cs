@@ -109,7 +109,14 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
-            SetSelfStartingHelper.SetSelfStart(AppStartAutomatically);
+            // TODO delete after 2021.03;
+            SetSelfStartingHelper.SetSelfStartByShortcut(false);
+
+#if FOR_MICROSOFT_STORE_ONLY
+            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically);
+#else
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically);
+#endif
 
             StopAutoSave = false;
             _ini.Save();
