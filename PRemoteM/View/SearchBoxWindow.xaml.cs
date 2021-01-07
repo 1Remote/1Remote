@@ -13,7 +13,7 @@ using Shawn.Utils.PageHost;
 
 namespace PRM.View
 {
-    public partial class SearchBoxWindow : Window
+    public partial class SearchBoxWindow : WindowChromeBase
     {
         private readonly VmSearchBox _vmSearchBox = null;
 
@@ -128,17 +128,15 @@ namespace PRM.View
 
 
 
-        private void WindowHeader_MouseMove(object sender, MouseEventArgs e)
+        protected override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            try
             {
-                try
-                {
-                    this.DragMove();
-                }
-                catch
-                {
-                }
+                this.DragMove();
+            }
+            catch
+            {
             }
         }
 

@@ -1,20 +1,20 @@
-﻿<Window x:Class="PRM.View.GuidanceWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PRM.View"
-        xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
-        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-        xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
-        xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-        mc:Ignorable="d"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        WindowStyle="None"
-        Background="Transparent"
-        Topmost="True"
-        Title="SearchBoxWindow" Height="600" Width="800">
+﻿<utils:WindowChromeBase x:Class="PRM.View.GuidanceWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:PRM.View"
+                  xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
+                  xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+                  xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+                  mc:Ignorable="d"
+                  WindowStartupLocation="CenterScreen"
+                  ResizeMode="NoResize"
+                  WindowStyle="None"
+                  Background="Transparent"
+                  Topmost="True"
+                  Title="SearchBoxWindow" Height="600" Width="800">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
@@ -474,4 +474,4 @@
             </controls:ButtonEx>
         </Grid>
     </Grid>
-</Window>
+</utils:WindowChromeBase>

@@ -140,9 +140,6 @@
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\DesktopWindow.xaml.cs">
-      <DependentUpon>DesktopWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\FullScreenWindow.xaml.cs">
       <DependentUpon>FullScreenWindow.xaml</DependentUpon>
     </Compile>
@@ -155,6 +152,7 @@
     <Compile Include="View\ServerManagementPage.xaml.cs">
       <DependentUpon>ServerManagementPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TabWindow\TabWindowBase.cs" />
     <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
       <DependentUpon>TabWindowClassical.xaml</DependentUpon>
     </Compile>
@@ -171,7 +169,6 @@
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\TabItemViewModel.cs" />
-    <Compile Include="View\TabWindow\ITab.cs" />
     <Page Include="Controls\AutoCompleteComboBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -205,10 +202,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AboutPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\DesktopWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

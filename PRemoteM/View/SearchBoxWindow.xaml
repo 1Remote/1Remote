@@ -1,15 +1,16 @@
-﻿<Window x:Class="PRM.View.SearchBoxWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-        xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        WindowStyle="None"
-        SizeToContent="WidthAndHeight"
-        Background="Transparent"
-        Title="SearchBoxWindow" Height="460" Width="480">
+﻿<utils:WindowChromeBase x:Class="PRM.View.SearchBoxWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:system="clr-namespace:System;assembly=mscorlib"
+                  xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+                  xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
+                  xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  WindowStartupLocation="CenterScreen"
+                  ResizeMode="NoResize"
+                  WindowStyle="None"
+                  SizeToContent="WidthAndHeight"
+                  Background="Transparent"
+                  Title="SearchBoxWindow" Height="460" Width="480">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
@@ -382,7 +383,7 @@
 
             <Grid Width="50" Height="40" HorizontalAlignment="Right" 
                           Background="{DynamicResource MainColor1Brush}"
-                          MouseMove="WindowHeader_MouseMove"></Grid>
+                          PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
 
 
@@ -489,4 +490,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</Window>
+</utils:WindowChromeBase>

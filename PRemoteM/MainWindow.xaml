@@ -1,21 +1,21 @@
-﻿<Window x:Class="PRM.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:pageHost1="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
-        xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-        mc:Ignorable="d"
-        BorderThickness="0"
-        BorderBrush="Transparent"
-        KeyDown="MainWindow_OnKeyDown"
-        x:Name="Window"
-        Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
+﻿<utils:WindowChromeBase x:Class="PRM.MainWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:pageHost1="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
+                  xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+                  xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+                  xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  mc:Ignorable="d"
+                  BorderThickness="0"
+                  BorderBrush="Transparent"
+                  KeyDown="MainWindow_OnKeyDown"
+                  Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
-    <Window.Template>
+    <utils:WindowChromeBase.Template>
         <ControlTemplate TargetType="Window">
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource MainColor1Brush}">
                 <Border.Style>
@@ -34,19 +34,19 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-    </Window.Template>
-    <Window.Resources>
+    </utils:WindowChromeBase.Template>
+    <utils:WindowChromeBase.Resources>
         <ResourceDictionary>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter"/>
         </ResourceDictionary>
-    </Window.Resources>
-    <Window.CommandBindings>
+    </utils:WindowChromeBase.Resources>
+    <utils:WindowChromeBase.CommandBindings>
         <CommandBinding Command="{StaticResource CommandFocusFilter}" Executed="CommandFocusFilter_OnExecuted"></CommandBinding>
-    </Window.CommandBindings>
-    <Window.InputBindings>
+    </utils:WindowChromeBase.CommandBindings>
+    <utils:WindowChromeBase.InputBindings>
         <!-- map ctrl + f to focus on filter-->
         <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
-    </Window.InputBindings>
+    </utils:WindowChromeBase.InputBindings>
 
     <Grid Background="{DynamicResource MainBgColorBrush}">
         <Grid.RowDefinitions>
@@ -353,4 +353,4 @@
             </Grid>
         </Grid>
     </Grid>
-</Window>
+</utils:WindowChromeBase>
