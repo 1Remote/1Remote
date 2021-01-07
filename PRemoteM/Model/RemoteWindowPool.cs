@@ -440,42 +440,35 @@ namespace PRM.Model
 
         public Window MoveProtocolHostToTab(string connectionId)
         {
-            try
+            Debug.Assert(_protocolHosts.ContainsKey(connectionId) == true);
+            var host = _protocolHosts[connectionId];
+            // get tab
+            var tab = GetOrCreateTabWindow(host);
+            // assign host to tab
+            if (tab.GetViewModel().Items.All(x => x.Content != host))
             {
-                if (!_protocolHosts.ContainsKey(connectionId))
-                    throw new NullReferenceException($"_protocolHosts not contains {connectionId}");
-                var host = _protocolHosts[connectionId];
-                // get tab
-                var tab = GetOrCreateTabWindow(host);
-                // add host to tab
-                if (tab.GetViewModel().Items.All(x => x.Content != host))
+                // move
+                SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                SynchronizationContext.Current.Post(pl =>
                 {
-                    SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                    SynchronizationContext.Current.Post(pl =>
+                    tab.GetViewModel().Items.Add(new TabItemViewModel()
                     {
-                        tab.GetViewModel().Items.Add(new TabItemViewModel()
-                        {
-                            Content = host,
-                            Header = host.ProtocolServer.DispName,
-                        });
-                        tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Last();
-                    }, null);
-                }
-                else
-                {
-                    tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.First(x => x.Content != host);
-                }
-                host.ParentWindow = tab.GetWindow();
-                tab.GetWindow().Activate();
-                SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
-                SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-                return tab.GetWindow();
+                        Content = host,
+                        Header = host.ProtocolServer.DispName,
+                    });
+                    tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Last();
+                }, null);
             }
-            catch (Exception e)
+            else
             {
-                SimpleLogHelper.Fatal(e, e.StackTrace);
-                throw;
+                // just show
+                tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.First(x => x.Content != host);
             }
+            host.ParentWindow = tab.GetWindow();
+            tab.GetWindow().Activate();
+            SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
+            SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+            return tab.GetWindow();
         }
 
         /// <summary>

@@ -54,28 +54,6 @@ namespace PRM.Core.Protocol.Putty
             }
         }
 
-        public override bool CanSave()
-        {
-            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
-            {
-                var protocol = (ProtocolServerWithAddrPortUserPwdBase) Vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && !string.IsNullOrEmpty(protocol.UserName?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortBase))
-            {
-                var protocol = (ProtocolServerWithAddrPortBase) Vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            return false;
-        }
-
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
             if (Vm.GetType() == typeof(ProtocolServerSSH))

@@ -29,44 +29,5 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
                     GridPwd.Visibility = Visibility.Visible;
             }
         }
-
-        public override bool CanSave()
-        {
-            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
-            {
-                var protocol = (ProtocolServerWithAddrPortUserPwdBase) Vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && !string.IsNullOrEmpty(protocol.UserName?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortBase))
-            {
-                var protocol = (ProtocolServerWithAddrPortBase) Vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            return false;
-        }
-    }
-
-
-
-    public class ConverterESshVersion : IValueConverter
-    {
-        #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return ((int)((ProtocolServerFTP.ESshVersion)value) - 1).ToString();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return (ProtocolServerFTP.ESshVersion)(int.Parse(value.ToString()));
-        }
-        #endregion
     }
 }

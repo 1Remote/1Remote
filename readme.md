@@ -7,6 +7,10 @@ English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/read
 PRemoteM = Personal Remote Manager
 ```
 
+![issues](https://img.shields.io/github/issues/vshawn/premotem)
+![license](https://img.shields.io/github/license/vshawn/premotem)
+
+
 PRemoteM is a modern remote session manager and launcher, which allows you to open a remote session at any time and anywhere. Fornow PRemoteM supports multiple protocols such as RDP, VNC, SSH, Telnet, sFtp.
 
   

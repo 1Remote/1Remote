@@ -39,28 +39,6 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             }
         }
 
-        public override bool CanSave()
-        {
-            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
-            {
-                var protocol = (ProtocolServerWithAddrPortUserPwdBase) Vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && !string.IsNullOrEmpty(protocol.UserName?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            if ( Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortBase))
-            {
-                var protocol = (ProtocolServerWithAddrPortBase) Vm;
-                if (!string.IsNullOrEmpty(protocol.Address?.Trim())
-                    && protocol.GetPort() > 0 && protocol.GetPort() < 65536)
-                    return true;
-                return false;
-            }
-            return false;
-        }
-
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
             if (Vm.GetType() == typeof(ProtocolServerSFTP))
@@ -82,22 +60,5 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
                     ((ProtocolServerSFTP)Vm).PrivateKey = "";
             }
         }
-    }
-
-
-
-    public class ConverterESshVersion : IValueConverter
-    {
-        #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return ((int)((ProtocolServerSFTP.ESshVersion)value) - 1).ToString();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return (ProtocolServerSFTP.ESshVersion)(int.Parse(value.ToString()));
-        }
-        #endregion
     }
 }
