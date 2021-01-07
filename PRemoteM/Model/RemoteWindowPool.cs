@@ -81,7 +81,7 @@ namespace PRM.Model
 
 
         private string _lastTabToken = null;
-        private readonly Dictionary<string, ITab> _tabWindows = new Dictionary<string, ITab>();
+        private readonly Dictionary<string, TabWindowBase> _tabWindows = new Dictionary<string, TabWindowBase>();
         private readonly Dictionary<string, ProtocolHostBase> _protocolHosts = new Dictionary<string, ProtocolHostBase>();
         private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
 
@@ -98,7 +98,7 @@ namespace PRM.Model
             // is connected now! activate it then return.
             if (vmProtocolServer.Server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
             {
-                if (_protocolHosts[serverId.ToString()].ParentWindow is ITab t)
+                if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
                     var s = t.GetViewModel()?.Items?.First(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
@@ -245,7 +245,7 @@ namespace PRM.Model
         }
 
 
-        public void AddTab(ITab tab)
+        public void AddTab(TabWindowBase tab)
         {
             var token = tab.GetViewModel().Token;
             Debug.Assert(!_tabWindows.ContainsKey(token));
@@ -263,7 +263,7 @@ namespace PRM.Model
             var host = _protocolHosts[connectionId];
 
             // remove from old parent
-            ITab tab = null;
+            TabWindowBase tab = null;
             {
                 var tabs = _tabWindows.Values.Where(x => x.GetViewModel().Items.Any(y => y.Content == host)).ToArray();
                 if (tabs.Length > 0)
@@ -349,7 +349,7 @@ namespace PRM.Model
         /// <param name="host"></param>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private ITab GetOrCreateTabWindow(ProtocolHostBase host, string assignTabToken = null)
+        private TabWindowBase GetOrCreateTabWindow(ProtocolHostBase host, string assignTabToken = null)
         {
             var parentWindow = host.ParentWindow;
             // remove from old parent
@@ -372,13 +372,13 @@ namespace PRM.Model
         /// <param name="server"></param>
         /// <param name="assignTabToken">if assignTabToken != null, try return _tabWindows[assignTabToken]</param>
         /// <returns></returns>
-        private ITab GetOrCreateTabWindow(ProtocolServerBase server, string assignTabToken = null)
+        private TabWindowBase GetOrCreateTabWindow(ProtocolServerBase server, string assignTabToken = null)
         {
             try
             {
-                ITab tab = null;
+                TabWindowBase tab = null;
 
-                // use old ITab
+                // use old TabWindowBase
                 if (!string.IsNullOrEmpty(assignTabToken)
                     && _tabWindows.ContainsKey(assignTabToken))
                     tab = _tabWindows[assignTabToken];
@@ -402,7 +402,7 @@ namespace PRM.Model
                             break;
                     }
 
-                // create new ITab
+                // create new TabWindowBase
                 if (tab == null)
                 {
                     var token = DateTime.Now.Ticks.ToString();

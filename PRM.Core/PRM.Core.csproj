@@ -238,6 +238,7 @@
     <Compile Include="Utils\TinyPinyin.Net\PinyinDict.cs" />
     <Compile Include="Utils\TinyPinyin.Net\PinyinHelper.cs" />
     <Compile Include="Utils\SimpleLogHelper.cs" />
+    <Compile Include="Utils\WindowChromeBase.cs" />
     <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

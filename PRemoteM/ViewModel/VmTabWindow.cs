@@ -300,7 +300,7 @@ namespace PRM.ViewModel
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
-            if (window is ITab tab)
+            if (window is TabWindowBase tab)
             {
                 RemoteWindowPool.Instance.DelTabWindow(tab.GetViewModel().Token);
             }
