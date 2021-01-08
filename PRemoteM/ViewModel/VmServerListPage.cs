@@ -357,7 +357,6 @@ namespace PRM.ViewModel
                                     {
                                         server.Id = 0;
                                         list.Add(server);
-                                        SystemConfig.Instance.DataSecurity.EncryptPwd(server);
                                         Server.AddOrUpdate(server, true);
                                     }
                                 }
@@ -579,7 +578,6 @@ namespace PRM.ViewModel
                                 {
                                     foreach (var serverBase in list)
                                     {
-                                        SystemConfig.Instance.DataSecurity.EncryptPwd(serverBase);
                                         Server.AddOrUpdate(serverBase, true);
                                     }
                                     GlobalData.Instance.ServerListUpdate();
