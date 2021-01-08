@@ -32,7 +32,7 @@ namespace PRM.View
             {
                 if (ProtocolHostBase != null)
                 {
-                    RemoteWindowPool.Instance.DelProtocolHost(ProtocolHostBase.ConnectionId);
+                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(ProtocolHostBase.ConnectionId);
                 }
             };
         }

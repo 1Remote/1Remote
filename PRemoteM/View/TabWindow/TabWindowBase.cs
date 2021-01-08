@@ -78,7 +78,7 @@ namespace PRM.View.TabWindow
                 if (args.DragablzItem.DataContext is TabItemViewModel tivm)
                 {
                     var pb = tivm.Content;
-                    RemoteWindowPool.Instance.DelProtocolHost(pb?.ConnectionId);
+                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId);
                 }
             };
 
