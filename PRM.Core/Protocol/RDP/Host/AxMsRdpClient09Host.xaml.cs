@@ -72,59 +72,9 @@ namespace PRM.Core.Protocol.RDP.Host
             }
         }
 
-        private void InitRdp(double width = 0, double height = 0, bool isReconn = false)
+        private void RdpInitStatic()
         {
-            if (Status != ProtocolHostStatus.NotInit)
-                return;
-
-            Status = ProtocolHostStatus.Initializing;
-
-
-            RdpDispose();
-            _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
-
-            SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
-
-            ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
-            _rdp.Dock = DockStyle.Fill;
-            _rdp.Enabled = true;
-            _rdp.BackColor = Color.Black;
-            // set call back
-            _rdp.OnRequestGoFullScreen += (sender, args) =>
-            {
-                MakeNormal2FullScreen();
-            };
-            _rdp.OnRequestLeaveFullScreen += (sender, args) =>
-            {
-                MakeFullScreen2Normal();
-            };
-            _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
-            _rdp.OnDisconnected += RdpOnDisconnected;
-            _rdp.OnConfirmClose += RdpOnConfirmClose;
-            _rdp.OnConnected += RdpOnOnConnected;
-            _rdp.OnLoginComplete += RdpOnOnLoginComplete;
-            ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
-            RdpHost.Child = _rdp;
-
-
-            SimpleLogHelper.Debug("RDP Host: init CreateControl();");
-            _rdp.CreateControl();
-
-            SimpleLogHelper.Debug("RDP Host: init server info");
-            #region server info
-            // server info
-            _rdp.Server = _rdpServer.Address;
-            _rdp.UserName = _rdpServer.UserName;
-            _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
-            var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            secured.ClearTextPassword = _rdpServer.GetDecryptedPassWord();
-            _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
-            #endregion
-
-
-            SimpleLogHelper.Debug("RDP Host: init Others");
-            #region Others
-
+            SimpleLogHelper.Debug("RDP Host: init Static");
             // enable CredSSP, will use CredSsp if the client supports.
             _rdp.AdvancedSettings7.EnableCredSspSupport = true;
             _rdp.AdvancedSettings2.EncryptionEnabled = 1;
@@ -154,18 +104,24 @@ namespace PRM.Core.Protocol.RDP.Host
             // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
             _rdp.SecuredSettings3.KeyboardHookMode = 2;
 
-            #endregion
 
+            // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
+            _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
+        }
+
+        private void RdpInitConnBar()
+        {
             SimpleLogHelper.Debug("RDP Host: init conn bar");
-            #region conn bar
             _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar;
             _rdp.AdvancedSettings6.ConnectionBarShowPinButton = true;
             _rdp.AdvancedSettings6.PinConnectionBar = false;
             _rdp.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
             _rdp.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             _rdp.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;
-            #endregion
+        }
 
+        private void RdpInitRedirect()
+        {
             SimpleLogHelper.Debug("RDP Host: init Redirect");
             #region Redirect
 
@@ -219,6 +175,10 @@ namespace PRM.Core.Protocol.RDP.Host
             }
             #endregion
 
+        }
+
+        private void RdpInitDisplay(double width = 0, double height = 0, bool isReconn = false)
+        {
             SimpleLogHelper.Debug("RDP Host: init Display");
             #region Display
 
@@ -297,10 +257,10 @@ namespace PRM.Core.Protocol.RDP.Host
             }
 
             #endregion
+        }
 
-            // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
-            _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
-
+        private void RdpInitPerformance()
+        {
             SimpleLogHelper.Debug("RDP Host: init Performance");
             #region Performance
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings-performanceflags
@@ -351,9 +311,11 @@ namespace PRM.Core.Protocol.RDP.Host
             }
             SimpleLogHelper.Debug("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
             _rdp.AdvancedSettings9.PerformanceFlags = nDisplayPerformanceFlag;
-
             #endregion
+        }
 
+        private void RdpInitGateway()
+        {
             SimpleLogHelper.Debug("RDP Host: init Gateway");
             #region Gateway
             // Specifies whether Remote Desktop Gateway (RD Gateway) is supported.
@@ -403,7 +365,64 @@ namespace PRM.Core.Protocol.RDP.Host
                 _rdp.TransportSettings2.GatewayCredSharing = 0;
             }
             #endregion
+        }
 
+        private void InitRdp(double width = 0, double height = 0, bool isReconn = false)
+        {
+            if (Status != ProtocolHostStatus.NotInit)
+                return;
+
+            Status = ProtocolHostStatus.Initializing;
+
+
+            RdpDispose();
+            _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+
+            SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
+
+            ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
+            _rdp.Dock = DockStyle.Fill;
+            _rdp.Enabled = true;
+            _rdp.BackColor = Color.Black;
+            // set call back
+            _rdp.OnRequestGoFullScreen += (sender, args) =>
+            {
+                MakeNormal2FullScreen();
+            };
+            _rdp.OnRequestLeaveFullScreen += (sender, args) =>
+            {
+                MakeFullScreen2Normal();
+            };
+            _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
+            _rdp.OnDisconnected += RdpOnDisconnected;
+            _rdp.OnConfirmClose += RdpOnConfirmClose;
+            _rdp.OnConnected += RdpOnOnConnected;
+            _rdp.OnLoginComplete += RdpOnOnLoginComplete;
+            ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
+            RdpHost.Child = _rdp;
+
+
+            SimpleLogHelper.Debug("RDP Host: init CreateControl();");
+            _rdp.CreateControl();
+
+            SimpleLogHelper.Debug("RDP Host: init server info");
+            #region server info
+            // server info
+            _rdp.Server = _rdpServer.Address;
+            _rdp.UserName = _rdpServer.UserName;
+            _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
+            var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
+            secured.ClearTextPassword = _rdpServer.GetDecryptedPassWord();
+            _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
+            #endregion
+
+
+            RdpInitStatic();
+            RdpInitConnBar();
+            RdpInitRedirect();
+            RdpInitDisplay(width, height, isReconn);
+            RdpInitPerformance();
+            RdpInitGateway();
 
             Status = ProtocolHostStatus.Initialized;
         }
@@ -469,7 +488,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
         public override bool CanResizeNow()
         {
-            return Status != ProtocolHostStatus.Connected;
+            return Status == ProtocolHostStatus.Connected;
         }
         #endregion
 

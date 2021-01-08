@@ -361,6 +361,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVersionGenerator.ps1" />
+    <Resource Include="Resources\Theme\puttyThems.json" />
     <Resource Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

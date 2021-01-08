@@ -210,7 +210,6 @@ namespace PRM.Core.Model
             QuickConnect.Save();
             DataSecurity.Save();
             Theme.Save();
-            Theme.ReloadPuttyThemes();
         }
     }
 

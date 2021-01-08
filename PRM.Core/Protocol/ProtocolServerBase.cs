@@ -321,5 +321,21 @@ namespace PRM.Core.Protocol
             }
             return false;
         }
+
+        public void RunScriptBeforConnect()
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(CommandBeforeConnected);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
     }
 }

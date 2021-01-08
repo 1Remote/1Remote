@@ -265,7 +265,7 @@ namespace PRM.ViewModel
                     {
                         if (SelectedItem != null)
                         {
-                            RemoteWindowPool.Instance.DelProtocolHost(SelectedItem?.Content?.ConnectionId);
+                            RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
                         }
                         else
                         {

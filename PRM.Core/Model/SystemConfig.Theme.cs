@@ -270,7 +270,7 @@ namespace PRM.Core.Model
 
             PuttyThemeName = _ini.GetValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             if (string.IsNullOrEmpty(PuttyThemeName))
-                PuttyThemeName = PuttyColorThemes.Get00__Default().Item1;
+                PuttyThemeName = PrmColorThemeNames.First();
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
 
 
@@ -405,7 +405,7 @@ namespace PRM.Core.Model
                 {
                     _cmdToggleServerListPageUi = new RelayCommand((o) =>
                     {
-                        var array = (EnumServerListPageUI[]) Enum.GetValues(typeof(EnumServerListPageUI));
+                        var array = (EnumServerListPageUI[])Enum.GetValues(typeof(EnumServerListPageUI));
                         for (var i = 0; i < array.Length; i++)
                         {
                             var e = array[i];
