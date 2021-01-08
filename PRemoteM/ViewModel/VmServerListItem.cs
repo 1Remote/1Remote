@@ -113,8 +113,6 @@ namespace PRM.ViewModel
                     {
                         if (!string.IsNullOrWhiteSpace(this.Server.DispName))
                         {
-                            // encrypt pwd
-                            SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
                             GlobalData.Instance.ServerListUpdate(Server);
                         }
                     }, o => (this.Server.DispName.Trim() != ""));

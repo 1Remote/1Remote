@@ -130,7 +130,6 @@ namespace PRM.ViewModel
                     _cmdSave = new RelayCommand((o) =>
                     {
                         // encrypt pwd
-                        SystemConfig.Instance.DataSecurity.EncryptPwd(Server);
                         GlobalData.Instance.ServerListUpdate(Server);
                         App.Window.Vm.DispPage = null;
                     }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));

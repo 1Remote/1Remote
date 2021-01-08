@@ -279,7 +279,6 @@ namespace PRM.Core.Model
                                 // encrypt old data
                                 foreach (var psb in protocolServerBases)
                                 {
-                                    EncryptPwd(psb.Server);
                                     OnRsaProgress(++val, max);
                                     Server.AddOrUpdate(psb.Server);
                                     OnRsaProgress(++val, max);
@@ -376,18 +375,20 @@ namespace PRM.Core.Model
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
                 {
                     var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                    Debug.Assert(rsa.DecodeOrNull(s.Password) == null);
-                    s.Password = rsa.Encode(s.Password);
+                    if (rsa.DecodeOrNull(s.Password) == null)
+                        s.Password = rsa.Encode(s.Password);
                 }
                 if (server is ProtocolServerSSH ssh
                     && !string.IsNullOrWhiteSpace(ssh.PrivateKey))
                 {
-                    ssh.PrivateKey = rsa.Encode(ssh.PrivateKey);
+                    if (rsa.DecodeOrNull(ssh.PrivateKey) == null)
+                        ssh.PrivateKey = rsa.Encode(ssh.PrivateKey);
                 }
                 if (server is ProtocolServerRDP rdp
                     && !string.IsNullOrWhiteSpace(rdp.GatewayPassword))
                 {
-                    rdp.GatewayPassword = rsa.Encode(rdp.GatewayPassword);
+                    if (rsa.DecodeOrNull(rdp.GatewayPassword) == null)
+                        rdp.GatewayPassword = rsa.Encode(rdp.GatewayPassword);
                 }
             }
         }

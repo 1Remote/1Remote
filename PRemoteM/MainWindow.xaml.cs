@@ -26,19 +26,6 @@ namespace PRM
             Title = SystemConfig.AppName;
             this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
             this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
-            WinTitleBar.MouseUp += (sender, e) =>
-            {
-                if (e.LeftButton == MouseButtonState.Released)
-                {
-                    if (this.WindowState == WindowState.Normal)
-                    {
-                        SystemConfig.Instance.Locality.MainWindowTop = this.Top;
-                        SystemConfig.Instance.Locality.MainWindowLeft = this.Left;
-                        SystemConfig.Instance.Locality.Save();
-                        Console.WriteLine($"main window Top = {this.Top}, Left = {this.Left}");
-                    }
-                }
-            };
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
@@ -58,23 +45,8 @@ namespace PRM
 
 
             // Startup Location
-            {
-                var top = SystemConfig.Instance.Locality.MainWindowTop;
-                var left = SystemConfig.Instance.Locality.MainWindowLeft;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-                if (top >= 0 && top < Screen.PrimaryScreen.Bounds.Height
-                    && left >= 0 && left < Screen.PrimaryScreen.Bounds.Width
-                )
-                {
-                    WindowStartupLocation = WindowStartupLocation.Manual;
-                    Top = top;
-                    Left = left;
-                }
-                else
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                }
-            }
 
             BtnClose.Click += (sender, args) =>
             {
