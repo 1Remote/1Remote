@@ -15,6 +15,7 @@ using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 using VncSharpWpf;
 using Color = System.Drawing.Color;
+using MessageBox = System.Windows.MessageBox;
 
 namespace PRM.Core.Protocol.VNC.Host
 {
@@ -26,6 +27,9 @@ namespace PRM.Core.Protocol.VNC.Host
         public VncHost(ProtocolServerBase protocolServer) : base(protocolServer, false)
         {
             InitializeComponent();
+            GridMessageBox.Visibility = Visibility.Collapsed;
+            GridLoading.Visibility = Visibility.Visible;
+
             Debug.Assert(protocolServer.GetType() == typeof(ProtocolServerVNC));
 
             Vnc.ConnectComplete += OnConnected;
@@ -90,11 +94,31 @@ namespace PRM.Core.Protocol.VNC.Host
             Vnc.GetPassword += () => _vncServer.GetDecryptedPassWord();
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
-            Vnc.Connect(_vncServer.Address, false, _vncServer.VncWindowResizeMode == ProtocolServerVNC.EVncWindowResizeMode.Stretch);
+            try
+            {
+                Vnc.Connect(_vncServer.Address, false, _vncServer.VncWindowResizeMode == ProtocolServerVNC.EVncWindowResizeMode.Stretch);
+                Vnc.Visibility = Visibility.Visible;
+                GridLoading.Visibility = Visibility.Collapsed;
+                GridMessageBox.Visibility = Visibility.Collapsed;
+            }
+            catch (Exception e)
+            {
+                _invokeOnClosedWhenDisconnected = false;
+                Vnc.Visibility = Visibility.Collapsed;
+                GridLoading.Visibility = Visibility.Visible;
+                GridMessageBox.Visibility = Visibility.Visible;
+
+                TbMessageTitle.Visibility = Visibility.Collapsed;
+                BtnReconn.Visibility = Visibility.Visible;
+                TbMessage.Text = e.Message;
+            }
         }
 
         public override void ReConn()
         {
+            Vnc.Visibility = Visibility.Collapsed;
+            GridLoading.Visibility = Visibility.Visible;
+            GridMessageBox.Visibility = Visibility.Collapsed;
             _invokeOnClosedWhenDisconnected = false;
             Conn();
             _invokeOnClosedWhenDisconnected = true;
@@ -126,17 +150,35 @@ namespace PRM.Core.Protocol.VNC.Host
             Status = ProtocolHostStatus.Connected;
             Vnc.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
+            GridMessageBox.Visibility = Visibility.Collapsed;
         }
 
         private bool _invokeOnClosedWhenDisconnected = true;
         private void OnConnectionLost(object sender, EventArgs e)
         {
             Status = ProtocolHostStatus.Disconnected;
+            Vnc.Visibility = Visibility.Collapsed;
+            GridLoading.Visibility = Visibility.Collapsed;
+            GridMessageBox.Visibility = Visibility.Visible;
+            TbMessageTitle.Visibility = Visibility.Collapsed;
+            BtnReconn.Visibility = Visibility.Visible;
+            TbMessage.Text = "Connection lost...";
             if (_invokeOnClosedWhenDisconnected)
                 base.OnClosed?.Invoke(base.ConnectionId);
         }
 
         #endregion
         #endregion
+
+
+        private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void BtnReconn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ReConn();
+        }
     }
 }
