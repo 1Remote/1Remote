@@ -106,7 +106,6 @@ namespace PRM.ViewModel
         public VmMain(MainWindow window)
         {
             Window = window;
-
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
                 ProgressBarValue = arg1;
@@ -147,6 +146,7 @@ namespace PRM.ViewModel
                 };
             });
 
+            ListViewPageForServerList = new ServerListPage();
             _managementPage = new ServerManagementPage();
         }
 

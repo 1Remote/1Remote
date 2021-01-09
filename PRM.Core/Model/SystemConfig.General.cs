@@ -109,7 +109,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
-            // TODO delete after 2021.03;
+            // TODO delete after 2021.04;
             SetSelfStartingHelper.SetSelfStartByShortcut(false);
 
 #if FOR_MICROSOFT_STORE_ONLY

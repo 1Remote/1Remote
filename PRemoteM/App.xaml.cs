@@ -49,255 +49,235 @@ namespace PRM
             App.Close();
         }
 
-        private void App_OnStartup(object sender, StartupEventArgs startupEvent)
+        private void InitLog(string appDateFolder)
         {
+
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
 
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             if (!Directory.Exists(appDateFolder))
                 Directory.CreateDirectory(appDateFolder);
 
             // init log file placement
-            {
-                var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
-                var fi = new FileInfo(logFilePath);
-                if (!fi.Directory.Exists)
-                    fi.Directory.Create();
-                SimpleLogHelper.LogFileName = logFilePath;
-            }
+            var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+            var fi = new FileInfo(logFilePath);
+            if (!fi.Directory.Exists)
+                fi.Directory.Create();
+            SimpleLogHelper.LogFileName = logFilePath;
+        }
 
-            // init Exception handle
+        private void InitExceptionHandle()
+        {
+            this.DispatcherUnhandledException += (o, args) =>
             {
-                this.DispatcherUnhandledException += (o, args) =>
-                {
-                    OnUnhandledException(args.Exception);
-                };
-                TaskScheduler.UnobservedTaskException += (o, args) =>
-                {
-                    OnUnhandledException(args.Exception);
-                };
-                AppDomain.CurrentDomain.UnhandledException += (o, args) =>
-                {
-
-                    if (args.ExceptionObject is Exception e)
-                    {
-                        OnUnhandledException(e);
-                    }
-                    else
-                    {
-                        SimpleLogHelper.Fatal(args.ExceptionObject);
-                    }
-                };
-            }
-
-            try
+                OnUnhandledException(args.Exception);
+            };
+            TaskScheduler.UnobservedTaskException += (o, args) =>
             {
-                // startup creation for win32
+                OnUnhandledException(args.Exception);
+            };
+            AppDomain.CurrentDomain.UnhandledException += (o, args) =>
+            {
+
+                if (args.ExceptionObject is Exception e)
+                {
+                    OnUnhandledException(e);
+                }
+                else
+                {
+                    SimpleLogHelper.Fatal(args.ExceptionObject);
+                }
+            };
+        }
+
+        private void UnSetShortcutAutoStart(StartupEventArgs startupEvent)
+        {
+            // TODO delete at 2021.04
 #if !FOR_MICROSOFT_STORE_ONLY
-                {
-                    var startupMode = Shawn.Utils.SetSelfStartingHelper.StartupMode.Normal;
-                    if (startupEvent.Args.Length > 0)
-                    {
-                        System.Enum.TryParse(startupEvent.Args[0], out startupMode);
-                    }
-                    if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.SetSelfStart)
-                    {
-                        SetSelfStartingHelper.SetSelfStartByShortcut(true);
-                        Environment.Exit(0);
-                    }
-                    if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.UnsetSelfStart)
-                    {
-                        SetSelfStartingHelper.SetSelfStartByShortcut(false);
-                        Environment.Exit(0);
-                    }
-                }
-#endif
-
-
-                // make sure only one instance
-                #region single-instance app
-                {
-                    _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
-                    if (!isFirst)
-                    {
-                        try
-                        {
-                            var client = new NamedPipeClientStream(PipeName);
-                            client.Connect();
-                            StreamReader reader = new StreamReader(client);
-                            StreamWriter writer = new StreamWriter(client);
-                            writer.WriteLine("ActivateMe");
-                            writer.Flush();
-                            client.Dispose();
-                        }
-                        catch (Exception e)
-                        {
-                            SimpleLogHelper.Warning(e);
-                        }
-
-                        Environment.Exit(0);
-                    }
-                    else
-                    {
-                        Task.Factory.StartNew(() =>
-                        {
-                            NamedPipeServerStream server = null;
-                            while (true)
-                            {
-                                server?.Dispose();
-                                server = new NamedPipeServerStream(PipeName);
-                                SimpleLogHelper.Debug("NamedPipeServerStream.WaitForConnection");
-                                server.WaitForConnection();
-
-                                try
-                                {
-                                    var reader = new StreamReader(server);
-                                    var line = reader.ReadLine();
-                                    if (!string.IsNullOrEmpty(line))
-                                    {
-                                        SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
-                                        if (line == "ActivateMe")
-                                        {
-                                            if (App.Window != null)
-                                            {
-                                                Dispatcher.Invoke(() =>
-                                                {
-                                                    if (App.Window.WindowState == WindowState.Minimized)
-                                                        App.Window.WindowState = WindowState.Normal;
-                                                    App.Window.ActivateMe();
-                                                });
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    SimpleLogHelper.Warning(e);
-                                }
-                            }
-                        });
-                    }
-                }
-                #endregion
-
-
-#if DEV
-                SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-                Shawn.Utils.ConsoleManager.Show();
-#endif
-
-                #region system check & init
-
-                bool isFirstTimeUser = false;
-                #region Init
-                {
-                    var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
-
-                    // for portable purpose
-                    if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.Ordinal) < 0)
-                        if (File.Exists(SystemConfig.AppName + ".ini")
-                            || IOPermissionHelper.HasWritePermissionOnDir("./"))
-                        {
-                            iniPath = SystemConfig.AppName + ".ini";
-                        }
-
-                    var ini = new Ini(iniPath);
-                    var language = new SystemConfigLanguage(this.Resources, ini);
-                    var general = new SystemConfigGeneral(ini);
-                    var quickConnect = new SystemConfigQuickConnect(ini);
-                    var theme = new SystemConfigTheme(this.Resources, ini);
-                    var dataSecurity = new SystemConfigDataSecurity(ini);
-
-                    // config create instance (settings & langs)
-                    SystemConfig.Init();
-                    SystemConfig.Instance.General = general;
-                    SystemConfig.Instance.Language = language;
-                    SystemConfig.Instance.QuickConnect = quickConnect;
-                    SystemConfig.Instance.DataSecurity = dataSecurity;
-                    SystemConfig.Instance.Theme = theme;
-
-
-
-
-                    // if ini is not existed, then it would be a new user, open guide to set db path
-                    if (!File.Exists(iniPath))
-                    {
-                        isFirstTimeUser = true;
-                        ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                        var gw = new GuidanceWindow(SystemConfig.Instance);
-                        gw.ShowDialog();
-                    }
-
-
-                    // server data holder init.
-                    GlobalData.Init();
-
-                    // remote window pool init.
-                    RemoteWindowPool.Init();
-                }
-                #endregion
-
-                // kill putty process
-                foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
-                {
-                    try
-                    {
-                        process.Kill();
-                    }
-                    catch
-                    {
-                    }
-                }
-
-
-
-                #endregion
-
-                #region app start
-                // main window init
-                {
-                    ShutdownMode = ShutdownMode.OnMainWindowClose;
-                    MainWindow = Window;
-
-                    Window = new MainWindow();
-                    var page = new ServerListPage();
-                    Window.Vm.ListViewPageForServerList = page;
-                    if (!SystemConfig.Instance.General.AppStartMinimized
-                        || isFirstTimeUser)
-                    {
-                        ActivateWindow();
-                    }
-
-                    // check if Db is ok
-                    var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-                    if (!res.Item1)
-                    {
-                        SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErrorFlag'.");
-                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                        ActivateWindow();
-                        Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
-                    }
-                    else
-                    {
-                        // load data
-                        GlobalData.Instance.ServerListUpdate();
-                    }
-                }
-
-
-                // task tray init
-                InitTaskTray();
-
-
-                // quick search launcher init 
-                InitQuickSearch();
-                #endregion
-            }
-            catch (Exception ex)
             {
-                OnUnhandledException(ex);
+                var startupMode = Shawn.Utils.SetSelfStartingHelper.StartupMode.Normal;
+                if (startupEvent.Args.Length > 0)
+                {
+                    System.Enum.TryParse(startupEvent.Args[0], out startupMode);
+                }
+                if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.SetSelfStart)
+                {
+                    SetSelfStartingHelper.SetSelfStartByShortcut(true);
+                    Environment.Exit(0);
+                }
+                if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.UnsetSelfStart)
+                {
+                    SetSelfStartingHelper.SetSelfStartByShortcut(false);
+                    Environment.Exit(0);
+                }
             }
+#endif
+        }
+
+        private void OnlyOneAppInstanceCheck()
+        {
+            _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
+            if (!isFirst)
+            {
+                try
+                {
+                    var client = new NamedPipeClientStream(PipeName);
+                    client.Connect();
+                    var writer = new StreamWriter(client);
+                    writer.WriteLine("ActivateMe");
+                    writer.Flush();
+                    client.Dispose();
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Warning(e);
+                }
+
+                Environment.Exit(0);
+                return;
+            }
+
+
+            // open NamedPipeServerStream
+            Task.Factory.StartNew(() =>
+            {
+                NamedPipeServerStream server = null;
+                while (true)
+                {
+                    server?.Dispose();
+                    server = new NamedPipeServerStream(PipeName);
+                    server.WaitForConnection();
+                    var reader = new StreamReader(server);
+                    var line = reader.ReadLine();
+                    if (string.IsNullOrEmpty(line)) return;
+                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
+                    if (line != "ActivateMe") return;
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (App.Window?.WindowState == WindowState.Minimized)
+                            App.Window.WindowState = WindowState.Normal;
+                        App.Window?.ActivateMe();
+                    });
+                }
+            });
+        }
+
+        private bool InitSystemConfig(string appDateFolder)
+        {
+            bool isNewUser = false;
+
+            var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
+
+            // for portable purpose
+            if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.Ordinal) < 0)
+                if (File.Exists(SystemConfig.AppName + ".ini")
+                    || IOPermissionHelper.HasWritePermissionOnDir("./"))
+                {
+                    iniPath = SystemConfig.AppName + ".ini";
+                }
+
+            var ini = new Ini(iniPath);
+            var language = new SystemConfigLanguage(this.Resources, ini);
+            var general = new SystemConfigGeneral(ini);
+            var quickConnect = new SystemConfigQuickConnect(ini);
+            var theme = new SystemConfigTheme(this.Resources, ini);
+            var dataSecurity = new SystemConfigDataSecurity(ini);
+
+            // config create instance (settings & langs)
+            SystemConfig.Init();
+            SystemConfig.Instance.General = general;
+            SystemConfig.Instance.Language = language;
+            SystemConfig.Instance.QuickConnect = quickConnect;
+            SystemConfig.Instance.DataSecurity = dataSecurity;
+            SystemConfig.Instance.Theme = theme;
+
+
+
+
+            // if ini is not existed, then it would be a new user
+            if (!File.Exists(iniPath))
+            {
+                isNewUser = true;
+            }
+
+
+            // server data holder init.
+            GlobalData.Init();
+
+            // remote window pool init.
+            RemoteWindowPool.Init();
+
+            return isNewUser;
+        }
+
+        private void InitMainWindow(bool isNewUser)
+        {
+            Window = new MainWindow();
+            if (!SystemConfig.Instance.General.AppStartMinimized
+                || isNewUser)
+            {
+                ActivateWindow();
+            }
+        }
+
+        private void App_OnStartup(object sender, StartupEventArgs startupEvent)
+        {
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+#if DEV
+            SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+            Shawn.Utils.ConsoleManager.Show();
+#endif
+            InitLog(appDateFolder);
+            InitExceptionHandle();
+            UnSetShortcutAutoStart(startupEvent);
+            OnlyOneAppInstanceCheck();
+
+
+#if !DEBUG
+            // kill putty process
+            foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
+            {
+                try
+                {
+                    process.Kill();
+                }
+                catch
+                {
+                }
+            }
+#endif
+
+            bool isNewUser = InitSystemConfig(appDateFolder);
+            if (isNewUser)
+            {
+                ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                var gw = new GuidanceWindow(SystemConfig.Instance);
+                gw.ShowDialog();
+            }
+
+
+            InitMainWindow(isNewUser);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            MainWindow = Window;
+
+            // check if Db is ok
+            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
+            if (!res.Item1)
+            {
+                SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErrorFlag'.");
+                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                ActivateWindow();
+                Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
+            }
+            else
+            {
+                // load data
+                GlobalData.Instance.ServerListUpdate();
+            }
+
+
+            InitTaskTray();
+            InitLauncher();
         }
 
         private static void ActivateWindow()
@@ -307,58 +287,54 @@ namespace PRM
 
         private static void InitTaskTray()
         {
-            if (TaskTrayIcon == null)
+            if (TaskTrayIcon != null) return;
+            Debug.Assert(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico"))?.Stream != null);
+            TaskTrayIcon = new System.Windows.Forms.NotifyIcon
             {
-                Debug.Assert(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico"))?.Stream != null);
-                TaskTrayIcon = new System.Windows.Forms.NotifyIcon
+                Text = SystemConfig.AppName,
+                Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico")).Stream),
+                BalloonTipText = "",
+                Visible = true
+            };
+            ReloadTaskTrayContextMenu();
+            GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
+            TaskTrayIcon.MouseDoubleClick += (sender, e) =>
+            {
+                if (e.Button == System.Windows.Forms.MouseButtons.Left)
                 {
-                    Text = SystemConfig.AppName,
-                    Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico")).Stream),
-                    BalloonTipText = "",
-                    Visible = true
-                };
-                ReloadTaskTrayContextMenu();
-                GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
-                TaskTrayIcon.MouseDoubleClick += (sender, e) =>
-                {
-                    if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                    {
-                        ActivateWindow();
-                    }
-                };
-            }
+                    ActivateWindow();
+                }
+            };
         }
 
         public static void ReloadTaskTrayContextMenu()
         {
             // rebuild TaskTrayContextMenu while language changed
-            if (TaskTrayIcon != null)
+            if (TaskTrayIcon == null) return;
+
+            var title = new System.Windows.Forms.MenuItem(SystemConfig.AppName);
+            title.Click += (sender, args) =>
             {
-                var title = new System.Windows.Forms.MenuItem(SystemConfig.AppName);
-                title.Click += (sender, args) =>
-                {
-                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
-                };
-                var @break = new System.Windows.Forms.MenuItem("-");
-                var link_how_to_use = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_how_to_use"));
-                link_how_to_use.Click += (sender, args) =>
-                {
-                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
-                };
-                var link_feedback = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_feedback"));
-                link_feedback.Click += (sender, args) =>
-                {
-                    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
-                };
-                var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("word_exit"));
-                exit.Click += (sender, args) => App.Close();
-                var child = new System.Windows.Forms.MenuItem[] { title, @break, link_how_to_use, link_feedback, exit };
-                //var child = new System.Windows.Forms.MenuItem[] { exit };
-                TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
-            }
+                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+            };
+            var @break = new System.Windows.Forms.MenuItem("-");
+            var linkHowToUse = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_how_to_use"));
+            linkHowToUse.Click += (sender, args) =>
+            {
+                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
+            };
+            var linkFeedback = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_feedback"));
+            linkFeedback.Click += (sender, args) =>
+            {
+                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
+            };
+            var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("word_exit"));
+            exit.Click += (sender, args) => App.Close();
+            var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
+            TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
         }
 
-        private static void InitQuickSearch()
+        private static void InitLauncher()
         {
             SearchBoxWindow = new SearchBoxWindow();
             SearchBoxWindow.SetHotKey();
@@ -368,33 +344,24 @@ namespace PRM
         {
             try
             {
-                if (App.Window != null)
-                {
-                    App.Window.Hide();
-                    App.Window.Close();
-                    App.Window = null;
-                }
-
-                if (App.SearchBoxWindow != null)
-                {
-                    App.SearchBoxWindow.Hide();
-                    App.SearchBoxWindow.Close();
-                    App.SearchBoxWindow = null;
-                }
+                App.Window?.Hide();
+                App.Window?.Close();
+                App.Window = null;
+                App.SearchBoxWindow?.Hide();
+                App.SearchBoxWindow?.Close();
+                App.SearchBoxWindow = null;
 
                 if (App.TaskTrayIcon != null)
                 {
                     App.TaskTrayIcon.Visible = false;
                     App.TaskTrayIcon.Dispose();
                 }
-
                 RemoteWindowPool.Instance.Release();
             }
             finally
             {
                 Environment.Exit(exitCode);
             }
-
         }
     }
 }
