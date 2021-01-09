@@ -41,6 +41,11 @@ namespace PRM.Core.Protocol
             }
         }
 
+        protected override string GetSubTitle()
+        {
+            return $"@{Address}:{Port}";
+        }
+
         #endregion
     }
 }

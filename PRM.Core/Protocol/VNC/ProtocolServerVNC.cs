@@ -41,14 +41,9 @@ namespace PRM.Core.Protocol.VNC
             }
         }
 
-        public override int GetListOrder()
+        public override double GetListOrder()
         {
             return 2;
-        }
-
-        protected override string GetSubTitle()
-        {
-            return $"@{Address}:{Port}";
         }
     }
 }

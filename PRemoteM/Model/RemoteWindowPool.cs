@@ -151,11 +151,58 @@ namespace PRM.Model
             });
             t.Start();
         }
+
+
+        private void ConnectRdpApp(ProtocolServerRDPApp rdpApp)
+        {
+            var tmp = Path.GetTempPath();
+            var rdpFileName = $"{rdpApp.DispName}_{rdpApp.Port}_{rdpApp.UserName}";
+            var invalid = new string(Path.GetInvalidFileNameChars()) +
+                          new string(Path.GetInvalidPathChars());
+            rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
+            var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
+
+            // write a .rdp file for mstsc.exe
+            File.WriteAllText(rdpFile, rdpApp.ToRdpConfig().ToString());
+            var p = new Process
+            {
+                StartInfo =
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+            p.Start();
+            p.StandardInput.WriteLine($"mstsc \"" + rdpFile + "\"");
+            p.StandardInput.WriteLine("exit");
+
+            // delete tmp rdp file, ETA 10s
+            var t = new Task(() =>
+            {
+                try
+                {
+                    Thread.Sleep(1000 * 10);
+                    if (File.Exists(rdpFile))
+                        File.Delete(rdpFile);
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Error(e, e.StackTrace);
+                }
+            });
+            t.Start();
+        }
+
+
         private void ConnectWithFullScreen(VmProtocolServer vmProtocolServer)
         {
             // check if screens are in different scale factors
             int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-
+            
             // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
             if (Screen.AllScreens.Length > 1
                 && vmProtocolServer.Server is ProtocolServerRDP rdp
@@ -209,6 +256,12 @@ namespace PRM.Model
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
             Server.AddOrUpdate(vmProtocolServer.Server);
+
+            if (vmProtocolServer.Server is ProtocolServerRDPApp rdpApp)
+            {
+                ConnectRdpApp(rdpApp);
+                return;
+            }
 
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
             if (ActivateOrReConnIfServerSessionIsOpened(vmProtocolServer))
