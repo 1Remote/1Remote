@@ -454,8 +454,9 @@ namespace PRM.Core.Protocol.RDP.Host
 
             double width = _rdp.DesktopWidth;
             double height = _rdp.Height;
-            GridLoading.Visibility = Visibility.Visible;
             RdpHost.Visibility = Visibility.Collapsed;
+            GridLoading.Visibility = Visibility.Visible;
+            GridMessageBox.Visibility = Visibility.Collapsed;
             _invokeOnClosedWhenDisconnected = false;
             RdpDispose();
 
