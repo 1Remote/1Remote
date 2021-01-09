@@ -68,6 +68,7 @@ namespace PRM
 
         private void InitExceptionHandle()
         {
+#if !DEV
             this.DispatcherUnhandledException += (o, args) =>
             {
                 OnUnhandledException(args.Exception);
@@ -88,6 +89,7 @@ namespace PRM
                     SimpleLogHelper.Fatal(args.ExceptionObject);
                 }
             };
+#endif
         }
 
         private void UnSetShortcutAutoStart(StartupEventArgs startupEvent)

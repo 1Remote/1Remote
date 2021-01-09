@@ -286,11 +286,12 @@ namespace PRM.Core.Protocol
         /// <returns></returns>
         protected abstract string GetSubTitle();
 
+
         /// <summary>
         /// determine the display order to show items
         /// </summary>
         /// <returns></returns>
-        public abstract int GetListOrder();
+        public abstract double GetListOrder();
 
         /// <summary>
         /// cation: it is a shallow

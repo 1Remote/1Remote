@@ -10,10 +10,14 @@ using System.Text;
 namespace RdpHelper
 {
     /// <summary>
-    /// REF: https://www.donkz.nl/overview-rdp-file-settings/
+    /// REF:
+    /// https://www.donkz.nl/overview-rdp-file-settings/
+    /// https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/rdp-files
     /// </summary>
     public sealed class RdpConfig
     {
+        [RdpConfName("span monitors:i:")]
+        public int SpanMonitors { get; set; } = 1;
         [RdpConfName("screen mode id:i:")]
         public int ScreenModeId { get; set; } = 2;
         [RdpConfName("use multimon:i:")]
@@ -89,6 +93,13 @@ namespace RdpHelper
 
         [RdpConfName("autoreconnection enabled:i:")]
         public int AutoReconnectionEnabled { get; set; } = 1;
+        /// <summary>
+        /// Defines the server authentication level settings.
+        /// - 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
+        /// - 1: If server authentication fails, don't establish a connection (Don't connect)
+        /// - 2: If server authentication fails, show a warning and allow me to connect or refuse the connection(Warn me)
+        /// - 3: No authentication requirement specified.
+        /// </summary>
         [RdpConfName("authentication level:i:")]
         public int AuthenticationLevel { get; set; } = 2;
         [RdpConfName("prompt for credentials:i:")]
@@ -97,16 +108,49 @@ namespace RdpHelper
         public int NegotiateSecurityLayer { get; set; } = 1;
         [RdpConfName("remoteapplicationmode:i:")]
         public int RemoteApplicationMode { get; set; } = 0;
+        /// <summary>
+        /// Specifies the name of the RemoteApp in the client interface while starting the RemoteApp.App display name. For example, "Excel 2016."
+        /// </summary>
+        [RdpConfName("remoteapplicationname:s:")]
+        public string RemoteApplicationName { get; set; } = "";
+        /// <summary>
+        /// Specifies the alias or executable name of the RemoteApp. Valid alias or name. For example, "EXCEL."
+        /// </summary>
+        [RdpConfName("remoteapplicationprogram:s:")]
+        public string RemoteApplicationProgram { get; set; } = "";
         [RdpConfName("alternate shell:s:")]
         public string AlternateShell { get; set; } = "";
         [RdpConfName("shell working directory:s:")]
         public string ShellWorkingDirectory { get; set; } = "";
         [RdpConfName("gatewayhostname:s:")]
         public string GatewayHostname { get; set; } = "";
+        /// <summary>
+        /// Specifies when to use an RD Gateway for the connection.
+        /// - 0: Don't use an RD Gateway
+        /// - 1: Always use an RD Gateway
+        /// - 2: Use an RD Gateway if a direct connection cannot be made to the RD Session Host
+        /// - 3: Use the default RD Gateway settings
+        /// - 4: Don't use an RD Gateway, bypass gateway for local addresses
+        /// Setting this property value to 0 or 4 are effectively equivalent, but setting this property to 4 enables the option to bypass local addresses.
+        /// </summary>
         [RdpConfName("gatewayusagemethod:i:")]
         public int GatewayUsageMethod { get; set; } = 4;
+        /// <summary>
+        /// Specifies the RD Gateway authentication method.
+        /// - 0: Ask for password (NTLM)
+        /// - 1: Use smart card
+        /// - 2: Use the credentials for the currently logged on user.
+        /// - 3: Prompt the user for their credentials and use basic authentication
+        /// - 4: Allow user to select later
+        /// - 5: Use cookie-based authentication
+        /// </summary>
         [RdpConfName("gatewaycredentialssource:i:")]
         public int GatewayCredentialsSource { get; set; } = 4;
+        /// <summary>
+        /// Specifies whether to use default RD Gateway settings.
+        /// - 0: Use the default profile mode, as specified by the administrator
+        /// - 1: Use explicit settings, as specified by the user
+        /// </summary>
         [RdpConfName("gatewayprofileusagemethod:i:")]
         public int GatewayProfileUsageMethod { get; set; } = 0;
         [RdpConfName("promptcredentialonce:i:")]

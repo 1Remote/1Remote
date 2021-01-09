@@ -156,6 +156,10 @@
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
+    <Compile Include="Protocol\RDP\ProtocolServerRDPApp.cs" />
+    <Compile Include="Protocol\RDP\ProtocolServerRDPAppForm.xaml.cs">
+      <DependentUpon>ProtocolServerRDPAppForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocol\ServerIcons.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
@@ -401,6 +405,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\RDP\ProtocolServerRDPAppForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -30,7 +30,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
             }
         }
 
-        public override int GetListOrder()
+        public override double GetListOrder()
         {
             return 3;
         }
@@ -39,11 +39,6 @@ namespace PRM.Core.Protocol.Putty.Telnet
         public string GetPuttyConnString()
         {
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
-        }
-
-        protected override string GetSubTitle()
-        {
-            return $"@{Address}:{Port}";
         }
 
         [JsonIgnore]
