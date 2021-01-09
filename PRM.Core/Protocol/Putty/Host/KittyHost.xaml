@@ -7,7 +7,7 @@
                            mc:Ignorable="d"
                            d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid Name="GridBg">
+    <Grid Name="GridBg" Background="Black">
         <Grid Margin="8 0 8 1">
             <WindowsFormsHost x:Name="FormsHost" Background="{x:Null}"/>
         </Grid>

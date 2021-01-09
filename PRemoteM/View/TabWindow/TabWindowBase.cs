@@ -22,6 +22,7 @@ namespace PRM.View.TabWindow
         protected VmTabWindow Vm;
         private HwndSource _source = null;
         private TabablzControl _tabablzControl = null;
+        public string Token => Vm?.Token;
 
         protected TabWindowBase(string token)
         {
@@ -160,16 +161,19 @@ namespace PRM.View.TabWindow
 
 
 
-
-
-        public Window GetWindow()
-        {
-            return this;
-        }
-
         public VmTabWindow GetViewModel()
         {
             return Vm;
+        }
+        public void AddItem(TabItemViewModel newItem)
+        {
+            if (Vm.Items.Any(x => x.Content.ConnectionId == newItem.Content.ConnectionId))
+            {
+                Vm.SelectedItem = Vm.Items.First(x => x.Content.ConnectionId == newItem.Content.ConnectionId);
+                return;
+            }
+            Vm.Items.Add(newItem);
+            Vm.SelectedItem = Vm.Items.Last();
         }
 
         public Size GetTabContentSize()

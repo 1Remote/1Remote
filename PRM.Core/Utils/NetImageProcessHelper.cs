@@ -81,12 +81,10 @@ namespace Shawn.Utils
 
         public static void SaveTo(this BitmapSource source, string path)
         {
-            using (var fileStream = new FileStream(path, FileMode.Create))
-            {
-                BitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(source));
-                encoder.Save(fileStream);
-            }
+            using var fileStream = new FileStream(path, FileMode.Create);
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(source));
+            encoder.Save(fileStream);
         }
 
 
@@ -109,13 +107,11 @@ namespace Shawn.Utils
         }
         public static Bitmap ToBitmap(this System.Drawing.Image image)
         {
-            using (var ms = new MemoryStream())
-            {
-                image.Save(ms, ImageFormat.Png);
-                ms.Seek(0, SeekOrigin.Begin);
-                var bitmapImage = new Bitmap(ms);
-                return bitmapImage;
-            }
+            using var ms = new MemoryStream();
+            image.Save(ms, ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
+            var bitmapImage = new Bitmap(ms);
+            return bitmapImage;
         }
 
         public static Bitmap BitmapFromBytes(byte[] bytes)
@@ -131,20 +127,16 @@ namespace Shawn.Utils
 
         public static byte[] ToBytes(this Image img)
         {
-            using (var ms = new MemoryStream())
-            {
-                img.Save(ms, img.RawFormat);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            img.Save(ms, img.RawFormat);
+            return ms.ToArray();
         }
         public static byte[] ToBytes(this Bitmap bitmap)
         {
-            using (var ms = new MemoryStream())
-            {
-                bitmap.Save(ms, ImageFormat.Png);
-                byte[] byteImage = ms.ToArray();
-                return byteImage;
-            }
+            using var ms = new MemoryStream();
+            bitmap.Save(ms, ImageFormat.Png);
+            byte[] byteImage = ms.ToArray();
+            return byteImage;
         }
         public static byte[] ToBytes<T>(this T source) where T : BitmapSource
         {
@@ -170,37 +162,33 @@ namespace Shawn.Utils
             if (src == null)
                 return null;
 
-            using (var ms = new MemoryStream())
-            {
-                src.Save(ms, ImageFormat.Png);
-                ms.Seek(0, SeekOrigin.Begin);
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
-                // Force the bitmap to load right now so we can dispose the stream.
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-                return bitmapImage;
-            }
+            using var ms = new MemoryStream();
+            src.Save(ms, ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
+            // Force the bitmap to load right now so we can dispose the stream.
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = ms;
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
+            return bitmapImage;
         }
 
         public static BitmapImage ToBitmapImage(this System.Drawing.Image image)
         {
-            using (var ms = new MemoryStream())
-            {
-                image.Save(ms, ImageFormat.Png);
-                ms.Seek(0, SeekOrigin.Begin);
+            using var ms = new MemoryStream();
+            image.Save(ms, ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
 
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-                return bitmapImage;
-            }
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = ms;
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
+            return bitmapImage;
         }
 
         public static BitmapImage ToBitmapImage<T>(this BitmapSource bitmapSource) where T : BitmapEncoder, new()
@@ -212,17 +200,15 @@ namespace Shawn.Utils
             bool isCreated;
             try
             {
-                using (var ms = new MemoryStream())
-                {
-                    encoder.Save(ms);
-                    ms.Position = 0;
+                using var ms = new MemoryStream();
+                encoder.Save(ms);
+                ms.Position = 0;
 
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = ms;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    isCreated = true;
-                }
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = ms;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                isCreated = true;
             }
             catch
             {
@@ -330,22 +316,18 @@ namespace Shawn.Utils
 
         public static Image ImageFromBytes(byte[] byteArrayIn)
         {
-            using (MemoryStream mStream = new MemoryStream(byteArrayIn))
-            {
-                return Image.FromStream(mStream);
-            }
+            using var mStream = new MemoryStream(byteArrayIn);
+            return Image.FromStream(mStream);
         }
         public static Image ToImage(this Bitmap src)
         {
             if (src == null)
                 return null;
 
-            using (var ms = new MemoryStream())
-            {
-                src.Save(ms, ImageFormat.Png); // 坑点：格式选Bmp时，不带透明度
-                ms.Seek(0, SeekOrigin.Begin);
-                return Image.FromStream(ms);
-            }
+            using var ms = new MemoryStream();
+            src.Save(ms, ImageFormat.Png); // 坑点：格式选Bmp时，不带透明度
+            ms.Seek(0, SeekOrigin.Begin);
+            return Image.FromStream(ms);
         }
         public static Image ToImage<T>(this BitmapSource bitmapSource) where T : BitmapEncoder, new()
         {
@@ -354,12 +336,10 @@ namespace Shawn.Utils
             encoder.Frames.Add(frame);
             try
             {
-                using (var ms = new MemoryStream())
-                {
-                    encoder.Save(ms);
-                    ms.Seek(0, SeekOrigin.Begin);
-                    return Image.FromStream(ms);
-                }
+                using var ms = new MemoryStream();
+                encoder.Save(ms);
+                ms.Seek(0, SeekOrigin.Begin);
+                return Image.FromStream(ms);
             }
             catch
             {
@@ -401,10 +381,8 @@ namespace Shawn.Utils
             encoder.Frames.Add(frame);
             try
             {
-                using (var fs = new FileStream(fileName, FileMode.Create))
-                {
-                    encoder.Save(fs);
-                }
+                using var fs = new FileStream(fileName, FileMode.Create);
+                encoder.Save(fs);
             }
             catch (Exception)
             {
@@ -423,14 +401,12 @@ namespace Shawn.Utils
             if (image == null)
                 return null;
             Bitmap dstBitmap = null;
-            using (var mStream = new MemoryStream())
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(mStream, image);
-                mStream.Seek(0, SeekOrigin.Begin);
-                dstBitmap = (Bitmap)bf.Deserialize(mStream);
-                mStream.Close();
-            }
+            using var mStream = new MemoryStream();
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(mStream, image);
+            mStream.Seek(0, SeekOrigin.Begin);
+            dstBitmap = (Bitmap)bf.Deserialize(mStream);
+            mStream.Close();
 
             return dstBitmap;
         }
