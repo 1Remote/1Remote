@@ -83,7 +83,14 @@ namespace PRM.Core.Model
                 var tmp = new ObservableCollection<VmProtocolServer>();
                 foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
                 {
-                    tmp.Add(new VmProtocolServer(serverAbstract));
+                    try
+                    {
+                        tmp.Add(new VmProtocolServer(serverAbstract));
+                    }
+                    catch (Exception e)
+                    {
+                        // ignored
+                    }
                 }
                 VmItemList = tmp;
             }

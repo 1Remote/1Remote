@@ -214,7 +214,7 @@ height=21
 [KiTTY]
 adb=yes
 ; antiidle: character string regularly sent to maintain the connection alive
-antiidle== \k08\
+antiidle=\k08\
 ; antiidledelay: time delay between two sending
 antiidledelay=60
 ; autoreconnect: enable/disable the automatic reconnection feature
