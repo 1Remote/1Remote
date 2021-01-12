@@ -164,9 +164,9 @@ namespace PRM.View
                                 && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
+                                HideMe();
                                 _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
                             }
-                            HideMe();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count - 1)
@@ -340,12 +340,12 @@ namespace PRM.View
 
         private void OpenSessionAndHide()
         {
+            HideMe();
             if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
             {
                 var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
                 GlobalEventHelper.OnRequireServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
             }
-            HideMe();
         }
 
         private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)

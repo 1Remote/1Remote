@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
@@ -17,7 +18,7 @@ using Shawn.Utils.DragablzTab;
 
 namespace PRM.View.TabWindow
 {
-    public abstract class TabWindowBase: WindowChromeBase
+    public abstract class TabWindowBase: WindowChromeBase, ITab
     {
         protected VmTabWindow Vm;
         private HwndSource _source = null;
@@ -165,6 +166,7 @@ namespace PRM.View.TabWindow
         {
             return Vm;
         }
+
         public void AddItem(TabItemViewModel newItem)
         {
             if (Vm.Items.Any(x => x.Content.ConnectionId == newItem.Content.ConnectionId))

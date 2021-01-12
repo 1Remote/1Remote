@@ -100,7 +100,7 @@
   "system_options_data_security_rsa_decrypt": "Decrypt",
   "system_options_data_security_rsa_public_key": "Public key",
   "system_options_data_security_rsa_private_key_path": "Private key path",
-  "system_options_data_security_export_dialog_title": "Caution: your data will be decrypted",
+  "system_options_data_security_export_dialog_title": "Caution: your data will be saved decrypted",
   "system_options_data_security_info_data_processing": "Data processing, do not close app.",
   "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
   "system_options_data_security_info_clear_rsa": "Would you like to clear RSA encryption?",
@@ -159,6 +159,7 @@
   "server_editor_icon": "Logo",
   "server_editor_color_mark": "Color",
   "server_editor_cmd_before_connected": "Before cmd",
+  "server_editor_cmd_before_connected_tag": "run by cmd.exe(e.g. 'C:\\openVpn.bat' will run 'cmd.exe C:\\openVpn.bat')",
   // server editor - connection group items
   "server_editor_connection_address": "Address",
   "server_editor_connection_port": "Port",
@@ -207,7 +208,11 @@
   "server_editor_gateway_logon_method_psw": "Password",
   "server_editor_gateway_logon_method_smart_card": "Smart Card",
   "server_editor_gateway_bypass_gateway_for_loacl_address": "Bypass RD Gateway server for local address",
-
+  // server editor - RD-App group items
+  "server_editor_remote_app_name": "App Name",
+  "server_editor_remote_app_name_tag": "name of app(e.g. hello)",
+  "server_editor_remote_app_fullname": "App Path",
+  "server_editor_remote_app_fullname_tag": "full exe path on Server(e.g. C:\\Apps\\hello.exe)",
 
 
 

@@ -24,10 +24,9 @@ namespace PRM.Core.Protocol.RDP.Host
         private readonly ProtocolServerRDP _rdpServer = null;
         private uint _primaryScaleFactor = 100;
 
-        //private bool _isDisconned = false;
-        //private bool _isConnecting = false;
         private bool _flagHasConnected = false;
-
+        private bool _isLastTimeFullScreen = false;
+         
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
 
@@ -41,6 +40,9 @@ namespace PRM.Core.Protocol.RDP.Host
             if (protocolServer is ProtocolServerRDP rdp)
             {
                 _rdpServer = rdp;
+                _isLastTimeFullScreen = _rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                                        || _rdpServer.IsConnWithFullScreen
+                                        || (_rdpServer.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false);
                 InitRdp(width, height);
                 GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
             }
@@ -226,7 +228,6 @@ namespace PRM.Core.Protocol.RDP.Host
                 }
 
 
-
             switch (_rdpServer.RdpFullScreenFlag)
             {
                 case ERdpFullScreenFlag.Disable:
@@ -234,7 +235,7 @@ namespace PRM.Core.Protocol.RDP.Host
                     break;
                 case ERdpFullScreenFlag.EnableFullScreen:
                     base.CanFullScreen = true;
-                    if (_rdpServer.IsConnWithFullScreen || (_rdpServer.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false))
+                    if (_isLastTimeFullScreen)
                     {
                         var screenSize = GetScreenSize();
                         _rdp.DesktopWidth = (int)(screenSize.Width);
@@ -244,6 +245,7 @@ namespace PRM.Core.Protocol.RDP.Host
                     break;
                 case ERdpFullScreenFlag.EnableFullAllScreens:
                     base.CanFullScreen = true;
+                    // every time reconnect, EnableFullAllScreens will go to full screen.
                     if (Screen.AllScreens.Length == 1)
                     {
                         var screenSize = GetScreenSize();
@@ -452,7 +454,7 @@ namespace PRM.Core.Protocol.RDP.Host
             }
             Status = ProtocolHostStatus.WaitingForReconnect;
 
-            double width = _rdp.DesktopWidth;
+            double width = _rdp.Width;
             double height = _rdp.Height;
             RdpHost.Visibility = Visibility.Collapsed;
             GridLoading.Visibility = Visibility.Visible;
@@ -504,6 +506,10 @@ namespace PRM.Core.Protocol.RDP.Host
         private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
+            if(_rdp == null)
+                return;
+
+            _isLastTimeFullScreen = _rdp.FullScreen;
 
             Status = ProtocolHostStatus.Disconnected;
             ResizeEndStopFireDelegate();
@@ -511,7 +517,7 @@ namespace PRM.Core.Protocol.RDP.Host
                 this._onResizeEnd -= ReSizeRdp;
 
             const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
-            string reason = _rdp.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
+            string reason = _rdp?.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
                 SimpleLogHelper.Warning($"RDP({_rdpServer.DispName}) exit with error code {e.discReason}({reason})");
 
@@ -519,17 +525,17 @@ namespace PRM.Core.Protocol.RDP.Host
             // https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
 
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
-                && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
-                && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
-                && reason != "")
+                && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
+                && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
+                && !string.IsNullOrWhiteSpace(reason))
             {
                 BtnReconn.Visibility = Visibility.Collapsed;
                 RdpHost.Visibility = Visibility.Collapsed;
                 GridMessageBox.Visibility = Visibility.Visible;
                 if (_flagHasConnected == true
-                    && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
-                    && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
-                    && _rdp.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser
+                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
+                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
+                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser
                     && _retryCount < MaxRetryCount)
                 {
                     ++_retryCount;
@@ -578,7 +584,8 @@ namespace PRM.Core.Protocol.RDP.Host
             ResizeEndStartFireDelegate();
             if (this._onResizeEnd == null)
                 this._onResizeEnd += ReSizeRdp;
-            base.OnCanResizeNowChanged?.Invoke();
+
+            ReSizeRdp();
         }
 
         private void RdpOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
@@ -608,8 +615,7 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             try
             {
-                //_rdp.Reconnect(nw, nh);
-                Console.WriteLine($@"RDP resize:W ={w},  H = {h}");
+                Console.WriteLine($@"RDP resize: W = {w}, H = {h}");
                 var p = _primaryScaleFactor;
                 ReadScaleFactor();
                 if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || p != _primaryScaleFactor)
@@ -629,7 +635,16 @@ namespace PRM.Core.Protocol.RDP.Host
         private double _normalLeft = 0;
         private void MakeNormal2FullScreen(bool saveSize = true)
         {
+            // TODO makesure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
+            if (ParentWindow is ITab iTab)
+            {
+                // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case. 
+                _rdp.FullScreen = false;
+                _isLastTimeFullScreen = false;
+                return;
+            }
+
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
 
             var screenSize = GetScreenSize();
@@ -644,17 +659,17 @@ namespace PRM.Core.Protocol.RDP.Host
             ParentWindow.WindowState = WindowState.Normal;
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
-            //ParentWindow.WindowState = WindowState.Maximized;
 
             ParentWindow.Width = screenSize.Width / (_primaryScaleFactor / 100.0);
             ParentWindow.Height = screenSize.Height / (_primaryScaleFactor / 100.0);
             ParentWindow.Left = screenSize.Left / (_primaryScaleFactor / 100.0);
             ParentWindow.Top = screenSize.Top / (_primaryScaleFactor / 100.0);
+            // WARNING!: EnableFullAllScreens do not need to SetRdpResolution
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
             }
-            //ParentWindow.Topmost = true;
+            _isLastTimeFullScreen = true;
         }
 
 
@@ -680,7 +695,14 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void MakeFullScreen2Normal()
         {
+            // TODO makesure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
+            if (ParentWindow is ITab)
+            {
+                _isLastTimeFullScreen = false;
+                return;
+            }
+
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             //ParentWindow.Topmost = false;
             ParentWindow.ResizeMode = ResizeMode.CanResize;
@@ -691,6 +713,7 @@ namespace PRM.Core.Protocol.RDP.Host
             ParentWindow.Top = _normalTop;
             ParentWindow.Left = _normalLeft;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
+            _isLastTimeFullScreen = false;
         }
         private void MakeForm2Minimize()
         {

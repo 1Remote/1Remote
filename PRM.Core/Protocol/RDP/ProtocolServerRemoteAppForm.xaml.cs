@@ -12,13 +12,13 @@ using PRM.Core.Model;
 
 namespace PRM.Core.Protocol.RDP
 {
-    public partial class ProtocolServerRDPAppForm : ProtocolServerFormBase
+    public partial class ProtocolServerRemoteAppForm : ProtocolServerFormBase
     {
-        public ProtocolServerRDPApp Vm;
-        public ProtocolServerRDPAppForm(ProtocolServerBase vm) : base(vm)
+        public ProtocolServerRemoteApp Vm;
+        public ProtocolServerRemoteAppForm(ProtocolServerBase vm) : base(vm)
         {
             InitializeComponent();
-            Vm = (ProtocolServerRDPApp)vm;
+            Vm = (ProtocolServerRemoteApp)vm;
             DataContext = vm;
         }
     }

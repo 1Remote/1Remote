@@ -7,7 +7,7 @@ using Shawn.Utils;
 
 namespace PRM.Core.Protocol.RDP
 {
-    public sealed class ProtocolServerRDPApp : ProtocolServerWithAddrPortUserPwdBase
+    public sealed class ProtocolServerRemoteApp : ProtocolServerWithAddrPortUserPwdBase
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
@@ -26,7 +26,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        public ProtocolServerRDPApp() : base("RDPApp", "RDPApp.V1", "RDPApp", false)
+        public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", false)
         {
             base.Port = "3389";
             base.UserName = "Administrator";
@@ -52,7 +52,7 @@ namespace PRM.Core.Protocol.RDP
         {
             try
             {
-                return JsonConvert.DeserializeObject<ProtocolServerRDPApp>(jsonString);
+                return JsonConvert.DeserializeObject<ProtocolServerRemoteApp>(jsonString);
             }
             catch (Exception e)
             {

@@ -182,7 +182,9 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                        <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                                 Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
                                     </Grid>
                                     <controls:ButtonEx Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
                                 </StackPanel>
