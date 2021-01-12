@@ -151,6 +151,7 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
+    <Compile Include="Protocol\ITab.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
@@ -160,9 +161,6 @@
       <DependentUpon>KittyHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
-    <Compile Include="Protocol\Putty\Host\PuttyHost.xaml.cs">
-      <DependentUpon>PuttyHost.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
     <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
       <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
@@ -172,8 +170,11 @@
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
+    <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
+    <Compile Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml.cs">
+      <DependentUpon>ProtocolServerRemoteAppForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocol\ServerIcons.cs" />
-    <Compile Include="Protocol\ProtocolServerNone.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
     </Compile>
@@ -209,8 +210,13 @@
       <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ConsoleManager.cs" />
+    <Compile Include="Utils\EditableTextBlock\EditableTextBlock.xaml.cs">
+      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
+    <Compile Include="Utils\CmdRunner.cs" />
+    <Compile Include="Utils\MyVisualTreeHelper.cs" />
     <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\HyperlinkHelper.cs" />
     <Compile Include="Utils\Ini.cs" />
@@ -250,8 +256,115 @@
     <Compile Include="Utils\TinyPinyin.Net\PinyinDict.cs" />
     <Compile Include="Utils\TinyPinyin.Net\PinyinHelper.cs" />
     <Compile Include="Utils\SimpleLogHelper.cs" />
+    <Compile Include="Utils\WindowChromeBase.cs" />
+    <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Icons\20210106\20210106_001.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_002.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_003.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_004.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_005.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_006.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_007.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_008.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_009.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_010.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_011.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_012.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_013.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_014.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_015.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_016.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_017.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_018.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_019.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_020.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_021.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_022.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_023.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_024.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_025.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_026.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_027.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_028.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_029.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_030.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_031.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_032.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_033.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_034.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_035.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_036.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_037.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_038.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_039.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_040.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_041.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_042.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_043.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_044.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_045.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_046.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_047.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_048.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_049.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_050.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_051.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_052.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_053.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_054.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_055.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_056.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_057.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_058.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_059.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_060.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_061.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_062.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_063.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_064.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_065.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_066.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_067.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_068.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_069.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_070.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_071.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_072.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_073.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_074.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_075.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_076.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_077.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_078.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_079.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_080.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_081.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_082.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_083.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_084.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_085.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_086.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_087.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_088.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_089.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_090.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_091.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_092.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_093.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_094.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_095.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_096.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_097.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_098.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_099.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_100.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_101.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_102.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_103.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_104.png" />
+    <Resource Include="Resources\Icons\20210106\20210106_105.png" />
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -266,6 +379,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVersionGenerator.ps1" />
+    <Resource Include="Resources\Theme\puttyThems.json" />
     <Resource Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -308,13 +422,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Protocol\Putty\Host\PuttyHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Protocol\VNC\Host\VncHost.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -353,6 +467,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Utils\ColorPickerWPF\SliderRow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Utils\EditableTextBlock\EditableTextBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

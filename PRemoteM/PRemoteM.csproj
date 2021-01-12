@@ -40,7 +40,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;ChromeTAB</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
@@ -130,19 +130,15 @@
     </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
     <Compile Include="ViewModel\VmServerEditorPage.cs" />
-    <Compile Include="ViewModel\VmServerCard.cs" />
+    <Compile Include="ViewModel\VmServerListItem.cs" />
     <Compile Include="ViewModel\VmServerListPage.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\DesktopWindow.xaml.cs">
-      <DependentUpon>DesktopWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\FullScreenWindow.xaml.cs">
       <DependentUpon>FullScreenWindow.xaml</DependentUpon>
@@ -150,6 +146,13 @@
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ServerListPage.xaml.cs">
+      <DependentUpon>ServerListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ServerManagementPage.xaml.cs">
+      <DependentUpon>ServerManagementPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TabWindow\TabWindowBase.cs" />
     <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
       <DependentUpon>TabWindowClassical.xaml</DependentUpon>
     </Compile>
@@ -162,14 +165,10 @@
     <Compile Include="View\ServerEditorPage.xaml.cs">
       <DependentUpon>ServerEditorPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ServerListPage.xaml.cs">
-      <DependentUpon>ServerListPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\SystemConfigPage.xaml.cs">
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\TabItemViewModel.cs" />
-    <Compile Include="View\TabWindow\ITab.cs" />
     <Page Include="Controls\AutoCompleteComboBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -206,10 +205,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\DesktopWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\FullScreenWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -217,6 +212,14 @@
     <Page Include="View\Guidance\GuidanceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ServerListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ServerManagementPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\TabWindow\TabWindowClassical.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -231,10 +234,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ServerEditorPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\ServerListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

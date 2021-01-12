@@ -4,13 +4,11 @@ using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.View;
 using Shawn.Utils;
-using Shawn.Utils.PageHost;
 
 namespace PRM.ViewModel
 {
-    public class VmServerCard : NotifyPropertyChangedBase
+    public class VmServerListItem : NotifyPropertyChangedBase
     {
         private ProtocolServerBase _server = null;
         public ProtocolServerBase Server
@@ -19,13 +17,29 @@ namespace PRM.ViewModel
             private set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
         }
 
-        public readonly VmServerListPage Host;
-
-        public VmServerCard(ProtocolServerBase server, VmServerListPage host)
+        public VmServerListItem(ProtocolServerBase server)
         {
             Server = server;
-            Host = host;
         }
+
+
+        private Visibility _visible = Visibility.Collapsed;
+        public Visibility Visible
+        {
+            get => _visible;
+            set => SetAndNotifyIfChanged(nameof(Visible), ref _visible, value);
+        }
+
+
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
+        }
+
+
 
 
         #region CMD
@@ -50,7 +64,7 @@ namespace PRM.ViewModel
             {
                 return _cmdEditServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false, true);
                 });
             }
         }
@@ -63,27 +77,46 @@ namespace PRM.ViewModel
             {
                 return _cmdDuplicateServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true, true);
                 });
             }
         }
 
         private RelayCommand _cmdDeleteServer;
+
         public RelayCommand CmdDeleteServer
         {
             get
             {
                 return _cmdDeleteServer ??= new RelayCommand((o) =>
                 {
-                    if (MessageBox.Show(
+                    if (MessageBoxResult.Yes == MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("string_delete_confirm"),
-                            SystemConfig.Instance.Language.GetText("string_delete_confirm_title"),
-                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) ==
-                        MessageBoxResult.Yes)
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
+                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
+                        )
                     {
                         GlobalData.Instance.ServerListRemove(Server);
                     }
                 });
+            }
+        }
+
+
+        private RelayCommand _cmdSave;
+        public RelayCommand CmdSave
+        {
+            get
+            {
+                if (_cmdSave == null)
+                    _cmdSave = new RelayCommand((o) =>
+                    {
+                        if (!string.IsNullOrWhiteSpace(this.Server.DispName))
+                        {
+                            GlobalData.Instance.ServerListUpdate(Server);
+                        }
+                    }, o => (this.Server.DispName.Trim() != ""));
+                return _cmdSave;
             }
         }
         #endregion

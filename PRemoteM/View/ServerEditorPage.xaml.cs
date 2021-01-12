@@ -17,7 +17,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
-using PersonalRemoteManager;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
@@ -29,6 +28,7 @@ namespace PRM.View
     public partial class ServerEditorPage : UserControl
     {
         public readonly VmServerEditorPage Vm;
+        private readonly BitmapSource _oldLogo;
         public ServerEditorPage(VmServerEditorPage vm)
         {
             Debug.Assert(vm?.Server != null);
@@ -38,21 +38,23 @@ namespace PRM.View
             // add mode
             if (vm.IsAddMode)
             {
-                ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
+                ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
                 ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.MainColor1);
             }
 
             if (vm.Server.IconImg == null)
             {
-                ButtonSave.Content = SystemConfig.Instance.Language.GetText("button_add");
+                ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
                 if (ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
                     vm.Server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
                 }
             }
-            
+
+            _oldLogo = vm.Server.IconImg;
             LogoSelector.SetImg(vm.Server.IconImg);
+            LogoSelector.OnLogoChanged += () => Vm.Server.IconImg = LogoSelector.Logo;
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -65,19 +67,19 @@ namespace PRM.View
 
         private void ButtonLogoSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm?.Server != null && Vm.Server.GetType() != typeof(ProtocolServerNone))
+            if (Vm?.Server != null)
             {
                 Vm.Server.IconImg = LogoSelector.Logo;
-                //File.WriteAllText("img.txt",_vmServerEditorPage.Server.IconBase64);
             }
             PopupLogoSelectorClose();
         }
 
         private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
         {
+            Vm.Server.IconImg = _oldLogo;
             PopupLogoSelectorClose();
         }
-        
+
         private void PopupLogoSelectorOpen()
         {
             if (Math.Abs(PopupLogoSelector.Height) < 1)
@@ -111,7 +113,33 @@ namespace PRM.View
         }
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LogoSelector.Logo = (BitmapSource) (((ListView) sender).SelectedItem);
+            LogoSelector.SetImg((BitmapSource)(((ListView)sender).SelectedItem));
+        }
+
+        private void ButtonTryCommandBeforeConnected_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string cmd = Vm.Server.CommandBeforeConnected;
+                if (!string.IsNullOrWhiteSpace(cmd))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(cmd);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+            }
+        }
+
+        private void LogoList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (Vm?.Server != null)
+            {
+                Vm.Server.IconImg = LogoSelector.Logo;
+            }
+            PopupLogoSelectorClose();
         }
     }
 }

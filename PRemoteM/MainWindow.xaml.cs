@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.View;
 using PRM.ViewModel;
 using Shawn.Utils;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -13,32 +14,18 @@ using TextBox = System.Windows.Controls.TextBox;
 
 namespace PRM
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : WindowChromeBase
     {
-        public VmMain VmMain { get; private set; }
+        public VmMain Vm { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
-            VmMain = new VmMain(this);
-            this.DataContext = VmMain;
+            Vm = new VmMain(this);
+            this.DataContext = Vm;
             Title = SystemConfig.AppName;
-
-
             this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
             this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
-            WinTitleBar.MouseUp += (sender, e) =>
-            {
-                if (e.LeftButton == MouseButtonState.Released)
-                {
-                    if (this.WindowState == WindowState.Normal)
-                    {
-                        SystemConfig.Instance.Locality.MainWindowTop = this.Top;
-                        SystemConfig.Instance.Locality.MainWindowLeft = this.Left;
-                        SystemConfig.Instance.Locality.Save();
-                        Console.WriteLine($"main window Top = {this.Top}, Left = {this.Left}");
-                    }
-                }
-            };
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
@@ -58,23 +45,8 @@ namespace PRM
 
 
             // Startup Location
-            {
-                var top = SystemConfig.Instance.Locality.MainWindowTop;
-                var left = SystemConfig.Instance.Locality.MainWindowLeft;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-                if (top >= 0 && top < Screen.PrimaryScreen.Bounds.Height
-                    && left >= 0 && left < Screen.PrimaryScreen.Bounds.Width
-                )
-                {
-                    WindowStartupLocation = WindowStartupLocation.Manual;
-                    Top = top;
-                    Left = left;
-                }
-                else
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                }
-            }
 
             BtnClose.Click += (sender, args) =>
             {
@@ -98,67 +70,6 @@ namespace PRM
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
-        }
-
-        #region DragMove
-        private bool _isLeftMouseDown = false;
-        private bool _isDragging = false;
-        private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _isDragging = false;
-            _isLeftMouseDown = false;
-
-            if (e.ClickCount == 2 && e.LeftButton == MouseButtonState.Pressed)
-            {
-                this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-                return;
-            }
-
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                _isLeftMouseDown = true;
-                var th = new Thread(new ThreadStart(() =>
-                {
-                    Thread.Sleep(50);
-                    if (_isLeftMouseDown)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            _isDragging = true;
-                        });
-                    }
-                }));
-                th.Start();
-            }
-        }
-        private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            _isLeftMouseDown = false;
-            _isDragging = false;
-        }
-        private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
-            {
-                if (this.WindowState == WindowState.Maximized)
-                {
-                    var p = ScreenInfoEx.GetMouseVirtualPosition();
-                    var top = p.Y;
-                    var left = p.X;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                    this.WindowState = WindowState.Normal;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                }
-                this.DragMove();
-            }
-        }
-        #endregion
-
-        private void BtnSetting_OnClick(object sender, RoutedEventArgs e)
-        {
-            VmMain.SysOptionsMenuIsOpen = true;
         }
 
         public void ActivateMe(bool isForceActivate = false)
@@ -199,15 +110,54 @@ namespace PRM
 
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape
+                && sender is TextBox textBox)
             {
-                ((TextBox) sender).Text = "";
+                textBox.Text = "";
+                // Kill logical focus
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
+                // Kill keyboard focus
+                Keyboard.ClearFocus();
+                this.Focus();
             }
         }
 
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
         {
             CloseMe();
+        }
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            //if(Vm.BottomPage == null
+            //   && Vm.DispPage == null 
+            //   && TbFilter.IsFocused == false)
+            //    TbFilter.Focus();
+
+            if (Keyboard.FocusedElement is TextBox)
+            {
+            }
+            else if (e.Key == Key.Escape)
+            {
+                if (Vm.TopPage != null)
+                {
+                    Vm.TopPage = null;
+                }
+                else if (Vm.DispPage?.Page is SystemConfigPage scp)
+                {
+                    Vm.DispPage = null;
+                }
+            }
+            else
+            {
+                TbFilter.Focus();
+            }
+        }
+
+        private void ButtonToggleServerListViewUi_OnClick(object sender, RoutedEventArgs e)
+        {
+            SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
+            PopupMenu.IsOpen = false;
         }
     }
 }

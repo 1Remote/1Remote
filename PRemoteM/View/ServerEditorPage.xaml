@@ -10,7 +10,7 @@
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="1000" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -45,7 +45,7 @@
                         <StackPanel>
                             <Grid Style="{StaticResource EditorRowGrid}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_name}"></TextBlock>
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="DispName" 
                                                                     Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
@@ -103,7 +103,7 @@
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
                                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                             <StackPanel Orientation="Horizontal">
-                                                <Grid Width="64" Height="64" 
+                                                <Grid Name="GridLogo" Width="64" Height="64" 
                                                   MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp" 
                                                   Background="Transparent" 
                                                   Cursor="Hand"
@@ -126,7 +126,7 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                         <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
-                                            <Grid Width="362">
+                                            <Grid Width="510">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                                                     <ColumnDefinition></ColumnDefinition>
@@ -138,46 +138,55 @@
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
-                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource button_save}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
+                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource word_done}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
                                                         </controls:ButtonEx>
 
-                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource button_cancel}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource word_reset}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                         </controls:ButtonEx>
                                                     </Grid>
                                                 </StackPanel>
                                                 <Grid Grid.Column="1">
                                                     <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
-                                                    <ScrollViewer Height="190" Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
-                                                        <StackPanel >
-                                                            <ListView BorderThickness="0"
-                                                                          SelectionChanged="Selector_OnSelectionChanged"
-                                                                          ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
-                                                                          Background="Transparent"
-                                                                          ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                                                                <ListView.Resources>
-                                                                    <Style TargetType="ScrollViewer">
-                                                                        <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-                                                                    </Style>
-                                                                </ListView.Resources>
-                                                                <ListView.ItemsPanel>
-                                                                    <ItemsPanelTemplate>
-                                                                        <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
-                                                                    </ItemsPanelTemplate>
-                                                                </ListView.ItemsPanel>
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <Grid Margin="5">
-                                                                            <Image Source="{Binding}" Height="30"></Image>
-                                                                        </Grid>
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ListView>
-                                                        </StackPanel>
-                                                    </ScrollViewer>
+                                                    <ListView BorderThickness="0"
+                                                              SelectionChanged="Selector_OnSelectionChanged"
+                                                              MouseDoubleClick="LogoList_OnMouseDoubleClick"
+                                                              ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
+                                                              Background="Transparent"
+                                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                                                        <ListView.Resources>
+                                                            <Style TargetType="ScrollViewer">
+                                                                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
+                                                            </Style>
+                                                        </ListView.Resources>
+                                                        <ListView.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
+                                                            </ItemsPanelTemplate>
+                                                        </ListView.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Grid Margin="5">
+                                                                    <Image Source="{Binding}" Height="30"></Image>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ListView>
                                                 </Grid>
                                             </Grid>
                                         </Border>
                                     </Grid>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0 20 0 0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
+                                    <Grid Style="{StaticResource EditorRowGridInput}">
+                                        <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                                 Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
+                                    </Grid>
+                                    <controls:ButtonEx Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -294,10 +303,6 @@
                             </ListBox>
                         </StackPanel>
                     </ScrollViewer>
-                    <controls:ButtonEx Style="{StaticResource MainColor1Button}" Grid.Column="1" Padding="0 1 0 0" MinWidth="80" 
-                            Command="{Binding CmdImportFromFile}"
-                            Content="{DynamicResource server_editor_type_import_from_prmj}">
-                    </controls:ButtonEx>
                 </Grid>
             </Border>
         </Grid>
@@ -320,7 +325,7 @@
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
                                 Style="{StaticResource MainColor2ButtonRadius3}"
-                                BorderThickness="0" Content="{DynamicResource button_save}">
+                                BorderThickness="0" Content="{DynamicResource word_save}">
                         </controls:ButtonEx>
 
                         <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
@@ -328,7 +333,7 @@
                                 Command="{Binding CmdCancel}"
                                 Style="{StaticResource MainColor1ButtonRadius3}"
                                 BorderThickness="1"
-                                Content="{DynamicResource button_cancel}">
+                                Content="{DynamicResource word_cancel}">
                         </controls:ButtonEx>
                     </Grid>
                 </Grid>

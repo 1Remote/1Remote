@@ -1,29 +1,47 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils.DragablzTab;
 using PRM.Model;
-using PRM.View;
 using PRM.View.TabWindow;
 using Shawn.Utils;
-using Shawn.Utils.RDP;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
 {
-    public class VmTabWindow : NotifyPropertyChangedBase
+    public class VmTabWindow : NotifyPropertyChangedBase, IDisposable
     {
         public readonly string Token;
         public VmTabWindow(string token)
         {
             Token = token;
-            Items.CollectionChanged += (sender, args) =>
-                RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+            Items.CollectionChanged += ItemsOnCollectionChanged;
+        }
+
+        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+        }
+
+        public void Dispose()
+        {
+            SelectedItem = null;
+            foreach (var item in Items.ToArray())
+            {
+                if (item.Content is IDisposable dp)
+                {
+                    dp.Dispose();
+                }
+            }
+            Items.CollectionChanged -= ItemsOnCollectionChanged;
+            Items.Clear();
         }
 
         private string _tag = "";
@@ -187,7 +205,10 @@ namespace PRM.ViewModel
                     _cmdGoMinimize = new RelayCommand((o) =>
                     {
                         if (o is Window window)
+                        {
                             window.WindowState = WindowState.Minimized;
+                            SelectedItem.Content.ToggleAutoResize(false);
+                        }
                     });
                 }
                 return _cmdGoMinimize;
@@ -242,7 +263,7 @@ namespace PRM.ViewModel
                     {
                         if (SelectedItem != null)
                         {
-                            RemoteWindowPool.Instance.DelProtocolHost(SelectedItem?.Content?.ConnectionId);
+                            RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
                         }
                         else
                         {
@@ -277,7 +298,7 @@ namespace PRM.ViewModel
         }
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
-            if (window is ITab tab)
+            if (window is TabWindowBase tab)
             {
                 RemoteWindowPool.Instance.DelTabWindow(tab.GetViewModel().Token);
             }

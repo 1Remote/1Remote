@@ -30,48 +30,21 @@ namespace PRM.Core.Resources.Theme
             return ret;
         }
 
+        private static void AddOneTheme(Dictionary<string, PrmColorTheme> themes, KeyValuePair<string, PrmColorTheme> theme)
+        {
+            if (!themes.ContainsKey(theme.Key))
+                themes.Add(theme.Key, theme.Value);
+        }
+
         private static void AddStaticThemes(Dictionary<string, PrmColorTheme> themes)
         {
-            {
-                var theme = GetDefault();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
-
-            {
-                var theme = GetSecretKey();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
-
-            {
-                var theme = GetGreystone();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
-
-            {
-                var theme = GetAsphalt();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
-
-            {
-                var theme = GetWine();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
-
-            {
-                var theme = GetForest();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
-            {
-                var theme = GetSoil();
-                if (!themes.ContainsKey(theme.Key))
-                    themes.Add(theme.Key, theme.Value);
-            }
+            AddOneTheme(themes, GetDefault());
+            AddOneTheme(themes, GetSecretKey());
+            AddOneTheme(themes, GetGreystone());
+            AddOneTheme(themes, GetAsphalt());
+            AddOneTheme(themes, GetWine());
+            AddOneTheme(themes, GetForest());
+            AddOneTheme(themes, GetSoil());
         }
 
         public static KeyValuePair<string, PrmColorTheme> GetDefault()

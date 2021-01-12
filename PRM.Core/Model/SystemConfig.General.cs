@@ -13,10 +13,15 @@ namespace PRM.Core.Model
 {
     public enum EnumServerOrderBy
     {
-        Name,
-        AddTimeAsc,
-        AddTimeDesc,
-        Protocol,
+        IdAsc = -1,
+        Protocol = 0,
+        ProtocolDesc = 1,
+        Name = 2,
+        NameDesc = 3,
+        GroupName = 4,
+        GroupNameDesc = 5,
+        Address = 6,
+        AddressDesc = 7,
     }
     public enum EnumTabMode
     {
@@ -24,6 +29,8 @@ namespace PRM.Core.Model
         NewItemGoesToGroup,
         NewItemGoesToProtocol,
     }
+
+
     public sealed class SystemConfigGeneral : SystemConfigBase
     {
         public SystemConfigGeneral(Ini ini) : base(ini)
@@ -82,7 +89,7 @@ namespace PRM.Core.Model
             get => _serverOrderBy;
             set => SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
         }
-        
+
 
         private EnumTabMode _tabMode = EnumTabMode.NewItemGoesToLatestActivate;
         public EnumTabMode TabMode
@@ -102,7 +109,14 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
-            SetSelfStartingHelper.SetSelfStart(AppStartAutomatically);
+            // TODO delete after 2021.04;
+            SetSelfStartingHelper.SetSelfStartByShortcut(false);
+
+#if FOR_MICROSOFT_STORE_ONLY
+            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically);
+#else
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically);
+#endif
 
             StopAutoSave = false;
             _ini.Save();

@@ -13,19 +13,19 @@ namespace PRM.Controls
 {
     public partial class ServerCard : UserControl
     {
-        public static readonly DependencyProperty VmServerCardProperty =
-            DependencyProperty.Register("VmServerCard", typeof(VmServerCard), typeof(ServerCard),
-                new PropertyMetadata(new VmServerCard(null, null), new PropertyChangedCallback(OnServerDataChanged)));
+        public static readonly DependencyProperty VmServerListItemProperty =
+            DependencyProperty.Register("VmServerListItem", typeof(VmServerListItem), typeof(ServerCard),
+                new PropertyMetadata(new VmServerListItem(null), new PropertyChangedCallback(OnServerDataChanged)));
 
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (VmServerCard)e.NewValue;
+            var value = (VmServerListItem)e.NewValue;
             ((ServerCard)d).DataContext = value;
         }
-        public VmServerCard VmServerCard
+        public VmServerListItem VmServerListItem
         {
-            get => (VmServerCard)GetValue(VmServerCardProperty);
-            set => SetValue(VmServerCardProperty, value);
+            get => (VmServerListItem)GetValue(VmServerListItemProperty);
+            set => SetValue(VmServerListItemProperty, value);
         }
 
         public ServerCard()
@@ -41,34 +41,18 @@ namespace PRM.Controls
         private void ButtonEditServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmServerCard != null && VmServerCard.CmdEditServer.CanExecute())
+            if (VmServerListItem != null && VmServerListItem.CmdEditServer.CanExecute())
             {
-                VmServerCard.CmdEditServer.Execute();
+                VmServerListItem.CmdEditServer.Execute();
             }
         }
 
         private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmServerCard != null && VmServerCard.CmdDuplicateServer.CanExecute())
+            if (VmServerListItem != null && VmServerListItem.CmdDuplicateServer.CanExecute())
             {
-                VmServerCard.CmdDuplicateServer.Execute();
-            }
-        }
-
-        private void ButtonExportToFile_OnClick(object sender, RoutedEventArgs e)
-        {
-            PopupCardSettingMenu.IsOpen = false;
-            var dlg = new SaveFileDialog
-            {
-                Filter = "PRM json|*.prmj",
-                FileName = VmServerCard.Server.DispName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".prmj"
-            };
-            if (dlg.ShowDialog() == true)
-            {
-                var server = (ProtocolServerBase)VmServerCard.Server.Clone();
-                SystemConfig.Instance.DataSecurity.DecryptPwd(server);
-                File.WriteAllText(dlg.FileName, server.ToJsonString(), Encoding.UTF8);
+                VmServerListItem.CmdDuplicateServer.Execute();
             }
         }
     }

@@ -62,7 +62,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid>
+                    <Grid x:Name="Grid">
                         <Border 
                         x:Name="ButtonBorder"
                         Background="{TemplateBinding Background}" 
@@ -87,24 +87,21 @@
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
                                 <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                                 <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True"></Condition>
                                 <Condition Property="IsPressed" Value="True"></Condition>
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
                                 <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                                 <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="Grid" Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                            <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                             <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -118,19 +115,16 @@
                     <Condition Property="IsEnabled" Value="True"></Condition>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
+                    <Setter Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                     <Setter Property="Foreground" Value="{Binding ForegroundOnMouseOver, RelativeSource={x:Static RelativeSource.Self}}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True"></Condition>
-                    <Condition Property="IsPressed" Value="True"></Condition>
-                </MultiTrigger.Conditions>
-                <MultiTrigger.Setters>
-                    <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
-                </MultiTrigger.Setters>
-            </MultiTrigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
+            </Trigger>
             <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                 <Setter Property="Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
             </Trigger>
         </Style.Triggers>
@@ -390,6 +384,36 @@
                             <Setter Property="Opacity" Value="0.3" />
                         </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TextBoxWithPlaceHolder" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <TextBox Text="{Binding Path=Text,
+                                                RelativeSource={RelativeSource TemplatedParent}, 
+                                                Mode=TwoWay,
+                                                UpdateSourceTrigger=PropertyChanged}"
+                                 x:Name="textSource" 
+                                 Background="Transparent" 
+                                 Panel.ZIndex="2" />
+                        <TextBlock Text="{TemplateBinding Tag}" Background="{TemplateBinding Background}" Panel.ZIndex="1" VerticalAlignment="Center" Margin="5 0 0 0">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Text, Source={x:Reference textSource}}" Value="">
+                                            <Setter Property="Foreground" Value="LightGray"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

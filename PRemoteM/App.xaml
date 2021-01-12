@@ -10,6 +10,8 @@
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/GlobalStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Converter/Converter.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Languages/en-us.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="./Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="./Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

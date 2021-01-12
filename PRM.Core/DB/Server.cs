@@ -51,6 +51,7 @@ namespace PRM.Core.DB
 
         public static int AddOrUpdate(ProtocolServerBase org, bool isAdd = false)
         {
+            SystemConfig.Instance.DataSecurity.EncryptPwd(org);
             Init();
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);

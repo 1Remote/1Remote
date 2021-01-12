@@ -10,7 +10,7 @@ using PRM.Core.Protocol.FileTransmit.SFTP;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
 {
-    public partial class FileTransmitHost : ProtocolHostBase
+    public partial class FileTransmitHost : ProtocolHostBase, IDisposable
     {
         private readonly VmFileTransmitHost _vmRemote;
         public FileTransmitHost(ProtocolServerBase protocolServer) : base(protocolServer, false)
@@ -47,25 +47,15 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             _vmRemote?.Conn();
         }
 
-        public override void DisConn()
+        public override void Close()
         {
             _vmRemote?.Release();
-            base.DisConn();
+            base.Close();
         }
 
         public override void GoFullScreen()
         {
             throw new NotImplementedException();
-        }
-
-        public override bool IsConnected()
-        {
-            return _vmRemote?.Trans?.IsConnected() == true;
-        }
-
-        public override bool IsConnecting()
-        {
-            return _vmRemote.GridLoadingVisibility == Visibility.Visible;
         }
 
         public override void MakeItFocus()
@@ -213,6 +203,11 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         public override void ReConn()
         {
             _vmRemote?.Conn();
+        }
+
+        public void Dispose()
+        {
+            _vmRemote?.Release();
         }
     }
 

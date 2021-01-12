@@ -12,7 +12,6 @@ namespace PRM.Core.Protocol.Putty
 {
     public class PuttyOptionItem
     {
-
         private PuttyOptionItem() { }
         public static PuttyOptionItem Create(PuttyOptionKey key, int value)
         {
