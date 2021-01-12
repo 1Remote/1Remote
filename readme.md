@@ -6,6 +6,11 @@ English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/read
 ```
 PRemoteM = Personal Remote Manager
 ```
+[![version](https://img.shields.io/github/v/release/vshawn/premotem?color=Green&include_prereleases)](https://github.com/VShawn/PRemoteM/releases)
+[![codebeat badge](https://codebeat.co/badges/c3e71ab7-bf2c-455b-9886-d5956723eed5)](https://codebeat.co/projects/github-com-vshawn-premotem-dev)
+[![issues](https://img.shields.io/github/issues/vshawn/premotem)](https://github.com/VShawn/PRemoteM/issues)
+[![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/VShawn/PRemoteM/blob/dev/LICENSE)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvshawn%2Fpremotem&count_bg=%23E83D61&title_bg=%23102B3E&icon=github.svg&icon_color=%23CED8E1&title=&edge_flat=false)
 
 PRemoteM is a modern remote session manager and launcher, which allows you to open a remote session at any time and anywhere. Fornow PRemoteM supports multiple protocols such as RDP, VNC, SSH, Telnet, sFtp.
 
@@ -59,10 +64,11 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 - [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
 
 # Lastet
-Latest Version: 0.5.4.2012072119
+Latest Version: 0.5.5.2101082141
 
 - [Microsoft Store(testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Download exe](https://github.com/VShawn/PRemoteM/releases)
+- Install using [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
 ## Requirements
 
@@ -80,7 +86,7 @@ Latest Version: 0.5.4.2012072119
 
 ### open remote connection
 
-1. run PRemote.exe.
+1. run PRemoteM.exe.
 
 2. click "+" button to add connection info.
 

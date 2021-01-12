@@ -220,23 +220,19 @@ namespace Shawn.Utils
         {
             try
             {
-                if (_dictHotKeyId2hWnd.ContainsKey(hotKeyId))
+                if (!_dictHotKeyId2hWnd.ContainsKey(hotKeyId)) return;
+                lock (_locker)
                 {
-                    lock (_locker)
-                    {
-                        if (_dictHotKeyId2hWnd.ContainsKey(hotKeyId))
-                        {
-                            var hWnd = _dictHotKeyId2hWnd[hotKeyId];
-                            UnregisterHotKey(hWnd, hotKeyId);
-                            if (_hookedhWnd.Contains(hWnd))
-                                _hookedhWnd.Remove(hWnd);
-                            if (_dictHotKeyId2hWnd.ContainsKey(hotKeyId))
-                                _dictHotKeyId2hWnd.Remove(hotKeyId);
-                            if (_dictHotKeyId2CallBack.ContainsKey(hotKeyId))
-                                _dictHotKeyId2CallBack.Remove(hotKeyId);
-                            _hotKeyId = 1000;
-                        }
-                    }
+                    if (!_dictHotKeyId2hWnd.ContainsKey(hotKeyId)) return;
+                    var hWnd = _dictHotKeyId2hWnd[hotKeyId];
+                    UnregisterHotKey(hWnd, hotKeyId);
+                    if (_hookedhWnd.Contains(hWnd))
+                        _hookedhWnd.Remove(hWnd);
+                    if (_dictHotKeyId2hWnd.ContainsKey(hotKeyId))
+                        _dictHotKeyId2hWnd.Remove(hotKeyId);
+                    if (_dictHotKeyId2CallBack.ContainsKey(hotKeyId))
+                        _dictHotKeyId2CallBack.Remove(hotKeyId);
+                    _hotKeyId = 1000;
                 }
             }
             catch (Exception)

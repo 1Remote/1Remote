@@ -1,15 +1,16 @@
-﻿<Window x:Class="PRM.View.SearchBoxWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-        xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        WindowStyle="None"
-        SizeToContent="WidthAndHeight"
-        Background="Transparent"
-        Title="SearchBoxWindow" Height="460" Width="480">
+﻿<utils:WindowChromeBase x:Class="PRM.View.SearchBoxWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:system="clr-namespace:System;assembly=mscorlib"
+                  xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+                  xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
+                  xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  WindowStartupLocation="CenterScreen"
+                  ResizeMode="NoResize"
+                  WindowStyle="None"
+                  SizeToContent="WidthAndHeight"
+                  Background="Transparent"
+                  Title="SearchBoxWindow" Height="460" Width="480">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
@@ -28,7 +29,7 @@
     <Window.Resources>
         <system:Double x:Key="GridMainWidth">400</system:Double>
         <system:Double x:Key="OneItemHeight">40</system:Double>
-        <system:Double x:Key="OneActionItemHeight">30</system:Double>
+        <system:Double x:Key="OneActionItemHeight">35</system:Double>
         <system:Double x:Key="CornerRadius">8</system:Double>
 
 
@@ -36,8 +37,8 @@
         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
             <VisualBrush.Visual>
                 <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" Foreground="Black" Opacity="0.5" FontSize="18"/>
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource info_filter}" Foreground="White" Opacity="0.5" FontSize="18"/>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18"/>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18"/>
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
@@ -187,48 +188,68 @@
 
 
         <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
-            <Grid Visibility="{Binding ObjectVisibility}" Height="{StaticResource OneItemHeight}">
-                <Grid Height="30" VerticalAlignment="Center">
+            <Grid Visibility="{Binding ObjectVisibility}"  Height="{StaticResource OneItemHeight}">
+                <Grid VerticalAlignment="Center" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="30"></ColumnDefinition>
                         <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20"></RowDefinition>
-                        <RowDefinition Height="10"></RowDefinition>
-                    </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                    <Grid Grid.Column="1">
                         <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                     </Grid>
 
-                    <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
+
+                    <Grid Grid.Column="3" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding DispNameControl}">
+                            <ContentControl.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="18"></Setter>
+                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                </Style>
+                            </ContentControl.Resources>
+                        </ContentControl>
+
+                        <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.5" Content="{Binding SubTitleControl}">
+                            <ContentControl.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="12"></Setter>
+                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                </Style>
+                            </ContentControl.Resources>
+                        </ContentControl>
+
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
                                Text="{Binding Server.ProtocolDisplayName}" 
                                FontSize="18" FontWeight="Bold"
-                               Opacity="0.1"
                                HorizontalAlignment="Right"
+                               Opacity="0.4"
+                               Foreground="{DynamicResource MainColor1Brush}"
                                Margin="10 0"
                                VerticalAlignment="Center"></TextBlock>
-
-                    <ContentControl Grid.Row="0" Grid.Column="3" Content="{Binding DispNameControl}">
-                        <ContentControl.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="18"></Setter>
-                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                            </Style>
-                        </ContentControl.Resources>
-                    </ContentControl>
-
-                    <ContentControl Grid.Row="1" Grid.Column="3" Opacity="0.7" Content="{Binding SubTitleControl}">
-                        <ContentControl.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="10"></Setter>
-                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                            </Style>
-                        </ContentControl.Resources>
-                    </ContentControl>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
+                               Text="{Binding Server.ProtocolDisplayName}" 
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                               Opacity="0.2"
+                               HorizontalAlignment="Right"
+                               Margin="10 0"
+                               VerticalAlignment="Center">
+                        </TextBlock>
+                    </Grid>
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -289,7 +310,7 @@
 
         <DataTemplate x:Key="SearchBoxActionItemDataTemplate">
             <Grid Height="{StaticResource OneActionItemHeight}">
-                <Grid Height="20" VerticalAlignment="Center">
+                <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="30"></ColumnDefinition>
@@ -299,7 +320,7 @@
 
                     <Grid Grid.Row="0" Grid.Column="1"></Grid>
 
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" FontSize="12" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" FontSize="14" VerticalAlignment="Center"></TextBlock>
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -355,14 +376,14 @@
                          CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
                          Height="44" 
                          FontSize="18"
-                         Text="{Binding DispNameFilter, UpdateSourceTrigger=PropertyChanged}"  
+                         Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"  
                          PreviewKeyDown="TbKeyWord_OnKeyDown"
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
             <Grid Width="50" Height="40" HorizontalAlignment="Right" 
                           Background="{DynamicResource MainColor1Brush}"
-                          MouseMove="WindowHeader_MouseMove"></Grid>
+                          PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
 
 
@@ -391,49 +412,70 @@
                 VerticalAlignment="Top"
                 Background="{DynamicResource MainColor1Brush}">
             <StackPanel>
-                <Grid Height="{Binding GridKeywordHeight}">
-                    <Grid Height="30" Margin="0 5">
+                <Grid Margin="0 5" Width="{StaticResource GridMainWidth}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+
+                    <Grid Grid.Row="0" Grid.Column="0" Background="{DynamicResource MainColor1Brush}" MouseDown="ButtonActionBack_OnMouseDown">
+                        <Path Margin="2" Fill="{DynamicResource MainColor1LighterBrush}" Height="25"
+                                  Data="F1 M 16.591797 2.431641 L 9.023438 10 L 16.591797 17.568359 L 14.238281 19.931641 L 4.306641 10 L 14.238281 0.068359 L 16.591797 2.431641 Z " Stretch="Uniform">
+                        </Path>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                    </Grid>
+
+                    <Grid Grid.Column="3">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition Width="30"></ColumnDefinition>
-                            <ColumnDefinition Width="5"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="20"></RowDefinition>
-                            <RowDefinition Height="10"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
 
-
-                        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
-                            <Path Margin="2" Fill="{DynamicResource MainColor1LighterBrush}"
-                                  Data="F1 M 16.591797 2.431641 L 9.023438 10 L 16.591797 17.568359 L 14.238281 19.931641 L 4.306641 10 L 14.238281 0.068359 L 16.591797 2.431641 Z " Stretch="Uniform">
-                            </Path>
+                        <Grid Grid.Row="0" Grid.Column="0">
+                            <TextBlock TextTrimming="CharacterEllipsis"
+                                   FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding SelectedItem.Server.DispName}"></TextBlock>
                         </Grid>
 
-                        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-                            <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                        <Grid Grid.Row="1" Grid.Column="0" Opacity="0.5">
+                            <TextBlock TextTrimming="CharacterEllipsis"
+                                   FontSize="12" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   VerticalAlignment="Top"
+                                   Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
                         </Grid>
 
-                        <TextBlock Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" 
+
+
+
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}" 
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                   Opacity="0.1"
+                                   Foreground="{DynamicResource MainColor1Brush}"
+                                   Opacity="0.4"
                                    HorizontalAlignment="Right"
                                    Margin="10 0"
                                    VerticalAlignment="Center"></TextBlock>
-
-                        <TextBlock Grid.Row="0" Grid.Column="3" 
-                                           FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                           VerticalAlignment="Center"
-                                           Text="{Binding SelectedItem.Server.DispName}"></TextBlock>
-
-                        <TextBlock Grid.Row="1" Grid.Column="3" Opacity="0.7" 
-                                           FontSize="10" Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                           VerticalAlignment="Center"
-                                           Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
+                                   Text="{Binding SelectedItem.Server.ProtocolDisplayName}" 
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   Opacity="0.2"
+                                   HorizontalAlignment="Right"
+                                   Margin="10 0"
+                                   VerticalAlignment="Center"></TextBlock>
                     </Grid>
+
                 </Grid>
                 <ListBox x:Name="ListBoxActions"
                                 PreviewMouseRightButtonDown="ListBoxActions_OnMouseRightButtonDown"
@@ -448,4 +490,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</Window>
+</utils:WindowChromeBase>

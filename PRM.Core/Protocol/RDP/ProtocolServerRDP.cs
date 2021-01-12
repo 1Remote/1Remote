@@ -347,7 +347,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        public override int GetListOrder()
+        public override double GetListOrder()
         {
             return 0;
         }
@@ -465,13 +465,22 @@ namespace PRM.Core.Protocol.RDP
 
             rdpConfig.AutoReconnectionEnabled = 1;
 
-
+            switch (GatewayMode)
+            {
+                case EGatewayMode.AutomaticallyDetectGatewayServerSettings:
+                    rdpConfig.GatewayUsageMethod = 2;
+                    break;
+                case EGatewayMode.UseTheseGatewayServerSettings:
+                    rdpConfig.GatewayUsageMethod = 1;
+                    break;
+                case EGatewayMode.DoNotUseGateway:
+                default:
+                    rdpConfig.GatewayUsageMethod = 0;
+                    throw new ArgumentOutOfRangeException();
+            }
+            rdpConfig.GatewayHostname = this.GatewayHostName;
+            rdpConfig.GatewayCredentialsSource = 4;
             return rdpConfig;
-        }
-
-        protected override string GetSubTitle()
-        {
-            return $"@{Address}:{Port} ({UserName})";
         }
     }
 }

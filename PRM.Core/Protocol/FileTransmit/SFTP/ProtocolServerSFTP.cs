@@ -48,18 +48,13 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             }
         }
 
-        public override int GetListOrder()
+        public override double GetListOrder()
         {
             return 4;
         }
 
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
-
-        protected override string GetSubTitle()
-        {
-            return $"@SFTP {Address}:{Port} ({UserName})";
-        }
 
         public ITransmitter GeTransmitter()
         {

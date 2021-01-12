@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -95,14 +96,17 @@ namespace PRM.ViewModel
         }
 
 
-        private string _dispNameFilter;
-        public string DispNameFilter
+        private string _filter = "";
+        public string Filter
         {
-            get => _dispNameFilter;
+            get => _filter;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispNameFilter), ref _dispNameFilter, value);
-                UpdateItemsList(value);
+                if (_filter != value)
+                {
+                    SetAndNotifyIfChanged(nameof(Filter), ref _filter, value);
+                    UpdateItemsList(value);
+                }
             }
         }
 
@@ -186,7 +190,7 @@ namespace PRM.ViewModel
                 Run = () =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, false);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, false, false);
                 },
             });
             actions.Add(new ActionItem()
@@ -195,7 +199,7 @@ namespace PRM.ViewModel
                 Run = () =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, true);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, true, false);
                 },
             });
             if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
@@ -264,19 +268,15 @@ namespace PRM.ViewModel
 
             _listActions.Visibility = Visibility.Visible;
 
-            var sb = AnimationPage.GetInOutStoryboard(0.3,
-                AnimationPage.InOutAnimationType.SlideFromLeft,
-                _gridMainWidth,
-                GridMainHeight);
+            var sb = new Storyboard();
+            sb.AddSlideFromLeft(0.3, _gridMainWidth);
             sb.Begin(_listActions);
         }
 
         public void HideActionsList()
         {
-            var sb = AnimationPage.GetInOutStoryboard(0.3,
-                AnimationPage.InOutAnimationType.SlideToLeft,
-                _gridMainWidth,
-                GridMainHeight);
+            var sb = new Storyboard();
+            sb.AddSlideToLeft(0.3, _gridMainWidth);
             sb.Completed += (o, args) =>
             {
                 _listActions.Visibility = Visibility.Hidden;
@@ -295,8 +295,7 @@ namespace PRM.ViewModel
                     keyWordIsMatch.Add(false);
 
                 // match keyword
-                foreach (var vm in GlobalData.Instance.VmItemList.Where(x =>
-                    x.GetType() != typeof(ProtocolServerNone)))
+                foreach (var vm in GlobalData.Instance.VmItemList)
                 {
                     Debug.Assert(vm != null);
                     Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));

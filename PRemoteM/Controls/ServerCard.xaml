@@ -14,6 +14,7 @@
         <Grid Name="DispServerContext">
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
+                <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
             </Grid.InputBindings>
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -47,15 +48,14 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Grid.RowSpan="3">
-                        <Image Source="{Binding Server.IconImg}" 
-                               Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}" 
+                        <Image Source="{Binding Server.IconImg}" Width="110" Height="110"
                                Stretch="UniformToFill">
                             <Image.Style>
                                 <Style TargetType="Image">
                                     <Setter Property="RenderTransform">
                                         <Setter.Value>
                                             <TransformGroup>
-                                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" CenterX="50" CenterY="50"></ScaleTransform>
+                                                <ScaleTransform ScaleX="1.0" ScaleY="1.0" CenterX="65" CenterY="65"></ScaleTransform>
                                                 <RotateTransform Angle="0"></RotateTransform>
                                             </TransformGroup>
                                         </Setter.Value>
@@ -65,7 +65,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="72" CenterY="72"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="65" CenterY="65"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>
@@ -74,7 +74,7 @@
                                             <Setter Property="RenderTransform">
                                                 <Setter.Value>
                                                     <TransformGroup>
-                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5" CenterX="72" CenterY="72"></ScaleTransform>
+                                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1" CenterX="65" CenterY="65"></ScaleTransform>
                                                     </TransformGroup>
                                                 </Setter.Value>
                                             </Setter>
@@ -309,7 +309,6 @@
                                             <StackPanel>
                                                 <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></controls:ButtonEx>
                                                 <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
-                                                <controls:ButtonEx Click="ButtonExportToFile_OnClick" Content="{DynamicResource server_card_operate_export_to_prmj}"></controls:ButtonEx>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using PRM.Annotations;
@@ -26,34 +27,8 @@ namespace PRM.View
     /// <summary>
     /// GuidanceWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class GuidanceWindow : Window, INotifyPropertyChanged
+    public partial class GuidanceWindow : WindowChromeBase
     {
-        #region INotifyPropertyChanged
-        protected bool NotifyPropertyChangedEnabled = true;
-
-        public void SetNotifyPropertyChangedEnabled(bool isEnabled)
-        {
-            NotifyPropertyChangedEnabled = isEnabled;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void RaisePropertyChanged(string propertyName)
-        {
-            if (NotifyPropertyChangedEnabled)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected virtual void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
-        {
-            if (oldValue == null && newValue == null) return;
-            if (oldValue != null && oldValue.Equals(newValue)) return;
-            if (newValue != null && newValue.Equals(oldValue)) return;
-            oldValue = newValue;
-            RaisePropertyChanged(propertyName);
-        }
-        #endregion
-
         public GuidanceWindow(SystemConfig config)
         {
             InitializeComponent();
@@ -115,55 +90,6 @@ namespace PRM.View
 
         public SystemConfig SystemConfig { get; set; }
 
-        #region DragMove
-        private bool _isLeftMouseDown = false;
-        private bool _isDragging = false;
-        private void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _isDragging = false;
-            _isLeftMouseDown = false;
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                _isLeftMouseDown = true;
-                var th = new Thread(new ThreadStart(() =>
-                {
-                    Thread.Sleep(50);
-                    if (_isLeftMouseDown)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            _isDragging = true;
-                        });
-                    }
-                }));
-                th.Start();
-            }
-        }
-        private void WinTitleBar_OnMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            _isLeftMouseDown = false;
-            _isDragging = false;
-        }
-        private void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
-            {
-                if (this.WindowState == WindowState.Maximized)
-                {
-                    var p = ScreenInfoEx.GetMouseVirtualPosition();
-                    var top = p.Y;
-                    var left = p.X;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                    this.WindowState = WindowState.Normal;
-                    this.Top = top - 15;
-                    this.Left = left - this.Width / 2;
-                }
-                this.DragMove();
-            }
-        }
-        #endregion
-
         private int _step = 0;
         public int Step
         {
@@ -174,36 +100,29 @@ namespace PRM.View
 
         private void ButtonNext_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Step == 0)
-            {
-                Step = 1;
-                Grid2.Visibility = Visibility.Visible;
-                var sb = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideToLeft,
-                    this.ActualWidth, this.ActualHeight);
-                sb.Begin(Grid1);
-                var sb2 = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideFromRight,
-                    this.ActualWidth, this.ActualHeight);
-                sb2.Begin(Grid2);
-            }
+            if (Step != 0) return;
+            Step = 1;
+            Grid2.Visibility = Visibility.Visible;
+
+            var sb = new Storyboard();
+            sb.AddSlideToLeft(0.5, ActualWidth);
+            sb.Begin(Grid1);
+            var sb2 = new Storyboard();
+            sb2.AddSlideFromRight(0.5, ActualWidth);
+            sb2.Begin(Grid2);
         }
 
         private void ButtonPrevious_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Step == 1)
-            {
-                Step = 0;
-                Grid2.Visibility = Visibility.Visible;
-                var sb = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideFromLeft,
-                    this.ActualWidth, this.ActualHeight);
-                sb.Begin(Grid1);
-                var sb2 = AnimationPage.GetInOutStoryboard(0.5,
-                    AnimationPage.InOutAnimationType.SlideToRight,
-                    this.ActualWidth, this.ActualHeight);
-                sb2.Begin(Grid2);
-            }
+            if (Step != 1) return;
+            Step = 0;
+            Grid2.Visibility = Visibility.Visible;
+            var sb = new Storyboard();
+            sb.AddSlideFromLeft(0.5, ActualWidth);
+            sb.Begin(Grid1);
+            var sb2 = new Storyboard();
+            sb2.AddSlideToRight(0.5, ActualWidth);
+            sb2.Begin(Grid2);
         }
 
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)

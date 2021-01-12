@@ -107,7 +107,7 @@
                     <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
                         <StackPanel Orientation="Horizontal">
                             <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" Width="300"></TextBox>
-                            <controls:ButtonEx Content="{DynamicResource button_select}" Click="ButtonOpenPrivateKey_OnClick">
+                            <controls:ButtonEx Content="{DynamicResource word_select}" Click="ButtonOpenPrivateKey_OnClick">
                                 <controls:ButtonEx.Style>
                                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                                         <Setter Property="Height" Value="{Binding ElementName=TbPrivateKey, Path=Height}"></Setter>

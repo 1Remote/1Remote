@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Media;
@@ -47,7 +48,13 @@ namespace PRM.Core.Protocol
         public string DispName
         {
             get => _dispName;
-            set => SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
+                }
+            }
         }
 
         [JsonIgnore]
@@ -161,6 +168,32 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
         }
 
+
+        private string _commandBeforeConnected = "";
+        public string CommandBeforeConnected
+        {
+            get => _commandBeforeConnected;
+            set => SetAndNotifyIfChanged(nameof(CommandBeforeConnected), ref _commandBeforeConnected, value);
+        }
+
+
+        //private string _commandAfterConnected = "";
+        //public string CommandAfterConnected
+        //{
+        //    get => _commandAfterConnected;
+        //    set => SetAndNotifyIfChanged(nameof(CommandAfterConnected), ref _commandAfterConnected, value);
+        //}
+
+
+        //private string _commandAfterDisconnected = "";
+        //public string CommandAfterDisconnected
+        //{
+        //    get => _commandAfterDisconnected;
+        //    set => SetAndNotifyIfChanged(nameof(CommandAfterDisconnected), ref _commandAfterDisconnected, value);
+        //}
+
+
+
         /// <summary>
         /// copy all value type fields
         /// </summary>
@@ -253,11 +286,12 @@ namespace PRM.Core.Protocol
         /// <returns></returns>
         protected abstract string GetSubTitle();
 
+
         /// <summary>
         /// determine the display order to show items
         /// </summary>
         /// <returns></returns>
-        public abstract int GetListOrder();
+        public abstract double GetListOrder();
 
         /// <summary>
         /// cation: it is a shallow
@@ -265,6 +299,44 @@ namespace PRM.Core.Protocol
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public virtual bool EqualTo(ProtocolServerBase compare)
+        {
+            var t1 = this.GetType();
+            var t2 = compare.GetType();
+            if (t1 == t2)
+            {
+                var properties = t1.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var property in properties)
+                {
+                    if (property.CanWrite && property.SetMethod != null)
+                    {
+                        var v1 = property.GetValue(this)?.ToString();
+                        var v2 = property.GetValue(compare)?.ToString();
+                        if (v1 != v2)
+                            return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void RunScriptBeforConnect()
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(CommandBeforeConnected);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

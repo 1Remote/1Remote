@@ -119,7 +119,8 @@ namespace Shawn.Utils
         {
             Debug.Assert(resources != null);
             Debug.Assert(lang != null);
-            var rs1 = resources.MergedDictionaries.Where(o => o.Source != null && o.Source.AbsolutePath.ToLower().IndexOf("Languages/zh-cn.xaml".ToLower()) >= 0).ToArray();
+
+            var rs1 = resources.MergedDictionaries.Where(o => o.Source != null && o.Source.IsAbsoluteUri && o.Source.AbsolutePath.ToLower().IndexOf("Languages/".ToLower(), StringComparison.Ordinal) >= 0).ToArray();
             foreach (var r in rs1)
             {
                 resources.MergedDictionaries.Remove(r);

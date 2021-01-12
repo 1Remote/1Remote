@@ -12,6 +12,17 @@ using Shawn.Utils;
 
 namespace PRM.Core.Protocol
 {
+    public enum ProtocolHostStatus
+    {
+        NotInit,
+        Initializing,
+        Initialized,
+        Connecting,
+        Connected,
+        Disconnected,
+        WaitingForReconnect
+    }
+
     public abstract class ProtocolHostBase : UserControl
     {
         public readonly ProtocolServerBase ProtocolServer;
@@ -37,6 +48,21 @@ namespace PRM.Core.Protocol
         }
         public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
 
+        private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
+        public ProtocolHostStatus Status
+        {
+            get => _status;
+            protected set
+            {
+                SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
+                if (_status != value)
+                {
+                    _status = value;
+                    OnCanResizeNowChanged?.Invoke();
+                }
+            }
+        }
+
         protected ProtocolHostBase(ProtocolServerBase protocolServer, bool canFullScreen = false)
         {
             ProtocolServer = protocolServer;
@@ -45,7 +71,7 @@ namespace PRM.Core.Protocol
             // Add right click menu
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "tab_button_reconnect");
+                tb.SetResourceReference(TextBlock.TextProperty, "word_reconnect");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
@@ -54,11 +80,11 @@ namespace PRM.Core.Protocol
             }
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "button_close");
+                tb.SetResourceReference(TextBlock.TextProperty, "word_close");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
-                    Command = new RelayCommand((o) => { DisConn(); })
+                    Command = new RelayCommand((o) => { Close(); })
                 });
             }
         }
@@ -97,25 +123,25 @@ namespace PRM.Core.Protocol
         /// </summary>
         public Action OnCanResizeNowChanged { get; set; } = null;
 
+        public virtual void ToggleAutoResize(bool isEnable)
+        {
+
+        }
+
 
         public abstract void Conn();
+
         public abstract void ReConn();
 
         /// <summary>
         /// disconnect the session and close host window
         /// </summary>
-        public virtual void DisConn()
+        public virtual void Close()
         {
             OnClosed?.Invoke(ConnectionId);
         }
+
         public abstract void GoFullScreen();
-        public abstract bool IsConnected();
-        public abstract bool IsConnecting();
-
-
-
-        protected static readonly object MakeItFocusLocker1 = new object();
-        protected static readonly object MakeItFocusLocker2 = new object();
 
         /// <summary>
         /// call to focus the AxRdp or putty
@@ -124,8 +150,6 @@ namespace PRM.Core.Protocol
         {
             // do nothing
         }
-
-
 
         public Action<string> OnClosed { get; set; } = null;
         public Action<string> OnFullScreen2Window { get; set; } = null;

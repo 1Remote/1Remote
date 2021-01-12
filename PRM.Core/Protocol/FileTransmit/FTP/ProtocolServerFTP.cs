@@ -31,24 +31,19 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
                 var ret = JsonConvert.DeserializeObject<ProtocolServerFTP>(jsonString);
                 return ret;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
         }
 
-        public override int GetListOrder()
+        public override double GetListOrder()
         {
             return 4;
         }
 
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
-
-        protected override string GetSubTitle()
-        {
-            return $"@FTP {Address}:{Port} ({UserName})";
-        }
 
         public ITransmitter GeTransmitter()
         {

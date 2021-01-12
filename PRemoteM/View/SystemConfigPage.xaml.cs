@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -126,10 +127,10 @@ namespace PRM.View
                     VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("info_hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                    MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -138,6 +139,43 @@ namespace PRM.View
             VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.Instance.QuickConnect.HotKeyKey;
 
             return false;
+        }
+
+        private void ContentElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "json|*.json";
+            dlg.Title = "Select a language json file for translation test.";
+            dlg.CheckFileExists = false;
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    var path = dlg.FileName;
+                    var fi = new FileInfo(path);
+                    if (fi.Exists)
+                    {
+                        var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
+                        if (resourceDictionary != null)
+                        {
+                            if (resourceDictionary.Contains("language_name"))
+                            {
+                                var code = fi.Name.ReplaceLast(fi.Extension, "");
+                                SystemConfig.Instance.Language.AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
+                            }
+                            else
+                            {
+                                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ee)
+                {
+                    SimpleLogHelper.Warning(ee, ee.StackTrace);
+                    MessageBox.Show(ee.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                }
+            }
         }
     }
 

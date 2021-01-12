@@ -1,17 +1,18 @@
-﻿<Window x:Class="PRM.View.TabWindow.TabWindowClassical"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-        xmlns:dragablzTab="clr-namespace:Shawn.Utils.DragablzTab" 
-        xmlns:view="clr-namespace:PRM.View"
-        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:prm="clr-namespace:PRM;assembly=PRM.Core"
-        xmlns:tabWindow="clr-namespace:PRM.View.TabWindow"
-        mc:Ignorable="d"
-        Title="{Binding Title}" Height="600" Width="800">
+﻿<tabWindow:TabWindowBase x:Class="PRM.View.TabWindow.TabWindowClassical"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+                     xmlns:dragablzTab="clr-namespace:Shawn.Utils.DragablzTab" 
+                     xmlns:view="clr-namespace:PRM.View"
+                     xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+                     xmlns:system="clr-namespace:System;assembly=mscorlib"
+                     xmlns:prm="clr-namespace:PRM;assembly=PRM.Core"
+                     xmlns:tabWindow="clr-namespace:PRM.View.TabWindow"
+                     xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                     mc:Ignorable="d"
+                     Title="{Binding Title}" Height="600" Width="800">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
@@ -28,7 +29,7 @@
         <KeyBinding Gesture="Ctrl+9" Command="{Binding CmdShowTabByIndex}" CommandParameter="9"></KeyBinding>
     </Window.InputBindings>
     <Window.Template>
-        <ControlTemplate TargetType="Window">
+        <ControlTemplate TargetType="tabWindow:TabWindowBase">
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource MainColor1Brush}">
                 <Border.Style>
                     <Style TargetType="Border">
@@ -57,7 +58,7 @@
 
 
 
-            <system:Double x:Key="TrapezoidHeight">30</system:Double>
+            <system:Double x:Key="TitleBarHeight">30</system:Double>
             <!--cs code will read this vale-->
             <Thickness x:Key="TabContentBorder">2,0,2,2</Thickness>
 
@@ -84,8 +85,8 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
+                                  PreviewMouseDown="FocusContentWhenPreviewMouseDown"
                                   SnapsToDevicePixels="true" 
-                                  PreviewMouseUp="FocusContentWhenMouseKeyUp"
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
                                     <ContextMenu ItemsSource="{Binding Content.MenuItems}">
@@ -112,13 +113,13 @@
                                         <GradientStop Color="{DynamicResource MainColor1}" Offset="1"></GradientStop>
                                     </LinearGradientBrush>
                                 </Grid.Background>
-                                <Grid Name="Trapezoid" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
+                                <Grid Name="Trapezoid" Height="{StaticResource TitleBarHeight}" VerticalAlignment="Center" MinWidth="100">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10" />
                                         <ColumnDefinition Width="20" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <!--header item identify color-->
@@ -145,7 +146,7 @@
                                                   x:Name="contentPresenter" />
                                     </Border>
 
-                                    <!--header item placeholder-->
+                                    <!--header item placeholder(do not remove this)-->
                                     <Thumb Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
                                         <Thumb.Style>
                                             <Style TargetType="{x:Type Thumb}">
@@ -160,6 +161,27 @@
                                             </Style>
                                         </Thumb.Style>
                                     </Thumb>
+
+                                    <controls:ButtonEx Grid.Column="4" Width="10" Height="10"
+                                                       Margin="5 0" Padding="0" VerticalAlignment="Center"
+                                                       Command="dragablz:TabablzControl.CloseItemCommand">
+                                        <controls:ButtonEx.Style>
+                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="BackgroundOnMouseOver" Value="Transparent"/>
+                                                <Setter Property="BackgroundOnPressed" Value="Transparent"/>
+                                                <Setter Property="ForegroundOnPressed" Value="Gainsboro"/>
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                            </Style>
+                                        </controls:ButtonEx.Style>
+
+                                        <Grid Height="10" Width="8" >
+                                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" 
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" 
+                                                  StrokeThickness="2" Stretch="Uniform" />
+                                        </Grid>
+                                    </controls:ButtonEx>
                                 </Grid>
                             </Grid>
                             <ControlTemplate.Triggers>
@@ -226,52 +248,31 @@
                 <!--Add button to right of header items-->
                 <Setter Property="HeaderSuffixContent">
                     <Setter.Value>
-                        <Grid MouseDown="WinTitleBar_MouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource MainColor1Brush}">
+                        <Grid Background="{DynamicResource MainColor1Brush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Button Margin="0 0 0 1" Width="25" HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}">
-                                <Button.Style>
-                                    <Style TargetType="Button">
+
+                            <Grid Grid.Column="1" MouseDown="WinTitleBar_MouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource MainColor1Brush}"></Grid>
+
+                            <controls:ButtonEx Grid.Column="0" Width="25" Height="{StaticResource TitleBarHeight}" VerticalAlignment="Bottom"
+                                               HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}">
+                                <controls:ButtonEx.Style>
+                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
                                         <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}"/>
                                         <Setter Property="Opacity" Value="0.3"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type Button}">
-                                                    <Border Background="{TemplateBinding Background}"  BorderThickness="0">
-                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                                <Setter Property="Opacity" Value="0.6"/>
-                                            </Trigger>
-                                            <Trigger Property="Button.IsPressed" Value="True">
-                                                <Setter Property="Opacity" Value="0.8"/>
-                                            </Trigger>
-                                        </Style.Triggers>
+                                        <Setter Property="OpacityOnPressed" Value="0.6"/>
                                     </Style>
-                                </Button.Style>
-                                <Grid Width="25" Height="25">
+                                </controls:ButtonEx.Style>
+                                <Grid Width="12" Height="20">
                                     <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                                          Fill="{DynamicResource MainColor1ForegroundBrush}"
-                                          Stretch="Fill">
-                                        <Path.Style>
-                                            <Style TargetType="Path">
-                                                <Setter Property="Margin" Value="5"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button},Path=IsMouseOver}" Value="True">
-                                                        <Setter Property="Margin" Value="4"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Path.Style>
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" 
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" 
+                                          StrokeThickness="1" Stretch="Uniform">
                                     </Path>
                                 </Grid>
-                            </Button>
+                            </controls:ButtonEx>
                         </Grid>
                     </Setter.Value>
                 </Setter>
@@ -399,7 +400,7 @@
 
 
 
-    <Grid Background="{DynamicResource MainColor1Brush}" PreviewMouseUp="FocusContentWhenMouseKeyUp">
+    <Grid Background="{DynamicResource MainColor1Brush}" PreviewMouseDown="FocusContentWhenPreviewMouseDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -563,4 +564,4 @@
             <!--</dockablz:Layout>-->
         </Grid>
     </Grid>
-</Window>
+</tabWindow:TabWindowBase>

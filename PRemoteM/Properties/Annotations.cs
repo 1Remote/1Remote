@@ -31,7 +31,7 @@ using System;
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable InconsistentNaming
 
-namespace PersonalRemoteManager.Annotations
+namespace PRM.Annotations
 {
   /// <summary>
   /// Indicates that the value of the marked element could be <c>null</c> sometimes,
@@ -172,6 +172,65 @@ namespace PersonalRemoteManager.Annotations
 
     [NotNull] public string Name { get; }
   }
+
+  /// <summary>
+  /// Indicates that the integral value falls into the specified interval.
+  /// It's allowed to specify multiple non-intersecting intervals.
+  /// Values of interval boundaries are inclusive.
+  /// </summary>
+  /// <example><code>
+  /// void Foo([ValueRange(0, 100)] int value) {
+  ///   if (value == -1) { // Warning: Expression is always 'false'
+  ///     ...
+  ///   }
+  /// }
+  /// </code></example>
+  [AttributeUsage(
+    AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property |
+    AttributeTargets.Method | AttributeTargets.Delegate,
+    AllowMultiple = true)]
+  public sealed class ValueRangeAttribute : Attribute
+  {
+    public object From { get; }
+    public object To { get; }
+
+    public ValueRangeAttribute(long from, long to)
+    {
+      From = from;
+      To = to;
+    }
+
+    public ValueRangeAttribute(ulong from, ulong to)
+    {
+      From = from;
+      To = to;
+    }
+
+    public ValueRangeAttribute(long value)
+    {
+      From = To = value;
+    }
+
+    public ValueRangeAttribute(ulong value)
+    {
+      From = To = value;
+    }
+  }
+
+  /// <summary>
+  /// Indicates that the integral value never falls below zero.
+  /// </summary>
+  /// <example><code>
+  /// void Foo([NonNegativeValue] int value) {
+  ///   if (value == -1) { // Warning: Expression is always 'false'
+  ///     ...
+  ///   }
+  /// }
+  /// </code></example>
+  [AttributeUsage(
+    AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property |
+    AttributeTargets.Method | AttributeTargets.Delegate)]
+  public sealed class NonNegativeValueAttribute : Attribute { }
 
   /// <summary>
   /// Indicates that the function argument should be a string literal and match one
@@ -454,6 +513,8 @@ namespace PersonalRemoteManager.Annotations
     Itself = 1,
     /// <summary>Members of entity marked with attribute are considered used.</summary>
     Members = 2,
+    /// <summary> Inherited entities are considered used. </summary>
+    WithInheritors = 4,
     /// <summary>Entity marked with attribute and all its members considered used.</summary>
     WithMembers = Itself | Members
   }
@@ -463,6 +524,7 @@ namespace PersonalRemoteManager.Annotations
   /// which should not be removed and so is treated as used.
   /// </summary>
   [MeansImplicitUse(ImplicitUseTargetFlags.WithMembers)]
+  [AttributeUsage(AttributeTargets.All, Inherited = false)]
   public sealed class PublicAPIAttribute : Attribute
   {
     public PublicAPIAttribute() { }
@@ -491,7 +553,7 @@ namespace PersonalRemoteManager.Annotations
   /// [Pure] int Multiply(int x, int y) => x * y;
   /// 
   /// void M() {
-  ///   Multiply(123, 42); // Waring: Return value of pure method is not used
+  ///   Multiply(123, 42); // Warning: Return value of pure method is not used
   /// }
   /// </code></example>
   [AttributeUsage(AttributeTargets.Method)]
@@ -608,7 +670,7 @@ namespace PersonalRemoteManager.Annotations
   /// [SourceTemplate]
   /// public static void something(this Entity x, [Macro(Expression = "guid()", Editable = -1)] string newguid) {
   ///   /*$ var $x$Id = "$newguid$" + x.ToString();
-  ///   x.Activate($x$Id); */
+  ///   x.DoSomething($x$Id); */
   /// }
   /// </code>
   /// </example>
@@ -1015,7 +1077,7 @@ namespace PersonalRemoteManager.Annotations
   /// <summary>
   /// Indicates that the marked parameter is a regular expression pattern.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Parameter)]
+  [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property)]
   public sealed class RegexPatternAttribute : Attribute { }
 
   /// <summary>
@@ -1046,6 +1108,18 @@ namespace PersonalRemoteManager.Annotations
   /// </remarks>
   [AttributeUsage(AttributeTargets.Property)]
   public sealed class XamlItemBindingOfItemsControlAttribute : Attribute { }
+
+  /// <summary>
+  /// XAML attribute. Indicates the property of some <c>Style</c>-derived type, that
+  /// is used to style items of <c>ItemsControl</c>-derived type. This annotation will
+  /// enable the <c>DataContext</c> type resolve for XAML bindings for such properties.
+  /// </summary>
+  /// <remarks>
+  /// Property should have the tree ancestor of the <c>ItemsControl</c> type or
+  /// marked with the <see cref="XamlItemsControlAttribute"/> attribute.
+  /// </remarks>
+  [AttributeUsage(AttributeTargets.Property)]
+  public sealed class XamlItemStyleOfItemsControlAttribute : Attribute { }
 
   [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
   public sealed class AspChildControlTypeAttribute : Attribute

@@ -13,7 +13,7 @@ using Shawn.Utils.PageHost;
 
 namespace PRM.View
 {
-    public partial class SearchBoxWindow : Window
+    public partial class SearchBoxWindow : WindowChromeBase
     {
         private readonly VmSearchBox _vmSearchBox = null;
 
@@ -73,7 +73,7 @@ namespace PRM.View
                         _isHidden = true;
                         this.Hide();
                         _vmSearchBox.HideActionsList();
-                        _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.Filter = "";
                     }
                 }
         }
@@ -97,9 +97,11 @@ namespace PRM.View
             if (_isHidden == true)
                 lock (_hideToggleLocker)
                 {
+                    if (this.WindowState != WindowState.Normal)
+                        this.WindowState = WindowState.Normal;
                     if (_isHidden == true)
                     {
-                        _vmSearchBox.DispNameFilter = "";
+                        _vmSearchBox.Filter = "";
                         var p = ScreenInfoEx.GetMouseSystemPosition();
                         var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
                         this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
@@ -126,11 +128,15 @@ namespace PRM.View
 
 
 
-        private void WindowHeader_MouseMove(object sender, MouseEventArgs e)
+        protected override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            try
             {
                 this.DragMove();
+            }
+            catch
+            {
             }
         }
 
@@ -158,9 +164,9 @@ namespace PRM.View
                                 && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
+                                HideMe();
                                 _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
                             }
-                            HideMe();
                             break;
                         case Key.Down:
                             if (_vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count - 1)
@@ -309,16 +315,16 @@ namespace PRM.View
                     break;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     {
-                        var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_registered_fail")}: {r.Item2}";
+                        var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_registered_fail")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
-                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;
                     }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                     {
-                        var msg = $"{SystemConfig.Instance.Language.GetText("info_hotkey_already_registered")}: {r.Item2}";
+                        var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_already_registered")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
-                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                        MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;
                     }
                 default:
@@ -334,12 +340,12 @@ namespace PRM.View
 
         private void OpenSessionAndHide()
         {
+            HideMe();
             if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
             {
                 var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
                 GlobalEventHelper.OnRequireServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
             }
-            HideMe();
         }
 
         private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -356,19 +362,20 @@ namespace PRM.View
             _vmSearchBox.HideActionsList();
         }
 
+        private void ButtonActionBack_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _vmSearchBox.HideActionsList();
+        }
+
         private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2)
+            if (_vmSearchBox.Actions.Count > 0
+                && _vmSearchBox.SelectedActionIndex >= 0
+                && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
             {
-                if (_vmSearchBox.Actions.Count > 0
-                    && _vmSearchBox.SelectedActionIndex >= 0
-                    && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
-                {
-                    _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
-                }
-
-                HideMe();
+                _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
             }
+            HideMe();
         }
     }
 }

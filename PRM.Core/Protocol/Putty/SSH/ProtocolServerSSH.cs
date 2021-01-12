@@ -59,7 +59,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             }
         }
 
-        public override int GetListOrder()
+        public override double GetListOrder()
         {
             return 1;
         }
@@ -76,10 +76,5 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
-
-        protected override string GetSubTitle()
-        {
-            return $"@{Address}:{Port} ({UserName})";
-        }
     }
 }

@@ -21,15 +21,6 @@ namespace PRM.Core.Protocol.RDP
             Vm = (ProtocolServerRDP)vm;
             DataContext = vm;
         }
-
-        public override bool CanSave()
-        {
-            if (!string.IsNullOrEmpty(Vm.Address?.Trim())
-                && !string.IsNullOrEmpty(Vm.UserName?.Trim())
-                && Vm.GetPort() > 0 && Vm.GetPort() < 65536)
-                return true;
-            return false;
-        }
     }
 
 

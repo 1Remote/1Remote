@@ -35,22 +35,15 @@ namespace Shawn.Utils
         {
             return GetMd5Hash32Bit(Encoding.UTF8.GetBytes(str));
         }
+
         public static string GetMd5Hash32BitString(string str)
         {
-            byte[] outBytes = GetMd5Hash32Bit(str);
-            string outString = string.Empty;
-            foreach (byte t in outBytes)
-            {
-                outString += t.ToString("x2");
-            }
-            return outString;
+            return GetMd5Hash32BitString(Encoding.UTF8.GetBytes(str));
         }
 
         public static string GetMd5Hash16BitString(string str)
         {
-            string outString = BitConverter.ToString(GetMd5Hash32Bit(str), 4, 8);
-            outString = outString.Replace("-", "");
-            return outString;
+            return GetMd5Hash16BitString(Encoding.UTF8.GetBytes(str));
         }
     }
 }

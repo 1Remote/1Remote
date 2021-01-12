@@ -21,11 +21,6 @@ namespace PRM.Core.Protocol
         public VmProtocolServer(ProtocolServerBase psb)
         {
             Server = psb;
-            if (Server.GetType() == typeof(ProtocolServerNone))
-            {
-                ObjectVisibility = Visibility.Collapsed;
-                return;
-            }
             SubTitleControl = OrgSubTitleControl;
         }
 
@@ -64,22 +59,8 @@ namespace PRM.Core.Protocol
 
         public Visibility ObjectVisibility
         {
-            get
-            {
-                if (Server.GetType() == typeof(ProtocolServerNone))
-                {
-                    return Visibility.Collapsed;
-                }
-                return _objectVisibility;
-            }
-            set
-            {
-                if (Server.GetType() == typeof(ProtocolServerNone))
-                {
-                    return;
-                }
-                SetAndNotifyIfChanged(nameof(ObjectVisibility), ref _objectVisibility, value);
-            }
+            get => _objectVisibility;
+            set => SetAndNotifyIfChanged(nameof(ObjectVisibility), ref _objectVisibility, value);
         }
     }
 }
