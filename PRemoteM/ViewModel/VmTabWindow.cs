@@ -10,10 +10,8 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils.DragablzTab;
 using PRM.Model;
-using PRM.View;
 using PRM.View.TabWindow;
 using Shawn.Utils;
-using Shawn.Utils.RDP;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel

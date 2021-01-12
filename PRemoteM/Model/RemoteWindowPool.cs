@@ -153,17 +153,17 @@ namespace PRM.Model
         }
 
 
-        private void ConnectRdpApp(ProtocolServerRDPApp rdpApp)
+        private void ConnectRemoteApp(ProtocolServerRemoteApp remoteApp)
         {
             var tmp = Path.GetTempPath();
-            var rdpFileName = $"{rdpApp.DispName}_{rdpApp.Port}_{rdpApp.UserName}";
+            var rdpFileName = $"{remoteApp.DispName}_{remoteApp.Port}_{remoteApp.UserName}";
             var invalid = new string(Path.GetInvalidFileNameChars()) +
                           new string(Path.GetInvalidPathChars());
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            File.WriteAllText(rdpFile, rdpApp.ToRdpConfig().ToString());
+            File.WriteAllText(rdpFile, remoteApp.ToRdpConfig().ToString());
             var p = new Process
             {
                 StartInfo =
@@ -257,9 +257,9 @@ namespace PRM.Model
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
             Server.AddOrUpdate(vmProtocolServer.Server);
 
-            if (vmProtocolServer.Server is ProtocolServerRDPApp rdpApp)
+            if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
             {
-                ConnectRdpApp(rdpApp);
+                ConnectRemoteApp(remoteApp);
                 return;
             }
 
@@ -559,6 +559,8 @@ namespace PRM.Model
         private void RemoveFromTabWindow(string connectionId)
         {
             var tab = GetTabParent(connectionId);
+            if(tab == null)
+                return;
             var item = tab.GetViewModel().Items.First(x => x.Content.ConnectionId == connectionId);
             tab?.GetViewModel().Items.Remove(item);
             tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Count > 0 ? tab.GetViewModel().Items.First() : null;

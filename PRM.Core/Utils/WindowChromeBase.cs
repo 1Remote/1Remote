@@ -38,8 +38,8 @@ namespace Shawn.Utils
 
 
         #region DragMove
-        private bool _isLeftMouseDown = false;
-        private bool _isDragging = false;
+        protected bool _isLeftMouseDown = false;
+        protected bool _isDragging = false;
         protected virtual void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _isDragging = false;

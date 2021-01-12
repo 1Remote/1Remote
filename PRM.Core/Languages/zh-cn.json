@@ -159,6 +159,7 @@
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
   "server_editor_cmd_before_connected": "连接前cmd",
+  "server_editor_cmd_before_connected_tag": "用cmd运行(如：'C:\\openVpn.bat' 将执行 'cmd.exe C:\\openVpn.bat')",
   // server editor - connection group items
   "server_editor_connection_address": "地址",
   "server_editor_connection_port": "端口",
@@ -207,7 +208,11 @@
   "server_editor_gateway_logon_method_psw": "账号密码",
   "server_editor_gateway_logon_method_smart_card": "智能卡",
   "server_editor_gateway_bypass_gateway_for_loacl_address": "不对本地地址使用RD网关",
-
+  // server editor - RD-App group items
+  "server_editor_remote_app_name": "程序名称",
+  "server_editor_remote_app_name_tag": "程序名称的名称（如 hello.exe）",
+  "server_editor_remote_app_fullname": "服务端路径",
+  "server_editor_remote_app_fullname_tag": "被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）",
 
 
 

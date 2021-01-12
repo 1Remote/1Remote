@@ -138,6 +138,7 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
+    <Compile Include="Protocol\ITab.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
@@ -156,9 +157,9 @@
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRDPApp.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRDPAppForm.xaml.cs">
-      <DependentUpon>ProtocolServerRDPAppForm.xaml</DependentUpon>
+    <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
+    <Compile Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml.cs">
+      <DependentUpon>ProtocolServerRemoteAppForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Protocol\ServerIcons.cs" />
     <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
@@ -408,7 +409,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Protocol\RDP\ProtocolServerRDPAppForm.xaml">
+    <Page Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

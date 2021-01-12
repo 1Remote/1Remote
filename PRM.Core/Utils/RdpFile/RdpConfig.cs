@@ -106,6 +106,8 @@ namespace RdpHelper
         public int PromptForCredentials { get; set; } = 0;
         [RdpConfName("negotiate security layer:i:")]
         public int NegotiateSecurityLayer { get; set; } = 1;
+
+
         [RdpConfName("remoteapplicationmode:i:")]
         public int RemoteApplicationMode { get; set; } = 0;
         /// <summary>
@@ -118,6 +120,16 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("remoteapplicationprogram:s:")]
         public string RemoteApplicationProgram { get; set; } = "";
+        /// <summary>
+        /// Specifies whether the Remote Desktop client should check the remote computer for RemoteApp capabilities.
+        /// 0 - Check the remote computer for RemoteApp capabilities before logging in.
+        /// 1 - Do not check the remote computer for RemoteApp capabilities.Note: This setting must be set to 1 when connecting to Windows XP SP3, Vista or 7 computers with RemoteApps configured on them. This is the default behavior of RDP+.
+        /// </summary>
+        [RdpConfName("disableremoteappcapscheck:i:")]
+        public int DisableRemoteAppCapsCheck { get; set; } = 1;
+
+
+
         [RdpConfName("alternate shell:s:")]
         public string AlternateShell { get; set; } = "";
         [RdpConfName("shell working directory:s:")]
@@ -172,6 +184,9 @@ namespace RdpHelper
         private string FullAddress { get; set; } = "";
         [RdpConfName("username:s:")]
         private string Username { get; set; } = "";
+        /// <summary>
+        /// The user password in a binary hash value. Will be overruled by RDP+.
+        /// </summary>
         [RdpConfName("password 51:b:")]
         private string Password { get; set; }
 

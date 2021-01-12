@@ -55,7 +55,11 @@ namespace PRM.Core.Protocol
             protected set
             {
                 SimpleLogHelper.Debug(this.GetType().Name + ": Status => " + value);
-                _status = value;
+                if (_status != value)
+                {
+                    _status = value;
+                    OnCanResizeNowChanged?.Invoke();
+                }
             }
         }
 
@@ -126,6 +130,7 @@ namespace PRM.Core.Protocol
 
 
         public abstract void Conn();
+
         public abstract void ReConn();
 
         /// <summary>
@@ -135,6 +140,7 @@ namespace PRM.Core.Protocol
         {
             OnClosed?.Invoke(ConnectionId);
         }
+
         public abstract void GoFullScreen();
 
         /// <summary>
