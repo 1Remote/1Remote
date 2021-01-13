@@ -188,4 +188,23 @@ namespace PRM.Resources.Converter
         }
         #endregion
     }
+
+
+
+    public class ConverterColorHexString2Color : IValueConverter
+    {
+        #region IValueConverter
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string hex = value.ToString();
+            var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
+            return brush;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return "#FFFFFF";
+        }
+        #endregion
+    }
 }

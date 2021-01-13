@@ -115,16 +115,16 @@
                     <Condition Property="IsEnabled" Value="True"></Condition>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                    <Setter Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.Self}}"/>
                     <Setter Property="Foreground" Value="{Binding ForegroundOnMouseOver, RelativeSource={x:Static RelativeSource.Self}}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                <Setter Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
                 <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                <Setter Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
                 <Setter Property="Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
             </Trigger>
         </Style.Triggers>

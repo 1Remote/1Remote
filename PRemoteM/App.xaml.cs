@@ -235,7 +235,7 @@ namespace PRM
             OnlyOneAppInstanceCheck();
 
 
-#if !DEBUG
+#if !DEV
             // kill putty process
             foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
             {

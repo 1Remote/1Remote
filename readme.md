@@ -29,26 +29,28 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 
 ## Overview
 
-
-<p align="center">
-    Launcher(Alt + M)
-</p>
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
 </p>
 
 <p align="center">
-    Tab detach & SSH auto command after connected
+    ↑ Launcher(Alt + M) open RDP connection & resizing
 </p>
+
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="600"/>
 </p>
 
 <p align="center">
-    RDP with Multi-monitors
+    ↑ Tab detach & SSH auto command after connected
 </p>
+
 <p align="center">
     <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="600"/>
+</p>
+
+<p align="center">
+    ↑ RDP with Multi-monitors
 </p>
 
 

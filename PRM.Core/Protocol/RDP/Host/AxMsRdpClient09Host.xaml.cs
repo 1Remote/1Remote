@@ -637,7 +637,7 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             // TODO makesure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
-            if (ParentWindow is ITab iTab)
+            if (ParentWindow is ITab)
             {
                 // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case. 
                 _rdp.FullScreen = false;

@@ -61,6 +61,7 @@ namespace Shawn.Utils.DragablzTab
                 }
                 catch (Exception)
                 {
+                    MarkColorHex = "#FFFFFF";
                 }
             }
         }
