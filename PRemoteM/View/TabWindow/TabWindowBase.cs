@@ -20,7 +20,7 @@ using Shawn.Utils.DragablzTab;
 
 namespace PRM.View.TabWindow
 {
-    public abstract class TabWindowBase: WindowChromeBase, ITab
+    public abstract class TabWindowBase : WindowChromeBase, ITab
     {
         protected VmTabWindow Vm;
         private HwndSource _source = null;
