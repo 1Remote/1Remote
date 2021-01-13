@@ -5,7 +5,14 @@
 ```
 PRemoteM = Personal Remote Manager
 ```
-PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够在任何时候快速开启一个远程会话。目前 PRemoteM 已支持 RDP、VNC、SSH、Telnet、sFtp等多种协议。
+[![version](https://img.shields.io/github/v/release/vshawn/premotem?color=Green&include_prereleases)](https://github.com/VShawn/PRemoteM/releases)
+[![codebeat badge](https://codebeat.co/badges/c3e71ab7-bf2c-455b-9886-d5956723eed5)](https://codebeat.co/projects/github-com-vshawn-premotem-dev)
+[![issues](https://img.shields.io/github/issues/vshawn/premotem)](https://github.com/VShawn/PRemoteM/issues)
+[![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/VShawn/PRemoteM/blob/dev/LICENSE)
+
+
+
+PRemoteM 是一款现代的远程会话管理和启动器，它让你能够在任何时候快速开启一个远程会话。目前 PRemoteM 已支持 RDP、VNC、SSH、Telnet、sFtp等多种协议。
 
 <p  align="center">
 	<img  src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/maindemo.png"/>
@@ -42,19 +49,20 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 - 快捷方便的远程会话启动器，支持拼音检索汉字
 - 目前唯一一款支持 RDP 多显示器远程管理的第三方工具。(测试基于 **Win10 + 4k显示器*2** 远程至 **Win2016**)
 - 基于 PuTTY 的 SSH、Telnet 会话，支持连接后自动执行指令。
-- 支持 sFTP
+- 支持 sFTP、FTP
 - [可从 mRemoteNG 迁移会话](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#从-mRemoteNG-迁移数据)
 - [基于 RSA 的敏感数据保护](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md#数据加密)
 
-# Lastet
+# 最新版本
 
-- [微软商店版(测试中)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
-- [下载 exe](https://github.com/VShawn/PRemoteM/releases)
+- [微软商店版](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
+- [下载版](https://github.com/VShawn/PRemoteM/releases)
   
 ## 系统要求
 
 ----
 
+- [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 
 ## 使用方法
@@ -65,11 +73,11 @@ PRemoteM 是一款现代的远程会话管理器和启动器，它让你能够�
 
 1. 运行 PRemote.exe.
 
-2. 通过 "+" 按钮新增远程会话信息
+2. 点击 "+" 按钮新增远程会话信息
 
-3. 通过双击 **会话卡片** 以开启一个远程会话
+3. 双击 **会话卡片** 以开启一个远程会话
 
-4. 或者你可以通过 <kbd>Alt</kbd> + <kbd>M</kbd> 打开快速启动器键入关键字并回车以启动远程会话
+4. 或者快捷键 <kbd>Alt</kbd> + <kbd>M</kbd> 打开快速启动器键入关键字并回车以启动远程会话
 
 ### 数据加密
 
