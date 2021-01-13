@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
@@ -37,6 +39,13 @@ namespace PRM.View.TabWindow
             this.Activated += (sender, args) =>
             {
                 this.StopFlashingWindow();
+                // can't switch the focus directly, otherwise the close button, the minimize button, drag and drop, etc. will become invalid.
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(150);
+                    if ((System.Windows.Forms.Control.MouseButtons != MouseButtons.Left))
+                        Vm?.SelectedItem?.Content?.MakeItFocus();
+                });
             };
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -77,11 +86,23 @@ namespace PRM.View.TabWindow
             _tabablzControl.ClosingItemCallback += args =>
             {
                 args.Cancel();
-                if (args.DragablzItem.DataContext is TabItemViewModel tivm)
+                if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
                 {
-                    var pb = tivm.Content;
+                    var pb = viewModel.Content;
                     RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId);
                 }
+            };
+
+            // focus content when SelectionChanged
+            _tabablzControl.SelectionChanged += (sender, args) =>
+            {
+                // can't switch the focus directly, otherwise the tab drag detach. will become invalid.
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(150);
+                    if ((System.Windows.Forms.Control.MouseButtons != MouseButtons.Left))
+                        Vm?.SelectedItem?.Content?.MakeItFocus();
+                });
             };
 
             // focus content when click

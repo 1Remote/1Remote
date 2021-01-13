@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,7 +26,7 @@ namespace PRM.Core.Protocol
 
     public abstract class ProtocolHostBase : UserControl
     {
-        public readonly ProtocolServerBase ProtocolServer;
+        public ProtocolServerBase ProtocolServer { get;}
 
         private Window _parentWindow = null;
         public Window ParentWindow
@@ -153,5 +154,6 @@ namespace PRM.Core.Protocol
 
         public Action<string> OnClosed { get; set; } = null;
         public Action<string> OnFullScreen2Window { get; set; } = null;
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

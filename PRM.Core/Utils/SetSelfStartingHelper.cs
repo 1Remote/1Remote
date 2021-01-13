@@ -25,7 +25,7 @@ namespace Shawn.Utils
     public static class SetSelfStartingHelper
     {
 
-#if DEBUG
+#if DEV
         public static string StartupTaskId = "PRemoteM_Debug";
 #else
         public static string StartupTaskId = "PRemoteM";
@@ -181,6 +181,9 @@ namespace Shawn.Utils
         public static async Task<bool> IsSelfStartByRegistryKey()
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+#if !DEV
+            key?.DeleteValue("PRemoteM_Debug", false);
+#endif
             return key?.GetValueNames().Contains(StartupTaskId) == true;
         }
 
@@ -192,14 +195,14 @@ namespace Shawn.Utils
             {
                 if (!isSetSelfStart)
                 {
-                    key.DeleteValue(StartupTaskId, false);
+                    key?.DeleteValue(StartupTaskId, false);
                 }
             }
             else
             {
                 if (isSetSelfStart)
                 {
-                    key.SetValue(StartupTaskId, Process.GetCurrentProcess().MainModule.FileName);
+                    key?.SetValue(StartupTaskId, Process.GetCurrentProcess().MainModule.FileName);
                 }
             }
         }

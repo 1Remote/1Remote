@@ -63,6 +63,7 @@ namespace Shawn.Utils
                     {
                         _isDragging = true;
                     }
+                    _isLeftMouseDown = false;
                 });
                 th.Start();
             }

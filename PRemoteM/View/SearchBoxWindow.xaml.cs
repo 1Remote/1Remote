@@ -164,8 +164,9 @@ namespace PRM.View
                                 && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
+                                var si = _vmSearchBox.SelectedIndex;
                                 HideMe();
-                                _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
+                                _vmSearchBox.Actions[si]?.Run();
                             }
                             break;
                         case Key.Down:
@@ -340,10 +341,11 @@ namespace PRM.View
 
         private void OpenSessionAndHide()
         {
+            var si = _vmSearchBox.SelectedIndex;
             HideMe();
-            if (_vmSearchBox.SelectedIndex >= 0 && _vmSearchBox.SelectedIndex < GlobalData.Instance.VmItemList.Count)
+            if (si >= 0 && si < GlobalData.Instance.VmItemList.Count)
             {
-                var s = GlobalData.Instance.VmItemList[_vmSearchBox.SelectedIndex];
+                var s = GlobalData.Instance.VmItemList[si];
                 GlobalEventHelper.OnRequireServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
             }
         }
@@ -369,13 +371,14 @@ namespace PRM.View
 
         private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (_vmSearchBox.Actions.Count > 0
-                && _vmSearchBox.SelectedActionIndex >= 0
-                && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
-            {
-                _vmSearchBox.Actions[_vmSearchBox.SelectedActionIndex]?.Run();
-            }
+            var si = _vmSearchBox.SelectedIndex;
             HideMe();
+            if (_vmSearchBox.Actions.Count > 0
+                && si >= 0
+                && si < _vmSearchBox.Actions.Count)
+            {
+                _vmSearchBox.Actions[si]?.Run();
+            }
         }
     }
 }
