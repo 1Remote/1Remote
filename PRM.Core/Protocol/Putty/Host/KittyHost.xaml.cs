@@ -265,12 +265,19 @@ reload=yes
             Debug.Assert(ps.Arguments.IndexOf(_protocolPuttyBase.GetSessionName(), StringComparison.Ordinal) >= 0);
 
             _kittyProcess = new Process { StartInfo = ps };
+            _kittyProcess.EnableRaisingEvents = true;
+            _kittyProcess.Exited += KittyProcessOnExited;
             _kittyProcess.Start();
             SimpleLogHelper.Debug($"Start KiTTY({_kittyProcess.Handle})");
-            _kittyProcess.Exited += (sender, args) => _kittyProcess = null;
             _kittyProcess.Refresh();
             _kittyProcess.WaitForInputIdle();
             _kittyHandle = _kittyProcess.MainWindowHandle;
+        }
+
+        private void KittyProcessOnExited(object sender, EventArgs e)
+        {
+            SimpleLogHelper.Debug($"KittyProcessOnExited Invoked!");
+            Close();
         }
 
         private void SetKittyWindowStyle()
@@ -304,22 +311,25 @@ reload=yes
             DelKittySessionConfig();
         }
 
-        public void CloseKitty()
+        private void CloseKitty()
         {
             DelKittySessionConfig();
-            try
-            {
-                if (_kittyProcess?.HasExited == false)
+            if (_kittyProcess != null)
+                try
                 {
-                    SimpleLogHelper.Debug($"Stop KiTTY({_kittyProcess.Handle})");
-                    _kittyProcess?.Kill();
+                    _kittyProcess.Exited -= KittyProcessOnExited;
                 }
-                _kittyProcess = null;
-            }
-            catch (Exception e)
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+            if (_kittyProcess?.HasExited == false)
             {
-                SimpleLogHelper.Error(e);
+                SimpleLogHelper.Debug($"Stop KiTTY({_kittyProcess.Handle})");
+                _kittyProcess?.Kill();
             }
+            _kittyProcess = null;
         }
 
 
