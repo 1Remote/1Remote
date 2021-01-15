@@ -24,6 +24,13 @@ namespace PRM.Core.Protocol
         WaitingForReconnect
     }
 
+    public enum ProtocolHostType
+    {
+        Native,
+        Integrate
+    }
+
+
     public abstract class ProtocolHostBase : UserControl
     {
         public ProtocolServerBase ProtocolServer { get;}
@@ -151,6 +158,14 @@ namespace PRM.Core.Protocol
         {
             // do nothing
         }
+
+        public abstract ProtocolHostType GetProtocolHostType();
+
+        /// <summary>
+        /// if it is a Integrate host, then return process's hwnd.
+        /// </summary>
+        /// <returns></returns>
+        public abstract IntPtr GetHostHwnd();
 
         public Action<string> OnClosed { get; set; } = null;
         public Action<string> OnFullScreen2Window { get; set; } = null;

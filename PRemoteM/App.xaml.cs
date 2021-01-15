@@ -235,7 +235,6 @@ namespace PRM
             OnlyOneAppInstanceCheck();
 
 
-#if !DEV
             // kill putty process
             foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
             {
@@ -247,7 +246,6 @@ namespace PRM
                 {
                 }
             }
-#endif
 
             bool isNewUser = InitSystemConfig(appDateFolder);
             if (isNewUser)

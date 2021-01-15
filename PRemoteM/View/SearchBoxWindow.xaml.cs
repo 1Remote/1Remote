@@ -164,7 +164,7 @@ namespace PRM.View
                                 && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
-                                var si = _vmSearchBox.SelectedIndex;
+                                var si = _vmSearchBox.SelectedActionIndex;
                                 HideMe();
                                 _vmSearchBox.Actions[si]?.Run();
                             }

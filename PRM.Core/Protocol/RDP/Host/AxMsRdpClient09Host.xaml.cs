@@ -489,6 +489,16 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.FullScreen = true;
         }
 
+        public override ProtocolHostType GetProtocolHostType()
+        {
+            return ProtocolHostType.Native;
+        }
+
+        public override IntPtr GetHostHwnd()
+        {
+            return IntPtr.Zero;
+        }
+
         public override bool CanResizeNow()
         {
             return Status == ProtocolHostStatus.Connected;

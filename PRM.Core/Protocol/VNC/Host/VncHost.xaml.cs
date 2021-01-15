@@ -137,6 +137,16 @@ namespace PRM.Core.Protocol.VNC.Host
             throw new NotImplementedException();
         }
 
+        public override ProtocolHostType GetProtocolHostType()
+        {
+            return ProtocolHostType.Native;
+        }
+
+        public override IntPtr GetHostHwnd()
+        {
+            return IntPtr.Zero;
+        }
+
         #endregion
 
 
