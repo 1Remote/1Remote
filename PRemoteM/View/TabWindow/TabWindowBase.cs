@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -17,6 +20,7 @@ using PRM.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
 using Shawn.Utils.DragablzTab;
+using Timer = System.Timers.Timer;
 
 namespace PRM.View.TabWindow
 {
@@ -27,10 +31,45 @@ namespace PRM.View.TabWindow
         private TabablzControl _tabablzControl = null;
         public string Token => Vm?.Token;
 
+        private IntPtr _lastActivatedWindowHandle = IntPtr.Zero;
+        private IntPtr _myWindowHandle;
+        private readonly Timer _timer4CheckForegroundWindow;
+
         protected TabWindowBase(string token)
         {
             Vm = new VmTabWindow(token);
             DataContext = Vm;
+            _timer4CheckForegroundWindow = new Timer();
+
+            this.Loaded += (sender, args) =>
+            {
+                var wih = new WindowInteropHelper(this);
+                _myWindowHandle = wih.Handle;
+                _timer4CheckForegroundWindow.Interval = 100;
+                _timer4CheckForegroundWindow.AutoReset = true;
+                _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
+                _timer4CheckForegroundWindow.Start();
+            };
+        }
+
+        private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (Vm?.SelectedItem?.Content == null)
+                return;
+
+            var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+            if (hWnd == IntPtr.Zero) return;
+
+
+            var nowActivatedWindowHandle = GetForegroundWindow();
+            if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
+            {
+                SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
+                SimpleLogHelper.Debug($"TabWindowBase: nowActivatedWindowHandle = ({nowActivatedWindowHandle}), hWnd = {hWnd}");
+                SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
+                BringWindowToTop(_myWindowHandle);
+            }
+            _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
         protected void Init(TabablzControl tabablzControl)
@@ -129,6 +168,7 @@ namespace PRM.View.TabWindow
             Closed += (sender, args) =>
             {
                 DataContext = null;
+                _timer4CheckForegroundWindow?.Dispose();
                 Vm?.CmdCloseAll.Execute();
                 Vm?.Dispose();
                 try
@@ -211,5 +251,14 @@ namespace PRM.View.TabWindow
                 Height = _tabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - tabContentBorder.Top - 1,
             };
         }
+
+
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool BringWindowToTop(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        private static extern int SetForegroundWindow(IntPtr hWnd);
     }
 }

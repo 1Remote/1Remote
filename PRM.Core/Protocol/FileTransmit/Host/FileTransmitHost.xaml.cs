@@ -63,6 +63,16 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             TvFileList.Focus();
         }
 
+        public override ProtocolHostType GetProtocolHostType()
+        {
+            return ProtocolHostType.Native;
+        }
+
+        public override IntPtr GetHostHwnd()
+        {
+            return IntPtr.Zero;
+        }
+
         #endregion
 
         private void TvFileList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
