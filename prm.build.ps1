@@ -1,6 +1,7 @@
 <# .PARAMETER ib #>
 param (
-    [string] $aReleaseType = 'Debug'
+    [ValidateSet('Debug', 'R2Store', 'R2Win32')]
+    [string] $aReleaseType = 'R2Win32'
 )
 
 Enter-Build {
@@ -38,7 +39,7 @@ task Deps {
 
 # Synopsis: Build the application
 task Build {
-    exec { MSBuild $SolutionPath /t:Build }
+    exec { MSBuild $SolutionPath /t:Build /property:Configuration=$aReleaseType }
 }
 
 # Synopsis: Build in Windows Sandbox
