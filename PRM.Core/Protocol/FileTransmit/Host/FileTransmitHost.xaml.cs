@@ -60,7 +60,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 
         public override void MakeItFocus()
         {
-            TvFileList.Focus();
+            Dispatcher.Invoke(() =>
+            {
+                TvFileList.Focus();
+            });
         }
 
         public override ProtocolHostType GetProtocolHostType()

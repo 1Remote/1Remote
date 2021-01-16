@@ -12,11 +12,11 @@ PRemoteM = Personal Remote Manager
 [![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/VShawn/PRemoteM/blob/dev/LICENSE)
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvshawn%2Fpremotem&count_bg=%23E83D61&title_bg=%23102B3E&icon=github.svg&icon_color=%23CED8E1&title=&edge_flat=false)
 
-PRemoteM is a modern remote session manager and launcher, which allows you to open a remote session at any time and anywhere. Fornow PRemoteM supports multiple protocols such as RDP, VNC, SSH, Telnet, sFtp.
+PRemoteM is a modern remote session manager and launcher, which allows you to open a remote session at any time and anywhere. Fornow PRemoteM supports multiple protocols such as RDP, VNC, SSH, Telnet, SFTP, FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/RemoteApp-program).
 
-  
+
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/maindemo.png"/>
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/maindemo.png"/>
 </p>
 
 
@@ -26,11 +26,12 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 1. simply star this repository.
 2. [help translation](https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation)
 3. [buy a coffee](https://ko-fi.com/VShawn)
+4. [Join DEV](https://github.com/VShawn/PRemoteM/issues/58#issuecomment-759422795)
 
 ## Overview
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/quickstart.gif" width="600"/>
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/quickstart.gif" width="400"/>
 </p>
 
 <p align="center">
@@ -38,7 +39,7 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/tab.gif" width="600"/>
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/tab.gif" width="500"/>
 </p>
 
 <p align="center">
@@ -46,11 +47,20 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 </p>
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/multi-screen.jpg" width="600"/>
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/multi-screen.jpg" width="500"/>
 </p>
 
 <p align="center">
     ↑ RDP with Multi-monitors
+</p>
+
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/RemoteApp/demo.jpg" width="800"/>
+</p>
+
+<p align="center">
+    ↑ RemoteApp via RDP
 </p>
 
 
@@ -63,14 +73,15 @@ If you like **PRemoeM**, let's make **PRemoeM** stronger together by
 - SSH Telnet support via PuTTY, auto-cmd after connect is supported
 - File transmit: FTP SFTP supported
 - [Migrate remote connections from mRemoteNG](https://github.com/VShawn/PRemoteM#Migrate-from-mRemoteNG)
-- [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM#Encryption)
+- [Password can be encrypted by RSA](https://github.com/VShawn/PRemoteM/wiki/Password-Security)
+- RemoteApp via RDP
 
 # Lastet
-Latest Version: 0.5.7.2101121716
+Latest Version: 0.5.8.2101161513
 
 - [Microsoft Store(testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Download exe](https://github.com/VShawn/PRemoteM/releases)
-- Install using [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
+- [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
 ## Requirements
 
@@ -82,11 +93,10 @@ Latest Version: 0.5.7.2101121716
 
 
 
-## Usage
+## Quick start
 
 ----
 
-### open remote connection
 
 1. run PRemoteM.exe.
 
@@ -96,19 +106,13 @@ Latest Version: 0.5.7.2101121716
 
 4. or you can open a session by <kbd>Alt</kbd> + <kbd>M</kbd> and keyword.
 
-### Encryption
+## Security
 
-By encrypting data, no one can get your remote password by open database directly.
+[RSA database encryption](https://github.com/VShawn/PRemoteM/wiki/Security#append-how-to-enable-rsa-encryption)
 
-1. In <kbd>Setting</kbd> -> <kbd>Data & Security</kbd> page
-2. click <kbd>Encrypt</kbd> button and select a proper place to store your **Key File**.
 
-<p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Encryption.jpg" width="300"/>
-</p>
-
-### Migrate from mRemoteNG
+## Migrate from mRemoteNG
 
 <p align="center">
-    <img src="https://github.com/VShawn/PRemoteM/raw/Doc/DocPic/Migrate.jpg"/>
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/Migrate.jpg"/>
 </p>

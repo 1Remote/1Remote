@@ -79,12 +79,13 @@ namespace PRM.View.TabWindow
             {
                 this.StopFlashingWindow();
                 // can't switch the focus directly, otherwise the close button, the minimize button, drag and drop, etc. will become invalid.
-                Task.Factory.StartNew(() =>
-                {
-                    Thread.Sleep(150);
-                    if ((System.Windows.Forms.Control.MouseButtons != MouseButtons.Left))
-                        Vm?.SelectedItem?.Content?.MakeItFocus();
-                });
+                if (Vm?.SelectedItem?.Content.GetProtocolHostType() == ProtocolHostType.Integrate)
+                    Task.Factory.StartNew(() =>
+                    {
+                        Thread.Sleep(150);
+                        if ((System.Windows.Forms.Control.MouseButtons != MouseButtons.Left))
+                            Vm?.SelectedItem?.Content?.MakeItFocus();
+                    });
             };
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
