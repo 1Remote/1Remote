@@ -24,7 +24,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ActionName), ref _actionName, value);
         }
 
-        public Action Run;
+        public Action<uint> Run;
     }
 
 
@@ -178,28 +178,27 @@ namespace PRM.ViewModel
             actions.Add(new ActionItem()
             {
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_conn"),
-                Run = () =>
+                Run = (id) =>
                 {
-                    Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnRequireServerConnect?.Invoke(SelectedItem.Server.Id);
+                    GlobalEventHelper.OnRequireServerConnect?.Invoke(id);
                 },
             });
             actions.Add(new ActionItem()
             {
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_edit"),
-                Run = () =>
+                Run = (id) =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, false, false);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(id, false, false);
                 },
             });
             actions.Add(new ActionItem()
             {
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_duplicate"),
-                Run = () =>
+                Run = (id) =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(SelectedItem.Server.Id, true, false);
+                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(id, true, false);
                 },
             });
             if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
@@ -207,9 +206,10 @@ namespace PRM.ViewModel
                 actions.Add(new ActionItem()
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_address"),
-                    Run = () =>
+                    Run = (id) =>
                     {
-                        if (SelectedItem.Server is ProtocolServerWithAddrPortBase server)
+                        var pb = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id);
+                        if (pb.Server is ProtocolServerWithAddrPortBase server)
                             try
                             {
                                 Clipboard.SetText($"{server.Address}:{server.GetPort()}");
@@ -226,9 +226,10 @@ namespace PRM.ViewModel
                 actions.Add(new ActionItem()
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_username"),
-                    Run = () =>
+                    Run = (id) =>
                     {
-                        if (SelectedItem.Server is ProtocolServerWithAddrPortUserPwdBase server)
+                        var pb = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id);
+                        if (pb.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             try
                             {
                                 Clipboard.SetText(server.UserName);
@@ -245,9 +246,10 @@ namespace PRM.ViewModel
                 actions.Add(new ActionItem()
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_password"),
-                    Run = () =>
+                    Run = (id) =>
                     {
-                        if (SelectedItem.Server is ProtocolServerWithAddrPortUserPwdBase server)
+                        var pb = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id);
+                        if (pb.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             try
                             {
                                 Clipboard.SetText(server.GetDecryptedPassWord());
