@@ -164,9 +164,12 @@ namespace PRM.View
                                 && _vmSearchBox.SelectedActionIndex >= 0
                                 && _vmSearchBox.SelectedActionIndex < _vmSearchBox.Actions.Count)
                             {
+                                if(_vmSearchBox?.SelectedItem?.Server?.Id == null)
+                                    return;
+                                var id = _vmSearchBox.SelectedItem.Server.Id;
                                 var si = _vmSearchBox.SelectedActionIndex;
                                 HideMe();
-                                _vmSearchBox.Actions[si]?.Run();
+                                _vmSearchBox.Actions[si]?.Run(id);
                             }
                             break;
                         case Key.Down:
@@ -371,13 +374,16 @@ namespace PRM.View
 
         private void ListBoxActions_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var si = _vmSearchBox.SelectedIndex;
+            if (_vmSearchBox?.SelectedItem?.Server?.Id == null)
+                return;
+            var id = _vmSearchBox.SelectedItem.Server.Id;
+            var si = _vmSearchBox.SelectedActionIndex;
             HideMe();
             if (_vmSearchBox.Actions.Count > 0
                 && si >= 0
                 && si < _vmSearchBox.Actions.Count)
             {
-                _vmSearchBox.Actions[si]?.Run();
+                _vmSearchBox.Actions[si]?.Run(id);
             }
         }
     }
