@@ -55,7 +55,7 @@ task BuildInSandbox {
 
 # Synopsis: Clean generated data
 task Clean {
-    exec { MSBuild $SolutionPath /t:Clean }
+    exec { MSBuild $SolutionPath /t:Clean /property:Configuration=$aReleaseType  }
 }
 
 
