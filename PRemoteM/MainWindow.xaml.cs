@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Drawing;
-using System.Threading;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.View;
 using PRM.ViewModel;
 using Shawn.Utils;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace PRM
