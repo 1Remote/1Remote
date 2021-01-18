@@ -57,7 +57,7 @@ ib Clean, Build -aReleaseType R2Win32
 ./Invoke-Build.ps1 Clean, Build -aReleaseType R2Win32
 
 # Equivalent with system install of Invoke-Build
-Invoke-Build.ps1 Clean, Build -aReleaseType R2Win32
+Invoke-Build Clean, Build -aReleaseType R2Win32
 ```
 
 Please check out [invoke-build](https://chocolatey.org/packages/invoke-build) package notes on how to enable task auto completion and other tips.
