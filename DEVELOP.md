@@ -52,7 +52,15 @@ For example, to clean any existing builds and then build fresh PRemoteM as porta
 
 ```ps1
 ib Clean, Build -aReleaseType R2Win32
+
+# Equivalent without setting alias, must be run in root of the repository
+./Invoke-Build.ps1 Clean, Build -aReleaseType R2Win32
+
+# Equivalent with system install of Invoke-Build
+Invoke-Build.ps1 Clean, Build -aReleaseType R2Win32
 ```
+
+Please check out [invoke-build](https://chocolatey.org/packages/invoke-build) package notes on how to enable task auto completion and other tips.
 
 Task `BuildInSandbox` starts [Windows Sandbox] and executes `ib Deps, Build` tasks. This takes some time (~20 minutes) as all dependencies are downloaded from the Internet and installed, using [Chocolatey] package manager, but it guaranties pristine environment. Note that when you close the sandbox entire environment is gone.
 
