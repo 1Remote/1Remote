@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.Host;
 using PRM.Core.Protocol.FileTransmit.SFTP;
-using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
@@ -15,7 +9,6 @@ using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.RDP.Host;
 using PRM.Core.Protocol.VNC;
 using PRM.Core.Protocol.VNC.Host;
-using Shawn.Utils.RDP;
 
 namespace PRM.Core.Protocol
 {

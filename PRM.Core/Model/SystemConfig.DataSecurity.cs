@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
 using SQLite;
 

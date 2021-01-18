@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using Shawn.Utils;

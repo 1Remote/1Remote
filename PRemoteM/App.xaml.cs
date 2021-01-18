@@ -5,21 +5,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
-using Windows.ApplicationModel;
-using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.RDP;
 using PRM.Model;
 using PRM.View;
-using PRM.ViewModel;
 using Shawn.Utils;
-using Shawn.Utils.PageHost;
 
 namespace PRM
 {

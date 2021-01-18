@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
-using Shawn.Utils.PageHost;
 
 namespace PRM.View
 {

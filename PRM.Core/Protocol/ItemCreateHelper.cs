@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json;
-using PRM.Core.Model;
 using PRM.Core.Protocol;
 
 namespace PRM.Core.DB
@@ -56,8 +54,8 @@ namespace PRM.Core.DB
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||
-                jObj.Protocol == null ||
-                jObj.ClassVersion == null)
+                jObj?.Protocol == null ||
+                jObj?.ClassVersion == null)
                 return null;
 
             // reflect all the child class
@@ -73,15 +71,18 @@ namespace PRM.Core.DB
             }
 
             // get instance form json string
-            foreach (var @base in _baseList)
+            lock (Locker)
             {
-                if (jObj.Protocol.ToString() == @base.Protocol &&
-                    jObj.ClassVersion.ToString() == @base.ClassVersion)
+                foreach (var @base in _baseList)
                 {
-                    var ret = @base.CreateFromJsonString(jsonString);
-                    if (ret != null)
+                    if (jObj.Protocol.ToString() == @base.Protocol &&
+                        jObj.ClassVersion.ToString() == @base.ClassVersion)
                     {
-                        return ret;
+                        var ret = @base.CreateFromJsonString(jsonString);
+                        if (ret != null)
+                        {
+                            return ret;
+                        }
                     }
                 }
             }

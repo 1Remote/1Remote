@@ -1,22 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using Microsoft.Win32;
 using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.Putty.Telnet;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.VNC;
-using PRM.View;
 using Shawn.Utils;
 
 namespace PRM.ViewModel

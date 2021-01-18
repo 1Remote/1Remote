@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PRM.Core.Protocol
+﻿namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerWithAddrPortBase : ProtocolServerBase
     {
