@@ -8,11 +8,11 @@ English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/read
 [![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/VShawn/PRemoteM/blob/dev/LICENSE)
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvshawn%2Fpremotem&count_bg=%23E83D61&title_bg=%23102B3E&icon=github.svg&icon_color=%23CED8E1&title=&edge_flat=false)
 
-PRemoteM is a modern personal remote session manager and launcher. It is a single place to manage all your remote sessions using number of different protocols.
+PRemoteM is a modern personal remote session manager and launcher. It is a single place to manage all your remote sessions supporting number of different protocols.
 
 ## Features
 
-- Supports RDP, SSH, VNC, Telnet, (S)FTP protocols, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/RemoteApp-program)
+- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/RemoteApp-program)
 - Quick and convenient remote session launcher
 - Multi-screen and HiDPI RDP connections
 - Detailed connection configuration: groups, icons, colors, connection scripts etc.
@@ -38,23 +38,23 @@ Use one of the following methods to install the application:
 
 ### Main
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/maindemo.png" style="margin-right: 1em" />
+<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/maindemo.png"/>
 
 ### Launcher(Alt + M) open RDP connection & resizing
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/quickstart.gif" width="400" style="margin-right: 1em" />
+<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/quickstart.gif" width="400"/>
 
 ### Tab detach & SSH auto command after connected
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/tab.gif" width="500" style="margin-right: 1em" />
+<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/tab.gif" width="500" />
 
 ### RDP with Multi-monitors
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/multi-screen.jpg" width="500" style="margin-right: 1em" />
+<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/multi-screen.jpg" width="500" />
 
 ### RemoteApp via RDP
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/RemoteApp/demo.jpg" width="800" style="margin-right: 1em" />
+<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/RemoteApp/demo.jpg" width="800" />
 
 ## Make PRemoteM Stronger
 
