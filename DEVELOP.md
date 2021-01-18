@@ -32,7 +32,7 @@ Build is automated using [Invoke-Build] PowerShell module which is included in t
 
 For convenience, set alias to it - open administrative PowerShell, go to repository root and run `Set-Alias ib $pwd\Invoke-Build.ps1`.
 
-Run `ib ?` to get list of available tasks:
+Run `ib ?` to get list of available tasks (anywhere in the repository directory hierarchy):
 
 ```
 PS C:\Projects\PRemoteM> ib ?
@@ -47,6 +47,12 @@ Clean          {}   Clean generated data
 ```
 
 Tasks are defined in the [prm.build.ps1] PowerShell script.
+
+For example, to clean any existing builds and then build fresh PRemoteM as portable Win32 application invoke:
+
+```ps1
+ib Clean, Build -aReleaseType R2Win32
+```
 
 Task `BuildInSandbox` starts [Windows Sandbox] and executes `ib Deps, Build` tasks. This takes some time (~20 minutes) as all dependencies are downloaded from the Internet and installed, using [Chocolatey] package manager, but it guaranties pristine environment. Note that when you close the sandbox entire environment is gone.
 
