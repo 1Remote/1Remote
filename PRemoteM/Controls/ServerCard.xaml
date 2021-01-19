@@ -87,7 +87,7 @@
 
                     <Grid Grid.Row="0" Grid.RowSpan="3">
                         <TextBlock Name="TbServerType" Opacity="0.3"
-                               FontWeight="Bold" Text="{Binding Server.ProtocolDisplayName}" 
+                               FontWeight="Bold" Text="{Binding Server.ProtocolDisplayNameInShort}" 
                                Width="40"
                                TextAlignment="Center"
                                HorizontalAlignment="Left" VerticalAlignment="Top">

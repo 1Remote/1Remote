@@ -97,7 +97,7 @@ namespace PRM.Core.Protocol
         {
             get
             {
-                if (ProtocolServer.OnlyOneInstance)
+                if (ProtocolServer.IsOnlyOneInstance())
                     return ProtocolServer.Id.ToString();
                 else
                     return ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
@@ -164,6 +164,5 @@ namespace PRM.Core.Protocol
 
         public Action<string> OnClosed { get; set; } = null;
         public Action<string> OnFullScreen2Window { get; set; } = null;
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

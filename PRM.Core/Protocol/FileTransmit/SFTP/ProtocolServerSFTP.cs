@@ -14,7 +14,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             V1 = 1,
             V2 = 2,
         }
-        public ProtocolServerSFTP() : base("SFTP", "SFTP.V1", "SFTP", false)
+        public ProtocolServerSFTP() : base("SFTP", "SFTP.V1", "SFTP")
         {
         }
 
@@ -32,6 +32,11 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
         {
             get => _startupPath;
             set => SetAndNotifyIfChanged(nameof(StartupPath), ref _startupPath, value);
+        }
+
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
         }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
