@@ -111,7 +111,7 @@ namespace PRM.View
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
         {
 #if !DEV
-            Process.Start("https://github.com/VShawn/PRemoteM");
+            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
 #endif
             this.Close();
         }
