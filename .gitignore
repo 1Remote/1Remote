@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /PRM.sln.DotSettings
+/scripts/Test-Sandbox_Temp
