@@ -334,6 +334,11 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
+        public override bool IsOnlyOneInstance()
+        {
+            return true;
+        }
+
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try

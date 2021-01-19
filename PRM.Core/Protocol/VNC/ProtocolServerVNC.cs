@@ -15,7 +15,7 @@ namespace PRM.Core.Protocol.VNC
             Stretch = 0,
             Fixed = 1,
         }
-        public ProtocolServerVNC() : base("VNC", "VNC.V1", "VNC", true)
+        public ProtocolServerVNC() : base("VNC", "VNC.V1", "VNC")
         {
             base.Port = "5900";
             base.UserName = "";
@@ -26,6 +26,11 @@ namespace PRM.Core.Protocol.VNC
         {
             get => _vncWindowResizeMode;
             set => SetAndNotifyIfChanged(nameof(VncWindowResizeMode), ref _vncWindowResizeMode, value);
+        }
+
+        public override bool IsOnlyOneInstance()
+        {
+            return true;
         }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)

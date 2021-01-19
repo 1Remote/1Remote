@@ -86,7 +86,7 @@ namespace PRM.Model
         {
             uint serverId = vmProtocolServer.Server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (vmProtocolServer.Server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
+            if (vmProtocolServer.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {

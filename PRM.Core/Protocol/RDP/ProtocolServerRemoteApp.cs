@@ -26,7 +26,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", false)
+        public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", "APP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";
@@ -47,6 +47,11 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(RemoteApplicationProgram), ref _remoteApplicationProgram, value);
         }
 
+
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
+        }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {

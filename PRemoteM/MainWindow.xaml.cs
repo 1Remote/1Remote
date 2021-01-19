@@ -139,7 +139,7 @@ namespace PRM
                 {
                     Vm.TopPage = null;
                 }
-                else if (Vm.DispPage?.Page is SystemConfigPage scp)
+                else if (Vm.DispPage?.Page is SystemConfigPage)
                 {
                     Vm.DispPage = null;
                 }

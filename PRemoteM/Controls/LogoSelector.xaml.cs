@@ -142,8 +142,6 @@ namespace PRM.Core.Resources.Controls
                 double y = (double)CanvasImage.GetValue(Canvas.TopProperty);
 
                 var startPoint = new PointF(0, 0);
-                double roiWidth = 0;
-                double roiHeight = 0;
                 var drawPoint = new PointF(0, 0);
                 if (x < 0)
                 {
@@ -166,6 +164,8 @@ namespace PRM.Core.Resources.Controls
                     startPoint.Y = 0;
                 }
 
+                double roiWidth = 0;
+                double roiHeight = 0;
                 if (x + resize.PixelWidth > CanvasWhiteBoard.Width)
                 {
                     roiWidth = CanvasWhiteBoard.Width - drawPoint.X;

@@ -17,7 +17,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             V1 = 1,
             V2 = 2,
         }
-        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH", false)
+        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
         {
         }
 
@@ -43,6 +43,11 @@ namespace PRM.Core.Protocol.Putty.SSH
         {
             get => _startupAutoCommand;
             set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
+        }
+
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
         }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
