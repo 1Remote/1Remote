@@ -1,3 +1,0 @@
-Thanks to
-
-https://github.com/hstarorg/TinyPinyin.Net

@@ -83,7 +83,10 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.AudioMode = 2;
             rdpConfig.AudioCaptureMode = 0;
 
-            rdpConfig.RedirectDrives = 1;
+            rdpConfig.RedirectPosDevices = 0;
+            rdpConfig.DeviceStoreDirect = "";
+            rdpConfig.DriveStoreDirect = "";
+            rdpConfig.RedirectDrives = 0;
             rdpConfig.RedirectComPorts = 1;
             rdpConfig.RedirectClipboard = 1;
             rdpConfig.RedirectPrinters = 0;

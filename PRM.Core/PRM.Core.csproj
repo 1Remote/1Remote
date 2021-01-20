@@ -89,6 +89,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TinyPinyin.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TinyPinyin.Core.0.1.0\lib\net452\TinyPinyin.Core.dll</HintPath>
+    </Reference>
     <Reference Include="VncSharpWpf, Version=0.0.0.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Protocol\VNC\VncSharpWpf.dll</HintPath>
@@ -203,10 +206,7 @@
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\CmdRunner.cs" />
-    <Compile Include="Utils\KeywordHelper\EnglishKeywordMatcher.cs" />
-    <Compile Include="Utils\KeywordHelper\IKeywordMatcher.cs" />
     <Compile Include="Utils\MyVisualTreeHelper.cs" />
-    <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\HyperlinkHelper.cs" />
     <Compile Include="Utils\Ini.cs" />
     <Compile Include="Utils\IOPermissionHelper.cs" />
@@ -235,15 +235,8 @@
     <Compile Include="Utils\ScreenInfoEx.cs" />
     <Compile Include="Utils\ScrollViewerExtensions.cs" />
     <Compile Include="Utils\SetSelfStartingHelper.cs" />
+    <Compile Include="Utils\StringHelper.cs" />
     <Compile Include="Utils\SystemIconHelper.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode1.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode2.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\Data\PinyinCode3.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\Data\PinyinData.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\Engine.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\IPinyinDict.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\PinyinDict.cs" />
-    <Compile Include="Utils\TinyPinyin.Net\PinyinHelper.cs" />
     <Compile Include="Utils\SimpleLogHelper.cs" />
     <Compile Include="Utils\WindowChromeBase.cs" />
     <Compile Include="Utils\WindowExtensions.cs" />
@@ -471,9 +464,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Utils\TinyPinyin.Net\RefInfo.txt" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">

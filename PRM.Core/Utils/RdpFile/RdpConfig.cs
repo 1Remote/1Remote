@@ -173,12 +173,29 @@ namespace RdpHelper
         public int RdgiskdcProxy { get; set; } = 0;
         [RdpConfName("kdcproxyname:s:")]
         public string KdcProxyName { get; set; } = "";
+        /// <summary>
+        /// 	Determines which supported Plug and Play devices on the client computer will be redirected and available in the remote session.
+        /// No value specified - Do not redirect any supported Plug and Play devices.
+        /// * - Redirect all supported Plug and Play devices, including ones that are connected later.
+        /// DynamicDevices - Redirect any supported Plug and Play devices that are connected later.
+        /// The hardware ID for one or more Plug and Play devices - Redirect the specified supported Plug and Play device(s).
+        /// </summary>
         [RdpConfName("devicestoredirect:s:")]
         public string DeviceStoreDirect { get; set; } = "*";
+        /// <summary>
+        /// Determines which local disk drives on the client computer will be redirected and available in the remote session.
+        /// No value specified - Do not redirect any drives.
+        /// * - Redirect all disk drives, including drives that are connected later.
+        /// DynamicDrives - Redirect any drives that are connected later.
+        /// The drive and labels for one or more drives - Redirect the specified drive(s). e.g. "C:\;D:\;"
+        /// </summary>
         [RdpConfName("drivestoredirect:s:")]
         public string DriveStoreDirect { get; set; } = "*";
+        /// <summary>
+        /// "*" or ""
+        /// </summary>
         [RdpConfName("camerastoredirect:s:")]
-        public string CameraStoreDirect { get; set; } = "*";
+        public string CameraStoreDirect { get; set; } = "";
 
         [RdpConfName("full address:s:")]
         private string FullAddress { get; set; } = "";
