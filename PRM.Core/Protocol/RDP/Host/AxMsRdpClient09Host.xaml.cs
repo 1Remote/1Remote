@@ -485,7 +485,7 @@ namespace PRM.Core.Protocol.RDP.Host
             }
             else
                 _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-            Server.AddOrUpdate(_rdpServer);
+            SystemConfig.Instance.DataSecurity.DbUpdateServer(_rdpServer);
             _rdp.FullScreen = true;
         }
 

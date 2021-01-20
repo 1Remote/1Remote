@@ -25,7 +25,7 @@ namespace PRM.ViewModel
             IsAddMode = Server.Id <= 0;
 
             // decrypt pwd
-            SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
+            SystemConfig.Instance.DataSecurity.DecryptPwdIfItIsEncrypted(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();

@@ -282,7 +282,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath}"></TextBox>
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath, Mode=OneWay}"></TextBox>
                             </Grid>
                             <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></controls:ButtonEx>
                             <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></controls:ButtonEx>

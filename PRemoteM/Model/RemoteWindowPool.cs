@@ -84,7 +84,7 @@ namespace PRM.Model
 
         private bool ActivateOrReConnIfServerSessionIsOpened(VmProtocolServer vmProtocolServer)
         {
-            uint serverId = vmProtocolServer.Server.Id;
+            var serverId = vmProtocolServer.Server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
             if (vmProtocolServer.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
             {
@@ -242,7 +242,7 @@ namespace PRM.Model
         }
 
 
-        public void ShowRemoteHost(uint serverId, string assignTabToken)
+        public void ShowRemoteHost(long serverId, string assignTabToken)
         {
             Debug.Assert(serverId > 0);
             Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == serverId));
@@ -250,7 +250,7 @@ namespace PRM.Model
 
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
-            Server.AddOrUpdate(vmProtocolServer.Server);
+            SystemConfig.Instance.DataSecurity.DbUpdateServer(vmProtocolServer.Server);
 
             if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
             {
