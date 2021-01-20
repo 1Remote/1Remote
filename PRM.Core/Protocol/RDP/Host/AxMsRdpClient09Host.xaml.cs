@@ -489,6 +489,16 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.FullScreen = true;
         }
 
+        public override ProtocolHostType GetProtocolHostType()
+        {
+            return ProtocolHostType.Native;
+        }
+
+        public override IntPtr GetHostHwnd()
+        {
+            return IntPtr.Zero;
+        }
+
         public override bool CanResizeNow()
         {
             return Status == ProtocolHostStatus.Connected;
@@ -624,7 +634,6 @@ namespace PRM.Core.Protocol.RDP.Host
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Console.WriteLine(e.StackTrace);
             }
         }
 
@@ -635,9 +644,9 @@ namespace PRM.Core.Protocol.RDP.Host
         private double _normalLeft = 0;
         private void MakeNormal2FullScreen(bool saveSize = true)
         {
-            // TODO makesure ParentWindow is FullScreen Window
+            // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
-            if (ParentWindow is ITab iTab)
+            if (ParentWindow is ITab)
             {
                 // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case. 
                 _rdp.FullScreen = false;
@@ -695,7 +704,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void MakeFullScreen2Normal()
         {
-            // TODO makesure ParentWindow is FullScreen Window
+            // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
             if (ParentWindow is ITab)
             {

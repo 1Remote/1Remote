@@ -1,26 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.ViewModel;
 using Shawn.Utils;
-using SQLite;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
-using MessageBoxOptions = System.Windows.MessageBoxOptions;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -172,7 +162,7 @@ namespace PRM.View
                 }
                 catch (Exception ee)
                 {
-                    SimpleLogHelper.Warning(ee, ee.StackTrace);
+                    SimpleLogHelper.Warning(ee);
                     MessageBox.Show(ee.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 }
             }

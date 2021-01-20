@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
 using SQLite;
 
@@ -63,7 +56,6 @@ namespace PRM.Core.Model
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                SimpleLogHelper.Error(e.StackTrace);
                 return new Tuple<bool, string>(false, e.Message);
             }
         }
@@ -256,7 +248,7 @@ namespace PRM.Core.Model
                                     }
                                     catch (Exception e)
                                     {
-                                        SimpleLogHelper.Debug(e, e.StackTrace);
+                                        SimpleLogHelper.Debug(e);
                                         rsa = null;
                                     }
                                 }
@@ -641,7 +633,7 @@ namespace PRM.Core.Model
                             }
                             catch (Exception ee)
                             {
-                                SimpleLogHelper.Debug(ee, ee.StackTrace);
+                                SimpleLogHelper.Debug(ee);
                                 DbPath = oldDbPath;
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }

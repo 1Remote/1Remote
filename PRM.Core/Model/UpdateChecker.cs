@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Shawn.Utils;
@@ -22,8 +19,15 @@ namespace PRM.Core.Model
 
         private string _ignoreVersion;
 
-        public UpdateChecker(string ignoreVersion = "")
+        /// <summary>
+        /// Invoke to notify a newer version of te software was released
+        /// while new version code = arg1, download url = arg2
+        /// </summary>
+        protected readonly Action<string, string> OnNewVersionRelease;
+
+        public UpdateChecker(Action<string, string> onNewVersionRelease, string ignoreVersion = "")
         {
+            OnNewVersionRelease = onNewVersionRelease;
             this._ignoreVersion = ignoreVersion;
         }
 
@@ -148,7 +152,7 @@ namespace PRM.Core.Model
                 var r = CheckUpdate();
                 if (r.Item1)
                 {
-                    GlobalEventHelper.OnNewVersionRelease?.Invoke(r.Item2, r.Item3);
+                    OnNewVersionRelease?.Invoke(r.Item2, r.Item3);
                 }
             });
             t.Start();

@@ -5,30 +5,39 @@
 
 
     <Style TargetType="Control" x:Key="ControlBase">
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FontFamily" Value="Microsoft YaHei"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
     <Style TargetType="Button" x:Key="ButtonBase">
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
     <Style TargetType="TextBox" x:Key="TextBoxBase">
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
     </Style>
+    <Style TargetType="TextBlock" x:Key="TextBlockBase">
+        <Setter Property="FontSize" Value="12"></Setter>
+    </Style>
     <Style TargetType="CheckBox" x:Key="CheckBoxBase">
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
     <Style TargetType="RadioButton" x:Key="RadioButtonBase">
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
     <Style TargetType="TextElement" x:Key="TextElementBase">
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
     </Style>
@@ -36,6 +45,7 @@
     <Style TargetType="Control" BasedOn="{StaticResource ControlBase}" />
     <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}" />
     <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxBase}" />
+    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}" />
     <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}" />
     <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonBase}" />
     <Style TargetType="TextElement" BasedOn="{StaticResource TextElementBase}" />
@@ -45,6 +55,7 @@
     <Style TargetType="{x:Type controls:ButtonEx}" x:Key="ButtonExStyleBase">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+        <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="Opacity" Value="1"></Setter>
         <Setter Property="Padding" Value="5"></Setter>
         <Setter Property="BorderBrush" Value="Gray"></Setter>
@@ -115,16 +126,16 @@
                     <Condition Property="IsEnabled" Value="True"></Condition>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                    <Setter Property="Opacity" Value="{Binding OpacityOnMouseOver, RelativeSource={x:Static RelativeSource.Self}}"/>
                     <Setter Property="Foreground" Value="{Binding ForegroundOnMouseOver, RelativeSource={x:Static RelativeSource.Self}}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                <Setter Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
                 <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                <Setter Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
                 <Setter Property="Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
             </Trigger>
         </Style.Triggers>
@@ -169,7 +180,7 @@
                 <ColumnDefinition Width="20" />
             </Grid.ColumnDefinitions>
             <Border Grid.ColumnSpan="2" Name="Border"
-              BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" 
+              BorderBrush="{StaticResource ComboBoxNormalBorderBrush}"  
               CornerRadius="0" BorderThickness="1, 1, 1, 1" 
               Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
             <Border Grid.Column="1" Margin="1, 1, 1, 1" BorderBrush="#444" Name="ButtonBorder"
@@ -274,7 +285,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="EditorRowGridTitle" TargetType="TextBlock">
+    <Style x:Key="EditorRowGridTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="Width" Value="100"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>

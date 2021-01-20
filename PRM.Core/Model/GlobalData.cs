@@ -83,15 +83,24 @@ namespace PRM.Core.Model
                 var tmp = new ObservableCollection<VmProtocolServer>();
                 foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
                 {
-                    tmp.Add(new VmProtocolServer(serverAbstract));
+                    try
+                    {
+                        tmp.Add(new VmProtocolServer(serverAbstract));
+                    }
+                    catch (Exception e)
+                    {
+                        // ignored
+                    }
                 }
                 VmItemList = tmp;
             }
             // edit
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
-                VmItemList.First(x => x.Server.Id == protocolServer.Id).Server.Update(protocolServer);
                 Server.AddOrUpdate(protocolServer);
+                VmItemList.Remove(VmItemList.First(x => x.Server.Id == protocolServer.Id));
+                VmItemList.Add(new VmProtocolServer(protocolServer));
+                VmItemListDataChanged?.Invoke();
             }
             // add
             else

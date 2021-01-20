@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -23,9 +19,16 @@ namespace PRM.Core.Protocol
         WaitingForReconnect
     }
 
+    public enum ProtocolHostType
+    {
+        Native,
+        Integrate
+    }
+
+
     public abstract class ProtocolHostBase : UserControl
     {
-        public readonly ProtocolServerBase ProtocolServer;
+        public ProtocolServerBase ProtocolServer { get;}
 
         private Window _parentWindow = null;
         public Window ParentWindow
@@ -94,7 +97,7 @@ namespace PRM.Core.Protocol
         {
             get
             {
-                if (ProtocolServer.OnlyOneInstance)
+                if (ProtocolServer.IsOnlyOneInstance())
                     return ProtocolServer.Id.ToString();
                 else
                     return ProtocolServer.Id.ToString() + "_" + this.GetHashCode().ToString();
@@ -150,6 +153,14 @@ namespace PRM.Core.Protocol
         {
             // do nothing
         }
+
+        public abstract ProtocolHostType GetProtocolHostType();
+
+        /// <summary>
+        /// if it is a Integrate host, then return process's hwnd.
+        /// </summary>
+        /// <returns></returns>
+        public abstract IntPtr GetHostHwnd();
 
         public Action<string> OnClosed { get; set; } = null;
         public Action<string> OnFullScreen2Window { get; set; } = null;

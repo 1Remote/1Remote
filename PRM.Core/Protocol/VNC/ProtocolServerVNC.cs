@@ -15,7 +15,7 @@ namespace PRM.Core.Protocol.VNC
             Stretch = 0,
             Fixed = 1,
         }
-        public ProtocolServerVNC() : base("VNC", "VNC.V1", "VNC", true)
+        public ProtocolServerVNC() : base("VNC", "VNC.V1", "VNC")
         {
             base.Port = "5900";
             base.UserName = "";
@@ -28,6 +28,11 @@ namespace PRM.Core.Protocol.VNC
             set => SetAndNotifyIfChanged(nameof(VncWindowResizeMode), ref _vncWindowResizeMode, value);
         }
 
+        public override bool IsOnlyOneInstance()
+        {
+            return true;
+        }
+
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
@@ -36,7 +41,7 @@ namespace PRM.Core.Protocol.VNC
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

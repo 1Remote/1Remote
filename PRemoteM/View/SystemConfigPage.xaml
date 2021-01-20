@@ -405,7 +405,7 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.Resources>
-                                <Style TargetType="TextBlock">
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="TextAlignment" Value="Center"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="HorizontalAlignment" Value="Left"></Setter>

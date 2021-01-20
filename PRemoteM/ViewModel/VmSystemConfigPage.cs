@@ -1,23 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security;
-using System.Security.AccessControl;
-using System.Security.Permissions;
-using System.Security.Principal;
-using System.Text;
+﻿using System.IO;
 using System.Windows;
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using PRM.Core.DB;
 using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
-using SQLite;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel

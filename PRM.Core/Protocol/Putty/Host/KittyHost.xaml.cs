@@ -66,15 +66,18 @@ namespace PRM.Core.Protocol.Putty.Host
         private const int SW_HIDE = 0;
         private const int SW_SHOWNORMAL = 1;
         private const int SW_SHOWMAXIMIZED = 3;
-
-        public const string KittyExeName = "KiTTY_PRM.exe";
+#if DEV
+        public const string KittyExeName = "kitty_portable_PRemoteM_debug.exe";
+#else
+        public const string KittyExeName = "kitty_portable_PRemoteM.exe";
+#endif
         public const string KittyIniName = "kitty.ini";
         private readonly string KittyExeFolderPath = null;
         private readonly string KittyExeFullName = null;
 
         private const int KittyWindowMargin = 0;
         private Process _kittyProcess = null;
-        private IntPtr _kittyHandle = IntPtr.Zero;
+        private IntPtr _kittyHandleOfWindow = IntPtr.Zero;
         private System.Windows.Forms.Panel _kittyMasterPanel = null;
         private IntPtr KittyMasterPanelHandle { get; set; } = IntPtr.Zero;
 
@@ -154,9 +157,9 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private void KittyMasterPanelOnSizeChanged(object sender, EventArgs e)
         {
-            if (_kittyHandle != IntPtr.Zero)
+            if (_kittyHandleOfWindow != IntPtr.Zero)
             {
-                MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2,
+                MoveWindow(_kittyHandleOfWindow, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2,
                     _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
             }
         }
@@ -168,9 +171,10 @@ namespace PRM.Core.Protocol.Putty.Host
 
             if (File.Exists(KittyExeFullName))
             {
+#if !DEV
                 // verify MD5
                 var md5 = MD5Helper.GetMd5Hash32BitString(File.ReadAllBytes(KittyExeFullName));
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/KiTTY_PRM.exe")).Stream;
+                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/kitty_portable.exe")).Stream;
                 byte[] bytes = new byte[kitty.Length];
                 kitty.Read(bytes, 0, bytes.Length);
                 var md5_2 = MD5Helper.GetMd5Hash32BitString(bytes);
@@ -191,10 +195,11 @@ namespace PRM.Core.Protocol.Putty.Host
                     kitty.Seek(0, SeekOrigin.Begin);
                     kitty.CopyTo(fileStream);
                 }
+#endif
             }
             else
             {
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/KiTTY_PRM.exe")).Stream;
+                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/kitty_portable.exe")).Stream;
                 using (var fileStream = File.Create(KittyExeFullName))
                 {
                     kitty.Seek(0, SeekOrigin.Begin);
@@ -214,7 +219,7 @@ height=21
 [KiTTY]
 adb=yes
 ; antiidle: character string regularly sent to maintain the connection alive
-antiidle== \k08\
+antiidle=\k08\
 ; antiidledelay: time delay between two sending
 antiidledelay=60
 ; autoreconnect: enable/disable the automatic reconnection feature
@@ -258,36 +263,45 @@ reload=yes
             {
                 FileName = KittyExeFullName,
                 WorkingDirectory = KittyExeFolderPath,
-                Arguments = _protocolPuttyBase.GetPuttyConnString() + " -hwndparent " + KittyMasterPanelHandle,
+                Arguments = _protocolPuttyBase.GetPuttyConnString(),
                 WindowStyle = ProcessWindowStyle.Minimized
             };
 
             Debug.Assert(ps.Arguments.IndexOf(_protocolPuttyBase.GetSessionName(), StringComparison.Ordinal) >= 0);
 
             _kittyProcess = new Process { StartInfo = ps };
+            _kittyProcess.EnableRaisingEvents = true;
+            _kittyProcess.Exited += KittyProcessOnExited;
             _kittyProcess.Start();
             SimpleLogHelper.Debug($"Start KiTTY({_kittyProcess.Handle})");
-            _kittyProcess.Exited += (sender, args) => _kittyProcess = null;
             _kittyProcess.Refresh();
             _kittyProcess.WaitForInputIdle();
-            _kittyHandle = _kittyProcess.MainWindowHandle;
+            _kittyHandleOfWindow = _kittyProcess.MainWindowHandle;
+        }
+
+        private void KittyProcessOnExited(object sender, EventArgs e)
+        {
+            SimpleLogHelper.Debug($"KittyProcessOnExited Invoked!");
+            Close();
         }
 
         private void SetKittyWindowStyle()
         {
             SimpleLogHelper.Debug("SetParent");
-            SetParent(_kittyHandle, KittyMasterPanelHandle);
+            // must be set or putty will be shown out of panel
+            SetParent(_kittyHandleOfWindow, KittyMasterPanelHandle);
             SimpleLogHelper.Debug("ShowWindow");
-            ShowWindow(_kittyHandle, SW_SHOWMAXIMIZED);
+            ShowWindow(_kittyHandleOfWindow, SW_SHOWMAXIMIZED);
             SimpleLogHelper.Debug("GetWindowLong");
-            int lStyle = GetWindowLong(_kittyHandle, GWL_STYLE);
+            int lStyle = GetWindowLong(_kittyHandleOfWindow, GWL_STYLE);
             lStyle &= ~WS_CAPTION; // no title
             lStyle &= ~WS_BORDER;  // no border
             lStyle &= ~WS_THICKFRAME;
+            lStyle &= ~WS_VSCROLL;
             SimpleLogHelper.Debug("SetWindowLong");
-            SetWindowLong(_kittyHandle, GWL_STYLE, lStyle);
+            SetWindowLong(_kittyHandleOfWindow, GWL_STYLE, lStyle);
             SimpleLogHelper.Debug("MoveWindow");
-            MoveWindow(_kittyHandle, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2, _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
+            MoveWindow(_kittyHandleOfWindow, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2, _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
             SimpleLogHelper.Debug("Del KiTTY session config");
         }
 
@@ -304,22 +318,25 @@ reload=yes
             DelKittySessionConfig();
         }
 
-        public void CloseKitty()
+        private void CloseKitty()
         {
             DelKittySessionConfig();
-            try
-            {
-                if (_kittyProcess?.HasExited == false)
+            if (_kittyProcess != null)
+                try
                 {
-                    SimpleLogHelper.Debug($"Stop KiTTY({_kittyProcess.Handle})");
-                    _kittyProcess?.Kill();
+                    _kittyProcess.Exited -= KittyProcessOnExited;
                 }
-                _kittyProcess = null;
-            }
-            catch (Exception e)
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+            if (_kittyProcess?.HasExited == false)
             {
-                SimpleLogHelper.Error(e);
+                SimpleLogHelper.Debug($"Stop KiTTY({_kittyProcess.Handle})");
+                _kittyProcess?.Kill();
             }
+            _kittyProcess = null;
         }
 
 
@@ -367,6 +384,7 @@ reload=yes
                 }
 
             puttyOption.Set(PuttyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
@@ -445,13 +463,13 @@ reload=yes
             //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
 
 
-            puttyOption.SaveKittyConfig(KittyExeFolderPath);
+            puttyOption.SaveToKittyConfig(KittyExeFolderPath);
         }
 
         private void DelKittySessionConfig()
         {
             var puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
-            puttyOption.DelKittyConfig(KittyExeFolderPath);
+            puttyOption.DelFromKittyConfig(KittyExeFolderPath);
         }
 
         public override void GoFullScreen()
@@ -461,7 +479,17 @@ reload=yes
 
         public override void MakeItFocus()
         {
-            SetForegroundWindow(_kittyHandle);
+            SetForegroundWindow(_kittyHandleOfWindow);
+        }
+
+        public override ProtocolHostType GetProtocolHostType()
+        {
+            return ProtocolHostType.Integrate;
+        }
+
+        public override IntPtr GetHostHwnd()
+        {
+            return _kittyHandleOfWindow;
         }
 
         private void Dispose(bool disposing)

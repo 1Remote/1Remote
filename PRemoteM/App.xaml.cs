@@ -5,21 +5,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
-using Windows.ApplicationModel;
-using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.Host;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.RDP;
 using PRM.Model;
 using PRM.View;
-using PRM.ViewModel;
 using Shawn.Utils;
-using Shawn.Utils.PageHost;
 
 namespace PRM
 {
@@ -43,7 +33,7 @@ namespace PRM
 
         private static void OnUnhandledException(Exception e)
         {
-            SimpleLogHelper.Fatal(e, e.StackTrace);
+            SimpleLogHelper.Fatal(e);
             MessageBox.Show("please contact me if you see these: \r\n\r\n\r\n" + e.Message, SystemConfig.AppName + " unhandled error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
             Process.Start("https://github.com/VShawn/PRemoteM/issues");
             App.Close();
@@ -235,7 +225,6 @@ namespace PRM
             OnlyOneAppInstanceCheck();
 
 
-#if !DEBUG
             // kill putty process
             foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
             {
@@ -247,7 +236,6 @@ namespace PRM
                 {
                 }
             }
-#endif
 
             bool isNewUser = InitSystemConfig(appDateFolder);
             if (isNewUser)

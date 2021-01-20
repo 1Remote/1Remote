@@ -26,7 +26,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", false)
+        public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", "APP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";
@@ -48,6 +48,11 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
+        }
+
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
@@ -56,7 +61,7 @@ namespace PRM.Core.Protocol.RDP
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }
@@ -78,7 +83,10 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.AudioMode = 2;
             rdpConfig.AudioCaptureMode = 0;
 
-            rdpConfig.RedirectDrives = 1;
+            rdpConfig.RedirectPosDevices = 0;
+            rdpConfig.DeviceStoreDirect = "";
+            rdpConfig.DriveStoreDirect = "";
+            rdpConfig.RedirectDrives = 0;
             rdpConfig.RedirectComPorts = 1;
             rdpConfig.RedirectClipboard = 1;
             rdpConfig.RedirectPrinters = 0;
