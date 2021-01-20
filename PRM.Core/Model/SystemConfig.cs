@@ -60,6 +60,11 @@ namespace PRM.Core.Model
                 this.NewVersionUrl = s1;
             };
 
+
+            _lastScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
+            _lastScreenRectangle = GetScreenSize();
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+
             // check update every hours.
             _checkUpdateTimer = new Timer()
             {
@@ -68,16 +73,12 @@ namespace PRM.Core.Model
             };
             _checkUpdateTimer.Elapsed += (sender, args) =>
             {
-                var uc = new UpdateChecker();
+                var uc = new UpdateChecker(GlobalEventHelper.OnNewVersionRelease);
                 uc.CheckUpdateAsync();
             };
-
-            _lastScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
-            _lastScreenRectangle = GetScreenSize();
-            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
-
+            // check one time right now!
             {
-                var uc = new UpdateChecker();
+                var uc = new UpdateChecker(GlobalEventHelper.OnNewVersionRelease);
                 uc.CheckUpdateAsync();
             }
         }

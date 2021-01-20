@@ -98,8 +98,9 @@ namespace PRM.Core.Model
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
                 Server.AddOrUpdate(protocolServer);
-                // TODO not to reload.
-                ServerListUpdate();
+                VmItemList.Remove(VmItemList.First(x => x.Server.Id == protocolServer.Id));
+                VmItemList.Add(new VmProtocolServer(protocolServer));
+                VmItemListDataChanged?.Invoke();
             }
             // add
             else

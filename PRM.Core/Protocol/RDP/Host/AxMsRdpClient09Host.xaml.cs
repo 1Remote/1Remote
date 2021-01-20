@@ -644,7 +644,7 @@ namespace PRM.Core.Protocol.RDP.Host
         private double _normalLeft = 0;
         private void MakeNormal2FullScreen(bool saveSize = true)
         {
-            // TODO makesure ParentWindow is FullScreen Window
+            // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
             if (ParentWindow is ITab)
             {
@@ -704,7 +704,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void MakeFullScreen2Normal()
         {
-            // TODO makesure ParentWindow is FullScreen Window
+            // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
             if (ParentWindow is ITab)
             {

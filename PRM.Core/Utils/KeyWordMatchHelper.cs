@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Converters;
 using PRM.Core.Annotations;
+using TinyPinyin.Core;
 
 namespace Shawn.Utils
 {
@@ -170,7 +171,7 @@ namespace Shawn.Utils
 
 
             // 没有汉字时，直接返回英文匹配结果
-            if (orgString.All(@char => !TinyPinyin.PinyinHelper.IsChinese(@char)))
+            if (orgString.All(@char => !PinyinHelper.IsChinese(@char)))
             {
                 goto Return;
             }
@@ -189,9 +190,9 @@ namespace Shawn.Utils
             var pinyinFlagOnOrgString = new List<bool>();
             foreach (var @char in orgString)
             {
-                if (TinyPinyin.PinyinHelper.IsChinese(@char))
+                if (PinyinHelper.IsChinese(@char))
                 {
-                    var pinyin = TinyPinyin.PinyinHelper.GetPinyin(@char).ToLower();
+                    var pinyin = PinyinHelper.GetPinyin(@char).ToLower();
                     pinyinFlagOnOrgString.Add(true);
                 }
                 else
@@ -204,7 +205,7 @@ namespace Shawn.Utils
 
             // 进行拼音首字母的匹配
             {
-                string pinyinInitialsString = TinyPinyin.PinyinHelper.GetPinyinInitials(orgString);
+                string pinyinInitialsString = PinyinHelper.GetPinyinInitials(orgString);
                 // 先用小写匹配所有词，再根据大小写敏感校验英文字符是否匹配
                 var pinyinInitialsLowerString = pinyinInitialsString.ToLower();
                 for (var n = 0; n < keywordList.Count; n++)
@@ -281,7 +282,7 @@ namespace Shawn.Utils
                     var @char = orgString[i];
                     if (pinyinFlagOnOrgString[i])
                     {
-                        var pinyin = TinyPinyin.PinyinHelper.GetPinyin(@char).ToLower();
+                        var pinyin = PinyinHelper.GetPinyin(@char).ToLower();
                         charFullPinYinList.Add(pinyin);
                     }
                     else
