@@ -162,7 +162,7 @@ namespace PRM.View
                 }
                 catch (Exception ee)
                 {
-                    SimpleLogHelper.Warning(ee, ee.StackTrace);
+                    SimpleLogHelper.Warning(ee);
                     MessageBox.Show(ee.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 }
             }

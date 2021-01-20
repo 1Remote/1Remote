@@ -56,7 +56,6 @@ namespace PRM.Core.Model
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
-                SimpleLogHelper.Error(e.StackTrace);
                 return new Tuple<bool, string>(false, e.Message);
             }
         }
@@ -249,7 +248,7 @@ namespace PRM.Core.Model
                                     }
                                     catch (Exception e)
                                     {
-                                        SimpleLogHelper.Debug(e, e.StackTrace);
+                                        SimpleLogHelper.Debug(e);
                                         rsa = null;
                                     }
                                 }
@@ -634,7 +633,7 @@ namespace PRM.Core.Model
                             }
                             catch (Exception ee)
                             {
-                                SimpleLogHelper.Debug(ee, ee.StackTrace);
+                                SimpleLogHelper.Debug(ee);
                                 DbPath = oldDbPath;
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }

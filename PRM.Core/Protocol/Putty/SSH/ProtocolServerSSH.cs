@@ -59,7 +59,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

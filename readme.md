@@ -23,6 +23,8 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 
 ## Installation
 
+Latest Version: 0.5.8.2101192131
+
 Use one of the following methods to install the application:
 
 - [GitHub release](https://github.com/VShawn/PRemoteM/releases)

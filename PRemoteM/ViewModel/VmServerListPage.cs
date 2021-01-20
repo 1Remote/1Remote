@@ -360,7 +360,7 @@ namespace PRM.ViewModel
                             }
                             catch (Exception e)
                             {
-                                SimpleLogHelper.Debug(e, e.StackTrace);
+                                SimpleLogHelper.Debug(e);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
@@ -583,7 +583,7 @@ namespace PRM.ViewModel
                             }
                             catch (Exception e)
                             {
-                                SimpleLogHelper.Debug(e, e.StackTrace);
+                                SimpleLogHelper.Debug(e);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }

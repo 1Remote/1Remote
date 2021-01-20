@@ -617,7 +617,7 @@
             </Grid.Style>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel.Resources>
-                    <Style TargetType="TextBlock">
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                         <Setter Property="Margin" Value="0 0 5 0"></Setter>
                     </Style>

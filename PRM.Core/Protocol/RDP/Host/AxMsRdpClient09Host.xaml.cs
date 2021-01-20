@@ -634,7 +634,6 @@ namespace PRM.Core.Protocol.RDP.Host
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Console.WriteLine(e.StackTrace);
             }
         }
 

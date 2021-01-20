@@ -613,7 +613,7 @@ namespace PRM.Core.Protocol.Putty
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Error(e, e.StackTrace);
+                SimpleLogHelper.Error(e);
             }
         }
 
@@ -646,7 +646,7 @@ namespace PRM.Core.Protocol.Putty
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Error(PuttyKeyFilePath, e, e.StackTrace);
+                SimpleLogHelper.Info("Try to delete KiTTY registry table but fail: ", PuttyKeyFilePath, e);
             }
         }
 
