@@ -24,7 +24,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ActionName), ref _actionName, value);
         }
 
-        public Action<uint> Run;
+        public Action<int> Run;
     }
 
 

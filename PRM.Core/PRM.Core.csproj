@@ -112,13 +112,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DB\Config.cs" />
-    <Compile Include="DB\IDb.cs" />
-    <Compile Include="DB\SQLite\DbConfig.cs" />
-    <Compile Include="DB\SQLite\DbSqliteHelper.cs" />
-    <Compile Include="DB\SQLite\OrmTableBase.cs" />
-    <Compile Include="DB\SQLite\DbServer.cs" />
-    <Compile Include="DB\SQLite\SQLite.cs" />
+    <Compile Include="DB\DbExtensions.cs" />
+    <Compile Include="DB\freesql\FreeSqlDb.cs" />
+    <Compile Include="DB\IDB\IDb.cs" />
+    <Compile Include="DB\IDB\IDbServer.cs" />
+    <Compile Include="DB\freesql\DbConfig.cs" />
+    <Compile Include="DB\freesql\DbServer.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.cs" />
@@ -229,7 +228,6 @@
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
     <Compile Include="Protocol\ItemCreateHelper.cs" />
-    <Compile Include="DB\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
@@ -361,9 +359,6 @@
     <Resource Include="Resources\Icons\20210106\20210106_104.png" />
     <Resource Include="Resources\Icons\20210106\20210106_105.png" />
     <Resource Include="kitty_portable.exe" />
-    <Content Include="sqlite3.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Resources\Logo\author_avatar.jpg" />
     <Content Include="Protocol\VNC\VncSharpWpf.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />

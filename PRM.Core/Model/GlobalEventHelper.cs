@@ -8,7 +8,7 @@ namespace PRM.Core.Model
 {
     public static class GlobalEventHelper
     {
-        public delegate void OnServerConnectDelegate(uint serverId, string assignTabToken = null);
+        public delegate void OnServerConnectDelegate(long serverId, string assignTabToken = null);
 
         /// <summary>
         /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
@@ -29,7 +29,7 @@ namespace PRM.Core.Model
         /// <param name="serverId">server id, if id == 0 goto add page</param>
         /// <param name="isDuplicateMode">is duplicate? works only id above 0</param>
         /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnGoToServerEditPageDelegate(uint serverId, bool isDuplicateMode = false, bool showAnimation = true);
+        public delegate void OnGoToServerEditPageDelegate(int serverId, bool isDuplicateMode = false, bool showAnimation = true);
 
         /// <summary>
         /// Go to server add
@@ -40,7 +40,7 @@ namespace PRM.Core.Model
 
         /// <summary>
         /// Go to server edit by server id
-        /// param1 uint: server id
+        /// param1 int: server id
         /// param2 bool: is duplicate?
         /// param3 bool: show in animation?
         /// </summary>

@@ -299,14 +299,14 @@ namespace PRM.ViewModel
                                 foreach (var vs in GlobalData.Instance.VmItemList)
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                    SystemConfig.Instance.DataSecurity.DecryptPwd(serverBase);
+                                    SystemConfig.Instance.DataSecurity.DecryptPwdIfItIsEncrypted(serverBase);
                                     list.Add(serverBase);
                                 }
                             else
                                 foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true))
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                    SystemConfig.Instance.DataSecurity.DecryptPwd(serverBase);
+                                    SystemConfig.Instance.DataSecurity.DecryptPwdIfItIsEncrypted(serverBase);
                                     list.Add(serverBase);
                                 }
                             File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
@@ -352,7 +352,7 @@ namespace PRM.ViewModel
                                     {
                                         server.Id = 0;
                                         list.Add(server);
-                                        Server.AddOrUpdate(server, true);
+                                        SystemConfig.Instance.DataSecurity.DbAddServer(server);
                                     }
                                 }
                                 GlobalData.Instance.ServerListUpdate();
@@ -573,7 +573,7 @@ namespace PRM.ViewModel
                                 {
                                     foreach (var serverBase in list)
                                     {
-                                        Server.AddOrUpdate(serverBase, true);
+                                        SystemConfig.Instance.DataSecurity.DbAddServer(serverBase);
                                     }
                                     GlobalData.Instance.ServerListUpdate();
                                     MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
@@ -611,14 +611,12 @@ namespace PRM.ViewModel
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {
                             var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                            if (ss?.Count > 0)
+                            if (!(ss?.Count > 0)) return;
+                            foreach (var vs in ss)
                             {
-                                foreach (var vs in ss)
-                                {
-                                    Server.Delete(vs.Server.Id);
-                                }
-                                GlobalData.Instance.ServerListUpdate();
+                                SystemConfig.Instance.DataSecurity.DbDeleteServer(vs.Server.Id);
                             }
+                            GlobalData.Instance.ServerListUpdate();
                         }
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
                 }
@@ -670,7 +668,7 @@ namespace PRM.ViewModel
                                             foreach (var vs in ss)
                                             {
                                                 vs.Server.DispName = MultiEditNewValue;
-                                                Server.AddOrUpdate(vs.Server);
+                                                SystemConfig.Instance.DataSecurity.DbUpdateServer(vs.Server);
                                             }
                                         }
                                         break;
@@ -683,7 +681,7 @@ namespace PRM.ViewModel
                                             foreach (var vs in ss)
                                             {
                                                 vs.Server.GroupName = MultiEditNewValue;
-                                                Server.AddOrUpdate(vs.Server);
+                                                SystemConfig.Instance.DataSecurity.DbUpdateServer(vs.Server);
                                             }
                                         }
                                         break;
@@ -698,7 +696,7 @@ namespace PRM.ViewModel
                                                 if (vs.Server is ProtocolServerWithAddrPortBase p)
                                                 {
                                                     p.Address = MultiEditNewValue;
-                                                    Server.AddOrUpdate(p);
+                                                    SystemConfig.Instance.DataSecurity.DbUpdateServer(p);
                                                 }
                                             }
                                         }
@@ -714,7 +712,7 @@ namespace PRM.ViewModel
                                                 if (vs.Server is ProtocolServerWithAddrPortBase p)
                                                 {
                                                     p.Port = MultiEditNewValue;
-                                                    Server.AddOrUpdate(p);
+                                                    SystemConfig.Instance.DataSecurity.DbUpdateServer(p);
                                                 }
                                             }
                                         }
@@ -730,7 +728,7 @@ namespace PRM.ViewModel
                                                 if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
                                                 {
                                                     p.UserName = MultiEditNewValue;
-                                                    Server.AddOrUpdate(p);
+                                                    SystemConfig.Instance.DataSecurity.DbUpdateServer(p);
                                                 }
                                             }
                                         }
@@ -746,7 +744,7 @@ namespace PRM.ViewModel
                                                 if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
                                                 {
                                                     p.Password = MultiEditNewValue;
-                                                    Server.AddOrUpdate(p);
+                                                    SystemConfig.Instance.DataSecurity.DbUpdateServer(p);
                                                 }
                                             }
                                         }

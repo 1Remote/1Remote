@@ -26,9 +26,9 @@ namespace PRM.Core.Protocol
         public abstract bool IsOnlyOneInstance();
 
 
-        private uint _id = 0;
+        private int _id = 0;
         [JsonIgnore]
-        public uint Id
+        public int Id
         {
             get => _id;
             set => SetAndNotifyIfChanged(nameof(Id), ref _id, value);

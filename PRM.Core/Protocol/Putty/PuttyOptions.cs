@@ -644,9 +644,9 @@ namespace PRM.Core.Protocol.Putty
             {
                 Registry.CurrentUser.DeleteSubKeyTree(regPath);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                SimpleLogHelper.Info("Try to delete KiTTY registry table but fail: ", PuttyKeyFilePath, e);
+                // ignored
             }
         }
 
