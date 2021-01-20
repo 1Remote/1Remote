@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Microsoft.Win32;
 using PRM.Core.Annotations;
 using PRM.Core.Model;
@@ -151,8 +142,6 @@ namespace PRM.Core.Resources.Controls
                 double y = (double)CanvasImage.GetValue(Canvas.TopProperty);
 
                 var startPoint = new PointF(0, 0);
-                double roiWidth = 0;
-                double roiHeight = 0;
                 var drawPoint = new PointF(0, 0);
                 if (x < 0)
                 {
@@ -175,6 +164,8 @@ namespace PRM.Core.Resources.Controls
                     startPoint.Y = 0;
                 }
 
+                double roiWidth = 0;
+                double roiHeight = 0;
                 if (x + resize.PixelWidth > CanvasWhiteBoard.Width)
                 {
                     roiWidth = CanvasWhiteBoard.Width - drawPoint.X;

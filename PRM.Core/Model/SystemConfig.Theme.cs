@@ -3,14 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using Newtonsoft.Json;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Resources.Theme;
 using Shawn.Utils;
@@ -118,7 +112,7 @@ namespace PRM.Core.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Debug(e, e.StackTrace);
+                    SimpleLogHelper.Debug(e);
                 }
             }
         }
@@ -164,7 +158,7 @@ namespace PRM.Core.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                 }
             }
         }

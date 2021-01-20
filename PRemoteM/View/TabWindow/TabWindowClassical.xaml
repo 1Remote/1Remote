@@ -85,7 +85,6 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
-                                  PreviewMouseDown="FocusContentWhenPreviewMouseDown"
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
@@ -109,7 +108,7 @@
                                 </Grid.ContextMenu>
                                 <Grid.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                        <GradientStop Color="{Binding MarkColorHex}" Offset="0"></GradientStop>
+                                        <GradientStop Color="{Binding MarkColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0"></GradientStop>
                                         <GradientStop Color="{DynamicResource MainColor1}" Offset="1"></GradientStop>
                                     </LinearGradientBrush>
                                 </Grid.Background>
@@ -400,7 +399,7 @@
 
 
 
-    <Grid Background="{DynamicResource MainColor1Brush}" PreviewMouseDown="FocusContentWhenPreviewMouseDown">
+    <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>

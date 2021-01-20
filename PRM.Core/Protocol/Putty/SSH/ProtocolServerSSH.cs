@@ -17,7 +17,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             V1 = 1,
             V2 = 2,
         }
-        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH", false)
+        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
         {
         }
 
@@ -45,6 +45,11 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
         }
 
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
+        }
+
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
@@ -54,7 +59,7 @@ namespace PRM.Core.Protocol.Putty.SSH
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

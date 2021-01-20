@@ -226,6 +226,8 @@ namespace Shawn.Utils
                 foreach (var obj in o)
                 {
                     Console.WriteLine(obj);
+                    if (o[0] is Exception e)
+                        Console.WriteLine(e.StackTrace);
                 }
             }
             Console.ResetColor();
@@ -260,34 +262,26 @@ namespace Shawn.Utils
                         default:
                             throw new ArgumentOutOfRangeException(nameof(enumLogLevel), enumLogLevel, null);
                     }
-                    string logFileNameWithOutExtension = logFileName;
+                    var fi = new FileInfo(logFileName);
+                    // craete Directory
+                    if (!fi.Directory.Exists)
+                        fi.Directory.Create();
 
                     // append date
+                    var logFileNameWithOutExtension = fi.Name.Replace(fi.Extension, "");
+                    if (!string.IsNullOrWhiteSpace(fi.Extension))
                     {
-                        var fi = new FileInfo(logFileName);
-                        logFileNameWithOutExtension = fi.Name.Replace(fi.Extension, "");
-                        if (!string.IsNullOrWhiteSpace(fi.Extension))
-                        {
-                            var withOutExtension = logFileName.Substring(0, logFileName.LastIndexOf(".", StringComparison.Ordinal));
-                            logFileName = $"{withOutExtension}_{DateTime.Now.ToString("yyyyMMdd")}{fi.Extension}";
-                        }
-                        else
-                        {
-                            logFileName = $"{logFileName}_{DateTime.Now.ToString("yyyyMMdd")}{fi.Extension}";
-                        }
+                        var withOutExtension = logFileName.Substring(0, logFileName.LastIndexOf(".", StringComparison.Ordinal));
+                        logFileName = $"{withOutExtension}_{DateTime.Now.ToString("yyyyMMdd")}{fi.Extension}";
                     }
-
-                    // craete Directory
+                    else
                     {
-                        var fi = new FileInfo(logFileName);
-                        if (!fi.Directory.Exists)
-                            fi.Directory.Create();
+                        logFileName = $"{logFileName}_{DateTime.Now.ToString("yyyyMMdd")}{fi.Extension}";
                     }
 
                     // clean history
                     if (LogFileMaxHistoryDays > 0)
                     {
-                        var fi = new FileInfo(logFileName);
                         var di = fi.Directory;
                         var fis = di.GetFiles($"{logFileNameWithOutExtension}*{fi.Extension}");
                         foreach (var fileInfo in fis)
@@ -312,7 +306,6 @@ namespace Shawn.Utils
 
                     if (File.Exists(logFileName))
                     {
-                        var fi = new FileInfo(logFileName);
                         long maxLength = 1024 * 1024 * LogFileMaxSizeMegabytes;
                         // over size then move to xxxx.md -> xxxx.001.md
                         if (fi.Length > maxLength)
@@ -375,6 +368,8 @@ namespace Shawn.Utils
                         if (o.Length == 1)
                         {
                             sw.WriteLine(o[0]);
+                            if (o[0] is Exception e)
+                                sw.WriteLine(e.StackTrace);
                             if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
                                 sw.WriteLine();
                         }
@@ -386,6 +381,8 @@ namespace Shawn.Utils
                             foreach (var obj in o)
                             {
                                 sw.WriteLine(obj);
+                                if (o[0] is Exception e)
+                                    sw.WriteLine(e.StackTrace);
                             }
                             if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
                                 sw.WriteLine("\r\n```\r\n");

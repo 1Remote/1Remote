@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace PRM.Core.Protocol
+﻿namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerWithAddrPortBase : ProtocolServerBase
     {
-        protected ProtocolServerWithAddrPortBase(string protocol, string classVersion, string protocolDisplayName, bool onlyOneInstance = true) : base(protocol, classVersion, protocolDisplayName, onlyOneInstance)
+        protected ProtocolServerWithAddrPortBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "") : base(protocol, classVersion, protocolDisplayName, protocolDisplayNameInShort)
         {
         }
 

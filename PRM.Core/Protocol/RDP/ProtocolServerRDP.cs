@@ -334,6 +334,11 @@ namespace PRM.Core.Protocol.RDP
         }
 
 
+        public override bool IsOnlyOneInstance()
+        {
+            return true;
+        }
+
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
         {
             try
@@ -342,7 +347,7 @@ namespace PRM.Core.Protocol.RDP
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

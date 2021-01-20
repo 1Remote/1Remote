@@ -613,11 +613,44 @@ namespace PRM.Core.Protocol.Putty
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Error(e, e.StackTrace);
+                SimpleLogHelper.Error(e);
             }
         }
 
-        public void SaveKittyConfig(string kittyPath)
+        /// <summary>
+        /// save to reg table
+        /// </summary>
+        private void SaveToKittyRegistryTable()
+        {
+            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{SessionName}";
+            using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+            if (regKey == null) return;
+            foreach (var item in Options)
+            {
+                if (item.Value != null)
+                    regKey.SetValue(item.Key, item.Value, item.ValueKind);
+            }
+        }
+
+        /// <summary>
+        /// del from reg table
+        /// </summary>
+        private void DelFromKittyRegistryTable()
+        {
+            if (File.Exists(PuttyKeyFilePath))
+                File.Delete(PuttyKeyFilePath);
+            string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{SessionName}";
+            try
+            {
+                Registry.CurrentUser.DeleteSubKeyTree(regPath);
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Info("Try to delete KiTTY registry table but fail: ", PuttyKeyFilePath, e);
+            }
+        }
+
+        private void SaveToKittyPortableConfig(string kittyPath)
         {
             try
             {
@@ -636,7 +669,7 @@ namespace PRM.Core.Protocol.Putty
             }
         }
 
-        public void DelKittyConfig(string kittyPath)
+        private void DelFromKittyPortableConfig(string kittyPath)
         {
             try
             {
@@ -648,6 +681,18 @@ namespace PRM.Core.Protocol.Putty
             {
                 SimpleLogHelper.Warning(e);
             }
+        }
+
+        public void SaveToKittyConfig(string kittyPath)
+        {
+            SaveToKittyPortableConfig(kittyPath);
+            SaveToKittyRegistryTable();
+        }
+
+        public void DelFromKittyConfig(string kittyPath)
+        {
+            DelFromKittyPortableConfig(kittyPath);
+            DelFromKittyRegistryTable();
         }
     }
 }

@@ -12,8 +12,13 @@ namespace PRM.Core.Protocol.Putty.Telnet
 {
     public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IPuttyConnectable
     {
-        public ProtocolServerTelnet() : base("Telnet", "Putty.Telnet.V1", "Telnet", false)
+        public ProtocolServerTelnet() : base("Telnet", "Putty.Telnet.V1", "Telnet")
         {
+        }
+
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
         }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)
@@ -25,7 +30,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

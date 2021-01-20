@@ -22,6 +22,7 @@
                                     <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center">
                                         <ContentPresenter.Resources>
                                             <Style TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=utils:EditableTextBlock}}"></Setter>
                                                 <Setter Property="TextTrimming" Value="{Binding TextTrimming, RelativeSource={RelativeSource AncestorType=utils:EditableTextBlock}}"></Setter>
                                             </Style>
                                         </ContentPresenter.Resources>

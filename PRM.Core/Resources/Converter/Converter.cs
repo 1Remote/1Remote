@@ -131,13 +131,15 @@ namespace PRM.Resources.Converter
         {
             try
             {
-                var tb = new TextBlock();
-                tb.Text = values[0].ToString();
-                tb.Width = int.Parse(values[1].ToString());
-                tb.FontFamily = (FontFamily)values[2];
-                tb.FontStyle = (FontStyle)values[3];
-                tb.FontWeight = (FontWeight)values[4];
-                tb.FontStretch = (FontStretch)values[5];
+                var tb = new TextBlock
+                {
+                    Text = values[0].ToString(),
+                    Width = int.Parse(values[1].ToString()),
+                    FontFamily = (FontFamily) values[2],
+                    FontStyle = (FontStyle) values[3],
+                    FontWeight = (FontWeight) values[4],
+                    FontStretch = (FontStretch) values[5]
+                };
                 var size = MeasureText(tb, 20);
                 double k = 1.0 * tb.Width / size.Width;
                 double fs = (int) (20 * k);
@@ -179,6 +181,25 @@ namespace PRM.Resources.Converter
         {
             string hex = value.ToString();
             var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
+            return brush;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return "#FFFFFF";
+        }
+        #endregion
+    }
+
+
+
+    public class ConverterColorHexString2Color : IValueConverter
+    {
+        #region IValueConverter
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string hex = value.ToString();
+            var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
             return brush;
         }
 

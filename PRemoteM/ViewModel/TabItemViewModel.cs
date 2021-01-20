@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows;
-using System.Windows.Media;
 using PRM.Core;
 using PRM.Core.Protocol;
-using Color = System.Drawing.Color;
 
 namespace Shawn.Utils.DragablzTab
 {
@@ -61,6 +57,7 @@ namespace Shawn.Utils.DragablzTab
                 }
                 catch (Exception)
                 {
+                    MarkColorHex = "#FFFFFF";
                 }
             }
         }

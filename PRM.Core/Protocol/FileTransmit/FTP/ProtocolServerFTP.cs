@@ -13,7 +13,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
             V1 = 1,
             V2 = 2,
         }
-        public ProtocolServerFTP() : base("FTP", "FTP.V1", "FTP", false)
+        public ProtocolServerFTP() : base("FTP", "FTP.V1", "FTP")
         {
         }
 
@@ -22,6 +22,11 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
         {
             get => _startupPath;
             set => SetAndNotifyIfChanged(nameof(StartupPath), ref _startupPath, value);
+        }
+
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
         }
 
         public override ProtocolServerBase CreateFromJsonString(string jsonString)

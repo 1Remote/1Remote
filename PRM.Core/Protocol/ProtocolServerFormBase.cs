@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerFormBase : UserControl
     {
-        private ProtocolServerBase _vm = null;
-        public ProtocolServerFormBase(ProtocolServerBase protocol)
+        private readonly ProtocolServerBase _vm = null;
+
+        protected ProtocolServerFormBase(ProtocolServerBase protocol)
         {
             _vm = protocol;
         }

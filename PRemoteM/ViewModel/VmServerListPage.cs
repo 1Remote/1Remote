@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
-using Windows.ApplicationModel.Store;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Core;
@@ -365,7 +360,7 @@ namespace PRM.ViewModel
                             }
                             catch (Exception e)
                             {
-                                SimpleLogHelper.Debug(e, e.StackTrace);
+                                SimpleLogHelper.Debug(e);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
@@ -588,7 +583,7 @@ namespace PRM.ViewModel
                             }
                             catch (Exception e)
                             {
-                                SimpleLogHelper.Debug(e, e.StackTrace);
+                                SimpleLogHelper.Debug(e);
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }

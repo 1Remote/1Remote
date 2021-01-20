@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using PRM.Core.DB;
@@ -18,9 +16,6 @@ using Shawn.Utils.DragablzTab;
 using PRM.View;
 using PRM.View.TabWindow;
 using Shawn.Utils;
-using Application = System.Windows.Application;
-using MessageBox = System.Windows.MessageBox;
-using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace PRM.Model
 {
@@ -91,7 +86,7 @@ namespace PRM.Model
         {
             uint serverId = vmProtocolServer.Server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (vmProtocolServer.Server.OnlyOneInstance && _protocolHosts.ContainsKey(serverId.ToString()))
+            if (vmProtocolServer.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
@@ -146,7 +141,7 @@ namespace PRM.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                 }
             });
             t.Start();
@@ -191,7 +186,7 @@ namespace PRM.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                 }
             });
             t.Start();
@@ -600,7 +595,7 @@ namespace PRM.Model
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Error(e, e.StackTrace);
+                SimpleLogHelper.Error(e);
             }
 
             if (host is IDisposable dp)
