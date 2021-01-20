@@ -608,7 +608,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
                 catch (Exception e)
                 {
                     TransmitTaskStatus = ETransmitTaskStatus.Cancel;
-                    SimpleLogHelper.Warning(e, e.StackTrace);
+                    SimpleLogHelper.Warning(e);
                     var e2 = TransmissionType == ETransmissionType.HostToServer ?
                         new Exception($"Upload to {item.DstPath}: " + e.Message, e) :
                         new Exception($"Download to {item.DstPath}: " + e.Message, e);

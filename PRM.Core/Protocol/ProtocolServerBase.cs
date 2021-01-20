@@ -35,7 +35,7 @@ namespace PRM.Core.Protocol
         }
 
         public string Protocol { get; }
-            
+
         public string ClassVersion { get; }
 
         [JsonIgnore]
@@ -87,7 +87,7 @@ namespace PRM.Core.Protocol
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Debug(e, e.StackTrace);
+                    SimpleLogHelper.Debug(e);
                     _iconImg = null;
                     Icon = null;
                 }
@@ -122,7 +122,7 @@ namespace PRM.Core.Protocol
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                     _iconBase64 = null;
                     Icon = null;
                 }

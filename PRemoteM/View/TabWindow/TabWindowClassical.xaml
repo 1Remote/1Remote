@@ -85,8 +85,6 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
-                                  PreviewMouseDown="FocusContentWhenPreviewMouseDown"
-                                  PreviewMouseUp="FocusContentWhenPreviewMouseDown"
                                   SnapsToDevicePixels="true" 
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
@@ -401,7 +399,7 @@
 
 
 
-    <Grid Background="{DynamicResource MainColor1Brush}" PreviewMouseDown="FocusContentWhenPreviewMouseDown">
+    <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>

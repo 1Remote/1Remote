@@ -141,7 +141,7 @@ namespace PRM.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                 }
             });
             t.Start();
@@ -186,7 +186,7 @@ namespace PRM.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                 }
             });
             t.Start();
@@ -595,7 +595,7 @@ namespace PRM.Model
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Error(e, e.StackTrace);
+                SimpleLogHelper.Error(e);
             }
 
             if (host is IDisposable dp)

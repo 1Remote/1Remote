@@ -11,8 +11,13 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
+        /// <summary>
+        /// to remember original protocol options
+        /// </summary>
+        private readonly ProtocolServerBase _orgServerBase;
         public VmServerEditorPage(ProtocolServerBase server, bool isDuplicate = false)
         {
+            _orgServerBase = server;
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
             if (_isDuplicate)
@@ -39,12 +44,6 @@ namespace PRM.ViewModel
             catch (Exception)
             {
                 ProtocolSelected = ProtocolList.First();
-            }
-
-            if (!IsAddMode || isDuplicate)
-            {
-                ProtocolList.Clear();
-                ProtocolList.Add(ProtocolSelected);
             }
 
             NameSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.DispName)
@@ -75,6 +74,8 @@ namespace PRM.ViewModel
                 if (value != _protocolSelected)
                 {
                     SetAndNotifyIfChanged(nameof(ProtocolSelected), ref _protocolSelected, value);
+                    if (_orgServerBase.GetType() == Server.GetType())
+                        _orgServerBase.Update(Server);
                     ReflectProtocolEditControl();
                 }
             }
@@ -155,21 +156,33 @@ namespace PRM.ViewModel
             try
             {
                 var assembly = typeof(ProtocolServerBase).Assembly;
-                var server = Server;
-                if (IsAddMode && !_isDuplicate)
-                {
-                    server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
-                    // switch protocol and hold user name & pwd.
-                    if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
-                        && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-                        server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
-                    else if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
-                        && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
-                        server.Update(Server, typeof(ProtocolServerWithAddrPortBase));
-                    // switch just hold base info
-                    else
-                        server.Update(Server, typeof(ProtocolServerBase));
-                }
+                // change protocol
+                var server = (ProtocolServerBase)assembly.CreateInstance(ProtocolSelected.GetType().FullName);
+
+                // restore original server base info
+                if (_orgServerBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
+                    && server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+                    server.Update(_orgServerBase, typeof(ProtocolServerWithAddrPortUserPwdBase));
+                else if (_orgServerBase.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
+                         && server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                    server.Update(_orgServerBase, typeof(ProtocolServerWithAddrPortBase));
+                else
+                    server.Update(_orgServerBase, typeof(ProtocolServerBase));
+                if (_orgServerBase.GetType() == server.GetType())
+                    server.Update(_orgServerBase);
+
+
+                // switch protocol and hold user name & pwd.
+                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
+                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+                    server.Update(Server, typeof(ProtocolServerWithAddrPortUserPwdBase));
+                else if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))
+                    && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+                    server.Update(Server, typeof(ProtocolServerWithAddrPortBase));
+                // switch just hold base info
+                else
+                    server.Update(Server, typeof(ProtocolServerBase));
+
 
                 var types = assembly.GetTypes();
                 var formName = ProtocolSelected.GetType().Name + "Form";

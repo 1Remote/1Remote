@@ -112,7 +112,7 @@ namespace PRM.Core.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Debug(e, e.StackTrace);
+                    SimpleLogHelper.Debug(e);
                 }
             }
         }
@@ -158,7 +158,7 @@ namespace PRM.Core.Model
                 }
                 catch (Exception e)
                 {
-                    SimpleLogHelper.Error(e, e.StackTrace);
+                    SimpleLogHelper.Error(e);
                 }
             }
         }
