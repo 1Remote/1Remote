@@ -30,7 +30,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

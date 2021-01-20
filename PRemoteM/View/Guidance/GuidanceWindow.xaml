@@ -349,7 +349,7 @@
                                     <Setter Property="Margin" Value="8"></Setter>
                                     <Setter Property="MinHeight" Value="50"></Setter>
                                 </Style>
-                                <Style TargetType="TextBlock" x:Key="HeaderStyle">
+                                <Style TargetType="TextBlock" x:Key="HeaderStyle" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="Foreground" Value="{StaticResource Gray600}"></Setter>
                                     <Setter Property="Width" Value="200"></Setter>
                                     <Setter Property="HorizontalAlignment" Value="Center"></Setter>

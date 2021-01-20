@@ -214,7 +214,7 @@
 
                         <ContentControl Grid.Row="0" Grid.Column="0" Content="{Binding DispNameControl}">
                             <ContentControl.Resources>
-                                <Style TargetType="TextBlock">
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="FontSize" Value="18"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
@@ -224,7 +224,7 @@
 
                         <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.5" Content="{Binding SubTitleControl}">
                             <ContentControl.Resources>
-                                <Style TargetType="TextBlock">
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="FontSize" Value="12"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>

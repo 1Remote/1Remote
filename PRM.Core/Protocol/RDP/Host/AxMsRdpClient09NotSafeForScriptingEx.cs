@@ -16,9 +16,9 @@ namespace Shawn.Utils.RDP
             {
                 ((IMsRdpExtendedSettings)axHost.GetOcx()).set_Property(propertyName, ref value);
             }
-            catch (Exception ex)
+            catch (Exception ee)
             {
-                SimpleLogHelper.Error(ex, ex.StackTrace);
+                SimpleLogHelper.Error(ee);
             }
         }
     }
