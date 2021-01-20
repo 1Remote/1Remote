@@ -89,8 +89,6 @@
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid Background="{DynamicResource MainColor1Brush}" Height="{StaticResource TabHeaderBarHeight}">
                                 <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True"
-                                      PreviewMouseDown="FocusContentWhenPreviewMouseDown"
-                                      PreviewMouseUp="FocusContentWhenPreviewMouseDown"
                                       SnapsToDevicePixels="true" 
                                       VerticalAlignment="Bottom">
                                     <Grid.ContextMenu>

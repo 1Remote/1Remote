@@ -41,7 +41,7 @@ namespace PRM.Core.Protocol.VNC
             }
             catch (Exception e)
             {
-                SimpleLogHelper.Debug(e, e.StackTrace);
+                SimpleLogHelper.Debug(e);
                 return null;
             }
         }

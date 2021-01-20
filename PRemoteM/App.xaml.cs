@@ -33,7 +33,7 @@ namespace PRM
 
         private static void OnUnhandledException(Exception e)
         {
-            SimpleLogHelper.Fatal(e, e.StackTrace);
+            SimpleLogHelper.Fatal(e);
             MessageBox.Show("please contact me if you see these: \r\n\r\n\r\n" + e.Message, SystemConfig.AppName + " unhandled error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
             Process.Start("https://github.com/VShawn/PRemoteM/issues");
             App.Close();
