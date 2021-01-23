@@ -98,10 +98,11 @@ namespace PRM.ViewModel
         }
 
         public readonly MainWindow Window;
+        public GlobalData AppData { get; }
 
-
-        public VmMain(MainWindow window)
+        public VmMain(GlobalData appData, MainWindow window)
         {
+            AppData = appData;
             Window = window;
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
@@ -109,23 +110,16 @@ namespace PRM.ViewModel
                 ProgressBarMaximum = arg2;
                 ProgressBarInfo = arg2 > 0 ? arg3 : "";
             };
-            GlobalEventHelper.OnGoToServerEditPage += new GlobalEventHelper.OnGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
+            GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
-                ProtocolServerBase server;
-                if (id <= 0)
-                {
-                    return;
-                }
-                else
-                {
-                    Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == id));
-                    server = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id).Server;
-                }
+                if (id <= 0) return;
+                Debug.Assert(appData.VmItemList.Any(x => x.Server.Id == id));
+                var server = appData.VmItemList.First(x => x.Server.Id == id).Server;
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server, isDuplicate)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(appData, server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
@@ -133,17 +127,17 @@ namespace PRM.ViewModel
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
             {
-                var server = new ProtocolServerRDP {GroupName = groupName};
+                var server = new ProtocolServerRDP { GroupName = groupName };
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(appData, server)),
                 };
             });
 
-            ListViewPageForServerList = new ServerListPage();
-            _managementPage = new ServerManagementPage();
+            ListViewPageForServerList = new ServerListPage(appData);
+            _managementPage = new ServerManagementPage(appData);
         }
 
 

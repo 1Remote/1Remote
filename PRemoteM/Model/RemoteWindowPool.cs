@@ -39,20 +39,22 @@ namespace PRM.Model
         public static RemoteWindowPool Instance => GetInstance();
         #endregion
 
-        public static void Init()
+        public static void Init(GlobalData appData)
         {
             lock (InstanceLock)
             {
                 if (_uniqueInstance == null)
                 {
-                    _uniqueInstance = new RemoteWindowPool();
+                    _uniqueInstance = new RemoteWindowPool(appData);
                 }
             }
         }
 
-        private RemoteWindowPool()
+        private readonly GlobalData _appData;
+        private RemoteWindowPool(GlobalData appData)
         {
-            GlobalEventHelper.OnRequireServerConnect += ShowRemoteHost;
+            _appData = appData;
+            GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
         }
 
         public void Release()
@@ -197,7 +199,7 @@ namespace PRM.Model
         {
             // check if screens are in different scale factors
             int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-            
+
             // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
             if (Screen.AllScreens.Length > 1
                 && vmProtocolServer.Server is ProtocolServerRDP rdp
@@ -245,8 +247,8 @@ namespace PRM.Model
         public void ShowRemoteHost(long serverId, string assignTabToken)
         {
             Debug.Assert(serverId > 0);
-            Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == serverId));
-            var vmProtocolServer = GlobalData.Instance.VmItemList.First(x => x.Server.Id == serverId);
+            Debug.Assert(_appData.VmItemList.Any(x => x.Server.Id == serverId));
+            var vmProtocolServer = _appData.VmItemList.First(x => x.Server.Id == serverId);
 
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
@@ -554,7 +556,7 @@ namespace PRM.Model
         private void RemoveFromTabWindow(string connectionId)
         {
             var tab = GetTabParent(connectionId);
-            if(tab == null)
+            if (tab == null)
                 return;
             var item = tab.GetViewModel().Items.First(x => x.Content.ConnectionId == connectionId);
             tab?.GetViewModel().Items.Remove(item);

@@ -8,9 +8,9 @@ namespace PRM.View
     public partial class ServerListPage : UserControl
     {
         public VmServerListPage Vm;
-        public ServerListPage()
+        public ServerListPage(GlobalData appData)
         {
-            Vm = new VmServerListPage(GlobalData.Instance, LvServerCards);
+            Vm = new VmServerListPage(appData, LvServerCards);
             InitializeComponent();
             DataContext = Vm;
 

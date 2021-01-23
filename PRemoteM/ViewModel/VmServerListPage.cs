@@ -166,42 +166,41 @@ namespace PRM.ViewModel
 
         private void OrderServerList()
         {
-            if (ServerListItems?.Count > 0 && _list.ItemsSource != null)
-            {
-                ICollectionView dataView = CollectionViewSource.GetDefaultView(_list.ItemsSource);
-                dataView.SortDescriptions.Clear();
-                switch (SystemConfig.Instance.General.ServerOrderBy)
-                {
-                    case EnumServerOrderBy.Protocol:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Ascending));
-                        break;
-                    case EnumServerOrderBy.ProtocolDesc:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Descending));
-                        break;
-                    case EnumServerOrderBy.Name:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Ascending));
-                        break;
-                    case EnumServerOrderBy.NameDesc:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
-                        break;
-                    case EnumServerOrderBy.GroupName:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Ascending));
-                        break;
-                    case EnumServerOrderBy.GroupNameDesc:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Descending));
-                        break;
-                    case EnumServerOrderBy.Address:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
-                        break;
-                    case EnumServerOrderBy.AddressDesc:
-                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Descending));
-                        break;
-                }
+            if (!(ServerListItems?.Count > 0) || _list?.ItemsSource == null) return;
 
-                dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
-                dataView.Refresh();
-                SimpleLogHelper.Debug($"OrderServerList: {SystemConfig.Instance.General.ServerOrderBy}");
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(_list.ItemsSource);
+            dataView.SortDescriptions.Clear();
+            switch (SystemConfig.Instance.General.ServerOrderBy)
+            {
+                case EnumServerOrderBy.Protocol:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Ascending));
+                    break;
+                case EnumServerOrderBy.ProtocolDesc:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Descending));
+                    break;
+                case EnumServerOrderBy.Name:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Ascending));
+                    break;
+                case EnumServerOrderBy.NameDesc:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
+                    break;
+                case EnumServerOrderBy.GroupName:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Ascending));
+                    break;
+                case EnumServerOrderBy.GroupNameDesc:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Descending));
+                    break;
+                case EnumServerOrderBy.Address:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
+                    break;
+                case EnumServerOrderBy.AddressDesc:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Descending));
+                    break;
             }
+
+            dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
+            dataView.Refresh();
+            SimpleLogHelper.Debug($"OrderServerList: {SystemConfig.Instance.General.ServerOrderBy}");
         }
 
         private void CalcVisible()

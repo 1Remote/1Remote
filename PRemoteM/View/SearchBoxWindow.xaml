@@ -399,7 +399,7 @@
                          PreviewMouseRightButtonDown="ListBoxSelections_OnMouseRightButtonDown"
                          PreviewMouseLeftButtonDown="ListBoxSelections_OnMouseDoubleClick"
                          SelectedIndex="{Binding SelectedIndex}" 
-                         ItemsSource="{Binding Source={x:Static model:GlobalData.Instance}, Path=VmItemList}"
+                         ItemsSource="{Binding AppData.VmItemList}"
                          Background="Transparent"
                          Foreground="{DynamicResource MainColor1ForegroundBrush}"
                          Style="{StaticResource SearchBoxSelectionList}">

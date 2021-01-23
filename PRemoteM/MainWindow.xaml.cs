@@ -14,10 +14,10 @@ namespace PRM
     {
         public VmMain Vm { get; set; }
 
-        public MainWindow()
+        public MainWindow(GlobalData appData)
         {
             InitializeComponent();
-            Vm = new VmMain(this);
+            Vm = new VmMain(appData, this);
             this.DataContext = Vm;
             Title = SystemConfig.AppName;
             this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
