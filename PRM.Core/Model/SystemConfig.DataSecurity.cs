@@ -627,11 +627,13 @@ namespace PRM.Core.Model
                 {
                     _cmdDbMigrate = new RelayCommand((o) =>
                     {
-                        var dlg = new SaveFileDialog();
-                        dlg.Filter = "Sqlite Database|*.db";
-                        dlg.CheckFileExists = false;
-                        dlg.InitialDirectory = new FileInfo(DbPath).DirectoryName;
-                        dlg.FileName = new FileInfo(DbPath).Name;
+                        var dlg = new SaveFileDialog
+                        {
+                            Filter = "Sqlite Database|*.db",
+                            CheckFileExists = false,
+                            InitialDirectory = new FileInfo(DbPath).DirectoryName,
+                            FileName = new FileInfo(DbPath).Name
+                        };
                         if (dlg.ShowDialog() == true)
                         {
                             var path = dlg.FileName;

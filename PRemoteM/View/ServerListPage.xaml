@@ -9,6 +9,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              mc:Ignorable="d" 
              Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -90,16 +91,16 @@
             <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerCards">
                 <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}"/>
             </ItemsPanelTemplate>
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="viewModel:VmServerListItem">
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="protocol:VmProtocolServer">
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="{Binding Visible}"></Setter>
+                            <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList}"></Setter>
                             <Setter Property="Height" Value="164"></Setter>
                             <Setter Property="Width" Value="165"></Setter>
                         </Style>
                     </Grid.Style>
-                    <controls:ServerCard VmServerListItem="{Binding}">
+                    <controls:ServerCard VmProtocolServer="{Binding}">
                     </controls:ServerCard>
                 </Grid>
             </DataTemplate>
@@ -284,7 +285,7 @@
             <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerList">
                 <StackPanel></StackPanel>
             </ItemsPanelTemplate>
-            <DataTemplate x:Key="DataTemplateForServerList" DataType="viewModel:VmServerListItem">
+            <DataTemplate x:Key="DataTemplateForServerList" DataType="protocol:VmProtocolServer">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource MainBgColorBrush}">
                     <Grid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
@@ -292,7 +293,7 @@
                     </Grid.InputBindings>
                     <Grid.Style>
                         <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="{Binding Visible, UpdateSourceTrigger=PropertyChanged}"></Setter>
+                            <Setter Property="Visibility" Value="{Binding ObjectVisibility, UpdateSourceTrigger=PropertyChanged}"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Server.Id}" Value="0">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>

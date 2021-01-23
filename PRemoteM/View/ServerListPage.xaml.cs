@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PRM.Core.Model;
 using PRM.ViewModel;
 
 namespace PRM.View
@@ -9,7 +10,7 @@ namespace PRM.View
         public VmServerListPage Vm;
         public ServerListPage()
         {
-            Vm = new VmServerListPage();
+            Vm = new VmServerListPage(GlobalData.Instance, LvServerCards);
             InitializeComponent();
             DataContext = Vm;
 
