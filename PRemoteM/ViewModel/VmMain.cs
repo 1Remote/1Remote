@@ -133,8 +133,7 @@ namespace PRM.ViewModel
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
             {
-                var server = new ProtocolServerRDP();
-                server.GroupName = groupName;
+                var server = new ProtocolServerRDP {GroupName = groupName};
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,

@@ -151,7 +151,6 @@
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
     <Compile Include="ViewModel\VmServerEditorPage.cs" />
-    <Compile Include="ViewModel\VmServerListItem.cs" />
     <Compile Include="ViewModel\VmServerListPage.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>

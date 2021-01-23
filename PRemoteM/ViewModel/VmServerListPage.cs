@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Core;
@@ -22,8 +25,12 @@ namespace PRM.ViewModel
 {
     public class VmServerListPage : NotifyPropertyChangedBase
     {
-        public VmServerListPage()
+        private readonly GlobalData _globalData;
+        private readonly ListBox _list;
+        public VmServerListPage(GlobalData globalData, ListBox list)
         {
+            _globalData = globalData;
+            _list = list;
             var lastSelectedGroup = "";
             if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected))
             {
@@ -31,37 +38,37 @@ namespace PRM.ViewModel
             }
 
             RebuildVmServerCardList();
-            GlobalData.Instance.VmItemListDataChanged += RebuildVmServerCardList;
+            _globalData.VmItemListDataChanged += RebuildVmServerCardList;
 
-            SystemConfig.Instance.General.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
-                    OrderServerList();
-            };
+            //SystemConfig.Instance.General.PropertyChanged += (sender, args) =>
+            //{
+            //    if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
+            //        OrderServerList();
+            //};
 
             if (!string.IsNullOrEmpty(lastSelectedGroup) && ServerGroupList.Contains(lastSelectedGroup))
             {
                 SelectedGroup = lastSelectedGroup;
             }
 
-            GlobalData.Instance.OnMainWindowServerFilterChanged += new Action<string>(s =>
+            _globalData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
             });
         }
 
-        private VmServerListItem _selectedServerListItem = null;
-        public VmServerListItem SelectedServerListItem
+        private VmProtocolServer _selectedServerListItem = null;
+        public VmProtocolServer SelectedServerListItem
         {
             get => _selectedServerListItem;
             set => SetAndNotifyIfChanged(nameof(SelectedServerListItem), ref _selectedServerListItem, value);
         }
 
-        private ObservableCollection<VmServerListItem> _serverListItems = new ObservableCollection<VmServerListItem>();
+        private ObservableCollection<VmProtocolServer> _serverListItems = new ObservableCollection<VmProtocolServer>();
         /// <summary>
         /// AllServerList data source for list view
         /// </summary>
-        public ObservableCollection<VmServerListItem> ServerListItems
+        public ObservableCollection<VmProtocolServer> ServerListItems
         {
             get => _serverListItems;
             set
@@ -102,7 +109,7 @@ namespace PRM.ViewModel
             {
                 if (_selectedGroup != value)
                 {
-                    GlobalData.Instance.MainWindowServerFilter = "";
+                    _globalData.MainWindowServerFilter = "";
                     SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
                     SystemConfig.Instance.Locality.MainWindowTabSelected = value;
                     SystemConfig.Instance.Locality.Save();
@@ -120,7 +127,7 @@ namespace PRM.ViewModel
                 SetAndNotifyIfChanged(nameof(IsSelectedAll), ref _isSelectedAll, value);
                 foreach (var vmServerCard in ServerListItems)
                 {
-                    if (vmServerCard.Visible == Visibility.Visible)
+                    if (vmServerCard.ObjectVisibilityInList == Visibility.Visible)
                         vmServerCard.IsSelected = value;
                 }
             }
@@ -130,9 +137,9 @@ namespace PRM.ViewModel
         private void RebuildVmServerCardList()
         {
             _serverListItems.Clear();
-            foreach (var vs in GlobalData.Instance.VmItemList)
+            foreach (var vs in _globalData.VmItemList)
             {
-                ServerListItems.Add(new VmServerListItem(vs.Server));
+                ServerListItems.Add(new VmProtocolServer(vs.Server));
             }
             OrderServerList();
             RebuildGroupList();
@@ -159,47 +166,41 @@ namespace PRM.ViewModel
 
         private void OrderServerList()
         {
-            if (ServerListItems?.Count > 0)
+            if (ServerListItems?.Count > 0 && _list.ItemsSource != null)
             {
-                var items = new ObservableCollection<VmServerListItem>();
+                ICollectionView dataView = CollectionViewSource.GetDefaultView(_list.ItemsSource);
+                dataView.SortDescriptions.Clear();
                 switch (SystemConfig.Instance.General.ServerOrderBy)
                 {
-                    case EnumServerOrderBy.IdAsc:
-                    default:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.Id));
-                        break;
                     case EnumServerOrderBy.Protocol:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.Protocol).ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Ascending));
                         break;
                     case EnumServerOrderBy.ProtocolDesc:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => x.Server.Protocol).ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Descending));
                         break;
                     case EnumServerOrderBy.Name:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.DispName).ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Ascending));
                         break;
                     case EnumServerOrderBy.NameDesc:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => x.Server.DispName).ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
                         break;
                     case EnumServerOrderBy.GroupName:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => x.Server.GroupName).ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Ascending));
                         break;
                     case EnumServerOrderBy.GroupNameDesc:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => x.Server.GroupName).ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Descending));
                         break;
                     case EnumServerOrderBy.Address:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderBy(x => (x.Server is ProtocolServerWithAddrPortBase p) ? p.Address : "").ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
                         break;
                     case EnumServerOrderBy.AddressDesc:
-                        items = new ObservableCollection<VmServerListItem>(ServerListItems.OrderByDescending(x => (x.Server is ProtocolServerWithAddrPortBase p) ? p.Address : "").ThenBy(x => x.Server.Id));
+                        dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Descending));
                         break;
                 }
 
-
-                _serverListItems = items;
-
-                CalcVisible();
-
-                base.RaisePropertyChanged(nameof(ServerListItems));
+                dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
+                dataView.Refresh();
+                SimpleLogHelper.Debug($"OrderServerList: {SystemConfig.Instance.General.ServerOrderBy}");
             }
         }
 
@@ -208,25 +209,25 @@ namespace PRM.ViewModel
             foreach (var card in ServerListItems)
             {
                 var server = card.Server;
-                string keyWord = GlobalData.Instance.MainWindowServerFilter;
+                string keyWord = _globalData.MainWindowServerFilter;
                 string selectedGroup = SelectedGroup;
 
                 if (server.Id <= 0)
                 {
-                    card.Visible = Visibility.Collapsed;
+                    card.ObjectVisibilityInList = Visibility.Collapsed;
                     continue;
                 }
 
                 bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup;
                 if (!bGroupMatched)
                 {
-                    card.Visible = Visibility.Collapsed;
+                    card.ObjectVisibilityInList = Visibility.Collapsed;
                     continue;
                 }
 
                 if (string.IsNullOrEmpty(keyWord))
                 {
-                    card.Visible = Visibility.Visible;
+                    card.ObjectVisibilityInList = Visibility.Visible;
                     continue;
                 }
 
@@ -245,12 +246,12 @@ namespace PRM.ViewModel
                 }
 
                 if (keyWordIsMatch.All(x => x == true))
-                    card.Visible = Visibility.Visible;
+                    card.ObjectVisibilityInList = Visibility.Visible;
                 else
-                    card.Visible = Visibility.Collapsed;
+                    card.ObjectVisibilityInList = Visibility.Collapsed;
             }
 
-            if (ServerListItems.Where(x => x.Visible == Visibility.Visible).All(x => x.IsSelected))
+            if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
                 _isSelectedAll = true;
             else
                 _isSelectedAll = false;
@@ -296,7 +297,7 @@ namespace PRM.ViewModel
                         {
                             var list = new List<ProtocolServerBase>();
                             if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
-                                foreach (var vs in GlobalData.Instance.VmItemList)
+                                foreach (var vs in _globalData.VmItemList)
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                     SystemConfig.Instance.DataSecurity.DecryptPwdIfItIsEncrypted(serverBase);
@@ -355,7 +356,7 @@ namespace PRM.ViewModel
                                         SystemConfig.Instance.DataSecurity.DbAddServer(server);
                                     }
                                 }
-                                GlobalData.Instance.ServerListUpdate();
+                                _globalData.ServerListUpdate();
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
                             catch (Exception e)
@@ -575,7 +576,7 @@ namespace PRM.ViewModel
                                     {
                                         SystemConfig.Instance.DataSecurity.DbAddServer(serverBase);
                                     }
-                                    GlobalData.Instance.ServerListUpdate();
+                                    _globalData.ServerListUpdate();
                                     MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 }
                                 else
@@ -616,7 +617,7 @@ namespace PRM.ViewModel
                             {
                                 SystemConfig.Instance.DataSecurity.DbDeleteServer(vs.Server.Id);
                             }
-                            GlobalData.Instance.ServerListUpdate();
+                            _globalData.ServerListUpdate();
                         }
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
                 }

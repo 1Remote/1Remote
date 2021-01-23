@@ -49,7 +49,7 @@ namespace PRM
                 Directory.CreateDirectory(appDateFolder);
 
             // init log file placement
-            var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+            var logFilePath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
