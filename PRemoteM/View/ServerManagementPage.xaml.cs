@@ -8,10 +8,10 @@ namespace PRM.View
     public partial class ServerManagementPage : UserControl
     {
         public VmServerListPage Vm;
-        public ServerManagementPage()
+        public ServerManagementPage(GlobalData appData)
         {
             InitializeComponent();
-            Vm = new VmServerListPage(GlobalData.Instance, LvServerCards);
+            Vm = new VmServerListPage(appData, LvServerCards);
             DataContext = Vm;
         }
 

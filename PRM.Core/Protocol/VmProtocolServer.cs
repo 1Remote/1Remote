@@ -93,7 +93,7 @@ namespace PRM.Core.Protocol
                 if (_cmdConnServer == null)
                     _cmdConnServer = new RelayCommand((o) =>
                     {
-                        GlobalEventHelper.OnRequireServerConnect?.Invoke(Server.Id);
+                        GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id);
                     });
                 return _cmdConnServer;
             }
@@ -106,7 +106,7 @@ namespace PRM.Core.Protocol
             {
                 return _cmdEditServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, false, true);
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(Server.Id, false, true);
                 });
             }
         }
@@ -119,7 +119,7 @@ namespace PRM.Core.Protocol
             {
                 return _cmdDuplicateServer ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(Server.Id, true, true);
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(Server.Id, true, true);
                 });
             }
         }
@@ -138,7 +138,7 @@ namespace PRM.Core.Protocol
                             MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
                         )
                     {
-                        GlobalData.Instance.ServerListRemove(Server);
+                        GlobalEventHelper.OnRequestDeleteServer?.Invoke(Server.Id);
                     }
                 });
             }
@@ -150,14 +150,15 @@ namespace PRM.Core.Protocol
         {
             get
             {
-                if (_cmdSave == null)
-                    _cmdSave = new RelayCommand((o) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(this.Server.DispName))
-                        {
-                            GlobalData.Instance.ServerListUpdate(Server);
-                        }
-                    }, o => (this.Server.DispName.Trim() != ""));
+                if (_cmdSave != null) return _cmdSave;
+
+                _cmdSave = new RelayCommand((o) =>
+                {
+                    if (string.IsNullOrWhiteSpace(this.Server.DispName)) return;
+
+                    GlobalEventHelper.OnRequestUpdateServer?.Invoke(Server);
+
+                }, o => (this.Server.DispName.Trim() != ""));
                 return _cmdSave;
             }
         }

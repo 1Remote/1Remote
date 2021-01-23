@@ -18,16 +18,18 @@ namespace PRM.Core.Model
 {
     public sealed class SystemConfigDataSecurity : SystemConfigBase
     {
-        public SystemConfigDataSecurity(Ini ini) : base(ini)
+        private readonly GlobalData _appData;
+        public SystemConfigDataSecurity(GlobalData appData, Ini ini) : base(ini)
         {
+            _appData = appData;
             Load();
-            _db = new FreeSqlDb(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(DbPath));
             // restore from back. (in these case .back will existed: data encrypt/decrypt processing throw exception)
             if (File.Exists(_dbPath + ".back"))
             {
                 File.Copy(_dbPath + ".back", _dbPath, true);
                 File.Delete(_dbPath + ".back");
             }
+            _db = new FreeSqlDb(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(DbPath));
         }
 
         private readonly IDb _db;
@@ -218,7 +220,7 @@ namespace PRM.Core.Model
                 {
                     if (!string.IsNullOrEmpty(rsaPublicKey)) return;
 
-                    int max = GlobalData.Instance.VmItemList.Count() * 3 + 2;
+                    int max = _appData.VmItemList.Count() * 3 + 2;
                     int val = 0;
 
                     var dlg = new OpenFileDialog
@@ -268,7 +270,7 @@ namespace PRM.Core.Model
                         RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
                         // encrypt old data
-                        foreach (var vmProtocolServer in GlobalData.Instance.VmItemList)
+                        foreach (var vmProtocolServer in _appData.VmItemList)
                         {
                             OnRsaProgress(++val, max);
                             this.EncryptPwdIfItIsNotEncrypted(vmProtocolServer.Server);
@@ -307,7 +309,7 @@ namespace PRM.Core.Model
                     {
                         if (string.IsNullOrEmpty(rsaPublicKey)) return;
                         OnRsaProgress(0, 1);
-                        int max = GlobalData.Instance.VmItemList.Count() * 3 + 2 + 1;
+                        int max = _appData.VmItemList.Count() * 3 + 2 + 1;
                         int val = 1;
                         OnRsaProgress(val, max);
 
@@ -322,7 +324,7 @@ namespace PRM.Core.Model
 
                         // decrypt pwd
                         Debug.Assert(Rsa != null);
-                        foreach (var vmProtocolServer in GlobalData.Instance.VmItemList)
+                        foreach (var vmProtocolServer in _appData.VmItemList)
                         {
                             DecryptPwdIfItIsEncrypted(vmProtocolServer.Server);
                             OnRsaProgress(++val, max);
@@ -337,7 +339,7 @@ namespace PRM.Core.Model
                         RaisePropertyChanged(nameof(RsaPrivateKeyPath));
 
                         // update db
-                        foreach (var vmProtocolServer in GlobalData.Instance.VmItemList)
+                        foreach (var vmProtocolServer in _appData.VmItemList)
                         {
                             this._db.UpdateServer(vmProtocolServer.Server);
                             OnRsaProgress(++val, max);
@@ -564,7 +566,7 @@ namespace PRM.Core.Model
                             {
                                 if (File.Exists(DbPath))
                                     File.Delete(DbPath);
-                                GlobalData.Instance.ServerListUpdate();
+                                _appData.ServerListUpdate();
                                 Load();
                             }
                         }
@@ -599,7 +601,7 @@ namespace PRM.Core.Model
                                 if (IOPermissionHelper.HasWritePermissionOnFile(path))
                                 {
                                     this._db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
-                                    GlobalData.Instance.ServerListUpdate();
+                                    _appData.ServerListUpdate();
                                     DbPath = path;
                                 }
                                 else
@@ -649,7 +651,7 @@ namespace PRM.Core.Model
                                     File.Delete(oldDbPath);
                                     this._db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
                                     // Migrate do not need reload data
-                                    // GlobalData.Instance.ServerListUpdate();
+                                    // _appData.ServerListUpdate();
                                     DbPath = path;
                                 }
                                 else

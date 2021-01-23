@@ -10,36 +10,7 @@ namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        #region singleton
-        private static GlobalData uniqueInstance;
-        private static readonly object InstanceLock = new object();
-
-        public static GlobalData GetInstance()
-        {
-            lock (InstanceLock)
-            {
-                if (uniqueInstance == null)
-                {
-                    throw new NullReferenceException($"{nameof(GlobalData)} has not been inited!");
-                }
-            }
-            return uniqueInstance;
-        }
-        public static GlobalData Instance => GetInstance();
-        #endregion
-
-        public static void Init()
-        {
-            lock (InstanceLock)
-            {
-                if (uniqueInstance == null)
-                {
-                    uniqueInstance = new GlobalData();
-                }
-            }
-        }
-
-        private GlobalData()
+        public GlobalData()
         {
         }
 
@@ -112,10 +83,10 @@ namespace PRM.Core.Model
             }
         }
 
-        public void ServerListRemove(ProtocolServerBase server)
+        public void ServerListRemove(int id)
         {
-            Debug.Assert(server.Id > 0);
-            if (SystemConfig.Instance.DataSecurity.DbDeleteServer(server.Id))
+            Debug.Assert(id > 0);
+            if (SystemConfig.Instance.DataSecurity.DbDeleteServer(id))
             {
                 ServerListUpdate();
             }

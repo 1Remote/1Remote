@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core.DB;
+using PRM.Core.DB.freesql;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Model;
 using PRM.View;
@@ -23,6 +26,7 @@ namespace PRM
         private Mutex _singleAppMutex = null;
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
+        public static readonly GlobalData AppData = new GlobalData();
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEV
@@ -169,11 +173,13 @@ namespace PRM
                 }
 
             var ini = new Ini(iniPath);
+            // read dbPath.
+
             var language = new SystemConfigLanguage(this.Resources, ini);
             var general = new SystemConfigGeneral(ini);
             var quickConnect = new SystemConfigQuickConnect(ini);
             var theme = new SystemConfigTheme(this.Resources, ini);
-            var dataSecurity = new SystemConfigDataSecurity(ini);
+            var dataSecurity = new SystemConfigDataSecurity(AppData, ini);
 
             // config create instance (settings & langs)
             SystemConfig.Init();
@@ -192,19 +198,27 @@ namespace PRM
                 isNewUser = true;
             }
 
-
             // server data holder init.
-            GlobalData.Init();
 
             // remote window pool init.
-            RemoteWindowPool.Init();
+            RemoteWindowPool.Init(AppData);
+
+            // Event register
+            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
+            {
+                AppData.ServerListRemove(id);
+            };
+            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
+            {
+                AppData.ServerListUpdate(server);
+            };
 
             return isNewUser;
         }
 
         private void InitMainWindow(bool isNewUser)
         {
-            Window = new MainWindow();
+            Window = new MainWindow(AppData);
             if (!SystemConfig.Instance.General.AppStartMinimized
                 || isNewUser)
             {
@@ -254,6 +268,7 @@ namespace PRM
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
             if (!res.Item1)
             {
+                // db is not ok
                 SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErrorFlag'.");
                 MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 ActivateWindow();
@@ -262,9 +277,8 @@ namespace PRM
             else
             {
                 // load data
-                GlobalData.Instance.ServerListUpdate();
+                AppData.ServerListUpdate();
             }
-
 
             InitTaskTray();
             InitLauncher();
@@ -324,9 +338,9 @@ namespace PRM
             TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
         }
 
-        private static void InitLauncher()
+        private void InitLauncher()
         {
-            SearchBoxWindow = new SearchBoxWindow();
+            SearchBoxWindow = new SearchBoxWindow(AppData);
             SearchBoxWindow.SetHotKey();
         }
 
