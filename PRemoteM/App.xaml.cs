@@ -160,13 +160,17 @@ namespace PRM
 
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
 
+#if !FOR_MICROSOFT_STORE_ONLY
             // for portable purpose
-            if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.Ordinal) < 0)
-                if (File.Exists(SystemConfig.AppName + ".ini")
-                    || IOPermissionHelper.HasWritePermissionOnDir("./"))
+            if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                var iniOnCurrentPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
+                if (IOPermissionHelper.HasWritePermissionOnFile(iniOnCurrentPath))
                 {
                     iniPath = SystemConfig.AppName + ".ini";
                 }
+            }
+#endif
 
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
