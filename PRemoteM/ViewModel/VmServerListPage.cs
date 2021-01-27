@@ -107,14 +107,11 @@ namespace PRM.ViewModel
             get => _selectedGroup;
             set
             {
-                if (_selectedGroup != value)
-                {
-                    _context.AppData.MainWindowServerFilter = "";
-                    SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
-                    SystemConfig.Instance.Locality.MainWindowTabSelected = value;
-                    SystemConfig.Instance.Locality.Save();
-                    CalcVisible();
-                }
+                if (_selectedGroup == value) return;
+                _context.AppData.MainWindowServerFilter = "";
+                SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
+                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+                CalcVisible();
             }
         }
 
@@ -195,6 +192,9 @@ namespace PRM.ViewModel
                     break;
                 case EnumServerOrderBy.AddressDesc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Descending));
+                    break;
+                default:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Id), ListSortDirection.Ascending));
                     break;
             }
 

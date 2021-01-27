@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Win32;
+using Shawn.Utils;
+
+namespace PRM.Core.Model
+{
+    public class DesktopResolutionWatcher
+    {
+        private readonly Action _onDesktopResolutionChanged;
+        private int _lastScreenCount = 0;
+        private System.Drawing.Rectangle _lastScreenRectangle = System.Drawing.Rectangle.Empty;
+
+        public DesktopResolutionWatcher(Action onDesktopResolutionChanged)
+        {
+            _onDesktopResolutionChanged = onDesktopResolutionChanged;
+            _lastScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
+            _lastScreenRectangle = ScreenInfoEx.GetAllScreensSize();
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+        }
+
+        ~DesktopResolutionWatcher()
+        {
+            SystemEvents.DisplaySettingsChanged -= SystemEvents_DisplaySettingsChanged;
+        }
+
+        private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        {
+            SimpleLogHelper.Debug($"Resolution Changed: {e}");
+            var newScreenCount = System.Windows.Forms.Screen.AllScreens.Length;
+            var newScreenRectangle = ScreenInfoEx.GetAllScreensSize();
+            if (newScreenCount != _lastScreenCount
+                || newScreenRectangle.Width != _lastScreenRectangle.Width
+                || newScreenRectangle.Height != _lastScreenRectangle.Height)
+                _onDesktopResolutionChanged?.Invoke();
+            _lastScreenCount = newScreenCount;
+            _lastScreenRectangle = newScreenRectangle;
+        }
+    }
+}

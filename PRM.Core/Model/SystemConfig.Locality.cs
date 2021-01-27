@@ -5,17 +5,13 @@ using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
-    public sealed class SystemConfigLocality : NotifyPropertyChangedBase
+    public sealed class SystemConfigLocality : SystemConfigBase
     {
-        private readonly Ini _ini;
-
-        public SystemConfigLocality()
+        public SystemConfigLocality(Ini ini) : base(ini)
         {
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             if (!Directory.Exists(appDateFolder))
                 Directory.CreateDirectory(appDateFolder);
-            var fileName = Path.Combine(appDateFolder, "locality.ini");
-            _ini = new Ini(fileName);
             Load();
         }
 
@@ -75,7 +71,7 @@ namespace PRM.Core.Model
 
         #region Interface
         private const string _sectionName = "Locality";
-        public void Save()
+        public override void Save()
         {
             _ini.WriteValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth.ToString());
             _ini.WriteValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight.ToString());
@@ -85,7 +81,7 @@ namespace PRM.Core.Model
             _ini.Save();
         }
 
-        public void Load()
+        public override void Load()
         {
             _mainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
             _mainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
@@ -93,6 +89,12 @@ namespace PRM.Core.Model
             _tabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
             MainWindowTabSelected = _ini.GetValue(nameof(MainWindowTabSelected).ToLower(), _sectionName, MainWindowTabSelected);
         }
+
+        public override void Update(SystemConfigBase newConfig)
+        {
+            UpdateBase(this, newConfig, typeof(SystemConfigLocality));
+        }
+
         #endregion
     }
 }

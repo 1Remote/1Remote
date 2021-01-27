@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using PRM.Core.Model;
 using Shawn.Utils;
 
-namespace PRM.Core.Model
+namespace PRM.Core.Utils
 {
     public class UpdateChecker
     {
-        private readonly string[] urls =
+        /// <summary>
+        /// Invoke to notify a newer version of te software was released
+        /// while new version code = arg1, download url = arg2
+        /// </summary>
+        public delegate void OnNewVersionReleaseDelegate(string version, string url);
+
+        private readonly string[] _urls =
         {
             "https://github.com/VShawn/PRemoteM/wiki",
             "https://github.com/VShawn/PRemoteM",
@@ -17,18 +24,18 @@ namespace PRM.Core.Model
         };
 
 
-        private string _ignoreVersion;
 
         /// <summary>
         /// Invoke to notify a newer version of te software was released
         /// while new version code = arg1, download url = arg2
         /// </summary>
-        protected readonly Action<string, string> OnNewVersionRelease;
+        public OnNewVersionReleaseDelegate OnNewVersionRelease = null;
 
-        public UpdateChecker(Action<string, string> onNewVersionRelease, string ignoreVersion = "")
+        private readonly string _currentVersion;
+
+        public UpdateChecker(string currentVersion)
         {
-            OnNewVersionRelease = onNewVersionRelease;
-            this._ignoreVersion = ignoreVersion;
+            _currentVersion = currentVersion;
         }
 
         /// <summary>
@@ -38,32 +45,17 @@ namespace PRM.Core.Model
         /// <returns></returns>
         private bool Compare(string versionString)
         {
-            var x = FromVersionString(versionString);
-            if (x.Item1 > PRMVersion.Major)
-                return true;
-            if (x.Item1 == PRMVersion.Major
-                && x.Item2 > PRMVersion.Minor)
-                return true;
-            if (x.Item1 == PRMVersion.Major
-                && x.Item2 == PRMVersion.Minor
-                && x.Item3 > PRMVersion.Build)
-                return true;
-            if (x.Item1 == PRMVersion.Major
-                && x.Item2 == PRMVersion.Minor
-                && x.Item3 == PRMVersion.Build
-                && x.Item4 > PRMVersion.ReleaseDate)
-                return true;
-            return false;
+            return Compare(_currentVersion, versionString);
         }
 
-        
 
         /// <summary>
         /// if versionString2 is newer, return true
         /// </summary>
-        /// <param name="versionString"></param>
+        /// <param name="versionString1"></param>
+        /// <param name="versionString2"></param>
         /// <returns></returns>
-        private bool Compare(string versionString1,string versionString2)
+        private bool Compare(string versionString1, string versionString2)
         {
             var x1 = FromVersionString(versionString1);
             var x2 = FromVersionString(versionString2);
@@ -87,7 +79,7 @@ namespace PRM.Core.Model
 
         private Tuple<int, int, int, int> FromVersionString(string versionString)
         {
-            var splits = versionString?.Split(new[] {"."}, StringSplitOptions.RemoveEmptyEntries);
+            var splits = versionString?.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
             if (splits?.Length == 4)
             {
                 if (int.TryParse(splits[0], out var major)
@@ -102,7 +94,7 @@ namespace PRM.Core.Model
             return new Tuple<int, int, int, int>(-1, -1, -1, -1);
         }
 
-        public Tuple<bool, string, string> CheckUpdate(string url)
+        public Tuple<bool, string, string> CheckUpdate(string url, string ignoreVersion = "")
         {
             try
             {
@@ -112,7 +104,7 @@ namespace PRM.Core.Model
                 {
                     var tmp = vs.ToString();
                     var version = tmp.Substring(tmp.IndexOf("version:") + "version:".Length + 1).Trim();
-                    if (Compare(_ignoreVersion, version))
+                    if (Compare(ignoreVersion, version))
                         if (Compare(version))
                         {
                             return new Tuple<bool, string, string>(true, version, url);
@@ -132,7 +124,7 @@ namespace PRM.Core.Model
         /// <returns></returns>
         public Tuple<bool, string, string> CheckUpdate()
         {
-            foreach (var url in urls)
+            foreach (var url in _urls)
             {
                 var tuple = CheckUpdate(url);
                 if (tuple.Item1)

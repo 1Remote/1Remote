@@ -10,7 +10,6 @@ namespace PRM.Core.Model
     public class PrmContext : NotifyPropertyChangedBase
     {
         private IDb _db;
-
         public IDb Db
         {
             get => _db;
@@ -18,11 +17,10 @@ namespace PRM.Core.Model
             {
                 _db = value;
                 DbOperator = new DbOperator(_db);
-                AppData = new GlobalData(DbOperator);
+                AppData.SetDbOperator(DbOperator);
             }
         }
-
-        public GlobalData AppData { get; private set; } = null;
+        public GlobalData AppData { get; } = new GlobalData();
         public DbOperator DbOperator { get; private set; } = null;
     }
 }

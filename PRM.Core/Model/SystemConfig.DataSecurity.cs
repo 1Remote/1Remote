@@ -23,14 +23,12 @@ namespace PRM.Core.Model
         {
             _context = context;
             Load();
-            // restore from back. (in these case .back will existed: data encrypt/decrypt processing throw exception)
+            // restore from back. (in these case .back is existed ---- when data encrypt/decrypt processing throw exception)
             if (File.Exists(_dbPath + ".back"))
             {
                 File.Copy(_dbPath + ".back", _dbPath, true);
                 File.Delete(_dbPath + ".back");
             }
-            // TODO create outside.
-            _context.Db = new FreeSqlDb(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(DbPath));
         }
 
         /// <summary>
@@ -39,7 +37,7 @@ namespace PRM.Core.Model
         /// <returns>
         /// Tuple(is decrypted, error info)
         /// </returns>
-        private static Tuple<bool, string> CheckIfDbIsWritable()
+        public Tuple<bool, string> CheckIfDbIsWritable()
         {
             var path = SystemConfig.Instance.DataSecurity.DbPath;
             try
@@ -290,8 +288,14 @@ namespace PRM.Core.Model
         public override void Load()
         {
             StopAutoSave = true;
-            DbPath = _ini.GetValue(nameof(DbPath).ToLower(), SectionName);
+            DbPath = ReadDbPath(_ini);
             StopAutoSave = false;
+        }
+
+        public static string ReadDbPath(Ini ini)
+        {
+            string ret = ini.GetValue(nameof(DbPath).ToLower(), SectionName);
+            return ret;
         }
 
         public override void Update(SystemConfigBase newConfig)

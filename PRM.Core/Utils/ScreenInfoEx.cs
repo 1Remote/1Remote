@@ -57,6 +57,27 @@ namespace Shawn.Utils
             var screen = System.Windows.Forms.Screen.FromPoint(systemPosition);
             return new ScreenInfoEx(screen);
         }
+        public static System.Drawing.Rectangle GetAllScreensSize()
+        {
+            var entireSize = System.Drawing.Rectangle.Empty;
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+                entireSize = System.Drawing.Rectangle.Union(entireSize, screen.Bounds);
+            return entireSize;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         const int ENUM_CURRENT_SETTINGS = -1;
 
         /// <summary>

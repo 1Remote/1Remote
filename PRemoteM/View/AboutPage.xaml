@@ -104,7 +104,7 @@
                                     <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock>
-                                            <Hyperlink NavigateUri="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                            <Hyperlink NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
                                                 <Grid>
                                                 <TextBlock Text="Update" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}"/>
                                                 </Grid>
@@ -116,7 +116,7 @@
                                                           Margin="0 0 -3 0"
                                                           VerticalAlignment="Top" HorizontalAlignment="Right" >
                                                     </Path>
-                                                    <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}"/>
+                                                    <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding NewVersion}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}"/>
                                                 </Grid>
                                             </Hyperlink>
                                         </TextBlock>
