@@ -28,7 +28,6 @@ namespace PRM
                 {
                     SystemConfig.Instance.Locality.MainWindowHeight = this.Height;
                     SystemConfig.Instance.Locality.MainWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.Save();
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };

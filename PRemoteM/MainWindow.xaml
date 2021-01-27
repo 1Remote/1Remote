@@ -164,7 +164,7 @@
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Value="">
+                                    <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -242,7 +242,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Value="">
+                                                        <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
                                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -325,7 +325,7 @@
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <ContentControl Content="{Binding ListViewPageForServerList}"></ContentControl>
+            <pageHost1:PageHost NewPage="{Binding ServersShownPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost1:PageHost>

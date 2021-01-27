@@ -10,13 +10,12 @@ namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        private readonly DbOperator _dbOperator;
-        public GlobalData(DbOperator dbOperator)
+        private DbOperator _dbOperator;
+
+        public void SetDbOperator(DbOperator dbOperator)
         {
             _dbOperator = dbOperator;
         }
-
-
 
         public Action<string> OnMainWindowServerFilterChanged;
 
@@ -52,6 +51,10 @@ namespace PRM.Core.Model
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null)
         {
+            if (_dbOperator == null)
+            {
+                return;
+            }
             // read from db
             if (protocolServer == null)
             {
@@ -88,6 +91,10 @@ namespace PRM.Core.Model
 
         public void ServerListRemove(int id)
         {
+            if (_dbOperator == null)
+            {
+                return;
+            }
             Debug.Assert(id > 0);
             if (_dbOperator.DbDeleteServer(id))
             {

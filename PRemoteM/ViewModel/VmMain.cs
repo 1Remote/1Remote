@@ -14,12 +14,9 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-        private object _listViewPageForServerList;
-        public object ListViewPageForServerList
-        {
-            get => _listViewPageForServerList;
-            set => SetAndNotifyIfChanged(nameof(ListViewPageForServerList), ref _listViewPageForServerList, value);
-        }
+        public VmAboutPage VmAboutPage { get; }
+
+        #region Properties
 
 
         private Visibility _tbFilterVisible = Visibility.Visible;
@@ -29,7 +26,11 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
         }
 
-        private readonly ServerManagementPage _managementPage = null;
+        private readonly ServerManagementPage _managementPage;
+        private readonly AboutPage _aboutPage;
+
+        public AnimationPage ServersShownPage { get; }
+
         private AnimationPage _bottomPage = null;
         public AnimationPage BottomPage
         {
@@ -96,6 +97,7 @@ namespace PRM.ViewModel
                 }
             }
         }
+        #endregion
 
         public readonly MainWindow Window;
         public PrmContext Context { get; }
@@ -104,6 +106,7 @@ namespace PRM.ViewModel
         {
             Context = context;
             Window = window;
+            this.VmAboutPage = new VmAboutPage();
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
                 ProgressBarValue = arg1;
@@ -136,8 +139,15 @@ namespace PRM.ViewModel
                 };
             });
 
-            ListViewPageForServerList = new ServerListPage(Context);
+
+            ServersShownPage = new AnimationPage()
+            {
+                InAnimationType = AnimationPage.InOutAnimationType.None,
+                OutAnimationType = AnimationPage.InOutAnimationType.None,
+                Page = new ServerListPage(Context),
+            };
             _managementPage = new ServerManagementPage(Context);
+            _aboutPage = new AboutPage(VmAboutPage, this);
         }
 
 
@@ -215,7 +225,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new AboutPage(this),
+                            Page = _aboutPage,
                         };
                         Window.PopupMenu.IsOpen = false;
                     }, o => TopPage?.Page?.GetType() != typeof(AboutPage));

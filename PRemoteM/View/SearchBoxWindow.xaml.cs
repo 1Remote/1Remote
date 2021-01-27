@@ -35,10 +35,10 @@ namespace PRM.View
             };
             Show();
 
-            SystemConfig.Instance.QuickConnect.PropertyChanged += (sender, args) =>
+            SystemConfig.Instance.Launcher.PropertyChanged += (sender, args) =>
             {
-                if (args.PropertyName == nameof(SystemConfigQuickConnect.HotKeyKey) ||
-                    args.PropertyName == nameof(SystemConfigQuickConnect.HotKeyModifiers))
+                if (args.PropertyName == nameof(SystemConfigLauncher.HotKeyKey) ||
+                    args.PropertyName == nameof(SystemConfigLauncher.HotKeyModifiers))
                 {
                     SetHotKey();
                 }
@@ -83,7 +83,7 @@ namespace PRM.View
         {
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
-            if (!SystemConfig.Instance.QuickConnect.Enable)
+            if (!SystemConfig.Instance.Launcher.Enable)
                 return;
 
             SimpleLogHelper.Debug("Call shortcut to invoke quick window.");
@@ -304,7 +304,7 @@ namespace PRM.View
         public void SetHotKey()
         {
             GlobalHotkeyHooker.Instance.Unregist(this);
-            var r = GlobalHotkeyHooker.Instance.Regist(this, (uint)SystemConfig.Instance.QuickConnect.HotKeyModifiers, SystemConfig.Instance.QuickConnect.HotKeyKey, this.ShowMe);
+            var r = GlobalHotkeyHooker.Instance.Regist(this, (uint)SystemConfig.Instance.Launcher.HotKeyModifiers, SystemConfig.Instance.Launcher.HotKeyKey, this.ShowMe);
             var title = SystemConfig.Instance.Language.GetText("messagebox_title_warning");
             switch (r.Item1)
             {

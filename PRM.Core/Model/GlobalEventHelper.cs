@@ -51,14 +51,6 @@ namespace PRM.Core.Model
 
 
 
-
-        /// <summary>
-        /// Invoke to notify a newer version of te software was released
-        /// while new version code = arg1, download url = arg2
-        /// </summary>
-        public static Action<string, string> OnNewVersionRelease { get; set; } = null;
-
-
         /// <summary>
         /// Invoke to show up progress bar when arg2 > 0
         /// while progress percent = arg1 / arg2 * 100%, alert info = arg3

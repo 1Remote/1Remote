@@ -30,9 +30,9 @@ namespace PRM.Core.Model
         ControlAlt = ModifierKeys.Control | ModifierKeys.Alt,
     }
 
-    public sealed class SystemConfigQuickConnect : SystemConfigBase
+    public sealed class SystemConfigLauncher : SystemConfigBase
     {
-        public SystemConfigQuickConnect(Ini ini) : base(ini)
+        public SystemConfigLauncher(Ini ini) : base(ini)
         {
             Load();
         }
@@ -91,7 +91,7 @@ namespace PRM.Core.Model
 
         public override void Update(SystemConfigBase newConfig)
         {
-            UpdateBase(this, newConfig, typeof(SystemConfigQuickConnect));
+            UpdateBase(this, newConfig, typeof(SystemConfigLauncher));
         }
 
         #endregion

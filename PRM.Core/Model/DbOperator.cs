@@ -35,6 +35,9 @@ namespace PRM.Core.Model
         /// <returns></returns>
         public int CheckDbRsaIsOk()
         {
+            if (_db == null)
+                return 0;
+
             var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();
 
             // NO RSA

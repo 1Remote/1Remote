@@ -35,6 +35,12 @@ namespace PRM
         private const string PipeName = "PRemoteM_singlex@foxmail.com";
 #endif
 
+
+        private DesktopResolutionWatcher _desktopResolutionWatcher;
+
+
+
+
         private static void OnUnhandledException(Exception e)
         {
             SimpleLogHelper.Fatal(e);
@@ -174,23 +180,24 @@ namespace PRM
 #endif
 
             var ini = new Ini(iniPath);
-            // read dbPath.
-
             var language = new SystemConfigLanguage(this.Resources, ini);
             var general = new SystemConfigGeneral(ini);
-            var quickConnect = new SystemConfigQuickConnect(ini);
+            var quickConnect = new SystemConfigLauncher(ini);
             var theme = new SystemConfigTheme(this.Resources, ini);
-            // init db connection
+            var locality = new SystemConfigLocality(new Ini(Path.Combine(appDateFolder, "locality.ini")));
+
+            // read dbPath.
             var dataSecurity = new SystemConfigDataSecurity(Context, ini);
+
 
             // config create instance (settings & langs)
             SystemConfig.Init();
             SystemConfig.Instance.General = general;
             SystemConfig.Instance.Language = language;
-            SystemConfig.Instance.QuickConnect = quickConnect;
+            SystemConfig.Instance.Launcher = quickConnect;
             SystemConfig.Instance.DataSecurity = dataSecurity;
             SystemConfig.Instance.Theme = theme;
-
+            SystemConfig.Instance.Locality = locality;
 
 
 
@@ -200,10 +207,9 @@ namespace PRM
                 isNewUser = true;
             }
 
-            // server data holder init.
-
             // remote window pool init.
             RemoteWindowPool.Init(Context);
+
 
             // Event register
             GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
@@ -214,6 +220,7 @@ namespace PRM
             {
                 Context.AppData.ServerListUpdate(server);
             };
+            _desktopResolutionWatcher = new DesktopResolutionWatcher(GlobalEventHelper.OnScreenResolutionChanged);
 
             return isNewUser;
         }
@@ -265,6 +272,13 @@ namespace PRM
             InitMainWindow(isNewUser);
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow = Window;
+
+            // TODO check if Db is writable
+            // var ret = SystemConfig.Instance.DataSecurity.CheckIfDbIsWritable();
+
+
+            // init db connection
+            Context.Db = new FreeSqlDb(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(SystemConfig.Instance.DataSecurity.DbPath));
 
             // check if Db is ok
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();

@@ -32,7 +32,7 @@ namespace PRM.View
                 TabItemGeneral.IsSelected = true;
             if (t == typeof(SystemConfigLanguage))
                 TabItemGeneral.IsSelected = true;
-            if (t == typeof(SystemConfigQuickConnect))
+            if (t == typeof(SystemConfigLauncher))
                 TabItemQuick.IsSelected = true;
             if (t == typeof(SystemConfigDataSecurity))
                 TabItemDataBase.IsSelected = true;
@@ -83,7 +83,7 @@ namespace PRM.View
             {
                 if (this.IsLoaded)
                 {
-                    SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers, key);
+                    SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, key);
                 }
             }
         }
@@ -92,17 +92,17 @@ namespace PRM.View
         {
             if (this.IsLoaded)
             {
-                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers, VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey);
+                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey);
             }
         }
 
         private bool SetHotkeyIsRegistered(HotkeyModifierKeys modifier, Key key)
         {
-            if (modifier == SystemConfig.Instance.QuickConnect.HotKeyModifiers
-                && key == SystemConfig.Instance.QuickConnect.HotKeyKey)
+            if (modifier == SystemConfig.Instance.Launcher.HotKeyModifiers
+                && key == SystemConfig.Instance.Launcher.HotKeyKey)
             {
-                VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
-                VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
+                VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
+                VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
                 return false;
             }
 
@@ -113,8 +113,8 @@ namespace PRM.View
             {
                 case GlobalHotkeyHooker.RetCode.Success:
                     GlobalHotkeyHooker.Instance.Unregist(r.Item3);
-                    VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = modifier;
-                    VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = key;
+                    VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
+                    VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
                     return true;
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
@@ -125,8 +125,8 @@ namespace PRM.View
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyModifiers = SystemConfig.Instance.QuickConnect.HotKeyModifiers;
-            VmSystemConfigPage.SystemConfig.QuickConnect.HotKeyKey = SystemConfig.Instance.QuickConnect.HotKeyKey;
+            VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = SystemConfig.Instance.Launcher.HotKeyModifiers;
+            VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = SystemConfig.Instance.Launcher.HotKeyKey;
 
             return false;
         }

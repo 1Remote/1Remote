@@ -96,7 +96,6 @@ namespace PRM.View.TabWindow
                     SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
                     SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
                     SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
-                    SystemConfig.Instance.Locality.Save();
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -108,7 +107,6 @@ namespace PRM.View.TabWindow
                     SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
                     SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
                     SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
-                    SystemConfig.Instance.Locality.Save();
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };

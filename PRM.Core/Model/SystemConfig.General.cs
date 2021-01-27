@@ -36,7 +36,6 @@ namespace PRM.Core.Model
             IconFolderPath = Path.Combine(appDateFolder, "icons");
             if (!Directory.Exists(IconFolderPath))
                 Directory.CreateDirectory(IconFolderPath);
-            LogFilePath = Path.Combine(appDateFolder, SystemConfig.AppName + ".log.md");
             StopAutoSave = false;
         }
 
@@ -59,21 +58,6 @@ namespace PRM.Core.Model
         {
             get => _iconFolderPath;
             private set => SetAndNotifyIfChanged(nameof(IconFolderPath), ref _iconFolderPath, value);
-        }
-
-        private string _logFilePath = $"./{SystemConfig.AppName}.log.md";
-        public string LogFilePath
-        {
-            get => _logFilePath;
-            private set
-            {
-                SetAndNotifyIfChanged(nameof(LogFilePath), ref _logFilePath, value);
-                SimpleLogHelper.LogFileName = value;
-                SimpleLogHelper.DebugFileName = value;
-                SimpleLogHelper.WarningFileName = value;
-                SimpleLogHelper.ErrorFileName = value;
-                SimpleLogHelper.FatalFileName = value;
-            }
         }
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;

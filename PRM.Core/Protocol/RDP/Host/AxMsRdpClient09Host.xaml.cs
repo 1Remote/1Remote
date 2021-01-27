@@ -686,18 +686,12 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
-                var entireSize = System.Drawing.Rectangle.Empty;
-                foreach (var screen in System.Windows.Forms.Screen.AllScreens)
-                    entireSize = System.Drawing.Rectangle.Union(entireSize, screen.Bounds);
-                return entireSize;
+                return ScreenInfoEx.GetAllScreensSize();
             }
-            else
+            else if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
+                     && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
             {
-                if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
-                    && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
-                {
-                    return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
-                }
+                return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
             }
             return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
         }
