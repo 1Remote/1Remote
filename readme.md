@@ -17,7 +17,7 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 - Multi-screen and HiDPI RDP connections
 - Detailed connection configuration: groups, icons, colors, connection scripts etc.
 - Multiple languages, themes and tabbed interface
-- [Import connections from mRemoteNG](PRemoteM/Doc/DocPic/Migrate.jpg)
+- [Import connections from mRemoteNG](https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/Migrate.jpg)
 - [Password encryption via RSA](https://github.com/VShawn/PRemoteM/wiki/Password-Security)
 - Portable - just unpack and run
 
