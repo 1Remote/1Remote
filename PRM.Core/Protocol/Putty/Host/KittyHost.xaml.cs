@@ -83,7 +83,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
         private readonly IPuttyConnectable _protocolPuttyBase = null;
 
-        public KittyHost(IPuttyConnectable iPuttyConnectable) : base(iPuttyConnectable.ProtocolServerBase, false)
+        public KittyHost(PrmContext context, IPuttyConnectable iPuttyConnectable) : base(context, iPuttyConnectable.ProtocolServerBase, false)
         {
             _protocolPuttyBase = iPuttyConnectable;
             InitializeComponent();
@@ -263,7 +263,7 @@ reload=yes
             {
                 FileName = KittyExeFullName,
                 WorkingDirectory = KittyExeFolderPath,
-                Arguments = _protocolPuttyBase.GetPuttyConnString(),
+                Arguments = _protocolPuttyBase.GetPuttyConnString(Context),
                 WindowStyle = ProcessWindowStyle.Minimized
             };
 
@@ -348,9 +348,7 @@ reload=yes
                 if (!string.IsNullOrEmpty(server.PrivateKey))
                 {
                     // set key
-                    var ppk = server.PrivateKey;
-                    if (SystemConfig.Instance.DataSecurity.Rsa != null)
-                        ppk = SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(ppk) ?? ppk;
+                    var ppk = Context.DbOperator.DecryptOrReturnOriginalString(server.PrivateKey);
                     Debug.Assert(ppk != null);
                     puttyOption.Set(PuttyOptionKey.PublicKeyFile, ppk);
                 }

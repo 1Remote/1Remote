@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmitter;
 
@@ -50,13 +51,13 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
 
-        public ITransmitter GeTransmitter()
+        public ITransmitter GeTransmitter(PrmContext context)
         {
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = this.GetDecryptedPassWord();
-                return new TransmitterFtp(hostname, port, username, password);
+            var password = context.DbOperator.DecryptOrReturnOriginalString(this.Password);
+            return new TransmitterFtp(hostname, port, username, password);
         }
 
         public string GetStartupPath()

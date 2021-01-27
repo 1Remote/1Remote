@@ -12,7 +12,7 @@ namespace PRM.View
     {
         private readonly VmSearchBox _vm = null;
 
-        public SearchBoxWindow(GlobalData appData)
+        public SearchBoxWindow(PrmContext context)
         {
             InitializeComponent();
             ShowInTaskbar = false;
@@ -21,7 +21,7 @@ namespace PRM.View
             double oneItemHeight = (double)FindResource("OneItemHeight");
             double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
             double cornerRadius = (double)FindResource("CornerRadius");
-            _vm = new VmSearchBox(appData, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
+            _vm = new VmSearchBox(context, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
 
             DataContext = _vm;
             Loaded += (sender, args) =>
@@ -217,7 +217,7 @@ namespace PRM.View
                             }
 
                             if (_vm.SelectedIndex >= 0 &&
-                                _vm.SelectedIndex < _vm.AppData.VmItemList.Count)
+                                _vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count)
                             {
                                 _vm.ShowActionsList();
                             }
@@ -227,12 +227,12 @@ namespace PRM.View
                             OpenSessionAndHide();
                             break;
                         case Key.Down:
-                            if (_vm.SelectedIndex < _vm.AppData.VmItemList.Count - 1)
+                            if (_vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count - 1)
                             {
                                 var index = _vm.SelectedIndex;
-                                for (int i = _vm.SelectedIndex + 1; i < _vm.AppData.VmItemList.Count; i++)
+                                for (int i = _vm.SelectedIndex + 1; i < _vm.Context.AppData.VmItemList.Count; i++)
                                 {
-                                    if (_vm.AppData.VmItemList[i].ObjectVisibility == Visibility)
+                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
                                     {
                                         index = i;
                                         break;
@@ -247,7 +247,7 @@ namespace PRM.View
                                 var index = _vm.SelectedIndex;
                                 for (int i = _vm.SelectedIndex - 1; i >= 0; i--)
                                 {
-                                    if (_vm.AppData.VmItemList[i].ObjectVisibility == Visibility)
+                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
                                     {
                                         index = i;
                                         break;
@@ -263,7 +263,7 @@ namespace PRM.View
                                 int count = 0;
                                 for (int i = _vm.SelectedIndex - 1; i >= 0; i--)
                                 {
-                                    if (_vm.AppData.VmItemList[i].ObjectVisibility == Visibility)
+                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
                                     {
                                         ++count;
                                         index = i;
@@ -275,13 +275,13 @@ namespace PRM.View
                             }
                             break;
                         case Key.PageDown:
-                            if (_vm.SelectedIndex < _vm.AppData.VmItemList.Count - 1)
+                            if (_vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count - 1)
                             {
                                 var index = _vm.SelectedIndex;
                                 int count = 0;
-                                for (int i = _vm.SelectedIndex + 1; i < _vm.AppData.VmItemList.Count; i++)
+                                for (int i = _vm.SelectedIndex + 1; i < _vm.Context.AppData.VmItemList.Count; i++)
                                 {
-                                    if (_vm.AppData.VmItemList[i].ObjectVisibility == Visibility)
+                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
                                     {
                                         ++count;
                                         index = i;
@@ -339,9 +339,9 @@ namespace PRM.View
         {
             var si = _vm.SelectedIndex;
             HideMe();
-            if (si >= 0 && si < _vm.AppData.VmItemList.Count)
+            if (si >= 0 && si < _vm.Context.AppData.VmItemList.Count)
             {
-                var s = _vm.AppData.VmItemList[si];
+                var s = _vm.Context.AppData.VmItemList[si];
                 GlobalEventHelper.OnRequestServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
             }
         }
@@ -349,7 +349,7 @@ namespace PRM.View
         private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (_vm.SelectedIndex >= 0 &&
-                _vm.SelectedIndex < _vm.AppData.VmItemList.Count)
+                _vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count)
             {
                 _vm.ShowActionsList();
             }

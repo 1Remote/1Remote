@@ -18,10 +18,10 @@ namespace PRM.Core.Model
 {
     public sealed class SystemConfigDataSecurity : SystemConfigBase
     {
-        private readonly GlobalData _appData;
-        public SystemConfigDataSecurity(GlobalData appData, Ini ini) : base(ini)
+        private readonly PrmContext _context;
+        public SystemConfigDataSecurity(PrmContext context, Ini ini) : base(ini)
         {
-            _appData = appData;
+            _context = context;
             Load();
             // restore from back. (in these case .back will existed: data encrypt/decrypt processing throw exception)
             if (File.Exists(_dbPath + ".back"))
@@ -29,10 +29,9 @@ namespace PRM.Core.Model
                 File.Copy(_dbPath + ".back", _dbPath, true);
                 File.Delete(_dbPath + ".back");
             }
-            _db = new FreeSqlDb(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(DbPath));
+            // TODO create outside.
+            _context.Db = new FreeSqlDb(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(DbPath));
         }
-
-        private readonly IDb _db;
 
         /// <summary>
         /// Check if db is existed and writable
@@ -76,63 +75,14 @@ namespace PRM.Core.Model
             if (!c1.Item1)
                 return c1;
 
-            var sha1 = this._db.Get_RSA_SHA1();
-            var rsaPublicKey = this._db.Get_RSA_PublicKey();
-            if (string.IsNullOrEmpty(rsaPrivateKeyPath))
-                rsaPrivateKeyPath = this._db.Get_RSA_PrivateKeyPath();
-
-            // NO RSA
-            if (string.IsNullOrEmpty(sha1)
-                && string.IsNullOrEmpty(rsaPrivateKeyPath)
-                && string.IsNullOrEmpty(rsaPublicKey))
-                return new Tuple<bool, string>(true, "");
-
-            if (!File.Exists(rsaPrivateKeyPath))
-                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-
-            RSA rsaPublicKeyObj = null;
-            RSA rsaPrivateKeyObj = null;
-
-            try
+            var ret = _context.DbOperator.CheckDbRsaIsOk();
+            switch (ret)
             {
-                rsaPrivateKeyObj = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
-            }
-            catch (Exception)
-            {
-                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-            }
-
-            // make sure public key is PEM format key
-            try
-            {
-                rsaPublicKeyObj = new RSA(rsaPublicKey, true);
-            }
-            catch (Exception)
-            {
-                // try to fix public key
-                if (rsaPrivateKeyObj.Verify("SHA1", sha1, SystemConfig.AppName))
-                {
-                    this._db.Set_RSA_PublicKey(rsaPrivateKeyObj.ToPEM_PKCS1(true));
-                    rsaPublicKeyObj = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
-                }
-            }
-
-
-            // check if RSA private key is matched public key?
-            try
-            {
-                rsaPrivateKeyObj = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
-                var sha1Tmp = rsaPrivateKeyObj.Sign("SHA1", SystemConfig.AppName);
-                if (rsaPublicKeyObj?.Verify("SHA1", sha1Tmp, SystemConfig.AppName) != true)
-                {
-                    throw new Exception("RSA key is not match!");
-                }
-                this._db.Set_RSA_SHA1(sha1Tmp);
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+                case -1:
+                case -2:
+                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+                case -3:
+                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
             return new Tuple<bool, string>(true, "");
         }
@@ -157,36 +107,15 @@ namespace PRM.Core.Model
                 lock (_lockerForRsa)
                 {
                     SetAndNotifyIfChanged(nameof(DbPath), ref _dbPath, value.Replace(Environment.CurrentDirectory, "."));
-                    Rsa = null;
                     RaisePropertyChanged(nameof(RsaPublicKey));
                     RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                 }
             }
         }
 
-        public string RsaPublicKey => this._db.Get_RSA_PublicKey();
-        public string RsaPrivateKeyPath => this._db.Get_RSA_PrivateKeyPath();
+        public string RsaPublicKey => this._context.Db.Get_RSA_PublicKey();
+        public string RsaPrivateKeyPath => this._context.Db.Get_RSA_PrivateKeyPath();
 
-        private RSA _rsa = null;
-        public RSA Rsa
-        {
-            set => _rsa = value;
-            get
-            {
-                if (_rsa == null)
-                {
-                    var ret = CheckIfDbIsOk();
-                    if (!ret.Item1)
-                    {
-                        throw new Exception(ret.Item2);
-                    }
-                    if (string.IsNullOrEmpty(this._db.Get_RSA_PublicKey()))
-                        return null;
-                    _rsa = new RSA(File.ReadAllText(this._db.Get_RSA_PrivateKeyPath()), true);
-                }
-                return _rsa;
-            }
-        }
 
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
@@ -199,8 +128,8 @@ namespace PRM.Core.Model
 
 
         private readonly object _lockerForRsa = new object();
-        public const string PrivateKeyFileExt = ".prpk";
-        public void GenRsa()
+        private const string PrivateKeyFileExt = ".prpk";
+        private void GenRsa()
         {
             // validate rsa key
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
@@ -210,18 +139,13 @@ namespace PRM.Core.Model
                 return;
             }
 
-            var rsaPublicKey = this._db.Get_RSA_PublicKey();
-
 
             var t = new Task(() =>
             {
-                if (!string.IsNullOrEmpty(rsaPublicKey)) return;
                 lock (_lockerForRsa)
                 {
-                    if (!string.IsNullOrEmpty(rsaPublicKey)) return;
+                    if (!string.IsNullOrEmpty(_context.DbOperator.GetRsaPrivateKeyPath())) return;
 
-                    int max = _appData.VmItemList.Count() * 3 + 2;
-                    int val = 0;
 
                     var dlg = new OpenFileDialog
                     {
@@ -230,68 +154,65 @@ namespace PRM.Core.Model
                         FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                         CheckFileExists = false,
                     };
-                    if (dlg.ShowDialog() == true)
+                    if (dlg.ShowDialog() != true) return;
+
+                    int max = this._context.AppData.VmItemList.Count() * 3 + 2;
+                    int val = 0;
+                    OnRsaProgress(val, max);
+                    // database back up
+                    Debug.Assert(File.Exists(DbPath));
+                    File.Copy(_dbPath, _dbPath + ".back", true);
+                    OnRsaProgress(++val, max);
+
+                    if (!File.Exists(dlg.FileName))
                     {
-                        OnRsaProgress(val, max);
-                        // database back up
-                        Debug.Assert(File.Exists(DbPath));
-                        File.Copy(_dbPath, _dbPath + ".back", true);
-                        OnRsaProgress(++val, max);
-
-                        Rsa = null;
-                        RSA rsa = null;
-                        // try read rsa
-                        if (File.Exists(dlg.FileName))
-                        {
-                            try
-                            {
-                                rsa = new RSA(File.ReadAllText(dlg.FileName), true);
-                            }
-                            catch (Exception e)
-                            {
-                                SimpleLogHelper.Debug(e);
-                                rsa = null;
-                            }
-                        }
                         // gen rsa
-                        if (rsa == null)
-                        {
-                            rsa = new RSA(2048);
-                            // save key file
-                            File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
-                        }
-                        OnRsaProgress(++val, max);
-
-                        // key write to db
-                        this._db.Set_RSA_SHA1(rsa.Sign("SHA1", SystemConfig.AppName));
-                        this._db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
-                        this._db.Set_RSA_PrivateKeyPath(dlg.FileName);
-                        RaisePropertyChanged(nameof(RsaPublicKey));
-                        RaisePropertyChanged(nameof(RsaPrivateKeyPath));
-
-                        // encrypt old data
-                        foreach (var vmProtocolServer in _appData.VmItemList)
-                        {
-                            OnRsaProgress(++val, max);
-                            this.EncryptPwdIfItIsNotEncrypted(vmProtocolServer.Server);
-                            var tmp = (ProtocolServerBase)vmProtocolServer.Server.Clone();
-                            this.EncryptInfo(tmp);
-                            this._db.UpdateServer(tmp);
-                            OnRsaProgress(++val, max);
-                        }
-
-                        // del back up
-                        File.Delete(_dbPath + ".back");
-
-                        // done
-                        OnRsaProgress(0, 0);
+                        var rsa = new RSA(2048);
+                        // save key file
+                        File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
                     }
+
+                    OnRsaProgress(++val, max);
+
+                    var result = _context.DbOperator.SetRsaPrivateKey(dlg.FileName);
+                    switch (result)
+                    {
+                        case -1:
+                            break;
+                        case -2:
+                            break;
+                        case -3:
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // encrypt old data
+                    foreach (var vmProtocolServer in this._context.AppData.VmItemList)
+                    {
+                        OnRsaProgress(++val, max);
+                        this._context.DbOperator.EncryptPwdIfItIsNotEncrypted(vmProtocolServer.Server);
+                        var tmp = (ProtocolServerBase)vmProtocolServer.Server.Clone();
+                        this._context.DbOperator.EncryptInfo(tmp);
+                        this._context.Db.UpdateServer(tmp);
+                        OnRsaProgress(++val, max);
+                    }
+
+                    // del back up
+                    File.Delete(_dbPath + ".back");
+
+                    // done
+                    OnRsaProgress(0, 0);
+
+                    RaisePropertyChanged(nameof(RsaPublicKey));
+                    RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                 }
             });
             t.Start();
 
         }
-        public void CleanRsa()
+
+        private void CleanRsa()
         {
             // validate rsa key
             var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
@@ -300,7 +221,7 @@ namespace PRM.Core.Model
                 MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
-            var rsaPublicKey = this._db.Get_RSA_PublicKey();
+            var rsaPublicKey = this._context.Db.Get_RSA_PublicKey();
 
             var t = new Task(() =>
                 {
@@ -309,7 +230,7 @@ namespace PRM.Core.Model
                     {
                         if (string.IsNullOrEmpty(rsaPublicKey)) return;
                         OnRsaProgress(0, 1);
-                        int max = _appData.VmItemList.Count() * 3 + 2 + 1;
+                        int max = this._context.AppData.VmItemList.Count() * 3 + 2 + 1;
                         int val = 1;
                         OnRsaProgress(val, max);
 
@@ -323,25 +244,19 @@ namespace PRM.Core.Model
                         //var rsa = new RSA(File.ReadAllText(this.Db.Get_RSA_PrivateKeyPath()), true);
 
                         // decrypt pwd
-                        Debug.Assert(Rsa != null);
-                        foreach (var vmProtocolServer in _appData.VmItemList)
+                        foreach (var vmProtocolServer in this._context.AppData.VmItemList)
                         {
-                            DecryptPwdIfItIsEncrypted(vmProtocolServer.Server);
+                            this._context.DbOperator.DecryptPwdIfItIsEncrypted(vmProtocolServer.Server);
                             OnRsaProgress(++val, max);
                         }
 
                         // remove rsa keys from db
-                        Rsa = null;
-                        this._db.Set_RSA_SHA1("");
-                        this._db.Set_RSA_PublicKey("");
-                        this._db.Set_RSA_PrivateKeyPath("");
-                        RaisePropertyChanged(nameof(RsaPublicKey));
-                        RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                        this._context.DbOperator.SetRsaPrivateKey("");
 
                         // update db
-                        foreach (var vmProtocolServer in _appData.VmItemList)
+                        foreach (var vmProtocolServer in this._context.AppData.VmItemList)
                         {
-                            this._db.UpdateServer(vmProtocolServer.Server);
+                            this._context.Db.UpdateServer(vmProtocolServer.Server);
                             OnRsaProgress(++val, max);
                         }
 
@@ -353,128 +268,14 @@ namespace PRM.Core.Model
 
                         // done
                         OnRsaProgress(0, 0);
+
+                        RaisePropertyChanged(nameof(RsaPublicKey));
+                        RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                     }
                 });
             t.Start();
         }
 
-        public void EncryptPwdIfItIsNotEncrypted(ProtocolServerBase server)
-        {
-            var rsa = Rsa;
-            if (rsa != null)
-            {
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-                {
-                    var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                    if (rsa.DecodeOrNull(s.Password) == null)
-                        s.Password = rsa.Encode(s.Password);
-                }
-                if (server is ProtocolServerSSH ssh
-                    && !string.IsNullOrWhiteSpace(ssh.PrivateKey))
-                {
-                    if (rsa.DecodeOrNull(ssh.PrivateKey) == null)
-                        ssh.PrivateKey = rsa.Encode(ssh.PrivateKey);
-                }
-                if (server is ProtocolServerRDP rdp
-                    && !string.IsNullOrWhiteSpace(rdp.GatewayPassword))
-                {
-                    if (rsa.DecodeOrNull(rdp.GatewayPassword) == null)
-                        rdp.GatewayPassword = rsa.Encode(rdp.GatewayPassword);
-                }
-            }
-        }
-
-        public void DecryptPwdIfItIsEncrypted(ProtocolServerBase server)
-        {
-            var rsa = Rsa;
-            if (rsa != null)
-            {
-                if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-                {
-                    var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                   if(rsa.DecodeOrNull(s.Password) == null)
-                   {
-                       return;
-                   }
-                    s.Password = rsa.DecodeOrNull(s.Password);
-                }
-                if (server is ProtocolServerSSH ssh
-                && !string.IsNullOrWhiteSpace(ssh.PrivateKey))
-                {
-                    Debug.Assert(rsa.DecodeOrNull(ssh.PrivateKey) != null);
-                    ssh.PrivateKey = rsa.DecodeOrNull(ssh.PrivateKey);
-                }
-                if (server is ProtocolServerRDP rdp
-                && !string.IsNullOrWhiteSpace(rdp.GatewayPassword))
-                {
-                    Debug.Assert(rsa.DecodeOrNull(rdp.GatewayPassword) != null);
-                    rdp.GatewayPassword = rsa.DecodeOrNull(rdp.GatewayPassword);
-                }
-            }
-        }
-
-        private void EncryptInfo(ProtocolServerBase server)
-        {
-            var rsa = Rsa;
-            if (rsa == null) return;
-            Debug.Assert(rsa.DecodeOrNull(server.DispName) == null);
-            server.DispName = rsa.Encode(server.DispName);
-            server.GroupName = rsa.Encode(server.GroupName);
-
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
-            {
-                var p = (ProtocolServerWithAddrPortUserPwdBase)server;
-                if (!string.IsNullOrEmpty(p.UserName))
-                    p.UserName = rsa.Encode(p.UserName);
-                if (!string.IsNullOrEmpty(p.Address))
-                    p.Address = rsa.Encode(p.Address);
-            }
-        }
-
-        public void DecryptInfo(ProtocolServerBase server)
-        {
-            var rsa = Rsa;
-            if (rsa == null) return;
-            Debug.Assert(rsa.DecodeOrNull(server.DispName) != null);
-            server.DispName = rsa.DecodeOrNull(server.DispName);
-            server.GroupName = rsa.DecodeOrNull(server.GroupName);
-
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
-            {
-                var p = (ProtocolServerWithAddrPortUserPwdBase)server;
-                if (!string.IsNullOrEmpty(p.UserName))
-                    p.UserName = rsa.DecodeOrNull(p.UserName) ?? p.UserName;
-                if (!string.IsNullOrEmpty(p.Address))
-                    p.Address = rsa.DecodeOrNull(p.Address) ?? p.Address;
-            }
-        }
-
-        public void DbAddServer(ProtocolServerBase org)
-        {
-            EncryptPwdIfItIsNotEncrypted(org);
-            var tmp = (ProtocolServerBase)org.Clone();
-            tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptInfo(tmp);
-            _db.AddServer(tmp);
-        }
-        public void DbUpdateServer(ProtocolServerBase org)
-        {
-            EncryptPwdIfItIsNotEncrypted(org);
-            var tmp = (ProtocolServerBase)org.Clone();
-            tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptInfo(tmp);
-            _db.UpdateServer(tmp);
-        }
-
-        public bool DbDeleteServer(int id)
-        {
-            return _db.DeleteServer(id);
-        }
-
-        public List<ProtocolServerBase> GetServers()
-        {
-            return _db.GetServers();
-        }
 
 
 
@@ -534,14 +335,7 @@ namespace PRM.Core.Model
         {
             get
             {
-                if (_cmdGenRsaKey == null)
-                {
-                    _cmdGenRsaKey = new RelayCommand((o) =>
-                    {
-                        GenRsa();
-                    });
-                }
-                return _cmdGenRsaKey;
+                return _cmdGenRsaKey ??= new RelayCommand((o) => { GenRsa(); });
             }
         }
 
@@ -551,30 +345,28 @@ namespace PRM.Core.Model
         {
             get
             {
-                if (_cmdClearRsaKey == null)
+                return _cmdClearRsaKey ??= new RelayCommand((o) =>
                 {
-                    _cmdClearRsaKey = new RelayCommand((o) =>
+                    var res = CheckIfDbIsOk();
+                    if (!res.Item1)
                     {
-                        var res = CheckIfDbIsOk();
-                        if (!res.Item1)
+                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        if (MessageBoxResult.Yes == MessageBox.Show(
+                            SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rsa"),
+                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Warning, MessageBoxResult.None))
                         {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            if (MessageBoxResult.Yes == MessageBox.Show(
-                                SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rsa"),
-                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo, 
-                                MessageBoxImage.Warning, MessageBoxResult.None))
-                            {
-                                if (File.Exists(DbPath))
-                                    File.Delete(DbPath);
-                                _appData.ServerListUpdate();
-                                Load();
-                            }
+                            if (File.Exists(DbPath))
+                                File.Delete(DbPath);
+                            this._context.AppData.ServerListUpdate();
+                            Load();
                         }
-                        else
-                            CleanRsa();
-                    });
-                }
-                return _cmdClearRsaKey;
+                    }
+                    else
+                        CleanRsa();
+                });
             }
         }
 
@@ -584,39 +376,45 @@ namespace PRM.Core.Model
         {
             get
             {
-                if (_cmdSelectDbPath == null)
+                return _cmdSelectDbPath ??= new RelayCommand((o) =>
                 {
-                    _cmdSelectDbPath = new RelayCommand((o) =>
+                    var dlg = new OpenFileDialog
                     {
-                        var dlg = new OpenFileDialog();
-                        dlg.Filter = "Sqlite Database|*.db";
-                        dlg.CheckFileExists = false;
-                        dlg.InitialDirectory = new FileInfo(DbPath).DirectoryName;
-                        if (dlg.ShowDialog() == true)
+                        Filter = "Sqlite Database|*.db",
+                        CheckFileExists = false,
+                        InitialDirectory = new FileInfo(DbPath).DirectoryName
+                    };
+                    if (dlg.ShowDialog() == true)
+                    {
+                        var path = dlg.FileName;
+                        var oldDbPath = DbPath;
+                        try
                         {
-                            var path = dlg.FileName;
-                            var oldDbPath = DbPath;
-                            try
+                            if (IOPermissionHelper.HasWritePermissionOnFile(path))
                             {
-                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
-                                {
-                                    this._db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
-                                    _appData.ServerListUpdate();
-                                    DbPath = path;
-                                }
-                                else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                this._context.Db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
+                                this._context.AppData.ServerListUpdate();
+                                DbPath = path;
                             }
-                            catch (Exception ee)
-                            {
-                                DbPath = oldDbPath;
-                                SimpleLogHelper.Warning(ee);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            }
+                            else
+                                MessageBox.Show(
+                                    SystemConfig.Instance.Language.GetText(
+                                        "system_options_data_security_error_can_not_open"),
+                                    SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         }
-                    });
-                }
-                return _cmdSelectDbPath;
+                        catch (Exception ee)
+                        {
+                            DbPath = oldDbPath;
+                            SimpleLogHelper.Warning(ee);
+                            MessageBox.Show(
+                                SystemConfig.Instance.Language.GetText(
+                                    "system_options_data_security_error_can_not_open"),
+                                SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
+                                MessageBoxImage.Error, MessageBoxResult.None);
+                        }
+                    }
+                });
             }
         }
 
@@ -625,48 +423,52 @@ namespace PRM.Core.Model
         {
             get
             {
-                if (_cmdDbMigrate == null)
+                return _cmdDbMigrate ??= new RelayCommand((o) =>
                 {
-                    _cmdDbMigrate = new RelayCommand((o) =>
+                    var dlg = new SaveFileDialog
                     {
-                        var dlg = new SaveFileDialog
+                        Filter = "Sqlite Database|*.db",
+                        CheckFileExists = false,
+                        InitialDirectory = new FileInfo(DbPath).DirectoryName,
+                        FileName = new FileInfo(DbPath).Name
+                    };
+                    if (dlg.ShowDialog() == true)
+                    {
+                        var path = dlg.FileName;
+                        var oldDbPath = DbPath;
+                        if (oldDbPath == path)
+                            return;
+                        try
                         {
-                            Filter = "Sqlite Database|*.db",
-                            CheckFileExists = false,
-                            InitialDirectory = new FileInfo(DbPath).DirectoryName,
-                            FileName = new FileInfo(DbPath).Name
-                        };
-                        if (dlg.ShowDialog() == true)
-                        {
-                            var path = dlg.FileName;
-                            var oldDbPath = DbPath;
-                            if (oldDbPath == path)
-                                return;
-                            try
+                            if (IOPermissionHelper.HasWritePermissionOnFile(path))
                             {
-                                if (IOPermissionHelper.HasWritePermissionOnFile(path))
-                                {
-                                    this._db.CloseConnection();
-                                    File.Move(oldDbPath, path);
-                                    File.Delete(oldDbPath);
-                                    this._db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
-                                    // Migrate do not need reload data
-                                    // _appData.ServerListUpdate();
-                                    DbPath = path;
-                                }
-                                else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                this._context.Db.CloseConnection();
+                                File.Move(oldDbPath, path);
+                                File.Delete(oldDbPath);
+                                this._context.Db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
+                                // Migrate do not need reload data
+                                // this._appContext.AppData.ServerListUpdate();
+                                DbPath = path;
                             }
-                            catch (Exception ee)
-                            {
-                                SimpleLogHelper.Debug(ee);
-                                DbPath = oldDbPath;
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            }
+                            else
+                                MessageBox.Show(
+                                    SystemConfig.Instance.Language.GetText(
+                                        "system_options_data_security_error_can_not_open"),
+                                    SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         }
-                    });
-                }
-                return _cmdDbMigrate;
+                        catch (Exception ee)
+                        {
+                            SimpleLogHelper.Debug(ee);
+                            DbPath = oldDbPath;
+                            MessageBox.Show(
+                                SystemConfig.Instance.Language.GetText(
+                                    "system_options_data_security_error_can_not_open"),
+                                SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
+                                MessageBoxImage.Error, MessageBoxResult.None);
+                        }
+                    }
+                });
             }
         }
         #endregion

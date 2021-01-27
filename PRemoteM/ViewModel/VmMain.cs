@@ -98,11 +98,11 @@ namespace PRM.ViewModel
         }
 
         public readonly MainWindow Window;
-        public GlobalData AppData { get; }
+        public PrmContext Context { get; }
 
-        public VmMain(GlobalData appData, MainWindow window)
+        public VmMain(PrmContext context, MainWindow window)
         {
-            AppData = appData;
+            Context = context;
             Window = window;
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
@@ -113,13 +113,13 @@ namespace PRM.ViewModel
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
                 if (id <= 0) return;
-                Debug.Assert(appData.VmItemList.Any(x => x.Server.Id == id));
-                var server = appData.VmItemList.First(x => x.Server.Id == id).Server;
+                Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
+                var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(appData, server, isDuplicate)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
@@ -132,12 +132,12 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(appData, server)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server)),
                 };
             });
 
-            ListViewPageForServerList = new ServerListPage(appData);
-            _managementPage = new ServerManagementPage(appData);
+            ListViewPageForServerList = new ServerListPage(Context);
+            _managementPage = new ServerManagementPage(Context);
         }
 
 

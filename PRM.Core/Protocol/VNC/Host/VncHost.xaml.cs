@@ -24,7 +24,7 @@ namespace PRM.Core.Protocol.VNC.Host
         private readonly ProtocolServerVNC _vncServer = null;
 
 
-        public VncHost(ProtocolServerBase protocolServer) : base(protocolServer, false)
+        public VncHost(PrmContext context, ProtocolServerBase protocolServer) : base(context, protocolServer, false)
         {
             InitializeComponent();
             GridMessageBox.Visibility = Visibility.Collapsed;
@@ -91,7 +91,7 @@ namespace PRM.Core.Protocol.VNC.Host
             GridLoading.Visibility = Visibility.Visible;
             Vnc.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncServer.GetPort();
-            Vnc.GetPassword += () => _vncServer.GetDecryptedPassWord();
+            Vnc.GetPassword += () => Context.DbOperator.DecryptOrReturnOriginalString(_vncServer.Password);
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try
