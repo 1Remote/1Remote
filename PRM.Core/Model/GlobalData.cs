@@ -10,9 +10,12 @@ namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        public GlobalData()
+        private readonly DbOperator _dbOperator;
+        public GlobalData(DbOperator dbOperator)
         {
+            _dbOperator = dbOperator;
         }
+
 
 
         public Action<string> OnMainWindowServerFilterChanged;
@@ -53,11 +56,11 @@ namespace PRM.Core.Model
             if (protocolServer == null)
             {
                 var tmp = new ObservableCollection<VmProtocolServer>();
-                foreach (var serverAbstract in SystemConfig.Instance.DataSecurity.GetServers())
+                foreach (var serverAbstract in _dbOperator.GetServers())
                 {
                     try
                     {
-                        SystemConfig.Instance.DataSecurity.DecryptInfo(serverAbstract);
+                        _dbOperator.DecryptInfo(serverAbstract);
                         tmp.Add(new VmProtocolServer(serverAbstract));
                     }
                     catch (Exception e)
@@ -70,7 +73,7 @@ namespace PRM.Core.Model
             // edit
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
-                SystemConfig.Instance.DataSecurity.DbUpdateServer(protocolServer);
+                _dbOperator.DbUpdateServer(protocolServer);
                 VmItemList.Remove(VmItemList.First(x => x.Server.Id == protocolServer.Id));
                 VmItemList.Add(new VmProtocolServer(protocolServer));
                 VmItemListDataChanged?.Invoke();
@@ -78,7 +81,7 @@ namespace PRM.Core.Model
             // add
             else
             {
-                SystemConfig.Instance.DataSecurity.DbAddServer(protocolServer);
+                _dbOperator.DbAddServer(protocolServer);
                 ServerListUpdate();
             }
         }
@@ -86,7 +89,7 @@ namespace PRM.Core.Model
         public void ServerListRemove(int id)
         {
             Debug.Assert(id > 0);
-            if (SystemConfig.Instance.DataSecurity.DbDeleteServer(id))
+            if (_dbOperator.DbDeleteServer(id))
             {
                 ServerListUpdate();
             }

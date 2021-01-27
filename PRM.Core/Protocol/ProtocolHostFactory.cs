@@ -1,4 +1,5 @@
 ﻿using System;
+using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.Host;
 using PRM.Core.Protocol.FileTransmit.SFTP;
@@ -14,38 +15,38 @@ namespace PRM.Core.Protocol
 {
     public static class ProtocolHostFactory
     {
-        public static ProtocolHostBase Get(ProtocolServerBase server, double width = 0, double height = 0)
+        public static ProtocolHostBase Get(PrmContext context, ProtocolServerBase server, double width = 0, double height = 0)
         {
             switch (server)
             {
                 case ProtocolServerRDP _:
                     {
-                        var host = new AxMsRdpClient09Host(server, width, height);
+                        var host = new AxMsRdpClient09Host(context, server, width, height);
                         return host;
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var host = new KittyHost(ssh);
+                        var host = new KittyHost(context, ssh);
                         return host;
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var host = new KittyHost(telnet);
+                        var host = new KittyHost(context, telnet);
                         return host;
                     }
                 case ProtocolServerVNC vnc:
                     {
-                        var host = new VncHost(vnc);
+                        var host = new VncHost(context, vnc);
                         return host;
                     }
                 case ProtocolServerSFTP sftp:
                     {
-                        var host = new FileTransmitHost(sftp);
+                        var host = new FileTransmitHost(context, sftp);
                         return host;
                     }
                 case ProtocolServerFTP ftp:
                     {
-                        var host = new FileTransmitHost(ftp);
+                        var host = new FileTransmitHost(context, ftp);
                         return host;
                     }
                 default:

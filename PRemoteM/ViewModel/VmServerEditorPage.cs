@@ -11,14 +11,14 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        private readonly GlobalData _globalData;
+        private readonly PrmContext _context;
         /// <summary>
         /// to remember original protocol options
         /// </summary>
         private readonly ProtocolServerBase _orgServerBase;
-        public VmServerEditorPage(GlobalData globalData, ProtocolServerBase server, bool isDuplicate = false)
+        public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
         {
-            _globalData = globalData;
+            _context = context;
             _orgServerBase = server;
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
@@ -27,7 +27,7 @@ namespace PRM.ViewModel
             IsAddMode = Server.Id <= 0;
 
             // decrypt pwd
-            SystemConfig.Instance.DataSecurity.DecryptPwdIfItIsEncrypted(Server);
+            _context.DbOperator.DecryptPwdIfItIsEncrypted(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -48,11 +48,11 @@ namespace PRM.ViewModel
                 ProtocolSelected = ProtocolList.First();
             }
 
-            NameSelections = _globalData.VmItemList.Select(x => x.Server.DispName)
+            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DispName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
 
-            GroupSelections = _globalData.VmItemList.Select(x => x.Server.GroupName)
+            GroupSelections = _context.AppData.VmItemList.Select(x => x.Server.GroupName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
         }
@@ -120,7 +120,7 @@ namespace PRM.ViewModel
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
-                    _globalData.ServerListUpdate(Server);
+                    _context.AppData.ServerListUpdate(Server);
                     App.Window.Vm.DispPage = null;
                 }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;

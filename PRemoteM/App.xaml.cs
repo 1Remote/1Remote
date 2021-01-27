@@ -26,7 +26,7 @@ namespace PRM
         private Mutex _singleAppMutex = null;
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
-        public static readonly GlobalData AppData = new GlobalData();
+        public static readonly PrmContext Context = new PrmContext();
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 #if DEV
@@ -62,7 +62,6 @@ namespace PRM
 
         private void InitExceptionHandle()
         {
-#if !DEV
             this.DispatcherUnhandledException += (o, args) =>
             {
                 OnUnhandledException(args.Exception);
@@ -73,7 +72,6 @@ namespace PRM
             };
             AppDomain.CurrentDomain.UnhandledException += (o, args) =>
             {
-
                 if (args.ExceptionObject is Exception e)
                 {
                     OnUnhandledException(e);
@@ -83,7 +81,6 @@ namespace PRM
                     SimpleLogHelper.Fatal(args.ExceptionObject);
                 }
             };
-#endif
         }
 
         private void UnSetShortcutAutoStart(StartupEventArgs startupEvent)
@@ -183,7 +180,8 @@ namespace PRM
             var general = new SystemConfigGeneral(ini);
             var quickConnect = new SystemConfigQuickConnect(ini);
             var theme = new SystemConfigTheme(this.Resources, ini);
-            var dataSecurity = new SystemConfigDataSecurity(AppData, ini);
+            // init db connection
+            var dataSecurity = new SystemConfigDataSecurity(Context, ini);
 
             // config create instance (settings & langs)
             SystemConfig.Init();
@@ -205,16 +203,16 @@ namespace PRM
             // server data holder init.
 
             // remote window pool init.
-            RemoteWindowPool.Init(AppData);
+            RemoteWindowPool.Init(Context);
 
             // Event register
             GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
             {
-                AppData.ServerListRemove(id);
+                Context.AppData.ServerListRemove(id);
             };
             GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
             {
-                AppData.ServerListUpdate(server);
+                Context.AppData.ServerListUpdate(server);
             };
 
             return isNewUser;
@@ -222,7 +220,7 @@ namespace PRM
 
         private void InitMainWindow(bool isNewUser)
         {
-            Window = new MainWindow(AppData);
+            Window = new MainWindow(Context);
             if (!SystemConfig.Instance.General.AppStartMinimized
                 || isNewUser)
             {
@@ -281,7 +279,7 @@ namespace PRM
             else
             {
                 // load data
-                AppData.ServerListUpdate();
+                Context.AppData.ServerListUpdate();
             }
 
             InitTaskTray();
@@ -344,7 +342,7 @@ namespace PRM
 
         private void InitLauncher()
         {
-            SearchBoxWindow = new SearchBoxWindow(AppData);
+            SearchBoxWindow = new SearchBoxWindow(Context);
             SearchBoxWindow.SetHotKey();
         }
 

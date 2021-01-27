@@ -112,12 +112,14 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\DbOperator.cs" />
     <Compile Include="DB\DbExtensions.cs" />
     <Compile Include="DB\freesql\FreeSqlDb.cs" />
     <Compile Include="DB\IDB\IDb.cs" />
     <Compile Include="DB\IDB\IDbServer.cs" />
     <Compile Include="DB\freesql\DbConfig.cs" />
     <Compile Include="DB\freesql\DbServer.cs" />
+    <Compile Include="Model\PrmContext.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.cs" />

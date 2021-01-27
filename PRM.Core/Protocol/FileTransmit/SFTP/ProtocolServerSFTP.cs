@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
@@ -61,12 +62,12 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
 
-        public ITransmitter GeTransmitter()
+        public ITransmitter GeTransmitter(PrmContext context)
         {
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = this.GetDecryptedPassWord();
+            var password = context.DbOperator.DecryptOrReturnOriginalString(this.Password);
             var sshKey = this.PrivateKey;
             if (sshKey == "")
                 return new TransmitterSFtp(hostname, port, username, password);

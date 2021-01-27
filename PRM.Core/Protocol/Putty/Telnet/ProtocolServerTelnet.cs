@@ -41,7 +41,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
         }
 
 
-        public string GetPuttyConnString()
+        public string GetPuttyConnString(PrmContext _)
         {
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
         }

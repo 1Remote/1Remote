@@ -36,7 +36,7 @@
                             <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource MainBgColorBrush}">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
-                                        <Setter Property="Visibility" Value="{Binding Visible, UpdateSourceTrigger=PropertyChanged}"></Setter>
+                                        <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList, UpdateSourceTrigger=PropertyChanged}"></Setter>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Server.Id}" Value="0">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
