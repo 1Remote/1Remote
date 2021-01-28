@@ -9,12 +9,17 @@ namespace PRM.Core.DB.freesql
 {
     public class FreeSqlDb : IDb
     {
-        private IFreeSql _fsql;
+        private IFreeSql _fsql = null;
         private FreeSql.DataType _dbType;
         private string _connectionString;
+
         public static string GetConnectionStringSqlite(string dbPath)
         {
             return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
+        }
+
+        public FreeSqlDb()
+        {
         }
 
         public FreeSqlDb(DatabaseType dbType, string connectionString)
@@ -24,7 +29,7 @@ namespace PRM.Core.DB.freesql
 
         public void CloseConnection()
         {
-            _fsql.Dispose();
+            _fsql?.Dispose();
             _fsql = null;
         }
 
@@ -61,43 +66,43 @@ namespace PRM.Core.DB.freesql
 
         public void InitTables()
         {
-            _fsql.CodeFirst.SyncStructure<DbServer>();
-            _fsql.CodeFirst.SyncStructure<DbConfig>();
+            _fsql?.CodeFirst.SyncStructure<DbServer>();
+            _fsql?.CodeFirst.SyncStructure<DbConfig>();
         }
 
         public ProtocolServerBase GetServer(int id)
         {
-            var dbServer = _fsql.Select<DbServer>().Where(x => x.Id == id).First();
+            var dbServer = _fsql?.Select<DbServer>().Where(x => x.Id == id).First();
             return dbServer?.ToProtocolServerBase();
         }
 
         public List<ProtocolServerBase> GetServers()
         {
-            return _fsql.Select<DbServer>().ToList().Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
+            return _fsql?.Select<DbServer>().ToList().Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
         }
 
         public int AddServer(ProtocolServerBase server)
         {
             Debug.Assert(server.Id == 0);
-            var id = (int)_fsql.Insert<DbServer>().AppendData(server.ToDbServer()).ExecuteIdentity();
-            return id;
+            var id = _fsql?.Insert<DbServer>().AppendData(server.ToDbServer()).ExecuteIdentity();
+            return id == null ? 0 : (int)id;
         }
 
         public bool UpdateServer(ProtocolServerBase server)
         {
             Debug.Assert(server.Id > 0);
             var dbServer = server.ToDbServer();
-            return _fsql.Update<DbServer>().SetSource(dbServer).ExecuteAffrows() > 0;
+            return _fsql?.Update<DbServer>().SetSource(dbServer).ExecuteAffrows() > 0;
         }
 
         public bool DeleteServer(int id)
         {
-            return _fsql.Delete<DbServer>().Where(x => x.Id == id).ExecuteAffrows() > 0;
+            return _fsql?.Delete<DbServer>().Where(x => x.Id == id).ExecuteAffrows() > 0;
         }
 
         public string GetConfig(string key)
         {
-            var value = _fsql.Select<DbConfig>().Where(x => x.Key == key).First();
+            var value = _fsql?.Select<DbConfig>().Where(x => x.Key == key).First();
             return value?.Value;
         }
 
@@ -105,11 +110,11 @@ namespace PRM.Core.DB.freesql
         {
             if (GetConfig(key) != null)
             {
-                _fsql.Update<DbConfig>().Set(x => x.Value, value).Where(x => x.Key == key).ExecuteAffrows();
+                _fsql?.Update<DbConfig>().Set(x => x.Value, value).Where(x => x.Key == key).ExecuteAffrows();
             }
             else
             {
-                _fsql.Insert(new DbConfig
+                _fsql?.Insert(new DbConfig
                 {
                     Key = key,
                     Value = value,

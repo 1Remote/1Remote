@@ -1,7 +1,6 @@
 ﻿{
   "language_name": "中文(简体)",
 
-
   "messagebox_title_warning": "PRemoteM 警告",
   "messagebox_title_error": "PRemoteM 错误",
   "messagebox_title_info": "PRemoteM 提示",
@@ -27,8 +26,6 @@
   "word_reconnect": "重新连接",
   "word_dismiss": "关闭",
 
-
-
   "filter_mainwindow": "在此输入关键词",
   "filter_searchbox": "搜索 (Ctrl+F)",
 
@@ -43,7 +40,6 @@
 
   // server protocol relate
   "server_protocol": "协议",
-
 
   // file transmit host
   "file_transmit_host_list_header_last_update": "修改时间",
@@ -64,7 +60,6 @@
   "file_transmit_host_warning_same_names": "目标包含{0}个同名文件，需要替换吗？",
 
   "host_reconecting_info": "正尝试重新连接...",
-
 
   // sys menu
   "system_menu_options_title": "设置",
@@ -105,6 +100,7 @@
   "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
   "system_options_data_security_info_clear_rsa": "是否清除RSA加密?",
   "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
+  "system_options_data_security_error_rsa_private_key_format_error": "RSA 私钥文件格式错误！",
   "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
   "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
 
@@ -124,7 +120,6 @@
   "system_options_theme_tab_ui": "Tab外观",
   "system_options_theme_tab_ui_chrome": "Chrome风格",
   "system_options_theme_tab_ui_classical": "经典",
-
 
   // server operate
   "server_card_operate_conn": "连接",
@@ -146,7 +141,6 @@
   "managementpage_edit_selected_error_empty_string": "不能输入空字符串",
   "managementpage_edit_selected_error_port": "端口号应当为：1 - 65535!",
   "managementpage_edit_selected_confirm": "确认要将所选项目变更为 '",
-
 
   // server editor
   "server_editor_group_title_common": "常规",
@@ -214,15 +208,11 @@
   "server_editor_remote_app_fullname": "服务端路径",
   "server_editor_remote_app_fullname_tag": "被远程程序在服务器上的路径（如 ' C:\\Apps\\hello.exe'）",
 
-
-
-
   // about page
   "about_page_how_to_use": "帮助",
   "about_page_feedback": "提意见/需求",
 
-
-  // guidance 
+  // guidance
   "guidance_introduce": "PRemoteM 为您管理远程会话，无论何时何地",
   "guidance_feature_launcher_key": "快速呼出启动器",
   "guidance_feature_launcher_select": "选择项目",
@@ -231,8 +221,6 @@
   "guidance_feature_tab_demo": "可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体",
   "guidance_feature_start_setting1": "开始使用前请确认一些配置",
   "guidance_feature_start_setting2": "这些配置稍后同样可以在设置界面中修改",
-
-
 
   // other
   "logo_selecter_open_file_dialog_title": "选择图片"

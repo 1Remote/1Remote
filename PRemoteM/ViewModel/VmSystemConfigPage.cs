@@ -9,6 +9,7 @@ namespace PRM.ViewModel
     public class VmSystemConfigPage : NotifyPropertyChangedBase
     {
         public readonly VmMain Host;
+
         public VmSystemConfigPage(VmMain vmMain)
         {
             Host = vmMain;
@@ -19,16 +20,17 @@ namespace PRM.ViewModel
         public SystemConfig SystemConfig { get; set; }
 
         private Visibility _progressBarVisibility = Visibility.Collapsed;
+
         public Visibility ProgressBarVisibility
         {
             get => _progressBarVisibility;
             private set => SetAndNotifyIfChanged(nameof(ProgressBarVisibility), ref _progressBarVisibility, value);
         }
 
-
         #region CMD
 
         private RelayCommand _cmdSaveAndGoBack;
+
         public RelayCommand CmdSaveAndGoBack
         {
             get
@@ -38,13 +40,13 @@ namespace PRM.ViewModel
                     _cmdSaveAndGoBack = new RelayCommand((o) =>
                     {
                         // check if Db is ok
-                        var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
-                        if (!c1.Item1)
-                        {
-                            MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            return;
-                        }
-
+                        // TODO check DB is connected, and RSA is ok?
+                        //var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                        //if (!c1.Item1)
+                        //{
+                        //    MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        //    return;
+                        //}
 
                         Host.DispPage = null;
 
@@ -56,10 +58,8 @@ namespace PRM.ViewModel
             }
         }
 
-
-
-
         private RelayCommand _cmdOpenPath;
+
         public RelayCommand CmdOpenPath
         {
             get
@@ -85,6 +85,7 @@ namespace PRM.ViewModel
                 return _cmdOpenPath;
             }
         }
-        #endregion
+
+        #endregion CMD
     }
 }

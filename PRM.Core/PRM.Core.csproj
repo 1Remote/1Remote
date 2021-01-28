@@ -112,6 +112,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\EnumConnectResult.cs" />
     <Compile Include="Model\DbOperator.cs" />
     <Compile Include="DB\DbExtensions.cs" />
     <Compile Include="DB\freesql\FreeSqlDb.cs" />
