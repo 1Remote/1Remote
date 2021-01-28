@@ -154,8 +154,6 @@ namespace PRM.Core.DB
             }
         }
 
-
-
         public static string RSA_PrivateKeyPath
         {
             get
