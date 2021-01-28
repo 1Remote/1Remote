@@ -21,6 +21,7 @@ namespace PRM
         FOR_MICROSOFT_STORE             =>  Let app try to use UWP code to fit microsoft store, if not define then app support win32 only.
         FOR_MICROSOFT_STORE_ONLY        =>  Disable all functions store not recommend.Must define FOR_MICROSOFT_STORE first!!!
     */
+
     public partial class App : Application
     {
         private Mutex _singleAppMutex = null;
@@ -51,7 +52,6 @@ namespace PRM
 
         private void InitLog(string appDateFolder)
         {
-
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
 
@@ -136,7 +136,6 @@ namespace PRM
                 return;
             }
 
-
             // open NamedPipeServerStream
             Task.Factory.StartNew(() =>
             {
@@ -166,18 +165,22 @@ namespace PRM
             bool isNewUser = false;
 
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
+            SimpleLogHelper.Debug($"ini init path = {iniPath}");
 
 #if !FOR_MICROSOFT_STORE_ONLY
             // for portable purpose
             if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.OrdinalIgnoreCase) < 0)
             {
                 var iniOnCurrentPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
+                SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath}");
                 if (IOPermissionHelper.HasWritePermissionOnFile(iniOnCurrentPath))
                 {
                     iniPath = SystemConfig.AppName + ".ini";
+                    SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath} Pass");
                 }
             }
 #endif
+            SimpleLogHelper.Debug($"ini finally path = {iniPath}");
 
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
@@ -237,6 +240,8 @@ namespace PRM
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
+
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
@@ -246,7 +251,6 @@ namespace PRM
             InitExceptionHandle();
             UnSetShortcutAutoStart(startupEvent);
             OnlyOneAppInstanceCheck();
-
 
             // kill putty process
             foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
@@ -267,7 +271,6 @@ namespace PRM
                 var gw = new GuidanceWindow(SystemConfig.Instance);
                 gw.ShowDialog();
             }
-
 
             InitMainWindow(isNewUser);
             ShutdownMode = ShutdownMode.OnMainWindowClose;
