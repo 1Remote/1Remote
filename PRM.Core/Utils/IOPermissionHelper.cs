@@ -16,14 +16,14 @@ namespace Shawn.Utils
             var writeAllow = false;
             var writeDeny = false;
             var accessControlList = Directory.GetAccessControl(path);
-            var accessRules = accessControlList?.GetAccessRules(true, true, 
+            var accessRules = accessControlList?.GetAccessRules(true, true,
                 typeof(System.Security.Principal.SecurityIdentifier));
             if (accessRules == null)
                 return false;
 
             foreach (FileSystemAccessRule rule in accessRules)
             {
-                if ((FileSystemRights.Write & rule.FileSystemRights) != FileSystemRights.Write) 
+                if ((FileSystemRights.Write & rule.FileSystemRights) != FileSystemRights.Write)
                     continue;
                 if (rule.AccessControlType == AccessControlType.Allow)
                     writeAllow = true;
@@ -33,6 +33,27 @@ namespace Shawn.Utils
 
             return writeAllow && !writeDeny;
         }
+
+        public static bool IsFileInUse(string fileName)
+        {
+            bool inUse = true;
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
+                inUse = false;
+            }
+            catch
+            {
+                // ignored
+            }
+            finally
+            {
+                fs?.Close();
+            }
+            return inUse; //true表示正在使用,false没有使用
+        }
+
         public static bool HasWritePermissionOnFile(string filePath)
         {
             try
@@ -42,13 +63,13 @@ namespace Shawn.Utils
                 // nuget import System.IO.FileSystem.AccessControl
                 if (File.Exists(filePath))
                 {
-                    security = new FileSecurity(filePath, AccessControlSections.Owner | 
+                    security = new FileSecurity(filePath, AccessControlSections.Owner |
                                                           AccessControlSections.Group |
                                                           AccessControlSections.Access);
                 }
                 else
                 {
-                    security = new DirectorySecurity(filePath,AccessControlSections.Owner | 
+                    security = new DirectorySecurity(filePath,AccessControlSections.Owner |
                                                               AccessControlSections.Group |
                                                               AccessControlSections.Access);
                 }
@@ -93,6 +114,11 @@ namespace Shawn.Utils
                         return false;
                     if (rule.AccessControlType == AccessControlType.Allow)
                         result = true;
+                }
+
+                if (result)
+                {
+                    result = !IsFileInUse(filePath);
                 }
                 return result;
             }

@@ -19,6 +19,7 @@ namespace PRM.Core.Model
     public sealed class SystemConfigDataSecurity : SystemConfigBase
     {
         private readonly PrmContext _context;
+
         public SystemConfigDataSecurity(PrmContext context, Ini ini) : base(ini)
         {
             _context = context;
@@ -77,8 +78,11 @@ namespace PRM.Core.Model
             switch (ret)
             {
                 case -1:
+                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_format_error"));
+
                 case -2:
                     return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+
                 case -3:
                     return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
             }
@@ -86,18 +90,17 @@ namespace PRM.Core.Model
         }
 
         private string _dbPath = null;
+
         public string DbPath
         {
             get
             {
-                if (string.IsNullOrEmpty(_dbPath))
-                {
-                    var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-                    if (!Directory.Exists(appDateFolder))
-                        Directory.CreateDirectory(appDateFolder);
-                    _dbPath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.db");
-                    Save();
-                }
+                if (!string.IsNullOrEmpty(_dbPath)) return _dbPath;
+                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+                if (!Directory.Exists(appDateFolder))
+                    Directory.CreateDirectory(appDateFolder);
+                _dbPath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.db");
+                Save();
                 return _dbPath;
             }
             private set
@@ -111,9 +114,8 @@ namespace PRM.Core.Model
             }
         }
 
-        public string RsaPublicKey => this._context.Db.Get_RSA_PublicKey();
-        public string RsaPrivateKeyPath => this._context.Db.Get_RSA_PrivateKeyPath();
-
+        public string RsaPublicKey => this._context.Db?.Get_RSA_PublicKey();
+        public string RsaPrivateKeyPath => this._context.Db?.Get_RSA_PrivateKeyPath();
 
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
@@ -123,10 +125,9 @@ namespace PRM.Core.Model
             GlobalEventHelper.OnLongTimeProgress?.Invoke(now, total, SystemConfig.Instance.Language.GetText("system_options_data_security_info_data_processing"));
         }
 
-
-
         private readonly object _lockerForRsa = new object();
         private const string PrivateKeyFileExt = ".prpk";
+
         private void GenRsa()
         {
             // validate rsa key
@@ -137,13 +138,11 @@ namespace PRM.Core.Model
                 return;
             }
 
-
             var t = new Task(() =>
             {
                 lock (_lockerForRsa)
                 {
                     if (!string.IsNullOrEmpty(_context.DbOperator.GetRsaPrivateKeyPath())) return;
-
 
                     var dlg = new OpenFileDialog
                     {
@@ -177,10 +176,13 @@ namespace PRM.Core.Model
                     {
                         case -1:
                             break;
+
                         case -2:
                             break;
+
                         case -3:
                             break;
+
                         default:
                             break;
                     }
@@ -207,7 +209,6 @@ namespace PRM.Core.Model
                 }
             });
             t.Start();
-
         }
 
         private void CleanRsa()
@@ -274,11 +275,10 @@ namespace PRM.Core.Model
             t.Start();
         }
 
-
-
-
         #region Interface
+
         private const string SectionName = "DataSecurity";
+
         public override void Save()
         {
             _ini.WriteValue(nameof(DbPath).ToLower(), SectionName, DbPath);
@@ -303,10 +303,13 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigDataSecurity));
             Save();
         }
-        #endregion
+
+        #endregion Interface
 
         #region CMD
+
         private RelayCommand _cmdSelectRsaPrivateKey;
+
         public RelayCommand CmdSelectRsaPrivateKey
         {
             get
@@ -335,6 +338,7 @@ namespace PRM.Core.Model
         }
 
         private RelayCommand _cmdGenRsaKey;
+
         public RelayCommand CmdGenRsaKey
         {
             get
@@ -343,8 +347,8 @@ namespace PRM.Core.Model
             }
         }
 
-
         private RelayCommand _cmdClearRsaKey;
+
         public RelayCommand CmdClearRsaKey
         {
             get
@@ -374,8 +378,8 @@ namespace PRM.Core.Model
             }
         }
 
-
         private RelayCommand _cmdSelectDbPath;
+
         public RelayCommand CmdSelectDbPath
         {
             get
@@ -400,6 +404,7 @@ namespace PRM.Core.Model
                                 this._context.AppData.ServerListUpdate();
                                 DbPath = path;
                             }
+                            // TODO more detail info for db read error.
                             else
                                 MessageBox.Show(
                                     SystemConfig.Instance.Language.GetText(
@@ -423,6 +428,7 @@ namespace PRM.Core.Model
         }
 
         private RelayCommand _cmdDbMigrate;
+
         public RelayCommand CmdDbMigrate
         {
             get
@@ -475,6 +481,7 @@ namespace PRM.Core.Model
                 });
             }
         }
-        #endregion
+
+        #endregion CMD
     }
 }
