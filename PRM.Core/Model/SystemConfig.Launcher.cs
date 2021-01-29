@@ -73,6 +73,9 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            if (!_ini.ContainsKey(nameof(Enable).ToLower(), _sectionName))
+                return;
+
             StopAutoSave = true;
             Enable = _ini.GetValue(nameof(Enable).ToLower(), _sectionName, Enable);
             uint modifiers = 0;

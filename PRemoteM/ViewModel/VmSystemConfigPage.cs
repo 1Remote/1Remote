@@ -35,25 +35,23 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdSaveAndGoBack == null)
+                if (_cmdSaveAndGoBack != null) return _cmdSaveAndGoBack;
+                _cmdSaveAndGoBack = new RelayCommand((o) =>
                 {
-                    _cmdSaveAndGoBack = new RelayCommand((o) =>
-                    {
-                        // check if Db is ok
-                        // TODO check DB is connected, and RSA is ok?
-                        //var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
-                        //if (!c1.Item1)
-                        //{
-                        //    MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                        //    return;
-                        //}
+                    // check if Db is ok
+                    // TODO check DB is connected, and RSA is ok?
+                    //var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
+                    //if (!c1.Item1)
+                    //{
+                    //    MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                    //    return;
+                    //}
 
-                        Host.DispPage = null;
+                    Host.DispPage = null;
 
-                        /***                update config                ***/
-                        SystemConfig.Save();
-                    });
-                }
+                    /***                update config                ***/
+                    SystemConfig.Save();
+                });
                 return _cmdSaveAndGoBack;
             }
         }
@@ -64,24 +62,22 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdOpenPath == null)
+                if (_cmdOpenPath != null) return _cmdOpenPath;
+                _cmdOpenPath = new RelayCommand((o) =>
                 {
-                    _cmdOpenPath = new RelayCommand((o) =>
+                    var path = o.ToString();
+                    if (File.Exists(path))
                     {
-                        var path = o.ToString();
-                        if (File.Exists(path))
-                        {
-                            System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe");
-                            psi.Arguments = "/e,/select," + path;
-                            System.Diagnostics.Process.Start(psi);
-                        }
+                        System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe");
+                        psi.Arguments = "/e,/select," + path;
+                        System.Diagnostics.Process.Start(psi);
+                    }
 
-                        if (Directory.Exists(path))
-                        {
-                            System.Diagnostics.Process.Start("explorer.exe", path);
-                        }
-                    });
-                }
+                    if (Directory.Exists(path))
+                    {
+                        System.Diagnostics.Process.Start("explorer.exe", path);
+                    }
+                });
                 return _cmdOpenPath;
             }
         }

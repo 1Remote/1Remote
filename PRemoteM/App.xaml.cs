@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core;
 using PRM.Core.DB;
 using PRM.Core.DB.freesql;
 using PRM.Core.Model;
@@ -25,17 +26,13 @@ namespace PRM
 
     public partial class App : Application
     {
-        private Mutex _singleAppMutex = null;
+        private OnlyOneAppInstanceHelper _onlyOneAppInstanceHelper;
+
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static readonly PrmContext Context = new PrmContext();
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
-#if DEV
-        private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
-#else
-        private const string PipeName = "PRemoteM_singlex@foxmail.com";
-#endif
 
         private DesktopResolutionWatcher _desktopResolutionWatcher;
 
@@ -51,10 +48,6 @@ namespace PRM
         {
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-
-            if (!Directory.Exists(appDateFolder))
-                Directory.CreateDirectory(appDateFolder);
-
             // init log file placement
             var logFilePath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
@@ -110,46 +103,24 @@ namespace PRM
 
         private void OnlyOneAppInstanceCheck()
         {
-            _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
-            if (!isFirst)
+            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(SystemConfig.AppName);
+            if (!_onlyOneAppInstanceHelper.IsFirstInstance())
             {
-                var client = new NamedPipeClientStream(PipeName);
-                client.Connect();
-                var writer = new StreamWriter(client);
-                writer.WriteLine("ActivateMe");
-                writer.Flush();
-                client.Dispose();
+                _onlyOneAppInstanceHelper.NamedPipeSendMessage("ActivateMe");
+                _onlyOneAppInstanceHelper.Dispose();
                 Environment.Exit(0);
-                return;
             }
 
-            // open NamedPipeServerStream
-            Task.Factory.StartNew(StartNamedPipe);
-        }
-
-        private void StartNamedPipe()
-        {
-            NamedPipeServerStream server = null;
-            while (true)
+            _onlyOneAppInstanceHelper.OnMessageReceived += message =>
             {
-                server?.Dispose();
-                server = new NamedPipeServerStream(PipeName);
-                server.WaitForConnection();
-                var reader = new StreamReader(server);
-                var line = reader.ReadLine();
-                SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
-                if (line == "ActivateMe")
-                    Dispatcher.Invoke(() =>
-                    {
-                        App.Window?.ActivateMe();
-                    });
-            }
+                SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
+                if (message == "ActivateMe")
+                    App.Window?.ActivateMe();
+            };
         }
 
         private bool InitSystemConfig(string appDateFolder)
         {
-            bool isNewUser = false;
-
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
             SimpleLogHelper.Debug($"ini init path = {iniPath}");
 
@@ -167,6 +138,11 @@ namespace PRM
             }
 #endif
             SimpleLogHelper.Debug($"ini finally path = {iniPath}");
+
+
+            // if ini is not existed, then it would be a new user
+            bool isNewUser = !File.Exists(iniPath);
+
 
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
@@ -187,32 +163,14 @@ namespace PRM
             SystemConfig.Instance.Theme = theme;
             SystemConfig.Instance.Locality = locality;
 
-            // if ini is not existed, then it would be a new user
-            if (!File.Exists(iniPath))
-            {
-                isNewUser = true;
-            }
-
-            // remote window pool init.
-            RemoteWindowPool.Init(Context);
-
-            // Event register
-            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
-            {
-                Context.AppData.ServerListRemove(id);
-            };
-            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
-            {
-                Context.AppData.ServerListUpdate(server);
-            };
-            _desktopResolutionWatcher = new DesktopResolutionWatcher(GlobalEventHelper.OnScreenResolutionChanged);
-
             return isNewUser;
         }
 
         private void InitMainWindow(bool isNewUser)
         {
             Window = new MainWindow(Context);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            MainWindow = Window;
             if (!SystemConfig.Instance.General.AppStartMinimized
                 || isNewUser)
             {
@@ -248,53 +206,47 @@ namespace PRM
                 gw.ShowDialog();
             }
 
+
+
+            // remote window pool init.
+            RemoteWindowPool.Init(Context);
+            // Event register
+            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
+            {
+                Context.AppData.ServerListRemove(id);
+            };
+            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
+            {
+                Context.AppData.ServerListUpdate(server);
+            };
+            _desktopResolutionWatcher = new DesktopResolutionWatcher();
+            _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
+            {
+                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
+            };
+
+
+
+
             InitMainWindow(isNewUser);
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
-            MainWindow = Window;
+            InitLauncher();
+            InitTaskTray();
+
 
             // init db connection
             var connStatus = Context.InitSqliteDb(SystemConfig.Instance.DataSecurity.DbPath);
-            switch (connStatus)
+            if (connStatus != EnumDbStatus.OK)
             {
-                case EnumConnectResult.Success:
-                    // load data
-                    Context.AppData.ServerListUpdate();
-                    break;
-
-                case EnumConnectResult.AccessDenied:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("string_permission_denied") + $": {SystemConfig.Instance.DataSecurity.DbPath}",
-                        SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                    Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
-                    break;
-
-                case EnumConnectResult.RsaPrivateKeyNotFound:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"),
-                        SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                    Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
-                    break;
-
-                case EnumConnectResult.RsaPrivateKeyFormatError:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_format_error"),
-                        SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                    Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
-                    break;
-
-                case EnumConnectResult.RsaNotMatched:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"),
-                        SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                    Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
+                string error = connStatus.GetErrorInfo(SystemConfig.Instance.Language, SystemConfig.Instance.DataSecurity.DbPath);
+                MessageBox.Show(error,
+                    SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
+                    MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
             }
-
-            InitTaskTray();
-            InitLauncher();
+            else
+            {
+                Context.AppData.ServerListUpdate();
+            }
         }
 
         private static void ActivateWindow()

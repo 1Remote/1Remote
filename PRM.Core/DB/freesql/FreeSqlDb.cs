@@ -64,6 +64,11 @@ namespace PRM.Core.DB.freesql
             InitTables();
         }
 
+        public bool IsConnected()
+        {
+            return _fsql != null;
+        }
+
         public void InitTables()
         {
             _fsql?.CodeFirst.SyncStructure<DbServer>();

@@ -104,6 +104,11 @@
   "system_options_data_security_error_rsa_private_key_not_found": "找不到 RSA 私钥文件！",
   "system_options_data_security_error_rsa_private_key_not_match": "RSA 私钥公钥不匹配！",
 
+  "string_database_error_permission_denied": "数据库：没有足够的权限读取，或数据库已被占用！",
+  "string_database_error_rsa_private_key_format_error": "数据库：存储的 RSA 私钥文件格式错误，请重新选择！",
+  "string_database_error_rsa_private_key_not_found": "数据库：无法找到数据库中存储的 RSA 私钥文件路径！",
+  "string_database_error_rsa_private_key_not_match": "数据库：存储的 RSA 私钥公钥不匹配，请重新选择！",
+
   "system_options_theme_title": "外观",
   "system_options_theme_prm_title": "配色主题",
   "system_options_theme_prm_theme": "主题",

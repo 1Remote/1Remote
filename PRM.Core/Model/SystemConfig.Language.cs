@@ -270,6 +270,8 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            if(!_ini.ContainsKey("lang", _sectionName))
+                return;
             StopAutoSave = true;
             CurrentLanguageCode = _ini.GetValue("lang", _sectionName, DefaultLanguageCode);
             StopAutoSave = false;

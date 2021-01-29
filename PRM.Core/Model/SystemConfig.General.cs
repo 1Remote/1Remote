@@ -30,12 +30,8 @@ namespace PRM.Core.Model
         {
             Load();
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-            if (!Directory.Exists(appDateFolder))
-                Directory.CreateDirectory(appDateFolder);
             StopAutoSave = true;
             IconFolderPath = Path.Combine(appDateFolder, "icons");
-            if (!Directory.Exists(IconFolderPath))
-                Directory.CreateDirectory(IconFolderPath);
             StopAutoSave = false;
         }
 
@@ -53,7 +49,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(AppStartMinimized), ref _appStartMinimized, value);
         }
 
-        private string _iconFolderPath = "./Icons";
+        private string _iconFolderPath = "./icons";
         public string IconFolderPath
         {
             get => _iconFolderPath;
@@ -101,6 +97,9 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            if (!_ini.ContainsKey(nameof(AppStartAutomatically).ToLower(), _sectionName))
+                return;
+
             StopAutoSave = true;
             AppStartAutomatically = _ini.GetValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically);
             AppStartMinimized = _ini.GetValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized);
