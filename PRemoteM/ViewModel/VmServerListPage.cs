@@ -280,12 +280,6 @@ namespace PRM.ViewModel
                 {
                     _cmdExportSelectedToJson = new RelayCommand((isExportAll) =>
                     {
-                        var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-                        if (!res.Item1)
-                        {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            return;
-                        }
                         var dlg = new SaveFileDialog
                         {
                             Filter = "PRM json array|*.prma",
@@ -327,12 +321,6 @@ namespace PRM.ViewModel
                 {
                     _cmdImportFromJson = new RelayCommand((o) =>
                     {
-                        var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-                        if (!res.Item1)
-                        {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            return;
-                        }
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
@@ -381,12 +369,6 @@ namespace PRM.ViewModel
                 {
                     _cmdImportFromCsv = new RelayCommand((o) =>
                     {
-                        var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-                        if (!res.Item1)
-                        {
-                            MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            return;
-                        }
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "csv|*.csv",

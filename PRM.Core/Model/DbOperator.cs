@@ -25,78 +25,71 @@ namespace PRM.Core.Model
             }
         }
 
+
+
+        public bool IsDbEncrypted()
+        {
+            var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();
+            return !string.IsNullOrWhiteSpace(rsaPrivateKeyPath);
+        }
+
         /// <summary>
         /// return:
-        /// 0: ok
+        /// 0: encrypt ok
+        /// 0: no encrypt
         /// -1: private key not existed
         /// -2: private key is not in correct format
         /// -3: private key not matched
+        /// -4: db is not connected
         /// </summary>
         /// <returns></returns>
-        public int CheckDbRsaIsOk()
+        public EnumDbStatus CheckDbRsaStatus()
         {
-            if (_db == null)
-                return 0;
+            if (_db?.IsConnected() != true)
+                return EnumDbStatus.NotConnected;
 
             var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();
 
             // NO RSA
-            if (string.IsNullOrEmpty(rsaPrivateKeyPath))
-                return 0;
-
-            var sha1 = _db.Get_RSA_SHA1();
-            var rsaPublicKey = _db.Get_RSA_PublicKey();
+            if (IsDbEncrypted() == false)
+                return EnumDbStatus.OK;
 
             if (!File.Exists(rsaPrivateKeyPath))
-                return -1;
+                return EnumDbStatus.RsaPrivateKeyNotFound;
 
-            RSA rsa = null;
             try
             {
-                rsa = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
+                var rsa = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
             }
             catch (Exception)
             {
-                return -2;
+                return EnumDbStatus.RsaPrivateKeyFormatError;
             }
 
 
 
             // make sure public key is PEM format key
-            RSA rsaPublicKeyObj = null;
             try
             {
-                rsaPublicKeyObj = new RSA(rsaPublicKey, true);
+                var rsaPublicKeyObj = new RSA(_db.Get_RSA_PublicKey(), true);
             }
             catch (Exception)
             {
-                // try to fix public key
-                if (rsa.Verify("SHA1", sha1, SystemConfig.AppName))
-                {
-                    this._db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
-                    rsaPublicKeyObj = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
-                }
+                // TODO public key error, try SHA1 and pk matched?
+                //// try to fix public key
+                //if (rsa.Verify("SHA1", sha1, SystemConfig.AppName))
+                //{
+                //    this._db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
+                //    rsaPublicKeyObj = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
+                //}
             }
 
             // check if RSA private key is matched public key?
-            try
+            if (!VerifyRsaPrivateKey(rsaPrivateKeyPath))
             {
-                rsa = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
-                var sha1Tmp = rsa.Sign("SHA1", SystemConfig.AppName);
-                if (rsaPublicKeyObj?.Verify("SHA1", sha1Tmp, SystemConfig.AppName) != true)
-                {
-                    throw new Exception("RSA key is not match!");
-                }
-                this._db.Set_RSA_SHA1(sha1Tmp);
+                return EnumDbStatus.RsaNotMatched;
             }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Error(e);
-                return -3;
-            }
-
-
-            return 0;
+            return EnumDbStatus.OK;
         }
 
         private RSA _rsa = null;
@@ -118,10 +111,35 @@ namespace PRM.Core.Model
             _db.Set_RSA_PrivateKeyPath("");
         }
 
+        public bool VerifyRsaPrivateKey(string privateKeyPath)
+        {
+            Debug.Assert(File.Exists(privateKeyPath));
+            Debug.Assert(!string.IsNullOrWhiteSpace(privateKeyPath));
+
+            if (IsDbEncrypted() == false)
+                return false;
+
+            // check if RSA private key is matched public key?
+            try
+            {
+                var rsa = new RSA(File.ReadAllText(privateKeyPath), true);
+                var sha1Tmp = rsa.Sign("SHA1", SystemConfig.AppName);
+                var rsaPublicKeyObj = new RSA(_db.Get_RSA_PublicKey(), true);
+                if (rsaPublicKeyObj?.Verify("SHA1", sha1Tmp, SystemConfig.AppName) != true)
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// return
         /// 0: success
-        /// -1: DB is encrypted
         /// -2: private key is not in correct format
         /// </summary>
         /// <param name="privateKeyPath"></param>
@@ -135,9 +153,6 @@ namespace PRM.Core.Model
             }
 
             Debug.Assert(File.Exists(privateKeyPath));
-            var oldPath = GetRsaPrivateKeyPath();
-            if (!string.IsNullOrWhiteSpace(oldPath))
-                return -1;
 
             RSA rsa = null;
             try

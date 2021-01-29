@@ -16,46 +16,11 @@ namespace PRM.Core.Model
         }
 
 
-        private string _mainWindowTabSelected = "";
-        public string MainWindowTabSelected
-        {
-            get => _mainWindowTabSelected;
-            set => SetAndNotifyIfChanged(nameof(MainWindowTabSelected), ref _mainWindowTabSelected, value);
-        }
-
-        private double _mainWindowWidth = 680;
-        public double MainWindowWidth
-        {
-            get => _mainWindowWidth;
-            set => SetAndNotifyIfChanged(nameof(MainWindowWidth), ref _mainWindowWidth, value);
-        }
-
-
-        private double _mainWindowHeight = 530;
-        public double MainWindowHeight
-        {
-            get => _mainWindowHeight;
-            set => SetAndNotifyIfChanged(nameof(MainWindowHeight), ref _mainWindowHeight, value);
-        }
-
-
-
-
-        private double _tabWindowWidth = 800;
-        public double TabWindowWidth
-        {
-            get => _tabWindowWidth;
-            set => SetAndNotifyIfChanged(nameof(TabWindowWidth), ref _tabWindowWidth, value);
-        }
-
-
-        private double _tabWindowHeight = 600;
-        public double TabWindowHeight
-        {
-            get => _tabWindowHeight;
-            set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
-        }
-
+        public string MainWindowTabSelected = "";
+        public double MainWindowWidth = 680;
+        public double MainWindowHeight = 530;
+        public double TabWindowWidth = 800;
+        public double TabWindowHeight = 600;
 
         private WindowState _tabWindowState = WindowState.Normal;
         public WindowState TabWindowState
@@ -83,10 +48,10 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
-            _mainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
-            _mainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
-            _tabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
-            _tabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
+            MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
+            MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
+            TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
+            TabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
             MainWindowTabSelected = _ini.GetValue(nameof(MainWindowTabSelected).ToLower(), _sectionName, MainWindowTabSelected);
         }
 

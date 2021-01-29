@@ -62,32 +62,30 @@ namespace PRM.Core.Model
             }
         }
 
-        /// <summary>
-        /// Check if db is(can) decrypted by the private key
-        /// </summary>
-        /// <returns>
-        /// Tuple(is decrypted, error info)
-        /// </returns>
-        public Tuple<bool, string> CheckIfDbIsOk(string rsaPrivateKeyPath = "")
-        {
-            var c1 = CheckIfDbIsWritable();
-            if (!c1.Item1)
-                return c1;
+        ///// <summary>
+        ///// Check if db is(can) decrypted by the private key
+        ///// </summary>
+        ///// <returns>
+        ///// Tuple(is decrypted, error info)
+        ///// </returns>
+        //public Tuple<bool, string> CheckIfDbIsOk(string rsaPrivateKeyPath = "")
+        //{
+        //    //var c1 = CheckIfDbIsWritable();
+        //    //if (!c1.Item1)
+        //    //    return c1;
+        //    var ret = _context.DbOperator.CheckDbRsaStatus();
+        //    switch (ret)
+        //    {
+        //        case -1:
+        //            return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_format_error"));
+        //        case -2:
+        //            return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
+        //        case -3:
+        //            return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
+        //    }
+        //    return new Tuple<bool, string>(true, "");
+        //}
 
-            var ret = _context.DbOperator.CheckDbRsaIsOk();
-            switch (ret)
-            {
-                case -1:
-                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_format_error"));
-
-                case -2:
-                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_found"));
-
-                case -3:
-                    return new Tuple<bool, string>(false, SystemConfig.Instance.Language.GetText("system_options_data_security_error_rsa_private_key_not_match"));
-            }
-            return new Tuple<bool, string>(true, "");
-        }
 
         private string _dbPath = null;
 
@@ -131,10 +129,8 @@ namespace PRM.Core.Model
         private void GenRsa()
         {
             // validate rsa key
-            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-            if (!res.Item1)
+            if (_context.DbOperator.IsDbEncrypted())
             {
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
@@ -142,7 +138,7 @@ namespace PRM.Core.Model
             {
                 lock (_lockerForRsa)
                 {
-                    if (!string.IsNullOrEmpty(_context.DbOperator.GetRsaPrivateKeyPath())) return;
+                    if (_context.DbOperator.IsDbEncrypted()) return;
 
                     var dlg = new OpenFileDialog
                     {
@@ -171,21 +167,7 @@ namespace PRM.Core.Model
 
                     OnRsaProgress(++val, max);
 
-                    var result = _context.DbOperator.SetRsaPrivateKey(dlg.FileName);
-                    switch (result)
-                    {
-                        case -1:
-                            break;
-
-                        case -2:
-                            break;
-
-                        case -3:
-                            break;
-
-                        default:
-                            break;
-                    }
+                    _context.DbOperator.SetRsaPrivateKey(dlg.FileName);
 
                     // encrypt old data
                     foreach (var vmProtocolServer in this._context.AppData.VmItemList)
@@ -214,14 +196,14 @@ namespace PRM.Core.Model
         private void CleanRsa()
         {
             // validate rsa key
-            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-            if (!res.Item1)
+            var res = _context.DbOperator.CheckDbRsaStatus();
+            if (res != EnumDbStatus.OK)
             {
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show(res.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
-            var rsaPublicKey = this._context.Db.Get_RSA_PublicKey();
 
+            var rsaPublicKey = this._context.Db.Get_RSA_PublicKey();
             var t = new Task(() =>
                 {
                     if (string.IsNullOrEmpty(rsaPublicKey)) return;
@@ -318,6 +300,10 @@ namespace PRM.Core.Model
                 {
                     _cmdSelectRsaPrivateKey = new RelayCommand((o) =>
                     {
+                        if (!_context.DbOperator.IsDbEncrypted())
+                        {
+                            return;
+                        }
                         var dlg = new OpenFileDialog
                         {
                             Filter = $"private key|*{SystemConfigDataSecurity.PrivateKeyFileExt}",
@@ -325,13 +311,17 @@ namespace PRM.Core.Model
                         };
                         if (dlg.ShowDialog() == true)
                         {
-                            var res = CheckIfDbIsOk(dlg.FileName);
-                            if (!res.Item1)
+                            var res = _context.DbOperator.VerifyRsaPrivateKey(dlg.FileName);
+                            if (res)
                             {
-                                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                _context.DbOperator.SetRsaPrivateKey(dlg.FileName);
+                            }
+                            else
+                            {
+                                MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
-                    });
+                    }, o => _context.DbOperator.IsDbEncrypted());
                 }
                 return _cmdSelectRsaPrivateKey;
             }
@@ -355,10 +345,10 @@ namespace PRM.Core.Model
             {
                 return _cmdClearRsaKey ??= new RelayCommand((o) =>
                 {
-                    var res = CheckIfDbIsOk();
-                    if (!res.Item1)
+                    var res = _context.DbOperator.CheckDbRsaStatus();
+                    if (res != EnumDbStatus.OK)
                     {
-                        MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                        MessageBox.Show(res.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"),
                             MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         if (MessageBoxResult.Yes == MessageBox.Show(
                             SystemConfig.Instance.Language.GetText("system_options_data_security_info_clear_rsa"),

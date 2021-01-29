@@ -86,7 +86,8 @@ namespace PRM.View.TabWindow
             this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
             this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
             this.MinWidth = this.MinHeight = 300;
-            this.WindowState = SystemConfig.Instance.Locality.TabWindowState;
+            if (SystemConfig.Instance.Locality.TabWindowState != WindowState.Minimized)
+                this.WindowState = SystemConfig.Instance.Locality.TabWindowState;
 
             // save window size when size changed
             this.SizeChanged += (sizeChangeSender, _) =>

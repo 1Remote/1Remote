@@ -20,33 +20,20 @@ namespace PRM.Core.Model
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
         /// <param name="sqlitePath"></param>
-        public EnumConnectResult InitSqliteDb(string sqlitePath)
+        public EnumDbStatus InitSqliteDb(string sqlitePath)
         {
             if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
-                return EnumConnectResult.AccessDenied;
+                return EnumDbStatus.AccessDenied;
             }
 
             Db.CloseConnection();
             Db.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(sqlitePath));
             DbOperator = new DbOperator(Db);
-            var ret = DbOperator.CheckDbRsaIsOk();
-            switch (ret)
-            {
-                case 0:
-                    AppData.SetDbOperator(DbOperator);
-                    return EnumConnectResult.Success;
-
-                case -2:
-                    return EnumConnectResult.RsaPrivateKeyFormatError;
-
-                case -3:
-                    return EnumConnectResult.RsaNotMatched;
-
-                case -1:
-                default:
-                    return EnumConnectResult.RsaPrivateKeyNotFound;
-            }
+            var ret = DbOperator.CheckDbRsaStatus();
+            if (ret == EnumDbStatus.OK)
+                AppData.SetDbOperator(DbOperator);
+            return ret;
         }
 
         //public void InitMysqlDb(string connectionString)

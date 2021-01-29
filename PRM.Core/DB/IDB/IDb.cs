@@ -17,6 +17,8 @@ namespace PRM.Core.DB
         void CloseConnection();
         void OpenConnection(DatabaseType? type = null, string newConnectionString = "");
 
+        bool IsConnected();
+
         /// <summary>
         /// create tables
         /// </summary>

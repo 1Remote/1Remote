@@ -112,7 +112,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DB\EnumConnectResult.cs" />
+    <Compile Include="DB\EnumDbStatus.cs" />
     <Compile Include="Model\DbOperator.cs" />
     <Compile Include="DB\DbExtensions.cs" />
     <Compile Include="DB\freesql\FreeSqlDb.cs" />
@@ -132,6 +132,7 @@
     <Compile Include="Model\SystemConfig.Theme.cs" />
     <Compile Include="Model\SystemConfig.Launcher.cs" />
     <Compile Include="Model\SystemConfigBase.cs" />
+    <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
