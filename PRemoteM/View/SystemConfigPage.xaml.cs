@@ -20,10 +20,10 @@ namespace PRM.View
     {
         public VmMain Host;
         public VmSystemConfigPage VmSystemConfigPage;
-        public SystemConfigPage(VmMain host, Type t = null)
+        public SystemConfigPage(VmMain host, PrmContext context, Type t = null)
         {
             Host = host;
-            VmSystemConfigPage = new VmSystemConfigPage(host);
+            VmSystemConfigPage = new VmSystemConfigPage(host, context);
             InitializeComponent();
             DataContext = VmSystemConfigPage;
 
@@ -79,12 +79,9 @@ namespace PRM.View
                 key == Key.Apps)
             {
             }
-            else
+            else if (this.IsLoaded)
             {
-                if (this.IsLoaded)
-                {
-                    SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, key);
-                }
+                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, key);
             }
         }
 

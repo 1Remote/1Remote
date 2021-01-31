@@ -17,18 +17,30 @@ namespace PRM.Core.Model
         public DbOperator(IDb db)
         {
             _db = db;
-            var privateKeyPath = _db.Get_RSA_PrivateKeyPath();
-            if (!string.IsNullOrWhiteSpace(privateKeyPath)
-                && File.Exists(privateKeyPath))
-            {
-                _rsa = new RSA(File.ReadAllText(privateKeyPath), true);
-            }
+            OpenConnection();
         }
 
+        public bool OpenConnection(DatabaseType? type = null, string newConnectionString = "")
+        {
+            Debug.Assert(_db != null);
+            _db.OpenConnection(type, newConnectionString);
+            if (IsDbEncrypted()
+                && File.Exists(GetRsaPrivateKeyPath()))
+            {
+                _rsa = new RSA(File.ReadAllText(GetRsaPrivateKeyPath()), true);
+            }
+            return true;
+        }
 
+        public void CloseConnection()
+        {
+            Debug.Assert(_db != null);
+            _db.CloseConnection();
+        }
 
         public bool IsDbEncrypted()
         {
+            Debug.Assert(_db != null);
             var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();
             return !string.IsNullOrWhiteSpace(rsaPrivateKeyPath);
         }
@@ -45,6 +57,7 @@ namespace PRM.Core.Model
         /// <returns></returns>
         public EnumDbStatus CheckDbRsaStatus()
         {
+            Debug.Assert(_db != null);
             if (_db?.IsConnected() != true)
                 return EnumDbStatus.NotConnected;
 
@@ -94,21 +107,16 @@ namespace PRM.Core.Model
 
         private RSA _rsa = null;
 
-        private string GetRsaPublicKey()
+        public string GetRsaPublicKey()
         {
-            return _db.Get_RSA_PublicKey();
+            Debug.Assert(_db != null);
+            return _db?.Get_RSA_PublicKey();
         }
 
         public string GetRsaPrivateKeyPath()
         {
-            return _db.Get_RSA_PrivateKeyPath();
-        }
-
-        private void ClearRsaPrivateKey()
-        {
-            _db.Set_RSA_SHA1("");
-            _db.Set_RSA_PublicKey("");
-            _db.Set_RSA_PrivateKeyPath("");
+            Debug.Assert(_db != null);
+            return _db?.Get_RSA_PrivateKeyPath();
         }
 
         public bool VerifyRsaPrivateKey(string privateKeyPath)
@@ -146,9 +154,13 @@ namespace PRM.Core.Model
         /// <returns></returns>
         public int SetRsaPrivateKey(string privateKeyPath)
         {
+            Debug.Assert(_db != null);
             if (string.IsNullOrWhiteSpace(privateKeyPath))
             {
-                ClearRsaPrivateKey();
+                _db.Set_RSA_SHA1("");
+                _db.Set_RSA_PublicKey("");
+                _db.Set_RSA_PrivateKeyPath("");
+                _rsa = null;
                 return 0;
             }
 
@@ -165,10 +177,10 @@ namespace PRM.Core.Model
                 return -2;
             }
 
-            _rsa = rsa;
             _db.Set_RSA_SHA1(rsa.Sign("SHA1", SystemConfig.AppName));
             _db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
             _db.Set_RSA_PrivateKeyPath(privateKeyPath);
+            _rsa = rsa;
             return 0;
         }
 
@@ -184,17 +196,17 @@ namespace PRM.Core.Model
             switch (server)
             {
                 case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                {
-                    if (_rsa.DecodeOrNull(ssh.PrivateKey) == null)
-                        ssh.PrivateKey = _rsa.Encode(ssh.PrivateKey);
-                    break;
-                }
+                    {
+                        if (_rsa.DecodeOrNull(ssh.PrivateKey) == null)
+                            ssh.PrivateKey = _rsa.Encode(ssh.PrivateKey);
+                        break;
+                    }
                 case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                {
-                    if (_rsa.DecodeOrNull(rdp.GatewayPassword) == null)
-                        rdp.GatewayPassword = _rsa.Encode(rdp.GatewayPassword);
-                    break;
-                }
+                    {
+                        if (_rsa.DecodeOrNull(rdp.GatewayPassword) == null)
+                            rdp.GatewayPassword = _rsa.Encode(rdp.GatewayPassword);
+                        break;
+                    }
             }
         }
 

@@ -11,7 +11,7 @@ namespace PRM.Core.Model
 {
     public class PrmContext : NotifyPropertyChangedBase
     {
-        public IDb Db { get; private set; } = new FreeSqlDb();
+        protected IDb Db { get; private set; } = new FreeSqlDb();
 
         public GlobalData AppData { get; } = new GlobalData();
         public DbOperator DbOperator { get; private set; } = null;

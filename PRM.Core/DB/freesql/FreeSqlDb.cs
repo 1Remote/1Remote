@@ -57,6 +57,9 @@ namespace PRM.Core.DB.freesql
                 _connectionString = newConnectionString;
             }
 
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return;
+
             _fsql = new FreeSql.FreeSqlBuilder()
                 .UseConnectionString(_dbType, _connectionString)
                 .Build();

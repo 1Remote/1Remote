@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
+using PRM.Core.DB;
 using PRM.Core.Model;
 using Shawn.Utils;
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
@@ -9,10 +10,11 @@ namespace PRM.ViewModel
     public class VmSystemConfigPage : NotifyPropertyChangedBase
     {
         public readonly VmMain Host;
-
-        public VmSystemConfigPage(VmMain vmMain)
+        private readonly PrmContext _context;
+        public VmSystemConfigPage(VmMain vmMain, PrmContext context)
         {
             Host = vmMain;
+            _context = context;
             // create new SystemConfigGeneral object
             SystemConfig = SystemConfig.Instance;
         }
@@ -39,16 +41,14 @@ namespace PRM.ViewModel
                 _cmdSaveAndGoBack = new RelayCommand((o) =>
                 {
                     // check if Db is ok
-                    // TODO check DB is connected, and RSA is ok?
-                    //var c1 = SystemConfig.DataSecurity.CheckIfDbIsOk();
-                    //if (!c1.Item1)
-                    //{
-                    //    MessageBox.Show(c1.Item2, SystemConfig.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                    //    return;
-                    //}
+                    var res = _context.DbOperator.CheckDbRsaStatus();
+                    if (res != EnumDbStatus.OK)
+                    {
+                        MessageBox.Show(res.GetErrorInfo(SystemConfig.Instance.Language, SystemConfig.Instance.DataSecurity.DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        return;
+                    }
 
                     Host.DispPage = null;
-
                     /***                update config                ***/
                     SystemConfig.Save();
                 });
