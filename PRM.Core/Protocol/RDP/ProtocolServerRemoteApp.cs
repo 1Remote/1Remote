@@ -75,9 +75,9 @@ namespace PRM.Core.Protocol.RDP
         /// To rdp file object
         /// </summary>
         /// <returns></returns>
-        public RdpConfig ToRdpConfig()
+        public RdpConfig ToRdpConfig(PrmContext context)
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.GetDecryptedPassWord());
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DbOperator.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.KeyboardHook = 0;
             rdpConfig.AudioMode = 2;

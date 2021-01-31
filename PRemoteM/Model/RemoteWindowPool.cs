@@ -39,20 +39,22 @@ namespace PRM.Model
         public static RemoteWindowPool Instance => GetInstance();
         #endregion
 
-        public static void Init()
+        public static void Init(PrmContext context)
         {
             lock (InstanceLock)
             {
                 if (_uniqueInstance == null)
                 {
-                    _uniqueInstance = new RemoteWindowPool();
+                    _uniqueInstance = new RemoteWindowPool(context);
                 }
             }
         }
 
-        private RemoteWindowPool()
+        private readonly PrmContext _context;
+        private RemoteWindowPool(PrmContext context)
         {
-            GlobalEventHelper.OnRequireServerConnect += ShowRemoteHost;
+            _context = context;
+            GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
         }
 
         public void Release()
@@ -84,7 +86,7 @@ namespace PRM.Model
 
         private bool ActivateOrReConnIfServerSessionIsOpened(VmProtocolServer vmProtocolServer)
         {
-            uint serverId = vmProtocolServer.Server.Id;
+            var serverId = vmProtocolServer.Server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
             if (vmProtocolServer.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
             {
@@ -112,7 +114,7 @@ namespace PRM.Model
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            File.WriteAllText(rdpFile, rdp.ToRdpConfig().ToString());
+            File.WriteAllText(rdpFile, rdp.ToRdpConfig(_context).ToString());
             var p = new Process
             {
                 StartInfo =
@@ -158,7 +160,7 @@ namespace PRM.Model
             var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
             // write a .rdp file for mstsc.exe
-            File.WriteAllText(rdpFile, remoteApp.ToRdpConfig().ToString());
+            File.WriteAllText(rdpFile, remoteApp.ToRdpConfig(_context).ToString());
             var p = new Process
             {
                 StartInfo =
@@ -197,7 +199,7 @@ namespace PRM.Model
         {
             // check if screens are in different scale factors
             int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-            
+
             // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
             if (Screen.AllScreens.Length > 1
                 && vmProtocolServer.Server is ProtocolServerRDP rdp
@@ -210,7 +212,7 @@ namespace PRM.Model
             }
 
             // fullscreen normally
-            var host = ProtocolHostFactory.Get(vmProtocolServer.Server);
+            var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server);
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             _protocolHosts.Add(host.ConnectionId, host);
             host.OnClosed += OnProtocolClose;
@@ -225,7 +227,7 @@ namespace PRM.Model
         {
             var tab = GetOrCreateTabWindow(vmProtocolServer.Server, assignTabToken);
             var size = tab.GetTabContentSize();
-            var host = ProtocolHostFactory.Get(vmProtocolServer.Server, size.Width, size.Height);
+            var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server, size.Width, size.Height);
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += OnFullScreen2Window;
@@ -242,15 +244,15 @@ namespace PRM.Model
         }
 
 
-        public void ShowRemoteHost(uint serverId, string assignTabToken)
+        public void ShowRemoteHost(long serverId, string assignTabToken)
         {
             Debug.Assert(serverId > 0);
-            Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == serverId));
-            var vmProtocolServer = GlobalData.Instance.VmItemList.First(x => x.Server.Id == serverId);
+            Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
+            var vmProtocolServer = _context.AppData.VmItemList.First(x => x.Server.Id == serverId);
 
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
-            Server.AddOrUpdate(vmProtocolServer.Server);
+            _context.DbOperator.DbUpdateServer(vmProtocolServer.Server);
 
             if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
             {
@@ -554,7 +556,7 @@ namespace PRM.Model
         private void RemoveFromTabWindow(string connectionId)
         {
             var tab = GetTabParent(connectionId);
-            if(tab == null)
+            if (tab == null)
                 return;
             var item = tab.GetViewModel().Items.First(x => x.Content.ConnectionId == connectionId);
             tab?.GetViewModel().Items.Remove(item);

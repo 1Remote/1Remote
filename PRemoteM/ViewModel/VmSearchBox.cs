@@ -24,7 +24,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ActionName), ref _actionName, value);
         }
 
-        public Action<uint> Run;
+        public Action<int> Run;
     }
 
 
@@ -39,8 +39,11 @@ namespace PRM.ViewModel
         private readonly FrameworkElement _listSelections;
         private readonly FrameworkElement _listActions;
 
-        public VmSearchBox(double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
+        public PrmContext Context { get; }
+
+        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
         {
+            Context = context;
             _gridMainWidth = gridMainWidth;
             _oneItemHeight = oneItemHeight;
             _oneActionHeight = oneActionHeight;
@@ -66,11 +69,11 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(SelectedIndex), ref _selectedIndex, value);
-                if (GlobalData.Instance.VmItemList.Count > 0
+                if (Context.AppData.VmItemList.Count > 0
                     && _selectedIndex >= 0
-                    && _selectedIndex < GlobalData.Instance.VmItemList.Count)
+                    && _selectedIndex < Context.AppData.VmItemList.Count)
                 {
-                    SelectedItem = GlobalData.Instance.VmItemList[_selectedIndex];
+                    SelectedItem = Context.AppData.VmItemList[_selectedIndex];
                 }
                 else
                 {
@@ -162,7 +165,7 @@ namespace PRM.ViewModel
             else
             {
                 const int nMaxCount = 8;
-                int visibleCount = GlobalData.Instance.VmItemList.Count(vm => vm.ObjectVisibility == Visibility.Visible);
+                int visibleCount = Context.AppData.VmItemList.Count(vm => vm.ObjectVisibility == Visibility.Visible);
                 if (visibleCount >= nMaxCount)
                     GridSelectionsHeight = _oneItemHeight * nMaxCount;
                 else
@@ -180,7 +183,7 @@ namespace PRM.ViewModel
                 ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_conn"),
                 Run = (id) =>
                 {
-                    GlobalEventHelper.OnRequireServerConnect?.Invoke(id);
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(id);
                 },
             });
             actions.Add(new ActionItem()
@@ -189,7 +192,7 @@ namespace PRM.ViewModel
                 Run = (id) =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(id, false, false);
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, false, false);
                 },
             });
             actions.Add(new ActionItem()
@@ -198,7 +201,7 @@ namespace PRM.ViewModel
                 Run = (id) =>
                 {
                     Debug.Assert(SelectedItem?.Server != null);
-                    GlobalEventHelper.OnGoToServerEditPage?.Invoke(id, true, false);
+                    GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, true, false);
                 },
             });
             if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
@@ -208,7 +211,7 @@ namespace PRM.ViewModel
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_address"),
                     Run = (id) =>
                     {
-                        var pb = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id);
+                        var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
                         if (pb.Server is ProtocolServerWithAddrPortBase server)
                             try
                             {
@@ -228,7 +231,7 @@ namespace PRM.ViewModel
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_username"),
                     Run = (id) =>
                     {
-                        var pb = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id);
+                        var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
                         if (pb.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             try
                             {
@@ -248,11 +251,11 @@ namespace PRM.ViewModel
                     ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_password"),
                     Run = (id) =>
                     {
-                        var pb = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id);
+                        var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
                         if (pb.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             try
                             {
-                                Clipboard.SetText(server.GetDecryptedPassWord());
+                                Clipboard.SetText(Context.DbOperator.DecryptOrReturnOriginalString(server.Password));
                             }
                             catch (Exception)
                             {
@@ -297,7 +300,7 @@ namespace PRM.ViewModel
                     keyWordIsMatch.Add(false);
 
                 // match keyword
-                foreach (var vm in GlobalData.Instance.VmItemList)
+                foreach (var vm in Context.AppData.VmItemList)
                 {
                     Debug.Assert(vm != null);
                     Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
@@ -393,7 +396,7 @@ namespace PRM.ViewModel
             else
             {
                 // show all
-                foreach (var vm in GlobalData.Instance.VmItemList)
+                foreach (var vm in Context.AppData.VmItemList)
                 {
                     vm.ObjectVisibility = Visibility.Visible;
                     vm.DispNameControl = vm.OrgDispNameControl;
@@ -402,22 +405,22 @@ namespace PRM.ViewModel
             }
 
             // reorder
-            for (var i = 1; i < GlobalData.Instance.VmItemList.Count; i++)
+            for (var i = 1; i < Context.AppData.VmItemList.Count; i++)
             {
-                var s0 = GlobalData.Instance.VmItemList[i - 1];
-                var s1 = GlobalData.Instance.VmItemList[i];
+                var s0 = Context.AppData.VmItemList[i - 1];
+                var s1 = Context.AppData.VmItemList[i];
                 if (s0.Server.LastConnTime < s1.Server.LastConnTime)
                 {
-                    GlobalData.Instance.VmItemList = new ObservableCollection<VmProtocolServer>(GlobalData.Instance.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+                    Context.AppData.VmItemList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
                     break;
                 }
             }
 
 
             // index the list to first item
-            for (var i = 0; i < GlobalData.Instance.VmItemList.Count; i++)
+            for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
             {
-                var vm = GlobalData.Instance.VmItemList[i];
+                var vm = Context.AppData.VmItemList[i];
                 if (vm.ObjectVisibility == Visibility.Visible)
                 {
                     SelectedIndex = i;

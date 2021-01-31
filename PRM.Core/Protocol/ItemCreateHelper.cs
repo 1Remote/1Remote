@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using PRM.Core.Protocol;
+using PRM.Core.DB;
+using PRM.Core.DB.IDB;
 
-namespace PRM.Core.DB
+namespace PRM.Core.Protocol
 {
     public class ItemCreateHelper
     {
         private static readonly object Locker = new object();
         private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
-        public static ProtocolServerBase CreateFromDbOrm(Server item)
+        public static ProtocolServerBase CreateFromDbOrm(IDbServer dbIdbServer)
         {
             // reflect all the child class
             lock (Locker)
@@ -24,26 +25,16 @@ namespace PRM.Core.DB
                 }
                 
                 // get instance form json string
-                foreach (var @base in _baseList)
+                foreach (var serverBase in _baseList)
                 {
-                    if (item.Protocol == @base.Protocol &&
-                        item.ClassVersion == @base.ClassVersion)
+                    if (dbIdbServer.GetProtocol() == serverBase.Protocol 
+                        && dbIdbServer.GetClassVersion() == serverBase.ClassVersion)
                     {
-                        var jsonStr = item.JsonConfigString;
-                        //if (rsa != null)
-                        //{
-                        //    var tmp = rsa.DecodeOrNull(jsonStr);
-                        //    if (tmp != null)
-                        //    {
-                        //        jsonStr = tmp;
-                        //    }
-                        //}
-                        var ret = @base.CreateFromJsonString(jsonStr);
-                        if (ret != null)
-                        {
-                            ret.Id = item.Id;
-                            return ret;
-                        }
+                        var jsonString = dbIdbServer.GetJson();
+                        var ret = serverBase.CreateFromJsonString(jsonString);
+                        if (ret == null) continue;
+                        ret.Id = dbIdbServer.GetId();
+                        return ret;
                     }
                 }
             }

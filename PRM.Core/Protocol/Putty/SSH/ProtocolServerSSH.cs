@@ -70,10 +70,10 @@ namespace PRM.Core.Protocol.Putty.SSH
         }
 
 
-        public string GetPuttyConnString()
+        public string GetPuttyConnString(PrmContext context)
         {
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {GetDecryptedPassWord()} -{(int)SshVersion}";
+            var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {context.DbOperator.DecryptOrReturnOriginalString(Password)} -{(int)SshVersion}";
             if (!string.IsNullOrWhiteSpace(StartupAutoCommand))
                 arg = arg + $" -cmd \"{StartupAutoCommand.Replace(@"""", @"\""")}\"";
             return arg;

@@ -14,10 +14,10 @@ namespace PRM
     {
         public VmMain Vm { get; set; }
 
-        public MainWindow()
+        public MainWindow(PrmContext context)
         {
             InitializeComponent();
-            Vm = new VmMain(this);
+            Vm = new VmMain(context, this);
             this.DataContext = Vm;
             Title = SystemConfig.AppName;
             this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
@@ -28,7 +28,6 @@ namespace PRM
                 {
                     SystemConfig.Instance.Locality.MainWindowHeight = this.Height;
                     SystemConfig.Instance.Locality.MainWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.Save();
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };
@@ -70,6 +69,8 @@ namespace PRM
 
         public void ActivateMe(bool isForceActivate = false)
         {
+            if (App.Window?.WindowState == WindowState.Minimized)
+                App.Window.WindowState = WindowState.Normal;
             if (isForceActivate)
                 HideMe(false);
             Dispatcher?.Invoke(() =>
@@ -106,16 +107,13 @@ namespace PRM
 
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape
-                && sender is TextBox textBox)
-            {
-                textBox.Text = "";
-                // Kill logical focus
-                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
-                // Kill keyboard focus
-                Keyboard.ClearFocus();
-                this.Focus();
-            }
+            if (e.Key != Key.Escape || !(sender is TextBox textBox)) return;
+            textBox.Text = "";
+            // Kill logical focus
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
+            // Kill keyboard focus
+            Keyboard.ClearFocus();
+            this.Focus();
         }
 
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
@@ -125,11 +123,6 @@ namespace PRM
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            //if(Vm.BottomPage == null
-            //   && Vm.DispPage == null 
-            //   && TbFilter.IsFocused == false)
-            //    TbFilter.Focus();
-
             if (Keyboard.FocusedElement is TextBox)
             {
             }

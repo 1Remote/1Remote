@@ -24,14 +24,14 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
         }
 
-        public string GetDecryptedPassWord()
-        {
-            if (SystemConfig.Instance.DataSecurity.Rsa != null)
-            {
-                return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_password) ?? "";
-            }
-            return _password;
-        }
+        //public string GetDecryptedPassWord()
+        //{
+        //    if (SystemConfig.Instance.DataSecurity.Rsa != null)
+        //    {
+        //        return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_password) ?? "";
+        //    }
+        //    return _password;
+        //}
 
         protected override string GetSubTitle()
         {

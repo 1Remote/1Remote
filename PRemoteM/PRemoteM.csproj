@@ -94,12 +94,23 @@
     <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
     </Reference>
+    <Reference Include="FreeSql, Version=2.0.105.0, Culture=neutral, PublicKeyToken=a33928e5d4a4b39c, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSql.2.0.105\lib\net45\FreeSql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FreeSql.Provider.Sqlite, Version=2.0.105.0, Culture=neutral, PublicKeyToken=5800863e689c9dd8, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSql.Provider.Sqlite.2.0.105\lib\net45\FreeSql.Provider.Sqlite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.113.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Windows.Forms" />
@@ -135,12 +146,12 @@
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
+    <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
     <Compile Include="ViewModel\VmServerEditorPage.cs" />
-    <Compile Include="ViewModel\VmServerListItem.cs" />
     <Compile Include="ViewModel\VmServerListPage.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
@@ -316,4 +327,11 @@ xcopy /y $(TargetDir)en-us.xaml $(SolutionDir)PRM.Core\Languages\en-us.xaml*  /C
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+  </Target>
 </Project>

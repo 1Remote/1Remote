@@ -11,12 +11,14 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
+        private readonly PrmContext _context;
         /// <summary>
         /// to remember original protocol options
         /// </summary>
         private readonly ProtocolServerBase _orgServerBase;
-        public VmServerEditorPage(ProtocolServerBase server, bool isDuplicate = false)
+        public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
         {
+            _context = context;
             _orgServerBase = server;
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
@@ -25,7 +27,7 @@ namespace PRM.ViewModel
             IsAddMode = Server.Id <= 0;
 
             // decrypt pwd
-            SystemConfig.Instance.DataSecurity.DecryptPwd(Server);
+            _context.DbOperator.DecryptPwdIfItIsEncrypted(Server);
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
@@ -46,11 +48,11 @@ namespace PRM.ViewModel
                 ProtocolSelected = ProtocolList.First();
             }
 
-            NameSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.DispName)
+            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DispName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
 
-            GroupSelections = GlobalData.Instance.VmItemList.Select(x => x.Server.GroupName)
+            GroupSelections = _context.AppData.VmItemList.Select(x => x.Server.GroupName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
         }
@@ -115,13 +117,12 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdSave == null)
-                    _cmdSave = new RelayCommand((o) =>
-                    {
-                        // encrypt pwd
-                        GlobalData.Instance.ServerListUpdate(Server);
-                        App.Window.Vm.DispPage = null;
-                    }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
+                if (_cmdSave != null) return _cmdSave;
+                _cmdSave = new RelayCommand((o) =>
+                {
+                    _context.AppData.ServerListUpdate(Server);
+                    App.Window.Vm.DispPage = null;
+                }, o => (this.Server.DispName.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
         }
@@ -134,11 +135,11 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdCancel == null)
-                    _cmdCancel = new RelayCommand((o) =>
-                    {
-                        App.Window.Vm.DispPage = null;
-                    });
+                if (_cmdCancel != null) return _cmdCancel;
+                _cmdCancel = new RelayCommand((o) =>
+                {
+                    App.Window.Vm.DispPage = null;
+                });
                 return _cmdCancel;
             }
         }

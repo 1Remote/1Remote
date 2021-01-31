@@ -1,24 +1,25 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PRM.Core.Protocol;
 using PRM.ViewModel;
 
 namespace PRM.Controls
 {
     public partial class ServerCard : UserControl
     {
-        public static readonly DependencyProperty VmServerListItemProperty =
-            DependencyProperty.Register("VmServerListItem", typeof(VmServerListItem), typeof(ServerCard),
-                new PropertyMetadata(new VmServerListItem(null), new PropertyChangedCallback(OnServerDataChanged)));
+        public static readonly DependencyProperty VmProtocolServerProperty =
+            DependencyProperty.Register("VmProtocolServer", typeof(VmProtocolServer), typeof(ServerCard),
+                new PropertyMetadata(null, new PropertyChangedCallback(OnServerDataChanged)));
 
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (VmServerListItem)e.NewValue;
+            var value = (VmProtocolServer)e.NewValue;
             ((ServerCard)d).DataContext = value;
         }
-        public VmServerListItem VmServerListItem
+        public VmProtocolServer VmProtocolServer
         {
-            get => (VmServerListItem)GetValue(VmServerListItemProperty);
-            set => SetValue(VmServerListItemProperty, value);
+            get => (VmProtocolServer)GetValue(VmProtocolServerProperty);
+            set => SetValue(VmProtocolServerProperty, value);
         }
 
         public ServerCard()
@@ -34,18 +35,18 @@ namespace PRM.Controls
         private void ButtonEditServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmServerListItem != null && VmServerListItem.CmdEditServer.CanExecute())
+            if (VmProtocolServer != null && VmProtocolServer.CmdEditServer.CanExecute())
             {
-                VmServerListItem.CmdEditServer.Execute();
+                VmProtocolServer.CmdEditServer.Execute();
             }
         }
 
         private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmServerListItem != null && VmServerListItem.CmdDuplicateServer.CanExecute())
+            if (VmProtocolServer != null && VmProtocolServer.CmdDuplicateServer.CanExecute())
             {
-                VmServerListItem.CmdDuplicateServer.Execute();
+                VmProtocolServer.CmdDuplicateServer.Execute();
             }
         }
     }

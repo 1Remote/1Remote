@@ -6,7 +6,7 @@ namespace PRM.Core.Protocol.Putty
 {
     public interface IPuttyConnectable
     {
-        string GetPuttyConnString();
+        string GetPuttyConnString(PrmContext context);
         /// <summary>
         /// Allowing implementing interface only for specific class 'ProtocolServerBase'
         /// </summary>

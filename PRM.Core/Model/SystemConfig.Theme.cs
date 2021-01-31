@@ -25,13 +25,13 @@ namespace PRM.Core.Model
 
     public sealed class SystemConfigTheme : SystemConfigBase
     {
+        private readonly ResourceDictionary _appResourceDictionary = null;
         public SystemConfigTheme(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
         {
             Debug.Assert(appResourceDictionary != null);
-            AppResourceDictionary = appResourceDictionary;
+            _appResourceDictionary = appResourceDictionary;
             Load();
         }
-        public readonly ResourceDictionary AppResourceDictionary = null;
 
         private int _puttyFontSize = 14;
         public int PuttyFontSize
@@ -63,22 +63,20 @@ namespace PRM.Core.Model
             get => _prmColorThemeName;
             set
             {
-                if (PrmColorThemes.ContainsKey(value))
-                {
-                    var theme = PrmColorThemes[value];
-                    _mainColor1 = theme.MainColor1;
-                    _mainColor1Lighter = theme.MainColor1Lighter;
-                    _mainColor1Darker = theme.MainColor1Darker;
-                    _mainColor1Foreground = theme.MainColor1Foreground;
-                    _mainColor2 = theme.MainColor2;
-                    _mainColor2Lighter = theme.MainColor2Lighter;
-                    _mainColor2Darker = theme.MainColor2Darker;
-                    _mainColor2Foreground = theme.MainColor2Foreground;
-                    _mainBgColor = theme.MainBgColor;
-                    _mainBgColorForeground = theme.MainBgColorForeground;
-                    Save();
-                    SetAndNotifyIfChanged(nameof(PrmColorThemeName), ref _prmColorThemeName, value);
-                }
+                if (!PrmColorThemes.ContainsKey(value)) return;
+                var theme = PrmColorThemes[value];
+                _mainColor1 = theme.MainColor1;
+                _mainColor1Lighter = theme.MainColor1Lighter;
+                _mainColor1Darker = theme.MainColor1Darker;
+                _mainColor1Foreground = theme.MainColor1Foreground;
+                _mainColor2 = theme.MainColor2;
+                _mainColor2Lighter = theme.MainColor2Lighter;
+                _mainColor2Darker = theme.MainColor2Darker;
+                _mainColor2Foreground = theme.MainColor2Foreground;
+                _mainBgColor = theme.MainBgColor;
+                _mainBgColorForeground = theme.MainBgColorForeground;
+                Save();
+                SetAndNotifyIfChanged(nameof(PrmColorThemeName), ref _prmColorThemeName, value);
             }
         }
 
@@ -241,6 +239,9 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            if (!_ini.ContainsKey(nameof(PrmColorThemeName).ToLower(), _sectionName))
+                return;
+
             StopAutoSave = true;
             PrmColorThemes = PRM.Core.Resources.Theme.PrmColorThemes.GetThemes();
             PrmColorThemeNames = new ObservableCollection<string>(PrmColorThemes.Keys);
@@ -248,9 +249,9 @@ namespace PRM.Core.Model
             ReloadPuttyThemes();
 
             _prmColorThemeName = _ini.GetValue(nameof(PrmColorThemeName).ToLower(), _sectionName, _prmColorThemeName);
-            if (string.IsNullOrEmpty(_prmColorThemeName)
-                || !PrmColorThemeNames.Contains(_prmColorThemeName))
+            if (!PrmColorThemeNames.Contains(_prmColorThemeName))
                 _prmColorThemeName = PrmColorThemeNames.First();
+
             _mainColor1 = _ini.GetValue(nameof(MainColor1).ToLower(), _sectionName, MainColor1);
             _mainColor1Lighter = _ini.GetValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
             _mainColor1Darker = _ini.GetValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
@@ -263,8 +264,8 @@ namespace PRM.Core.Model
             _mainBgColorForeground = _ini.GetValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
 
             PuttyThemeName = _ini.GetValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
-            if (string.IsNullOrEmpty(PuttyThemeName))
-                PuttyThemeName = PrmColorThemeNames.First();
+            if (!PuttyThemeNames.Contains(PuttyThemeName))
+                PuttyThemeName = PuttyThemeNames.First();
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
 
 
@@ -305,7 +306,7 @@ namespace PRM.Core.Model
 
         private void ApplyPrmColorTheme()
         {
-            Debug.Assert(AppResourceDictionary != null);
+            Debug.Assert(_appResourceDictionary != null);
             const string resourceTypeKey = "__Resource_Type_Key";
             const string resourceTypeValue = "__Resource_Type_Value=colortheme";
             void SetKey(IDictionary rd, string key, object value)
@@ -315,7 +316,7 @@ namespace PRM.Core.Model
                 else
                     rd[key] = value;
             }
-            var rs = AppResourceDictionary.MergedDictionaries.Where(o =>
+            var rs = _appResourceDictionary.MergedDictionaries.Where(o =>
                 (o.Source != null && o.Source.IsAbsoluteUri && o.Source.AbsolutePath.ToLower().IndexOf("Theme/Default.xaml".ToLower()) >= 0)
                 || o[resourceTypeKey]?.ToString() == resourceTypeValue).ToArray();
             try
@@ -347,9 +348,9 @@ namespace PRM.Core.Model
 
                 foreach (var r in rs)
                 {
-                    AppResourceDictionary.MergedDictionaries.Remove(r);
+                    _appResourceDictionary.MergedDictionaries.Remove(r);
                 }
-                AppResourceDictionary.MergedDictionaries.Add(rd);
+                _appResourceDictionary.MergedDictionaries.Add(rd);
 
                 RaisePropertyChanged(nameof(MainColor1));
                 RaisePropertyChanged(nameof(MainColor1Lighter));

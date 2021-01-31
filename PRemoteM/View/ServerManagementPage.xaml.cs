@@ -1,29 +1,23 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PRM.Core.Model;
 using PRM.ViewModel;
 
 namespace PRM.View
 {
     public partial class ServerManagementPage : UserControl
     {
-        public VmServerListPage VmDataContext;
-        public ServerManagementPage()
+        public VmServerListPage Vm;
+        public ServerManagementPage(PrmContext context)
         {
-            VmDataContext = new VmServerListPage();
             InitializeComponent();
-            DataContext = VmDataContext;
-
-            //// hide GridBottom when hover.
-            //MouseMove += (sender, args) =>
-            //{
-            //    var p = args.GetPosition(GridBottom);
-            //    GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
-            //};
+            Vm = new VmServerListPage(context, LvServerCards);
+            DataContext = Vm;
         }
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            VmDataContext.SelectedGroup = "";
+            Vm.SelectedGroup = "";
         }
 
         private void ButtonBack_OnClick(object sender, RoutedEventArgs e)

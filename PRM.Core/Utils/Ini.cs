@@ -8,10 +8,10 @@ namespace Shawn.Utils
 {
     public class Ini
     {
-        Dictionary<string, Dictionary<string, string>> ini =
+        readonly Dictionary<string, Dictionary<string, string>> _ini =
             new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
 
-        string file;
+        readonly string _file;
 
         /// <summary>
         /// Initialize an INI file
@@ -20,7 +20,7 @@ namespace Shawn.Utils
         /// <param name="file">Full path where the INI file has to be read from or written to</param>
         public Ini(string file)
         {
-            this.file = file;
+            this._file = file;
 
             if (!File.Exists(file))
                 return;
@@ -33,12 +33,11 @@ namespace Shawn.Utils
         /// </summary>
         public void Load()
         {
-            var txt = File.ReadAllText(file);
+            var txt = File.ReadAllText(_file);
 
-            Dictionary<string, string> currentSection =
-                new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var currentSection =  new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-            ini[""] = currentSection;
+            _ini[""] = currentSection;
 
             foreach (var l in txt.Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries)
                     .Select((t, i) => new
@@ -59,7 +58,7 @@ namespace Shawn.Utils
                 if (line.StartsWith("[") && line.EndsWith("]"))
                 {
                     currentSection = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-                    ini[line.Substring(1, line.Length - 2)] = currentSection;
+                    _ini[line.Substring(1, line.Length - 2)] = currentSection;
                     continue;
                 }
 
@@ -101,13 +100,7 @@ namespace Shawn.Utils
         /// <returns></returns>
         public string GetValue(string key, string section, string @default)
         {
-            if (!ini.ContainsKey(section))
-                return @default;
-
-            if (!ini[section].ContainsKey(key))
-                return @default;
-
-            return ini[section][key];
+            return ContainsKey(key, section) ? _ini[section][key] : @default;
         }
 
         /// <summary>
@@ -119,14 +112,11 @@ namespace Shawn.Utils
         /// <returns></returns>
         public T GetValue<T>(string key, string section, T @default)
         {
-            if (!ini.ContainsKey(section))
-                return @default;
-
-            if (!ini[section].ContainsKey(key))
+            if (!ContainsKey(key, section))
                 return @default;
             try
             {
-                object r = Convert.ChangeType(ini[section][key], typeof(T));
+                var r = Convert.ChangeType(_ini[section][key], typeof(T));
                 return (T)r;
             }
             catch (Exception e)
@@ -136,6 +126,11 @@ namespace Shawn.Utils
             }
         }
 
+        public bool ContainsKey(string key, string section)
+        {
+            return _ini.ContainsKey(section) && _ini[section].ContainsKey(key);
+        }
+
 
         /// <summary>
         /// Save the INI file
@@ -143,7 +138,7 @@ namespace Shawn.Utils
         public void Save()
         {
             var sb = new StringBuilder();
-            foreach (var section in ini)
+            foreach (var section in _ini)
             {
                 if (section.Key != "")
                 {
@@ -169,7 +164,7 @@ namespace Shawn.Utils
                     sb.AppendLine();
             }
 
-            File.WriteAllText(file, sb.ToString());
+            File.WriteAllText(_file, sb.ToString());
         }
 
         bool endWithCRLF(StringBuilder sb)
@@ -205,13 +200,13 @@ namespace Shawn.Utils
         public void WriteValue(string key, string section, string value)
         {
             Dictionary<string, string> currentSection;
-            if (!ini.ContainsKey(section))
+            if (!_ini.ContainsKey(section))
             {
                 currentSection = new Dictionary<string, string>();
-                ini.Add(section, currentSection);
+                _ini.Add(section, currentSection);
             }
             else
-                currentSection = ini[section];
+                currentSection = _ini[section];
             currentSection[key] = value;
         }
 
@@ -222,10 +217,10 @@ namespace Shawn.Utils
         /// <returns></returns>
         public string[] GetKeys(string section)
         {
-            if (!ini.ContainsKey(section))
+            if (!_ini.ContainsKey(section))
                 return new string[0];
 
-            return ini[section].Keys.ToArray();
+            return _ini[section].Keys.ToArray();
         }
 
         /// <summary>
@@ -234,7 +229,7 @@ namespace Shawn.Utils
         /// <returns></returns>
         public string[] GetSections()
         {
-            return ini.Keys.Where(t => t != "").ToArray();
+            return _ini.Keys.Where(t => t != "").ToArray();
         }
     }
 }

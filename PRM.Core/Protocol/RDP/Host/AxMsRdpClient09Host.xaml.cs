@@ -30,7 +30,7 @@ namespace PRM.Core.Protocol.RDP.Host
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
 
-        public AxMsRdpClient09Host(ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(protocolServer, true)
+        public AxMsRdpClient09Host(PrmContext context, ProtocolServerBase protocolServer, double width = 0, double height = 0) : base(context, protocolServer, true)
         {
             InitializeComponent();
 
@@ -357,7 +357,7 @@ namespace PRM.Core.Protocol.RDP.Host
                     case EGatewayLogonMethod.Password:
                         _rdp.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
                         _rdp.TransportSettings2.GatewayUsername = _rdpServer.GatewayUserName;
-                        _rdp.TransportSettings2.GatewayPassword = _rdpServer.GetDecryptedGatewayPassword();
+                        _rdp.TransportSettings2.GatewayPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.GatewayPassword);
                         break;
                     default:
                         _rdp.TransportSettings.GatewayCredsSource = 4; // TSC_PROXY_CREDS_MODE_ANY 
@@ -414,7 +414,7 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            secured.ClearTextPassword = _rdpServer.GetDecryptedPassWord();
+            secured.ClearTextPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.Password);
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
             #endregion
 
@@ -485,7 +485,7 @@ namespace PRM.Core.Protocol.RDP.Host
             }
             else
                 _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-            Server.AddOrUpdate(_rdpServer);
+            Context.DbOperator.DbUpdateServer(_rdpServer);
             _rdp.FullScreen = true;
         }
 
@@ -686,18 +686,12 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
-                var entireSize = System.Drawing.Rectangle.Empty;
-                foreach (var screen in System.Windows.Forms.Screen.AllScreens)
-                    entireSize = System.Drawing.Rectangle.Union(entireSize, screen.Bounds);
-                return entireSize;
+                return ScreenInfoEx.GetAllScreensSize();
             }
-            else
+            else if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
+                     && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
             {
-                if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
-                    && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
-                {
-                    return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
-                }
+                return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
             }
             return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
         }

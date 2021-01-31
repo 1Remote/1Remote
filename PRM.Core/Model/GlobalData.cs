@@ -4,44 +4,18 @@ using System.Diagnostics;
 using System.Linq;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
+using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        #region singleton
-        private static GlobalData uniqueInstance;
-        private static readonly object InstanceLock = new object();
+        private DbOperator _dbOperator;
 
-        public static GlobalData GetInstance()
+        public void SetDbOperator(DbOperator dbOperator)
         {
-            lock (InstanceLock)
-            {
-                if (uniqueInstance == null)
-                {
-                    throw new NullReferenceException($"{nameof(GlobalData)} has not been inited!");
-                }
-            }
-            return uniqueInstance;
+            _dbOperator = dbOperator;
         }
-        public static GlobalData Instance => GetInstance();
-        #endregion
-
-        public static void Init()
-        {
-            lock (InstanceLock)
-            {
-                if (uniqueInstance == null)
-                {
-                    uniqueInstance = new GlobalData();
-                }
-            }
-        }
-
-        private GlobalData()
-        {
-        }
-
 
         public Action<string> OnMainWindowServerFilterChanged;
 
@@ -77,19 +51,24 @@ namespace PRM.Core.Model
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null)
         {
+            if (_dbOperator == null)
+            {
+                return;
+            }
             // read from db
             if (protocolServer == null)
             {
                 var tmp = new ObservableCollection<VmProtocolServer>();
-                foreach (var serverAbstract in PRM.Core.DB.Server.ListAllProtocolServerBase())
+                foreach (var serverAbstract in _dbOperator.GetServers())
                 {
                     try
                     {
+                        _dbOperator.DecryptInfo(serverAbstract);
                         tmp.Add(new VmProtocolServer(serverAbstract));
                     }
                     catch (Exception e)
                     {
-                        // ignored
+                        SimpleLogHelper.Info(e);
                     }
                 }
                 VmItemList = tmp;
@@ -97,7 +76,7 @@ namespace PRM.Core.Model
             // edit
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
-                Server.AddOrUpdate(protocolServer);
+                _dbOperator.DbUpdateServer(protocolServer);
                 VmItemList.Remove(VmItemList.First(x => x.Server.Id == protocolServer.Id));
                 VmItemList.Add(new VmProtocolServer(protocolServer));
                 VmItemListDataChanged?.Invoke();
@@ -105,15 +84,19 @@ namespace PRM.Core.Model
             // add
             else
             {
-                Server.AddOrUpdate(protocolServer, true);
+                _dbOperator.DbAddServer(protocolServer);
                 ServerListUpdate();
             }
         }
 
-        public void ServerListRemove(ProtocolServerBase server)
+        public void ServerListRemove(int id)
         {
-            Debug.Assert(server.Id > 0);
-            if (Server.Delete(server.Id))
+            if (_dbOperator == null)
+            {
+                return;
+            }
+            Debug.Assert(id > 0);
+            if (_dbOperator.DbDeleteServer(id))
             {
                 ServerListUpdate();
             }

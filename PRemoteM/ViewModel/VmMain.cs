@@ -14,12 +14,9 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-        private object _listViewPageForServerList;
-        public object ListViewPageForServerList
-        {
-            get => _listViewPageForServerList;
-            set => SetAndNotifyIfChanged(nameof(ListViewPageForServerList), ref _listViewPageForServerList, value);
-        }
+        public VmAboutPage VmAboutPage { get; }
+
+        #region Properties
 
 
         private Visibility _tbFilterVisible = Visibility.Visible;
@@ -29,7 +26,11 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
         }
 
-        private readonly ServerManagementPage _managementPage = null;
+        private readonly ServerManagementPage _managementPage;
+        private readonly AboutPage _aboutPage;
+
+        public AnimationPage ServersShownPage { get; }
+
         private AnimationPage _bottomPage = null;
         public AnimationPage BottomPage
         {
@@ -96,36 +97,32 @@ namespace PRM.ViewModel
                 }
             }
         }
+        #endregion
 
         public readonly MainWindow Window;
+        public PrmContext Context { get; }
 
-
-        public VmMain(MainWindow window)
+        public VmMain(PrmContext context, MainWindow window)
         {
+            Context = context;
             Window = window;
+            this.VmAboutPage = new VmAboutPage();
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
                 ProgressBarValue = arg1;
                 ProgressBarMaximum = arg2;
                 ProgressBarInfo = arg2 > 0 ? arg3 : "";
             };
-            GlobalEventHelper.OnGoToServerEditPage += new GlobalEventHelper.OnGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
+            GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
-                ProtocolServerBase server;
-                if (id <= 0)
-                {
-                    return;
-                }
-                else
-                {
-                    Debug.Assert(GlobalData.Instance.VmItemList.Any(x => x.Server.Id == id));
-                    server = GlobalData.Instance.VmItemList.First(x => x.Server.Id == id).Server;
-                }
+                if (id <= 0) return;
+                Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
+                var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server, isDuplicate)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
@@ -133,18 +130,24 @@ namespace PRM.ViewModel
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
             {
-                var server = new ProtocolServerRDP();
-                server.GroupName = groupName;
+                var server = new ProtocolServerRDP { GroupName = groupName };
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(server)),
+                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server)),
                 };
             });
 
-            ListViewPageForServerList = new ServerListPage();
-            _managementPage = new ServerManagementPage();
+
+            ServersShownPage = new AnimationPage()
+            {
+                InAnimationType = AnimationPage.InOutAnimationType.None,
+                OutAnimationType = AnimationPage.InOutAnimationType.None,
+                Page = new ServerListPage(Context),
+            };
+            _managementPage = new ServerManagementPage(Context);
+            _aboutPage = new AboutPage(VmAboutPage, this);
         }
 
 
@@ -172,7 +175,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SystemConfigPage(this, (Type)o),
+                            Page = new SystemConfigPage(this, Context, (Type)o),
                         };
                         Window.PopupMenu.IsOpen = false;
                     }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
@@ -222,7 +225,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new AboutPage(this),
+                            Page = _aboutPage,
                         };
                         Window.PopupMenu.IsOpen = false;
                     }, o => TopPage?.Page?.GetType() != typeof(AboutPage));

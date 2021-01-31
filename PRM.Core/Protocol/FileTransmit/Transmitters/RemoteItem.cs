@@ -45,17 +45,15 @@ namespace PRM.Core.Protocol.FileTransmitter
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(_fileType))
+                if (!string.IsNullOrWhiteSpace(_fileType)) return _fileType;
+                if (IsDirectory)
                 {
-                    if (IsDirectory)
-                    {
-                        FileType = "folder";
-                    }
-                    else if (_fullName.IndexOf(".", StringComparison.Ordinal) > 0)
-                    {
-                        var ext = _fullName.Substring(_fullName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-                        FileType = ext;
-                    }
+                    FileType = "folder";
+                }
+                else if (_fullName.IndexOf(".", StringComparison.Ordinal) > 0)
+                {
+                    var ext = _fullName.Substring(_fullName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
+                    FileType = ext;
                 }
                 return _fileType;
             }

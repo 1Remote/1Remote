@@ -8,12 +8,14 @@ namespace PRM.View
 {
     public partial class AboutPage : UserControl
     {
-        public readonly VmMain Vm;
-        public AboutPage(VmMain vm)
+        public readonly VmAboutPage Vm;
+        private readonly VmMain _vmMain;
+        public AboutPage(VmAboutPage vm, VmMain vmMain)
         {
             InitializeComponent();
             Vm = vm;
             DataContext = Vm;
+            _vmMain = vmMain;
             TbVersion.Text = PRMVersion.Version;
         }
 
@@ -27,7 +29,7 @@ namespace PRM.View
 
         private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
         {
-            Vm.TopPage = null;
+            _vmMain.TopPage = null;
         }
     }
 }

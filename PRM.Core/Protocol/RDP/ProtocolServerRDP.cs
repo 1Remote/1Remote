@@ -316,14 +316,14 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(GatewayPassword), ref _gatewayPassword, value);
         }
 
-        public string GetDecryptedGatewayPassword()
-        {
-            if (SystemConfig.Instance.DataSecurity.Rsa != null)
-            {
-                return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_gatewayPassword) ?? "";
-            }
-            return _gatewayPassword;
-        }
+        //public string GetDecryptedGatewayPassword()
+        //{
+        //    if (SystemConfig.Instance.DataSecurity.Rsa != null)
+        //    {
+        //        return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_gatewayPassword) ?? "";
+        //    }
+        //    return _gatewayPassword;
+        //}
         #endregion
 
         private LocalSetting _autoSetting = new LocalSetting();
@@ -361,9 +361,9 @@ namespace PRM.Core.Protocol.RDP
         /// To rdp file object
         /// </summary>
         /// <returns></returns>
-        public RdpConfig ToRdpConfig()
+        public RdpConfig ToRdpConfig(PrmContext context)
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, this.GetDecryptedPassWord());
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DbOperator.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
             switch (this.RdpFullScreenFlag)
