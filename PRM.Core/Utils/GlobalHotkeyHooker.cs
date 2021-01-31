@@ -119,7 +119,7 @@ namespace Shawn.Utils
         /// </summary>
         public Tuple<RetCode, string, int> Regist(Window window, ModifierKeys hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
         {
-            return Regist(window, (uint)hotkeyModifiers, key, callBack);
+            return Register(window, (uint)hotkeyModifiers, key, callBack);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Shawn.Utils
         /// </summary>
         public Tuple<RetCode, string, int> Regist(Window window, HotkeyModifiers hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
         {
-            return Regist(window, (uint) hotkeyModifiers, key, callBack);
+            return Register(window, (uint) hotkeyModifiers, key, callBack);
         }
 
 
@@ -138,7 +138,7 @@ namespace Shawn.Utils
         /// <param name="hotkeyModifiers"></param>
         /// <param name="key"></param>
         /// <param name="callBack"></param>
-        public Tuple<RetCode, string, int> Regist(Window window, uint hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
+        public Tuple<RetCode, string, int> Register(Window window, uint hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
         {
             lock (_locker)
             {

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PRM.Core.Model;
 using PRM.ViewModel;
 
 namespace PRM.View
@@ -7,9 +8,9 @@ namespace PRM.View
     public partial class ServerListPage : UserControl
     {
         public VmServerListPage Vm;
-        public ServerListPage()
+        public ServerListPage(PrmContext context)
         {
-            Vm = new VmServerListPage();
+            Vm = new VmServerListPage(context, LvServerCards);
             InitializeComponent();
             DataContext = Vm;
 

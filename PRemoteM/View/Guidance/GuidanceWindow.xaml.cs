@@ -51,15 +51,7 @@ namespace PRM.View
             Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
             Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
             string code = ci.Name.ToLower();
-            if (SystemConfig.Instance.Language.LanguageCode2Name.ContainsKey(code))
-            {
-                SystemConfig.Instance.Language.CurrentLanguageCode = code;
-            }
-            else
-            {
-                // use default english
-            }
-
+            SystemConfig.Instance.Language.CurrentLanguageCode = code;
 
             // saving config when this window close
             Closed += (sender, args) =>

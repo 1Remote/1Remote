@@ -52,23 +52,15 @@ namespace Shawn.Utils
 
         private static ResourceDictionary LangDictFromJsonString(string jsonString)
         {
-            try
+            var rd = new ResourceDictionary();
+            var kvs = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
+            foreach (var kv in kvs)
             {
-                var rd = new ResourceDictionary();
-                var kvs = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
-                foreach (var kv in kvs)
-                {
-                    SetKey(rd, kv.Key, kv.Value);
-                }
-                SetKey(rd, LangFilePathKey, "from_memory");
-                SetKey(rd, ResourceTypeKey, ResourceTypeValue);
-                return rd;
+                SetKey(rd, kv.Key, kv.Value);
             }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Warning(e);
-                return null;
-            }
+            SetKey(rd, LangFilePathKey, "from_memory");
+            SetKey(rd, ResourceTypeKey, ResourceTypeValue);
+            return rd;
         }
 
         public static ResourceDictionary LangDictFromXamlUri(Uri uri)

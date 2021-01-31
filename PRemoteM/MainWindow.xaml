@@ -74,7 +74,7 @@
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="20" 
                          Visibility="{Binding TbFilterVisible}"
-                         Text="{Binding Source={x:Static model:GlobalData.Instance}, Path=MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding Context.AppData.MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
@@ -164,7 +164,7 @@
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Value="">
+                                    <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -242,7 +242,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=NewVersion}" Value="">
+                                                        <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
                                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -325,7 +325,7 @@
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <ContentControl Content="{Binding ListViewPageForServerList}"></ContentControl>
+            <pageHost1:PageHost NewPage="{Binding ServersShownPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
             <pageHost1:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost1:PageHost>

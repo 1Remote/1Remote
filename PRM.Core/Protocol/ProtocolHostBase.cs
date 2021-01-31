@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
+using PRM.Core.Model;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol
@@ -29,6 +30,7 @@ namespace PRM.Core.Protocol
     public abstract class ProtocolHostBase : UserControl
     {
         public ProtocolServerBase ProtocolServer { get;}
+        protected PrmContext Context;
 
         private Window _parentWindow = null;
         public Window ParentWindow
@@ -66,8 +68,9 @@ namespace PRM.Core.Protocol
             }
         }
 
-        protected ProtocolHostBase(ProtocolServerBase protocolServer, bool canFullScreen = false)
+        protected ProtocolHostBase(PrmContext context, ProtocolServerBase protocolServer, bool canFullScreen = false)
         {
+            Context = context;
             ProtocolServer = protocolServer;
             CanFullScreen = canFullScreen;
 

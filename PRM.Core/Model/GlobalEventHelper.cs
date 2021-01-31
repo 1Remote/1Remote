@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PRM.Core.Protocol;
 
 namespace PRM.Core.Model
 {
     public static class GlobalEventHelper
     {
-        public delegate void OnServerConnectDelegate(uint serverId, string assignTabToken = null);
+        public delegate void OnServerConnectDelegate(long serverId, string assignTabToken = null);
 
         /// <summary>
         /// Invoke notify to open a new remote session to Tab with assignTabToken (if assignTabToken != null).
         /// </summary>
-        public static OnServerConnectDelegate OnRequireServerConnect { get; set; } = null;
+        public static OnServerConnectDelegate OnRequestServerConnect { get; set; } = null;
 
 
         /// <summary>
@@ -23,34 +24,31 @@ namespace PRM.Core.Model
         /// <param name="showAnimation">show in animation?</param>
         public delegate void OnGoToServerAddPageDelegate(string presetGroupName = "", bool showAnimation = true);
 
+        public static OnGoToServerAddPageDelegate OnGoToServerAddPage { get; set; } = null;
+
+
+
         /// <summary>
         /// Go to server edit by server id, if id == 0 goto add page
         /// </summary>
         /// <param name="serverId">server id, if id == 0 goto add page</param>
         /// <param name="isDuplicateMode">is duplicate? works only id above 0</param>
         /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnGoToServerEditPageDelegate(uint serverId, bool isDuplicateMode = false, bool showAnimation = true);
-
-        /// <summary>
-        /// Go to server add
-        /// param3 bool: show in animation?
-        /// </summary>
-        public static OnGoToServerAddPageDelegate OnGoToServerAddPage { get; set; } = null;
-
-
+        public delegate void OnRequestGoToServerEditPageDelegate(int serverId, bool isDuplicateMode = false, bool showAnimation = true);
         /// <summary>
         /// Go to server edit by server id
-        /// param1 uint: server id
+        /// param1 int: server id
         /// param2 bool: is duplicate?
         /// param3 bool: show in animation?
         /// </summary>
-        public static OnGoToServerEditPageDelegate OnGoToServerEditPage { get; set; } = null;
+        public static OnRequestGoToServerEditPageDelegate OnRequestGoToServerEditPage { get; set; } = null;
 
-        /// <summary>
-        /// Invoke to notify a newer version of te software was released
-        /// while new version code = arg1, download url = arg2
-        /// </summary>
-        public static Action<string, string> OnNewVersionRelease { get; set; } = null;
+        public delegate void OnRequestUpdateServerDelegate(ProtocolServerBase server);
+        public static OnRequestUpdateServerDelegate OnRequestUpdateServer { get; set; } = null;
+
+        public delegate void OnRequestDeleteServerDelegate(int serverId);
+        public static OnRequestDeleteServerDelegate OnRequestDeleteServer { get; set; } = null;
+
 
 
         /// <summary>

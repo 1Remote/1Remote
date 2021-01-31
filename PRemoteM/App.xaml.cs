@@ -2,10 +2,15 @@
 using System.IO;
 using System.IO.Pipes;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using PRM.Core;
+using PRM.Core.DB;
+using PRM.Core.DB.freesql;
 using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Model;
 using PRM.View;
@@ -21,16 +26,15 @@ namespace PRM
 
     public partial class App : Application
     {
-        private Mutex _singleAppMutex = null;
+        private OnlyOneAppInstanceHelper _onlyOneAppInstanceHelper;
+
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
+        public static readonly PrmContext Context = new PrmContext();
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
-#if DEV
-        private const string PipeName = "PRemoteM_DEBUG_singlex@foxmail.com";
-#else
-        private const string PipeName = "PRemoteM_singlex@foxmail.com";
-#endif
+
+        private DesktopResolutionWatcher _desktopResolutionWatcher;
 
         private static void OnUnhandledException(Exception e)
         {
@@ -44,12 +48,8 @@ namespace PRM
         {
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-
-            if (!Directory.Exists(appDateFolder))
-                Directory.CreateDirectory(appDateFolder);
-
             // init log file placement
-            var logFilePath = Path.Combine(appDateFolder, "PRemoteM.log.md");
+            var logFilePath = Path.Combine(appDateFolder, $"{SystemConfig.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
@@ -58,7 +58,6 @@ namespace PRM
 
         private void InitExceptionHandle()
         {
-#if !DEV
             this.DispatcherUnhandledException += (o, args) =>
             {
                 OnUnhandledException(args.Exception);
@@ -78,84 +77,50 @@ namespace PRM
                     SimpleLogHelper.Fatal(args.ExceptionObject);
                 }
             };
-#endif
         }
 
         private void UnSetShortcutAutoStart(StartupEventArgs startupEvent)
         {
             // TODO delete at 2021.04
 #if !FOR_MICROSOFT_STORE_ONLY
+            var startupMode = Shawn.Utils.SetSelfStartingHelper.StartupMode.Normal;
+            if (startupEvent.Args.Length > 0)
             {
-                var startupMode = Shawn.Utils.SetSelfStartingHelper.StartupMode.Normal;
-                if (startupEvent.Args.Length > 0)
-                {
-                    System.Enum.TryParse(startupEvent.Args[0], out startupMode);
-                }
-                if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.SetSelfStart)
-                {
-                    SetSelfStartingHelper.SetSelfStartByShortcut(true);
-                    Environment.Exit(0);
-                }
-                if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.UnsetSelfStart)
-                {
-                    SetSelfStartingHelper.SetSelfStartByShortcut(false);
-                    Environment.Exit(0);
-                }
+                System.Enum.TryParse(startupEvent.Args[0], out startupMode);
+            }
+            if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.SetSelfStart)
+            {
+                SetSelfStartingHelper.SetSelfStartByShortcut(true);
+                Environment.Exit(0);
+            }
+            if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.UnsetSelfStart)
+            {
+                SetSelfStartingHelper.SetSelfStartByShortcut(false);
+                Environment.Exit(0);
             }
 #endif
         }
 
         private void OnlyOneAppInstanceCheck()
         {
-            _singleAppMutex = new Mutex(true, PipeName, out var isFirst);
-            if (!isFirst)
+            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(SystemConfig.AppName);
+            if (!_onlyOneAppInstanceHelper.IsFirstInstance())
             {
-                try
-                {
-                    var client = new NamedPipeClientStream(PipeName);
-                    client.Connect();
-                    var writer = new StreamWriter(client);
-                    writer.WriteLine("ActivateMe");
-                    writer.Flush();
-                    client.Dispose();
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Warning(e);
-                }
-
+                _onlyOneAppInstanceHelper.NamedPipeSendMessage("ActivateMe");
+                _onlyOneAppInstanceHelper.Dispose();
                 Environment.Exit(0);
-                return;
             }
 
-            // open NamedPipeServerStream
-            Task.Factory.StartNew(() =>
+            _onlyOneAppInstanceHelper.OnMessageReceived += message =>
             {
-                NamedPipeServerStream server = null;
-                while (true)
-                {
-                    server?.Dispose();
-                    server = new NamedPipeServerStream(PipeName);
-                    server.WaitForConnection();
-                    var reader = new StreamReader(server);
-                    var line = reader.ReadLine();
-                    if (string.IsNullOrEmpty(line)) return;
-                    SimpleLogHelper.Debug("NamedPipeServerStream get: " + line);
-                    if (line != "ActivateMe") return;
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (App.Window?.WindowState == WindowState.Minimized)
-                            App.Window.WindowState = WindowState.Normal;
-                        App.Window?.ActivateMe();
-                    });
-                }
-            });
+                SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
+                if (message == "ActivateMe")
+                    App.Window?.ActivateMe();
+            };
         }
 
         private bool InitSystemConfig(string appDateFolder)
         {
-            bool isNewUser = false;
-
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
             SimpleLogHelper.Debug($"ini init path = {iniPath}");
 
@@ -174,39 +139,38 @@ namespace PRM
 #endif
             SimpleLogHelper.Debug($"ini finally path = {iniPath}");
 
+
+            // if ini is not existed, then it would be a new user
+            bool isNewUser = !File.Exists(iniPath);
+
+
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
             var general = new SystemConfigGeneral(ini);
-            var quickConnect = new SystemConfigQuickConnect(ini);
+            var quickConnect = new SystemConfigLauncher(ini);
             var theme = new SystemConfigTheme(this.Resources, ini);
-            var dataSecurity = new SystemConfigDataSecurity(ini);
+            var locality = new SystemConfigLocality(new Ini(Path.Combine(appDateFolder, "locality.ini")));
+
+            // read dbPath.
+            var dataSecurity = new SystemConfigDataSecurity(Context, ini);
 
             // config create instance (settings & langs)
             SystemConfig.Init();
             SystemConfig.Instance.General = general;
             SystemConfig.Instance.Language = language;
-            SystemConfig.Instance.QuickConnect = quickConnect;
+            SystemConfig.Instance.Launcher = quickConnect;
             SystemConfig.Instance.DataSecurity = dataSecurity;
             SystemConfig.Instance.Theme = theme;
-
-            // if ini is not existed, then it would be a new user
-            if (!File.Exists(iniPath))
-            {
-                isNewUser = true;
-            }
-
-            // server data holder init.
-            GlobalData.Init();
-
-            // remote window pool init.
-            RemoteWindowPool.Init();
+            SystemConfig.Instance.Locality = locality;
 
             return isNewUser;
         }
 
         private void InitMainWindow(bool isNewUser)
         {
-            Window = new MainWindow();
+            Window = new MainWindow(Context);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            MainWindow = Window;
             if (!SystemConfig.Instance.General.AppStartMinimized
                 || isNewUser)
             {
@@ -231,13 +195,7 @@ namespace PRM
             // kill putty process
             foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
             {
-                try
-                {
-                    process.Kill();
-                }
-                catch
-                {
-                }
+                process.Kill();
             }
 
             bool isNewUser = InitSystemConfig(appDateFolder);
@@ -248,27 +206,47 @@ namespace PRM
                 gw.ShowDialog();
             }
 
-            InitMainWindow(isNewUser);
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
-            MainWindow = Window;
 
-            // check if Db is ok
-            var res = SystemConfig.Instance.DataSecurity.CheckIfDbIsOk();
-            if (!res.Item1)
+
+            // remote window pool init.
+            RemoteWindowPool.Init(Context);
+            // Event register
+            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
             {
-                SimpleLogHelper.Info("Start with 'SystemConfigPage' by 'ErrorFlag'.");
-                MessageBox.Show(res.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                ActivateWindow();
+                Context.AppData.ServerListRemove(id);
+            };
+            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
+            {
+                Context.AppData.ServerListUpdate(server);
+            };
+            _desktopResolutionWatcher = new DesktopResolutionWatcher();
+            _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
+            {
+                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
+            };
+
+
+
+
+            InitMainWindow(isNewUser);
+            InitLauncher();
+            InitTaskTray();
+
+
+            // init db connection
+            var connStatus = Context.InitSqliteDb(SystemConfig.Instance.DataSecurity.DbPath);
+            if (connStatus != EnumDbStatus.OK)
+            {
+                string error = connStatus.GetErrorInfo(SystemConfig.Instance.Language, SystemConfig.Instance.DataSecurity.DbPath);
+                MessageBox.Show(error,
+                    SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
+                    MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
             }
             else
             {
-                // load data
-                GlobalData.Instance.ServerListUpdate();
+                Context.AppData.ServerListUpdate();
             }
-
-            InitTaskTray();
-            InitLauncher();
         }
 
         private static void ActivateWindow()
@@ -325,9 +303,9 @@ namespace PRM
             TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
         }
 
-        private static void InitLauncher()
+        private void InitLauncher()
         {
-            SearchBoxWindow = new SearchBoxWindow();
+            SearchBoxWindow = new SearchBoxWindow(Context);
             SearchBoxWindow.SetHotKey();
         }
 
