@@ -230,7 +230,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_quick_enable}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.QuickConnect.Enable, Mode=TwoWay}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.Enable, Mode=TwoWay}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -241,7 +241,7 @@
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ComboBox Width="100" SelectedValuePath="Tag"
-                                              SelectedValue="{Binding SystemConfig.QuickConnect.HotKeyModifiers}" 
+                                              SelectedValue="{Binding SystemConfig.Launcher.HotKeyModifiers}" 
                                               SelectionChanged="Modifiers_OnSelectionChanged">
                                         <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
                                         <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
@@ -260,7 +260,7 @@
                                              IsReadOnlyCaretVisible="False"
                                              IsUndoEnabled="False"
                                              PreviewKeyDown="TextBoxKey_OnPreviewKeyDown" 
-                                             Text="{Binding SystemConfig.QuickConnect.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
+                                             Text="{Binding SystemConfig.Launcher.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
