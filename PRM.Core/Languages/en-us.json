@@ -100,9 +100,6 @@
   "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
   "system_options_data_security_info_clear_rsa": "Would you like to clear RSA encryption?",
   "system_options_data_security_error_can_not_open": "File is not a database or file is a encrypted database!",
-  "system_options_data_security_error_rsa_private_key_format_error": "RSA private key is in error format!",
-  "system_options_data_security_error_rsa_private_key_not_found": "Can't find the RSA private key!",
-  "system_options_data_security_error_rsa_private_key_not_match": "RSA private key not match the public key!",
 
   "string_database_error_permission_denied": "Database: permission denied for reading! Please check your password of file occupation.",
   "string_database_error_rsa_private_key_format_error": "Database: RSA private key is in error format! Please select a correct key.",

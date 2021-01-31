@@ -304,7 +304,7 @@ namespace PRM.View
         public void SetHotKey()
         {
             GlobalHotkeyHooker.Instance.Unregist(this);
-            var r = GlobalHotkeyHooker.Instance.Regist(this, (uint)SystemConfig.Instance.Launcher.HotKeyModifiers, SystemConfig.Instance.Launcher.HotKeyKey, this.ShowMe);
+            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)SystemConfig.Instance.Launcher.HotKeyModifiers, SystemConfig.Instance.Launcher.HotKeyKey, this.ShowMe);
             var title = SystemConfig.Instance.Language.GetText("messagebox_title_warning");
             switch (r.Item1)
             {

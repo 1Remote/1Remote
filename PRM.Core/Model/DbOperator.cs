@@ -184,58 +184,11 @@ namespace PRM.Core.Model
             return 0;
         }
 
-        public void EncryptPwdIfItIsNotEncrypted(ProtocolServerBase server)
-        {
-            if (_rsa == null) return;
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-            {
-                var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                if (_rsa.DecodeOrNull(s.Password) == null)
-                    s.Password = _rsa.Encode(s.Password);
-            }
-            switch (server)
-            {
-                case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                    {
-                        if (_rsa.DecodeOrNull(ssh.PrivateKey) == null)
-                            ssh.PrivateKey = _rsa.Encode(ssh.PrivateKey);
-                        break;
-                    }
-                case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                    {
-                        if (_rsa.DecodeOrNull(rdp.GatewayPassword) == null)
-                            rdp.GatewayPassword = _rsa.Encode(rdp.GatewayPassword);
-                        break;
-                    }
-            }
-        }
-
         public string DecryptOrReturnOriginalString(string originalString)
         {
-            if (_rsa == null) return originalString;
-            return _rsa.DecodeOrNull(originalString) ?? originalString;
+            return _rsa?.DecodeOrNull(originalString) ?? originalString;
         }
 
-        public void DecryptPwdIfItIsEncrypted(ProtocolServerBase server)
-        {
-            if (_rsa == null) return;
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
-            {
-                var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                s.Password = DecryptOrReturnOriginalString(s.Password);
-            }
-            switch (server)
-            {
-                case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                    Debug.Assert(_rsa.DecodeOrNull(ssh.PrivateKey) != null);
-                    ssh.PrivateKey = DecryptOrReturnOriginalString(ssh.PrivateKey);
-                    break;
-                case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                    Debug.Assert(_rsa.DecodeOrNull(rdp.GatewayPassword) != null);
-                    rdp.GatewayPassword = DecryptOrReturnOriginalString(rdp.GatewayPassword);
-                    break;
-            }
-        }
 
         public void EncryptInfo(ProtocolServerBase server)
         {
@@ -264,10 +217,55 @@ namespace PRM.Core.Model
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
                 var p = (ProtocolServerWithAddrPortUserPwdBase)server;
-                if (!string.IsNullOrEmpty(p.UserName))
-                    p.UserName = DecryptOrReturnOriginalString(p.UserName) ?? p.UserName;
-                if (!string.IsNullOrEmpty(p.Address))
-                    p.Address = DecryptOrReturnOriginalString(p.Address) ?? p.Address;
+                p.UserName = DecryptOrReturnOriginalString(p.UserName);
+                p.Address = DecryptOrReturnOriginalString(p.Address);
+            }
+        }
+
+
+        private void EncryptPwdIfItIsNotEncrypted(ProtocolServerBase server)
+        {
+            if (_rsa == null) return;
+            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            {
+                var s = (ProtocolServerWithAddrPortUserPwdBase)server;
+                if (_rsa.DecodeOrNull(s.Password) == null)
+                    s.Password = _rsa.Encode(s.Password);
+            }
+            switch (server)
+            {
+                case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
+                    {
+                        if (_rsa.DecodeOrNull(ssh.PrivateKey) == null)
+                            ssh.PrivateKey = _rsa.Encode(ssh.PrivateKey);
+                        break;
+                    }
+                case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
+                    {
+                        if (_rsa.DecodeOrNull(rdp.GatewayPassword) == null)
+                            rdp.GatewayPassword = _rsa.Encode(rdp.GatewayPassword);
+                        break;
+                    }
+            }
+        }
+        public void DecryptPwdIfItIsEncrypted(ProtocolServerBase server)
+        {
+            if (_rsa == null) return;
+            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            {
+                var s = (ProtocolServerWithAddrPortUserPwdBase)server;
+                s.Password = DecryptOrReturnOriginalString(s.Password);
+            }
+            switch (server)
+            {
+                case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
+                    Debug.Assert(_rsa.DecodeOrNull(ssh.PrivateKey) != null);
+                    ssh.PrivateKey = DecryptOrReturnOriginalString(ssh.PrivateKey);
+                    break;
+                case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
+                    Debug.Assert(_rsa.DecodeOrNull(rdp.GatewayPassword) != null);
+                    rdp.GatewayPassword = DecryptOrReturnOriginalString(rdp.GatewayPassword);
+                    break;
             }
         }
 
@@ -279,8 +277,14 @@ namespace PRM.Core.Model
             EncryptInfo(tmp);
             _db.AddServer(tmp);
         }
+
+        /// <summary>
+        /// if rsa is set, it will encrypt [org pwd] / [clone info] before saving database.
+        /// </summary>
+        /// <param name="org"></param>
         public void DbUpdateServer(ProtocolServerBase org)
         {
+            Debug.Assert(org.Id > 0);
             EncryptPwdIfItIsNotEncrypted(org);
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -28,9 +29,8 @@ namespace PRM.View
             DataContext = VmSystemConfigPage;
 
 
-            if (t == typeof(SystemConfigGeneral))
-                TabItemGeneral.IsSelected = true;
-            if (t == typeof(SystemConfigLanguage))
+            if (t == typeof(SystemConfigGeneral)
+            || t == typeof(SystemConfigLanguage))
                 TabItemGeneral.IsSelected = true;
             if (t == typeof(SystemConfigLauncher))
                 TabItemQuick.IsSelected = true;
@@ -46,40 +46,35 @@ namespace PRM.View
             e.Handled = true;
             var key = e.Key;
             // In case of an Alt modifier, e.Key returns Key.System and the real key is in e.SystemKey. 
-            switch (key)
+            key = key switch
             {
-                case Key.System:
-                    key = e.SystemKey;
-                    break;
-                case Key.ImeProcessed:
-                    key = e.ImeProcessedKey;
-                    break;
-                case Key.DeadCharProcessed:
-                    key = e.DeadCharProcessedKey;
-                    break;
-            }
-            if (
-                key == Key.Tab ||
-                key == Key.CapsLock ||
-                key == Key.PrintScreen ||
-                key == Key.Scroll ||
-                key == Key.Sleep ||
-                key == Key.Pause ||
-                key == Key.LeftCtrl ||
-                key == Key.RightCtrl ||
-                key == Key.LeftAlt ||
-                key == Key.RightAlt ||
-                key == Key.LeftShift ||
-                key == Key.RightShift ||
-                key == Key.LWin ||
-                key == Key.RWin ||
-                key == Key.Clear ||
-                key == Key.OemClear ||
-                key == Key.Escape ||
-                key == Key.Apps)
-            {
-            }
-            else if (this.IsLoaded)
+                Key.System => e.SystemKey,
+                Key.ImeProcessed => e.ImeProcessedKey,
+                Key.DeadCharProcessed => e.DeadCharProcessedKey,
+                _ => key
+            };
+
+            var specialKeys = new[] { Key.Tab ,
+                                      Key.CapsLock ,
+                                      Key.PrintScreen ,
+                                      Key.Scroll ,
+                                      Key.Sleep ,
+                                      Key.Pause ,
+                                      Key.LeftCtrl ,
+                                      Key.RightCtrl ,
+                                      Key.LeftAlt ,
+                                      Key.RightAlt ,
+                                      Key.LeftShift ,
+                                      Key.RightShift ,
+                                      Key.LWin ,
+                                      Key.RWin ,
+                                      Key.Clear ,
+                                      Key.OemClear ,
+                                      Key.Escape ,
+                                      Key.Apps };
+
+            if (!specialKeys.Contains(key)
+            && this.IsLoaded)
             {
                 SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, key);
             }
@@ -105,7 +100,7 @@ namespace PRM.View
 
 
             // check if HOTKEY_ALREADY_REGISTERED
-            var r = GlobalHotkeyHooker.Instance.Regist(null, (uint)modifier, key, () => { });
+            var r = GlobalHotkeyHooker.Instance.Register(null, (uint)modifier, key, () => { });
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
@@ -122,6 +117,8 @@ namespace PRM.View
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            // HotKey will be auto registered in SearchBox.xaml.cs
             VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = SystemConfig.Instance.Launcher.HotKeyModifiers;
             VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = SystemConfig.Instance.Launcher.HotKeyKey;
 
@@ -134,34 +131,19 @@ namespace PRM.View
             dlg.Filter = "json|*.json";
             dlg.Title = "Select a language json file for translation test.";
             dlg.CheckFileExists = false;
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog() != true) return;
+
+            var path = dlg.FileName;
+            var fi = new FileInfo(path);
+            var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
+            if (resourceDictionary?.Contains("language_name") == true)
             {
-                try
-                {
-                    var path = dlg.FileName;
-                    var fi = new FileInfo(path);
-                    if (fi.Exists)
-                    {
-                        var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
-                        if (resourceDictionary != null)
-                        {
-                            if (resourceDictionary.Contains("language_name"))
-                            {
-                                var code = fi.Name.ReplaceLast(fi.Extension, "");
-                                SystemConfig.Instance.Language.AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
-                            }
-                            else
-                            {
-                                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ee)
-                {
-                    SimpleLogHelper.Warning(ee);
-                    MessageBox.Show(ee.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                }
+                var code = fi.Name.ReplaceLast(fi.Extension, "");
+                SystemConfig.Instance.Language.AddJsonLanguageResources(code, fi.FullName);
+            }
+            else
+            {
+                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
             }
         }
     }

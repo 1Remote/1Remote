@@ -36,6 +36,9 @@ namespace Shawn.Utils
 
         public static bool IsFileInUse(string fileName)
         {
+            if (!File.Exists(fileName))
+                return false;
+
             bool inUse = true;
             FileStream fs = null;
             try

@@ -3,20 +3,59 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using Windows.ApplicationModel.VoiceCommands;
+using PRM.Core.Annotations;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
     public sealed class SystemConfigLanguage : SystemConfigBase
     {
+        public const string DefaultLanguageCode = "en-us";
+        public readonly string LanguageJsonDir;
+        private readonly ResourceDictionary _appResourceDictionary = null;
+
+
+        private readonly ResourceDictionary _defaultLanguageResourceDictionary = null;
+        private ResourceDictionary _currentLanguageResourceDictionary  = null;
+
+
+        /// <summary>
+        /// code => language file name, all codes leave in small cases, ref https://en.wikipedia.org/wiki/Language_code
+        /// </summary>
+        private readonly Dictionary<string, string> _languageCode2Name = new Dictionary<string, string>();
+        private readonly Dictionary<string, ResourceDictionary> _languageCode2Resources = new Dictionary<string, ResourceDictionary>();
+
+        /// <summary>
+        /// code => language file name, all codes leave in small cases, ref https://en.wikipedia.org/wiki/Language_code
+        /// </summary>
+        public Dictionary<string, string> LanguageCode2Name => _languageCode2Name;
+
+        private string _currentLanguageCode = "en-us";
+        public string CurrentLanguageCode
+        {
+            get => _currentLanguageCode;
+            set
+            {
+                if (ChangeLanguage(value))
+                {
+                    SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, value);
+                }
+            }
+        }
+
+
         public SystemConfigLanguage(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
         {
+            _appResourceDictionary = appResourceDictionary;
             Debug.Assert(appResourceDictionary != null);
+
+
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             LanguageJsonDir = Path.Combine(appDateFolder, "Languages");
-#if DEV
             if (!Directory.Exists(LanguageJsonDir))
                 Directory.CreateDirectory(LanguageJsonDir);
+#if DEV
             var zh_cn_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.json")).Stream;
             using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "zh-cn.json")))
             {
@@ -32,172 +71,71 @@ namespace PRM.Core.Model
             }
             en_us_json.Close();
 #endif
-            AppResourceDictionary = appResourceDictionary;
-            InitLanguageCode2Name();
+            Init();
             _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguageCode);
+            _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
             Load();
         }
-        public const string DefaultLanguageCode = "en-us";
-        public readonly string LanguageJsonDir;
-        public readonly ResourceDictionary AppResourceDictionary = null;
 
-        private string _currentLanguageCode = "en-us";
-        public string CurrentLanguageCode
+        private void Init()
         {
-            get => _currentLanguageCode;
-            set
+            _languageCode2Name.Clear();
+            _languageCode2Resources.Clear();
+
+            // add dynamic json
+            var di = new DirectoryInfo(LanguageJsonDir);
+            var fis = di.GetFiles("*.json");
+            foreach (var fi in fis)
             {
-                var newVal = value?.Trim()?.ToLower();
-                if (string.IsNullOrEmpty(newVal)
-                    || !LanguageCode2Name.ContainsKey(newVal))
-                    newVal = DefaultLanguageCode;
-
-                if (_currentLanguageCode != newVal || _currentLanguageResourceDictionary == null)
-                {
-                    SetAndNotifyIfChanged(nameof(CurrentLanguageCode), ref _currentLanguageCode, newVal);
-                    // reload ResourceDictionary
-                    _currentLanguageResourceDictionary = GetResourceDictionaryByCode(_currentLanguageCode);
-                    if (_currentLanguageResourceDictionary == null)
-                    {
-                        // use default
-                        _currentLanguageCode = DefaultLanguageCode;
-                        _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
-                    }
-                    AppResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
-                    GlobalEventHelper.OnLanguageChanged?.Invoke();
-                }
-            }
-        }
-
-        private ResourceDictionary _defaultLanguageResourceDictionary { get; set; } = null;
-        private ResourceDictionary _currentLanguageResourceDictionary { get; set; } = null;
-
-
-        private Dictionary<string, string> _languageCode2Name = new Dictionary<string, string>();
-        /// <summary>
-        /// code => language file name, all codes leave in small cases, ref https://en.wikipedia.org/wiki/Language_code
-        /// </summary>
-        public Dictionary<string, string> LanguageCode2Name
-        {
-            get => _languageCode2Name;
-            private set => SetAndNotifyIfChanged(nameof(LanguageCode2Name), ref _languageCode2Name, value);
-        }
-
-        private readonly Dictionary<string, string> _languageCode2ResourcePath = new Dictionary<string, string>();
-
-
-        private void InitLanguageCode2Name()
-        {
-            LanguageCode2Name.Clear();
-            _languageCode2ResourcePath.Clear();
-#if DEV
-            if (Directory.Exists("Languages"))
-            {
-                var di = new DirectoryInfo("Languages");
-                var fis = di.GetFiles("*.json");
-
-                // add dynamic language resources
-                foreach (var fi in fis)
-                {
-                    try
-                    {
-                        var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
-                        if (resourceDictionary != null)
-                        {
-                            if (resourceDictionary.Contains("language_name"))
-                            {
-                                var code = fi.Name.ReplaceLast(fi.Extension, "");
-                                AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
-                }
-            }
-#endif
-            if (Directory.Exists(LanguageJsonDir))
-            {
-                var di = new DirectoryInfo(LanguageJsonDir);
-                var fis = di.GetFiles("*.json");
-
-                // add dynamic language resources
-                foreach (var fi in fis)
-                {
-                    try
-                    {
-                        var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
-                        if (resourceDictionary != null)
-                        {
-                            if (resourceDictionary.Contains("language_name"))
-                            {
-                                var code = fi.Name.ReplaceLast(fi.Extension, "");
-                                AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), fi.FullName);
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(LanguageJsonDir);
+                var code = fi.Name.ReplaceLast(fi.Extension, "");
+                AddJsonLanguageResources(code, fi.FullName);
             }
 
             // add static language resources
-            {
-                var code = "zh-cn";
-                var path = "pack://application:,,,/PRM.Core;component/Languages/zh-cn.xaml";
-                if (!LanguageCode2Name.ContainsKey(code))
-                {
-                    var r = GetResourceDictionaryByPath(path);
-                    Debug.Assert(r != null);
-                    Debug.Assert(r.Contains("language_name"));
-                    AddOrUpdateLanguage(code, r["language_name"].ToString(), path);
-                }
-            }
-            {
-                var code = "en-us";
-                var path = "pack://application:,,,/PRM.Core;component/Languages/en-us.xaml";
-                if (!LanguageCode2Name.ContainsKey(code))
-                {
-                    var r = GetResourceDictionaryByPath(path);
-                    Debug.Assert(r != null);
-                    Debug.Assert(r.Contains("language_name"));
-                    AddOrUpdateLanguage(code, r["language_name"].ToString(), path);
-                }
-            }
+            AddStaticLanguageResources("zh-cn");
+            AddStaticLanguageResources("en-us");
         }
 
-
-        /// <summary>
-        /// may return null
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        private ResourceDictionary GetResourceDictionaryByPath(string path)
+        public void AddJsonLanguageResources(string code, string fullName)
         {
-            if (path.ToLower().EndsWith(".xaml"))
+            var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fullName);
+            if (resourceDictionary?.Contains("language_name") != true) return;
+            var r = GetResourceDictionaryByJsonFilePath(fullName);
+            AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), r);
+        }
+
+        private void AddStaticLanguageResources(string code)
+        {
+            var path = $"pack://application:,,,/PRM.Core;component/Languages/{code}.xaml";
+            if (_languageCode2Name.ContainsKey(code)) return;
+            var r = GetResourceDictionaryByXamlUri(path);
+            Debug.Assert(r != null);
+            Debug.Assert(r.Contains("language_name"));
+            AddOrUpdateLanguage(code, r["language_name"].ToString(), r);
+        }
+
+        [CanBeNull]
+        private static ResourceDictionary GetResourceDictionaryByXamlUri(string path)
+        {
+            try
             {
-                try
+                var resourceDictionary = MultiLangHelper.LangDictFromXamlUri(new Uri(path));
+                if (resourceDictionary != null)
                 {
-                    var resourceDictionary = MultiLangHelper.LangDictFromXamlUri(new Uri(path));
-                    if (resourceDictionary != null)
-                    {
-                        return resourceDictionary;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
+                    return resourceDictionary;
                 }
             }
-            else if (path.ToLower().EndsWith(".json") && File.Exists(path))
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return null;
+        }
+
+        [CanBeNull]
+        private static ResourceDictionary GetResourceDictionaryByJsonFilePath(string path)
+        {
+            try
             {
                 var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(path);
                 if (resourceDictionary != null)
@@ -205,6 +143,10 @@ namespace PRM.Core.Model
                     return resourceDictionary;
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             return null;
         }
 
@@ -213,35 +155,25 @@ namespace PRM.Core.Model
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
+        [CanBeNull]
         private ResourceDictionary GetResourceDictionaryByCode(string code)
         {
-            if (LanguageCode2Name.ContainsKey(code)
-                && _languageCode2ResourcePath.ContainsKey(code))
-            {
-                var path = _languageCode2ResourcePath[code];
-                var ret = GetResourceDictionaryByPath(path);
-                if (ret != null)
-                {
-                    return ret;
-                }
-                LanguageCode2Name.Remove(code);
-                _languageCode2ResourcePath.Remove(code);
-            }
-            return null;
+            return _languageCode2Resources.ContainsKey(code) ? _languageCode2Resources[code] : null;
         }
 
-        public void AddOrUpdateLanguage(string code, string name, string path)
+        private void AddOrUpdateLanguage(string code, string name, ResourceDictionary resourceDictionary)
         {
-            if (LanguageCode2Name.ContainsKey(code))
+            if (_languageCode2Name.ContainsKey(code))
             {
-                LanguageCode2Name[code] = name;
-                _languageCode2ResourcePath[code] = path;
+                _languageCode2Name[code] = name;
+                _languageCode2Resources[code] = resourceDictionary;
             }
             else
             {
-                LanguageCode2Name.Add(code, name);
-                _languageCode2ResourcePath.Add(code, path);
+                _languageCode2Name.Add(code, name);
+                _languageCode2Resources.Add(code, resourceDictionary);
             }
+            RaisePropertyChanged(nameof(LanguageCode2Name));
         }
 
         public string GetText(string textKey)
@@ -253,10 +185,31 @@ namespace PRM.Core.Model
             if (_defaultLanguageResourceDictionary.Contains(textKey))
                 return _defaultLanguageResourceDictionary[textKey].ToString();
 
+            SimpleLogHelper.Error("GetText: can't find any string by key '" + textKey + "'!");
             throw new NotImplementedException("can't find any string by '" + textKey + "'!");
         }
 
+        public bool ChangeLanguage(string code)
+        {
+            var newVal = code?.Trim()?.ToLower();
+            if (_currentLanguageCode == newVal)
+                return false;
+            if (!_languageCode2Name.ContainsKey(newVal))
+                return false;
 
+            // reload ResourceDictionary
+            var tmp = GetResourceDictionaryByCode(newVal);
+            if (tmp == null)
+            {
+                return false;
+            }
+
+            _currentLanguageCode = newVal;
+            _currentLanguageResourceDictionary = tmp;
+            _appResourceDictionary?.ChangeLanguage(_currentLanguageResourceDictionary);
+            GlobalEventHelper.OnLanguageChanged?.Invoke();
+            return true;
+        }
 
 
 

@@ -133,10 +133,7 @@ namespace PRM.Core.Model
                     foreach (var vmProtocolServer in this._context.AppData.VmItemList)
                     {
                         OnRsaProgress(++val, max);
-                        this._context.DbOperator.EncryptPwdIfItIsNotEncrypted(vmProtocolServer.Server);
-                        var tmp = (ProtocolServerBase)vmProtocolServer.Server.Clone();
-                        this._context.DbOperator.EncryptInfo(tmp);
-                        this._context.DbOperator.DbUpdateServer(tmp);
+                        this._context.DbOperator.DbUpdateServer(vmProtocolServer.Server);
                         OnRsaProgress(++val, max);
                     }
 
@@ -383,42 +380,40 @@ namespace PRM.Core.Model
                         InitialDirectory = new FileInfo(DbPath).DirectoryName,
                         FileName = new FileInfo(DbPath).Name
                     };
-                    if (dlg.ShowDialog() == true)
+                    if (dlg.ShowDialog() != true) return;
+                    var path = dlg.FileName;
+                    var oldDbPath = DbPath;
+                    if (oldDbPath == path)
+                        return;
+                    try
                     {
-                        var path = dlg.FileName;
-                        var oldDbPath = DbPath;
-                        if (oldDbPath == path)
-                            return;
-                        try
+                        if (!IOPermissionHelper.IsFileInUse(path)
+                            && IOPermissionHelper.HasWritePermissionOnFile(path))
                         {
-                            if (!IOPermissionHelper.IsFileInUse(path)
-                                && IOPermissionHelper.HasWritePermissionOnFile(path))
-                            {
-                                this._context.DbOperator.CloseConnection();
-                                File.Move(oldDbPath, path);
-                                File.Delete(oldDbPath);
-                                this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
-                                // Migrate do not need reload data
-                                // this._appContext.AppData.ServerListUpdate();
-                                DbPath = path;
-                            }
-                            else
-                                MessageBox.Show(
-                                    SystemConfig.Instance.Language.GetText(
-                                        "system_options_data_security_error_can_not_open"),
-                                    SystemConfig.Instance.Language.GetText("messagebox_title_error"),
-                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            this._context.DbOperator.CloseConnection();
+                            File.Move(oldDbPath, path);
+                            File.Delete(oldDbPath);
+                            this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
+                            // Migrate do not need reload data
+                            // this._appContext.AppData.ServerListUpdate();
+                            DbPath = path;
                         }
-                        catch (Exception ee)
-                        {
-                            SimpleLogHelper.Error(ee);
-                            DbPath = oldDbPath;
+                        else
                             MessageBox.Show(
                                 SystemConfig.Instance.Language.GetText(
                                     "system_options_data_security_error_can_not_open"),
-                                SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
-                                MessageBoxImage.Error, MessageBoxResult.None);
-                        }
+                                SystemConfig.Instance.Language.GetText("messagebox_title_error"),
+                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                    }
+                    catch (Exception ee)
+                    {
+                        SimpleLogHelper.Error(ee);
+                        DbPath = oldDbPath;
+                        MessageBox.Show(
+                            SystemConfig.Instance.Language.GetText(
+                                "system_options_data_security_error_can_not_open"),
+                            SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
+                            MessageBoxImage.Error, MessageBoxResult.None);
                     }
                 });
             }
