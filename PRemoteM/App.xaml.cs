@@ -14,6 +14,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.Host;
 using PRM.Model;
 using PRM.View;
+using PRM.View.ErrorReport;
 using Shawn.Utils;
 
 namespace PRM
@@ -39,8 +40,8 @@ namespace PRM
         private static void OnUnhandledException(Exception e)
         {
             SimpleLogHelper.Fatal(e);
-            MessageBox.Show("please contact me if you see these: \r\n\r\n\r\n" + e.Message, SystemConfig.AppName + " unhandled error!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-            Process.Start("https://github.com/VShawn/PRemoteM/issues");
+            var errorReport = new ErrorReportWindow(e);
+            errorReport.ShowDialog();
             App.Close();
         }
 
@@ -122,22 +123,22 @@ namespace PRM
         private bool InitSystemConfig(string appDateFolder)
         {
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
-            SimpleLogHelper.Debug($"ini init path = {iniPath}");
+            //SimpleLogHelper.Debug($"ini init path = {iniPath}");
 
 #if !FOR_MICROSOFT_STORE_ONLY
             // for portable purpose
             if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.OrdinalIgnoreCase) < 0)
             {
                 var iniOnCurrentPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
-                SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath}");
+                //SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath}");
                 if (IOPermissionHelper.HasWritePermissionOnFile(iniOnCurrentPath))
                 {
                     iniPath = SystemConfig.AppName + ".ini";
-                    SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath} Pass");
+                    //SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath} Pass");
                 }
             }
 #endif
-            SimpleLogHelper.Debug($"ini finally path = {iniPath}");
+            //SimpleLogHelper.Debug($"ini finally path = {iniPath}");
 
 
             // if ini is not existed, then it would be a new user
@@ -325,7 +326,7 @@ namespace PRM
                     App.TaskTrayIcon.Visible = false;
                     App.TaskTrayIcon.Dispose();
                 }
-                RemoteWindowPool.Instance.Release();
+                RemoteWindowPool.Instance?.Release();
             }
             finally
             {

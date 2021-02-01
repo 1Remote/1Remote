@@ -9,6 +9,7 @@
   "word_close": "关闭",
   "word_add": "添加",
   "word_save": "保存",
+  "word_save_as": "保存到...",
   "word_back": "返回",
   "word_delete": "删除",
   "word_cancel": "取消",
@@ -223,6 +224,17 @@
   "guidance_feature_tab_demo": "可分离可合并的 RDP, SSH, VNC, sFTP 远程窗体",
   "guidance_feature_start_setting1": "开始使用前请确认一些配置",
   "guidance_feature_start_setting2": "这些配置稍后同样可以在设置界面中修改",
+
+
+  // error report
+  "word_oops": "哎哟喂...",
+  "error_report_unexpected_error_occurred": "程序发生了一些未知错误，详细信息如下：",
+  "error_report_to_clipboard": "保存到剪贴板",
+  "error_report_please_help_us_improve": "请通过反馈这个错误来帮助我们改进 PRemoteM。",
+  "error_report_how_help_us_improve": "只需要复制错误信息，并通过下列任意方式即可完成错误反馈！",
+  "error_report_send_by_email": "通过邮件",
+  "error_report_send_by_github": "通过GitHub",
+
 
   // other
   "logo_selecter_open_file_dialog_title": "选择图片"

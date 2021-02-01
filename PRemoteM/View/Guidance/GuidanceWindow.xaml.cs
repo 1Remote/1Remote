@@ -24,9 +24,9 @@ namespace PRM.View
             Grid1.Visibility = Visibility.Visible;
             Grid2.Visibility = Visibility.Collapsed;
 
-            WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
-            WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
-            WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
+            WinGrid.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinGrid.MouseUp += WinTitleBar_OnMouseUp;
+            WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             DataContext = this;
 

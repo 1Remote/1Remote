@@ -49,7 +49,8 @@ namespace Shawn.Utils
             {
                 return;
             }
-            else if (e.ClickCount == 2)
+
+            if (e.ClickCount == 2)
             {
                 this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             }
