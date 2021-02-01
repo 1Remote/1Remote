@@ -328,18 +328,16 @@ namespace PRM.Core.Protocol.RDP.Host
                 _rdp.TransportSettings2.GatewayProfileUsageMethod = 1; // Use explicit settings, as specified by the user.
 
                 // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclienttransportsettings-gatewayusagemethod
-                switch (_rdpServer.GatewayMode)
+                _rdp.TransportSettings.GatewayUsageMethod = _rdpServer.GatewayMode switch
                 {
-                    case EGatewayMode.UseTheseGatewayServerSettings:
-                        _rdp.TransportSettings.GatewayUsageMethod = 1; // 1 : Always use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is cleared.
-                        break;
-                    case EGatewayMode.AutomaticallyDetectGatewayServerSettings:
-                        _rdp.TransportSettings.GatewayUsageMethod = 2; // 2 : Use an RD Gateway server if a direct connection cannot be made to the RD Session Host server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
+                    EGatewayMode.UseTheseGatewayServerSettings =>
+                    1 // 1 : Always use an RD Gateway server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is cleared.
+                    ,
+                    EGatewayMode.AutomaticallyDetectGatewayServerSettings =>
+                    2 // 2 : Use an RD Gateway server if a direct connection cannot be made to the RD Session Host server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
+                    ,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
 
                 _rdp.TransportSettings2.GatewayHostname = _rdpServer.GatewayHostName;
                 //_rdp.TransportSettings2.GatewayDomain = "XXXXX";

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipes;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using PRM.Core;
+using CommandLine;
 using PRM.Core.DB;
-using PRM.Core.DB.freesql;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.Host;
@@ -32,6 +28,7 @@ namespace PRM
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static readonly PrmContext Context = new PrmContext();
+        public static AppOptions AppOptions { get; private set; } = new AppOptions();
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 
@@ -164,7 +161,23 @@ namespace PRM
             SystemConfig.Instance.Theme = theme;
             SystemConfig.Instance.Locality = locality;
 
+            if (isNewUser)
+            {
+                ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                var gw = new GuidanceWindow(SystemConfig.Instance);
+                gw.ShowDialog();
+            }
+
             return isNewUser;
+        }
+
+        private void KillPutty()
+        {
+            // kill putty process
+            foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
+            {
+                process.Kill();
+            }
         }
 
         private void InitMainWindow(bool isNewUser)
@@ -172,40 +185,36 @@ namespace PRM
             Window = new MainWindow(Context);
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow = Window;
-            if (!SystemConfig.Instance.General.AppStartMinimized
-                || isNewUser)
-            {
-                ActivateWindow();
-            }
         }
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+
+            string[] pargs = Environment.GetCommandLineArgs();
+            CommandLine.Parser.Default.ParseArguments<AppOptions>(pargs).WithParsed((o) =>
+            {
+                AppOptions = o;
 #if DEV
-            SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-            Shawn.Utils.ConsoleManager.Show();
+                AppOptions.IsDebug = true;
 #endif
+            });
+
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            if (AppOptions.IsDebug)
+            {
+                SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+                Shawn.Utils.ConsoleManager.Show();
+            }
+
             InitLog(appDateFolder);
             InitExceptionHandle();
             UnSetShortcutAutoStart(startupEvent);
             OnlyOneAppInstanceCheck();
-
-            // kill putty process
-            foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
-            {
-                process.Kill();
-            }
+            KillPutty();
 
             bool isNewUser = InitSystemConfig(appDateFolder);
-            if (isNewUser)
-            {
-                ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                var gw = new GuidanceWindow(SystemConfig.Instance);
-                gw.ShowDialog();
-            }
 
 
 
@@ -233,7 +242,6 @@ namespace PRM
             InitLauncher();
             InitTaskTray();
 
-
             // init db connection
             var connStatus = Context.InitSqliteDb(SystemConfig.Instance.DataSecurity.DbPath);
             if (connStatus != EnumDbStatus.OK)
@@ -247,6 +255,15 @@ namespace PRM
             else
             {
                 Context.AppData.ServerListUpdate();
+            }
+
+
+
+
+            if (!SystemConfig.Instance.General.AppStartMinimized
+                || isNewUser)
+            {
+                ActivateWindow();
             }
         }
 
