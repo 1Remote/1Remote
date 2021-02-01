@@ -37,7 +37,9 @@ namespace PRM.View.ErrorReport
             sb.AppendLine();
 
             sb.AppendLine("## Stack Trace");
+            sb.AppendLine("```");
             sb.AppendLine(e.StackTrace);
+            sb.AppendLine("```");
             sb.AppendLine();
 
             BuildRecentLog(ref sb);
@@ -95,7 +97,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                Clipboard.SetText(TbErrorInfo.Text);
+                Clipboard.SetText(TbErrorInfo.Text.Replace("\n", "\n\n"));
                 var sb = new Storyboard();
                 sb.AddFadeOut(1);
                 sb.Begin(IconCopyDone);

@@ -65,7 +65,9 @@
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding RemoteApplicationName,UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource TextBoxWithPlaceHolder}"
-                                 Tag="{DynamicResource server_editor_remote_app_name_tag}"></TextBox>
+                                 Tag="{DynamicResource server_editor_remote_app_name_tag}"
+                                 ToolTip="{DynamicResource server_editor_remote_app_name_tag}"
+                                 ></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -76,7 +78,8 @@
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding RemoteApplicationProgram,UpdateSourceTrigger=PropertyChanged}" 
                                  Style="{StaticResource TextBoxWithPlaceHolder}"
-                                 Tag="{DynamicResource server_editor_remote_app_fullname_tag}"></TextBox>
+                                 Tag="{DynamicResource server_editor_remote_app_fullname_tag}"
+                                 ToolTip="{DynamicResource server_editor_remote_app_fullname_tag}"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
