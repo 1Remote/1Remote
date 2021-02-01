@@ -9,6 +9,7 @@
   "word_close": "Close",
   "word_add": "Add",
   "word_save": "Save",
+  "word_save_as": "Save as...",
   "word_back": "Back",
   "word_delete": "Delete",
   "word_cancel": "Cancel",
@@ -223,6 +224,17 @@
   "guidance_feature_tab_demo": "Dragable, tearable, dockable remote session for RDP, SSH, VNC, sFTP...",
   "guidance_feature_start_setting1": "Please confirm some settings before start use.",
   "guidance_feature_start_setting2": "You are able to change this setting latter in Options page.",
+
+
+  // error report
+  "word_oops": "Oops...",
+  "error_report_unexpected_error_occurred": "Unexpected error occurred. Error info is shown bellow:",
+  "error_report_to_clipboard": "Copy to clipboard",
+  "error_report_please_help_us_improve": "Please help us improve PRemoteM by reporting this error.",
+  "error_report_how_help_us_improve": "Simply copy the error message and choose one of the ways to report it.",
+  "error_report_send_by_email": "Send by e-mail",
+  "error_report_send_by_github": "Send by GitHub",
+
 
   // other
   "logo_selecter_open_file_dialog_title": "select a picture"

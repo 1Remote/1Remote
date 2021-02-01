@@ -14,7 +14,7 @@
                   WindowStyle="None"
                   Background="Transparent"
                   Topmost="True"
-                  Title="SearchBoxWindow" Height="600" Width="800">
+                  Title="Guidance" Height="600" Width="800">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
@@ -41,7 +41,7 @@
 
 
 
-    <Grid Margin="16" Name="WinTitleBar" Background="{StaticResource MainColor1Brush}">
+    <Grid Margin="16" Name="WinGrid" Background="{StaticResource MainColor1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto"  />
