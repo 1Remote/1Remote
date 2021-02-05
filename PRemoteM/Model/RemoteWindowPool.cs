@@ -22,6 +22,7 @@ namespace PRM.Model
     public class RemoteWindowPool
     {
         #region singleton
+
         private static RemoteWindowPool _uniqueInstance;
         private static readonly object InstanceLock = new object();
 
@@ -36,8 +37,10 @@ namespace PRM.Model
             }
             return _uniqueInstance;
         }
+
         public static RemoteWindowPool Instance => GetInstance();
-        #endregion
+
+        #endregion singleton
 
         public static void Init(PrmContext context)
         {
@@ -51,6 +54,7 @@ namespace PRM.Model
         }
 
         private readonly PrmContext _context;
+
         private RemoteWindowPool(PrmContext context)
         {
             _context = context;
@@ -77,7 +81,6 @@ namespace PRM.Model
                 DelProtocolHostInSyncContext(kv.Key);
             }
         }
-
 
         private string _lastTabToken = null;
         private readonly Dictionary<string, TabWindowBase> _tabWindows = new Dictionary<string, TabWindowBase>();
@@ -149,7 +152,6 @@ namespace PRM.Model
             t.Start();
         }
 
-
         private void ConnectRemoteApp(ProtocolServerRemoteApp remoteApp)
         {
             var tmp = Path.GetTempPath();
@@ -193,7 +195,6 @@ namespace PRM.Model
             });
             t.Start();
         }
-
 
         private void ConnectWithFullScreen(VmProtocolServer vmProtocolServer)
         {
@@ -243,7 +244,6 @@ namespace PRM.Model
             SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DispName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
         }
 
-
         public void ShowRemoteHost(long serverId, string assignTabToken)
         {
             Debug.Assert(serverId > 0);
@@ -254,18 +254,18 @@ namespace PRM.Model
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
             _context.DbOperator.DbUpdateServer(vmProtocolServer.Server);
 
-            if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
-            {
-                ConnectRemoteApp(remoteApp);
-                return;
-            }
-
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
             if (ActivateOrReConnIfServerSessionIsOpened(vmProtocolServer))
                 return;
 
             // run script before connected
             vmProtocolServer.Server.RunScriptBeforConnect();
+
+            if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
+            {
+                ConnectRemoteApp(remoteApp);
+                return;
+            }
 
             // connect with host
             if (vmProtocolServer.Server.IsConnWithFullScreen())
@@ -285,7 +285,6 @@ namespace PRM.Model
         {
             DelProtocolHostInSyncContext(connectionId);
         }
-
 
         public void AddTab(TabWindowBase tab)
         {
@@ -389,7 +388,6 @@ namespace PRM.Model
                 RemoveFromTabWindow(connectionId);
             }
 
-
             // move to full-screen-window
             FullScreenWindow full;
             if (_host2FullScreenWindows.ContainsKey(connectionId))
@@ -432,7 +430,6 @@ namespace PRM.Model
             return tab;
         }
 
-
         private TabWindowBase GetExistedTabWindow(ProtocolServerBase server, string assignTabToken)
         {
             // get TabWindowBase by assignTabToken
@@ -450,11 +447,13 @@ namespace PRM.Model
                     if (_tabWindows.Any(x => x.Value.GetViewModel().Tag == server.GroupName))
                         tab = _tabWindows.First(x => x.Value.GetViewModel().Tag == server.GroupName).Value;
                     break;
+
                 case EnumTabMode.NewItemGoesToProtocol:
                     // work in tab by protocol mode
                     if (_tabWindows.Any(x => x.Value.GetViewModel().Tag == server.ProtocolDisplayName))
                         tab = _tabWindows.First(x => x.Value.GetViewModel().Tag == server.ProtocolDisplayName).Value;
                     break;
+
                 case EnumTabMode.NewItemGoesToLatestActivate:
                 default:
                     // work in tab by latest tab mode
@@ -464,6 +463,7 @@ namespace PRM.Model
             }
             return tab;
         }
+
         private TabWindowBase CreateNewTabWindow(ProtocolServerBase server)
         {
             var token = DateTime.Now.Ticks.ToString();
@@ -539,8 +539,6 @@ namespace PRM.Model
             return tab;
         }
 
-
-
         private void CloseFullWindow(string connectionId)
         {
             if (!_host2FullScreenWindows.ContainsKey(connectionId))
@@ -580,14 +578,12 @@ namespace PRM.Model
             // remove from tab
             RemoveFromTabWindow(connectionId);
 
-
             var host = _protocolHosts[connectionId];
             SimpleLogHelper.Debug($@"DelProtocolHost host({host.GetHashCode()})");
             if (host.OnClosed != null)
                 host.OnClosed -= OnProtocolClose;
             _protocolHosts.Remove(connectionId);
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-
 
             // Dispose
             try
@@ -602,6 +598,8 @@ namespace PRM.Model
 
             if (host is IDisposable dp)
                 dp.Dispose();
+
+            host.ProtocolServer.RunScriptAfterDisconnected();
 
             CleanupTabs();
         }
@@ -639,7 +637,6 @@ namespace PRM.Model
                 CleanupTabs();
             }, null);
         }
-
 
         private void CloseUnhandledProtocols()
         {
