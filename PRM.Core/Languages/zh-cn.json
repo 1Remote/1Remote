@@ -156,7 +156,9 @@
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
   "server_editor_cmd_before_connected": "连接前cmd",
-  "server_editor_cmd_before_connected_tag": "用cmd运行(如：'C:\\openVpn.bat' 将执行 'cmd.exe C:\\openVpn.bat')",
+  "server_editor_cmd_before_connected_tag": "启动会话前用cmd运行脚本(如：'C:\\openVpn.bat' 将执行 'cmd.exe C:\\openVpn.bat')",
+  "server_editor_cmd_after_disconnected": "断开后cmd",
+  "server_editor_cmd_after_disconnected_tag": "关闭会话后用cmd运行脚本(如：'C:\\closeVpn.bat' 将运行 'cmd.exe C:\\closeVpn.bat')",
   // server editor - connection group items
   "server_editor_connection_address": "地址",
   "server_editor_connection_port": "端口",
@@ -225,7 +227,6 @@
   "guidance_feature_start_setting1": "开始使用前请确认一些配置",
   "guidance_feature_start_setting2": "这些配置稍后同样可以在设置界面中修改",
 
-
   // error report
   "word_oops": "哎哟喂...",
   "error_report_unexpected_error_occurred": "程序发生了一些未知错误，详细信息如下：",
@@ -234,7 +235,6 @@
   "error_report_how_help_us_improve": "只需要复制错误信息，并通过下列任意方式即可完成错误反馈！",
   "error_report_send_by_email": "通过邮件",
   "error_report_send_by_github": "通过GitHub",
-
 
   // other
   "logo_selecter_open_file_dialog_title": "选择图片"

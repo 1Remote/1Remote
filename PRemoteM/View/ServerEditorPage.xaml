@@ -1,15 +1,15 @@
 ﻿<UserControl x:Class="PRM.View.ServerEditorPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="1000" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -26,18 +26,16 @@
             <system:Double x:Key="BottomHeight">30</system:Double>
         </Grid.Resources>
 
-
         <Grid>
             <Grid.Margin>
                 <Thickness Top="{StaticResource TopHeight}" Bottom="{StaticResource BottomHeight}"></Thickness>
             </Grid.Margin>
 
-
-            <ScrollViewer 
+            <ScrollViewer
                 x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
-                HorizontalScrollBarVisibility="Hidden" 
-                VerticalScrollBarVisibility="Auto" 
+                HorizontalScrollBarVisibility="Hidden"
+                VerticalScrollBarVisibility="Auto"
                 Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
                 <Grid>
                     <StackPanel Orientation="Vertical">
@@ -47,7 +45,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <utils:AutoCompleteComboBox x:Name="DispName" 
+                                        <utils:AutoCompleteComboBox x:Name="DispName"
                                                                     Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
                                         ></utils:AutoCompleteComboBox>
@@ -58,16 +56,15 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <utils:AutoCompleteComboBox x:Name="TbGroup" 
+                                        <utils:AutoCompleteComboBox x:Name="TbGroup"
                                                                     Text="{Binding Server.GroupName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding GroupSelections}"
                                                                     ></utils:AutoCompleteComboBox>
-                                        <Popup 
+                                        <Popup
                                                Name="PopupGroup"
-                                               PlacementTarget="{Binding ElementName=TbGroup}" 
+                                               PlacementTarget="{Binding ElementName=TbGroup}"
                                                Width="{Binding ElementName=TbGroup, Path=ActualWidth}"
-                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}"
-                                               >
+                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                                             <Popup.Style>
                                                 <Style TargetType="Popup">
                                                     <Setter Property="IsOpen" Value="False"></Setter>
@@ -103,18 +100,18 @@
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
                                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                             <StackPanel Orientation="Horizontal">
-                                                <Grid Name="GridLogo" Width="64" Height="64" 
-                                                  MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp" 
-                                                  Background="Transparent" 
+                                                <Grid Name="GridLogo" Width="64" Height="64"
+                                                  MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp"
+                                                  Background="Transparent"
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
                                                     <Border BorderThickness="1" BorderBrush="Black"></Border>
                                                     <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
-                                                <colorPickerWpf:ColorPickRowPopup 
+                                                <colorPickerWpf:ColorPickRowPopup
                                                     Color="{Binding Server.MarkColor}"
-                                                    Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
@@ -150,7 +147,7 @@
                                                     <ListView BorderThickness="0"
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
-                                                              ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}" 
+                                                              ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}"
                                                               Background="Transparent"
                                                               ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                                                         <ListView.Resources>
@@ -160,7 +157,7 @@
                                                         </ListView.Resources>
                                                         <ListView.ItemsPanel>
                                                             <ItemsPanelTemplate>
-                                                                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}"/>
+                                                                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}" />
                                                             </ItemsPanelTemplate>
                                                         </ListView.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
@@ -190,14 +187,25 @@
                                     <controls:ButtonEx Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
+
+                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0 20 0 0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
+                                    <Grid Style="{StaticResource EditorRowGridInput}">
+                                        <TextBox Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                                 ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
+                                                 Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
+                                    </Grid>
+                                    <controls:ButtonEx Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                         <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
         </Grid>
-
-
 
         <Grid VerticalAlignment="Top">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource TopHeight}">
@@ -213,13 +221,13 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" 
+                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                   Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <ListBox 
+                            <ListBox
                                     IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding ProtocolList}" 
+                                    ItemsSource="{Binding ProtocolList}"
                                     SelectedValue="{Binding ProtocolSelected}"
                                     Background="{StaticResource MainColor1Brush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
@@ -233,7 +241,7 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListBox">
-                                                    <ItemsPresenter/>
+                                                    <ItemsPresenter />
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
@@ -246,16 +254,16 @@
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListBoxItem">
                                                     <Border BorderThickness="0" Margin="{TemplateBinding Margin}"
-                                                        Padding="{TemplateBinding Control.Padding}" 
-                                                        Background="{TemplateBinding Panel.Background}" 
-                                                        Name="Bd" 
+                                                        Padding="{TemplateBinding Control.Padding}"
+                                                        Background="{TemplateBinding Panel.Background}"
+                                                        Name="Bd"
                                                         SnapsToDevicePixels="True">
-                                                        <ContentPresenter 
-                                                                Content="{TemplateBinding ContentControl.Content}" 
-                                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" 
-                                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" 
-                                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" 
-                                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" 
+                                                        <ContentPresenter
+                                                                Content="{TemplateBinding ContentControl.Content}"
+                                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
                                                                 SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -294,8 +302,8 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
-                                            <TextBlock Margin="15 0" 
-                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" 
+                                            <TextBlock Margin="15 0"
+                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
                                                            FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
                                                            Text="{Binding ProtocolDisplayName}"></TextBlock>
                                         </Grid>
@@ -307,8 +315,6 @@
                 </Grid>
             </Border>
         </Grid>
-
-
 
         <Grid VerticalAlignment="Bottom">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource BottomHeight}">

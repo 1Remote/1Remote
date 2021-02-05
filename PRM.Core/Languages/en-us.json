@@ -156,7 +156,9 @@
   "server_editor_icon": "Logo",
   "server_editor_color_mark": "Color",
   "server_editor_cmd_before_connected": "Before cmd",
-  "server_editor_cmd_before_connected_tag": "run by cmd.exe(e.g. 'C:\\openVpn.bat' will run 'cmd.exe C:\\openVpn.bat')",
+  "server_editor_cmd_before_connected_tag": "run before connect by cmd.exe(e.g. 'C:\\openVpn.bat' will run 'cmd.exe C:\\openVpn.bat')",
+  "server_editor_cmd_after_disconnected": "After cmd",
+  "server_editor_cmd_after_disconnected_tag": "run after disconnected by cmd.exe(e.g. 'C:\\closeVpn.bat' will run 'cmd.exe C:\\closeVpn.bat')",
   // server editor - connection group items
   "server_editor_connection_address": "Address",
   "server_editor_connection_port": "Port",
@@ -225,7 +227,6 @@
   "guidance_feature_start_setting1": "Please confirm some settings before start use.",
   "guidance_feature_start_setting2": "You are able to change this setting latter in Options page.",
 
-
   // error report
   "word_oops": "Oops...",
   "error_report_unexpected_error_occurred": "Unexpected error occurred. Error info is shown bellow:",
@@ -234,7 +235,6 @@
   "error_report_how_help_us_improve": "Simply copy the error message and choose one of the ways to report it.",
   "error_report_send_by_email": "Send by e-mail",
   "error_report_send_by_github": "Send by GitHub",
-
 
   // other
   "logo_selecter_open_file_dialog_title": "select a picture"

@@ -16,6 +16,7 @@ namespace PRM.View
     {
         public readonly VmServerEditorPage Vm;
         private readonly BitmapSource _oldLogo;
+
         public ServerEditorPage(VmServerEditorPage vm)
         {
             Debug.Assert(vm?.Server != null);
@@ -98,6 +99,7 @@ namespace PRM.View
                 PopupLogoSelector.BeginAnimation(HeightProperty, animation);
             }
         }
+
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LogoSelector.SetImg((BitmapSource)(((ListView)sender).SelectedItem));
@@ -108,6 +110,23 @@ namespace PRM.View
             try
             {
                 string cmd = Vm.Server.CommandBeforeConnected;
+                if (!string.IsNullOrWhiteSpace(cmd))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(cmd);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+            }
+        }
+
+        private void ButtonTryCommandAfterDisconnected_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string cmd = Vm.Server.CommandAfterDisconnected;
                 if (!string.IsNullOrWhiteSpace(cmd))
                 {
                     // TODO add some params
