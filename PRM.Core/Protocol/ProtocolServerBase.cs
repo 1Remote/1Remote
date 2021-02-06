@@ -25,8 +25,8 @@ namespace PRM.Core.Protocol
 
         public abstract bool IsOnlyOneInstance();
 
-
         private int _id = 0;
+
         [JsonIgnore]
         public int Id
         {
@@ -40,11 +40,12 @@ namespace PRM.Core.Protocol
 
         [JsonIgnore]
         public string ProtocolDisplayName { get; }
+
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
-
         private string _dispName = "";
+
         public string DispName
         {
             get => _dispName;
@@ -60,16 +61,16 @@ namespace PRM.Core.Protocol
         [JsonIgnore]
         public string SubTitle => GetSubTitle();
 
-
         private string _groupName = "";
+
         public string GroupName
         {
             get => _groupName;
             set => SetAndNotifyIfChanged(nameof(GroupName), ref _groupName, value);
         }
 
-
         private string _iconBase64 = "";
+
         public string IconBase64
         {
             get => _iconBase64;
@@ -94,8 +95,8 @@ namespace PRM.Core.Protocol
             }
         }
 
-
         private Icon _icon = null;
+
         [JsonIgnore]
         public Icon Icon
         {
@@ -103,8 +104,8 @@ namespace PRM.Core.Protocol
             private set => SetAndNotifyIfChanged(nameof(Icon), ref _icon, value);
         }
 
-
         private BitmapSource _iconImg = null;
+
         [JsonIgnore]
         public BitmapSource IconImg
         {
@@ -129,8 +130,8 @@ namespace PRM.Core.Protocol
             }
         }
 
-
         private string _markColorHex = "#FFFFFF";
+
         public string MarkColorHex
         {
             get => _markColorHex;
@@ -148,8 +149,8 @@ namespace PRM.Core.Protocol
             }
         }
 
-
         private Color _markColor = Colors.White;
+
         [JsonIgnore]
         public Color MarkColor
         {
@@ -162,20 +163,20 @@ namespace PRM.Core.Protocol
         }
 
         private DateTime _lastConnTime = DateTime.MinValue;
+
         public DateTime LastConnTime
         {
             get => _lastConnTime;
             set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
         }
 
-
         private string _commandBeforeConnected = "";
+
         public string CommandBeforeConnected
         {
             get => _commandBeforeConnected;
             set => SetAndNotifyIfChanged(nameof(CommandBeforeConnected), ref _commandBeforeConnected, value);
         }
-
 
         //private string _commandAfterConnected = "";
         //public string CommandAfterConnected
@@ -184,15 +185,13 @@ namespace PRM.Core.Protocol
         //    set => SetAndNotifyIfChanged(nameof(CommandAfterConnected), ref _commandAfterConnected, value);
         //}
 
+        private string _commandAfterDisconnected = "";
 
-        //private string _commandAfterDisconnected = "";
-        //public string CommandAfterDisconnected
-        //{
-        //    get => _commandAfterDisconnected;
-        //    set => SetAndNotifyIfChanged(nameof(CommandAfterDisconnected), ref _commandAfterDisconnected, value);
-        //}
-
-
+        public string CommandAfterDisconnected
+        {
+            get => _commandAfterDisconnected;
+            set => SetAndNotifyIfChanged(nameof(CommandAfterDisconnected), ref _commandAfterDisconnected, value);
+        }
 
         /// <summary>
         /// copy all value type fields
@@ -241,7 +240,6 @@ namespace PRM.Core.Protocol
             return false;
         }
 
-
         ///// <summary>
         ///// copy all value ProtocolServerBase fields
         ///// </summary>
@@ -279,13 +277,11 @@ namespace PRM.Core.Protocol
         /// <returns></returns>
         public abstract ProtocolServerBase CreateFromJsonString(string jsonString);
 
-
         /// <summary>
         /// subtitle of every server, different form each protocol
         /// </summary>
         /// <returns></returns>
         protected abstract string GetSubTitle();
-
 
         /// <summary>
         /// determine the display order to show items
@@ -331,6 +327,22 @@ namespace PRM.Core.Protocol
                 {
                     // TODO add some params
                     Shawn.Utils.CmdRunner.RunCmdAsync(CommandBeforeConnected);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        public void RunScriptAfterDisconnected()
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
+                {
+                    // TODO add some params
+                    Shawn.Utils.CmdRunner.RunCmdAsync(CommandAfterDisconnected);
                 }
             }
             catch (Exception e)
