@@ -3,7 +3,6 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
-using CommandLine;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -28,7 +27,6 @@ namespace PRM
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static readonly PrmContext Context = new PrmContext();
-        public static AppOptions AppOptions { get; private set; } = new AppOptions();
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 
@@ -117,6 +115,24 @@ namespace PRM
             };
         }
 
+        private void InitEvent()
+        {
+            // Event register
+            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
+            {
+                Context.AppData.ServerListRemove(id);
+            };
+            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
+            {
+                Context.AppData.ServerListUpdate(server);
+            };
+            _desktopResolutionWatcher = new DesktopResolutionWatcher();
+            _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
+            {
+                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
+            };
+        }
+
         private bool InitSystemConfig(string appDateFolder)
         {
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
@@ -191,58 +207,29 @@ namespace PRM
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
-
-            string[] pargs = Environment.GetCommandLineArgs();
-            CommandLine.Parser.Default.ParseArguments<AppOptions>(pargs).WithParsed((o) =>
-            {
-                AppOptions = o;
-#if DEV
-                AppOptions.IsDebug = true;
-#endif
-            });
+            //string[] pargs = Environment.GetCommandLineArgs();
 
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-            if (AppOptions.IsDebug)
-            {
-                SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-                Shawn.Utils.ConsoleManager.Show();
-            }
-
+#if DEV
+            SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+            Shawn.Utils.ConsoleManager.Show();
+#endif
+            // BASE MODULES
             InitLog(appDateFolder);
             InitExceptionHandle();
             UnSetShortcutAutoStart(startupEvent);
             OnlyOneAppInstanceCheck();
             KillPutty();
-
-            bool isNewUser = InitSystemConfig(appDateFolder);
-
-
-
-            // remote window pool init.
+            InitEvent();
             RemoteWindowPool.Init(Context);
-            // Event register
-            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
-            {
-                Context.AppData.ServerListRemove(id);
-            };
-            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
-            {
-                Context.AppData.ServerListUpdate(server);
-            };
-            _desktopResolutionWatcher = new DesktopResolutionWatcher();
-            _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
-            {
-                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
-            };
 
-
-
-
+            // UI
+            bool isNewUser = InitSystemConfig(appDateFolder);
             InitMainWindow(isNewUser);
             InitLauncher();
             InitTaskTray();
 
-            // init db connection
+            // Database
             var connStatus = Context.InitSqliteDb(SystemConfig.Instance.DataSecurity.DbPath);
             if (connStatus != EnumDbStatus.OK)
             {

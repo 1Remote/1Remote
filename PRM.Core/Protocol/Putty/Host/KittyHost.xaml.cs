@@ -107,7 +107,7 @@ namespace PRM.Core.Protocol.Putty.Host
 
             // set putty bg color
             var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
-            var bgOption = options?.First(x => x.Key == PuttyOptionKey.Colour2.ToString());
+            var bgOption = options?.First(x => x.Key == EnumKittyOptionKey.Colour2.ToString());
             if (bgOption != null
                 && bgOption.Value.ToString().Split(',').Length == 3)
             {
@@ -356,24 +356,24 @@ reload=yes
                     // set key
                     var ppk = Context.DbOperator.DecryptOrReturnOriginalString(server.PrivateKey);
                     Debug.Assert(ppk != null);
-                    puttyOption.Set(PuttyOptionKey.PublicKeyFile, ppk);
+                    puttyOption.Set(EnumKittyOptionKey.PublicKeyFile, ppk);
                 }
 #if UseKiTTY
-                puttyOption.Set(PuttyOptionKey.HostName, server.Address);
-                puttyOption.Set(PuttyOptionKey.PortNumber, server.GetPort());
-                puttyOption.Set(PuttyOptionKey.Protocol, "ssh");
+                puttyOption.Set(EnumKittyOptionKey.HostName, server.Address);
+                puttyOption.Set(EnumKittyOptionKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumKittyOptionKey.Protocol, "ssh");
 #endif
             }
 
             // set color theme
-            puttyOption.Set(PuttyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            puttyOption.Set(EnumKittyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
             var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             if (options != null)
                 foreach (var option in options)
                 {
                     try
                     {
-                        if (Enum.TryParse(option.Key, out PuttyOptionKey key))
+                        if (Enum.TryParse(option.Key, out EnumKittyOptionKey key))
                         {
                             if (option.ValueKind == RegistryValueKind.DWord)
                                 puttyOption.Set(key, (int)(option.Value));
@@ -387,7 +387,7 @@ reload=yes
                     }
                 }
 
-            puttyOption.Set(PuttyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            puttyOption.Set(EnumKittyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
 
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
