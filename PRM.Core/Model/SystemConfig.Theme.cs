@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Resources.Theme;
 using Shawn.Utils;

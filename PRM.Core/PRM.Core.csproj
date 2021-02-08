@@ -132,6 +132,9 @@
     <Compile Include="Model\SystemConfig.Theme.cs" />
     <Compile Include="Model\SystemConfig.Launcher.cs" />
     <Compile Include="Model\SystemConfigBase.cs" />
+    <Compile Include="Protocol\PuttyOptionItem.cs" />
+    <Compile Include="Protocol\Putty\EnumKittyOptionKey.cs" />
+    <Compile Include="Protocol\Putty\KittyOptions.cs" />
     <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
@@ -375,6 +378,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVersionGenerator.ps1" />
+    <Resource Include="Protocol\Putty\KittyDefaultOptons.ini" />
     <Resource Include="Resources\Theme\puttyThems.json" />
     <Resource Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -6,6 +6,7 @@ English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/read
 [![codebeat badge](https://codebeat.co/badges/c3e71ab7-bf2c-455b-9886-d5956723eed5)](https://codebeat.co/projects/github-com-vshawn-premotem-dev)
 [![issues](https://img.shields.io/github/issues/vshawn/premotem)](https://github.com/VShawn/PRemoteM/issues)
 [![license](https://img.shields.io/github/license/vshawn/premotem?color=blue)](https://github.com/VShawn/PRemoteM/blob/dev/LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/2qbmeeurdq0vijmf/branch/dev?svg=true)](https://ci.appveyor.com/project/VShawn/premotem-build-dev/branch/dev)
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvshawn%2Fpremotem&count_bg=%23E83D61&title_bg=%23102B3E&icon=github.svg&icon_color=%23CED8E1&title=&edge_flat=false)
 
 PRemoteM is a modern personal remote session manager and launcher. It is a single place to manage all your remote sessions supporting number of different protocols.
