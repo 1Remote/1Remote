@@ -70,13 +70,6 @@ namespace PRM.Core.Model
                 en_us_json.CopyTo(fileStream);
             }
             en_us_json.Close();
-            Stream de_de_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/de-de.json")).Stream;
-            using (FileStream fileStream = File.Create(Path.Combine(LanguageJsonDir, "de-de.json")))
-            {
-                de_de_json.Seek(0, SeekOrigin.Begin);
-                de_de_json.CopyTo(fileStream);
-            }
-            de_de_json.Close();
 #endif
             Init();
             _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguageCode);
@@ -101,7 +94,6 @@ namespace PRM.Core.Model
             // add static language resources
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("en-us");
-            AddStaticLanguageResources("de-de");
         }
 
         public void AddJsonLanguageResources(string code, string fullName)

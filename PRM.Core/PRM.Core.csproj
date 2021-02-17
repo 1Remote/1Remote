@@ -387,16 +387,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <None Include="BuildVersionGeneratorAndUpdateReadme.ps1" />
-    <Resource Include="Languages\de-de.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Languages\de-de.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Languages\en-us.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
