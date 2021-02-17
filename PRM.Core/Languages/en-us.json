@@ -182,7 +182,7 @@
   "server_editor_display_rdp_performance": "Performance",
   "server_editor_display_rdp_performance_auto": "Auto judge(by connection speed)",
   "server_editor_display_rdp_performance_high": "High(32bit color with full features support)",
-  "server_editor_display_rdp_performance_middle": "Mdiddle(16bit color with only font smoothing and desktop composition)",
+  "server_editor_display_rdp_performance_middle": "Middle(16bit color with only font smoothing and desktop composition)",
   "server_editor_display_rdp_performance_low": "Low(8bit color with no feature support)",
   // server editor - Advantage group items
   "server_editor_advantage_resources": "Resources",
@@ -194,7 +194,7 @@
   "server_editor_advantage_ports": "Ports",
   "server_editor_advantage_printers": "Printers",
   "server_editor_advantage_smart_cards": "Smart Cards",
-  "server_editor_advantage_ssh_version": "SSH Verison",
+  "server_editor_advantage_ssh_version": "SSH Version",
   "server_editor_advantage_ssh_startup_auto_command": "Auto command",
   "server_editor_advantage_sftp_startup_path": "Startup path",
   // server editor - RD-gateway group items
