@@ -546,7 +546,8 @@ namespace PRM.Core.Protocol.RDP.Host
             if (e.discReason != UI_ERR_NORMAL_DISCONNECT
                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
-                && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser
+                && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                // log out from win2008 will reply exDiscReasonNoInfo
+                && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser          // log out from win10 will reply exDiscReasonLogoffByUser
                 && !string.IsNullOrWhiteSpace(reason))
             {
                 BtnReconn.Visibility = Visibility.Collapsed;
@@ -555,7 +556,9 @@ namespace PRM.Core.Protocol.RDP.Host
                 if (_flagHasConnected == true
                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser
+                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnection
+                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnectionFips
+                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerInsufficientPrivileges
                     && _retryCount < MaxRetryCount)
                 {
                     ++_retryCount;
