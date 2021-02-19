@@ -128,4 +128,19 @@ namespace PRM.Core.Protocol.RDP
         }
         #endregion
     }
+
+    public class ConverterSoundsEnable : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var a = (bool?)parameter;
+            var b = (bool?) value;
+            return a == b;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return (bool)value ? parameter : Binding.DoNothing;
+        }
+    }
 }
