@@ -214,7 +214,7 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(EnableKeyCombinations), ref _enableKeyCombinations, value);
         }
 
-        private bool? _enableSounds = null;
+        private bool? _enableSounds = true;
 
         public bool? EnableSounds
         {
