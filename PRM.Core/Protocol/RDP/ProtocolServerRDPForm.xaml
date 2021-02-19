@@ -6,6 +6,7 @@
                         xmlns:local="clr-namespace:PRM.Core.Protocol.RDP"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
                         xmlns:utils="clr-namespace:Shawn.Utils"
+                        xmlns:system="clr-namespace:System;assembly=mscorlib"
                         mc:Ignorable="d"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
@@ -196,6 +197,23 @@
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
 
             <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+                <Grid.Resources>
+                    <local:ConverterSoundsEnable x:Key="ConverterSoundsEnable" />
+                    <system:Boolean x:Key="True">True</system:Boolean>
+                    <system:Boolean x:Key="False">False</system:Boolean>
+                </Grid.Resources>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sounds}"></TextBlock>
+
+                    <UniformGrid Columns="3" Rows="1" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <RadioButton GroupName="Sounds" Content="{DynamicResource server_editor_advantage_sounds_on_local}" IsChecked="{Binding EnableSounds, Converter={StaticResource ConverterSoundsEnable}, ConverterParameter={StaticResource True}}"></RadioButton>
+                        <RadioButton GroupName="Sounds" Content="{DynamicResource server_editor_advantage_sounds_on_remote}" IsChecked="{Binding EnableSounds, Converter={StaticResource ConverterSoundsEnable}, ConverterParameter={x:Null}}"></RadioButton>
+                        <RadioButton GroupName="Sounds" Content="{DynamicResource server_editor_advantage_sounds_disabled}" IsChecked="{Binding EnableSounds, Converter={StaticResource ConverterSoundsEnable}, ConverterParameter={StaticResource False}}"></RadioButton>
+                    </UniformGrid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_resources}"></TextBlock>
 
@@ -208,26 +226,8 @@
                         <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding EnableClipboard}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding EnableKeyCombinations}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>
-
-                        <CheckBox IsThreeState="True" IsChecked="{Binding EnableSounds}">
-                            <CheckBox.Style>
-                                <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}">
-                                    <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
-                                    <Setter Property="Content" Value="{DynamicResource server_editor_advantage_sounds_on_remote}"></Setter>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsChecked" Value="True">
-                                            <Setter Property="Content" Value="{DynamicResource server_editor_advantage_sounds_on_local}"></Setter>
-                                        </Trigger>
-                                        <Trigger Property="IsChecked" Value="False">
-                                            <Setter Property="Content" Value="{DynamicResource server_editor_advantage_sounds_disabled}"></Setter>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </CheckBox.Style>
-                        </CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_audio_capture}" IsChecked="{Binding EnableAudioCapture}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_ports}" IsChecked="{Binding EnablePorts}"></CheckBox>
-
                         <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding EnablePrinters}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding EnableSmartCardsAndWinHello}"></CheckBox>
                     </UniformGrid>

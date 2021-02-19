@@ -77,8 +77,15 @@ namespace PRM.Core.Model
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
                 _dbOperator.DbUpdateServer(protocolServer);
-                VmItemList.Remove(VmItemList.First(x => x.Server.Id == protocolServer.Id));
-                VmItemList.Add(new VmProtocolServer(protocolServer));
+                int i = VmItemList.Count;
+                if (VmItemList.Any(x => x.Server.Id == protocolServer.Id))
+                {
+                    var old = VmItemList.First(x => x.Server.Id == protocolServer.Id);
+                    i = VmItemList.IndexOf(old);
+                    VmItemList.Remove(old);
+                }
+
+                VmItemList.Insert(i,new VmProtocolServer(protocolServer));
                 VmItemListDataChanged?.Invoke();
             }
             // add
