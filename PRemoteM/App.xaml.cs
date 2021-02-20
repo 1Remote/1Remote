@@ -111,7 +111,12 @@ namespace PRM
             {
                 SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
                 if (message == "ActivateMe")
-                    App.Window?.ActivateMe();
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        App.Window?.ActivateMe();
+                    });
+                }
             };
         }
 
