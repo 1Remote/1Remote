@@ -37,11 +37,18 @@ namespace Shawn.Utils
         public void NamedPipeSendMessage(string message)
         {
             var client = new NamedPipeClientStream(_appName);
-            client.Connect();
-            var writer = new StreamWriter(client);
-            writer.WriteLine(message);
-            writer.Flush();
-            client.Dispose();
+            try
+            {
+                client.Connect(1 * 1000);
+                var writer = new StreamWriter(client);
+                writer.WriteLine(message);
+                writer.Flush();
+            }
+            finally
+            {
+                client.Close();
+                client.Dispose();
+            }
         }
 
         private void StartNamedPipeServer()
@@ -51,6 +58,7 @@ namespace Shawn.Utils
             {
                 while (!_cancellationTokenSource.IsCancellationRequested)
                 {
+                    server?.Dispose();
                     server = new NamedPipeServerStream(_appName);
                     server.WaitForConnection();
                     var reader = new StreamReader(server);
