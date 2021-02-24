@@ -141,23 +141,19 @@ namespace PRM
         private bool InitSystemConfig(string appDateFolder)
         {
             var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
-            //SimpleLogHelper.Debug($"ini init path = {iniPath}");
 
 #if !FOR_MICROSOFT_STORE_ONLY
             // for portable purpose
             if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.OrdinalIgnoreCase) < 0)
             {
                 var iniOnCurrentPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
-                //SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath}");
                 if (IOPermissionHelper.HasWritePermissionOnFile(iniOnCurrentPath))
                 {
                     iniPath = SystemConfig.AppName + ".ini";
-                    //SimpleLogHelper.Debug($"Try local ini path = {iniOnCurrentPath} Pass");
                 }
             }
 #endif
-            //SimpleLogHelper.Debug($"ini finally path = {iniPath}");
-
+            throw new Exception("test");
 
             // if ini is not existed, then it would be a new user
             bool isNewUser = !File.Exists(iniPath);

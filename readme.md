@@ -29,7 +29,7 @@ Latest Version: 0.5.9.2102191952
 Use one of the following methods to install the application:
 
 - [GitHub release](https://github.com/VShawn/PRemoteM/releases)
-- [Microsoft Store (testing)](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
+- [Microsoft Store](https://www.microsoft.com/store/productId/9PNMNF92JNFP)
 - [Chocolatey](https://chocolatey.org/packages/premotem): `choco install premotem`
 
 ### Requirements
@@ -67,3 +67,7 @@ If you like **PRemoteM**, help us make it stronger by doing any of the following
 2. [Help translation](https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation)
 3. [Buy a coffee](https://ko-fi.com/VShawn)
 4. [Join DEV](DEVELOP.md)
+
+## Special thanks
+
+<a href="http://www.jetbrains.com/resharper/"><img src="http://www.tom-englert.de/Images/icon_ReSharper.png" alt="ReSharper" width="64" height="64" /></a>
