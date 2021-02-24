@@ -153,7 +153,6 @@ namespace PRM
                 }
             }
 #endif
-            throw new Exception("test");
 
             // if ini is not existed, then it would be a new user
             bool isNewUser = !File.Exists(iniPath);

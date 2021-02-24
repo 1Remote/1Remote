@@ -81,21 +81,23 @@ namespace PRM.View.ErrorReport
                 var platform = $"{osName} {osType} {osVersion} ({osRelease})";
                 var attributes = Assembly.GetExecutingAssembly().CustomAttributes;
                 var framework = attributes.FirstOrDefault(a => a.AttributeType == typeof(TargetFrameworkAttribute));
+                var from = "";
+
+                // TODO: identify Chocolatey release
+#if FOR_MICROSOFT_STORE_ONLY
+                from = "Microsoft store";
+#else
+                from = "EXE release";
+#endif
 
                 sb.AppendLine("## Environment");
                 sb.AppendLine("");
                 sb.AppendLine("|     Component   |                       Version                      |");
                 sb.AppendLine("|:------------------|:--------------------------------------|");
-                sb.AppendLine($"|{SystemConfig.AppName} | `{PRMVersion.Version}`|");
-                // TODO: identify Chocolatey release
-#if FOR_MICROSOFT_STORE_ONLY
-                sb.AppendLine($"|platform       | `Microsoft store`     |");
-#else
-                sb.AppendLine($"|platform       | `EXE release`         |");
-#endif
+                sb.AppendLine($"|{SystemConfig.AppName} | `{PRMVersion.Version}`({from})|");
                 sb.AppendLine($"|.NET Framework | `{framework?.NamedArguments?[0].TypedValue.Value?.ToString()}`    |");
-                sb.AppendLine($"|OS             | `{platform}`                  |");
                 sb.AppendLine($"|CLR            | `{Environment.Version}`       |");
+                sb.AppendLine($"|OS             | `{platform}`                  |");
                 sb.AppendLine();
             }
             catch

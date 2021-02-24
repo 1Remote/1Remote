@@ -60,6 +60,13 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(HotKeyKey), ref _hotKeyKey, value);
         }
 
+        private bool _allowGroupNameSearch = true;
+        public bool AllowGroupNameSearch
+        {
+            get => _allowGroupNameSearch;
+            set => SetAndNotifyIfChanged(nameof(AllowGroupNameSearch), ref _allowGroupNameSearch, value);
+        }
+
 
         #region Interface
         private const string _sectionName = "QuickConnect";
@@ -68,6 +75,7 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(Enable).ToLower(), _sectionName, Enable.ToString());
             _ini.WriteValue(nameof(HotKeyModifiers).ToLower(), _sectionName, ((uint)HotKeyModifiers).ToString());
             _ini.WriteValue(nameof(HotKeyKey).ToLower(), _sectionName, ((uint)HotKeyKey).ToString());
+            _ini.WriteValue(nameof(AllowGroupNameSearch).ToLower(), _sectionName, AllowGroupNameSearch.ToString());
             _ini.Save();
         }
 
@@ -89,6 +97,7 @@ namespace PRM.Core.Model
                 HotKeyModifiers = HotkeyModifierKeys.Alt;
                 HotKeyKey = Key.M;
             }
+            AllowGroupNameSearch = _ini.GetValue(nameof(AllowGroupNameSearch).ToLower(), _sectionName, AllowGroupNameSearch);
             StopAutoSave = false;
         }
 

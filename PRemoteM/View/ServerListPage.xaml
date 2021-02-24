@@ -338,17 +338,50 @@
 
                             <TextBlock Grid.Column="2" Margin="5 0"
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.DispName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+                                                                 Text="{Binding Server.DispName}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="">
+                                                <Setter Property="ToolTip" Value="{x:Null}"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
 
 
                             <TextBlock Grid.Column="3" Margin="5 0" MaxWidth="100"
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.GroupName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+                                                                 Text="{Binding Server.GroupName}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="">
+                                                <Setter Property="ToolTip" Value="{x:Null}"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
 
 
                             <TextBlock Grid.Column="4" Margin="5 0" MaxWidth="500"
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.SubTitle}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
+                                                                 Text="{Binding Server.SubTitle}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="">
+                                                <Setter Property="ToolTip" Value="{x:Null}"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </Grid>
                     </Grid>
                 </Grid>

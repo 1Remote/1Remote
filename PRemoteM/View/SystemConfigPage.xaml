@@ -272,6 +272,15 @@
                             <TextBlock Margin="64 0 0 0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="450" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
                     </Grid>
+
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.AllowGroupNameSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_allow_group_name_search}"></CheckBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </TabItem>
 
