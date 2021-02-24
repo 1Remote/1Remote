@@ -299,6 +299,23 @@ namespace PRM.ViewModel
                 for (var i = 0; i < keyWords.Length; i++)
                     keyWordIsMatch.Add(false);
 
+                bool anyGroupMatched = false;
+                if (SystemConfig.Instance.Launcher.AllowGroupNameSearch)
+                {
+                    var gs = Context.AppData.VmItemList.Select(x => x.Server.GroupName).Distinct();
+                    foreach (var g in gs)
+                    {
+                        for (var i = 0; i < keyWordIsMatch.Count; i++)
+                        {
+                            if (g.IsMatchPinyinKeywords(keyWords[i], out var m))
+                            {
+                                anyGroupMatched = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 // match keyword
                 foreach (var vm in Context.AppData.VmItemList)
                 {
@@ -307,6 +324,9 @@ namespace PRM.ViewModel
                     Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
 
                     var dispName = vm.Server.DispName;
+                    if (anyGroupMatched && !string.IsNullOrEmpty(vm.Server.GroupName))
+                        dispName = $"{vm.Server.GroupName} - {dispName}";
+
                     var subTitle = vm.Server.SubTitle;
 
 

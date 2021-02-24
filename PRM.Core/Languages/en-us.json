@@ -86,6 +86,7 @@
   "system_options_quick_description": "Quick connect allow you hang up a quick connect bar by hot key, then you can type the keyword and start connection by press enter key",
   "system_options_quick_enable": "Enable",
   "system_options_quick_hot_key": "Hot key",
+  "system_options_quick_allow_group_name_search": "Allow search group name",
 
   "system_options_data_security_title": "Data & Security",
   "system_options_data_security_database": "Database",
