@@ -309,18 +309,18 @@ namespace Shawn.Utils
         private string GetLogLevelString(SimpleLogHelper.EnumLogLevel enumLogLevel, SimpleLogHelper.EnumLogFileType type)
         {
             string levelString = enumLogLevel.ToString();
-            if (type == SimpleLogHelper.EnumLogFileType.MarkDown)
-            {
-                levelString = enumLogLevel switch
-                {
-                    SimpleLogHelper.EnumLogLevel.Debug => $"<font color=Green>{enumLogLevel}</font>",
-                    SimpleLogHelper.EnumLogLevel.Info => $"<font color=Blue>{enumLogLevel}</font>",
-                    SimpleLogHelper.EnumLogLevel.Warning => $"<font color=Yellow>{enumLogLevel}</font>",
-                    SimpleLogHelper.EnumLogLevel.Error => $"*<font color=Red>{enumLogLevel}</font>*",
-                    SimpleLogHelper.EnumLogLevel.Fatal => $"<u>**<font color=Red>{enumLogLevel}</font>**</u>",
-                    _ => throw new ArgumentOutOfRangeException(nameof(enumLogLevel), enumLogLevel, null)
-                };
-            }
+            //if (type == SimpleLogHelper.EnumLogFileType.MarkDown)
+            //{
+            //    levelString = enumLogLevel switch
+            //    {
+            //        SimpleLogHelper.EnumLogLevel.Debug => $"<font color=Green>{enumLogLevel}</font>",
+            //        SimpleLogHelper.EnumLogLevel.Info => $"<font color=Blue>{enumLogLevel}</font>",
+            //        SimpleLogHelper.EnumLogLevel.Warning => $"<font color=Yellow>{enumLogLevel}</font>",
+            //        SimpleLogHelper.EnumLogLevel.Error => $"*<font color=Red>{enumLogLevel}</font>*",
+            //        SimpleLogHelper.EnumLogLevel.Fatal => $"<u>**<font color=Red>{enumLogLevel}</font>**</u>",
+            //        _ => throw new ArgumentOutOfRangeException(nameof(enumLogLevel), enumLogLevel, null)
+            //    };
+            //}
             return levelString;
         }
 

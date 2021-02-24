@@ -30,13 +30,19 @@ namespace PRM.View.ErrorReport
             TbErrorInfo.Text += e.Message;
 
             var sb = new StringBuilder();
+
+            sb.AppendLine("<details>");
+            sb.AppendLine();
+
             BuildEnvironment(ref sb);
 
             sb.AppendLine("## Error Info");
+            sb.AppendLine();
             sb.AppendLine(e.Message);
             sb.AppendLine();
 
             sb.AppendLine("## Stack Trace");
+            sb.AppendLine();
             sb.AppendLine("```");
             sb.AppendLine(e.StackTrace);
             sb.AppendLine("```");
@@ -44,6 +50,8 @@ namespace PRM.View.ErrorReport
 
             BuildRecentLog(ref sb);
 
+            sb.AppendLine("</details>");
+            sb.AppendLine();
 
             TbErrorInfo.Text = sb.ToString();
         }
@@ -65,19 +73,29 @@ namespace PRM.View.ErrorReport
         private void BuildEnvironment(ref StringBuilder sb)
         {
             try
-            {
-                sb.AppendLine("## Environment");
-                sb.AppendLine($"{SystemConfig.AppName} Ver: `{PRMVersion.Version}`");
+            { 
                 var osRelease = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "").ToString();
                 var osName = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "productName", "").ToString();
                 var osType = Environment.Is64BitOperatingSystem ? "64-bits" : "32-bits";
                 var osVersion = Environment.OSVersion.Version.ToString();
                 var platform = $"{osName} {osType} {osVersion} ({osRelease})";
-                sb.AppendLine($"OS: `{platform}`");
                 var attributes = Assembly.GetExecutingAssembly().CustomAttributes;
-                var result = attributes.FirstOrDefault(a => a.AttributeType == typeof(TargetFrameworkAttribute));
-                sb.AppendLine($".NET Framework: `{result?.NamedArguments?[0].TypedValue.Value?.ToString()}`");
-                sb.AppendLine($"CLR: `{Environment.Version}`");
+                var framework = attributes.FirstOrDefault(a => a.AttributeType == typeof(TargetFrameworkAttribute));
+
+                sb.AppendLine("## Environment");
+                sb.AppendLine("");
+                sb.AppendLine("|     Component   |                       Version                      |");
+                sb.AppendLine("|:------------------|:--------------------------------------|");
+                sb.AppendLine($"|{SystemConfig.AppName} | `{PRMVersion.Version}`|");
+                // TODO: identify Chocolatey release
+#if FOR_MICROSOFT_STORE_ONLY
+                sb.AppendLine($"|platform       | `Microsoft store`     |");
+#else
+                sb.AppendLine($"|platform       | `EXE release`         |");
+#endif
+                sb.AppendLine($"|.NET Framework | `{framework?.NamedArguments?[0].TypedValue.Value?.ToString()}`    |");
+                sb.AppendLine($"|OS             | `{platform}`                  |");
+                sb.AppendLine($"|CLR            | `{Environment.Version}`       |");
                 sb.AppendLine();
             }
             catch
@@ -89,7 +107,10 @@ namespace PRM.View.ErrorReport
         private void BuildRecentLog(ref StringBuilder sb)
         {
             sb.AppendLine("## Recent Log ");
+            sb.AppendLine();
+            sb.AppendLine("```");
             sb.AppendLine(SimpleLogHelper.GetLog());
+            sb.AppendLine("```");
             sb.AppendLine();
         }
 
@@ -97,7 +118,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                Clipboard.SetText(TbErrorInfo.Text.Replace("\n", "\n\n"));
+                Clipboard.SetText(TbErrorInfo.Text);
                 var sb = new Storyboard();
                 sb.AddFadeOut(1);
                 sb.Begin(IconCopyDone);
@@ -115,7 +136,7 @@ namespace PRM.View.ErrorReport
                 var dlg = new SaveFileDialog
                 {
                     Filter = $"log |*.log.md",
-                    FileName = SystemConfig.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".log.md",
+                    FileName = SystemConfig.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md",
                     CheckFileExists = false,
                 };
                 if (dlg.ShowDialog() != true) return;
