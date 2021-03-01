@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 using Shawn.Utils;
 
-namespace PRM.Core.Model
+namespace Shawn.Utils
 {
     public class DesktopResolutionWatcher
     {

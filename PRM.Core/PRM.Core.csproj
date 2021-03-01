@@ -123,7 +123,7 @@
     <Compile Include="Model\PrmContext.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
-    <Compile Include="Model\DesktopResolutionWatcher.cs" />
+    <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.DataSecurity.cs" />
     <Compile Include="Model\SystemConfig.General.cs" />
