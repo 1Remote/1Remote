@@ -98,10 +98,9 @@ namespace PRM.Core.Model
 
         public void AddJsonLanguageResources(string code, string fullName)
         {
-            var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fullName);
+            var resourceDictionary = GetResourceDictionaryByJsonFilePath(fullName);
             if (resourceDictionary?.Contains("language_name") != true) return;
-            var r = GetResourceDictionaryByJsonFilePath(fullName);
-            AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), r);
+            AddOrUpdateLanguage(code, resourceDictionary["language_name"].ToString(), resourceDictionary);
         }
 
         private void AddStaticLanguageResources(string code)
