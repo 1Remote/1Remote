@@ -385,9 +385,16 @@
     <Resource Include="Languages\zh-cn.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Languages\de-de.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Languages\de-de.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Languages\en-us.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
