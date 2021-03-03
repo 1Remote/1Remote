@@ -59,7 +59,9 @@ namespace PRM.Core.Protocol.RDP.Host
             catch
             {
             }
-            RdpHost.Child = null;
+
+            if (RdpHost != null)
+                RdpHost.Child = null;
             RdpDispose();
             _resizeEndTimer?.Dispose();
             RdpHost?.Dispose();
