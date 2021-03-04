@@ -328,12 +328,16 @@
   <PropertyGroup>
     <PostBuildEvent>echo copy $(TargetDir)zh-cn.xaml to $(SolutionDir)PRM.Core\Languages\zh-cn.xaml
 echo copy $(TargetDir)en-us.xaml to $(SolutionDir)PRM.Core\Languages\en-us.xaml
+echo copy $(TargetDir)de-de.xaml to $(SolutionDir)PRM.Core\Languages\de-de.xaml
 
 if exist $(TargetDir)zh-cn.xaml (
 xcopy /y $(TargetDir)zh-cn.xaml $(SolutionDir)PRM.Core\Languages\zh-cn.xaml*  /C /E /Q
 )
 if exist $(TargetDir)en-us.xaml (
 xcopy /y $(TargetDir)en-us.xaml $(SolutionDir)PRM.Core\Languages\en-us.xaml*  /C /E /Q
+)
+if exist $(TargetDir)de-de.xaml (
+xcopy /y $(TargetDir)de-de.xaml $(SolutionDir)PRM.Core\Languages\de-de.xaml*  /C /E /Q
 )</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

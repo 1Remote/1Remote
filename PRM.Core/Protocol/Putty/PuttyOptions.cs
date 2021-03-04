@@ -18,10 +18,28 @@ namespace PRM.Core.Protocol.Putty
     {
         public readonly List<PuttyOptionItem> Options = new List<PuttyOptionItem>();
         public readonly string SessionName;
-        public PuttyOptions(string sessionName)
+        public PuttyOptions(string sessionName, string overwritePath = null)
         {
             SessionName = sessionName;
             InitDefault();
+            if (!string.IsNullOrEmpty(overwritePath))
+            {
+                var overWrite = KittyPortableSessionConfigReader.Read(overwritePath);
+                foreach (var item in overWrite)
+                {
+                    if (Options.Any(x => String.Equals(x.Key, item.Key, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        var oldItem = Options.First(x =>
+                            String.Equals(x.Key, item.Key, StringComparison.CurrentCultureIgnoreCase));
+                        oldItem.Value = item.Value;
+                        oldItem.ValueKind = item.ValueKind;
+                    }
+                    else
+                    {
+                        Options.Add(item);
+                    }
+                }
+            }
         }
 
 
@@ -279,16 +297,12 @@ namespace PRM.Core.Protocol.Putty
         public void SaveToPuttyRegistryTable()
         {
             string regPath = $"Software\\SimonTatham\\PuTTY\\Sessions\\{SessionName}";
-            using (var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree))
+            using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+            if (regKey == null) return;
+            foreach (var item in Options)
             {
-                if (regKey != null)
-                {
-                    foreach (var item in Options)
-                    {
-                        if (item.Value != null)
-                            regKey.SetValue(item.Key, item.Value, item.ValueKind);
-                    }
-                }
+                if (item.Value != null)
+                    regKey.SetValue(item.Key, item.Value, item.ValueKind);
             }
         }
 

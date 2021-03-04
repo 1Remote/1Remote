@@ -75,6 +75,30 @@ namespace PRM.Core.Protocol.Putty
                     ((ProtocolServerSSH)Vm).PrivateKey = "";
             }
         }
+
+        private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Vm is IPuttyConnectable pc)
+            {
+                var dlg = new OpenFileDialog
+                {
+                    Filter = "KiTTY Session|*.*",
+                    CheckFileExists = true,
+                };
+                if (dlg.ShowDialog() != true) return;
+
+                var path = dlg.FileName;
+                if (File.Exists(path)
+                && KittyPortableSessionConfigReader.Read(path)?.Count > 0)
+                {
+                    pc.ExternalKittySessionConfigPath = path;
+                }
+                else
+                {
+                    pc.ExternalKittySessionConfigPath = "";
+                }
+            }
+        }
     }
 
 
