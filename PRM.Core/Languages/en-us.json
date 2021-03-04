@@ -200,6 +200,7 @@
   "server_editor_advantage_smart_cards": "Smart Cards",
   "server_editor_advantage_ssh_version": "SSH Verison",
   "server_editor_advantage_ssh_startup_auto_command": "Auto command",
+  "server_editor_advantage_ssh_startup_auto_kitty_session_tip": "support external config by select a session file path of KiTTY",
   "server_editor_advantage_sftp_startup_path": "Startup path",
   // server editor - RD-gateway group items
   "server_editor_gateway_mode": "Connection",

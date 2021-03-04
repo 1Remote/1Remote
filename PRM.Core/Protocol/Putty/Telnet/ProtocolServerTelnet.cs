@@ -12,6 +12,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
 {
     public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IPuttyConnectable
     {
+
         public ProtocolServerTelnet() : base("Telnet", "Putty.Telnet.V1", "Telnet")
         {
         }
@@ -48,5 +49,12 @@ namespace PRM.Core.Protocol.Putty.Telnet
 
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
+
+        private string _externalKittySessionConfigPath;
+        public string ExternalKittySessionConfigPath
+        {
+            get => _externalKittySessionConfigPath;
+            set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
+        }
     }
 }

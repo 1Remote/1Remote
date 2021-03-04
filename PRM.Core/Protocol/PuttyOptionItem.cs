@@ -10,7 +10,7 @@ namespace PRM.Core.Protocol
 {
     public class PuttyOptionItem
     {
-        private PuttyOptionItem() { }
+        public PuttyOptionItem() { }
         public static PuttyOptionItem Create(string key, int value)
         {
             return new PuttyOptionItem
@@ -22,12 +22,24 @@ namespace PRM.Core.Protocol
         }
         public static PuttyOptionItem Create(string key, string value)
         {
-            return new PuttyOptionItem
+            if (double.TryParse(value, out double nValue))
             {
-                Key = key,
-                Value = value,
-                ValueKind = RegistryValueKind.String,
-            };
+                return new PuttyOptionItem
+                {
+                    Key = key,
+                    Value = value,
+                    ValueKind = RegistryValueKind.DWord,
+                };
+            }
+            else
+            {
+                return new PuttyOptionItem
+                {
+                    Key = key,
+                    Value = value,
+                    ValueKind = RegistryValueKind.String,
+                };
+            }
         }
         public string Key;
         public object Value;

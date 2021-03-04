@@ -147,6 +147,19 @@
                     </Grid>
                 </StackPanel>
             </Grid>
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="KiTTY Session"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding ExternalKittySessionConfigPath,UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                 ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
+                                 Tag="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
+                                 ></TextBox>
+                    </Grid>
+                    <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Click="ButtonSelectSessionConfigFile_OnClick"></controls:ButtonEx>
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </StackPanel>
 </protocol:ProtocolServerFormBase>

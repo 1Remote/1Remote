@@ -200,6 +200,7 @@
   "server_editor_advantage_smart_cards": "智能卡",
   "server_editor_advantage_ssh_version": "SSH Verison",
   "server_editor_advantage_ssh_startup_auto_command": "自动命令",
+  "server_editor_advantage_ssh_startup_auto_kitty_session_tip": "输入 KiTTY Portable.exe 的 Session 配置路径可支持更多额外配置",
   "server_editor_advantage_sftp_startup_path": "启动位置",
   // server editor - RD-gateway group items
   "server_editor_gateway_mode": "连接设置",
