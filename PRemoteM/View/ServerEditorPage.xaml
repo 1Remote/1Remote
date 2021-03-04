@@ -184,7 +184,7 @@
                                                  ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
                                     </Grid>
-                                    <controls:ButtonEx Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                    <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
 
@@ -197,7 +197,7 @@
                                                  ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
                                     </Grid>
-                                    <controls:ButtonEx Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                    <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

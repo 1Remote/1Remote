@@ -123,6 +123,7 @@
     <Compile Include="Model\PrmContext.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
+    <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.DataSecurity.cs" />
@@ -134,7 +135,6 @@
     <Compile Include="Model\SystemConfigBase.cs" />
     <Compile Include="Protocol\PuttyOptionItem.cs" />
     <Compile Include="Protocol\Putty\EnumKittyOptionKey.cs" />
-    <Compile Include="Protocol\Putty\KittyOptions.cs" />
     <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
@@ -377,7 +377,6 @@
     <Resource Include="Utils\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Protocol\Putty\KittyDefaultOptons.ini" />
     <Resource Include="Resources\Theme\puttyThems.json" />
     <Resource Include="Languages\en-us.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

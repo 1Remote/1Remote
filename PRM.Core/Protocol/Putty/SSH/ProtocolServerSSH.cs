@@ -45,6 +45,13 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
         }
 
+        private string _externalKittySessionConfigPath;
+        public string ExternalKittySessionConfigPath
+        {
+            get => _externalKittySessionConfigPath;
+            set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
+        }
+
         public override bool IsOnlyOneInstance()
         {
             return false;
