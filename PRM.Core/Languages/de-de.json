@@ -211,7 +211,7 @@
   "server_editor_gateway_logon_method": "Anmeldemethode",
   "server_editor_gateway_logon_method_psw": "Kennwort anfordern",
   "server_editor_gateway_logon_method_smart_card": "Smartcard",
-  "server_editor_gateway_bypass_gateway_for_loacl_address": "Remotedesktop-Gatewayserver für lokale Adressen umgehen",
+  "server_editor_gateway_bypass_gateway_for_local_address": "Remotedesktop-Gatewayserver für lokale Adressen umgehen",
   // server editor - RD-App group items
   "server_editor_remote_app_name": "Programm Name",
   "server_editor_remote_app_name_tag": "Name des Programms (bspw. Hallo)",
@@ -242,5 +242,5 @@
   "error_report_send_by_github": "Senden über Github",
 
   // other
-  "logo_selecter_open_file_dialog_title": "Bild auswählen"
+  "logo_selector_open_file_dialog_title": "Bild auswählen"
 }

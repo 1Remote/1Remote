@@ -22,7 +22,7 @@ namespace PRM.Core.Protocol
         }
         public static PuttyOptionItem Create(string key, string value)
         {
-            if (double.TryParse(value, out double nValue))
+            if (double.TryParse(value.Replace(',', '_'), out double nValue))
             {
                 return new PuttyOptionItem
                 {
