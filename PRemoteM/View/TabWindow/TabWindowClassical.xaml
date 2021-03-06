@@ -86,6 +86,7 @@
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
                             <Grid x:Name="templateRoot" FocusManager.IsFocusScope="True"
                                   SnapsToDevicePixels="true" 
+                                  utils:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
                                   Margin="0 -1 0 1">
                                 <Grid.ContextMenu>
                                     <ContextMenu ItemsSource="{Binding Content.MenuItems}">
