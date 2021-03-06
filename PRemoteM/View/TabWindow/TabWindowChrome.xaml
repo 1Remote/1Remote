@@ -90,6 +90,7 @@
                             <Grid Background="{DynamicResource MainColor1Brush}" Height="{StaticResource TabHeaderBarHeight}">
                                 <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True"
                                       SnapsToDevicePixels="true" 
+                                      utils:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
                                       VerticalAlignment="Bottom">
                                     <Grid.ContextMenu>
                                         <ContextMenu ItemsSource="{Binding Content.MenuItems}">
