@@ -348,7 +348,7 @@ reload=yes
 
         private void SetPuttySessionConfig()
         {
-            var puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
+            var puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName(), _protocolPuttyBase.ExternalKittySessionConfigPath);
             if (_protocolPuttyBase is ProtocolServerSSH server)
             {
                 if (!string.IsNullOrEmpty(server.PrivateKey))

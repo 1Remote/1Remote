@@ -211,7 +211,7 @@
   "server_editor_gateway_logon_method": "Logon Method",
   "server_editor_gateway_logon_method_psw": "Password",
   "server_editor_gateway_logon_method_smart_card": "Smart Card",
-  "server_editor_gateway_bypass_gateway_for_loacl_address": "Bypass RD Gateway server for local address",
+  "server_editor_gateway_bypass_gateway_for_local_address": "Bypass RD Gateway server for local address",
   // server editor - RD-App group items
   "server_editor_remote_app_name": "App Name",
   "server_editor_remote_app_name_tag": "name of app(e.g. hello)",
@@ -242,5 +242,5 @@
   "error_report_send_by_github": "Send by GitHub",
 
   // other
-  "logo_selecter_open_file_dialog_title": "select a picture"
+  "logo_selector_open_file_dialog_title": "select a picture"
 }
