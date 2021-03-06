@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Win32;
-using PRM.Core.Protocol.Putty;
+﻿using Microsoft.Win32;
 
-namespace PRM.Core.Protocol
+namespace PRM.Core.Protocol.Putty
 {
     public class PuttyOptionItem
     {
