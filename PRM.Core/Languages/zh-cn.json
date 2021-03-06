@@ -211,7 +211,7 @@
   "server_editor_gateway_logon_method": "登录方法",
   "server_editor_gateway_logon_method_psw": "账号密码",
   "server_editor_gateway_logon_method_smart_card": "智能卡",
-  "server_editor_gateway_bypass_gateway_for_loacl_address": "不对本地地址使用RD网关",
+  "server_editor_gateway_bypass_gateway_for_local_address": "不对本地地址使用RD网关",
   // server editor - RD-App group items
   "server_editor_remote_app_name": "程序名称",
   "server_editor_remote_app_name_tag": "程序名称的名称（如 hello.exe）",
@@ -242,5 +242,5 @@
   "error_report_send_by_github": "通过GitHub",
 
   // other
-  "logo_selecter_open_file_dialog_title": "选择图片"
+  "logo_selector_open_file_dialog_title": "选择图片"
 }

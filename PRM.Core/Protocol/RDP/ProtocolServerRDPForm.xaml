@@ -362,7 +362,7 @@
                                 <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="0 6 0 0">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                                        <CheckBox IsChecked="{Binding GatewayBypassForLocalAddress}" Content="{DynamicResource server_editor_gateway_bypass_gateway_for_loacl_address}"></CheckBox>
+                                        <CheckBox IsChecked="{Binding GatewayBypassForLocalAddress}" Content="{DynamicResource server_editor_gateway_bypass_gateway_for_local_address}"></CheckBox>
                                     </StackPanel>
                                 </Grid>-->
                             </StackPanel>
