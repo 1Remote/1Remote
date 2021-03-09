@@ -77,7 +77,7 @@
                             <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource MainBgColorBrush}">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
-                                        <Setter Property="Visibility" Value="{Binding Visible, UpdateSourceTrigger=PropertyChanged}"></Setter>
+                                        <Setter Property="Visibility" Value="{Binding ObjectVisibility, UpdateSourceTrigger=PropertyChanged}"></Setter>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Server.Id}" Value="0">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -174,7 +174,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="0">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="0">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -185,7 +185,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="1">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="1">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -206,7 +206,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="2">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="2">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -217,7 +217,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="3">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="3">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -237,7 +237,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="4">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="4">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -248,7 +248,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="5">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="5">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -268,7 +268,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="6">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="6">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -279,7 +279,7 @@
                                                             <Path.Style>
                                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding ItemsOrderByType}" Value="7">
+                                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="7">
                                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>

@@ -17,7 +17,7 @@
 
             <Grid>
                 <Border BorderBrush="Black" BorderThickness="1" Background="White" Height="16">
-                    <Grid x:Name="ColorDisplayGrid" Background="{Binding Color, ElementName=control}" />
+                    <Grid x:Name="ColorDisplayGrid"/>
                 </Border>
             </Grid>
             <TextBlock x:Name="HexLabel" Visibility="{Binding HexVisible, ElementName=control}"
