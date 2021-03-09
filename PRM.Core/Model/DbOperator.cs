@@ -29,6 +29,10 @@ namespace PRM.Core.Model
             {
                 _rsa = new RSA(File.ReadAllText(GetRsaPrivateKeyPath()), true);
             }
+            else
+            {
+                _rsa = null;
+            }
             return true;
         }
 

@@ -192,34 +192,22 @@
                         </StackPanel>
                     </Grid>
 
-
-                    <Grid Style="{StaticResource EditorRowGrid}" Visibility="Collapsed">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_log_file_path}"></TextBlock>
-                            <!--<Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
-                            </Grid>-->
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.LogFilePath, Mode=OneWay}"></controls:ButtonEx>
-                        </StackPanel>
-                    </Grid>
-
-
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0"  Visibility="Collapsed">
+                    <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}"></TextBlock>
-                            <!--<Grid Style="{StaticResource EditorRowGridInput}">
+                            <Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
-                            </Grid>-->
+                            </Grid>
                             <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></controls:ButtonEx>
                         </StackPanel>
                     </Grid>
-
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3"  Visibility="Collapsed">
+                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}" Visibility="Hidden"></TextBlock>
                             <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
                         </StackPanel>
-                    </Grid>
+                    </Grid>-->
+
                 </StackPanel>
             </TabItem>
 
@@ -384,7 +372,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_prm_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <ComboBox SelectedValuePath="Tag"
+                                <ComboBox 
                                           ItemsSource="{Binding SystemConfig.Theme.PrmColorThemeNames}"
                                           SelectedItem="{Binding SystemConfig.Theme.PrmColorThemeName}">
                                 </ComboBox>
@@ -467,7 +455,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <ComboBox SelectedValuePath="Tag"
+                                <ComboBox 
                                           ItemsSource="{Binding SystemConfig.Theme.PuttyThemeNames}"
                                           SelectedItem="{Binding SystemConfig.Theme.PuttyThemeName}">
                                 </ComboBox>
