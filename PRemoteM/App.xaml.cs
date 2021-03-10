@@ -35,6 +35,7 @@ namespace PRM
         private static void OnUnhandledException(Exception e)
         {
             SimpleLogHelper.Fatal(e);
+            CloseAllWindow();
             var errorReport = new ErrorReportWindow(e);
             errorReport.ShowDialog();
             App.Close();
@@ -314,7 +315,7 @@ namespace PRM
             SearchBoxWindow.SetHotKey();
         }
 
-        public static void Close(int exitCode = 0)
+        private static void CloseAllWindow()
         {
             try
             {
@@ -334,8 +335,13 @@ namespace PRM
             }
             finally
             {
-                Environment.Exit(exitCode);
             }
+        }
+
+        public static void Close(int exitCode = 0)
+        {
+            CloseAllWindow();
+            Environment.Exit(exitCode);
         }
     }
 }

@@ -16,13 +16,45 @@ namespace PRM.Core.Model
         }
 
 
-        public string MainWindowTabSelected = "";
-        public double MainWindowWidth = 680;
-        public double MainWindowHeight = 530;
-        public double TabWindowWidth = 800;
-        public double TabWindowHeight = 600;
-
         private WindowState _tabWindowState = WindowState.Normal;
+        private string _mainWindowTabSelected = "";
+        private double _mainWindowWidth = 680;
+        private double _tabWindowWidth = 800;
+        private double _mainWindowHeight = 530;
+        private double _tabWindowHeight = 600;
+
+
+        public string MainWindowTabSelected
+        {
+            get => _mainWindowTabSelected;
+            set => SetAndNotifyIfChanged(nameof(MainWindowTabSelected), ref _mainWindowTabSelected, value);
+        }
+
+        public double MainWindowWidth
+        {
+            get => _mainWindowWidth;
+            set => SetAndNotifyIfChanged(nameof(MainWindowWidth), ref _mainWindowWidth, value);
+        }
+
+        public double MainWindowHeight
+        {
+            get => _mainWindowHeight;
+            set => SetAndNotifyIfChanged(nameof(MainWindowHeight), ref _mainWindowHeight, value);
+        }
+
+        public double TabWindowWidth
+        {
+            get => _tabWindowWidth;
+            set => SetAndNotifyIfChanged(nameof(TabWindowWidth), ref _tabWindowWidth, value);
+        }
+
+        public double TabWindowHeight
+        {
+            get => _tabWindowHeight;
+            set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
+        }
+
+
         public WindowState TabWindowState
         {
             get => _tabWindowState;
@@ -48,11 +80,13 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
+            base.StopAutoSave = true;
             MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth);
             MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), _sectionName, MainWindowHeight);
             TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), _sectionName, TabWindowWidth);
             TabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), _sectionName, TabWindowHeight);
             MainWindowTabSelected = _ini.GetValue(nameof(MainWindowTabSelected).ToLower(), _sectionName, MainWindowTabSelected);
+            base.StopAutoSave = false;
         }
 
         public override void Update(SystemConfigBase newConfig)
