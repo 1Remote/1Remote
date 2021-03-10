@@ -31,26 +31,9 @@ namespace PRM.ViewModel
         {
             _context = context;
             _list = list;
-            var lastSelectedGroup = "";
-            if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected))
-            {
-                lastSelectedGroup = SystemConfig.Instance.Locality.MainWindowTabSelected;
-            }
-
             RebuildVmServerCardList();
             _context.AppData.VmItemListDataChanged += RebuildVmServerCardList;
-
-            //SystemConfig.Instance.General.PropertyChanged += (sender, args) =>
-            //{
-            //    if (args.PropertyName == nameof(SystemConfig.General.ServerOrderBy))
-            //        OrderServerList();
-            //};
-
-            if (!string.IsNullOrEmpty(lastSelectedGroup) && ServerGroupList.Contains(lastSelectedGroup))
-            {
-                SelectedGroup = lastSelectedGroup;
-            }
-
+            
             _context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
@@ -157,6 +140,11 @@ namespace PRM.ViewModel
             }
             if (ServerGroupList.Contains(selectedGroup))
                 SelectedGroup = selectedGroup;
+            else if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected)
+                && ServerGroupList.Contains(SystemConfig.Instance.Locality.MainWindowTabSelected))
+            {
+                SelectedGroup = SystemConfig.Instance.Locality.MainWindowTabSelected;
+            }
             else
                 SelectedGroup = "";
         }

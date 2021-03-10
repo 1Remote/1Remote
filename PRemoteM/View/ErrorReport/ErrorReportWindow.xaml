@@ -10,7 +10,7 @@
                   ResizeMode="NoResize"
                   WindowStyle="None"
                   Background="Transparent"
-                  Title="SearchBoxWindow" Height="600" Width="800">
+                  Title="Ahh Error..." Height="600" Width="800">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
