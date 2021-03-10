@@ -95,7 +95,7 @@ namespace PRM.Model
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
-                    var s = t.GetViewModel()?.Items?.First(x => x.Content?.ProtocolServer?.Id == serverId);
+                    var s = t.GetViewModel()?.Items?.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
                         t.GetViewModel().SelectedItem = s;
                     t.Activate();
@@ -621,14 +621,14 @@ namespace PRM.Model
         /// </summary>
         public void DelTabWindow(string token)
         {
+            if (!_tabWindows.ContainsKey(token)) return;
+            var tab = _tabWindows[token];
+            var items = tab.GetViewModel().Items.ToArray();
             SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
             SynchronizationContext.Current.Post(pl =>
             {
                 // del protocol
-                if (!_tabWindows.ContainsKey(token)) return;
-
-                var tab = _tabWindows[token];
-                foreach (var tabItemViewModel in tab.GetViewModel().Items.ToArray())
+                foreach (var tabItemViewModel in items)
                 {
                     DelProtocolHostInSyncContext(tabItemViewModel.Content.ConnectionId);
                 }

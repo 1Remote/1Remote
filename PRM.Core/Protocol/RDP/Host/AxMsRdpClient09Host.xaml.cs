@@ -490,14 +490,6 @@ namespace PRM.Core.Protocol.RDP.Host
         public override void GoFullScreen()
         {
             Debug.Assert(this.ParentWindow != null);
-
-            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
-            {
-                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
-            }
-            else
-                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-            Context.DbOperator.DbUpdateServer(_rdpServer);
             _rdp.FullScreen = true;
         }
 
@@ -697,6 +689,15 @@ namespace PRM.Core.Protocol.RDP.Host
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
             }
             _isLastTimeFullScreen = true;
+
+
+            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
+            {
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
+            }
+            else
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
+            Context.DbOperator.DbUpdateServer(_rdpServer);
         }
 
         private System.Drawing.Rectangle GetScreenSize()
@@ -734,6 +735,7 @@ namespace PRM.Core.Protocol.RDP.Host
             ParentWindow.Left = _normalLeft;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
             _isLastTimeFullScreen = false;
+            Context.DbOperator.DbUpdateServer(_rdpServer);
         }
 
         private void MakeForm2Minimize()
