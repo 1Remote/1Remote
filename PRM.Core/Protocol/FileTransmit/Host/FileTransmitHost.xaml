@@ -230,6 +230,16 @@
                   PreviewMouseRightButtonDown="FileList_OnPreviewMouseRightButtonDown"
                   GridViewColumnHeader.Click="ListViewColumnHeaderClick"
                   >
+                    <ListView.InputBindings>
+                        <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+                        <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+                        <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+                        <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+                        <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+                        <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+                    </ListView.InputBindings>
                     <ListView.Resources>
                         <host:ByteLength2ReadableStringConverter x:Key="ByteLength2ReadableStringConverter"/>
                         <Style TargetType="Grid" x:Key="HeaderGridStyle">

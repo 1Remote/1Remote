@@ -83,7 +83,4 @@ namespace PRM.Core.Model
             Locality.Save();
         }
     }
-
-
-    
 }

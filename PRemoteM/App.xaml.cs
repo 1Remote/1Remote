@@ -136,6 +136,7 @@ namespace PRM
             _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
             {
                 GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
+                ReloadTaskTrayContextMenu();
             };
         }
 
