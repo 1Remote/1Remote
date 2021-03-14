@@ -101,6 +101,9 @@
     <Reference Include="TinyPinyin.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TinyPinyin.Core.0.1.0\lib\net452\TinyPinyin.Core.dll</HintPath>
     </Reference>
+    <Reference Include="VariableKeywordMatcher, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.1.0.3\lib\net45\VariableKeywordMatcher.dll</HintPath>
+    </Reference>
     <Reference Include="VncSharpWpf, Version=0.0.0.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Protocol\VNC\VncSharpWpf.dll</HintPath>
@@ -120,6 +123,7 @@
     <Compile Include="DB\IDB\IDbServer.cs" />
     <Compile Include="DB\freesql\DbConfig.cs" />
     <Compile Include="DB\freesql\DbServer.cs" />
+    <Compile Include="Model\KeywordMatchService.cs" />
     <Compile Include="Model\PrmContext.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
@@ -232,7 +236,6 @@
     <Compile Include="Utils\HyperlinkHelper.cs" />
     <Compile Include="Utils\Ini.cs" />
     <Compile Include="Utils\IOPermissionHelper.cs" />
-    <Compile Include="Utils\KeyWordMatchHelper.cs" />
     <Compile Include="Utils\MD5Helper.cs" />
     <Compile Include="Utils\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />

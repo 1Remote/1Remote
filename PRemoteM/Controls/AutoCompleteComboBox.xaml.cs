@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -47,9 +48,7 @@ namespace Shawn.Utils
             {
 
                 o.Selections4Show = new ObservableCollection<string>(o.Selections
-                    .Where(x => x.ToLower().IndexOf(newValue.ToLower()) >= 0 
-                                || x.IsMatchPinyinKeywords(newValue, out var _)
-                                ));
+                    .Where(x => x.IndexOf(newValue, StringComparison.OrdinalIgnoreCase) >= 0));
                 if (o.Selections4Show?.Count() > 0)
                 {
                     o.CbContent.IsDropDownOpen = true;

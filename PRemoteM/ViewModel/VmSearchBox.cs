@@ -300,6 +300,7 @@ namespace PRM.ViewModel
                     keyWordIsMatch.Add(false);
 
                 bool anyGroupMatched = false;
+                // if group name search enabled, show group name as prefix
                 if (SystemConfig.Instance.Launcher.AllowGroupNameSearch)
                 {
                     var gs = Context.AppData.VmItemList.Select(x => x.Server.GroupName).Distinct();
@@ -307,7 +308,7 @@ namespace PRM.ViewModel
                     {
                         for (var i = 0; i < keyWordIsMatch.Count; i++)
                         {
-                            if (g.IsMatchPinyinKeywords(keyWords[i], out var m))
+                            if (g.StartsWith(keyWords[i], StringComparison.OrdinalIgnoreCase))
                             {
                                 anyGroupMatched = true;
                                 break;
@@ -324,45 +325,23 @@ namespace PRM.ViewModel
                     Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
 
                     var dispName = vm.Server.DispName;
+                    // if group name search enabled, and keyword match the group name, show group name as prefix
                     if (anyGroupMatched && !string.IsNullOrEmpty(vm.Server.GroupName))
                         dispName = $"{vm.Server.GroupName} - {dispName}";
 
                     var subTitle = vm.Server.SubTitle;
 
 
-                    var mDispName = new List<List<bool>>();
-                    var mSubTitle = new List<List<bool>>();
-                    for (var i = 0; i < keyWordIsMatch.Count; i++)
-                    {
-                        var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
-                        var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
-                        mDispName.Add(m1);
-                        mSubTitle.Add(m2);
-                        keyWordIsMatch[i] = f1 || f2;
-                    }
 
-                    if (keyWordIsMatch.All(x => x == true))
+                    var mrs = Context.KeywordMatchService.Matchs(new List<string>() {dispName, subTitle}, keyWords);
+                    if (mrs.IsMatchAllKeywords)
                     {
                         vm.ObjectVisibility = Visibility.Visible;
 
                         const bool enableHighLine = true;
                         if (enableHighLine)
                         {
-                            var m1 = new List<bool>();
-                            var m2 = new List<bool>();
-                            for (var i = 0; i < dispName.Length; i++)
-                                m1.Add(false);
-                            for (var i = 0; i < subTitle.Length; i++)
-                                m2.Add(false);
-                            for (var i = 0; i < keyWordIsMatch.Count; i++)
-                            {
-                                if (mDispName[i] != null)
-                                    for (int j = 0; j < mDispName[i].Count; j++)
-                                        m1[j] |= mDispName[i][j];
-                                if (mSubTitle[i] != null)
-                                    for (int j = 0; j < mSubTitle[i].Count; j++)
-                                        m2[j] |= mSubTitle[i][j];
-                            }
+                            var m1 = mrs.HitFlags[0];
                             if (m1.Any(x => x == true))
                             {
                                 var sp = new StackPanel()
@@ -384,6 +363,8 @@ namespace PRM.ViewModel
 
                                 vm.DispNameControl = sp;
                             }
+
+                            var m2 = mrs.HitFlags[1];
                             if (m2.Any(x => x == true))
                             {
                                 var sp = new StackPanel()
@@ -402,7 +383,6 @@ namespace PRM.ViewModel
                                             Text = subTitle[i].ToString(),
                                         });
                                 }
-
                                 vm.SubTitleControl = sp;
                             }
                         }
