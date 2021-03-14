@@ -85,7 +85,7 @@ namespace PRM.Core.Model
                     VmItemList.Remove(old);
                 }
 
-                VmItemList.Insert(i,new VmProtocolServer(protocolServer));
+                VmItemList.Insert(i, new VmProtocolServer(protocolServer));
                 VmItemListDataChanged?.Invoke();
             }
             // add

@@ -33,7 +33,7 @@ namespace PRM.ViewModel
             _list = list;
             RebuildVmServerCardList();
             _context.AppData.VmItemListDataChanged += RebuildVmServerCardList;
-            
+
             _context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
@@ -219,20 +219,10 @@ namespace PRM.ViewModel
                 }
 
                 var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                var keyWordIsMatch = new List<bool>(keyWords.Length);
-                for (var i = 0; i < keyWords.Length; i++)
-                    keyWordIsMatch.Add(false);
-
                 var dispName = server.DispName;
                 var subTitle = server.SubTitle;
-                for (var i = 0; i < keyWordIsMatch.Count; i++)
-                {
-                    var f1 = dispName.IsMatchPinyinKeywords(keyWords[i], out var m1);
-                    var f2 = subTitle.IsMatchPinyinKeywords(keyWords[i], out var m2);
-                    keyWordIsMatch[i] = f1 || f2;
-                }
-
-                if (keyWordIsMatch.All(x => x == true))
+                var matched = _context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
+                if (matched)
                     card.ObjectVisibilityInList = Visibility.Visible;
                 else
                     card.ObjectVisibilityInList = Visibility.Collapsed;

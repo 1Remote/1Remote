@@ -62,8 +62,6 @@ namespace PRM.Core.Model
         /// </summary>
         public static Action OnLanguageChanged { get; set; } = null;
 
-
-
         /// <summary>
         /// OnScreenResolutionChanged
         /// </summary>

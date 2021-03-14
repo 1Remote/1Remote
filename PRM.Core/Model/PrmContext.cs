@@ -16,6 +16,8 @@ namespace PRM.Core.Model
         public GlobalData AppData { get; } = new GlobalData();
         public DbOperator DbOperator { get; private set; } = null;
 
+        public KeywordMatchService KeywordMatchService { get; } = new KeywordMatchService();
+
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
