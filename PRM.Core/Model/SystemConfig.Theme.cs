@@ -238,16 +238,10 @@ namespace PRM.Core.Model
             ApplyPrmColorTheme();
         }
 
-        public override void Load()
+        private void LoadThemeFromIni()
         {
-            if (!_ini.ContainsKey(nameof(PrmColorThemeName).ToLower(), _sectionName))
-                return;
-
-            StopAutoSave = true;
             PrmColorThemes = PRM.Core.Resources.Theme.PrmColorThemes.GetThemes();
             PrmColorThemeNames = new ObservableCollection<string>(PrmColorThemes.Keys);
-            _prmColorThemeName = PrmColorThemeNames.First();
-            ReloadPuttyThemes();
 
             _prmColorThemeName = _ini.GetValue(nameof(PrmColorThemeName).ToLower(), _sectionName, _prmColorThemeName);
             if (!PrmColorThemeNames.Contains(_prmColorThemeName))
@@ -263,12 +257,27 @@ namespace PRM.Core.Model
             _mainColor2Foreground = _ini.GetValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
             _mainBgColor = _ini.GetValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
             _mainBgColorForeground = _ini.GetValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
+        }
 
+        private void LoadPuttyThemeFromIni()
+        {
+            ReloadPuttyThemes();
             PuttyThemeName = _ini.GetValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             if (!PuttyThemeNames.Contains(PuttyThemeName))
                 PuttyThemeName = PuttyThemeNames.First();
             PuttyFontSize = _ini.GetValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize);
+        }
 
+        public override void Load()
+        {
+            if (!_ini.ContainsKey(nameof(PrmColorThemeName).ToLower(), _sectionName))
+                return;
+
+            StopAutoSave = true;
+
+            LoadThemeFromIni();
+
+            LoadPuttyThemeFromIni();
 
             if (Enum.TryParse<EnumTabUI>(_ini.GetValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString()), out var tu))
                 TabUI = tu;

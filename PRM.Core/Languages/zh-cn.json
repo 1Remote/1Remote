@@ -84,9 +84,11 @@
 
   "system_options_quick_title": "快速连接",
   "system_options_quick_description": "快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。",
-  "system_options_quick_enable": "启用",
-  "system_options_quick_hot_key": "快捷键",
-  "system_options_quick_allow_group_name_search": "允许搜索组名",
+  "system_options_quick_match_providers": "关键词匹配器",
+  "system_options_quick_launcher": "启动器",
+  "system_options_quick_launcher_enable": "启用",
+  "system_options_quick_launcher_hotkey": "快捷键",
+  "system_options_quick_launcher_allow_group_name_search": "允许搜索组名",
 
   "system_options_data_security_title": "数据与安全",
   "system_options_data_security_database": "数据库",

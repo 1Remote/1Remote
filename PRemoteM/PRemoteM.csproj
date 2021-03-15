@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.props" Condition="Exists('..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -105,6 +106,15 @@
       <HintPath>..\packages\FreeSql.Provider.Sqlite.2.0.105\lib\net45\FreeSql.Provider.Sqlite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Kawazu, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kawazu.1.0.0\lib\netstandard2.0\Kawazu.dll</HintPath>
+    </Reference>
+    <Reference Include="LibNMeCab, Version=0.10.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibNMeCab.0.10.1\lib\netstandard2.0\LibNMeCab.dll</HintPath>
+    </Reference>
+    <Reference Include="LibNMeCab.IpaDicBin, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibNMeCab.IpaDicBin.0.10.0\lib\netstandard2.0\LibNMeCab.IpaDicBin.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -126,8 +136,20 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="VariableKeywordMatcher, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VariableKeywordMatcher.1.0.3\lib\net45\VariableKeywordMatcher.dll</HintPath>
+    <Reference Include="ToolGood.Words.FirstPinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToolGood.Words.FirstPinyin.3.0.1.4\lib\net40\ToolGood.Words.FirstPinyin.dll</HintPath>
+    </Reference>
+    <Reference Include="ToolGood.Words.Pinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToolGood.Words.Pinyin.3.0.1.4\lib\net40\ToolGood.Words.Pinyin.dll</HintPath>
+    </Reference>
+    <Reference Include="VariableKeywordMatcher, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.1.0.4\lib\net48\VariableKeywordMatcher.dll</HintPath>
+    </Reference>
+    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYin, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.1.0.4\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.dll</HintPath>
+    </Reference>
+    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.1.0.4\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.dll</HintPath>
     </Reference>
     <Reference Include="Windows, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -289,6 +311,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="IpaDic\AUTHORS" />
+    <None Include="IpaDic\char.bin" />
+    <None Include="IpaDic\COPYING" />
+    <None Include="IpaDic\matrix.bin" />
+    <None Include="IpaDic\sys.dic" />
+    <None Include="IpaDic\unk.dic" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -353,5 +381,8 @@ xcopy /y $(TargetDir)de-de.xaml $(SolutionDir)PRM.Core\Languages\de-de.xaml*  /C
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.props'))" />
+    <Error Condition="!Exists('..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.targets'))" />
   </Target>
+  <Import Project="..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.targets" Condition="Exists('..\packages\LibNMeCab.IpaDicBin.0.10.0\build\LibNMeCab.IpaDicBin.targets')" />
 </Project>

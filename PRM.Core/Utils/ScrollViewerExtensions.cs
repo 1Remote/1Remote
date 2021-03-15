@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace PRM
+namespace Shawn.Utils
 {
     /// <summary>
     /// thanks to https://stackoverflow.com/questions/25366784/wpf-scrollviewer-mousewheel-not-working-with-stackpanel/25375433#25375433

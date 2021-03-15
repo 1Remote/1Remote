@@ -52,6 +52,7 @@ namespace PRM.Core.Model
         public SystemConfigLocality Locality { get; set; }
         public SystemConfigLanguage Language { get; set; }
         public SystemConfigGeneral General { get; set; }
+        public SystemConfigKeywordMatch KeywordMatch { get; set; }
         public SystemConfigLauncher Launcher { get; set; }
         public SystemConfigDataSecurity DataSecurity { get; set; }
         public SystemConfigTheme Theme { get; set; }
@@ -67,6 +68,7 @@ namespace PRM.Core.Model
 
                 General.StopAutoSave = value;
                 Language.StopAutoSave = value;
+                KeywordMatch.StopAutoSave = value;
                 Launcher.StopAutoSave = value;
                 DataSecurity.StopAutoSave = value;
                 Theme.StopAutoSave = value;
@@ -77,6 +79,7 @@ namespace PRM.Core.Model
         {
             Language.Save();
             General.Save();
+            KeywordMatch.Save();
             Launcher.Save();
             DataSecurity.Save();
             Theme.Save();

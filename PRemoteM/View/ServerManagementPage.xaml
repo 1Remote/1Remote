@@ -522,7 +522,7 @@
 
                         <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" 
                                       Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                      prm:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                      utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                       Style="{StaticResource MinHorizontalScrollViewerStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <ListBox 
