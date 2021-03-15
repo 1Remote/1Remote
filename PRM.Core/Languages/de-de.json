@@ -84,9 +84,11 @@
 
   "system_options_quick_title": "Schnelle Verbindung",
   "system_options_quick_description": "Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.",
-  "system_options_quick_enable": "Aktiv",
-  "system_options_quick_hot_key": "Hotkey",
-  "system_options_quick_allow_group_name_search": "Allow search group name",
+  "system_options_quick_match_providers": "Keyword-Matchers",
+  "system_options_quick_launcher": "Startprogramm",
+  "system_options_quick_launcher_enable": "Aktiv",
+  "system_options_quick_launcher_hotkey": "Hotkey",
+  "system_options_quick_launcher_allow_group_name_search": "Allow search group name",
 
   "system_options_data_security_title": "Datenbank & Sicherheit",
   "system_options_data_security_database": "Datenbank",

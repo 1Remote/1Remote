@@ -156,6 +156,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             {
                 if (_vmRemote.RemoteItems.Count == 0)
                     return;
+
                 switch (e.Key)
                 {
                     case Key.Up:

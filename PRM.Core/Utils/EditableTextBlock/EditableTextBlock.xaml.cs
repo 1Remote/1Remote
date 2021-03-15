@@ -29,21 +29,13 @@ namespace Shawn.Utils
         {
             TextBox0.Visibility = Visibility.Collapsed;
 
-            {
-                Binding binding = new Binding("Background");
-                binding.Mode = BindingMode.OneWay;
-                binding.Source = this;
-                Button.SetBinding(BackgroundProperty, binding);
-            }
+            var bindingBackground = new Binding("Background") { Mode = BindingMode.OneWay, Source = this };
+            Button.SetBinding(BackgroundProperty, bindingBackground);
+            var bindingForeground = new Binding("Foreground") { Mode = BindingMode.OneWay, Source = this };
+            Button.SetBinding(ForegroundProperty, bindingForeground);
 
             Button.Focusable = false;
 
-            {
-                Binding binding = new Binding("Foreground");
-                binding.Mode = BindingMode.OneWay;
-                binding.Source = this;
-                Button.SetBinding(ForegroundProperty, binding);
-            }
 
             Button.MouseDoubleClick += (o, args) =>
             {

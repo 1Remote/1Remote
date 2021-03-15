@@ -163,7 +163,8 @@ namespace PRM
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
             var general = new SystemConfigGeneral(ini);
-            var quickConnect = new SystemConfigLauncher(ini);
+            var keyword = new SystemConfigKeywordMatch(Context, ini);
+            var launcher = new SystemConfigLauncher(ini);
             var theme = new SystemConfigTheme(this.Resources, ini);
             var locality = new SystemConfigLocality(new Ini(Path.Combine(appDateFolder, "locality.ini")));
 
@@ -174,7 +175,8 @@ namespace PRM
             SystemConfig.Init();
             SystemConfig.Instance.General = general;
             SystemConfig.Instance.Language = language;
-            SystemConfig.Instance.Launcher = quickConnect;
+            SystemConfig.Instance.KeywordMatch = keyword;
+            SystemConfig.Instance.Launcher = launcher;
             SystemConfig.Instance.DataSecurity = dataSecurity;
             SystemConfig.Instance.Theme = theme;
             SystemConfig.Instance.Locality = locality;
