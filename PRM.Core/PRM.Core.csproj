@@ -98,11 +98,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TinyPinyin.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TinyPinyin.Core.0.1.0\lib\net452\TinyPinyin.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="VariableKeywordMatcher, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VariableKeywordMatcher.1.0.3\lib\net45\VariableKeywordMatcher.dll</HintPath>
+    <Reference Include="VariableKeywordMatcher, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.1.0.4\lib\net48\VariableKeywordMatcher.dll</HintPath>
     </Reference>
     <Reference Include="VncSharpWpf, Version=0.0.0.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -123,10 +120,12 @@
     <Compile Include="DB\IDB\IDbServer.cs" />
     <Compile Include="DB\freesql\DbConfig.cs" />
     <Compile Include="DB\freesql\DbServer.cs" />
+    <Compile Include="Model\KeywordMatchProviderInfo.cs" />
     <Compile Include="Model\KeywordMatchService.cs" />
     <Compile Include="Model\PrmContext.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
+    <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
     <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />

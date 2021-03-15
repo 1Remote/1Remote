@@ -223,7 +223,7 @@
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                                   Width="{TemplateBinding ActualWidth}"
                                                   Height="{TemplateBinding ActualHeight}"
-                                                  prm:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                                  utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                                   Style="{StaticResource MinHorizontalScrollViewerStyle}"
                                                   Background="{x:Null}">
                                         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"

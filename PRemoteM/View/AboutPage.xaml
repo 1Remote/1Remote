@@ -184,11 +184,6 @@
                                 <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Included Components"></TextBlock>
                                 <StackPanel>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://www.chiark.greenend.org.uk/~sgtatham/putty/" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
-                                            https://www.chiark.greenend.org.uk/~sgtatham/putty/
-                                        </Hyperlink>
-                                    </TextBlock>
-                                    <TextBlock>
                                         <Hyperlink NavigateUri="https://github.com/cyd01/KiTTY" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
                                             https://github.com/cyd01/KiTTY
                                         </Hyperlink>
@@ -204,8 +199,8 @@
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/hstarorg/TinyPinyin.Net" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
-                                            https://github.com/hstarorg/TinyPinyin.Net
+                                        <Hyperlink NavigateUri="https://github.com/VShawn/VariableKeywordMatcher" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True" >
+                                            https://github.com/VShawn/VariableKeywordMatcher
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>

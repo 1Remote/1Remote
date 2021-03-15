@@ -478,6 +478,13 @@ namespace PRM.Core.Protocol.RDP.Host
             InitRdp(width, height, true);
             Conn();
 
+            // if parent is FullScreenWindow, go to full screen.
+            if (!(ParentWindow is ITab))
+            {
+                SimpleLogHelper.Debug("RDP Host: ReConn with full screen");
+                GoFullScreen();
+            }
+
             _invokeOnClosedWhenDisconnected = true;
         }
 

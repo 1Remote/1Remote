@@ -9,23 +9,6 @@ namespace PRM.Core.Protocol.RDP
 {
     public sealed class ProtocolServerRemoteApp : ProtocolServerWithAddrPortUserPwdBase
     {
-        public class LocalSetting : NotifyPropertyChangedBase
-        {
-            private bool _fullScreenLastSessionIsFullScreen = false;
-            public bool FullScreenLastSessionIsFullScreen
-            {
-                get => _fullScreenLastSessionIsFullScreen;
-                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
-            }
-
-            private int _fullScreenLastSessionScreenIndex = -1;
-            public int FullScreenLastSessionScreenIndex
-            {
-                get => _fullScreenLastSessionScreenIndex;
-                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
-            }
-        }
-
         public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", "APP")
         {
             base.Port = "3389";

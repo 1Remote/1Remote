@@ -69,6 +69,7 @@ namespace PRM.Core.Model
 
 
         #region Interface
+        // TODO rename to launcher
         private const string _sectionName = "QuickConnect";
         public override void Save()
         {

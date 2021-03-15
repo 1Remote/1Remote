@@ -10,6 +10,7 @@
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d" 
              Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -503,7 +504,7 @@
 
                     <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" 
                                       Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                      prm:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                      utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                       Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ListBox 
