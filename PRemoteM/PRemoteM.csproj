@@ -106,9 +106,6 @@
       <HintPath>..\packages\FreeSql.Provider.Sqlite.2.0.105\lib\net45\FreeSql.Provider.Sqlite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Kawazu, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kawazu.1.0.0\lib\netstandard2.0\Kawazu.dll</HintPath>
-    </Reference>
     <Reference Include="LibNMeCab, Version=0.10.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LibNMeCab.0.10.1\lib\netstandard2.0\LibNMeCab.dll</HintPath>
     </Reference>
@@ -142,14 +139,14 @@
     <Reference Include="ToolGood.Words.Pinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
       <HintPath>..\packages\ToolGood.Words.Pinyin.3.0.1.4\lib\net40\ToolGood.Words.Pinyin.dll</HintPath>
     </Reference>
-    <Reference Include="VariableKeywordMatcher, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VariableKeywordMatcher.1.0.4\lib\net48\VariableKeywordMatcher.dll</HintPath>
+    <Reference Include="VariableKeywordMatcher, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.1.0.5\lib\net48\VariableKeywordMatcher.dll</HintPath>
     </Reference>
-    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYin, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.1.0.4\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.dll</HintPath>
+    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYin, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.1.0.5\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.dll</HintPath>
     </Reference>
-    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.1.0.4\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.dll</HintPath>
+    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.1.0.5\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.dll</HintPath>
     </Reference>
     <Reference Include="Windows, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

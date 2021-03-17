@@ -343,13 +343,13 @@ namespace PRM.Core.Model
 
                     try
                     {
-                        this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
+                        this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                         this._context.AppData.ServerListUpdate();
                     }
                     catch (Exception ee)
                     {
                         path = oldDbPath;
-                        this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
+                        this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                         this._context.AppData.ServerListUpdate();
                         SimpleLogHelper.Warning(ee);
                         MessageBox.Show(
@@ -393,7 +393,7 @@ namespace PRM.Core.Model
                             this._context.DbOperator.CloseConnection();
                             File.Move(oldDbPath, path);
                             File.Delete(oldDbPath);
-                            this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, FreeSqlDb.GetConnectionStringSqlite(path));
+                            this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                             // Migrate do not need reload data
                             // this._appContext.AppData.ServerListUpdate();
                             DbPath = path;

@@ -33,8 +33,7 @@ namespace PRM.Core.DB
                 case EnumDbStatus.OK:
                     break;
                 case EnumDbStatus.NotConnected:
-                    // TODO add string
-                    break;
+                    return "database: NotConnected!";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
