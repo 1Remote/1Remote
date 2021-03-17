@@ -13,6 +13,11 @@ namespace PRM.Core.DB
 {
     public static class DbExtensions
     {
+        public static string GetSqliteConnectionString(string dbPath)
+        {
+            return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
+        }
+
         private static string TryGetConfig(this IDb iDb, string key)
         {
             try
