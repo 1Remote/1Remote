@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PRM.Core.DB;
 using PRM.Core.DB.Dapper;
-using PRM.Core.DB.freesql;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
