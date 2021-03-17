@@ -252,6 +252,7 @@ namespace PRM.Core.Model
                     }
             }
         }
+
         public void DecryptPwdIfItIsEncrypted(ProtocolServerBase server)
         {
             if (_rsa == null) return;

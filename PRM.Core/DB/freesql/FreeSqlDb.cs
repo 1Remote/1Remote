@@ -13,11 +13,6 @@ namespace PRM.Core.DB.freesql
         private FreeSql.DataType _dbType;
         private string _connectionString;
 
-        public static string GetConnectionStringSqlite(string dbPath)
-        {
-            return $"Data Source={dbPath}; Pooling=true;Min Pool Size=1";
-        }
-
         public FreeSqlDb()
         {
         }
@@ -80,6 +75,7 @@ namespace PRM.Core.DB.freesql
 
         public ProtocolServerBase GetServer(int id)
         {
+            Debug.Assert(id > 0);
             var dbServer = _fsql?.Select<DbServer>().Where(x => x.Id == id).First();
             return dbServer?.ToProtocolServerBase();
         }
