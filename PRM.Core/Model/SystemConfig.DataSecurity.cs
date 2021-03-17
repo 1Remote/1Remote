@@ -8,10 +8,6 @@ using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
 using PRM.Core.DB;
-using PRM.Core.DB.freesql;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
