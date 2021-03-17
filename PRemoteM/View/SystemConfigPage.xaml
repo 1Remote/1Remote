@@ -235,6 +235,16 @@
                         </StackPanel>
                     </Grid>
 
+
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.AllowGroupNameSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_allow_group_name_search}"></CheckBox>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
@@ -260,15 +270,6 @@
                                              PreviewKeyDown="TextBoxKey_OnPreviewKeyDown" 
                                              Text="{Binding SystemConfig.Launcher.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
                                 </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.AllowGroupNameSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_allow_group_name_search}"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
