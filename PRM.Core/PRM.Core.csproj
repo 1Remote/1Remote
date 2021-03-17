@@ -98,9 +98,8 @@
     <Reference Include="VariableKeywordMatcher, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VariableKeywordMatcher.1.0.5\lib\net48\VariableKeywordMatcher.dll</HintPath>
     </Reference>
-    <Reference Include="VncSharpWpf, Version=0.0.0.1, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Protocol\VNC\VncSharpWpf.dll</HintPath>
+    <Reference Include="VncSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=61974755c7bfea7c, processorArchitecture=MSIL">
+      <HintPath>..\packages\VncSharp.1.0.7.0\lib\VncSharp.dll</HintPath>
     </Reference>
     <Reference Include="Windows">
       <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
@@ -372,7 +371,6 @@
     <Resource Include="Resources\Icons\20210106\20210106_105.png" />
     <Resource Include="kitty_portable.exe" />
     <Resource Include="Resources\Logo\author_avatar.jpg" />
-    <Content Include="Protocol\VNC\VncSharpWpf.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
     <Resource Include="Resources\Logo\logo256.png" />
