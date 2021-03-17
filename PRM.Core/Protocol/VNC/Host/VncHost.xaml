@@ -4,8 +4,8 @@
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                            xmlns:protocol="clr-namespace:PRM.Core.Protocol"
-                           xmlns:vncSharpWpf="clr-namespace:VncSharpWpf;assembly=VncSharpWpf"
                            xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
+                           xmlns:vncSharp="clr-namespace:VncSharp;assembly=VncSharp"
                            mc:Ignorable="d"
                            d:DesignHeight="450" d:DesignWidth="800">
 
@@ -129,7 +129,9 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <vncSharpWpf:RemoteDesktopWpf x:Name="Vnc"/>
+        <WindowsFormsHost HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="VncFormsHost">
+            <vncSharp:RemoteDesktop x:Name="Vnc"/>
+        </WindowsFormsHost>
         <Control Name="GridLoading" Style="{StaticResource BusyAnimationStyle}" Background="Black"/>
         <Grid Name="GridMessageBox" Background="Black">
             <Grid.ColumnDefinitions>
