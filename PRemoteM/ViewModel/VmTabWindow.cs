@@ -5,10 +5,12 @@ using System.Linq;
 using System.Windows;
 using Dragablz;
 using PRM.Core.Model;
-using Shawn.Utils.DragablzTab;
+using Shawn.Utils;
 using PRM.Model;
 using PRM.View.TabWindow;
+
 using Shawn.Utils;
+
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
@@ -16,6 +18,7 @@ namespace PRM.ViewModel
     public class VmTabWindow : NotifyPropertyChangedBase, IDisposable
     {
         public readonly string Token;
+
         public VmTabWindow(string token)
         {
             Token = token;
@@ -42,6 +45,7 @@ namespace PRM.ViewModel
         }
 
         private string _tag = "";
+
         /// <summary>
         /// tag of the Tab, e.g. tag = Group1 then the servers in Group1 will be shown on this Tab.
         /// </summary>
@@ -56,6 +60,7 @@ namespace PRM.ViewModel
         }
 
         private string _title = "";
+
         public string Title
         {
             get => _title;
@@ -66,8 +71,8 @@ namespace PRM.ViewModel
 
         public Visibility BtnCloseAllVisibility => Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
 
-
         private bool _isTagEditing = false;
+
         public bool IsTagEditing
         {
             get => _isTagEditing;
@@ -83,8 +88,8 @@ namespace PRM.ViewModel
 
         public Visibility TitleTagEditorVisibility => IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
 
-
         private TabItemViewModel _selectedItem = new TabItemViewModel();
+
         public TabItemViewModel SelectedItem
         {
             get => _selectedItem;
@@ -96,10 +101,11 @@ namespace PRM.ViewModel
         }
 
         #region drag drop tab
+
         private readonly IInterTabClient _interTabClient = new InterTabClient();
         public IInterTabClient InterTabClient => _interTabClient;
-        #endregion
 
+        #endregion drag drop tab
 
         private void SetTitle()
         {
@@ -119,7 +125,9 @@ namespace PRM.ViewModel
         }
 
         #region CMD
+
         private RelayCommand _cmdHostGoFullScreen;
+
         public RelayCommand CmdHostGoFullScreen
         {
             get
@@ -136,8 +144,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private RelayCommand _cmdIsTagEditToggle;
+
         public RelayCommand CmdIsTagEditToggle
         {
             get
@@ -153,8 +161,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private RelayCommand _cmdInvokeLauncher;
+
         public RelayCommand CmdInvokeLauncher
         {
             get
@@ -171,6 +179,7 @@ namespace PRM.ViewModel
         }
 
         private RelayCommand _cmdShowTabByIndex;
+
         public RelayCommand CmdShowTabByIndex
         {
             get
@@ -193,6 +202,7 @@ namespace PRM.ViewModel
         }
 
         private RelayCommand _cmdGoMinimize;
+
         public RelayCommand CmdGoMinimize
         {
             get
@@ -212,8 +222,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private RelayCommand _cmdGoMaximize;
+
         public RelayCommand CmdGoMaximize
         {
             get
@@ -230,8 +240,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private RelayCommand _cmdCloseAll;
+
         public RelayCommand CmdCloseAll
         {
             get
@@ -247,9 +257,8 @@ namespace PRM.ViewModel
             }
         }
 
-
-
         private RelayCommand _cmdClose;
+
         public RelayCommand CmdClose
         {
             get
@@ -271,9 +280,9 @@ namespace PRM.ViewModel
                 return _cmdClose;
             }
         }
-        #endregion
-    }
 
+        #endregion CMD
+    }
 
     public class InterTabClient : IInterTabClient
     {
@@ -293,6 +302,7 @@ namespace PRM.ViewModel
                 return new NewTabHost<Window>(v, v.TabablzControl);
             }
         }
+
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
             if (window is TabWindowBase tab)

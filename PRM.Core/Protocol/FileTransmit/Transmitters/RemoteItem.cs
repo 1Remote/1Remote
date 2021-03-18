@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media.Imaging;
 
-namespace PRM.Core.Protocol.FileTransmitter
+namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {
     public class RemoteItem : NotifyPropertyChangedBase
     {

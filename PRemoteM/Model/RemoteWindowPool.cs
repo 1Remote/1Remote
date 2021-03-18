@@ -12,9 +12,11 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using Shawn.Utils.DragablzTab;
+using Shawn.Utils;
 using PRM.View;
 using PRM.View.TabWindow;
+using PRM.ViewModel;
+
 using Shawn.Utils;
 
 namespace PRM.Model

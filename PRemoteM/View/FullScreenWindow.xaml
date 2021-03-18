@@ -9,6 +9,5 @@
         WindowStartupLocation="CenterScreen"
         Title="FullScreenWindow" Height="480" Width="600">
     <Grid Background="{DynamicResource MainColor1Brush}">
-        
     </Grid>
 </Window>

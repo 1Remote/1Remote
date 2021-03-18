@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -37,7 +33,7 @@ namespace Shawn.Utils
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-        #endregion
+        #endregion Window Flashing API Stuff
 
         public static void Flash(this Window win, UInt32 count = UInt32.MaxValue, UInt32 interval = 500)
         {

@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
 
 namespace Shawn.Utils
 {
@@ -38,15 +29,14 @@ namespace Shawn.Utils
         protected static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi,
             uint cbSizeFileInfo, uint uFlags);
 
-
         [DllImport("User32.dll", EntryPoint = "DestroyIcon")]
         public static extern int DestroyIcon(IntPtr hIcon);
 
-        #endregion
+        #endregion SHGetFileInfo
 
         public static Bitmap GetFolderIcon(string path)
         {
-            //Constants flags for SHGetFileInfo 
+            //Constants flags for SHGetFileInfo
             const uint SHGFI_ICON = 0x100;
             const uint SHGFI_LARGEICON = 0x0; // 'Large icon
             if (Directory.Exists(path))
@@ -82,7 +72,6 @@ namespace Shawn.Utils
 
             return null;
         }
-
 
         public enum FileInfoFlags : uint
         {
@@ -124,10 +113,10 @@ namespace Shawn.Utils
             FILE_ATTRIBUTE_ENCRYPTED = 0x00004000
         }
 
-        /// <summary>  
+        /// <summary>
         /// 获取文件夹图标
-        /// </summary>  
-        /// <returns>图标</returns>  
+        /// </summary>
+        /// <returns>图标</returns>
         public static Bitmap GetFolderIcon(string path = "", bool isLargeIcon = false)
         {
             if (!string.IsNullOrEmpty(path) && Directory.Exists(path))

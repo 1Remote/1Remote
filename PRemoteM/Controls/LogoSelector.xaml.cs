@@ -9,8 +9,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using PRM.Core.Annotations;
 using PRM.Core.Model;
+using PRM.Core.Properties;
+using Shawn.Utils;
+
 using Shawn.Utils;
 
 namespace PRM.Core.Resources.Controls
@@ -18,6 +20,7 @@ namespace PRM.Core.Resources.Controls
     public partial class LogoSelector : UserControl, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -25,8 +28,8 @@ namespace PRM.Core.Resources.Controls
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
 
+        #endregion INotifyPropertyChanged
 
         /*
         public static readonly DependencyProperty LogoSourceProperty =
@@ -39,7 +42,6 @@ namespace PRM.Core.Resources.Controls
             ((LogoSelector)d).OnPropertyChanged(nameof(LogoSource));
         }
 
-
         public BitmapSource LogoSource
         {
             get => (BitmapSource)GetValue(LogoSourceProperty);
@@ -51,12 +53,10 @@ namespace PRM.Core.Resources.Controls
             }
         }*/
 
-
-
         public Action OnLogoChanged;
 
-
         private double _scaling = 1.0;
+
         public double Scaling
         {
             get => _scaling;
@@ -119,7 +119,6 @@ namespace PRM.Core.Resources.Controls
             }
             OnLogoChanged?.Invoke();
         }
-
 
         public BitmapSource Logo
         {
@@ -186,8 +185,8 @@ namespace PRM.Core.Resources.Controls
 
                 if (roiWidth > 0 && roiHeight > 0)
                 {
-                    var roi = resize.Roi(new Rectangle((int) startPoint.X, (int) startPoint.Y, (int) roiWidth, (int) roiHeight)).ToBitmapSource();
-                    var result = new WriteableBitmap((int) CanvasWhiteBoard.Width, (int) CanvasWhiteBoard.Height, roi.DpiX, roi.DpiY, resize.Format,null);
+                    var roi = resize.Roi(new Rectangle((int)startPoint.X, (int)startPoint.Y, (int)roiWidth, (int)roiHeight)).ToBitmapSource();
+                    var result = new WriteableBitmap((int)CanvasWhiteBoard.Width, (int)CanvasWhiteBoard.Height, roi.DpiX, roi.DpiY, resize.Format, null);
                     var stride = roi.PixelWidth * (roi.Format.BitsPerPixel / 8);
                     var data = new byte[roi.PixelHeight * stride];
                     roi.CopyPixels(data, stride, 0);
@@ -196,7 +195,7 @@ namespace PRM.Core.Resources.Controls
                 }
                 else
                 {
-                    var bitmap = new Bitmap((int) CanvasWhiteBoard.Width, (int) CanvasWhiteBoard.Height);
+                    var bitmap = new Bitmap((int)CanvasWhiteBoard.Width, (int)CanvasWhiteBoard.Height);
                     using (var g = Graphics.FromImage(bitmap))
                     {
                         g.Save();
@@ -207,15 +206,17 @@ namespace PRM.Core.Resources.Controls
             }
         }
 
-
         #region 拖动选区
+
         //鼠标相对于被拖动的Canvas控件CanvasImage的坐标
         private System.Windows.Point mouseStartPosition = new System.Windows.Point();
+
         //鼠标相对于作为容器的Canvas控件CanvasWhiteBoard的坐标
         private System.Windows.Point mouseNowPosition = new System.Windows.Point();
 
         private bool _dragStarted = false;
         private DateTime _dragStartTime = DateTime.MinValue;
+
         /// <summary>
         /// 记录移动起点
         /// </summary>
@@ -276,18 +277,19 @@ namespace PRM.Core.Resources.Controls
             }
             e.Handled = true;
         }
-        #endregion
 
-
+        #endregion 拖动选区
 
         /// <summary>
         /// 上一次使用滚轮放大时间
         /// </summary>
         private int _lastMouseWheelTimestamp = 0;
+
         /// <summary>
         /// 滚轮加速度
         /// </summary>
         private double _k = 1;
+
         private void Window_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (Img?.Source == null)
@@ -324,9 +326,6 @@ namespace PRM.Core.Resources.Controls
                 Scaling = tmp;
             }
         }
-
-
-
 
         /// <summary>
         ///  prevent child goes to parent outside
@@ -370,7 +369,6 @@ namespace PRM.Core.Resources.Controls
             return ret;
         }
 
-
         public bool? Show(Microsoft.Win32.FileDialog fileDialog)
         {
             Window win = new Window
@@ -391,6 +389,7 @@ namespace PRM.Core.Resources.Controls
             win.Close();
             return result;
         }
+
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog
@@ -416,16 +415,15 @@ namespace PRM.Core.Resources.Controls
         {
             Scaling -= 0.1;
         }
-
     }
 
-
-
     #region ChessboardBrushHelper
-    static class ChessboardBrushHelper
+
+    internal static class ChessboardBrushHelper
     {
         private static readonly object _obj = new object();
-        private static readonly Dictionary<int,ImageBrush> _chessboardBrushes = new Dictionary<int, ImageBrush>();
+        private static readonly Dictionary<int, ImageBrush> _chessboardBrushes = new Dictionary<int, ImageBrush>();
+
         public static ImageBrush ChessboardBrush(int blockPixSize = 32)
         {
             lock (_obj)
@@ -459,6 +457,7 @@ namespace PRM.Core.Resources.Controls
                 };
             }
         }
-    } 
-    #endregion
+    }
+
+    #endregion ChessboardBrushHelper
 }

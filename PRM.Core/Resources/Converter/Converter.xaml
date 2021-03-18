@@ -1,12 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converter="clr-namespace:PRM.Resources.Converter">
-    <converter:ConverterIsGreaterThan x:Key="ConverterIsGreaterThan0" CompareValue="0"/>
-    <converter:ConverterIsLowerThan x:Key="ConverterIsLowerThan1" CompareValue="1"/>
-    <converter:ConverterBool2Visible x:Key="ConverterBool2Visible"/>
-    <converter:ConverterBool2VisibleInv x:Key="ConverterBool2VisibleInv"/>
-    <converter:ConverterTextWidthAndContent2PresentationSize x:Key="ConverterTextWidthAndContent2PresentationSize"/>
-    <converter:ConverterDouble2Half x:Key="ConverterDouble2Half"/>
+                    xmlns:converter="clr-namespace:PRM.Core.Resources.Converter">
+    <converter:ConverterIsGreaterThan x:Key="ConverterIsGreaterThan0" CompareValue="0" />
+    <converter:ConverterIsLowerThan x:Key="ConverterIsLowerThan1" CompareValue="1" />
+    <converter:ConverterBool2Visible x:Key="ConverterBool2Visible" />
+    <converter:ConverterBool2VisibleInv x:Key="ConverterBool2VisibleInv" />
+    <converter:ConverterTextWidthAndContent2PresentationSize x:Key="ConverterTextWidthAndContent2PresentationSize" />
+    <converter:ConverterDouble2Half x:Key="ConverterDouble2Half" />
     <converter:ConverterColorHexString2Brush x:Key="ConverterColorHexString2Brush"></converter:ConverterColorHexString2Brush>
     <converter:ConverterColorHexString2Color x:Key="ConverterColorHexString2Color"></converter:ConverterColorHexString2Color>
 </ResourceDictionary>

@@ -16,13 +16,13 @@ namespace PRM.Core.Model
         Address = 6,
         AddressDesc = 7,
     }
+
     public enum EnumTabMode
     {
         NewItemGoesToLatestActivate,
         NewItemGoesToGroup,
         NewItemGoesToProtocol,
     }
-
 
     public sealed class SystemConfigGeneral : SystemConfigBase
     {
@@ -36,6 +36,7 @@ namespace PRM.Core.Model
         }
 
         private bool _appStartAutomatically = true;
+
         public bool AppStartAutomatically
         {
             get => _appStartAutomatically;
@@ -43,6 +44,7 @@ namespace PRM.Core.Model
         }
 
         private bool _appStartMinimized = true;
+
         public bool AppStartMinimized
         {
             get => _appStartMinimized;
@@ -50,6 +52,7 @@ namespace PRM.Core.Model
         }
 
         private string _iconFolderPath = "./icons";
+
         public string IconFolderPath
         {
             get => _iconFolderPath;
@@ -57,23 +60,25 @@ namespace PRM.Core.Model
         }
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;
+
         public EnumServerOrderBy ServerOrderBy
         {
             get => _serverOrderBy;
             set => SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
         }
 
-
         private EnumTabMode _tabMode = EnumTabMode.NewItemGoesToLatestActivate;
+
         public EnumTabMode TabMode
         {
             get => _tabMode;
             set => SetAndNotifyIfChanged(nameof(TabMode), ref _tabMode, value);
         }
 
-
         #region Interface
+
         private const string _sectionName = "General";
+
         public override void Save()
         {
             StopAutoSave = true;
@@ -115,6 +120,6 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigGeneral));
         }
 
-        #endregion
+        #endregion Interface
     }
 }

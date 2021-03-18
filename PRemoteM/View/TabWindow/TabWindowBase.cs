@@ -13,10 +13,12 @@ using System.Windows.Interop;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using Shawn.Utils;
 using PRM.Model;
 using PRM.ViewModel;
+
 using Shawn.Utils;
-using Shawn.Utils.DragablzTab;
+
 using Timer = System.Timers.Timer;
 
 namespace PRM.View.TabWindow
@@ -57,7 +59,6 @@ namespace PRM.View.TabWindow
             var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
             if (hWnd == IntPtr.Zero) return;
 
-
             var nowActivatedWindowHandle = GetForegroundWindow();
             if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
             {
@@ -72,6 +73,60 @@ namespace PRM.View.TabWindow
                 Vm?.SelectedItem?.Content?.MakeItFocus();
             }
             _lastActivatedWindowHandle = nowActivatedWindowHandle;
+        }
+
+        private void InitSizeChanged()
+        {
+            // save window size when size changed
+            this.SizeChanged += (sizeChangeSender, _) =>
+            {
+                if (this.WindowState == WindowState.Normal)
+                {
+                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
+                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                }
+                SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
+            };
+        }
+
+        private void InitStateChanged()
+        {
+            this.StateChanged += delegate (object sender, EventArgs args)
+            {
+                if (this.WindowState != WindowState.Minimized)
+                {
+                    Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
+                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
+                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
+                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                }
+                SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
+            };
+        }
+
+        private void InitClosingItemCallback()
+        {
+            _tabablzControl.ClosingItemCallback += args =>
+            {
+                args.Cancel();
+                if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
+                {
+                    var pb = viewModel.Content;
+                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId);
+                }
+            };
+        }
+
+        private void InitClosed()
+        {
+            Closed += (sender, args) =>
+            {
+                DataContext = null;
+                _timer4CheckForegroundWindow?.Dispose();
+                Vm?.CmdCloseAll.Execute();
+                Vm?.Dispose();
+            };
         }
 
         protected void Init(TabablzControl tabablzControl)
@@ -89,49 +144,11 @@ namespace PRM.View.TabWindow
             if (SystemConfig.Instance.Locality.TabWindowState != WindowState.Minimized)
                 this.WindowState = SystemConfig.Instance.Locality.TabWindowState;
 
-            // save window size when size changed
-            this.SizeChanged += (sizeChangeSender, _) =>
-            {
-                if (this.WindowState == WindowState.Normal)
-                {
-                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
-                }
-                SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
-            };
-            this.StateChanged += delegate (object sender, EventArgs args)
-            {
-                if (this.WindowState != WindowState.Minimized)
-                {
-                    Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
-                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
-                }
-                SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
-            };
-
-            _tabablzControl.ClosingItemCallback += args =>
-            {
-                args.Cancel();
-                if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
-                {
-                    var pb = viewModel.Content;
-                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId);
-                }
-            };
-
-            Closed += (sender, args) =>
-            {
-                DataContext = null;
-                _timer4CheckForegroundWindow?.Dispose();
-                Vm?.CmdCloseAll.Execute();
-                Vm?.Dispose();
-            };
+            InitSizeChanged();
+            InitStateChanged();
+            InitClosingItemCallback();
+            InitClosed();
         }
-
-
 
         protected virtual void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -140,7 +157,6 @@ namespace PRM.View.TabWindow
                 this.Icon = Vm.SelectedItem.Content.ProtocolServer.IconImg;
             }
         }
-        
 
         public VmTabWindow GetViewModel()
         {
@@ -171,12 +187,12 @@ namespace PRM.View.TabWindow
             };
         }
 
-
-
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool BringWindowToTop(IntPtr hWnd);
+
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
+
         [DllImport("user32.dll")]
         private static extern int SetForegroundWindow(IntPtr hWnd);
     }

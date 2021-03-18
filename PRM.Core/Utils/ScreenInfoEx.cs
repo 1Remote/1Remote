@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Interop;
 
 namespace Shawn.Utils
@@ -28,7 +23,6 @@ namespace Shawn.Utils
             }
 */
 
-
     public class ScreenInfoEx
     {
         public static ScreenInfoEx GetCurrentScreen(int screenIndex)
@@ -40,16 +34,19 @@ namespace Shawn.Utils
             }
             return new ScreenInfoEx(System.Windows.Forms.Screen.AllScreens[screenIndex]);
         }
+
         public static ScreenInfoEx GetCurrentScreen(Window win)
         {
             var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(win).Handle);
             return new ScreenInfoEx(screen);
         }
+
         public static ScreenInfoEx GetCurrentScreenBySystemPosition(System.Drawing.Point systemPosition)
         {
             var screen = System.Windows.Forms.Screen.FromPoint(systemPosition);
             return new ScreenInfoEx(screen);
         }
+
         public static ScreenInfoEx GetCurrentScreenByVirtualPosition(System.Drawing.Point virtualPosition)
         {
             var k = new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor;
@@ -57,6 +54,7 @@ namespace Shawn.Utils
             var screen = System.Windows.Forms.Screen.FromPoint(systemPosition);
             return new ScreenInfoEx(screen);
         }
+
         public static System.Drawing.Rectangle GetAllScreensSize()
         {
             var entireSize = System.Drawing.Rectangle.Empty;
@@ -65,20 +63,7 @@ namespace Shawn.Utils
             return entireSize;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        const int ENUM_CURRENT_SETTINGS = -1;
+        private const int ENUM_CURRENT_SETTINGS = -1;
 
         /// <summary>
         /// On win10, if your PrimaryScreen is 200%, then GlobalScaleFactor would be 200%, your 2nd screen's real bounds = screen.Bounds / 200%.
@@ -148,10 +133,9 @@ namespace Shawn.Utils
             }
         }
 
-
-
         public double ScaleFactor => PhysicalPixWidth * 1.0 / VirtualBounds.Width;
         public int Index { get; private set; }
+
         public Screen Screen
         {
             get => Screen.AllScreens[Index];
@@ -175,12 +159,11 @@ namespace Shawn.Utils
         public Rectangle VirtualBounds { get; }
         public Rectangle VirtualWorkingArea { get; }
         public System.Drawing.Point VirtualCenter => new System.Drawing.Point(VirtualBounds.X + VirtualBounds.Width / 2, VirtualBounds.Y + VirtualBounds.Height / 2);
+
         public System.Drawing.Point VirtualWorkingAreaCenter => new System.Drawing.Point(VirtualWorkingArea.X + VirtualWorkingArea.Width / 2,
             VirtualWorkingArea.Y + VirtualWorkingArea.Height / 2);
 
-
         public DEVMODE DevMode { get; private set; }
-
 
         [DllImport("user32.dll")]
         public static extern bool EnumDisplaySettings(string lpszDeviceName, int iModeNum, ref DEVMODE lpDevMode);
@@ -190,8 +173,10 @@ namespace Shawn.Utils
         {
             private const int CCHDEVICENAME = 0x20;
             private const int CCHFORMNAME = 0x20;
+
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
             public string dmDeviceName;
+
             public short dmSpecVersion;
             public short dmDriverVersion;
             public short dmSize;
@@ -206,8 +191,10 @@ namespace Shawn.Utils
             public short dmYResolution;
             public short dmTTOption;
             public short dmCollate;
+
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
             public string dmFormName;
+
             public short dmLogPixels;
             public int dmBitsPerPel;
             public int dmPelsWidth;
@@ -223,7 +210,6 @@ namespace Shawn.Utils
             public int dmPanningWidth;
             public int dmPanningHeight;
         }
-
 
         /// <summary>
         /// GetCursorPos return the cursor position witch is on a system resolution, not on real resolution.
@@ -242,6 +228,7 @@ namespace Shawn.Utils
             public Int32 X;
             public Int32 Y;
         };
+
         public static System.Drawing.Point GetMouseVirtualPosition()
         {
             var w32Mouse = new Win32Point();
@@ -258,6 +245,7 @@ namespace Shawn.Utils
                 return new System.Drawing.Point((int)(w32Mouse.X / k), (int)(w32Mouse.Y / k));
             }
         }
+
         public static System.Drawing.Point GetMouseSystemPosition()
         {
             var w32Mouse = new Win32Point();

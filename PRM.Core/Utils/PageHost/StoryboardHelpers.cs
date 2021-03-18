@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace Shawn.Utils
+namespace Shawn.Utils.PageHost
 {
     public static class StoryboardHelpers
     {
@@ -37,7 +37,6 @@ namespace Shawn.Utils
             var to = new Thickness(-parentWidth, 0, parentWidth, 0);
             storyboard.AddThicknessAnimation(seconds, from, to, "Margin", decelerationRatio);
         }
-
 
         public static void AddSlideFromTop(this Storyboard storyboard, double seconds, double parentHeight,
             float decelerationRatio = 0.9f)

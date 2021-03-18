@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,8 +22,8 @@ namespace Shawn.Utils
         /// to determine which lang it is
         /// </summary>
         public const string ResourceTypeKey = "__Resource_Type_Key";
-        public const string ResourceTypeValue = "__Resource_Type_Value=languages";
 
+        public const string ResourceTypeValue = "__Resource_Type_Value=languages";
 
         private static void SetKey(IDictionary rd, string key, string value)
         {
@@ -115,7 +114,6 @@ namespace Shawn.Utils
                 throw;
             }
         }
-
 
         public static void ChangeLanguage(this ResourceDictionary resources, ResourceDictionary lang)
         {

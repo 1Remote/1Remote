@@ -3,28 +3,25 @@
 #define STORE_METHOD
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Windows.UI.Popups;
+using Windows.ApplicationModel;
 using PRM.Core.Model;
 
 #if FOR_MICROSOFT_STORE
-using Windows.ApplicationModel;
+
 #endif
 
 namespace Shawn.Utils
 {
     public static class SetSelfStartingHelper
     {
-
 #if DEV
         public static string StartupTaskId = "PRemoteM_Debug";
 #else
@@ -39,10 +36,12 @@ namespace Shawn.Utils
             /// 正常启动
             /// </summary>
             Normal,
+
             /// <summary>
             /// 高权限启动，并设置软件自启动
             /// </summary>
             SetSelfStart,
+
             /// <summary>
             /// 高权限启动，并取消软件自启动
             /// </summary>
@@ -63,15 +62,15 @@ namespace Shawn.Utils
         /// <param name="startupMode"></param>
         public static void RunElvatedTask(StartupMode startupMode)
         {
-            // It is not possible to launch a ClickOnce app as administrator directly,  
-            // so instead we launch the app as administrator in a new process.  
+            // It is not possible to launch a ClickOnce app as administrator directly,
+            // so instead we launch the app as administrator in a new process.
             var processInfo = new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName);
 
-            // The following properties run the new process as administrator  
+            // The following properties run the new process as administrator
             processInfo.UseShellExecute = true;
             processInfo.Verb = "runas";
             processInfo.Arguments = startupMode.ToString();
-            // Start the new process  
+            // Start the new process
             try
             {
                 Process.Start(processInfo);
@@ -80,7 +79,6 @@ namespace Shawn.Utils
             {
             }
         }
-
 
         private static string MD5EncryptString(string str)
         {
@@ -99,6 +97,7 @@ namespace Shawn.Utils
             // 返回加密的字符串
             return sb.ToString();
         }
+
         private static string GetStartupShortcutPath()
         {
             var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -134,6 +133,7 @@ namespace Shawn.Utils
             else
                 RunElvatedTask(StartupMode.UnsetSelfStart);
         }
+
         private static async void SetSelfStartByStartupByShortcut(string shortcutPath)
         {
             var hasStartup = await IsSelfStartByShortcut();
@@ -174,10 +174,11 @@ namespace Shawn.Utils
             else
                 UnsetSelfStartByStartupByShortcut(shortcutPath);
         }
+
 #endif
 
-
 #if REGISTRY_METHOD
+
         public static async Task<bool> IsSelfStartByRegistryKey()
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -186,7 +187,6 @@ namespace Shawn.Utils
 #endif
             return key?.GetValueNames().Contains(StartupTaskId) == true;
         }
-
 
         public static async void SetSelfStartByRegistryKey(bool isSetSelfStart)
         {
@@ -206,14 +206,11 @@ namespace Shawn.Utils
                 }
             }
         }
+
 #endif
 
-
-
-
-
-
 #if STORE_METHOD
+
         public static async Task<bool> IsSelfStartByStartupTask()
         {
             var result = await StartupTask.GetAsync(StartupTaskId);
@@ -223,14 +220,15 @@ namespace Shawn.Utils
                 case StartupTaskState.DisabledByUser:
                 case StartupTaskState.DisabledByPolicy:
                     return false;
+
                 case StartupTaskState.Enabled:
                 case StartupTaskState.EnabledByPolicy:
                     return true;
+
                 default:
                     return false;
             }
         }
-
 
         public static async void SetSelfStartByStartupTask(bool isSetSelfStart)
         {
@@ -243,6 +241,7 @@ namespace Shawn.Utils
                         var newState = await result.RequestEnableAsync();
                     }
                     break;
+
                 case StartupTaskState.DisabledByUser:
                     MessageBox.Show(
                         "You have disabled this app's ability to run " +
@@ -250,21 +249,24 @@ namespace Shawn.Utils
                         "you can enable this in the Startup tab in Task Manager.",
                         "Warning");
                     break;
+
                 case StartupTaskState.DisabledByPolicy:
                     Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
                     break;
+
                 case StartupTaskState.Enabled:
                     if (!isSetSelfStart)
                         result.Disable();
                     break;
+
                 case StartupTaskState.EnabledByPolicy:
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
+
 #endif
-
-
     }
 }

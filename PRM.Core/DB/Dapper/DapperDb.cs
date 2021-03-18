@@ -5,8 +5,8 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
 using Dapper;
+using PRM.Core.DB.IDB;
 using PRM.Core.Protocol;
-using Renci.SshNet.Security;
 
 namespace PRM.Core.DB.Dapper
 {
@@ -15,6 +15,7 @@ namespace PRM.Core.DB.Dapper
         private IDbConnection _dbConnection;
         private string _connectionString;
         private readonly object _locker = new object();
+
         public void CloseConnection()
         {
             lock (_locker)
@@ -64,18 +65,18 @@ namespace PRM.Core.DB.Dapper
         public void InitTables()
         {
             _dbConnection?.Execute(@"
-CREATE TABLE IF NOT EXISTS `Server` (  
-  `Id` INTEGER PRIMARY KEY AUTOINCREMENT, 
-  `Protocol` VARCHAR, 
-  `ClassVersion` VARCHAR, 
-  `JsonConfigString` VARCHAR, 
+CREATE TABLE IF NOT EXISTS `Server` (
+  `Id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `Protocol` VARCHAR,
+  `ClassVersion` VARCHAR,
+  `JsonConfigString` VARCHAR,
   `UpdatedToken` VARCHAR
 );");
             _dbConnection?.Execute(@"
 BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS `Config` (  
-  `Id` INTEGER PRIMARY KEY AUTOINCREMENT, 
-  `Key` VARCHAR, 
+CREATE TABLE IF NOT EXISTS `Config` (
+  `Id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `Key` VARCHAR,
   `Value` VARCHAR
 );
 CREATE UNIQUE INDEX IF NOT EXISTS `uk_key` ON `Config`(`Key`);
@@ -104,9 +105,9 @@ COMMIT TRANSACTION;
             Debug.Assert(server.Id == 0);
             return _dbConnection?.Execute(
                 $@"
-INSERT INTO `{nameof(Server)}` 
-(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`, `{nameof(Server.UpdatedToken)}`) 
-VALUES 
+INSERT INTO `{nameof(Server)}`
+(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`, `{nameof(Server.UpdatedToken)}`)
+VALUES
 (@{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.JsonConfigString)}, @{nameof(Server.UpdatedToken)});",
                 server.ToDbServer()) > 0
                 ? _dbConnection?.QuerySingle<int>("SELECT LAST_INSERT_ROWID();") ?? 0
@@ -119,10 +120,10 @@ VALUES
             return _dbConnection?.Execute(
                 $@"
 UPDATE Server SET
-`{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)}, 
-`{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)}, 
-`{nameof(Server.JsonConfigString)}` = @{nameof(Server.JsonConfigString)}, 
-`{nameof(Server.UpdatedToken)}` = @{nameof(Server.UpdatedToken)} 
+`{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
+`{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
+`{nameof(Server.JsonConfigString)}` = @{nameof(Server.JsonConfigString)},
+`{nameof(Server.UpdatedToken)}` = @{nameof(Server.UpdatedToken)}
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};",
                 server.ToDbServer()) > 0;
         }
@@ -130,7 +131,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};",
         public bool DeleteServer(int id)
         {
             return _dbConnection?.Execute($@"
-DELETE FROM `{nameof(Server)}` 
+DELETE FROM `{nameof(Server)}`
 WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
         }
 

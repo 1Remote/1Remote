@@ -7,8 +7,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Core.Model;
-using PRM.ViewModel;
 using Shawn.Utils;
+using PRM.ViewModel;
+
+using Shawn.Utils;
+
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -21,13 +24,13 @@ namespace PRM.View
     {
         public VmMain Host;
         public VmSystemConfigPage VmSystemConfigPage;
+
         public SystemConfigPage(VmMain host, PrmContext context, Type t = null)
         {
             Host = host;
             VmSystemConfigPage = new VmSystemConfigPage(host, context);
             InitializeComponent();
             DataContext = VmSystemConfigPage;
-
 
             if (t == typeof(SystemConfigGeneral)
             || t == typeof(SystemConfigLanguage))
@@ -40,12 +43,11 @@ namespace PRM.View
                 TabItemTheme.IsSelected = true;
         }
 
-
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
             var key = e.Key;
-            // In case of an Alt modifier, e.Key returns Key.System and the real key is in e.SystemKey. 
+            // In case of an Alt modifier, e.Key returns Key.System and the real key is in e.SystemKey.
             key = key switch
             {
                 Key.System => e.SystemKey,
@@ -98,7 +100,6 @@ namespace PRM.View
                 return false;
             }
 
-
             // check if HOTKEY_ALREADY_REGISTERED
             var r = GlobalHotkeyHooker.Instance.Register(null, (uint)modifier, key, () => { });
             switch (r.Item1)
@@ -108,12 +109,15 @@ namespace PRM.View
                     VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
                     VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
                     return true;
+
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     break;
+
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                     MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -148,7 +152,6 @@ namespace PRM.View
         }
     }
 
-
     public class ObjEqualParam2Bool : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -162,13 +165,13 @@ namespace PRM.View
         }
     }
 
-
     /// <summary>
     /// key board key A -> string "A"
     /// </summary>
     public class Key2KeyStringConverter : IValueConverter
     {
-        #region IValueConverter 成员  
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             Key k = (Key)value;
@@ -179,14 +182,14 @@ namespace PRM.View
         {
             throw new NotImplementedException();
         }
-        #endregion
+
+        #endregion IValueConverter 成员
     }
-
-
 
     public class StringIsEmpty2BoolConverter : IValueConverter
     {
-        #region IValueConverter 成员  
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string str = value?.ToString();
@@ -197,6 +200,7 @@ namespace PRM.View
         {
             throw new NotImplementedException();
         }
-        #endregion
+
+        #endregion IValueConverter 成员
     }
 }

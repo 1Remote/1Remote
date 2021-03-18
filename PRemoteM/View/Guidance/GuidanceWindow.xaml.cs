@@ -4,8 +4,9 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using PRM.Core.Model;
 using Shawn.Utils;
+using Shawn.Utils.PageHost;
 
-namespace PRM.View
+namespace PRM.View.Guidance
 {
     /// <summary>
     /// GuidanceWindow.xaml 的交互逻辑
@@ -29,8 +30,6 @@ namespace PRM.View
             WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
             DataContext = this;
-
-
 
             // set default language
             CultureInfo ci = CultureInfo.CurrentCulture;
@@ -61,17 +60,15 @@ namespace PRM.View
             };
         }
 
-
-
         public SystemConfig SystemConfig { get; set; }
 
         private int _step = 0;
+
         public int Step
         {
             get => _step;
             set => SetAndNotifyIfChanged(nameof(Step), ref _step, value);
         }
-
 
         private void ButtonNext_OnClick(object sender, RoutedEventArgs e)
         {

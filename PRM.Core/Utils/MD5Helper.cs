@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -13,6 +12,7 @@ namespace Shawn.Utils
             byte[] outBytes = md5.ComputeHash(data);
             return outBytes;
         }
+
         public static string GetMd5Hash32BitString(byte[] data)
         {
             byte[] outBytes = GetMd5Hash32Bit(data);

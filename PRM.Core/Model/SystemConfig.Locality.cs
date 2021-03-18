@@ -15,14 +15,12 @@ namespace PRM.Core.Model
             Load();
         }
 
-
         private WindowState _tabWindowState = WindowState.Normal;
         private string _mainWindowTabSelected = "";
         private double _mainWindowWidth = 680;
         private double _tabWindowWidth = 800;
         private double _mainWindowHeight = 530;
         private double _tabWindowHeight = 600;
-
 
         public string MainWindowTabSelected
         {
@@ -54,7 +52,6 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(TabWindowHeight), ref _tabWindowHeight, value);
         }
 
-
         public WindowState TabWindowState
         {
             get => _tabWindowState;
@@ -65,9 +62,10 @@ namespace PRM.Core.Model
             }
         }
 
-
         #region Interface
+
         private const string _sectionName = "Locality";
+
         public override void Save()
         {
             _ini.WriteValue(nameof(MainWindowWidth).ToLower(), _sectionName, MainWindowWidth.ToString());
@@ -94,6 +92,6 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigLocality));
         }
 
-        #endregion
+        #endregion Interface
     }
 }

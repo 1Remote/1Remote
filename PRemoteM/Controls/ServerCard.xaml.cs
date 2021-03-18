@@ -16,6 +16,7 @@ namespace PRM.Controls
             var value = (VmProtocolServer)e.NewValue;
             ((ServerCard)d).DataContext = value;
         }
+
         public VmProtocolServer VmProtocolServer
         {
             get => (VmProtocolServer)GetValue(VmProtocolServerProperty);

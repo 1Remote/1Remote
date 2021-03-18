@@ -1,5 +1,4 @@
-﻿
-namespace PRM.Core.DB.Dapper
+﻿namespace PRM.Core.DB.Dapper
 {
     public class Config
     {

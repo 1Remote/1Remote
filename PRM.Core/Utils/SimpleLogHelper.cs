@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Shawn.Utils
 {
@@ -26,7 +23,6 @@ namespace Shawn.Utils
             Txt,
             MarkDown,
         }
-
 
         public static string LogFileName
         {
@@ -72,26 +68,26 @@ namespace Shawn.Utils
             get => _simpleLogHelper.PrintLogLevel;
             set => _simpleLogHelper.PrintLogLevel = value;
         }
+
         public static EnumLogLevel WriteLogEnumLogLevel
         {
             get => _simpleLogHelper.WriteLogLevel;
             set => _simpleLogHelper.WriteLogLevel = value;
         }
+
         public static long LogFileMaxSizeMb
         {
             get => _simpleLogHelper.LogFileMaxSizeMegabytes;
             set => _simpleLogHelper.LogFileMaxSizeMegabytes = value;
         }
+
         public static EnumLogFileType LogFileType
         {
             get => _simpleLogHelper.LogFileType;
             set => _simpleLogHelper.LogFileType = value;
         }
 
-
         private static SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
-
-
 
         public static void Debug(params object[] o)
         {
@@ -127,7 +123,6 @@ namespace Shawn.Utils
         }
     }
 
-
     public class SimpleLogHelperObject
     {
         public SimpleLogHelperObject(string logFileName = "")
@@ -141,6 +136,7 @@ namespace Shawn.Utils
                 FatalFileName = logFileName;
             }
         }
+
         public SimpleLogHelperObject(
             string debugLogFileName,
             string infoLogFileName,
@@ -170,9 +166,11 @@ namespace Shawn.Utils
         /// if log file size over this vale, old log file XXXXX.log will be moved to XXXXX.001.log
         /// </summary>
         public long LogFileMaxSizeMegabytes { get; set; } = 10;
+
         public SimpleLogHelper.EnumLogLevel PrintLogLevel { get; set; } = SimpleLogHelper.EnumLogLevel.Debug;
         public SimpleLogHelper.EnumLogLevel WriteLogLevel { get; set; } = SimpleLogHelper.EnumLogLevel.Info;
         public SimpleLogHelper.EnumLogFileType LogFileType { get; set; } = SimpleLogHelper.EnumLogFileType.MarkDown;
+
         /// <summary>
         /// del log files created before LogFileMaxHistoryDays if LogFileMaxHistoryDays > 0
         /// </summary>
@@ -336,7 +334,6 @@ namespace Shawn.Utils
                     // append date
                     var withOutExtension = logFileName.Substring(0, logFileName.LastIndexOf(".", StringComparison.Ordinal));
                     logFileName = $"{withOutExtension}_{DateTime.Now.ToString("yyyyMMdd")}{new FileInfo(logFileName).Extension}";
-
 
                     var fi = new FileInfo(logFileName);
                     // craete Directory

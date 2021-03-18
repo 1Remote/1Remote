@@ -32,86 +32,74 @@
         <system:Double x:Key="OneActionItemHeight">35</system:Double>
         <system:Double x:Key="CornerRadius">8</system:Double>
 
-
-
         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
             <VisualBrush.Visual>
                 <Grid VerticalAlignment="Center">
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18"/>
-                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18"/>
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="Black" Opacity="0.5" FontSize="18" />
+                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_mainwindow}" Foreground="White" Opacity="0.5" FontSize="18" />
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
 
         <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="AllowDrop" Value="true"/>
-            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
-            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="AllowDrop" Value="true" />
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
                         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent" />
             <Style.Triggers>
                 <Trigger Property="Text" Value="{x:Null}">
-                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                    <Setter Property="Background" Value="{StaticResource HintText}" />
                 </Trigger>
                 <Trigger Property="Text" Value="">
-                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                    <Setter Property="Background" Value="{StaticResource HintText}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-
-
-
-
-
-
-
-
-
-
         <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Focusable" Value="false"/>
-            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Focusable" Value="false" />
+            <Setter Property="IsTabStop" Value="false" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type RepeatButton}">
-                        <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+                        <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
         <Style x:Key="ScrollBarThumbVertical" TargetType="{x:Type Thumb}">
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
-            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="IsTabStop" Value="false" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Thumb}">
                         <Grid Margin="0 0 0 3">
                             <Border x:Name="rectangle" Opacity="0.5" Background="#FFF" CornerRadius="5" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}">
-                                <!--<Rectangle Fill="#FFF" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>-->
+                                <!--<Rectangle Fill="#FFF" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}" />-->
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Opacity" TargetName="rectangle" Value="0.7"/>
+                                <Setter Property="Opacity" TargetName="rectangle" Value="0.7" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="false">
-                                <Setter Property="Opacity" TargetName="rectangle" Value="0.4"/>
+                                <Setter Property="Opacity" TargetName="rectangle" Value="0.4" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -119,28 +107,28 @@
             </Setter>
         </Style>
         <Style x:Key="SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle" TargetType="{x:Type ScrollBar}">
-            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
-            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-            <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
-            <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
+            <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ScrollBar}">
                         <Grid x:Name="Bg" SnapsToDevicePixels="true" HorizontalAlignment="Right">
 
-                            <!--<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Row="1"/>-->
+                            <!--<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Row="1" />-->
 
                             <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}" Width="5">
                                 <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource RepeatButtonTransparent}"/>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource RepeatButtonTransparent}" />
                                 </Track.DecreaseRepeatButton>
                                 <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource RepeatButtonTransparent}"/>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource RepeatButtonTransparent}" />
                                 </Track.IncreaseRepeatButton>
                                 <Track.Thumb>
-                                    <Thumb Style="{StaticResource ScrollBarThumbVertical}"/>
+                                    <Thumb Style="{StaticResource ScrollBarThumbVertical}" />
                                 </Track.Thumb>
                             </Track>
                         </Grid>
@@ -151,41 +139,24 @@
         <ControlTemplate x:Key="SearchBoxSelectionList_ScrollViewerTemplate" TargetType="{x:Type ScrollViewer}">
             <Border BorderThickness="0" BorderBrush="{TemplateBinding BorderBrush}">
                 <Grid x:Name="Grid" Background="{TemplateBinding Background}">
-                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" 
-                                            CanContentScroll="{TemplateBinding CanContentScroll}" 
-                                            CanHorizontallyScroll="False" 
-                                            CanVerticallyScroll="False" 
+                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                            CanContentScroll="{TemplateBinding CanContentScroll}"
+                                            CanHorizontallyScroll="False"
+                                            CanVerticallyScroll="False"
                                             ClipToBounds="True"
-                                            ContentTemplate="{TemplateBinding ContentTemplate}" 
-                                            Content="{TemplateBinding Content}" 
-                                            Margin="{TemplateBinding Padding}"/>
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Content="{TemplateBinding Content}"
+                                            Margin="{TemplateBinding Padding}" />
                     <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow"
                        HorizontalAlignment="Right"
-                       Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" 
-                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
-                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
-                       ViewportSize="{TemplateBinding ViewportHeight}" 
-                       Style="{StaticResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}"/>
+                       Maximum="{TemplateBinding ScrollableHeight}" Minimum="0"
+                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                       ViewportSize="{TemplateBinding ViewportHeight}"
+                       Style="{StaticResource SearchBoxSelectionList_ScrollViewerTemplateScrollBarStyle}" />
                 </Grid>
             </Border>
         </ControlTemplate>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
             <Grid Visibility="{Binding ObjectVisibility}"  Height="{StaticResource OneItemHeight}">
@@ -200,7 +171,6 @@
                     <Grid Grid.Column="1">
                         <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                     </Grid>
-
 
                     <Grid Grid.Column="3" VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -232,16 +202,16 @@
                             </ContentControl.Resources>
                         </ContentControl>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
-                               Text="{Binding Server.ProtocolDisplayName}" 
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                               Text="{Binding Server.ProtocolDisplayName}"
                                FontSize="18" FontWeight="Bold"
                                HorizontalAlignment="Right"
                                Opacity="0.4"
                                Foreground="{DynamicResource MainColor1Brush}"
                                Margin="10 0"
                                VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
-                               Text="{Binding Server.ProtocolDisplayName}" 
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                               Text="{Binding Server.ProtocolDisplayName}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                Opacity="0.2"
@@ -254,7 +224,6 @@
             </Grid>
         </DataTemplate>
 
-
         <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
@@ -262,7 +231,7 @@
                     <ControlTemplate TargetType="{x:Type ListBox}">
                         <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
                             <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Template="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplate}">
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                             </ScrollViewer>
                         </Border>
                     </ControlTemplate>
@@ -277,24 +246,24 @@
                                     <Grid>
                                         <Border x:Name="GridContainer">
                                             <!--<Border.CornerRadius>
-                                                <CornerRadius 
+                                                <CornerRadius
                                                     TopLeft="{StaticResource CornerRadius}"
                                                     TopRight="{StaticResource CornerRadius}"
                                                     BottomRight="{StaticResource CornerRadius}"
-                                                    BottomLeft="{StaticResource CornerRadius}"/>
+                                                    BottomLeft="{StaticResource CornerRadius}" />
                                             </Border.CornerRadius>-->
                                         </Border>
-                                        <ContentPresenter/>
+                                        <ContentPresenter />
                                     </Grid>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer"/>
+                                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Opacity" Value="1" TargetName="GridContainer"/>
-                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}" TargetName="GridContainer"/>
+                                            <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}" TargetName="GridContainer" />
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
@@ -305,8 +274,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-
 
         <DataTemplate x:Key="SearchBoxActionItemDataTemplate">
             <Grid Height="{StaticResource OneActionItemHeight}">
@@ -330,63 +297,31 @@
         </Style>
     </Window.Resources>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <Grid Name="GridMain" 
+    <Grid Name="GridMain"
           Width="{StaticResource GridMainWidth}"
           Height="{Binding GridMainHeight}"
-          Clip="{Binding GridMainClip}" 
+          Clip="{Binding GridMainClip}"
           Background="{DynamicResource MainColor1Brush}">
 
         <Grid Name="GridKeyword"
               VerticalAlignment="Top"
-              Height="{Binding GridKeywordHeight}" 
+              Height="{Binding GridKeywordHeight}"
               Background="{DynamicResource MainColor1Brush}">
             <TextBox Name="TbKeyWord"
                          Margin="10 0 0 0"
-                         Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                         Foreground="{DynamicResource MainColor1ForegroundBrush}"
                          CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
-                         Height="44" 
+                         Height="44"
                          FontSize="18"
-                         Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"  
+                         Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
                          PreviewKeyDown="TbKeyWord_OnKeyDown"
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
-            <Grid Width="50" Height="40" HorizontalAlignment="Right" 
+            <Grid Width="50" Height="40" HorizontalAlignment="Right"
                           Background="{DynamicResource MainColor1Brush}"
                           PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
-
-
 
         <Grid Name="GridSelections"
               VerticalAlignment="Top">
@@ -398,7 +333,7 @@
                          BorderThickness="0"
                          PreviewMouseRightButtonDown="ListBoxSelections_OnMouseRightButtonDown"
                          PreviewMouseLeftButtonDown="ListBoxSelections_OnMouseDoubleClick"
-                         SelectedIndex="{Binding SelectedIndex}" 
+                         SelectedIndex="{Binding SelectedIndex}"
                          ItemsSource="{Binding Context.AppData.VmItemList}"
                          Background="Transparent"
                          Foreground="{DynamicResource MainColor1ForegroundBrush}"
@@ -406,7 +341,6 @@
                 </ListBox>
             </StackPanel>
         </Grid>
-
 
         <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}"
                 VerticalAlignment="Top"
@@ -419,7 +353,6 @@
                         <ColumnDefinition Width="5"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-
 
                     <Grid Grid.Row="0" Grid.Column="0" Background="{DynamicResource MainColor1Brush}" MouseDown="ButtonActionBack_OnMouseDown">
                         <Path Margin="2" Fill="{DynamicResource MainColor1LighterBrush}" Height="25"
@@ -455,19 +388,16 @@
                                    Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
                         </Grid>
 
-
-
-
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
-                                   Text="{Binding SelectedItem.Server.ProtocolDisplayName}" 
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                                   Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource MainColor1Brush}"
                                    Opacity="0.4"
                                    HorizontalAlignment="Right"
                                    Margin="10 0"
                                    VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
-                                   Text="{Binding SelectedItem.Server.ProtocolDisplayName}" 
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                                   Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
                                    FontSize="18" FontWeight="Bold"
                                    Foreground="{DynamicResource MainColor1ForegroundBrush}"
                                    Opacity="0.2"
@@ -475,14 +405,13 @@
                                    Margin="10 0"
                                    VerticalAlignment="Center"></TextBlock>
                     </Grid>
-
                 </Grid>
                 <ListBox x:Name="ListBoxActions"
                                 PreviewMouseRightButtonDown="ListBoxActions_OnMouseRightButtonDown"
                                 PreviewMouseDoubleClick="ListBoxActions_OnMouseDoubleClick"
                                 Style="{StaticResource SearchBoxActionList}"
                                 BorderThickness="0"
-                                SelectedIndex="{Binding SelectedActionIndex}" 
+                                SelectedIndex="{Binding SelectedActionIndex}"
                                 ItemsSource="{Binding Actions}"
                                 Background="{DynamicResource MainColor1Brush}"
                                 Foreground="{DynamicResource MainColor1ForegroundBrush}">

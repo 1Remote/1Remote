@@ -15,6 +15,7 @@ namespace PRM.Core.Protocol.VNC
             Stretch = 0,
             Fixed = 1,
         }
+
         public ProtocolServerVNC() : base("VNC", "VNC.V1", "VNC")
         {
             base.Port = "5900";
@@ -22,6 +23,7 @@ namespace PRM.Core.Protocol.VNC
         }
 
         private EVncWindowResizeMode _vncWindowResizeMode = EVncWindowResizeMode.Stretch;
+
         public EVncWindowResizeMode VncWindowResizeMode
         {
             get => _vncWindowResizeMode;

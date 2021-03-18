@@ -326,7 +326,7 @@ namespace PRM.Core.Protocol
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
                     // TODO add some params
-                    Shawn.Utils.CmdRunner.RunCmdAsync(CommandBeforeConnected);
+                    CmdRunner.RunCmdAsync(CommandBeforeConnected);
                 }
             }
             catch (Exception e)
@@ -342,7 +342,7 @@ namespace PRM.Core.Protocol
                 if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
                 {
                     // TODO add some params
-                    Shawn.Utils.CmdRunner.RunCmdAsync(CommandAfterDisconnected);
+                    CmdRunner.RunCmdAsync(CommandAfterDisconnected);
                 }
             }
             catch (Exception e)

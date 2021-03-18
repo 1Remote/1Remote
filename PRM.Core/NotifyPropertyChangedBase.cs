@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
-using System.Windows.Forms.VisualStyles;
 
 namespace PRM.Core
 {
     public class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
+
         protected bool NotifyPropertyChangedEnabled = true;
 
         public void SetNotifyPropertyChangedEnabled(bool isEnabled)
@@ -29,6 +29,7 @@ namespace PRM.Core
             oldValue = newValue;
             RaisePropertyChanged(propertyName);
         }
-        #endregion
+
+        #endregion INotifyPropertyChanged
     }
 }

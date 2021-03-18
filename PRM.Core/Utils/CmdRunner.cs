@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management;
-using System.IO;
+﻿using System.Diagnostics;
 
 namespace Shawn.Utils
 {
@@ -46,9 +38,8 @@ namespace Shawn.Utils
 
             var retCode = output.Substring(output.LastIndexOf("echo %ERRORLEVEL%\r\n") + "echo %ERRORLEVEL%\r\n".Length);
             retCode = retCode.Substring(0, retCode.IndexOf("\r\n")).Trim(new[] { '\r', '\n', ' ' });
-            return new []{ content,retCode };
+            return new[] { content, retCode };
         }
-
 
         /// <summary>
         /// cmd by cmd.exe
@@ -70,9 +61,6 @@ namespace Shawn.Utils
             pro.Start();
             pro.StandardInput.WriteLine(cmd);
         }
-
-
-
 
         public static void RunExeAsync(string cmd, bool createNoWindow = false)
         {
