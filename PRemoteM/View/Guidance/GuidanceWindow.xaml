@@ -1,10 +1,9 @@
-﻿<utils:WindowChromeBase x:Class="PRM.View.GuidanceWindow"
+﻿<utils:WindowChromeBase x:Class="PRM.View.Guidance.GuidanceWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:local="clr-namespace:PRM.View"
-                  xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
                   xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
@@ -31,20 +30,10 @@
         </ControlTemplate>
     </Window.Template>
 
-
-
-
-
-
-
-
-
-
-
     <Grid Margin="16" Name="WinGrid" Background="{StaticResource MainColor1Brush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto"  />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid>
@@ -67,7 +56,6 @@
                     <Setter Property="Padding" Value="4,0,4,0" />
                 </Style>
 
-
                 <ControlTemplate TargetType="ToggleButton" x:Key="ComboBoxToggleButtonTemplate">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -75,17 +63,17 @@
                             <ColumnDefinition Width="20" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.ColumnSpan="2" Name="Border"
-                                BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" 
-                                CornerRadius="0" BorderThickness="0" 
+                                BorderBrush="{StaticResource ComboBoxNormalBorderBrush}"
+                                CornerRadius="0" BorderThickness="0"
                                 Background="{StaticResource MainColor1Brush}" />
                         <Border Grid.Column="1" Margin="1, 1, 1, 1" BorderBrush="#444" Name="ButtonBorder"
-                                CornerRadius="0, 0, 0, 0" BorderThickness="0, 0, 0, 0" 
+                                CornerRadius="0, 0, 0, 0" BorderThickness="0, 0, 0, 0"
                                 Background="{StaticResource MainColor1Brush}" />
-                        <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" Margin="1,-1,0,0" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#FFDDDDDD"/>
+                        <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" Margin="1,-1,0,0" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#FFDDDDDD" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsMouseOver" Value="True">
-                            <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource MainColor2Brush}"/>
+                            <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource MainColor2Brush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -93,26 +81,26 @@
                 <Style TargetType="{x:Type ComboBox}" x:Key="ComboBoxFlatStyle">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                     <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
-                    <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
-                    <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
-                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-                    <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"/>
+                    <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                    <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}" />
                     <Setter Property="Control.Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ComboBox">
                                 <Grid>
-                                    <ToggleButton Name="ToggleButton" ClickMode="Press" Focusable="False" IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+                                    <ToggleButton Name="ToggleButton" ClickMode="Press" Focusable="False" IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Template="{StaticResource ComboBoxToggleButtonTemplate}" />
                                     <ContentPresenter Name="ContentSite" Margin="5, 3, 23, 3" IsHitTestVisible="False"
-                                          HorizontalAlignment="Left" VerticalAlignment="Center"                              
-                                          Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                                          HorizontalAlignment="Left" VerticalAlignment="Center"
+                                          Content="{TemplateBinding ComboBox.SelectionBoxItem}"
                                           ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
-                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
-                                    <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3" IsReadOnly="{TemplateBinding IsReadOnly}" 
-                                            Visibility="Hidden" Background="{StaticResource MainColor1Brush}" HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True" >
+                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+                                    <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3" IsReadOnly="{TemplateBinding IsReadOnly}"
+                                            Visibility="Hidden" Background="{StaticResource MainColor1Brush}" HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True">
                                         <TextBox.Template>
-                                            <ControlTemplate TargetType="TextBox" >
+                                            <ControlTemplate TargetType="TextBox">
                                                 <Border Name="PART_ContentHost" Focusable="False" />
                                             </ControlTemplate>
                                         </TextBox.Template>
@@ -123,7 +111,7 @@
                                             IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
                                            PopupAnimation="Slide">
                                         <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding FrameworkElement.ActualWidth}" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
-                                            <Border Name="DropDownBorder" Background="{StaticResource MainColor1Brush}" Margin="0, 1, 0, 0" CornerRadius="0" BorderThickness="1" BorderBrush="{StaticResource ComboBoxNormalBorderBrush}"/>
+                                            <Border Name="DropDownBorder" Background="{StaticResource MainColor1Brush}" Margin="0, 1, 0, 0" CornerRadius="0" BorderThickness="1" BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" />
                                             <ScrollViewer Margin="4" SnapsToDevicePixels="True">
                                                 <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
                                             </ScrollViewer>
@@ -140,7 +128,7 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"  />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0 20 0 0">
@@ -155,18 +143,17 @@
                     </StackPanel>
                 </Grid>
 
-
                 <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
                         <TextBlock Margin="2" Foreground="{StaticResource MainColor1ForegroundBrush}">Language:</TextBlock>
-                        <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}" 
+                        <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}"
                               Style="{StaticResource ComboBoxFlatStyle}"
                               Foreground="{StaticResource MainColor1ForegroundBrush}"
                               SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
                               SelectedValuePath="Key"
                               HorizontalAlignment="Right"
                               VerticalAlignment="Top"
-                              DisplayMemberPath="Value" Height="20" Width="100"/>
+                              DisplayMemberPath="Value" Height="20" Width="100" />
                     </StackPanel>
                     <TextBlock>
                         <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">
@@ -180,7 +167,7 @@
                                             <Setter Property="TextBlock.TextDecorations">
                                                 <Setter.Value>
                                                     <TextDecorationCollection>
-                                                        <TextDecoration Location="Underline"/>
+                                                        <TextDecoration Location="Underline" />
                                                     </TextDecorationCollection>
                                                 </Setter.Value>
                                             </Setter>
@@ -193,12 +180,6 @@
                     </TextBlock>
                 </StackPanel>
 
-
-
-
-
-
-
                 <Grid Grid.Row="1" Grid.Column="0">
                     <Grid Name="Grid1">
                         <Grid.ColumnDefinitions>
@@ -208,9 +189,9 @@
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto"  />
-                            <RowDefinition Height="Auto"  />
-                            <RowDefinition Height="Auto"  />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <Grid Margin="8" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
@@ -223,15 +204,13 @@
                             </TextBlock>
                         </Grid>
 
-
-
                         <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">
                             <Image Source="Resources/launcher_main1.png" Width="200" HorizontalAlignment="Left"></Image>
                         </Grid>
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" MinWidth="10"/>
+                                    <ColumnDefinition Width="Auto" MinWidth="10" />
                                     <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
@@ -286,11 +265,8 @@
                                         <TextBlock>→</TextBlock>
                                     </Border>
                                 </StackPanel>
-
                             </Grid>
                         </Grid>
-
-
 
                         <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center">
                             <Image Source="Resources/demo.png" Width="200" Margin="15 0 0 0" HorizontalAlignment="Left"></Image>
@@ -305,21 +281,10 @@
                         </Grid>
                     </Grid>
 
-
-
-
-
-
-
-
-
-
-
-
                     <Grid Name="Grid2" Background="{StaticResource MainColor1Brush}" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*"  />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="8">
@@ -365,7 +330,6 @@
                                     <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
                                 </StackPanel>
 
-
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Style="{StaticResource HeaderStyle}"
@@ -374,18 +338,17 @@
                                     <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
                                 </StackPanel>
 
-
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel.Resources>
-                                        <local:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool"/>
+                                        <local:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool" />
                                     </StackPanel.Resources>
                                     <TextBlock
                                         Style="{StaticResource HeaderStyle}"
                                         Text="{DynamicResource system_options_theme_tab_ui}">
                                     </TextBlock>
                                     <StackPanel Margin="0" MinHeight="0" VerticalAlignment="Center">
-                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}"/>
-                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}"/>
+                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}" />
+                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -393,7 +356,7 @@
                     </Grid>
                 </Grid>
             </Grid>
-        </Grid >
+        </Grid>
 
         <Grid Grid.Row="1" VerticalAlignment="Bottom" Height="30" Width="400">
 

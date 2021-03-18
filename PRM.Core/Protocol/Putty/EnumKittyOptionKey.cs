@@ -3,6 +3,7 @@
     public enum EnumKittyOptionKey
     {
         #region Enum
+
         TerminalType,
         TerminalSpeed,
         TerminalModes,
@@ -25,94 +26,117 @@
         Answerback,
         BellWaveFile,
         WinTitle,
+
         /// <summary>
         /// Default Foreground
         /// </summary>
         Colour0,
+
         /// <summary>
         /// Default Bold Foreground
         /// </summary>
         Colour1,
+
         /// <summary>
         /// Default Background
         /// </summary>
         Colour2,
+
         /// <summary>
         /// Default Bold Background
         /// </summary>
         Colour3,
+
         /// <summary>
         /// Cursor Text
         /// </summary>
         Colour4,
+
         /// <summary>
         /// Cursor Color
         /// </summary>
         Colour5,
+
         /// <summary>
         ///  ANSI Black
         /// </summary>
         Colour6,
+
         /// <summary>
         /// ANSI Black Bold
         /// </summary>
         Colour7,
+
         /// <summary>
         /// ANSI Red
         /// </summary>
         Colour8,
+
         /// <summary>
         /// ANSI Red Bold
         /// </summary>
         Colour9,
+
         /// <summary>
         /// ANSI Green
         /// </summary>
         Colour10,
+
         /// <summary>
         /// ANSI Green Bold
         /// </summary>
         Colour11,
+
         /// <summary>
         /// ANSI Yellow
         /// </summary>
         Colour12,
+
         /// <summary>
         /// ANSI Yellow Bold
         /// </summary>
         Colour13,
+
         /// <summary>
         /// ANSI Blue
         /// </summary>
         Colour14,
+
         /// <summary>
         /// ANSI Blue Bold
         /// </summary>
         Colour15,
+
         /// <summary>
         /// ANSI Magenta
         /// </summary>
         Colour16,
+
         /// <summary>
         /// ANSI Magenta Bold
         /// </summary>
         Colour17,
+
         /// <summary>
         /// ANSI Cyan
         /// </summary>
         Colour18,
+
         /// <summary>
         /// ANSI Cyan Bold
         /// </summary>
         Colour19,
+
         /// <summary>
         /// ANSI White
         /// </summary>
         Colour20,
+
         /// <summary>
         /// ANSI White Bold
         /// </summary>
         Colour21,
+
         Wordness0,
         Wordness32,
         Wordness64,
@@ -270,6 +294,7 @@
         HostName,
         Protocol,
 #endif
-        #endregion
+
+        #endregion Enum
     }
 }

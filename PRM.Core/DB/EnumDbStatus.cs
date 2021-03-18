@@ -30,10 +30,13 @@ namespace PRM.Core.DB
 
                 case EnumDbStatus.RsaNotMatched:
                     return SystemConfig.Instance.Language.GetText("string_database_error_rsa_private_key_not_match");
+
                 case EnumDbStatus.OK:
                     break;
+
                 case EnumDbStatus.NotConnected:
                     return "database: NotConnected!";
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }

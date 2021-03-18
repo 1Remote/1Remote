@@ -15,6 +15,7 @@ namespace PRM.Core.Protocol
     public class ServerIcons
     {
         #region singleton
+
         private static ServerIcons uniqueInstance;
         private static readonly object InstanceLock = new object();
 
@@ -33,7 +34,7 @@ namespace PRM.Core.Protocol
             }
         }
 
-        #endregion
+        #endregion singleton
 
         private ServerIcons()
         {
@@ -73,7 +74,6 @@ namespace PRM.Core.Protocol
             }
             else if (!di.Exists)
                 di.Create();
-
 
             string resourceName = this.GetType().Assembly.GetName().Name + ".g";
             ResourceManager mgr = new ResourceManager(resourceName, this.GetType().Assembly);

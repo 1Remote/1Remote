@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shawn.Utils
 {
@@ -56,7 +52,7 @@ namespace Shawn.Utils
         /// <returns></returns>
         public static string ArgbToHexColor(byte a, byte r, byte g, byte b)
         {
-            var arr = new[] {a, r, g, b};
+            var arr = new[] { a, r, g, b };
             string hex = BitConverter.ToString(arr).Replace("-", string.Empty).ToUpper();
             return $"#{hex}";
         }
@@ -69,17 +65,17 @@ namespace Shawn.Utils
         /// <returns></returns>
         public static string ArgbToHexColor(byte r, byte g, byte b)
         {
-            var arr = new[] {r, g, b};
+            var arr = new[] { r, g, b };
             string hex = BitConverter.ToString(arr).Replace("-", string.Empty).ToUpper();
             return $"#{hex}";
         }
-
 
         public static System.Windows.Media.Color HexColorToMediaColor(string hexColor)
         {
             var (a, r, g, b) = HexColorToArgb(hexColor);
             return System.Windows.Media.Color.FromArgb(a, r, g, b);
         }
+
         public static System.Drawing.Color HexColorToDrawingColor(string hexColor)
         {
             var (a, r, g, b) = HexColorToArgb(hexColor);
@@ -97,6 +93,7 @@ namespace Shawn.Utils
                 return ArgbToHexColor(color.R, color.G, color.B);
             }
         }
+
         public static string ColorToHexColor(this System.Drawing.Color color, bool showAlpha = false)
         {
             if (showAlpha)
@@ -114,11 +111,13 @@ namespace Shawn.Utils
             var b = new System.Drawing.SolidBrush(color);
             return b;
         }
+
         public static System.Drawing.Brush ColorToDrawingBrush(this System.Windows.Media.Color color)
         {
             var b = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B));
             return b;
         }
+
         public static System.Drawing.Brush ColorToDrawingBrush(string hexColor)
         {
             var color = HexColorToDrawingColor(hexColor);
@@ -131,11 +130,13 @@ namespace Shawn.Utils
             var b = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B));
             return b;
         }
+
         public static System.Windows.Media.Brush ColorToMediaBrush(this System.Windows.Media.Color color)
         {
             var b = new System.Windows.Media.SolidColorBrush(color);
             return b;
         }
+
         public static System.Windows.Media.Brush ColorToMediaBrush(string hexColor)
         {
             var color = HexColorToMediaColor(hexColor);

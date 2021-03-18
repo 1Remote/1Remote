@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using PRM.Core;
 using PRM.Core.Model;
-using PRM.Core.Utils;
+using Shawn.Utils;
+
 using Shawn.Utils;
 
 namespace PRM.ViewModel
@@ -14,6 +15,7 @@ namespace PRM.ViewModel
     public class VmAboutPage : NotifyPropertyChangedBase
     {
         private readonly Timer _checkUpdateTimer;
+
         public VmAboutPage()
         {
             var checker = new UpdateChecker(PRMVersion.Version);
@@ -38,6 +40,7 @@ namespace PRM.ViewModel
         }
 
         private string _newVersion = "";
+
         public string NewVersion
         {
             get => _newVersion;
@@ -45,6 +48,7 @@ namespace PRM.ViewModel
         }
 
         private string _newVersionUrl = "";
+
         public string NewVersionUrl
         {
             get => _newVersionUrl;

@@ -3,7 +3,6 @@ using System.Text;
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
-using PRM.Core.Protocol.FileTransmitter;
 
 namespace PRM.Core.Protocol.FileTransmit.FTP
 {

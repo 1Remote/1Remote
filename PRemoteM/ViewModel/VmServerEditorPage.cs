@@ -7,15 +7,19 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using Shawn.Utils;
 
+using Shawn.Utils;
+
 namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
         private readonly PrmContext _context;
+
         /// <summary>
         /// to remember original protocol options
         /// </summary>
         private readonly ProtocolServerBase _orgServerBase;
+
         public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
         {
             _context = context;
@@ -31,7 +35,7 @@ namespace PRM.ViewModel
 
             var assembly = typeof(ProtocolServerBase).Assembly;
             var types = assembly.GetTypes();
-            // reflect remote protocols 
+            // reflect remote protocols
             {
                 ProtocolList.Clear();
                 ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
@@ -57,10 +61,8 @@ namespace PRM.ViewModel
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
         }
 
-
-
-
         private ProtocolServerBase _server = null;
+
         public ProtocolServerBase Server
         {
             get => _server;
@@ -68,6 +70,7 @@ namespace PRM.ViewModel
         }
 
         private ProtocolServerBase _protocolSelected = null;
+
         public ProtocolServerBase ProtocolSelected
         {
             get => _protocolSelected;
@@ -84,6 +87,7 @@ namespace PRM.ViewModel
         }
 
         private List<ProtocolServerBase> _protocolList = new List<ProtocolServerBase>();
+
         public List<ProtocolServerBase> ProtocolList
         {
             get => _protocolList;
@@ -93,26 +97,26 @@ namespace PRM.ViewModel
         private readonly bool _isDuplicate = false;
 
         private bool _isAddMode = true;
+
         public bool IsAddMode
         {
             get => _isAddMode;
             set => SetAndNotifyIfChanged(nameof(IsAddMode), ref _isAddMode, value);
         }
 
-
         private ProtocolServerFormBase _protocolEditControl = null;
+
         public ProtocolServerFormBase ProtocolEditControl
         {
             get => _protocolEditControl;
             set => SetAndNotifyIfChanged(nameof(ProtocolEditControl), ref _protocolEditControl, value);
         }
 
-
         public List<string> NameSelections { get; set; }
         public List<string> GroupSelections { get; set; }
 
-
         private RelayCommand _cmdSave;
+
         public RelayCommand CmdSave
         {
             get
@@ -127,10 +131,8 @@ namespace PRM.ViewModel
             }
         }
 
-
-
-
         private RelayCommand _cmdCancel;
+
         public RelayCommand CmdCancel
         {
             get
@@ -143,12 +145,6 @@ namespace PRM.ViewModel
                 return _cmdCancel;
             }
         }
-
-
-
-
-
-
 
         private void ReflectProtocolEditControl()
         {
@@ -172,7 +168,6 @@ namespace PRM.ViewModel
                 if (_orgServerBase.GetType() == server.GetType())
                     server.Update(_orgServerBase);
 
-
                 // switch protocol and hold user name & pwd.
                 if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
                     && Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
@@ -183,7 +178,6 @@ namespace PRM.ViewModel
                 // switch just hold base info
                 else
                     server.Update(Server, typeof(ProtocolServerBase));
-
 
                 var types = assembly.GetTypes();
                 var formName = ProtocolSelected.GetType().Name + "Form";

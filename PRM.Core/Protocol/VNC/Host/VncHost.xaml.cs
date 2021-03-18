@@ -23,7 +23,6 @@ namespace PRM.Core.Protocol.VNC.Host
     {
         private readonly ProtocolServerVNC _vncServer = null;
 
-
         public VncHost(PrmContext context, ProtocolServerBase protocolServer) : base(context, protocolServer, false)
         {
             InitializeComponent();
@@ -83,6 +82,7 @@ namespace PRM.Core.Protocol.VNC.Host
         }
 
         #region Base Interface
+
         public override void Conn()
         {
             if (Vnc.IsConnected)
@@ -147,9 +147,7 @@ namespace PRM.Core.Protocol.VNC.Host
             return IntPtr.Zero;
         }
 
-        #endregion
-
-
+        #endregion Base Interface
 
         #region event handler
 
@@ -164,6 +162,7 @@ namespace PRM.Core.Protocol.VNC.Host
         }
 
         private bool _invokeOnClosedWhenDisconnected = true;
+
         private void OnConnectionLost(object sender, EventArgs e)
         {
             Status = ProtocolHostStatus.Disconnected;
@@ -177,9 +176,9 @@ namespace PRM.Core.Protocol.VNC.Host
                 base.OnClosed?.Invoke(base.ConnectionId);
         }
 
-        #endregion
-        #endregion
+        #endregion connection
 
+        #endregion event handler
 
         private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
         {

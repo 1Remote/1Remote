@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -37,7 +32,7 @@ namespace Shawn.Utils
                 sv.PreviewMouseWheel -= sv_PreviewMouseWheel;
         }
 
-        static void sv_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private static void sv_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             ScrollViewer scrollviewer = sender as ScrollViewer;
             if (e.Delta > 0)

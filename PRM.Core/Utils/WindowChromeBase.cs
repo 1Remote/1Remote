@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using System.Drawing;
+﻿using System.ComponentModel;
 using System.Threading;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace Shawn.Utils
@@ -11,6 +8,7 @@ namespace Shawn.Utils
     public abstract class WindowChromeBase : Window, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
+
         protected bool NotifyPropertyChangedEnabled = true;
 
         public void SetNotifyPropertyChangedEnabled(bool isEnabled)
@@ -34,12 +32,14 @@ namespace Shawn.Utils
             oldValue = newValue;
             RaisePropertyChanged(propertyName);
         }
-        #endregion
 
+        #endregion INotifyPropertyChanged
 
         #region DragMove
+
         protected bool _isLeftMouseDown = false;
         protected bool _isDragging = false;
+
         protected virtual void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _isDragging = false;
@@ -75,6 +75,7 @@ namespace Shawn.Utils
             _isLeftMouseDown = false;
             _isDragging = false;
         }
+
         protected virtual void WinTitleBar_OnPreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed || !_isDragging)
@@ -103,6 +104,7 @@ namespace Shawn.Utils
                 // ignored
             }
         }
-        #endregion
+
+        #endregion DragMove
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace Shawn.Utils.PageHost
@@ -17,7 +11,6 @@ namespace Shawn.Utils.PageHost
 
         private const double AnimationSeconds = 0.3;
         private const float AnimationDecelerationRatio = 0.9f;
-
 
         public enum InOutAnimationType
         {
@@ -42,15 +35,19 @@ namespace Shawn.Utils.PageHost
                 case InOutAnimationType.SlideFromLeft:
                     storyboard.AddSlideFromLeft(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.SlideFromRight:
                     storyboard.AddSlideFromRight(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.SlideFromTop:
                     storyboard.AddSlideFromTop(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.SlideFromBottom:
                     storyboard.AddSlideFromBottom(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.FadeIn:
                     storyboard.AddFadeIn(AnimationSeconds);
                     break;
@@ -58,7 +55,6 @@ namespace Shawn.Utils.PageHost
             return storyboard;
         }
 
-        
         public Storyboard GetOutAnimationStoryboard(double parentWidth, double parentHeight)
         {
             var storyboard = new Storyboard();
@@ -67,15 +63,19 @@ namespace Shawn.Utils.PageHost
                 case InOutAnimationType.SlideToLeft:
                     storyboard.AddSlideToLeft(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.SlideToRight:
                     storyboard.AddSlideToRight(AnimationSeconds, parentWidth, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.SlideToTop:
                     storyboard.AddSlideToTop(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.SlideToBottom:
                     storyboard.AddSlideToBottom(AnimationSeconds, parentHeight, AnimationDecelerationRatio);
                     break;
+
                 case InOutAnimationType.FadeOut:
                     storyboard.AddFadeOut(AnimationSeconds);
                     break;

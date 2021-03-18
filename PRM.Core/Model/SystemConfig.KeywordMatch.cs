@@ -20,17 +20,18 @@ namespace PRM.Core.Model
             Load();
         }
 
-
         private List<MatchProviderInfo> _availableMatcherProviders;
+
         public List<MatchProviderInfo> AvailableMatcherProviders
         {
             get => _availableMatcherProviders;
             set => SetAndNotifyIfChanged(nameof(AvailableMatcherProviders), ref _availableMatcherProviders, value);
         }
 
-
         #region Interface
+
         private const string _sectionName = "KeywordMatch";
+
         public override void Save()
         {
             var enabledNames = string.Join(";", AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name));
@@ -96,6 +97,6 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigKeywordMatch));
         }
 
-        #endregion
+        #endregion Interface
     }
 }

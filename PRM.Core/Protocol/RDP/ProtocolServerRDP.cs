@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 using PRM.Core.Model;
-using RdpHelper;
 using Shawn.Utils;
+using Shawn.Utils.RdpFile;
 
 namespace PRM.Core.Protocol.RDP
 {

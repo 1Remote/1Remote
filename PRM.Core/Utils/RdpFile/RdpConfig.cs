@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace RdpHelper
+namespace Shawn.Utils.RdpFile
 {
     /// <summary>
     /// REF:
@@ -18,58 +18,85 @@ namespace RdpHelper
     {
         [RdpConfName("span monitors:i:")]
         public int SpanMonitors { get; set; } = 1;
+
         [RdpConfName("screen mode id:i:")]
         public int ScreenModeId { get; set; } = 2;
+
         [RdpConfName("use multimon:i:")]
         public int UseMultimon { get; set; } = 0;
+
         [RdpConfName("desktopwidth:i:")]
         public int DesktopWidth { get; set; } = 1600;
+
         [RdpConfName("desktopheight:i:")]
         public int DesktopHeight { get; set; } = 900;
+
         [RdpConfName("smart sizing:i:")]
         public int SmartSizing { get; set; } = 0;
+
         [RdpConfName("dynamic resolution:i:")]
         public int DynamicResolution { get; set; } = 1;
+
         [RdpConfName("session bpp:i:")]
         public int SessionBpp { get; set; } = 32;
+
         [RdpConfName("winposstr:s:")]
         public string Winposstr { get; set; } = "0,3,0,0,800,600";
+
         [RdpConfName("compression:i:")]
         public int Compression { get; set; } = 1;
+
         [RdpConfName("keyboardhook:i:")]
         public int KeyboardHook { get; set; } = 2;
+
         [RdpConfName("audiocapturemode:i:")]
         public int AudioCaptureMode { get; set; } = 0;
+
         [RdpConfName("videoplaybackmode:i:")]
         public int VideoPlaybackMode { get; set; } = 1;
+
         [RdpConfName("connection type:i:")]
         public int ConnectionType { get; set; } = 2;
+
         [RdpConfName("networkautodetect:i:")]
         public int NetworkAutodetect { get; set; } = 1;
+
         [RdpConfName("bandwidthautodetect:i:")]
         public int BandwidthAutodetect { get; set; } = 1;
+
         [RdpConfName("displayconnectionbar:i:")]
         public int DisplayConnectionBar { get; set; } = 1;
+
         [RdpConfName("enableworkspacereconnect:i:")]
         public int EnableWorkspaceReconnect { get; set; } = 0;
+
         [RdpConfName("disable wallpaper:i:")]
         public int DisableWallpaper { get; set; } = 1;
+
         [RdpConfName("allow font smoothing:i:")]
         public int AllowFontSmoothing { get; set; } = 0;
+
         [RdpConfName("allow desktop composition:i:")]
         public int AllowDesktopComposition { get; set; } = 0;
+
         [RdpConfName("disable full window drag:i:")]
         public int DisableFullWindowDrag { get; set; } = 1;
+
         [RdpConfName("disable menu anims:i:")]
         public int DisableMenuAnims { get; set; } = 1;
+
         [RdpConfName("disable themes:i:")]
         public int DisableThemes { get; set; } = 0;
+
         [RdpConfName("disable cursor setting:i:")]
         public int DisableCursorSetting { get; set; } = 0;
+
         [RdpConfName("bitmapcachepersistenable:i:")]
         public int BitmapCachePersistenable { get; set; } = 1;
+
         [RdpConfName("audiomode:i:")]
         public int AudioMode { get; set; } = 1;
+
         /// <summary>
         /// Determines whether the clipboard on the client computer will be redirected and available in the remote session and vice versa.
         /// 0 - Do not redirect the clipboard.
@@ -77,22 +104,28 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("redirectclipboard:i:")]
         public int RedirectClipboard { get; set; } = 0;
+
         [RdpConfName("redirectcomports:i:")]
         public int RedirectComPorts { get; set; } = 0;
+
         [RdpConfName("redirectdirectx:i:")]
         public int RedirectDirectX { get; set; } = 1;
+
         [RdpConfName("redirectdrives:i:")]
         public int RedirectDrives { get; set; } = 1;
+
         [RdpConfName("redirectposdevices:i:")]
         public int RedirectPosDevices { get; set; } = 0;
+
         [RdpConfName("redirectprinters:i:")]
         public int RedirectPrinters { get; set; } = 0;
+
         [RdpConfName("redirectsmartcards:i:")]
         public int RedirectSmartCards { get; set; } = 0;
 
-
         [RdpConfName("autoreconnection enabled:i:")]
         public int AutoReconnectionEnabled { get; set; } = 1;
+
         /// <summary>
         /// Defines the server authentication level settings.
         /// - 0: If server authentication fails, connect to the computer without warning (Connect and don't warn me)
@@ -102,24 +135,28 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("authentication level:i:")]
         public int AuthenticationLevel { get; set; } = 2;
+
         [RdpConfName("prompt for credentials:i:")]
         public int PromptForCredentials { get; set; } = 0;
+
         [RdpConfName("negotiate security layer:i:")]
         public int NegotiateSecurityLayer { get; set; } = 1;
 
-
         [RdpConfName("remoteapplicationmode:i:")]
         public int RemoteApplicationMode { get; set; } = 0;
+
         /// <summary>
         /// Specifies the name of the RemoteApp in the client interface while starting the RemoteApp.App display name. For example, "Excel 2016."
         /// </summary>
         [RdpConfName("remoteapplicationname:s:")]
         public string RemoteApplicationName { get; set; } = "";
+
         /// <summary>
         /// Specifies the alias or executable name of the RemoteApp. Valid alias or name. For example, "EXCEL."
         /// </summary>
         [RdpConfName("remoteapplicationprogram:s:")]
         public string RemoteApplicationProgram { get; set; } = "";
+
         /// <summary>
         /// Specifies whether the Remote Desktop client should check the remote computer for RemoteApp capabilities.
         /// 0 - Check the remote computer for RemoteApp capabilities before logging in.
@@ -128,14 +165,15 @@ namespace RdpHelper
         [RdpConfName("disableremoteappcapscheck:i:")]
         public int DisableRemoteAppCapsCheck { get; set; } = 1;
 
-
-
         [RdpConfName("alternate shell:s:")]
         public string AlternateShell { get; set; } = "";
+
         [RdpConfName("shell working directory:s:")]
         public string ShellWorkingDirectory { get; set; } = "";
+
         [RdpConfName("gatewayhostname:s:")]
         public string GatewayHostname { get; set; } = "";
+
         /// <summary>
         /// Specifies when to use an RD Gateway for the connection.
         /// - 0: Don't use an RD Gateway
@@ -147,6 +185,7 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("gatewayusagemethod:i:")]
         public int GatewayUsageMethod { get; set; } = 4;
+
         /// <summary>
         /// Specifies the RD Gateway authentication method.
         /// - 0: Ask for password (NTLM)
@@ -158,6 +197,7 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("gatewaycredentialssource:i:")]
         public int GatewayCredentialsSource { get; set; } = 4;
+
         /// <summary>
         /// Specifies whether to use default RD Gateway settings.
         /// - 0: Use the default profile mode, as specified by the administrator
@@ -165,14 +205,19 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("gatewayprofileusagemethod:i:")]
         public int GatewayProfileUsageMethod { get; set; } = 0;
+
         [RdpConfName("promptcredentialonce:i:")]
         public int PromptCredentialOnce { get; set; } = 0;
+
         [RdpConfName("use redirection server name:i:")]
         public int UseRedirectionServerName { get; set; } = 0;
+
         [RdpConfName("rdgiskdcproxy:i:")]
         public int RdgiskdcProxy { get; set; } = 0;
+
         [RdpConfName("kdcproxyname:s:")]
         public string KdcProxyName { get; set; } = "";
+
         /// <summary>
         /// 	Determines which supported Plug and Play devices on the client computer will be redirected and available in the remote session.
         /// No value specified - Do not redirect any supported Plug and Play devices.
@@ -182,6 +227,7 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("devicestoredirect:s:")]
         public string DeviceStoreDirect { get; set; } = "*";
+
         /// <summary>
         /// Determines which local disk drives on the client computer will be redirected and available in the remote session.
         /// No value specified - Do not redirect any drives.
@@ -191,6 +237,7 @@ namespace RdpHelper
         /// </summary>
         [RdpConfName("drivestoredirect:s:")]
         public string DriveStoreDirect { get; set; } = "*";
+
         /// <summary>
         /// "*" or ""
         /// </summary>
@@ -199,8 +246,10 @@ namespace RdpHelper
 
         [RdpConfName("full address:s:")]
         private string FullAddress { get; set; } = "";
+
         [RdpConfName("username:s:")]
         private string Username { get; set; } = "";
+
         /// <summary>
         /// The user password in a binary hash value. Will be overruled by RDP+.
         /// </summary>

@@ -33,43 +33,40 @@ namespace PRM.Core.Protocol
                 Text = Server?.SubTitle,
             };
 
-
         private object _dispNameControl = null;
+
         public object DispNameControl
         {
             get => _dispNameControl;
             set => SetAndNotifyIfChanged(nameof(DispNameControl), ref _dispNameControl, value);
         }
 
-
-
         private object _subTitleControl = null;
+
         public object SubTitleControl
         {
             get => _subTitleControl;
             set => SetAndNotifyIfChanged(nameof(SubTitleControl), ref _subTitleControl, value);
         }
 
-
-
         private Visibility _objectVisibility = Visibility.Visible;
+
         public Visibility ObjectVisibility
         {
             get => _objectVisibility;
             set => SetAndNotifyIfChanged(nameof(ObjectVisibility), ref _objectVisibility, value);
         }
 
-
-
         private Visibility _objectVisibilityInList = Visibility.Visible;
+
         public Visibility ObjectVisibilityInList
         {
             get => _objectVisibilityInList;
             set => SetAndNotifyIfChanged(nameof(ObjectVisibilityInList), ref _objectVisibilityInList, value);
         }
 
-
         private bool _isSelected;
+
         /// <summary>
         /// is selected in list of MainWindow?
         /// </summary>
@@ -79,13 +76,10 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
         }
 
-
-
-
-
-
         #region CMD
+
         private RelayCommand _cmdConnServer;
+
         public RelayCommand CmdConnServer
         {
             get
@@ -100,6 +94,7 @@ namespace PRM.Core.Protocol
         }
 
         private RelayCommand _cmdEditServer;
+
         public RelayCommand CmdEditServer
         {
             get
@@ -111,8 +106,8 @@ namespace PRM.Core.Protocol
             }
         }
 
-
         private RelayCommand _cmdDuplicateServer;
+
         public RelayCommand CmdDuplicateServer
         {
             get
@@ -144,8 +139,8 @@ namespace PRM.Core.Protocol
             }
         }
 
-
         private RelayCommand _cmdSave;
+
         public RelayCommand CmdSave
         {
             get
@@ -157,11 +152,11 @@ namespace PRM.Core.Protocol
                     if (string.IsNullOrWhiteSpace(this.Server.DispName)) return;
 
                     GlobalEventHelper.OnRequestUpdateServer?.Invoke(Server);
-
                 }, o => (this.Server.DispName.Trim() != ""));
                 return _cmdSave;
             }
         }
-        #endregion
+
+        #endregion CMD
     }
 }

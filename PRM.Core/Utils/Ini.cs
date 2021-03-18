@@ -8,10 +8,10 @@ namespace Shawn.Utils
 {
     public class Ini
     {
-        readonly Dictionary<string, Dictionary<string, string>> _ini =
+        private readonly Dictionary<string, Dictionary<string, string>> _ini =
             new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
 
-        readonly string _file;
+        private readonly string _file;
 
         /// <summary>
         /// Initialize an INI file
@@ -35,17 +35,17 @@ namespace Shawn.Utils
         {
             var txt = File.ReadAllText(_file);
 
-            var currentSection =  new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var currentSection = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
             _ini[""] = currentSection;
 
-            foreach (var l in txt.Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries)
+            foreach (var l in txt.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries)
                     .Select((t, i) => new
                     {
                         idx = i,
                         text = t.Trim()
                     }))
-                // .Where(t => !string.IsNullOrWhiteSpace(t) && !t.StartsWith(";")))
+            // .Where(t => !string.IsNullOrWhiteSpace(t) && !t.StartsWith(";")))
             {
                 var line = l.text;
 
@@ -131,7 +131,6 @@ namespace Shawn.Utils
             return _ini.ContainsKey(section) && _ini[section].ContainsKey(key);
         }
 
-
         /// <summary>
         /// Save the INI file
         /// </summary>
@@ -167,7 +166,7 @@ namespace Shawn.Utils
             File.WriteAllText(_file, sb.ToString());
         }
 
-        bool endWithCRLF(StringBuilder sb)
+        private bool endWithCRLF(StringBuilder sb)
         {
             if (sb.Length < 2)
                 return false;

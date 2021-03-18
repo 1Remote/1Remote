@@ -14,7 +14,6 @@ using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using PRM.Core.Model;
-using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty
 {

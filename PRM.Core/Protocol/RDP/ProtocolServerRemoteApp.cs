@@ -2,8 +2,8 @@
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
-using RdpHelper;
 using Shawn.Utils;
+using Shawn.Utils.RdpFile;
 
 namespace PRM.Core.Protocol.RDP
 {
@@ -15,8 +15,8 @@ namespace PRM.Core.Protocol.RDP
             base.UserName = "Administrator";
         }
 
-
         private string _remoteApplicationName = "";
+
         public string RemoteApplicationName
         {
             get => _remoteApplicationName;
@@ -24,12 +24,12 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private string _remoteApplicationProgram = "";
+
         public string RemoteApplicationProgram
         {
             get => _remoteApplicationProgram;
             set => SetAndNotifyIfChanged(nameof(RemoteApplicationProgram), ref _remoteApplicationProgram, value);
         }
-
 
         public override bool IsOnlyOneInstance()
         {

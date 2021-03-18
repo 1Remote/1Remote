@@ -3,6 +3,9 @@ using System.Windows;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using Shawn.Utils;
+
+using Shawn.Utils;
+
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
@@ -11,6 +14,7 @@ namespace PRM.ViewModel
     {
         public readonly VmMain Host;
         private readonly PrmContext _context;
+
         public VmSystemConfigPage(VmMain vmMain, PrmContext context)
         {
             Host = vmMain;

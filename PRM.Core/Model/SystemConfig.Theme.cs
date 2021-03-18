@@ -27,6 +27,7 @@ namespace PRM.Core.Model
     public sealed class SystemConfigTheme : SystemConfigBase
     {
         private readonly ResourceDictionary _appResourceDictionary = null;
+
         public SystemConfigTheme(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
         {
             Debug.Assert(appResourceDictionary != null);
@@ -35,14 +36,15 @@ namespace PRM.Core.Model
         }
 
         private int _puttyFontSize = 14;
+
         public int PuttyFontSize
         {
             get => _puttyFontSize;
             set => SetAndNotifyIfChanged(nameof(PuttyFontSize), ref _puttyFontSize, value);
         }
 
-
         private string _puttyThemeName = "";
+
         public string PuttyThemeName
         {
             get => _puttyThemeName;
@@ -50,15 +52,15 @@ namespace PRM.Core.Model
         }
 
         private ObservableCollection<string> _puttyThemeNames = new ObservableCollection<string>();
+
         public ObservableCollection<string> PuttyThemeNames
         {
             get => _puttyThemeNames;
             set => SetAndNotifyIfChanged(nameof(PuttyThemeNames), ref _puttyThemeNames, value);
         }
 
-
-
         private string _prmColorThemeName = "";
+
         public string PrmColorThemeName
         {
             get => _prmColorThemeName;
@@ -82,12 +84,15 @@ namespace PRM.Core.Model
         }
 
         private ObservableCollection<string> _prmColorThemeNames = new ObservableCollection<string>();
+
         public ObservableCollection<string> PrmColorThemeNames
         {
             get => _prmColorThemeNames;
             set => SetAndNotifyIfChanged(nameof(PrmColorThemeNames), ref _prmColorThemeNames, value);
         }
+
         private Dictionary<string, PrmColorTheme> _prmColorThemes;
+
         public Dictionary<string, PrmColorTheme> PrmColorThemes
         {
             get => _prmColorThemes;
@@ -95,6 +100,7 @@ namespace PRM.Core.Model
         }
 
         private string _mainColor1 = "#102b3e";
+
         public string MainColor1
         {
             get => _mainColor1;
@@ -117,6 +123,7 @@ namespace PRM.Core.Model
         }
 
         private string _mainColor1Lighter = "#445a68";
+
         public string MainColor1Lighter
         {
             get => _mainColor1Lighter;
@@ -124,23 +131,23 @@ namespace PRM.Core.Model
         }
 
         private string _mainColor1Darker = "#0c2230";
+
         public string MainColor1Darker
         {
             get => _mainColor1Darker;
             set => SetAndNotifyIfChanged(nameof(MainColor1Darker), ref _mainColor1Darker, value);
         }
 
-
-
         private string _mainColor1Foreground = "#ffffff";
+
         public string MainColor1Foreground
         {
             get => _mainColor1Foreground;
             set => SetAndNotifyIfChanged(nameof(MainColor1Foreground), ref _mainColor1Foreground, value);
         }
 
-
         private string _mainColor2 = "#e83d61";
+
         public string MainColor2
         {
             get => _mainColor2;
@@ -163,6 +170,7 @@ namespace PRM.Core.Model
         }
 
         private string _mainColor2Lighter = "#ed6884";
+
         public string MainColor2Lighter
         {
             get => _mainColor2Lighter;
@@ -170,22 +178,23 @@ namespace PRM.Core.Model
         }
 
         private string _mainColor2Darker = "#b5304c";
+
         public string MainColor2Darker
         {
             get => _mainColor2Darker;
             set => SetAndNotifyIfChanged(nameof(MainColor2Darker), ref _mainColor2Darker, value);
         }
 
-
         private string _mainColor2Foreground = "#ffffff";
+
         public string MainColor2Foreground
         {
             get => _mainColor2Foreground;
             set => SetAndNotifyIfChanged(nameof(MainColor2Foreground), ref _mainColor2Foreground, value);
         }
 
-
         private string _mainBgColor = "#ced8e1";
+
         public string MainBgColor
         {
             get => _mainBgColor;
@@ -193,22 +202,23 @@ namespace PRM.Core.Model
         }
 
         private string _mainBgColorForeground = "#000000";
+
         public string MainBgColorForeground
         {
             get => _mainBgColorForeground;
             set => SetAndNotifyIfChanged(nameof(MainBgColorForeground), ref _mainBgColorForeground, value);
         }
 
-
         private EnumTabUI _tabUi = EnumTabUI.Classical;
+
         public EnumTabUI TabUI
         {
             get => _tabUi;
             set => SetAndNotifyIfChanged(nameof(TabUI), ref _tabUi, value);
         }
 
-
         private EnumServerListPageUI _serverListPageUi = EnumServerListPageUI.Card;
+
         public EnumServerListPageUI ServerListPageUI
         {
             get => _serverListPageUi;
@@ -216,7 +226,9 @@ namespace PRM.Core.Model
         }
 
         #region Interface
+
         private const string _sectionName = "Theme";
+
         public override void Save()
         {
             _ini.WriteValue(nameof(PrmColorThemeName).ToLower(), _sectionName, PrmColorThemeName);
@@ -295,6 +307,7 @@ namespace PRM.Core.Model
         }
 
         private Dictionary<string, List<PuttyOptionItem>> _puttyThemes = new Dictionary<string, List<PuttyOptionItem>>();
+
         public List<PuttyOptionItem> SelectedPuttyTheme
         {
             get
@@ -305,14 +318,14 @@ namespace PRM.Core.Model
             }
         }
 
-
         public void ReloadPuttyThemes()
         {
             _puttyThemes = PuttyColorThemes.GetThemes();
             var puttyThemeNames = new ObservableCollection<string>(_puttyThemes.Keys);
             _puttyThemeNames = puttyThemeNames;
         }
-        #endregion
+
+        #endregion Interface
 
         private void ApplyPrmColorTheme()
         {
@@ -379,12 +392,10 @@ namespace PRM.Core.Model
             }
         }
 
-
-
-
         #region CMD
 
         private RelayCommand _cmdPrmThemeReset;
+
         public RelayCommand CmdPrmThemeReset
         {
             get
@@ -400,8 +411,8 @@ namespace PRM.Core.Model
             }
         }
 
-
         private RelayCommand _cmdToggleServerListPageUi;
+
         public RelayCommand CmdToggleServerListPageUI
         {
             get
@@ -425,6 +436,7 @@ namespace PRM.Core.Model
                 return _cmdToggleServerListPageUi;
             }
         }
-        #endregion
+
+        #endregion CMD
     }
 }
