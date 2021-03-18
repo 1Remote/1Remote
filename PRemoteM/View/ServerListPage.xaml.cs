@@ -8,6 +8,7 @@ namespace PRM.View
     public partial class ServerListPage : UserControl
     {
         public VmServerListPage Vm;
+
         public ServerListPage(PrmContext context)
         {
             Vm = new VmServerListPage(context, LvServerCards);
@@ -21,7 +22,6 @@ namespace PRM.View
                 GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
             };
         }
-
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {

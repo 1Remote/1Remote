@@ -1,13 +1,13 @@
 ﻿<protocol:ProtocolServerFormBase x:Class="PRM.Core.Protocol.FileTransmit.SFTP.ProtocolServerSFTPForm"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:putty="clr-namespace:PRM.Core.Protocol.Putty"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
-                        xmlns:utils="clr-namespace:Shawn.Utils"
                         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
-                        mc:Ignorable="d" 
+                        xmlns:passwordEx="clr-namespace:Shawn.Utils"
+                        mc:Ignorable="d"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel.Resources>
@@ -26,11 +26,13 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                 Tag="e.g. 192.168.0.101"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}" 
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
                                  Width="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"
@@ -62,12 +64,11 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                     Style="{StaticResource PasswordBoxEx}"/>
+                        <PasswordBox passwordEx:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                     Style="{StaticResource PasswordBoxEx}" />
                     </Grid>
                 </StackPanel>
             </Grid>
-
 
             <Grid Name="GridPrivateKey" Height="Auto">
                 <Grid.Style>
@@ -82,14 +83,13 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_private_key}"></TextBlock>
                     <StackPanel>
-                        <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource server_editor_connection_private_key_checker}" 
+                        <CheckBox Name="CbUsePrivateKey" Content="{DynamicResource server_editor_connection_private_key_checker}"
                                   Unchecked="CbUsePrivateKey_OnChecked"></CheckBox>
                         <Grid>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
             </Grid>
-
 
             <Grid>
                 <Grid.Style>
@@ -125,7 +125,9 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sftp_startup_path}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding StartupPath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding StartupPath,UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                 Tag="e.g. /home/user/Desktop"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>

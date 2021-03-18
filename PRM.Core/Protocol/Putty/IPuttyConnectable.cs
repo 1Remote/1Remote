@@ -8,9 +8,6 @@ namespace PRM.Core.Protocol.Putty
     {
         string GetPuttyConnString(PrmContext context);
 
-
-
-
         /// <summary>
         /// Allowing implementing interface only for specific class 'ProtocolServerBase'
         /// </summary>

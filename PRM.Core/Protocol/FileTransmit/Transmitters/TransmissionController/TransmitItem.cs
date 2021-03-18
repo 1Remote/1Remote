@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using PRM.Core.Protocol.FileTransmitter;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 {

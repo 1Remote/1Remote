@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core;
+using Shawn.Utils;
 using PRM.ViewModel;
 
 namespace PRM.View
@@ -10,6 +11,7 @@ namespace PRM.View
     {
         public readonly VmAboutPage Vm;
         private readonly VmMain _vmMain;
+
         public AboutPage(VmAboutPage vm, VmMain vmMain)
         {
             InitializeComponent();
@@ -23,7 +25,7 @@ namespace PRM.View
         {
             if (e.ClickCount == 3)
             {
-                Shawn.Utils.ConsoleManager.Toggle();
+                ConsoleManager.Toggle();
             }
         }
 

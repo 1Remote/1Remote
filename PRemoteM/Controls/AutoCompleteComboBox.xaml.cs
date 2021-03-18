@@ -35,7 +35,7 @@ namespace Shawn.Utils
             }
         }
 
-        static void TextChanged(AutoCompleteComboBox o, string newValue)
+        private static void TextChanged(AutoCompleteComboBox o, string newValue)
         {
             if ((o.Selections?.Count() ?? 0) == 0)
                 return;
@@ -46,7 +46,6 @@ namespace Shawn.Utils
             }
             else
             {
-
                 o.Selections4Show = new ObservableCollection<string>(o.Selections
                     .Where(x => x.IndexOf(newValue, StringComparison.OrdinalIgnoreCase) >= 0));
                 if (o.Selections4Show?.Count() > 0)
@@ -62,10 +61,6 @@ namespace Shawn.Utils
                 }
             }
         }
-
-
-
-
 
         public static readonly DependencyProperty SelectionsProperty = DependencyProperty.Register(
             nameof(Selections), typeof(IEnumerable<string>), typeof(AutoCompleteComboBox),
@@ -96,7 +91,6 @@ namespace Shawn.Utils
             }
         }
 
-
         public static readonly DependencyProperty Selections4ShowProperty = DependencyProperty.Register(
             nameof(Selections4Show), typeof(IEnumerable<string>), typeof(AutoCompleteComboBox),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -106,7 +100,6 @@ namespace Shawn.Utils
             get => (IEnumerable<string>)GetValue(Selections4ShowProperty);
             set => SetValue(Selections4ShowProperty, value);
         }
-
 
         public AutoCompleteComboBox()
         {

@@ -40,7 +40,7 @@ namespace PRM.Core.Protocol.Putty.Host
         public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
@@ -54,14 +54,12 @@ namespace PRM.Core.Protocol.Putty.Host
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr SetFocus(HandleRef hWnd);
 
-
         private const int GWL_STYLE = (-16);
         private const int WM_CLOSE = 0x10;
         private const int WS_CAPTION = 0x00C00000;      // 	创建一个有标题框的窗口
         private const int WS_BORDER = 0x00800000;       // 	创建一个单边框的窗口
         private const int WS_THICKFRAME = 0x00040000;   // 创建一个具有可调边框的窗口
         private const int WS_VSCROLL = 0x00200000;      // 创建一个有垂直滚动条的窗口。
-
 
         private const int SW_HIDE = 0;
         private const int SW_SHOWNORMAL = 1;
@@ -87,7 +85,6 @@ namespace PRM.Core.Protocol.Putty.Host
         {
             _protocolPuttyBase = iPuttyConnectable;
             InitializeComponent();
-
 
             KittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Kitty");
             if (!Directory.Exists(KittyExeFolderPath))
@@ -125,9 +122,6 @@ namespace PRM.Core.Protocol.Putty.Host
                     });
                 }
             }
-
-
-
 
             _kittyMasterPanel = new System.Windows.Forms.Panel
             {
@@ -208,7 +202,6 @@ namespace PRM.Core.Protocol.Putty.Host
                 kitty.Close();
             }
 
-
             File.WriteAllText(Path.Combine(KittyExeFolderPath, KittyIniName),
                 @"
 [Agent]
@@ -278,7 +271,7 @@ reload=yes
                 SimpleLogHelper.Debug($"Start KiTTY({_kittyProcess.Handle})");
                 _kittyProcess.Refresh();
                 _kittyProcess.WaitForInputIdle();
-                _kittyHandleOfWindow = _kittyProcess.MainWindowHandle; 
+                _kittyHandleOfWindow = _kittyProcess.MainWindowHandle;
             }
         }
 
@@ -307,7 +300,6 @@ reload=yes
             MoveWindow(_kittyHandleOfWindow, KittyWindowMargin, KittyWindowMargin, _kittyMasterPanel.Width - KittyWindowMargin * 2, _kittyMasterPanel.Height - KittyWindowMargin * 2, true);
             SimpleLogHelper.Debug("Del KiTTY session config");
         }
-
 
         private void InitKitty()
         {
@@ -341,10 +333,9 @@ reload=yes
                     SimpleLogHelper.Debug($"Stop KiTTY({_kittyProcess.Handle})");
                     _kittyProcess?.Kill();
                 }
-                _kittyProcess = null; 
+                _kittyProcess = null;
             }
         }
-
 
         private void SetPuttySessionConfig()
         {
@@ -412,7 +403,6 @@ reload=yes
             //_puttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
             //_puttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
 
-
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour2, "0,0,0");
@@ -435,7 +425,6 @@ reload=yes
             //_puttyOption.Set(PuttyRegOptionKey.Colour19,"85,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour20,"187,187,187");
             //_puttyOption.Set(PuttyRegOptionKey.Colour21,"255,255,255");
-
 
             //_puttyOption.Set(PuttyRegOptionKey.UseSystemColours, 0);
             //_puttyOption.Set(PuttyRegOptionKey.TryPalette, 0);
@@ -465,7 +454,6 @@ reload=yes
             //_puttyOption.Set(PuttyRegOptionKey.Colour19,"52,226,226");
             //_puttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
             //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
-
 
             puttyOption.SaveToKittyConfig(KittyExeFolderPath);
         }

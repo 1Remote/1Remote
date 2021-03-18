@@ -5,9 +5,12 @@ using System.Windows;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using PRM.View;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
+using PRM.View;
+
+using Shawn.Utils;
+
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
@@ -18,8 +21,8 @@ namespace PRM.ViewModel
 
         #region Properties
 
-
         private Visibility _tbFilterVisible = Visibility.Visible;
+
         public Visibility TbFilterVisible
         {
             get => _tbFilterVisible;
@@ -32,6 +35,7 @@ namespace PRM.ViewModel
         public AnimationPage ServersShownPage { get; }
 
         private AnimationPage _bottomPage = null;
+
         public AnimationPage BottomPage
         {
             get => _bottomPage;
@@ -42,8 +46,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private AnimationPage _dispPage = null;
+
         public AnimationPage DispPage
         {
             get => _dispPage;
@@ -55,6 +59,7 @@ namespace PRM.ViewModel
         }
 
         private AnimationPage _topPage = null;
+
         public AnimationPage TopPage
         {
             get => _topPage;
@@ -66,6 +71,7 @@ namespace PRM.ViewModel
         }
 
         private int _progressBarValue = 0;
+
         public int ProgressBarValue
         {
             get => _progressBarValue;
@@ -73,6 +79,7 @@ namespace PRM.ViewModel
         }
 
         private int _progressBarMaximum = 0;
+
         public int ProgressBarMaximum
         {
             get => _progressBarMaximum;
@@ -86,6 +93,7 @@ namespace PRM.ViewModel
         }
 
         private string _progressBarInfo = "";
+
         public string ProgressBarInfo
         {
             get => _progressBarInfo;
@@ -97,7 +105,8 @@ namespace PRM.ViewModel
                 }
             }
         }
-        #endregion
+
+        #endregion Properties
 
         public readonly MainWindow Window;
         public PrmContext Context { get; }
@@ -139,7 +148,6 @@ namespace PRM.ViewModel
                 };
             });
 
-
             ServersShownPage = new AnimationPage()
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,
@@ -150,7 +158,6 @@ namespace PRM.ViewModel
             _aboutPage = new AboutPage(VmAboutPage, this);
         }
 
-
         private void CalcTbFilterVisible()
         {
             if (TopPage == null && DispPage == null)
@@ -159,10 +166,10 @@ namespace PRM.ViewModel
                 TbFilterVisible = Visibility.Collapsed;
         }
 
-
         #region CMD
 
         private RelayCommand _cmdGoSysOptionsPage;
+
         public RelayCommand CmdGoSysOptionsPage
         {
             get
@@ -184,8 +191,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private RelayCommand _cmdGoManagementPage;
+
         public RelayCommand CmdGoManagementPage
         {
             get
@@ -211,8 +218,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private RelayCommand _cmdGoAboutPage;
+
         public RelayCommand CmdGoAboutPage
         {
             get
@@ -233,6 +240,7 @@ namespace PRM.ViewModel
                 return _cmdGoAboutPage;
             }
         }
-        #endregion
+
+        #endregion CMD
     }
 }

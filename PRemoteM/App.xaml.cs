@@ -7,10 +7,11 @@ using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.Host;
+using Shawn.Utils;
 using PRM.Model;
 using PRM.View;
 using PRM.View.ErrorReport;
-using Shawn.Utils;
+using PRM.View.Guidance;
 
 namespace PRM
 {
@@ -80,17 +81,17 @@ namespace PRM
         {
             // TODO delete at 2021.04
 #if !FOR_MICROSOFT_STORE_ONLY
-            var startupMode = Shawn.Utils.SetSelfStartingHelper.StartupMode.Normal;
+            var startupMode = SetSelfStartingHelper.StartupMode.Normal;
             if (startupEvent.Args.Length > 0)
             {
                 System.Enum.TryParse(startupEvent.Args[0], out startupMode);
             }
-            if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.SetSelfStart)
+            if (startupMode == SetSelfStartingHelper.StartupMode.SetSelfStart)
             {
                 SetSelfStartingHelper.SetSelfStartByShortcut(true);
                 Environment.Exit(0);
             }
-            if (startupMode == Shawn.Utils.SetSelfStartingHelper.StartupMode.UnsetSelfStart)
+            if (startupMode == SetSelfStartingHelper.StartupMode.UnsetSelfStart)
             {
                 SetSelfStartingHelper.SetSelfStartByShortcut(false);
                 Environment.Exit(0);
@@ -159,7 +160,6 @@ namespace PRM
             // if ini is not existed, then it would be a new user
             bool isNewUser = !File.Exists(iniPath);
 
-
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
             var general = new SystemConfigGeneral(ini);
@@ -216,7 +216,7 @@ namespace PRM
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
-            Shawn.Utils.ConsoleManager.Show();
+            ConsoleManager.Show();
 #endif
             // BASE MODULES
             InitLog(appDateFolder);
@@ -247,9 +247,6 @@ namespace PRM
             {
                 Context.AppData.ServerListUpdate();
             }
-
-
-
 
             if (!SystemConfig.Instance.General.AppStartMinimized
                 || isNewUser)

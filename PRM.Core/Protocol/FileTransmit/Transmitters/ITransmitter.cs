@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters
@@ -28,6 +27,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 return icon;
             }
         }
+
         public static BitmapImage GetDictIcon(string key = "")
         {
             lock (_locker)
@@ -43,24 +43,31 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         }
     }
 
-
-
     public interface ITransmitter
     {
         void Conn();
+
         bool IsConnected();
+
         ITransmitter Clone();
+
         RemoteItem Get(string path);
+
         /// <summary>
         /// get items of a directory, sub-directory treat as a item too
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         List<RemoteItem> ListDirectoryItems(string path);
+
         bool Exists(string path);
+
         void Delete(string path);
+
         void Delete(RemoteItem item);
+
         void CreateDirectory(string path);
+
         void RenameFile(string path, string newPath);
 
         /// <summary>

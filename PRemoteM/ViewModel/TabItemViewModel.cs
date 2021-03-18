@@ -2,7 +2,7 @@
 using PRM.Core;
 using PRM.Core.Protocol;
 
-namespace Shawn.Utils.DragablzTab
+namespace PRM.ViewModel
 {
     public class TabItemViewModel : NotifyPropertyChangedBase
     {
@@ -11,8 +11,8 @@ namespace Shawn.Utils.DragablzTab
             _markColorHex = "#102b3e";
         }
 
-
         private object _header;
+
         public object Header
         {
             get => _header;
@@ -20,6 +20,7 @@ namespace Shawn.Utils.DragablzTab
         }
 
         private ProtocolHostBase _content;
+
         public ProtocolHostBase Content
         {
             get => _content;
@@ -41,8 +42,8 @@ namespace Shawn.Utils.DragablzTab
             set => SetAndNotifyIfChanged(nameof(CanResizeNow), ref _canResizeNow, value);
         }
 
-
         private string _markColorHex;
+
         /// <summary>
         /// tab title mark color
         /// </summary>
@@ -62,8 +63,8 @@ namespace Shawn.Utils.DragablzTab
             }
         }
 
-
         private System.Windows.Media.Imaging.BitmapSource _iconImg;
+
         public System.Windows.Media.Imaging.BitmapSource IconImg
         {
             get => _iconImg;

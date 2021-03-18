@@ -3,7 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core.Model;
+using Shawn.Utils;
 using PRM.ViewModel;
+
 using Shawn.Utils;
 
 namespace PRM.View
@@ -55,6 +57,7 @@ namespace PRM.View
 
         private readonly object _hideToggleLocker = new object();
         private bool _isHidden = false;
+
         private void HideMe()
         {
             if (_isHidden == false)
@@ -73,12 +76,11 @@ namespace PRM.View
 
         private string _assignTabTokenThisTime = null;
 
-
-
         public void ShowMe()
         {
             ShowMe(null);
         }
+
         public void ShowMe(string assignTabTokenThisTime)
         {
             _assignTabTokenThisTime = assignTabTokenThisTime;
@@ -112,15 +114,6 @@ namespace PRM.View
                 }
         }
 
-
-
-
-
-
-
-
-
-
         protected override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed) return;
@@ -133,10 +126,8 @@ namespace PRM.View
             }
         }
 
-
-
-
         private readonly object _keyDownLocker = new object();
+
         private void TbKeyWord_OnKeyDown(object sender, KeyEventArgs e)
         {
             lock (_keyDownLocker)
@@ -165,6 +156,7 @@ namespace PRM.View
                                 _vm.Actions[si]?.Run(id);
                             }
                             break;
+
                         case Key.Down:
                             if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
                             {
@@ -172,6 +164,7 @@ namespace PRM.View
                                 ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
                             }
                             break;
+
                         case Key.Up:
                             if (_vm.SelectedActionIndex > 0)
                             {
@@ -179,6 +172,7 @@ namespace PRM.View
                                 ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
                             }
                             break;
+
                         case Key.PageUp:
                             if (_vm.SelectedActionIndex > 0)
                             {
@@ -187,6 +181,7 @@ namespace PRM.View
                                 ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
                             }
                             break;
+
                         case Key.PageDown:
                             if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
                             {
@@ -197,6 +192,7 @@ namespace PRM.View
                                 ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
                             }
                             break;
+
                         case Key.Left:
                             _vm.HideActionsList();
                             break;
@@ -223,9 +219,11 @@ namespace PRM.View
                             }
                             e.Handled = true;
                             break;
+
                         case Key.Enter:
                             OpenSessionAndHide();
                             break;
+
                         case Key.Down:
                             if (_vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count - 1)
                             {
@@ -241,6 +239,7 @@ namespace PRM.View
                                 _vm.SelectedIndex = index;
                             }
                             break;
+
                         case Key.Up:
                             if (_vm.SelectedIndex > 0)
                             {
@@ -256,6 +255,7 @@ namespace PRM.View
                                 _vm.SelectedIndex = index;
                             }
                             break;
+
                         case Key.PageUp:
                             if (_vm.SelectedIndex > 0)
                             {
@@ -274,6 +274,7 @@ namespace PRM.View
                                 _vm.SelectedIndex = index;
                             }
                             break;
+
                         case Key.PageDown:
                             if (_vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count - 1)
                             {
@@ -297,7 +298,6 @@ namespace PRM.View
             }
         }
 
-
         /// <summary>
         /// use it after Show() has been called
         /// </summary>
@@ -310,6 +310,7 @@ namespace PRM.View
             {
                 case GlobalHotkeyHooker.RetCode.Success:
                     break;
+
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     {
                         var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_registered_fail")}: {r.Item2}";

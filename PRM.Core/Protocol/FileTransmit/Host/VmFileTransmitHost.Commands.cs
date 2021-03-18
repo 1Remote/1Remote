@@ -11,11 +11,9 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using ColorPickerWPF.Code;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;
-using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
 using Clipboard = System.Windows.Clipboard;
 using MessageBox = System.Windows.MessageBox;
@@ -25,10 +23,10 @@ namespace PRM.Core.Protocol.FileTransmit.Host
 {
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
-
         #region CMD
 
         private RelayCommand _cmdDelete;
+
         public RelayCommand CmdDelete
         {
             get
@@ -73,7 +71,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
         private RelayCommand _cmdBeginRenaming;
 
         public RelayCommand CmdBeginRenaming
@@ -98,7 +95,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 return _cmdBeginRenaming;
             }
         }
-
 
         private RelayCommand _cmdEndRenaming;
 
@@ -159,8 +155,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
         private RelayCommand _cmdCancelRenaming;
+
         public RelayCommand CmdCancelRenaming
         {
             get
@@ -194,8 +190,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
         private RelayCommand _cmdListViewDoubleClick;
+
         /// <summary>
         /// double click to enter folder or open file
         /// </summary>
@@ -256,8 +252,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
         private RelayCommand _cmdGoToPathCurrent;
+
         public RelayCommand CmdGoToPathCurrent
         {
             get
@@ -286,6 +282,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         }
 
         private RelayCommand _cmdGoToParent;
+
         public RelayCommand CmdGoToParent
         {
             get
@@ -310,6 +307,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         }
 
         private RelayCommand _cmdGoToPathPrevious;
+
         public RelayCommand CmdGoToPathPrevious
         {
             get
@@ -334,6 +332,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         }
 
         private RelayCommand _cmdGoToPathFollowing;
+
         public RelayCommand CmdGoToPathFollowing
         {
             get
@@ -357,8 +356,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
         private RelayCommand _cmdDownload;
+
         public RelayCommand CmdDownload
         {
             get
@@ -405,10 +404,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
-
-
         private RelayCommand _cmdUpload;
+
         public RelayCommand CmdUpload
         {
             get
@@ -447,7 +444,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             fbd.ShowNewFolderButton = false;
                             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
-                                DoUpload(new List<string>(){ fbd.SelectedPath });
+                                DoUpload(new List<string>() { fbd.SelectedPath });
                             }
                         }
                     });
@@ -486,7 +483,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 return _cmdUploadClipboard;
             }
         }
-
 
         private void DoUpload(List<string> filePathList)
         {
@@ -556,8 +552,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         //    }
         //}
 
-
         private RelayCommand _cmdShowTransmitDstPath;
+
         public RelayCommand CmdShowTransmitDstPath
         {
             get
@@ -599,10 +595,8 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
-
-
         private RelayCommand _cmdDeleteTransmitTask;
+
         public RelayCommand CmdDeleteTransmitTask
         {
             get
@@ -625,10 +619,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             }
         }
 
-
-
-
-        #endregion
-
+        #endregion CMD
     }
 }

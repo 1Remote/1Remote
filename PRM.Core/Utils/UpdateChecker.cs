@@ -2,9 +2,8 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PRM.Core.Model;
-using Shawn.Utils;
 
-namespace PRM.Core.Utils
+namespace Shawn.Utils
 {
     public class UpdateChecker
     {
@@ -21,8 +20,6 @@ namespace PRM.Core.Utils
             "https://github.com/VShawn/PRemoteM-Test/wiki",
 #endif
         };
-
-
 
         /// <summary>
         /// Invoke to notify a newer version of te software was released
@@ -46,7 +43,6 @@ namespace PRM.Core.Utils
         {
             return Compare(_currentVersion, versionString);
         }
-
 
         /// <summary>
         /// if versionString2 is newer, return true
@@ -77,7 +73,6 @@ namespace PRM.Core.Utils
                 return true;
             return false;
         }
-
 
         private Tuple<int, int, int, string> FromVersionString(string versionString)
         {

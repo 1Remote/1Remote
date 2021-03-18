@@ -7,7 +7,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using Shawn.Utils;
 using PRM.ViewModel;
+
 using Shawn.Utils;
 
 namespace PRM.View
@@ -119,7 +121,7 @@ namespace PRM.View
                 if (!string.IsNullOrWhiteSpace(cmd))
                 {
                     // TODO add some params
-                    Shawn.Utils.CmdRunner.RunCmdAsync(cmd);
+                    CmdRunner.RunCmdAsync(cmd);
                 }
             }
             catch (Exception ex)

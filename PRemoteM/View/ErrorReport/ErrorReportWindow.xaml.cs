@@ -14,6 +14,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 
+using Shawn.Utils;
+
+using Shawn.Utils.PageHost;
+
 namespace PRM.View.ErrorReport
 {
     /// <summary>
@@ -73,7 +77,7 @@ namespace PRM.View.ErrorReport
         private void BuildEnvironment(ref StringBuilder sb)
         {
             try
-            { 
+            {
                 var osRelease = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "").ToString();
                 var osName = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "productName", "").ToString();
                 var osType = Environment.Is64BitOperatingSystem ? "64-bits" : "32-bits";

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
-using PRM.Core.Protocol.FileTransmitter;
 
 namespace PRM.Core.Protocol.FileTransmit
 {

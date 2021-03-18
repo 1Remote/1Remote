@@ -10,11 +10,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using ColorPickerWPF.Code;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;
-using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
@@ -22,6 +20,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
         private readonly PrmContext _context;
+
         public VmFileTransmitHost(PrmContext context, IProtocolFileTransmittable protocol)
         {
             _context = context;
@@ -87,7 +86,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     IoMessage = e.Message;
                 }
 
-
                 ThreadPool.QueueUserWorkItem(delegate
                 {
                     try
@@ -127,6 +125,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
         }
 
         private int _remoteItemsOrderBy = -1;
+
         /// <summary>
         /// -1: by name asc(default)
         /// 0: by name asc
@@ -162,27 +161,35 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                     default:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderBy(a => a.IsDirectory ? 1 : 2).ThenBy(x => x.Name));
                         break;
+
                     case 0:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderBy(x => x.Name));
                         break;
+
                     case 1:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending(x => x.Name));
                         break;
+
                     case 2:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderBy(x => x.ByteSize));
                         break;
+
                     case 3:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending(x => x.ByteSize));
                         break;
+
                     case 4:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderBy(x => x.LastUpdate));
                         break;
+
                     case 5:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending(x => x.LastUpdate));
                         break;
+
                     case 6:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderBy(x => x.FileType).ThenBy(x => x.Name));
                         break;
+
                     case 7:
                         remoteItemInfos = new ObservableCollection<RemoteItem>(RemoteItems.OrderByDescending(x => x.FileType).ThenBy(x => x.Name));
                         break;
@@ -190,7 +197,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                 RemoteItems = remoteItemInfos;
             }
         }
-
 
         /// <summary>
         /// mode = 1 go preview, mode = 2 go following
@@ -272,7 +278,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                                 ShowFolder(CurrentPath);
                             return;
                         }
-
                     }
                     finally
                     {
@@ -283,9 +288,6 @@ namespace PRM.Core.Protocol.FileTransmit.Host
             });
             t.Start();
         }
-
-
-
 
         public void TvFileList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {

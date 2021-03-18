@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -16,18 +14,21 @@ namespace Shawn.Utils
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                var r = GlobalHotkeyHooker.Instance.Regist(this,(uint)GlobalHotkeyHooker.HotkeyModifiers.Ctrl | (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt, Key.M, 
+                var r = GlobalHotkeyHooker.Instance.Regist(this,(uint)GlobalHotkeyHooker.HotkeyModifiers.Ctrl | (uint)GlobalHotkeyHooker.HotkeyModifiers.Alt, Key.M,
                     () => { MessageBox.Show("hook"); });
                 switch (r.Item1)
                 {
                     case GlobalHotkeyHooker.RetCode.Success:
                         break;
+
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                         MessageBox.Show("快捷键注册失败" + ": " + r.Item2);
                         break;
+
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                         MessageBox.Show("快捷键已被占用" + ": " + r.Item2);
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -35,17 +36,14 @@ namespace Shawn.Utils
         }
      */
 
-
-
-
-
     /// <summary>
     /// for wpf window global hotkey regist
     /// </summary>
     public class GlobalHotkeyHooker
     {
         #region user32 api
-        const int WM_HOTKEY = 0x312;
+
+        private const int WM_HOTKEY = 0x312;
 
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint hotkeyModifiers, uint vk);
@@ -55,14 +53,18 @@ namespace Shawn.Utils
 
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
-        #endregion
+
+        #endregion user32 api
 
         #region 单例
+
         private static GlobalHotkeyHooker uniqueInstance;
         private static readonly object InstanceLock = new object();
+
         private GlobalHotkeyHooker()
         {
         }
+
         public static GlobalHotkeyHooker GetInstance()
         {
             if (uniqueInstance == null)
@@ -77,8 +79,10 @@ namespace Shawn.Utils
             }
             return uniqueInstance;
         }
+
         public static GlobalHotkeyHooker Instance => GetInstance();
-        #endregion
+
+        #endregion 单例
 
         ~GlobalHotkeyHooker()
         {
@@ -86,13 +90,12 @@ namespace Shawn.Utils
         }
 
         public delegate void HotKeyCallBackHandler();
+
         private int _hotKeyId = 1000;
         private object _locker = new object();
         private HashSet<IntPtr> _hookedhWnd = new HashSet<IntPtr>();
         private Dictionary<int, IntPtr> _dictHotKeyId2hWnd = new Dictionary<int, IntPtr>();
         private Dictionary<int, HotKeyCallBackHandler> _dictHotKeyId2CallBack = new Dictionary<int, HotKeyCallBackHandler>();
-
-
 
         /// <summary>
         /// The keys that must be pressed in combination with the key specified by the uVirtKey parameter in order to generate the WM_HOTKEY message.
@@ -113,7 +116,6 @@ namespace Shawn.Utils
             ERROR_HOTKEY_ALREADY_REGISTERED = 1409,
         }
 
-
         /// <summary>
         /// Regist a hotkey, it will return: status code + hot key in string + hot key id
         /// </summary>
@@ -127,9 +129,8 @@ namespace Shawn.Utils
         /// </summary>
         public Tuple<RetCode, string, int> Regist(Window window, HotkeyModifiers hotkeyModifiers, System.Windows.Input.Key key, HotKeyCallBackHandler callBack)
         {
-            return Register(window, (uint) hotkeyModifiers, key, callBack);
+            return Register(window, (uint)hotkeyModifiers, key, callBack);
         }
-
 
         /// <summary>
         /// Regist a hotkey, it will return: status code + hot key in string + hot key id
@@ -263,7 +264,6 @@ namespace Shawn.Utils
                 hotKeyString += GlobalHotkeyHooker.HotkeyModifiers.Alt.ToString() + " + ";
             if ((hotkeyModifiers & (uint)GlobalHotkeyHooker.HotkeyModifiers.Win) > 0)
                 hotKeyString += GlobalHotkeyHooker.HotkeyModifiers.Win.ToString() + " + ";
-
 
             if (
                 key == Key.LeftCtrl ||

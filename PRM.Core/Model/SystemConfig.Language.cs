@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Windows.ApplicationModel.VoiceCommands;
-using PRM.Core.Annotations;
+using PRM.Core.Properties;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
@@ -15,15 +15,14 @@ namespace PRM.Core.Model
         public readonly string LanguageJsonDir;
         private readonly ResourceDictionary _appResourceDictionary = null;
 
-
         private readonly ResourceDictionary _defaultLanguageResourceDictionary = null;
-        private ResourceDictionary _currentLanguageResourceDictionary  = null;
-
+        private ResourceDictionary _currentLanguageResourceDictionary = null;
 
         /// <summary>
         /// code => language file name, all codes leave in small cases, ref https://en.wikipedia.org/wiki/Language_code
         /// </summary>
         private readonly Dictionary<string, string> _languageCode2Name = new Dictionary<string, string>();
+
         private readonly Dictionary<string, ResourceDictionary> _languageCode2Resources = new Dictionary<string, ResourceDictionary>();
 
         /// <summary>
@@ -32,6 +31,7 @@ namespace PRM.Core.Model
         public Dictionary<string, string> LanguageCode2Name => _languageCode2Name;
 
         private string _currentLanguageCode = "en-us";
+
         public string CurrentLanguageCode
         {
             get => _currentLanguageCode;
@@ -44,12 +44,10 @@ namespace PRM.Core.Model
             }
         }
 
-
         public SystemConfigLanguage(ResourceDictionary appResourceDictionary, Ini ini) : base(ini)
         {
             _appResourceDictionary = appResourceDictionary;
             Debug.Assert(appResourceDictionary != null);
-
 
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
             LanguageJsonDir = Path.Combine(appDateFolder, "Languages");
@@ -93,7 +91,6 @@ namespace PRM.Core.Model
             AddStaticLanguageResources("en-us");
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("de-de");
-
 
             // add dynamic json
             var di = new DirectoryInfo(LanguageJsonDir);
@@ -219,10 +216,10 @@ namespace PRM.Core.Model
             return true;
         }
 
-
-
         #region Interface
+
         private const string _sectionName = "General";
+
         public override void Save()
         {
             _ini.WriteValue("lang", _sectionName, CurrentLanguageCode);
@@ -231,7 +228,7 @@ namespace PRM.Core.Model
 
         public override void Load()
         {
-            if(!_ini.ContainsKey("lang", _sectionName))
+            if (!_ini.ContainsKey("lang", _sectionName))
                 return;
             StopAutoSave = true;
             CurrentLanguageCode = _ini.GetValue("lang", _sectionName, DefaultLanguageCode);
@@ -243,6 +240,6 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigLanguage));
         }
 
-        #endregion
+        #endregion Interface
     }
 }

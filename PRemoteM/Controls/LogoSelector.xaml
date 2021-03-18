@@ -1,36 +1,31 @@
 ﻿<UserControl x:Class="PRM.Core.Resources.Controls.LogoSelector"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PRM.Core.Resources.Controls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="180" d:DesignWidth="144"
-             MouseWheel="Window_OnMouseWheel"
-             >
+             MouseWheel="Window_OnMouseWheel">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Converter/Converter.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-            <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="#606060"/>
+            <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="#606060" />
             <Style x:Key="ScrollBarThumbHorizontal" TargetType="{x:Type Thumb}">
-                <Setter Property="OverridesDefaultStyle" Value="true"/>
-                <Setter Property="IsTabStop" Value="false"/>
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="IsTabStop" Value="false" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Thumb}">
-                            <Ellipse Width="10" Height="10" 
-                                     x:Name="rectangle" 
-                                     Fill="{DynamicResource MainColor1Brush}" 
+                            <Ellipse Width="10" Height="10"
+                                     x:Name="rectangle"
+                                     Fill="{DynamicResource MainColor1Brush}"
                                      SnapsToDevicePixels="True" ></Ellipse>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Fill" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}"/>
+                                    <Setter Property="Fill" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}" />
                                 </Trigger>
                                 <Trigger Property="IsDragging" Value="true">
-                                    <Setter Property="Fill" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}"/>
+                                    <Setter Property="Fill" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -38,8 +33,8 @@
                 </Setter>
             </Style>
             <Style x:Key="LogoSelectorZoomScrollBarStyle" TargetType="{x:Type ScrollBar}">
-                <Setter Property="Width" Value="Auto"/>
-                <Setter Property="BorderThickness" Value="0,1"/>
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="BorderThickness" Value="0,1" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -48,7 +43,7 @@
                                 <Track x:Name="PART_Track" IsEnabled="{TemplateBinding IsMouseOver}"
                                        ViewportSize="NaN">
                                     <Track.Thumb>
-                                        <Thumb Style="{StaticResource ScrollBarThumbHorizontal}"/>
+                                        <Thumb Style="{StaticResource ScrollBarThumbHorizontal}" />
                                     </Track.Thumb>
                                 </Track>
                             </Grid>
@@ -69,16 +64,15 @@
                 <ColumnDefinition Width="144"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-
             <Border Grid.Row="0" Height="144" Width="144">
                 <Canvas Height="144" Width="144"
-                        Name="CanvasWhiteBoard" 
+                        Name="CanvasWhiteBoard"
                         MouseLeave="CanvasWhiteBoard_OnMouseLeave"
-                        MouseLeftButtonDown="CanvasImage_MouseLeftButtonDown" 
-                        MouseLeftButtonUp="CanvasImage_MouseLeftButtonUp" 
+                        MouseLeftButtonDown="CanvasImage_MouseLeftButtonDown"
+                        MouseLeftButtonUp="CanvasImage_MouseLeftButtonUp"
                         MouseMove="CanvasImage_Move"
                         ClipToBounds="True">
-                    <Canvas Canvas.Top="0" Canvas.Left="0"  Height="100" Width="100" 
+                    <Canvas Canvas.Top="0" Canvas.Left="0"  Height="100" Width="100"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Name="CanvasImage">
@@ -111,13 +105,13 @@
                         </Path.Style>
                     </Path>
                 </Grid>
-                <ScrollBar Grid.Column="1"  Name="ScrollBarScale" 
-                           Orientation="Horizontal" Height="20" 
-                           Value="{Binding Scaling}" 
-                           Maximum="2" Minimum="0" 
+                <ScrollBar Grid.Column="1"  Name="ScrollBarScale"
+                           Orientation="Horizontal" Height="20"
+                           Value="{Binding Scaling}"
+                           Maximum="2" Minimum="0"
                            Style="{StaticResource LogoSelectorZoomScrollBarStyle}"></ScrollBar>
                 <Grid Grid.Column="2" MouseLeftButtonUp="BtnZoomIn_OnMouseLeftButtonUp" Background="Transparent">
-                    <Path Margin="2" Data="F1 M 87.183594 -4.683594 C 87.727859 -4.139323 88.000000 -3.494792 88.000000 -2.750000 C 88.000000 -2.005208 87.727859 -1.360677 87.183594 -0.816406 C 86.639320 -0.272135 85.994789 0.000000 85.250000 0.000000 C 84.505203 0.000000 83.860672 -0.272135 83.316406 -0.816406 L 49.585938 -34.503906 C 46.835938 -32.240883 43.820961 -30.507813 40.541016 -29.304688 C 37.261066 -28.101563 33.830727 -27.500000 30.250000 -27.500000 C 27.471354 -27.500000 24.792969 -27.858072 22.214844 -28.574219 C 19.636719 -29.290363 17.230469 -30.307289 14.996094 -31.625000 C 12.761719 -32.942707 10.720703 -34.525391 8.873047 -36.373047 C 7.025391 -38.220703 5.442708 -40.261719 4.125000 -42.496094 C 2.807292 -44.730469 1.790365 -47.136719 1.074219 -49.714844 C 0.358073 -52.292969 0.000000 -54.971352 0.000000 -57.750000 C 0.000000 -60.528645 0.358073 -63.207031 1.074219 -65.785156 C 1.790365 -68.363281 2.807292 -70.769531 4.125000 -73.003906 C 5.442708 -75.238281 7.025391 -77.279297 8.873047 -79.126953 C 10.720703 -80.974609 12.761719 -82.557289 14.996094 -83.875000 C 17.230469 -85.192703 19.636719 -86.209633 22.214844 -86.925781 C 24.792969 -87.641922 27.471354 -88.000000 30.250000 -88.000000 C 33.028645 -88.000000 35.707031 -87.641922 38.285156 -86.925781 C 40.863281 -86.209633 43.269531 -85.192703 45.503906 -83.875000 C 47.738277 -82.557289 49.779293 -80.974609 51.626953 -79.126953 C 53.474606 -77.279297 55.057289 -75.238281 56.375000 -73.003906 C 57.692707 -70.769531 58.709633 -68.363281 59.425781 -65.785156 C 60.141926 -63.207031 60.500000 -60.528645 60.500000 -57.750000 C 60.500000 -54.169270 59.898438 -50.738930 58.695313 -47.458984 C 57.492188 -44.179035 55.759113 -41.164063 53.496094 -38.414063 Z M 30.250000 -33.000000 C 33.658852 -33.000000 36.867188 -33.651691 39.875000 -34.955078 C 42.882813 -36.258461 45.503906 -38.027344 47.738281 -40.261719 C 49.972656 -42.496094 51.741535 -45.117188 53.044922 -48.125000 C 54.348305 -51.132813 55.000000 -54.341145 55.000000 -57.750000 C 55.000000 -61.158852 54.348305 -64.367188 53.044922 -67.375000 C 51.741535 -70.382813 49.972656 -73.003906 47.738281 -75.238281 C 45.503906 -77.472656 42.882813 -79.241531 39.875000 -80.544922 C 36.867188 -81.848305 33.658852 -82.500000 30.250000 -82.500000 C 26.841145 -82.500000 23.632811 -81.848305 20.625000 -80.544922 C 17.617188 -79.241531 14.996093 -77.472656 12.761719 -75.238281 C 10.527344 -73.003906 8.758463 -70.382813 7.455078 -67.375000 C 6.151692 -64.367188 5.500000 -61.158852 5.500000 -57.750000 C 5.500000 -54.341145 6.151692 -51.132813 7.455078 -48.125000 C 8.758463 -45.117188 10.527344 -42.496094 12.761719 -40.261719 C 14.996093 -38.027344 17.617188 -36.258461 20.625000 -34.955078 C 23.632811 -33.651691 26.841145 -33.000000 30.250000 -33.000000 Z M 33.000000 -60.500000 L 44.000000 -60.500000 L 44.000000 -55.000000 L 33.000000 -55.000000 L 33.000000 -44.000000 L 27.500000 -44.000000 L 27.500000 -55.000000 L 16.500000 -55.000000 L 16.500000 -60.500000 L 27.500000 -60.500000 L 27.500000 -71.500000 L 33.000000 -71.500000 Z " Stretch="Uniform" >
+                    <Path Margin="2" Data="F1 M 87.183594 -4.683594 C 87.727859 -4.139323 88.000000 -3.494792 88.000000 -2.750000 C 88.000000 -2.005208 87.727859 -1.360677 87.183594 -0.816406 C 86.639320 -0.272135 85.994789 0.000000 85.250000 0.000000 C 84.505203 0.000000 83.860672 -0.272135 83.316406 -0.816406 L 49.585938 -34.503906 C 46.835938 -32.240883 43.820961 -30.507813 40.541016 -29.304688 C 37.261066 -28.101563 33.830727 -27.500000 30.250000 -27.500000 C 27.471354 -27.500000 24.792969 -27.858072 22.214844 -28.574219 C 19.636719 -29.290363 17.230469 -30.307289 14.996094 -31.625000 C 12.761719 -32.942707 10.720703 -34.525391 8.873047 -36.373047 C 7.025391 -38.220703 5.442708 -40.261719 4.125000 -42.496094 C 2.807292 -44.730469 1.790365 -47.136719 1.074219 -49.714844 C 0.358073 -52.292969 0.000000 -54.971352 0.000000 -57.750000 C 0.000000 -60.528645 0.358073 -63.207031 1.074219 -65.785156 C 1.790365 -68.363281 2.807292 -70.769531 4.125000 -73.003906 C 5.442708 -75.238281 7.025391 -77.279297 8.873047 -79.126953 C 10.720703 -80.974609 12.761719 -82.557289 14.996094 -83.875000 C 17.230469 -85.192703 19.636719 -86.209633 22.214844 -86.925781 C 24.792969 -87.641922 27.471354 -88.000000 30.250000 -88.000000 C 33.028645 -88.000000 35.707031 -87.641922 38.285156 -86.925781 C 40.863281 -86.209633 43.269531 -85.192703 45.503906 -83.875000 C 47.738277 -82.557289 49.779293 -80.974609 51.626953 -79.126953 C 53.474606 -77.279297 55.057289 -75.238281 56.375000 -73.003906 C 57.692707 -70.769531 58.709633 -68.363281 59.425781 -65.785156 C 60.141926 -63.207031 60.500000 -60.528645 60.500000 -57.750000 C 60.500000 -54.169270 59.898438 -50.738930 58.695313 -47.458984 C 57.492188 -44.179035 55.759113 -41.164063 53.496094 -38.414063 Z M 30.250000 -33.000000 C 33.658852 -33.000000 36.867188 -33.651691 39.875000 -34.955078 C 42.882813 -36.258461 45.503906 -38.027344 47.738281 -40.261719 C 49.972656 -42.496094 51.741535 -45.117188 53.044922 -48.125000 C 54.348305 -51.132813 55.000000 -54.341145 55.000000 -57.750000 C 55.000000 -61.158852 54.348305 -64.367188 53.044922 -67.375000 C 51.741535 -70.382813 49.972656 -73.003906 47.738281 -75.238281 C 45.503906 -77.472656 42.882813 -79.241531 39.875000 -80.544922 C 36.867188 -81.848305 33.658852 -82.500000 30.250000 -82.500000 C 26.841145 -82.500000 23.632811 -81.848305 20.625000 -80.544922 C 17.617188 -79.241531 14.996093 -77.472656 12.761719 -75.238281 C 10.527344 -73.003906 8.758463 -70.382813 7.455078 -67.375000 C 6.151692 -64.367188 5.500000 -61.158852 5.500000 -57.750000 C 5.500000 -54.341145 6.151692 -51.132813 7.455078 -48.125000 C 8.758463 -45.117188 10.527344 -42.496094 12.761719 -40.261719 C 14.996093 -38.027344 17.617188 -36.258461 20.625000 -34.955078 C 23.632811 -33.651691 26.841145 -33.000000 30.250000 -33.000000 Z M 33.000000 -60.500000 L 44.000000 -60.500000 L 44.000000 -55.000000 L 33.000000 -55.000000 L 33.000000 -44.000000 L 27.500000 -44.000000 L 27.500000 -55.000000 L 16.500000 -55.000000 L 16.500000 -60.500000 L 27.500000 -60.500000 L 27.500000 -71.500000 L 33.000000 -71.500000 Z " Stretch="Uniform">
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Setter Property="Fill" Value="{DynamicResource MainColor1Brush}"></Setter>
@@ -132,7 +126,7 @@
                 </Grid>
             </Grid>
 
-            <controls:ButtonEx Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource word_select}" Style="{StaticResource ButtonExStyleBase}"/>
+            <controls:ButtonEx Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource word_select}" Style="{StaticResource ButtonExStyleBase}" />
         </Grid>
     </Grid>
 </UserControl>

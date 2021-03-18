@@ -10,10 +10,15 @@ namespace PRM.Core.DB.IDB
     public interface IDbServer
     {
         int GetId();
+
         string GetProtocol();
+
         string GetClassVersion();
+
         string GetJson();
+
         string GetUpdatedMark();
+
         ProtocolServerBase ToProtocolServerBase();
     }
 }

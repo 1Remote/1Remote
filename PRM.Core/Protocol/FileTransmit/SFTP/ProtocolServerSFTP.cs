@@ -3,7 +3,6 @@ using System.Text;
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
-using PRM.Core.Protocol.FileTransmitter;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.SFTP
@@ -15,20 +14,21 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             V1 = 1,
             V2 = 2,
         }
+
         public ProtocolServerSFTP() : base("SFTP", "SFTP.V1", "SFTP")
         {
         }
 
-
         private string _privateKey = "";
+
         public string PrivateKey
         {
             get => _privateKey;
             set => SetAndNotifyIfChanged(nameof(PrivateKey), ref _privateKey, value);
         }
 
-
         private string _startupPath = "/";
+
         public string StartupPath
         {
             get => _startupPath;

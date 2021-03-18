@@ -17,12 +17,13 @@ namespace PRM.Core.Protocol.Putty.SSH
             V1 = 1,
             V2 = 2,
         }
+
         public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
         {
         }
 
-
         private string _privateKey = "";
+
         public string PrivateKey
         {
             get => _privateKey;
@@ -37,8 +38,8 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
         }
 
-
         private string _startupAutoCommand = "";
+
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
@@ -46,6 +47,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         }
 
         private string _externalKittySessionConfigPath;
+
         public string ExternalKittySessionConfigPath
         {
             get => _externalKittySessionConfigPath;
@@ -75,7 +77,6 @@ namespace PRM.Core.Protocol.Putty.SSH
         {
             return 1;
         }
-
 
         public string GetPuttyConnString(PrmContext context)
         {

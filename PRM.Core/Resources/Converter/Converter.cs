@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using PRM.Core.Protocol;
 using Shawn.Utils;
 
-namespace PRM.Resources.Converter
+namespace PRM.Core.Resources.Converter
 {
     public class ConverterIsGreaterThan : IValueConverter
     {
         public int CompareValue { get; set; } = 0;
         // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
-        #region IValueConverter 成员  
+
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int v = (int)value;
@@ -26,13 +25,17 @@ namespace PRM.Resources.Converter
         {
             throw new NotSupportedException();
         }
-        #endregion
+
+        #endregion IValueConverter 成员
     }
+
     public class ConverterIsLowerThan : IValueConverter
     {
         public int CompareValue { get; set; } = 0;
         // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
-        #region IValueConverter 成员  
+
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             int v = (int)value;
@@ -43,12 +46,14 @@ namespace PRM.Resources.Converter
         {
             throw new NotSupportedException();
         }
-        #endregion
+
+        #endregion IValueConverter 成员
     }
 
     public class ConverterBool2Visible : IValueConverter
     {
-        #region IValueConverter 成员  
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             bool ss = (bool)value;
@@ -59,13 +64,14 @@ namespace PRM.Resources.Converter
         {
             throw new NotSupportedException();
         }
-        #endregion
-    }
 
+        #endregion IValueConverter 成员
+    }
 
     public class ConverterBool2VisibleInv : IValueConverter
     {
-        #region IValueConverter 成员  
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             bool ss = (bool)value;
@@ -76,13 +82,13 @@ namespace PRM.Resources.Converter
         {
             throw new NotSupportedException();
         }
-        #endregion
-    }
 
+        #endregion IValueConverter 成员
+    }
 
     //public class ConverterDouble2Negate : IValueConverter
     //{
-    //    #region IValueConverter 成员  
+    //    #region IValueConverter 成员
     //    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     //    {
     //        double ss = (double)value;
@@ -95,25 +101,23 @@ namespace PRM.Resources.Converter
     //    #endregion
     //}
 
-
-
     public class ConverterDouble2Half : IValueConverter
     {
-        #region IValueConverter 成员  
+        #region IValueConverter 成员
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             double ss = (double)value;
             return ss * 0.5;
         }
+
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotSupportedException();
         }
-        #endregion
+
+        #endregion IValueConverter 成员
     }
-
-
-
 
     public class ConverterTextWidthAndContent2PresentationSize : IMultiValueConverter
     {
@@ -126,7 +130,8 @@ namespace PRM.Resources.Converter
             return new Size(formattedText.Width, formattedText.Height);
         }
 
-        #region IValueConverter 成员  
+        #region IValueConverter 成员
+
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             try
@@ -135,14 +140,14 @@ namespace PRM.Resources.Converter
                 {
                     Text = values[0].ToString(),
                     Width = int.Parse(values[1].ToString()),
-                    FontFamily = (FontFamily) values[2],
-                    FontStyle = (FontStyle) values[3],
-                    FontWeight = (FontWeight) values[4],
-                    FontStretch = (FontStretch) values[5]
+                    FontFamily = (FontFamily)values[2],
+                    FontStyle = (FontStyle)values[3],
+                    FontWeight = (FontWeight)values[4],
+                    FontStretch = (FontStretch)values[5]
                 };
                 var size = MeasureText(tb, 20);
                 double k = 1.0 * tb.Width / size.Width;
-                double fs = (int) (20 * k);
+                double fs = (int)(20 * k);
                 if (fs > 16)
                     fs = 16;
                 if (fs < 4)
@@ -160,23 +165,14 @@ namespace PRM.Resources.Converter
         {
             throw new NotSupportedException();
         }
-        #endregion
+
+        #endregion IValueConverter 成员
     }
-
-
-
-
-
-
-
-
-
-
-
 
     public class ConverterColorHexString2Brush : IValueConverter
     {
         #region IValueConverter
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string hex = value.ToString();
@@ -188,14 +184,14 @@ namespace PRM.Resources.Converter
         {
             return "#FFFFFF";
         }
-        #endregion
+
+        #endregion IValueConverter
     }
-
-
 
     public class ConverterColorHexString2Color : IValueConverter
     {
         #region IValueConverter
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string hex = value.ToString();
@@ -207,6 +203,7 @@ namespace PRM.Resources.Converter
         {
             return "#FFFFFF";
         }
-        #endregion
+
+        #endregion IValueConverter
     }
 }

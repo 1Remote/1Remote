@@ -20,6 +20,7 @@ namespace PRM.Core.Model
         public Action<string> OnMainWindowServerFilterChanged;
 
         private string _mainWindowServerFilter = "";
+
         public string MainWindowServerFilter
         {
             get => _mainWindowServerFilter;
@@ -33,11 +34,11 @@ namespace PRM.Core.Model
             }
         }
 
-
         #region Server Data
 
         public Action VmItemListDataChanged;
         private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
+
         public ObservableCollection<VmProtocolServer> VmItemList
         {
             get => _vmItemList;
@@ -47,7 +48,6 @@ namespace PRM.Core.Model
                 VmItemListDataChanged?.Invoke();
             }
         }
-
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null)
         {
@@ -108,6 +108,7 @@ namespace PRM.Core.Model
                 ServerListUpdate();
             }
         }
-        #endregion
+
+        #endregion Server Data
     }
 }

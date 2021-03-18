@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PRM.Core.Protocol;
 
-namespace PRM.Core.DB
+namespace PRM.Core.DB.IDB
 {
     public enum DatabaseType
     {
@@ -12,9 +11,11 @@ namespace PRM.Core.DB
         Oracle,
         Sqlite,
     }
+
     public interface IDb
     {
         void CloseConnection();
+
         void OpenConnection(DatabaseType? type = null, string newConnectionString = "");
 
         bool IsConnected();
@@ -25,8 +26,8 @@ namespace PRM.Core.DB
         void InitTables();
 
         ProtocolServerBase GetServer(int id);
-        List<ProtocolServerBase> GetServers();
 
+        List<ProtocolServerBase> GetServers();
 
         /// <summary>
         /// insert and return id
@@ -35,12 +36,10 @@ namespace PRM.Core.DB
         /// <returns></returns>
         int AddServer(ProtocolServerBase server);
 
-
         /// <summary>
         /// update server by id
         /// </summary>
         bool UpdateServer(ProtocolServerBase server);
-
 
         /// <summary>
         /// delete server by id, if id lower than 0 delete all data.
@@ -49,8 +48,11 @@ namespace PRM.Core.DB
         bool DeleteServer(int id);
 
         string GetConfig(string key);
+
         void SetConfig(string key, string value);
+
         string GetProtocolTemplate(string key);
+
         void SetProtocolTemplate(string key, string value);
     }
 

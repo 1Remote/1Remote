@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MSTSCLib;
+using Shawn.Utils;
 
-namespace Shawn.Utils.RDP
+namespace PRM.Core.Protocol.RDP.Host
 {
     public static class AxMsRdpClient9NotSafeForScriptingExAdd
     {
@@ -22,6 +19,7 @@ namespace Shawn.Utils.RDP
             }
         }
     }
+
     public class AxMsRdpClient9NotSafeForScriptingEx : AxMSTSCLib.AxMsRdpClient9NotSafeForScripting
     {
         public AxMsRdpClient9NotSafeForScriptingEx() : base()

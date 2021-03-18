@@ -10,12 +10,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using ColorPickerWPF.Code;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;
-using PRM.Core.Protocol.FileTransmitter;
-using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Host
 {

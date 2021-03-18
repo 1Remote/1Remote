@@ -1,13 +1,10 @@
 using System;
 using System.Text;
-using System.Windows;
 
 namespace Shawn.Utils
 {
     public static class StringHelper
     {
-        // TODO unit test.
-
         public static string ReplaceFirst(this string value, string oldValue, string newValue)
         {
             if (string.IsNullOrEmpty(oldValue))
@@ -39,7 +36,6 @@ namespace Shawn.Utils
             }
         }
 
-
         public static string ReplaceStartWith(this string value, string oldValue, string newValue)
         {
             if (string.IsNullOrEmpty(oldValue))
@@ -54,7 +50,6 @@ namespace Shawn.Utils
             value = value.Remove(idx, oldValue.Length);
             return value.Insert(idx, newValue);
         }
-
 
         public static string RemoveFirst(this string value, string find)
         {

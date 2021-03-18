@@ -3,17 +3,17 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:pageHost1="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
                   xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
                   xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
                   KeyDown="MainWindow_OnKeyDown"
                   Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False"/>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <utils:WindowChromeBase.Template>
         <ControlTemplate TargetType="Window">
@@ -29,7 +29,7 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 6 8 8"/>
+                    <Setter TargetName="WindowContentGrid" Property="Margin" Value="8 6 8 8" />
                     <Setter TargetName="WindowBorder" Property="BorderThickness" Value="0"></Setter>
                 </Trigger>
             </ControlTemplate.Triggers>
@@ -37,7 +37,7 @@
     </utils:WindowChromeBase.Template>
     <utils:WindowChromeBase.Resources>
         <ResourceDictionary>
-            <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter"/>
+            <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
         </ResourceDictionary>
     </utils:WindowChromeBase.Resources>
     <utils:WindowChromeBase.CommandBindings>
@@ -54,7 +54,6 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-
         <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="5 0 0 0">
@@ -62,26 +61,25 @@
                 </Grid>
 
                 <Label VerticalContentAlignment="Center" Margin="0,0,105,0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
-                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
                 </Label>
             </StackPanel>
         </Grid>
 
         <!-- System Button Area -->
-        <StackPanel Grid.Row="0" 
+        <StackPanel Grid.Row="0"
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
 
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
-                <TextBox Name="TbFilter" Width="150" Height="20" 
+                <TextBox Name="TbFilter" Width="150" Height="20"
                          Visibility="{Binding TbFilterVisible}"
                          Text="{Binding Context.AppData.MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>
-                                <TextBlock FontStyle="Italic" Text="{DynamicResource filter_searchbox}" 
-                                           Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                           />
+                                <TextBlock FontStyle="Italic" Text="{DynamicResource filter_searchbox}"
+                                           Foreground="{DynamicResource MainColor1ForegroundBrush}" />
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </TextBox.Resources>
@@ -95,7 +93,7 @@
                                             <Grid>
                                                 <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}"></Grid>
                                                 <Grid x:Name="grid1" Opacity="{TemplateBinding Opacity}">
-                                                    <ScrollViewer Foreground="{DynamicResource MainColor1ForegroundBrush}" x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                                    <ScrollViewer Foreground="{DynamicResource MainColor1ForegroundBrush}" x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                                                 </Grid>
                                             </Grid>
                                         </Border>
@@ -104,31 +102,30 @@
                             </Setter>
                             <Setter Property="Opacity" Value="0.5"></Setter>
                             <Setter Property="Background" Value="Transparent"></Setter>
-                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="IsEnabled" Value="False" />
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor1LighterBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor1LighterBrush}" />
                                     <Setter Property="Opacity" Value="0.8"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsFocused" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}" />
                                     <Setter Property="Opacity" Value="0.8"></Setter>
                                 </Trigger>
                                 <Trigger Property="Text" Value="{x:Null}">
-                                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                                    <Setter Property="Background" Value="{StaticResource HintText}" />
                                 </Trigger>
                                 <Trigger Property="Text" Value="">
-                                    <Setter Property="Background" Value="{StaticResource HintText}"/>
+                                    <Setter Property="Background" Value="{StaticResource HintText}" />
                                 </Trigger>
                                 <DataTrigger Binding="{Binding DispPage}" Value="{x:Null}">
-                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="IsEnabled" Value="True" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
                 </TextBox>
             </Grid>
-
 
             <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">
                 <CheckBox Name="CbPopForMenu" Width="35" Height="35" VerticalAlignment="Top" Margin="0">
@@ -137,7 +134,7 @@
                             <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
                                 <Grid VerticalAlignment="Center">
                                     <Grid Width="15" Height="15">
-                                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z " 
+                                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
                                               Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
                                     </Grid>
                                 </Grid>
@@ -155,12 +152,12 @@
                 </CheckBox>
 
                 <Grid Width="15" Height="15">
-                    <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
-                                      Fill="Red" 
+                    <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
+                                      Fill="Red"
                                       Stretch="Uniform"
                                       Width="6"
                                       Margin="0 -3 -3 0"
-                                      VerticalAlignment="Top" HorizontalAlignment="Right" >
+                                      VerticalAlignment="Top" HorizontalAlignment="Right">
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Style.Triggers>
@@ -174,9 +171,9 @@
                 </Grid>
             </Grid>
 
-            <Popup Name="PopupMenu" 
+            <Popup Name="PopupMenu"
                    AllowsTransparency="True"
-                   IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}" 
+                   IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}"
                    StaysOpen="False"
                    PlacementTarget="{Binding ElementName=CbPopForMenu}">
                 <Popup.Resources>
@@ -185,14 +182,14 @@
                         <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
                         <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                         <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
-                        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}"/>
-                        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
-                        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}" />
+                        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}" />
+                        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}" />
+                        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}" />
                         <Setter Property="OpacityOnPressed" Value="1"></Setter>
                     </Style>
 
-                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyle0}"/>
+                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyle0}" />
                 </Popup.Resources>
                 <Border Padding="0 0 4 4">
                     <Border.Effect>
@@ -235,10 +232,10 @@
                             <controls:ButtonEx Command="{Binding CmdGoAboutPage}">
                                 <Grid>
                                     <Grid Width="20" HorizontalAlignment="Left">
-                                        <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z " 
+                                        <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
                                           Fill="Red" Stretch="Uniform"
                                           Width="6"
-                                          VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                          VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Style.Triggers>
@@ -251,7 +248,7 @@
                                         </Path>
                                     </Grid>
                                     <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
-                                        <TextBlock Text="{DynamicResource system_menu_about_title}" VerticalAlignment="Center" 
+                                        <TextBlock Text="{DynamicResource system_menu_about_title}" VerticalAlignment="Center"
                                                    Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
                                         </TextBlock>
                                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="20" Margin="10 0 0 0"></Image>
@@ -270,14 +267,14 @@
 
             <controls:ButtonEx Name="BtnMinimize"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
-                <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1"/>
+                <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" />
             </controls:ButtonEx>
 
-            <controls:ButtonEx Name="BtnMaximize" 
+            <controls:ButtonEx Name="BtnMaximize"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
                 <Grid>
                     <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
-                          Stretch="Uniform" >
+                          Stretch="Uniform">
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Style.Triggers>
@@ -289,9 +286,9 @@
                         </Path.Style>
                     </Path>
 
-                    <Path Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Height="15" Width="15" 
+                    <Path Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Height="15" Width="15"
                           Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
-                          Stretch="Uniform" >
+                          Stretch="Uniform">
                         <Path.Style>
                             <Style TargetType="Path">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -306,29 +303,29 @@
                 </Grid>
             </controls:ButtonEx>
 
-            <controls:ButtonEx Name="BtnClose" 
+            <controls:ButtonEx Name="BtnClose"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
                 <controls:ButtonEx.Style>
                     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                        <Setter Property="BackgroundOnMouseOver" Value="Red"/>
-                        <Setter Property="BackgroundOnPressed" Value="Red"/>
-                        <Setter Property="ForegroundOnMouseOver" Value="White"/>
-                        <Setter Property="ForegroundOnPressed" Value="White"/>
+                        <Setter Property="BackgroundOnMouseOver" Value="Red" />
+                        <Setter Property="BackgroundOnPressed" Value="Red" />
+                        <Setter Property="ForegroundOnMouseOver" Value="White" />
+                        <Setter Property="ForegroundOnPressed" Value="White" />
                     </Style>
                 </controls:ButtonEx.Style>
-                <Grid Height="15" Width="15" >
-                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 
-                          L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z " 
+                <Grid Height="15" Width="15">
+                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406
+                          L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                           Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
             </controls:ButtonEx>
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <pageHost1:PageHost NewPage="{Binding ServersShownPage}"></pageHost1:PageHost>
-            <pageHost1:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost1:PageHost>
-            <pageHost1:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost1:PageHost>
-            <pageHost1:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost1:PageHost>
+            <pageHost:PageHost NewPage="{Binding ServersShownPage}"></pageHost:PageHost>
+            <pageHost:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost:PageHost>
+            <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost:PageHost>
+            <pageHost:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost:PageHost>
 
             <Grid>
                 <Grid.Resources>

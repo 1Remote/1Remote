@@ -811,8 +811,20 @@ namespace PRM.Core.Protocol.RDP.Host
                     if (_resizeEndStartFire == false)
                     {
                         _resizeEndStartFire = true;
-                        _resizeEndTimer.Elapsed += _InvokeResizeEndEnd;
-                        base.SizeChanged += _ResizeEnd_WindowSizeChanged;
+                        try
+                        {
+                            _resizeEndTimer.Elapsed += _InvokeResizeEndEnd;
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        try
+                        {
+                            base.SizeChanged += _ResizeEnd_WindowSizeChanged;
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                 }
         }
@@ -825,7 +837,7 @@ namespace PRM.Core.Protocol.RDP.Host
                     if (_resizeEndStartFire == true)
                     {
                         _resizeEndStartFire = false;
-                        _resizeEndTimer.Stop();
+                        _resizeEndTimer?.Stop();
                         try
                         {
                             _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
@@ -849,14 +861,14 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             if (_canAutoResize)
             {
-                _resizeEndTimer.Stop();
-                _resizeEndTimer.Start();
+                _resizeEndTimer?.Stop();
+                _resizeEndTimer?.Start();
             }
         }
 
         private void _InvokeResizeEndEnd(object sender, ElapsedEventArgs e)
         {
-            _resizeEndTimer.Stop();
+            _resizeEndTimer?.Stop();
             _onResizeEnd?.Invoke();
         }
 

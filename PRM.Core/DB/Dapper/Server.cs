@@ -9,6 +9,7 @@ namespace PRM.Core.DB.Dapper
         public string Protocol { get; set; } = "";
         public string ClassVersion { get; set; } = "";
         public string JsonConfigString { get; set; } = "";
+
         /// <summary>
         /// identify when it updated
         /// </summary>
@@ -45,7 +46,7 @@ namespace PRM.Core.DB.Dapper
         }
     }
 
-    static class ServerHelperStatic
+    internal static class ServerHelperStatic
     {
         public static Server ToDbServer(this ProtocolServerBase s)
         {

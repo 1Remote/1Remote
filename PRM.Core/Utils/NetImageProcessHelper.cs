@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 
 namespace Shawn.Utils
 {
@@ -76,8 +70,7 @@ namespace Shawn.Utils
             return roiBit;
         }
 
-        #endregion
-
+        #endregion Processing
 
         public static void SaveTo(this BitmapSource source, string path)
         {
@@ -87,13 +80,13 @@ namespace Shawn.Utils
             encoder.Save(fileStream);
         }
 
-
         #region Format
 
         public static Bitmap ToBitmap(this BitmapImage bitmapImage)
         {
             return ((BitmapSource)bitmapImage).ToBitmap();
         }
+
         public static Bitmap ToBitmap<T>(this T source) where T : BitmapSource
         {
             var m = (BitmapSource)source;
@@ -105,6 +98,7 @@ namespace Shawn.Utils
             bmp.UnlockBits(data);
             return bmp;
         }
+
         public static Bitmap ToBitmap(this System.Drawing.Image image)
         {
             using var ms = new MemoryStream();
@@ -120,6 +114,7 @@ namespace Shawn.Utils
             var ret = new Bitmap(ms);
             return ret;
         }
+
         public static Bitmap BitmapFromBase64(string base64)
         {
             return BitmapFromBytes(Convert.FromBase64String(base64));
@@ -131,6 +126,7 @@ namespace Shawn.Utils
             img.Save(ms, img.RawFormat);
             return ms.ToArray();
         }
+
         public static byte[] ToBytes(this Bitmap bitmap)
         {
             using var ms = new MemoryStream();
@@ -138,24 +134,26 @@ namespace Shawn.Utils
             byte[] byteImage = ms.ToArray();
             return byteImage;
         }
+
         public static byte[] ToBytes<T>(this T source) where T : BitmapSource
         {
             return source?.ToBitmap()?.ToBytes();
         }
-        
+
         public static string ToBase64(this Image img)
         {
             return Convert.ToBase64String(img.ToBytes());
         }
+
         public static string ToBase64(this Bitmap bitmap)
-        {            
+        {
             return Convert.ToBase64String(bitmap.ToBytes());
         }
+
         public static string ToBase64<T>(this T source) where T : BitmapSource
         {
             return Convert.ToBase64String(source.ToBytes());
         }
-
 
         public static BitmapImage ToBitmapImage(this System.Drawing.Bitmap src)
         {
@@ -217,7 +215,6 @@ namespace Shawn.Utils
 
             return isCreated ? bitmapImage : null;
         }
-        
 
         public static Icon ToIcon(this Image img)
         {
@@ -226,8 +223,8 @@ namespace Shawn.Utils
                 double k1 = 256.0 / img.Size.Width;
                 double k2 = 256.0 / img.Size.Height;
                 double k = Math.Max(k1, k2);
-                int nw = Math.Min((int)(img.Size.Width * k),256);
-                int nh = Math.Min((int)(img.Size.Height * k),256);
+                int nw = Math.Min((int)(img.Size.Width * k), 256);
+                int nh = Math.Min((int)(img.Size.Height * k), 256);
                 img = img.ToBitmap().ToThumbnail(nw, nh);
             }
 
@@ -262,6 +259,7 @@ namespace Shawn.Utils
             // And load it
             return new Icon(ms);
         }
+
         public static Icon ToIcon(this Bitmap bitmap)
         {
             var src = bitmap;
@@ -270,22 +268,20 @@ namespace Shawn.Utils
                 double k1 = 256.0 / src.Width;
                 double k2 = 256.0 / src.Height;
                 double k = Math.Max(k1, k2);
-                int nw = Math.Min((int)(src.Width * k),256);
-                int nh = Math.Min((int)(src.Height * k),256);
+                int nw = Math.Min((int)(src.Width * k), 256);
+                int nh = Math.Min((int)(src.Height * k), 256);
                 src = src.ToThumbnail(nw, nh).ToBitmap();
             }
             return Icon.FromHandle(src.GetHicon());
         }
+
         public static Icon ToIcon<T>(this T source) where T : BitmapSource
         {
             var src = source.ToBitmap();
             return src.ToIcon();
         }
 
-        
-        
-
-        // Convert a Bitmap to a BitmapSource. 
+        // Convert a Bitmap to a BitmapSource.
         public static BitmapSource ToBitmapSource(this System.Drawing.Bitmap src)
         {
             if (src == null)
@@ -311,14 +307,12 @@ namespace Shawn.Utils
             return (BitmapSource)image.ToBitmapImage();
         }
 
-
-
-
         public static Image ImageFromBytes(byte[] byteArrayIn)
         {
             using var mStream = new MemoryStream(byteArrayIn);
             return Image.FromStream(mStream);
         }
+
         public static Image ToImage(this Bitmap src)
         {
             if (src == null)
@@ -329,6 +323,7 @@ namespace Shawn.Utils
             ms.Seek(0, SeekOrigin.Begin);
             return Image.FromStream(ms);
         }
+
         public static Image ToImage<T>(this BitmapSource bitmapSource) where T : BitmapEncoder, new()
         {
             var frame = BitmapFrame.Create(bitmapSource);
@@ -347,11 +342,8 @@ namespace Shawn.Utils
             return null;
         }
 
+        #endregion Format
 
-        #endregion
-
-
-        
         public static Bitmap ReadImgFile(string filePath)
         {
             try
@@ -392,7 +384,6 @@ namespace Shawn.Utils
             return true;
         }
 
-
         #region Common
 
         public static Bitmap DeepClone(this Bitmap image)
@@ -414,6 +405,6 @@ namespace Shawn.Utils
         [DllImport("gdi32")]
         private static extern int DeleteObject(IntPtr o);
 
-        #endregion
+        #endregion Common
     }
 }

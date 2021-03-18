@@ -8,24 +8,34 @@ namespace PRM.Core.Model
     {
         [Description("None")]
         None = ModifierKeys.None,
+
         [Description("Control")]
         Control = ModifierKeys.Control,
+
         [Description("Shift")]
         Shift = ModifierKeys.Shift,
+
         [Description("Alt")]
         Alt = ModifierKeys.Alt,
+
         [Description("Win")]
         Windows = ModifierKeys.Windows,
+
         [Description("Shift + Control")]
         ShiftControl = ModifierKeys.Shift | ModifierKeys.Control,
+
         [Description("Shift + Win")]
         ShiftWindows = ModifierKeys.Shift | ModifierKeys.Windows,
+
         [Description("Shift + Alt")]
         ShiftAlt = ModifierKeys.Shift | ModifierKeys.Alt,
+
         [Description("Win + Control")]
         WindowsControl = ModifierKeys.Windows | ModifierKeys.Control,
+
         [Description("Win + Alt")]
         WindowsAlt = ModifierKeys.Windows | ModifierKeys.Alt,
+
         [Description("Control + Alt")]
         ControlAlt = ModifierKeys.Control | ModifierKeys.Alt,
     }
@@ -37,16 +47,16 @@ namespace PRM.Core.Model
             Load();
         }
 
-
         private bool _enable = true;
+
         public bool Enable
         {
             get => _enable;
             set => SetAndNotifyIfChanged(nameof(Enable), ref _enable, value);
         }
 
-
         private HotkeyModifierKeys _hotKeyModifiers = HotkeyModifierKeys.Alt;
+
         public HotkeyModifierKeys HotKeyModifiers
         {
             get => _hotKeyModifiers;
@@ -54,6 +64,7 @@ namespace PRM.Core.Model
         }
 
         private Key _hotKeyKey = Key.M;
+
         public Key HotKeyKey
         {
             get => _hotKeyKey;
@@ -61,16 +72,18 @@ namespace PRM.Core.Model
         }
 
         private bool _allowGroupNameSearch = true;
+
         public bool AllowGroupNameSearch
         {
             get => _allowGroupNameSearch;
             set => SetAndNotifyIfChanged(nameof(AllowGroupNameSearch), ref _allowGroupNameSearch, value);
         }
 
-
         #region Interface
+
         // TODO rename to launcher
         private const string _sectionName = "QuickConnect";
+
         public override void Save()
         {
             _ini.WriteValue(nameof(Enable).ToLower(), _sectionName, Enable.ToString());
@@ -107,6 +120,6 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigLauncher));
         }
 
-        #endregion
+        #endregion Interface
     }
 }

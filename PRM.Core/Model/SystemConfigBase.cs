@@ -27,8 +27,11 @@ namespace PRM.Core.Model
         }
 
         public abstract void Save();
+
         public abstract void Load();
+
         public abstract void Update(SystemConfigBase newConfig);
+
         protected static void UpdateBase(SystemConfigBase old, SystemConfigBase newConfig, Type configType)
         {
             var fields = configType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);

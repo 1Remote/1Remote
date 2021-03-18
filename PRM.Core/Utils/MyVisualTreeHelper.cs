@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,6 +8,7 @@ namespace Shawn.Utils
     public class MyVisualTreeHelper
     {
         #region Static Func
+
         public static T FindAncestor<T>(DependencyObject obj) where T : DependencyObject
         {
             while (obj != null)
@@ -88,6 +85,7 @@ namespace Shawn.Utils
             }
             return null;
         }
-        #endregion
+
+        #endregion Static Func
     }
 }

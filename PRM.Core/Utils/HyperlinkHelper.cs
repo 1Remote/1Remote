@@ -13,6 +13,7 @@ namespace Shawn.Utils
         {
             obj.SetValue(IsOpenExternalProperty, value);
         }
+
         public static readonly DependencyProperty IsOpenExternalProperty =
             DependencyProperty.RegisterAttached("IsOpenExternal", typeof(bool), typeof(HyperlinkHelper), new UIPropertyMetadata(false, OnIsOpenExternalChanged));
 

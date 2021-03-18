@@ -11,6 +11,7 @@ namespace PRM.Core.Protocol
     {
         private static readonly object Locker = new object();
         private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
+
         public static ProtocolServerBase CreateFromDbOrm(IDbServer dbIdbServer)
         {
             // reflect all the child class
@@ -23,11 +24,11 @@ namespace PRM.Core.Protocol
                     _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolServerBase)) && !x.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
-                
+
                 // get instance form json string
                 foreach (var serverBase in _baseList)
                 {
-                    if (dbIdbServer.GetProtocol() == serverBase.Protocol 
+                    if (dbIdbServer.GetProtocol() == serverBase.Protocol
                         && dbIdbServer.GetClassVersion() == serverBase.ClassVersion)
                     {
                         var jsonString = dbIdbServer.GetJson();

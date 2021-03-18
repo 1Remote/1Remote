@@ -7,18 +7,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Windows.ApplicationModel.Calls.Background;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using Shawn.Utils;
 using Shawn.Utils.PageHost;
+using Shawn.Utils;
 
 namespace PRM.ViewModel
 {
     public class ActionItem : NotifyPropertyChangedBase
     {
         private string _actionName = "";
+
         public string ActionName
         {
             get => _actionName;
@@ -27,9 +27,6 @@ namespace PRM.ViewModel
 
         public Action<int> Run;
     }
-
-
-
 
     public class VmSearchBox : NotifyPropertyChangedBase
     {
@@ -55,8 +52,8 @@ namespace PRM.ViewModel
             ReCalcWindowHeight(false);
         }
 
-
         private VmProtocolServer _selectedItem;
+
         public VmProtocolServer SelectedItem
         {
             get => _selectedItem;
@@ -64,6 +61,7 @@ namespace PRM.ViewModel
         }
 
         private int _selectedIndex;
+
         public int SelectedIndex
         {
             get => _selectedIndex;
@@ -83,9 +81,8 @@ namespace PRM.ViewModel
             }
         }
 
-
-
         private ObservableCollection<ActionItem> _actions = new ObservableCollection<ActionItem>();
+
         public ObservableCollection<ActionItem> Actions
         {
             get => _actions;
@@ -93,14 +90,15 @@ namespace PRM.ViewModel
         }
 
         private int _selectedActionIndex;
+
         public int SelectedActionIndex
         {
             get => _selectedActionIndex;
             set => SetAndNotifyIfChanged(nameof(SelectedActionIndex), ref _selectedActionIndex, value);
         }
 
-
         private string _filter = "";
+
         public string Filter
         {
             get => _filter;
@@ -114,8 +112,8 @@ namespace PRM.ViewModel
             }
         }
 
-
         private double _gridMainHeight;
+
         public double GridMainHeight
         {
             get => _gridMainHeight;
@@ -127,6 +125,7 @@ namespace PRM.ViewModel
         }
 
         private RectangleGeometry _gridMainClip = null;
+
         public RectangleGeometry GridMainClip
         {
             get => _gridMainClip;
@@ -135,23 +134,21 @@ namespace PRM.ViewModel
 
         public double GridKeywordHeight { get; }
 
-
         private double _gridSelectionsHeight;
+
         public double GridSelectionsHeight
         {
             get => _gridSelectionsHeight;
             set => SetAndNotifyIfChanged(nameof(GridSelectionsHeight), ref _gridSelectionsHeight, value);
         }
 
-
         private double _gridActionsHeight;
+
         public double GridActionsHeight
         {
             get => _gridActionsHeight;
             set => SetAndNotifyIfChanged(nameof(GridActionsHeight), ref _gridActionsHeight, value);
         }
-
-
 
         public void ReCalcWindowHeight(bool showGridAction)
         {
@@ -265,7 +262,8 @@ namespace PRM.ViewModel
                     },
                 });
             }
-            #endregion
+
+            #endregion Build Actions
 
             Actions = actions;
             SelectedActionIndex = 0;
@@ -341,7 +339,6 @@ namespace PRM.ViewModel
             {
                 var keyWords = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 var anyGroupMatched = IsAnyGroupNameMatched(keyWords);
-
 
                 // match keyword
                 foreach (var vm in Context.AppData.VmItemList)

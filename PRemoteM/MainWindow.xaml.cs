@@ -2,9 +2,12 @@
 using System.Windows;
 using System.Windows.Input;
 using PRM.Core.Model;
+using Shawn.Utils;
 using PRM.View;
 using PRM.ViewModel;
+
 using Shawn.Utils;
+
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -36,12 +39,8 @@ namespace PRM
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
-
-
-
             // Startup Location
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
 
             BtnClose.Click += (sender, args) =>
             {

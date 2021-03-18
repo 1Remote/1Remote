@@ -26,13 +26,13 @@ namespace PRM.Core.Protocol
         Integrate
     }
 
-
     public abstract class ProtocolHostBase : UserControl
     {
-        public ProtocolServerBase ProtocolServer { get;}
+        public ProtocolServerBase ProtocolServer { get; }
         protected PrmContext Context;
 
         private Window _parentWindow = null;
+
         public Window ParentWindow
         {
             get => _parentWindow;
@@ -51,9 +51,11 @@ namespace PRM.Core.Protocol
                 _parentWindow = value;
             }
         }
+
         public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
 
         private ProtocolHostStatus _status = ProtocolHostStatus.NotInit;
+
         public ProtocolHostStatus Status
         {
             get => _status;
@@ -95,7 +97,6 @@ namespace PRM.Core.Protocol
             }
         }
 
-
         public string ConnectionId
         {
             get
@@ -131,9 +132,7 @@ namespace PRM.Core.Protocol
 
         public virtual void ToggleAutoResize(bool isEnable)
         {
-
         }
-
 
         public abstract void Conn();
 

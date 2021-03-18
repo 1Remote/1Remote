@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
-using PRM.Core.Protocol.FileTransmitter;
-using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {
@@ -43,7 +41,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                return _ftp?.IsConnected == true; 
+                return _ftp?.IsConnected == true;
             }
         }
 
@@ -56,7 +54,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                return Exists(path) ? FtpListItem2RemoteItem(_ftp.GetObjectInfo(path)) : null; 
+                return Exists(path) ? FtpListItem2RemoteItem(_ftp.GetObjectInfo(path)) : null;
             }
         }
 
@@ -77,7 +75,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                         continue;
                     ret.Add(FtpListItem2RemoteItem(item));
                 }
-                return ret; 
+                return ret;
             }
         }
 
@@ -89,7 +87,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                     return true;
                 if (_ftp.DirectoryExists(path))
                     return true;
-                return false; 
+                return false;
             }
         }
 
@@ -134,7 +132,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                         newItem.Icon = TransmitItemIconCache.GetFileIcon("*");
                     }
                 }
-                return newItem; 
+                return newItem;
             }
         }
 
@@ -151,7 +149,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                     }
                     else
                         _ftp.DeleteFile(path);
-                } 
+                }
             }
         }
 
@@ -159,7 +157,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                Delete(item.FullName); 
+                Delete(item.FullName);
             }
         }
 
@@ -226,7 +224,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 {
                     if (cancellationToken.IsCancellationRequested == false)
                         throw;
-                } 
+                }
             }
         }
 
@@ -264,12 +262,12 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                     _ftp = new FtpClient(Hostname, Port, Username, Password);
                     //_ftp.Credentials = new NetworkCredential(Username, Password);
                     _ftp.Connect();
-                } 
+                }
             }
         }
 
-
         private readonly System.Timers.Timer _timerKeepAlive = new System.Timers.Timer();
+
         private void CheckMeAlive()
         {
             _timerKeepAlive.Interval = 10 * 1000;
@@ -281,8 +279,16 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 {
                     _ftp.GetListing("/");
                 }
-                _timerKeepAlive.Interval = 10 * 1000;
-                _timerKeepAlive.Start();
+
+                try
+                {
+                    _timerKeepAlive.Interval = 10 * 1000;
+                    _timerKeepAlive?.Start();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             };
             _timerKeepAlive.Start();
         }

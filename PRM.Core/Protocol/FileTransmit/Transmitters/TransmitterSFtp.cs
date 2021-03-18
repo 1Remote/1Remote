@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using PRM.Core.Protocol.FileTransmitter;
+using Shawn.Utils;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
-using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {
@@ -21,7 +20,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         public readonly string SshKey = "";
         private SftpClient _sftp = null;
 
-
         public TransmitterSFtp(string host, int port, string username, string password)
         {
             Hostname = host;
@@ -32,6 +30,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
             InitClient();
             //CheckMeAlive();
         }
+
         public TransmitterSFtp(string host, int port, string username, byte[] ppk)
         {
             Hostname = host;
@@ -308,8 +307,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
             }
         }
 
-
         private readonly System.Timers.Timer _timerKeepAlive = new System.Timers.Timer();
+
         private void CheckMeAlive()
         {
             _timerKeepAlive.Interval = 10 * 1000;

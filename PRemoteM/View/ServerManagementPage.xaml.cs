@@ -8,6 +8,7 @@ namespace PRM.View
     public partial class ServerManagementPage : UserControl
     {
         public VmServerListPage Vm;
+
         public ServerManagementPage(PrmContext context)
         {
             InitializeComponent();

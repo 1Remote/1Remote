@@ -87,13 +87,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="VariableKeywordMatcher, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VariableKeywordMatcher.1.0.5\lib\net48\VariableKeywordMatcher.dll</HintPath>
@@ -248,7 +245,7 @@
       <DependentUpon>PageHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\PageHost\StoryboardHelpers.cs" />
-    <Compile Include="Utils\PasswordEx\PasswordBoxEx.cs" />
+    <Compile Include="Utils\PasswordEx\PasswordBoxEx.xaml.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
