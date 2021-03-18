@@ -10,7 +10,6 @@ using MSTSCLib;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using Shawn.Utils;
-using Shawn.Utils.RDP;
 using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
 using MessageBox = System.Windows.MessageBox;
@@ -76,6 +75,21 @@ namespace PRM.Core.Protocol.RDP.Host
             }
         }
 
+        private void RdpInitServerInfo()
+        {
+            #region server info
+
+            // server info
+            _rdp.Server = _rdpServer.Address;
+            _rdp.UserName = _rdpServer.UserName;
+            _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
+            var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
+            secured.ClearTextPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.Password);
+            _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
+
+            #endregion server info
+        }
+
         private void RdpInitStatic()
         {
             SimpleLogHelper.Debug("RDP Host: init Static");
@@ -107,6 +121,37 @@ namespace PRM.Core.Protocol.RDP.Host
 
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
             _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
+        }
+
+        private void CreatRdp()
+        {
+            _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+
+            SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
+
+            ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
+            _rdp.Dock = DockStyle.Fill;
+            _rdp.Enabled = true;
+            _rdp.BackColor = Color.Black;
+            // set call back
+            _rdp.OnRequestGoFullScreen += (sender, args) =>
+            {
+                MakeNormal2FullScreen();
+            };
+            _rdp.OnRequestLeaveFullScreen += (sender, args) =>
+            {
+                MakeFullScreen2Normal();
+            };
+            _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
+            _rdp.OnDisconnected += RdpOnDisconnected;
+            _rdp.OnConfirmClose += RdpOnConfirmClose;
+            _rdp.OnConnected += RdpOnOnConnected;
+            _rdp.OnLoginComplete += RdpOnOnLoginComplete;
+            ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
+            RdpHost.Child = _rdp;
+
+            SimpleLogHelper.Debug("RDP Host: init CreateControl();");
+            _rdp.CreateControl();
         }
 
         private void RdpInitConnBar()
@@ -385,75 +430,53 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             if (Status != ProtocolHostStatus.NotInit)
                 return;
-
-            Status = ProtocolHostStatus.Initializing;
-
-            RdpDispose();
-            _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
-
-            SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
-
-            ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
-            _rdp.Dock = DockStyle.Fill;
-            _rdp.Enabled = true;
-            _rdp.BackColor = Color.Black;
-            // set call back
-            _rdp.OnRequestGoFullScreen += (sender, args) =>
+            try
             {
-                MakeNormal2FullScreen();
-            };
-            _rdp.OnRequestLeaveFullScreen += (sender, args) =>
+                Status = ProtocolHostStatus.Initializing;
+                RdpDispose();
+                CreatRdp();
+                RdpInitServerInfo();
+                RdpInitStatic();
+                RdpInitConnBar();
+                RdpInitRedirect();
+                RdpInitDisplay(width, height, isReconn);
+                RdpInitPerformance();
+                RdpInitGateway();
+
+                Status = ProtocolHostStatus.Initialized;
+            }
+            catch (Exception e)
             {
-                MakeFullScreen2Normal();
-            };
-            _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
-            _rdp.OnDisconnected += RdpOnDisconnected;
-            _rdp.OnConfirmClose += RdpOnConfirmClose;
-            _rdp.OnConnected += RdpOnOnConnected;
-            _rdp.OnLoginComplete += RdpOnOnLoginComplete;
-            ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
-            RdpHost.Child = _rdp;
+                GridMessageBox.Visibility = Visibility.Visible;
+                TbMessageTitle.Visibility = Visibility.Collapsed;
+                TbMessage.Text = e.Message;
 
-            SimpleLogHelper.Debug("RDP Host: init CreateControl();");
-            _rdp.CreateControl();
-
-            SimpleLogHelper.Debug("RDP Host: init server info");
-
-            #region server info
-
-            // server info
-            _rdp.Server = _rdpServer.Address;
-            _rdp.UserName = _rdpServer.UserName;
-            _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
-            var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            secured.ClearTextPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.Password);
-            _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
-
-            #endregion server info
-
-            RdpInitStatic();
-            RdpInitConnBar();
-            RdpInitRedirect();
-            RdpInitDisplay(width, height, isReconn);
-            RdpInitPerformance();
-            RdpInitGateway();
-
-            Status = ProtocolHostStatus.Initialized;
+                Status = ProtocolHostStatus.NotInit;
+            }
         }
 
         #region Base Interface
 
         public override void Conn()
         {
-            if (Status == ProtocolHostStatus.Connected
-            || Status == ProtocolHostStatus.Connecting)
+            try
             {
-                return;
+                if (Status == ProtocolHostStatus.Connected || Status == ProtocolHostStatus.Connecting)
+                {
+                    return;
+                }
+                Status = ProtocolHostStatus.Connecting;
+                GridLoading.Visibility = Visibility.Visible;
+                RdpHost.Visibility = Visibility.Collapsed;
+                _rdp.Connect();
             }
-            Status = ProtocolHostStatus.Connecting;
-            GridLoading.Visibility = Visibility.Visible;
-            RdpHost.Visibility = Visibility.Collapsed;
-            _rdp.Connect();
+            catch (Exception e)
+            {
+                Status = ProtocolHostStatus.Connected;
+                GridMessageBox.Visibility = Visibility.Visible;
+                TbMessageTitle.Visibility = Visibility.Collapsed;
+                TbMessage.Text = e.Message;
+            }
         }
 
         public override void ReConn()
@@ -545,7 +568,7 @@ namespace PRM.Core.Protocol.RDP.Host
             // https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
 
             if (!string.IsNullOrWhiteSpace(reason)
-                && (_flagHasConnected != true || 
+                && (_flagHasConnected != true ||
                  e.discReason != UI_ERR_NORMAL_DISCONNECT
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
@@ -696,7 +719,6 @@ namespace PRM.Core.Protocol.RDP.Host
                 SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
             }
             _isLastTimeFullScreen = true;
-
 
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
