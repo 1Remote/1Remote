@@ -49,6 +49,11 @@ namespace PRM.Core.Protocol.RDP.Host
                 throw new ArgumentException($"Send {protocolServer.GetType()} to RdpHost!");
         }
 
+        ~AxMsRdpClient09Host()
+        {
+            Dispose();
+        }
+
         public void Dispose()
         {
             try
