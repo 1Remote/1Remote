@@ -2,13 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
 using PRM.Core.Model;
@@ -16,9 +13,6 @@ using PRM.Core.Protocol;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.ViewModel;
-
-using Shawn.Utils;
-
 using Timer = System.Timers.Timer;
 
 namespace PRM.View.TabWindow
