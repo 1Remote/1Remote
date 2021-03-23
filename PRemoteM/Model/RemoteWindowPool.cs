@@ -97,12 +97,12 @@ namespace PRM.Model
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
-                    var s = t.GetViewModel()?.Items?.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
-                    if (s != null)
+                    var s = t?.GetViewModel()?.Items?.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
+                    if (t != null && s != null)
                         t.GetViewModel().SelectedItem = s;
-                    t.Activate();
-                    if (s.Content.Status != ProtocolHostStatus.Connected)
-                        s.Content.ReConn();
+                    t?.Activate();
+                    if (s?.Content?.Status != ProtocolHostStatus.Connected)
+                        s?.Content?.ReConn();
                 }
                 return true;
             }
