@@ -41,7 +41,8 @@ namespace PRM.Core.Model
         public void CloseConnection()
         {
             Debug.Assert(_db != null);
-            _db.CloseConnection();
+            if (_db.IsConnected())
+                _db.CloseConnection();
         }
 
         public bool IsDbEncrypted()
@@ -63,8 +64,10 @@ namespace PRM.Core.Model
         /// <returns></returns>
         public EnumDbStatus CheckDbRsaStatus()
         {
+            if(_db == null)
+                return EnumDbStatus.NotConnected;
             Debug.Assert(_db != null);
-            if (_db?.IsConnected() != true)
+            if (_db.IsConnected() != true)
                 return EnumDbStatus.NotConnected;
 
             var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();

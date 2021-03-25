@@ -16,11 +16,6 @@ namespace PRM.Core.DB.freesql
         public string ClassVersion { get; set; } = "";
         [JsonProperty, Column(DbType = "VARCHAR")]
         public string JsonConfigString { get; set; } = "";
-        /// <summary>
-        /// identify when it updated
-        /// </summary>
-        [JsonProperty, Column(DbType = "VARCHAR")]
-        public string UpdatedToken { get; set; } = "";
 
         public ProtocolServerBase ToProtocolServerBase()
         {
@@ -45,11 +40,6 @@ namespace PRM.Core.DB.freesql
         public string GetJson()
         {
             return JsonConfigString;
-        }
-
-        public string GetUpdatedMark()
-        {
-            return UpdatedToken;
         }
     }
 

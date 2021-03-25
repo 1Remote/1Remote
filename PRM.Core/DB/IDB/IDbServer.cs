@@ -17,8 +17,6 @@ namespace PRM.Core.DB.IDB
 
         string GetJson();
 
-        string GetUpdatedMark();
-
         ProtocolServerBase ToProtocolServerBase();
     }
 }
