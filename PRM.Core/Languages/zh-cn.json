@@ -103,7 +103,7 @@
   "system_options_data_security_info_data_processing": "数据处理中，请勿关闭程序。",
   "system_options_data_security_info_encrypt_private_key_warning": "请妥善保管私钥，丢失后数据将无法找回！",
   "system_options_data_security_info_clear_rsa": "是否清除RSA加密?",
-  "system_options_data_security_error_can_not_open": "所选文件不是数据库或该数据库已被加密！",
+  "system_options_data_security_error_can_not_open": "数据库：所选文件已被占用或不是数据库或该数据库已被加密！",
 
   "string_database_error_permission_denied": "数据库：没有足够的权限读取，或数据库已被占用！",
   "string_database_error_rsa_private_key_format_error": "数据库：存储的 RSA 私钥文件格式错误，请重新选择！",

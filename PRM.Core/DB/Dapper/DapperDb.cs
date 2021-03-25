@@ -20,6 +20,7 @@ namespace PRM.Core.DB.Dapper
         {
             lock (_locker)
             {
+                _dbConnection?.Close();
                 _dbConnection?.Dispose();
                 _dbConnection = null;
             }
@@ -36,19 +37,17 @@ namespace PRM.Core.DB.Dapper
                 if (string.IsNullOrWhiteSpace(newConnectionString))
                     return;
 
-                if (_connectionString != newConnectionString)
-                {
-                    _connectionString = newConnectionString;
-                    _dbConnection?.Dispose();
-                    _dbConnection = null;
+                _connectionString = newConnectionString;
 
-                    if (type == DatabaseType.Sqlite)
-                        _dbConnection = new SQLiteConnection(_connectionString);
-                    else
-                        throw new NotImplementedException(type.ToString() + " not supported!");
+                _dbConnection?.Close();
+                _dbConnection?.Dispose();
+                SQLiteConnection.ClearAllPools();
+                if (type == DatabaseType.Sqlite)
+                    _dbConnection = new SQLiteConnection(_connectionString);
+                else
+                    throw new NotImplementedException(type.ToString() + " not supported!");
 
-                    _dbConnection.Open();
-                }
+                _dbConnection.Open();
             }
 
             InitTables();
@@ -69,8 +68,7 @@ CREATE TABLE IF NOT EXISTS `Server` (
   `Id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `Protocol` VARCHAR,
   `ClassVersion` VARCHAR,
-  `JsonConfigString` VARCHAR,
-  `UpdatedToken` VARCHAR
+  `JsonConfigString` VARCHAR
 );");
             _dbConnection?.Execute(@"
 BEGIN TRANSACTION;
@@ -82,6 +80,14 @@ CREATE TABLE IF NOT EXISTS `Config` (
 CREATE UNIQUE INDEX IF NOT EXISTS `uk_key` ON `Config`(`Key`);
 COMMIT TRANSACTION;
 ");
+
+            try
+            {
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
 
         public ProtocolServerBase GetServer(int id)
@@ -106,9 +112,9 @@ COMMIT TRANSACTION;
             return _dbConnection?.Execute(
                 $@"
 INSERT INTO `{nameof(Server)}`
-(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`, `{nameof(Server.UpdatedToken)}`)
+(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`)
 VALUES
-(@{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.JsonConfigString)}, @{nameof(Server.UpdatedToken)});",
+(@{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.JsonConfigString)});",
                 server.ToDbServer()) > 0
                 ? _dbConnection?.QuerySingle<int>("SELECT LAST_INSERT_ROWID();") ?? 0
                 : 0;
@@ -122,8 +128,7 @@ VALUES
 UPDATE Server SET
 `{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
 `{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
-`{nameof(Server.JsonConfigString)}` = @{nameof(Server.JsonConfigString)},
-`{nameof(Server.UpdatedToken)}` = @{nameof(Server.UpdatedToken)}
+`{nameof(Server.JsonConfigString)}` = @{nameof(Server.JsonConfigString)}
 WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};",
                 server.ToDbServer()) > 0;
         }

@@ -27,10 +27,10 @@ namespace PRM.Core.Model
         {
             if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
+                DbOperator = null;
                 return EnumDbStatus.AccessDenied;
             }
 
-            Db.CloseConnection();
             Db.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
             DbOperator = new DbOperator(Db);
             var ret = DbOperator.CheckDbRsaStatus();

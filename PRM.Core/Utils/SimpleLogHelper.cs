@@ -87,7 +87,7 @@ namespace Shawn.Utils
             set => _simpleLogHelper.LogFileType = value;
         }
 
-        private static SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
+        private static readonly SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
 
         public static void Debug(params object[] o)
         {
@@ -118,8 +118,8 @@ namespace Shawn.Utils
         {
             // append date
             var withOutExtension = LogFileName.Substring(0, LogFileName.LastIndexOf(".", StringComparison.Ordinal));
-            LogFileName = $"{withOutExtension}_{DateTime.Now.ToString("yyyyMMdd")}{new FileInfo(LogFileName).Extension}";
-            return _simpleLogHelper.GetLog(LogFileName, lastLineCount);
+            var logFileName = $"{withOutExtension}_{DateTime.Now.ToString("yyyyMMdd")}{new FileInfo(LogFileName).Extension}";
+            return _simpleLogHelper.GetLog(logFileName, lastLineCount);
         }
     }
 

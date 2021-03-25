@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
@@ -41,7 +42,7 @@ namespace Shawn.Utils
                 fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
                 inUse = false;
             }
-            catch
+            catch(Exception e)
             {
                 // ignored
             }
