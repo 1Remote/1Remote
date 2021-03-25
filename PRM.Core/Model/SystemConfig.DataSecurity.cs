@@ -32,7 +32,7 @@ namespace PRM.Core.Model
         private bool ValidateDbStatusAndShowMessageBox()
         {
             // validate rsa key
-            var res = _context.DbOperator.CheckDbRsaStatus();
+            var res = _context.DbOperator?.CheckDbRsaStatus() ?? EnumDbStatus.AccessDenied;
             RaisePropertyChanged(nameof(RsaPublicKey));
             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
             if (res != EnumDbStatus.OK)
@@ -68,8 +68,8 @@ namespace PRM.Core.Model
             }
         }
 
-        public string RsaPublicKey => this._context.DbOperator.GetRsaPublicKey();
-        public string RsaPrivateKeyPath => this._context.DbOperator.GetRsaPrivateKeyPath();
+        public string RsaPublicKey => this._context.DbOperator?.GetRsaPublicKey() ?? "";
+        public string RsaPrivateKeyPath => this._context.DbOperator?.GetRsaPrivateKeyPath() ?? "";
 
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
@@ -84,6 +84,7 @@ namespace PRM.Core.Model
 
         private void GenRsa()
         {
+            if (_context.DbOperator == null) return;
             // validate rsa key
             Debug.Assert(_context.DbOperator.IsDbEncrypted() == false);
             var t = new Task(() =>
@@ -148,6 +149,7 @@ namespace PRM.Core.Model
 
         private void CleanRsa()
         {
+            if (_context.DbOperator == null) return;
             Debug.Assert(_context.DbOperator.IsDbEncrypted() == true);
             var t = new Task(() =>
                 {
@@ -259,7 +261,7 @@ namespace PRM.Core.Model
                         {
                             MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         }
-                    }, o => _context.DbOperator.IsDbEncrypted());
+                    }, o => _context.DbOperator != null && _context.DbOperator.IsDbEncrypted());
                 }
                 return _cmdSelectRsaPrivateKey;
             }
@@ -278,7 +280,7 @@ namespace PRM.Core.Model
                     {
                         return;
                     }
-                    if (_context.DbOperator.IsDbEncrypted())
+                    if (_context.DbOperator?.IsDbEncrypted() == true)
                     {
                         return;
                     }
@@ -300,7 +302,7 @@ namespace PRM.Core.Model
                     {
                         return;
                     }
-                    if (!_context.DbOperator.IsDbEncrypted())
+                    if (_context.DbOperator?.IsDbEncrypted() != true)
                     {
                         return;
                     }
@@ -330,22 +332,27 @@ namespace PRM.Core.Model
                     if (string.Equals(path, oldDbPath, StringComparison.CurrentCultureIgnoreCase))
                         return;
 
-                    if (IOPermissionHelper.IsFileInUse(path) || !IOPermissionHelper.HasWritePermissionOnFile(path))
+                    if (!IOPermissionHelper.HasWritePermissionOnFile(path))
                     {
-                        MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"),
-                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        MessageBox.Show(SystemConfig.Instance.Language.GetText("string_database_error_permission_denied"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
 
                     try
                     {
-                        this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        if (this._context.DbOperator == null)
+                            _context.InitSqliteDb(path);
+                        else
+                            this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                         this._context.AppData.ServerListUpdate();
                     }
                     catch (Exception ee)
                     {
                         path = oldDbPath;
-                        this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        if (this._context.DbOperator == null)
+                            _context.InitSqliteDb(path);
+                        else
+                            this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                         this._context.AppData.ServerListUpdate();
                         SimpleLogHelper.Warning(ee);
                         MessageBox.Show(
@@ -383,13 +390,14 @@ namespace PRM.Core.Model
                         return;
                     try
                     {
-                        if (!IOPermissionHelper.IsFileInUse(path)
-                            && IOPermissionHelper.HasWritePermissionOnFile(path))
+                        if (IOPermissionHelper.HasWritePermissionOnFile(path))
                         {
-                            this._context.DbOperator.CloseConnection();
+                            this._context.DbOperator?.CloseConnection();
                             File.Move(oldDbPath, path);
                             File.Delete(oldDbPath);
-                            this._context.DbOperator.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                            if (this._context.DbOperator == null)
+                                _context.InitSqliteDb(path);
+                            this._context.DbOperator?.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                             // Migrate do not need reload data
                             // this._appContext.AppData.ServerListUpdate();
                             DbPath = path;

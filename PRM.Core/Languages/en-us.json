@@ -103,9 +103,9 @@
   "system_options_data_security_info_data_processing": "Data processing, do not close app.",
   "system_options_data_security_info_encrypt_private_key_warning": "Guard your private key carefully, it's the only key to decrypt your data!",
   "system_options_data_security_info_clear_rsa": "Would you like to clear RSA encryption?",
-  "system_options_data_security_error_can_not_open": "File is not a database or file is a encrypted database!",
+  "system_options_data_security_error_can_not_open": "Database: Permission denied for reading or file is not a database or file is a encrypted database!",
 
-  "string_database_error_permission_denied": "Database: permission denied for reading! Please check your password of file occupation.",
+  "string_database_error_permission_denied": "Database: Permission denied for reading! Please check your password of file occupation.",
   "string_database_error_rsa_private_key_format_error": "Database: RSA private key is in error format! Please select a correct key.",
   "string_database_error_rsa_private_key_not_found": "Database: can't find the RSA private key! Please select a correct key.",
   "string_database_error_rsa_private_key_not_match": "Database: RSA private key not match the public key! Please select a correct key.",

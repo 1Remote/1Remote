@@ -45,7 +45,7 @@ namespace PRM.ViewModel
                 _cmdSaveAndGoBack = new RelayCommand((o) =>
                 {
                     // check if Db is ok
-                    var res = _context.DbOperator.CheckDbRsaStatus();
+                    var res = _context.DbOperator?.CheckDbRsaStatus() ?? EnumDbStatus.AccessDenied;
                     if (res != EnumDbStatus.OK)
                     {
                         MessageBox.Show(res.GetErrorInfo(SystemConfig.Instance.Language, SystemConfig.Instance.DataSecurity.DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);

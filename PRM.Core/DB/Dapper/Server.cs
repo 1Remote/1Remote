@@ -10,11 +10,6 @@ namespace PRM.Core.DB.Dapper
         public string ClassVersion { get; set; } = "";
         public string JsonConfigString { get; set; } = "";
 
-        /// <summary>
-        /// identify when it updated
-        /// </summary>
-        public string UpdatedToken { get; set; } = "";
-
         public ProtocolServerBase ToProtocolServerBase()
         {
             return ItemCreateHelper.CreateFromDbOrm(this);
@@ -38,11 +33,6 @@ namespace PRM.Core.DB.Dapper
         public string GetJson()
         {
             return JsonConfigString;
-        }
-
-        public string GetUpdatedMark()
-        {
-            return UpdatedToken;
         }
     }
 
