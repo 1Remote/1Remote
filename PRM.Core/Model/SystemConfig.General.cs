@@ -88,12 +88,12 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
             // TODO delete after 2021.04;
-            SetSelfStartingHelper.SetSelfStartByShortcut(false);
+            SetSelfStartingHelper.SetSelfStartByShortcut(false, SystemConfig.AppName);
 
 #if FOR_MICROSOFT_STORE_ONLY
-            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically);
+            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
 #else
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically);
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
 #endif
 
             StopAutoSave = false;

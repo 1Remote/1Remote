@@ -59,7 +59,7 @@ namespace Shawn.Utils
 
             var x1 = FromVersionString(versionString1);
             var x2 = FromVersionString(versionString2);
-            if (string.IsNullOrWhiteSpace(x1.Item4) && !string.IsNullOrWhiteSpace(x2.Item4))
+            if (string.IsNullOrWhiteSpace(x1.Item5) && !string.IsNullOrWhiteSpace(x2.Item5))
                 return false;
 
             if (x2.Item1 > x1.Item1)
@@ -71,33 +71,62 @@ namespace Shawn.Utils
                 && x2.Item2 == x1.Item2
                 && x2.Item3 > x1.Item3)
                 return true;
+            if (x2.Item1 == x1.Item1
+                && x2.Item2 == x1.Item2
+                && x2.Item3 == x1.Item3
+                && x2.Item4 > x1.Item4)
+                return true;
             return false;
         }
 
-        private Tuple<int, int, int, string> FromVersionString(string versionString)
+        private Tuple<int, int, int, int, string> FromVersionString(string versionString)
         {
+            bool isPreRelease = versionString.IndexOf("-", StringComparison.Ordinal) > 0;
             var splits = versionString?.Split(new[] { ".", "-" }, StringSplitOptions.RemoveEmptyEntries);
-            if (splits?.Length == 3)
+            int major = -1;
+            int minor = -1;
+            int patch = -1;
+            int build = 0;
+            string preRelease = "";
+            if (splits?.Length >= 3)
             {
-                if (int.TryParse(splits[0], out var major)
-                    && int.TryParse(splits[1], out var minor)
-                    && int.TryParse(splits[2], out var patch)
+                if (int.TryParse(splits[0], out var majorTmp)
+                    && int.TryParse(splits[1], out var minorTmp)
+                    && int.TryParse(splits[2], out var patchTmp)
                 )
                 {
-                    return new Tuple<int, int, int, string>(major, minor, patch, "");
+                    major = majorTmp;
+                    minor = minorTmp;
+                    patch = patchTmp;
                 }
             }
-            if (splits?.Length == 4)
+
+            if (splits?.Length >= 4)
             {
-                if (int.TryParse(splits[0], out var major)
-                    && int.TryParse(splits[1], out var minor)
-                    && int.TryParse(splits[2], out var build)
-                )
+                if (int.TryParse(splits[3], out var tmp))
                 {
-                    return new Tuple<int, int, int, string>(major, minor, build, splits[3]);
+                    if (splits?.Length == 5)
+                    {
+                        build = tmp;
+                        preRelease = splits[4];
+                    }
+                    else if (isPreRelease == false)
+                    {
+                        build = tmp;
+                    }
+                    else
+                    {
+                        preRelease = splits[3];
+                    }
+                }
+                else
+                {
+                    preRelease = splits[3];
                 }
             }
-            return new Tuple<int, int, int, string>(-1, -1, -1, "alpha");
+
+
+            return new Tuple<int, int, int, int, string>(major, minor, patch, build, preRelease);
         }
 
         public Tuple<bool, string, string> CheckUpdate(string url, string ignoreVersion = "")
