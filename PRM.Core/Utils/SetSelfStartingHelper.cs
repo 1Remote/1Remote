@@ -11,8 +11,9 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+#if STORE_METHOD
 using Windows.ApplicationModel;
-using PRM.Core.Model;
+#endif
 
 #if FOR_MICROSOFT_STORE
 
@@ -22,14 +23,7 @@ namespace Shawn.Utils
 {
     public static class SetSelfStartingHelper
     {
-#if DEV
-        public static string StartupTaskId = "PRemoteM_Debug";
-#else
-        public static string StartupTaskId = "PRemoteM";
-#endif
-
 #if SHORTCUT_METHOD
-
         public enum StartupMode
         {
             /// <summary>
@@ -98,21 +92,21 @@ namespace Shawn.Utils
             return sb.ToString();
         }
 
-        private static string GetStartupShortcutPath()
+        private static string GetStartupShortcutPath(string appName)
         {
             var startUpPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             var exePath = Process.GetCurrentProcess().MainModule.FileName;
             string md5 = MD5EncryptString(exePath);
-            var shortcutPath = System.IO.Path.Combine(startUpPath, $"{SystemConfig.AppName}_{md5}.lnk");
+            var shortcutPath = System.IO.Path.Combine(startUpPath, $"{appName}_{md5}.lnk");
             return shortcutPath;
         }
 
-        private static void CleanUpShortcut(string exceptionShortcutPath)
+        private static void CleanUpShortcut(string exceptionShortcutPath, string appName)
         {
             if (IsElvated())
             {
                 var di = new FileInfo(exceptionShortcutPath).Directory;
-                var fis = di.GetFiles(SystemConfig.AppName + "_*");
+                var fis = di.GetFiles(appName + "_*");
                 if (fis?.Length > 0)
                 {
                     foreach (var fi in fis)
@@ -124,9 +118,9 @@ namespace Shawn.Utils
             }
         }
 
-        private static async void UnsetSelfStartByStartupByShortcut(string shortcutPath)
+        private static async void UnsetSelfStartByStartupByShortcut(string shortcutPath, string appName)
         {
-            var hasStartup = await IsSelfStartByShortcut();
+            var hasStartup = await IsSelfStartByShortcut(appName);
             if (!hasStartup) return;
             if (IsElvated())
                 File.Delete(shortcutPath);
@@ -134,9 +128,9 @@ namespace Shawn.Utils
                 RunElvatedTask(StartupMode.UnsetSelfStart);
         }
 
-        private static async void SetSelfStartByStartupByShortcut(string shortcutPath)
+        private static async void SetSelfStartByStartupByShortcut(string shortcutPath, string appName)
         {
-            var hasStartup = await IsSelfStartByShortcut();
+            var hasStartup = await IsSelfStartByShortcut(appName);
             if (hasStartup) return;
 
             if (IsElvated())
@@ -159,50 +153,50 @@ namespace Shawn.Utils
             }
         }
 
-        public static async Task<bool> IsSelfStartByShortcut()
+        public static async Task<bool> IsSelfStartByShortcut(string appName)
         {
-            return File.Exists(GetStartupShortcutPath());
+            return File.Exists(GetStartupShortcutPath(appName));
         }
 
-        public static async void SetSelfStartByShortcut(bool isSetSelfStart)
+        public static async void SetSelfStartByShortcut(bool isSetSelfStart, string appName)
         {
-            var shortcutPath = GetStartupShortcutPath();
-            CleanUpShortcut(shortcutPath);
+            var shortcutPath = GetStartupShortcutPath(appName);
+            CleanUpShortcut(shortcutPath, appName);
 
             if (isSetSelfStart)
-                SetSelfStartByStartupByShortcut(shortcutPath);
+                SetSelfStartByStartupByShortcut(shortcutPath, appName);
             else
-                UnsetSelfStartByStartupByShortcut(shortcutPath);
+                UnsetSelfStartByStartupByShortcut(shortcutPath, appName);
         }
 
 #endif
 
 #if REGISTRY_METHOD
 
-        public static async Task<bool> IsSelfStartByRegistryKey()
+        public static async Task<bool> IsSelfStartByRegistryKey(string appName)
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 #if !DEV
             key?.DeleteValue("PRemoteM_Debug", false);
 #endif
-            return key?.GetValueNames().Contains(StartupTaskId) == true;
+            return key?.GetValueNames().Contains(appName) == true;
         }
 
-        public static async void SetSelfStartByRegistryKey(bool isSetSelfStart)
+        public static async void SetSelfStartByRegistryKey(bool isSetSelfStart, string appName)
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            if (await IsSelfStartByRegistryKey())
+            if (await IsSelfStartByRegistryKey(appName))
             {
                 if (!isSetSelfStart)
                 {
-                    key?.DeleteValue(StartupTaskId, false);
+                    key?.DeleteValue(appName, false);
                 }
             }
             else
             {
                 if (isSetSelfStart)
                 {
-                    key?.SetValue(StartupTaskId, Process.GetCurrentProcess().MainModule.FileName);
+                    key?.SetValue(appName, Process.GetCurrentProcess().MainModule.FileName);
                 }
             }
         }
@@ -211,9 +205,9 @@ namespace Shawn.Utils
 
 #if STORE_METHOD
 
-        public static async Task<bool> IsSelfStartByStartupTask()
+        public static async Task<bool> IsSelfStartByStartupTask(string appName)
         {
-            var result = await StartupTask.GetAsync(StartupTaskId);
+            var result = StartupTask.GetAsync(appName).GetResults();
             switch (result.State)
             {
                 case StartupTaskState.Disabled:
@@ -230,15 +224,15 @@ namespace Shawn.Utils
             }
         }
 
-        public static async void SetSelfStartByStartupTask(bool isSetSelfStart)
+        public static async void SetSelfStartByStartupTask(bool isSetSelfStart, string appName)
         {
-            var result = await StartupTask.GetAsync(StartupTaskId);
+            var result = StartupTask.GetAsync(appName).GetResults();
             switch (result.State)
             {
                 case StartupTaskState.Disabled:
                     if (isSetSelfStart)
                     {
-                        var newState = await result.RequestEnableAsync();
+                        var newState = result.RequestEnableAsync().GetResults();
                     }
                     break;
 
