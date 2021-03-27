@@ -88,12 +88,12 @@ namespace PRM
             }
             if (startupMode == SetSelfStartingHelper.StartupMode.SetSelfStart)
             {
-                SetSelfStartingHelper.SetSelfStartByShortcut(true);
+                SetSelfStartingHelper.SetSelfStartByShortcut(true, SystemConfig.AppName);
                 Environment.Exit(0);
             }
             if (startupMode == SetSelfStartingHelper.StartupMode.UnsetSelfStart)
             {
-                SetSelfStartingHelper.SetSelfStartByShortcut(false);
+                SetSelfStartingHelper.SetSelfStartByShortcut(false, SystemConfig.AppName);
                 Environment.Exit(0);
             }
 #endif
