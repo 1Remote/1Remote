@@ -350,5 +350,54 @@ namespace PRM.Core.Protocol
                 Console.WriteLine(e);
             }
         }
+
+        public bool SmartProtocolCheck(string protocolName, string smartProtocol, out string oAddress, out string oPort)
+        {
+            const string smartProtocolPrefix = "SP://";
+            oAddress = oPort = "";
+            try
+            {
+                if (smartProtocol.Contains(smartProtocolPrefix) == false)
+                {
+                    return false;
+                }
+
+                string nowCmd = "Premote-Plugin-SmartProtocol.exe " + protocolName + " " + smartProtocol;
+                var recodes = CmdRunner.RunCmdSync(nowCmd);
+                if (recodes.Length != 2)
+                {
+                    Console.WriteLine("SmartProtocolCheck return values len != 2");
+                    return false;
+                }
+
+                if (recodes[1] != "0")
+                {
+                    Console.WriteLine("SmartProtocolCheck return code = " + recodes[1] + " ," + recodes[0]);
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(recodes[0]) == true)
+                {
+                    Console.WriteLine("SmartProtocolCheck return content is empty");
+                    return false;
+                }
+                var tmpSplit = recodes[0].Split(':');
+                if (tmpSplit.Length != 2)
+                {
+                    Console.WriteLine("SmartProtocolCheck return IP Port Error");
+                    return false;
+                }
+
+                oAddress = tmpSplit[0];
+                oPort = tmpSplit[1];
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
     }
 }

@@ -263,6 +263,17 @@ namespace PRM.Model
             // run script before connected
             vmProtocolServer.Server.RunScriptBeforConnect();
 
+            // smart protocol
+            if (vmProtocolServer.Server is ProtocolServerWithAddrPortBase p)
+            {
+                var bok = vmProtocolServer.Server.SmartProtocolCheck(p.Protocol, p.Address, out string oAddress, out string oPort);
+                if (bok == true)
+                {
+                    p.Address = oAddress;
+                    p.Port = oPort;
+                }
+            }
+
             if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
             {
                 ConnectRemoteApp(remoteApp);
