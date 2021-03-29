@@ -284,17 +284,6 @@ namespace PRM.Core.Protocol.RDP.Host
                     base.CanFullScreen = false;
                     break;
 
-                case ERdpFullScreenFlag.EnableFullScreen:
-                    base.CanFullScreen = true;
-                    if (_isLastTimeFullScreen)
-                    {
-                        var screenSize = GetScreenSize();
-                        _rdp.DesktopWidth = (int)(screenSize.Width);
-                        _rdp.DesktopHeight = (int)(screenSize.Height);
-                        _rdp.FullScreen = true;
-                    }
-                    break;
-
                 case ERdpFullScreenFlag.EnableFullAllScreens:
                     base.CanFullScreen = true;
                     // every time reconnect, EnableFullAllScreens will go to full screen.
@@ -307,8 +296,17 @@ namespace PRM.Core.Protocol.RDP.Host
                     ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
                     break;
 
+                case ERdpFullScreenFlag.EnableFullScreen:
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    base.CanFullScreen = true;
+                    if (_isLastTimeFullScreen)
+                    {
+                        var screenSize = GetScreenSize();
+                        _rdp.DesktopWidth = (int)(screenSize.Width);
+                        _rdp.DesktopHeight = (int)(screenSize.Height);
+                        _rdp.FullScreen = true;
+                    }
+                    break;
             }
 
             #endregion Display
@@ -365,9 +363,6 @@ namespace PRM.Core.Protocol.RDP.Host
                         nDisplayPerformanceFlag += 0x00000080;//TS_PERF_ENABLE_FONT_SMOOTHING;        Enable font smoothing.
                         nDisplayPerformanceFlag += 0x00000100;//TS_PERF_ENABLE_DESKTOP_COMPOSITION ;  Enable desktop composition.
                         break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
                 }
             }
             SimpleLogHelper.Debug("RdpInit: DisplayPerformance = " + _rdpServer.DisplayPerformance + ", flag = " + Convert.ToString(nDisplayPerformanceFlag, 2));
@@ -398,7 +393,6 @@ namespace PRM.Core.Protocol.RDP.Host
                     EGatewayMode.AutomaticallyDetectGatewayServerSettings =>
                     2 // 2 : Use an RD Gateway server if a direct connection cannot be made to the RD Session Host server. In the RDC client UI, the Bypass RD Gateway server for local addresses check box is selected.
                     ,
-                    _ => throw new ArgumentOutOfRangeException()
                 };
 
                 _rdp.TransportSettings2.GatewayHostname = _rdpServer.GatewayHostName;

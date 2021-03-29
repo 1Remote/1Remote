@@ -109,9 +109,6 @@ namespace PRM.Core.Protocol.RDP
                         IsConnWithFullScreen = true;
                         break;
 
-                    case ERdpFullScreenFlag.EnableFullScreen:
-                        break;
-
                     case ERdpFullScreenFlag.Disable:
                         IsConnWithFullScreen = false;
                         if (RdpWindowResizeMode == ERdpWindowResizeMode.FixedFullScreen)
@@ -120,8 +117,9 @@ namespace PRM.Core.Protocol.RDP
                             RdpWindowResizeMode = ERdpWindowResizeMode.Stretch;
                         break;
 
+                    case ERdpFullScreenFlag.EnableFullScreen:
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                        break;
                 }
             }
         }
@@ -357,6 +355,7 @@ namespace PRM.Core.Protocol.RDP
             var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DbOperator.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
+
             switch (this.RdpFullScreenFlag)
             {
                 case ERdpFullScreenFlag.Disable:
@@ -365,25 +364,19 @@ namespace PRM.Core.Protocol.RDP
                     rdpConfig.DesktopHeight = this.RdpHeight;
                     break;
 
-                case ERdpFullScreenFlag.EnableFullScreen:
-                    rdpConfig.ScreenModeId = 2;
-                    break;
-
                 case ERdpFullScreenFlag.EnableFullAllScreens:
                     rdpConfig.ScreenModeId = 2;
                     rdpConfig.UseMultimon = 1;
                     break;
 
+                case ERdpFullScreenFlag.EnableFullScreen:
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    rdpConfig.ScreenModeId = 2;
+                    break;
             }
+
             switch (this.RdpWindowResizeMode)
             {
-                case ERdpWindowResizeMode.AutoResize:
-                    rdpConfig.SmartSizing = 0;
-                    rdpConfig.DynamicResolution = 1;
-                    break;
-
                 case ERdpWindowResizeMode.Stretch:
                 case ERdpWindowResizeMode.StretchFullScreen:
                     rdpConfig.SmartSizing = 1;
@@ -396,17 +389,16 @@ namespace PRM.Core.Protocol.RDP
                     rdpConfig.DynamicResolution = 0;
                     break;
 
+                case ERdpWindowResizeMode.AutoResize:
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    rdpConfig.SmartSizing = 0;
+                    rdpConfig.DynamicResolution = 1;
+                    break;
             }
 
             rdpConfig.NetworkAutodetect = 0;
             switch (this.DisplayPerformance)
             {
-                case EDisplayPerformance.Auto:
-                    rdpConfig.NetworkAutodetect = 1;
-                    break;
-
                 case EDisplayPerformance.Low:
                     rdpConfig.ConnectionType = 1;
                     rdpConfig.SessionBpp = 8;
@@ -443,8 +435,10 @@ namespace PRM.Core.Protocol.RDP
                     rdpConfig.DisableCursorSetting = 0;
                     break;
 
+                case EDisplayPerformance.Auto:
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    rdpConfig.NetworkAutodetect = 1;
+                    break;
             }
 
             rdpConfig.KeyboardHook = 0;
@@ -487,7 +481,7 @@ namespace PRM.Core.Protocol.RDP
                 case EGatewayMode.DoNotUseGateway:
                 default:
                     rdpConfig.GatewayUsageMethod = 0;
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
             rdpConfig.GatewayHostname = this.GatewayHostName;
             rdpConfig.GatewayCredentialsSource = 4;
