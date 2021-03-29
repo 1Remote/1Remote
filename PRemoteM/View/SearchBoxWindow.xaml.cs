@@ -326,7 +326,7 @@ namespace PRM.View
                         break;
                     }
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(r.Item1.ToString());
             }
         }
 
