@@ -487,7 +487,7 @@ namespace PRM.Core.Protocol.RDP
                 case EGatewayMode.DoNotUseGateway:
                 default:
                     rdpConfig.GatewayUsageMethod = 0;
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
             rdpConfig.GatewayHostname = this.GatewayHostName;
             rdpConfig.GatewayCredentialsSource = 4;
