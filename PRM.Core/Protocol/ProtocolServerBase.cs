@@ -331,7 +331,7 @@ namespace PRM.Core.Protocol
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                SimpleLogHelper.Warning(e);
             }
         }
 
@@ -366,25 +366,25 @@ namespace PRM.Core.Protocol
                 var recodes = CmdRunner.RunCmdSync(nowCmd);
                 if (recodes.Length != 2)
                 {
-                    Console.WriteLine("SmartProtocolCheck return values len != 2");
+                    SimpleLogHelper.Info("SmartProtocolCheck return values len != 2");
                     return false;
                 }
 
                 if (recodes[1] != "0")
                 {
-                    Console.WriteLine("SmartProtocolCheck return code = " + recodes[1] + " ," + recodes[0]);
+                    SimpleLogHelper.Info("SmartProtocolCheck return code = " + recodes[1] + " ," + recodes[0]);
                     return false;
                 }
 
                 if (string.IsNullOrEmpty(recodes[0]) == true)
                 {
-                    Console.WriteLine("SmartProtocolCheck return content is empty");
+                    SimpleLogHelper.Info("SmartProtocolCheck return content is empty");
                     return false;
                 }
                 var tmpSplit = recodes[0].Split(':');
                 if (tmpSplit.Length != 2)
                 {
-                    Console.WriteLine("SmartProtocolCheck return IP Port Error");
+                    SimpleLogHelper.Info("SmartProtocolCheck return IP Port Error");
                     return false;
                 }
 
@@ -395,7 +395,7 @@ namespace PRM.Core.Protocol
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                SimpleLogHelper.Warning(e);
                 return false;
             }
         }
