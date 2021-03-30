@@ -8,6 +8,10 @@ What function does this project have see the [source project](https://github.com
 
 这个项目有什么功能请看[源项目](https://github.com/VShawn/PRemoteM)
 
+Continuous update is not guaranteed, but can be used
+
+不保证持续更新，能用即可
+
 ## Additional Features
 
 Extra features of the Magic Change：
