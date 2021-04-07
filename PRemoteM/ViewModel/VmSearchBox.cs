@@ -56,7 +56,17 @@ namespace PRM.ViewModel
 
         public VmProtocolServer SelectedItem
         {
-            get => _selectedItem;
+            get
+            {
+                if(_selectedItem == null)
+                    if (Context.AppData.VmItemList.Count > 0
+                        && _selectedIndex >= 0
+                        && _selectedIndex < Context.AppData.VmItemList.Count)
+                    {
+                        _selectedItem = Context.AppData.VmItemList[_selectedIndex];
+                    }
+                return _selectedItem;
+            }
             private set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
         }
 
@@ -107,8 +117,8 @@ namespace PRM.ViewModel
                 if (_filter != value)
                 {
                     SetAndNotifyIfChanged(nameof(Filter), ref _filter, value);
-                    UpdateItemsList(value);
                 }
+                UpdateItemsList(value);
             }
         }
 
@@ -436,6 +446,41 @@ namespace PRM.ViewModel
                     break;
                 }
             }
+        }
+
+
+        public void AddSelectedIndexOnVisibilityItems(int step)
+        {
+            var index = SelectedIndex;
+            int count = 0;
+            if (step > 0)
+            {
+                for (int i = SelectedIndex + 1; i < Context.AppData.VmItemList.Count; i++)
+                {
+                    if (Context.AppData.VmItemList[i].ObjectVisibility == Visibility.Visible)
+                    {
+                        ++count;
+                        index = i;
+                        if (count == step)
+                            break;
+                    }
+                }
+            }
+            else if (step < 0)
+            {
+                step = Math.Abs(step);
+                for (int i = SelectedIndex - 1; i >= 0; i--)
+                {
+                    if (Context.AppData.VmItemList[i].ObjectVisibility == Visibility.Visible)
+                    {
+                        ++count;
+                        index = i;
+                        if (count == step)
+                            break;
+                    }
+                }
+            }
+            SelectedIndex = index;
         }
     }
 }

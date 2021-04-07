@@ -6,17 +6,19 @@ using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
 
-using Shawn.Utils;
-
 namespace PRM.View
 {
     public partial class SearchBoxWindow : WindowChromeBase
     {
-        private readonly VmSearchBox _vm = null;
+        private readonly VmSearchBox _vm;
+        private readonly PrmContext _context;
 
         public SearchBoxWindow(PrmContext context)
         {
+            _context = context;
             InitializeComponent();
+
+            ShowActivated = true;
             ShowInTaskbar = false;
 
             double gridMainWidth = (double)FindResource("GridMainWidth");
@@ -57,7 +59,6 @@ namespace PRM.View
 
         private readonly object _hideToggleLocker = new object();
         private bool _isHidden = false;
-
         private void HideMe()
         {
             if (_isHidden == false)
@@ -72,6 +73,7 @@ namespace PRM.View
                         _vm.Filter = "";
                     }
                 }
+            SimpleLogHelper.Debug("Call HideMe()");
         }
 
         private string _assignTabTokenThisTime = null;
@@ -83,35 +85,36 @@ namespace PRM.View
 
         public void ShowMe(string assignTabTokenThisTime)
         {
+            SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
-            if (!SystemConfig.Instance.Launcher.Enable)
-                return;
+            if (!SystemConfig.Instance.Launcher.Enable) return;
+            if (_isHidden != true) return;
 
-            SimpleLogHelper.Debug("Call shortcut to invoke quick window.");
-            if (_isHidden == true)
-                lock (_hideToggleLocker)
-                {
-                    if (this.WindowState != WindowState.Normal)
-                        this.WindowState = WindowState.Normal;
-                    if (_isHidden == true)
-                    {
-                        _vm.Filter = "";
-                        var p = ScreenInfoEx.GetMouseSystemPosition();
-                        var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
-                        this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
-                        this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
-                        _vm.UpdateItemsList("");
-                        this.Show();
-                        this.Visibility = Visibility.Visible;
-                        this.Activate();
-                        this.Topmost = true;  // important
-                        this.Topmost = false; // important
-                        this.Focus();         // important
-                        TbKeyWord.Focus();
-                        _isHidden = false;
-                    }
-                }
+            lock (_hideToggleLocker)
+            {
+                WindowState = WindowState.Normal;
+
+                if (_isHidden != true) return;
+
+                // show position
+                var p = ScreenInfoEx.GetMouseSystemPosition();
+                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
+                this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
+                this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
+
+                _vm.Filter = "";
+
+                this.Show();
+                this.Visibility = Visibility.Visible;
+                this.Activate();
+                this.Topmost = true;  // important
+                this.Topmost = false; // important
+                this.Topmost = true;  // important
+                this.Focus();         // important
+                TbKeyWord.Focus();
+                _isHidden = false;
+            }
         }
 
         protected override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
@@ -130,6 +133,7 @@ namespace PRM.View
 
         private void TbKeyWord_OnKeyDown(object sender, KeyEventArgs e)
         {
+            if (_isHidden) return;
             lock (_keyDownLocker)
             {
                 var key = e.Key;
@@ -141,6 +145,7 @@ namespace PRM.View
                 }
                 else if (GridMenuActions.Visibility == Visibility.Visible)
                 {
+                    e.Handled = true;
                     switch (key)
                     {
                         case Key.Enter:
@@ -197,10 +202,10 @@ namespace PRM.View
                             _vm.HideActionsList();
                             break;
                     }
-                    e.Handled = true;
                 }
                 else
                 {
+                    e.Handled = true;
                     switch (key)
                     {
                         case Key.Right:
@@ -217,83 +222,25 @@ namespace PRM.View
                             {
                                 _vm.ShowActionsList();
                             }
-                            e.Handled = true;
-                            break;
+                            return;
 
                         case Key.Enter:
                             OpenSessionAndHide();
-                            break;
-
+                            return;
                         case Key.Down:
-                            if (_vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count - 1)
-                            {
-                                var index = _vm.SelectedIndex;
-                                for (int i = _vm.SelectedIndex + 1; i < _vm.Context.AppData.VmItemList.Count; i++)
-                                {
-                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                                _vm.SelectedIndex = index;
-                            }
-                            break;
-
-                        case Key.Up:
-                            if (_vm.SelectedIndex > 0)
-                            {
-                                var index = _vm.SelectedIndex;
-                                for (int i = _vm.SelectedIndex - 1; i >= 0; i--)
-                                {
-                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        index = i;
-                                        break;
-                                    }
-                                }
-                                _vm.SelectedIndex = index;
-                            }
-                            break;
-
-                        case Key.PageUp:
-                            if (_vm.SelectedIndex > 0)
-                            {
-                                var index = _vm.SelectedIndex;
-                                int count = 0;
-                                for (int i = _vm.SelectedIndex - 1; i >= 0; i--)
-                                {
-                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        ++count;
-                                        index = i;
-                                        if (count == 5)
-                                            break;
-                                    }
-                                }
-                                _vm.SelectedIndex = index;
-                            }
-                            break;
-
+                            _vm.AddSelectedIndexOnVisibilityItems(1);
+                            return;
                         case Key.PageDown:
-                            if (_vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count - 1)
-                            {
-                                var index = _vm.SelectedIndex;
-                                int count = 0;
-                                for (int i = _vm.SelectedIndex + 1; i < _vm.Context.AppData.VmItemList.Count; i++)
-                                {
-                                    if (_vm.Context.AppData.VmItemList[i].ObjectVisibility == Visibility)
-                                    {
-                                        ++count;
-                                        index = i;
-                                        if (count == 5)
-                                            break;
-                                    }
-                                }
-                                _vm.SelectedIndex = index;
-                            }
-                            break;
+                            _vm.AddSelectedIndexOnVisibilityItems(5);
+                            return;
+                        case Key.Up:
+                            _vm.AddSelectedIndexOnVisibilityItems(-1);
+                            return;
+                        case Key.PageUp:
+                            _vm.AddSelectedIndexOnVisibilityItems(-5);
+                            return;
                     }
+                    e.Handled = false;
                 }
             }
         }
