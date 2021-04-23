@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Forms;
 using AxMSTSCLib;
 using MSTSCLib;
-using PRM.Core.DB;
 using PRM.Core.Model;
 using Shawn.Utils;
-using Application = System.Windows.Application;
 using Color = System.Drawing.Color;
-using MessageBox = System.Windows.MessageBox;
-using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace PRM.Core.Protocol.RDP.Host
 {
@@ -168,6 +163,17 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
             _rdp.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             _rdp.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;
+            //((IMsRdpClientNonScriptable5) _rdp.GetOcx()).devi = _rdpServer.EnableDiskDrives;
+        }
+
+
+        public void NotifyRedirectDeviceChange(int msg, uint wParam, int lParam)
+        {
+            const int WM_DEVICECHANGE = 0x0219;
+            // see https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable-notifyredirectdevicechange
+            if (msg == WM_DEVICECHANGE
+                && ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDevices)
+                ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).NotifyRedirectDeviceChange(wParam, lParam);
         }
 
         private void RdpInitRedirect()
@@ -175,6 +181,10 @@ namespace PRM.Core.Protocol.RDP.Host
             SimpleLogHelper.Debug("RDP Host: init Redirect");
 
             #region Redirect
+            // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
+            ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDevices = _rdpServer.EnableDiskDrives;
+            // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
+            ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDrives = _rdpServer.EnableDiskDrives;
 
             _rdp.AdvancedSettings9.RedirectDrives = _rdpServer.EnableDiskDrives;
             _rdp.AdvancedSettings9.RedirectClipboard = _rdpServer.EnableClipboard;

@@ -248,7 +248,15 @@ namespace PRM.Model
 
         public void ShowRemoteHost(long serverId, string assignTabToken)
         {
-            Debug.Assert(serverId > 0);
+            if (serverId <= 0)
+            {
+                throw new Exception($"try to connect Server Id = {serverId}");
+            }
+            if (_context.AppData.VmItemList.All(x => x.Server.Id != serverId))
+            {
+                SimpleLogHelper.Warning($@"try to connect Server Id = {serverId} and {serverId} not in the list");
+                _context.AppData.ServerListUpdate();
+            }
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
             var vmProtocolServer = _context.AppData.VmItemList.First(x => x.Server.Id == serverId);
 
