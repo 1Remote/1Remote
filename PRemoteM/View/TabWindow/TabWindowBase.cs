@@ -10,6 +10,8 @@ using System.Windows.Interop;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.ViewModel;
@@ -41,7 +43,22 @@ namespace PRM.View.TabWindow
                 _timer4CheckForegroundWindow.AutoReset = true;
                 _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
                 _timer4CheckForegroundWindow.Start();
+
+                var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+                source.AddHook(new HwndSourceHook(WndProc));
             };
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_DEVICECHANGE = 0x0219;
+            if (msg == WM_DEVICECHANGE)
+                if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdp)
+                {
+                    SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
+                    rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
+                }
+            return IntPtr.Zero;
         }
 
         private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)

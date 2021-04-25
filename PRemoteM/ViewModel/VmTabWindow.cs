@@ -67,6 +67,28 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(Title), ref _title, value);
         }
 
+
+
+        private ResizeMode _windowResizeMode = ResizeMode.CanResize;
+        public ResizeMode WindowResizeMode
+        {
+            get => _windowResizeMode;
+            private set => SetAndNotifyIfChanged(nameof(WindowResizeMode), ref _windowResizeMode, value);
+        }
+
+
+        private bool _isLocked = false;
+        public bool IsLocked
+        {
+            get => _isLocked;
+            set
+            {
+                SetAndNotifyIfChanged(nameof(IsLocked), ref _isLocked, value);
+                WindowResizeMode = value ? ResizeMode.NoResize : ResizeMode.CanResize;
+            }
+        }
+
+
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
         public Visibility BtnCloseAllVisibility => Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
@@ -136,6 +158,7 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
+                        if(IsLocked) return;
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
                             RemoteWindowPool.Instance.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
@@ -250,6 +273,7 @@ namespace PRM.ViewModel
                 {
                     _cmdCloseAll = new RelayCommand((o) =>
                     {
+                        if (IsLocked) return;
                         RemoteWindowPool.Instance.DelTabWindow(Token);
                     });
                 }
@@ -267,6 +291,7 @@ namespace PRM.ViewModel
                 {
                     _cmdClose = new RelayCommand((o) =>
                     {
+                        if (IsLocked) return;
                         if (SelectedItem != null)
                         {
                             RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);

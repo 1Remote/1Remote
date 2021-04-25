@@ -26,6 +26,9 @@
   "word_test": "测试",
   "word_reconnect": "重新连接",
   "word_dismiss": "关闭",
+  "word_lock": "锁定",
+  "word_topmost": "置顶",
+  "word_close_all": "全部关闭",
 
   "filter_mainwindow": "在此输入关键词",
   "filter_searchbox": "搜索 (Ctrl+F)",
