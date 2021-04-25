@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-             xmlns:prm="clr-namespace:PRM;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
              Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>

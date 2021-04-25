@@ -108,10 +108,12 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 
         public void TryCancel()
         {
-            if (TransmitTaskStatus == ETransmitTaskStatus.Transmitting)
+            if (TransmitTaskStatus != ETransmitTaskStatus.Transmitted)
+            {
                 TransmitTaskStatus = ETransmitTaskStatus.Cancel;
-            _cancellationSource.Cancel(false);
-            OnTaskEnd?.Invoke(TransmitTaskStatus);
+                _cancellationSource.Cancel(false);
+                OnTaskEnd?.Invoke(TransmitTaskStatus);
+            }
         }
 
         public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception e = null);

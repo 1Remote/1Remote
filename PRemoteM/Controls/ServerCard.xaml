@@ -6,6 +6,8 @@
              mc:Ignorable="d" 
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
+             d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
         <s:Double x:Key="CardWidth">144</s:Double>
