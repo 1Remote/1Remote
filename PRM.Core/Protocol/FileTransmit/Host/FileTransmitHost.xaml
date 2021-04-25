@@ -9,6 +9,7 @@
                            xmlns:trans="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController"
                            xmlns:transmitters="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters"
                            mc:Ignorable="d" 
+                           d:DataContext="{d:DesignInstance host:VmFileTransmitHost}"
                            d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
@@ -22,6 +23,16 @@
     </UserControl.InputBindings>
     <UserControl.Resources>
         <ResourceDictionary>
+            <InputBindingCollection x:Key="Hotkeys">
+                <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+                <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+                <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+                <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+                <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+                <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+                <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+                <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+            </InputBindingCollection>
             <host:WidthSub5 x:Key="WidthSub5"/>
 
             <!--ButtonEx Style Start-->
@@ -412,6 +423,16 @@
                           ItemsSource="{Binding TransmitTasks}" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                           BorderThickness="0">
+                    <ListView.InputBindings>
+                        <KeyBinding Key="Escape" Command="{Binding CmdCancelRenaming}"></KeyBinding>
+                        <KeyBinding Key="Enter" Command="{Binding CmdListViewDoubleClick}"></KeyBinding>
+                        <KeyBinding Key="Back" Command="{Binding CmdGoToParent}"></KeyBinding>
+                        <KeyBinding Key="F5" Command="{Binding CmdGoToPathCurrent}"></KeyBinding>
+                        <KeyBinding Key="F2" Command="{Binding CmdBeginRenaming}"></KeyBinding>
+                        <KeyBinding Key="Delete" Command="{Binding CmdDelete}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="S" Command="{Binding CmdDownload}"></KeyBinding>
+                        <KeyBinding Modifiers="Control" Key="V" Command="{Binding CmdUploadClipboard}" CommandParameter="0"></KeyBinding>
+                    </ListView.InputBindings>
                     <ListView.Style>
                         <Style TargetType="ListView">
                             <Style.Triggers>

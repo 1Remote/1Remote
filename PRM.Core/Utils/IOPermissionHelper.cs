@@ -35,14 +35,13 @@ namespace Shawn.Utils
             if (!File.Exists(fileName))
                 return false;
 
-            bool inUse = true;
             FileStream fs = null;
             try
             {
                 fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
-                inUse = false;
+                return false;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // ignored
             }
@@ -50,7 +49,45 @@ namespace Shawn.Utils
             {
                 fs?.Close();
             }
-            return inUse; //true表示正在使用,false没有使用
+            return true;
+        }
+
+        public static bool IsFileCanWriteNow(string fileName)
+        {
+            if (File.Exists(fileName) == false)
+            {
+                try
+                {
+                    File.WriteAllText(fileName, "");
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+                finally
+                {
+                    if (File.Exists(fileName))
+                        File.Delete(fileName);
+                }
+                return false;
+            }
+
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(fileName, FileMode.Open, FileAccess.Write, FileShare.None);
+                return true;
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+            finally
+            {
+                fs?.Close();
+            }
+            return false;
         }
 
         public static bool HasWritePermissionOnFile(string filePath)
