@@ -26,6 +26,9 @@
   "word_test": "Test",
   "word_reconnect": "Neu verbinden",
   "word_dismiss": "Schließen",
+  "word_lock": "Sperren",
+  "word_topmost": "Always on top",
+  "word_close_all": "Alle schließen",
 
   "filter_mainwindow": "Suchbegriffe eingeben",
   "filter_searchbox": "Suche (STRG + F)",
