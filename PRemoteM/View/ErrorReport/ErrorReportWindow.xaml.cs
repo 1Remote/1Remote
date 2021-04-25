@@ -91,7 +91,7 @@ namespace PRM.View.ErrorReport
 #if FOR_MICROSOFT_STORE_ONLY
                 from = "Microsoft store";
 #else
-                from = "EXE release";
+                from = "EXE Release";
 #endif
 
                 sb.AppendLine("## Environment");

@@ -9,6 +9,8 @@ namespace PRM.Core.Protocol
     {
         private ProtocolServerBase _server = null;
 
+        public int Id => Server?.Id ?? 0;
+
         public ProtocolServerBase Server
         {
             get => _server;

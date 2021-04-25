@@ -228,17 +228,28 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             }
                             try
                             {
-                                var tmpPath = Path.Combine(Path.GetTempPath(), "ReadOnly_" + SelectedRemoteItem.Name);
+                                var tmpPath = Path.Combine(Path.GetTempPath(), SelectedRemoteItem.Name);
                                 if (File.Exists(tmpPath))
                                 {
                                     File.SetAttributes(tmpPath, FileAttributes.Temporary);
                                     File.Delete(tmpPath);
                                 }
 
-                                Trans.DownloadFile(SelectedRemoteItem.FullName, tmpPath, null, CancellationToken.None);
-                                // set read only
-                                File.SetAttributes(tmpPath, FileAttributes.ReadOnly);
-                                System.Diagnostics.Process.Start(tmpPath);
+                                var fi = new FileInfo(tmpPath);
+                                var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
+                                var t = new TransmitTask(Trans, fi.Directory.FullName, ris);
+                                AddTransmitTask(t);
+                                t.StartTransmitAsync();
+                                t.OnTaskEnd += (status, exception) =>
+                                {
+                                    var item = t.Items.FirstOrDefault();
+                                    if (item != null)
+                                    {
+                                        // set read only
+                                        File.SetAttributes(item.DstPath, FileAttributes.ReadOnly);
+                                        System.Diagnostics.Process.Start(item.DstPath);
+                                    }
+                                };
                             }
                             catch (Exception e)
                             {
