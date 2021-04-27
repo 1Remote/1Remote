@@ -321,12 +321,25 @@ namespace PRM.Core.Protocol.Putty
         private void SaveToKittyRegistryTable()
         {
             string regPath = $"Software\\9bis.com\\KiTTY\\Sessions\\{SessionName}";
-            using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
-            if (regKey == null) return;
-            foreach (var item in Options)
+            try
             {
-                if (item.Value != null)
-                    regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                using var regKey = Registry.CurrentUser.CreateSubKey(regPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                if (regKey == null) return;
+                foreach (var item in Options.Where(item => !string.IsNullOrWhiteSpace(item.Key) && item.Value != null))
+                {
+                    try
+                    {
+                        regKey.SetValue(item.Key, item.Value, item.ValueKind);
+                    }
+                    catch (Exception e1)
+                    {
+                        SimpleLogHelper.Warning(e1, $"regKey.SetValue({item.Key}, {item.Value}, {item.ValueKind})");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Warning(e);
             }
         }
 
