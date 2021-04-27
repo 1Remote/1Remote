@@ -143,19 +143,18 @@ namespace PRM
 
         private bool InitSystemConfig(string appDateFolder)
         {
-            var iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
-
-#if !FOR_MICROSOFT_STORE_ONLY
-            // for portable purpose
-            if (Environment.CurrentDirectory.IndexOf(@"C:\Windows", StringComparison.OrdinalIgnoreCase) < 0)
+            var iniPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
+            if (IOPermissionHelper.IsFileCanWriteNow(iniPath) == false)
             {
-                var iniOnCurrentPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
-                if (IOPermissionHelper.HasWritePermissionOnFile(iniOnCurrentPath))
-                {
-                    iniPath = SystemConfig.AppName + ".ini";
-                }
+                iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
             }
+#if FOR_MICROSOFT_STORE_ONLY
+            iniPath = Path.Combine(appDateFolder, SystemConfig.AppName + ".ini");
 #endif
+            if (IOPermissionHelper.IsFileCanWriteNow(iniPath) == false)
+            {
+                throw new FileLoadException($"Our config file `{iniPath}` can not write!");
+            }
 
             // if ini is not existed, then it would be a new user
             bool isNewUser = !File.Exists(iniPath);
