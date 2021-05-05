@@ -19,6 +19,7 @@ namespace PRM.Core.Protocol.RDP.Host
         private uint _primaryScaleFactor = 100;
 
         private bool _flagHasConnected = false;
+        private bool _flagHasLogin = false;
         private bool _isLastTimeFullScreen = false;
 
         private int _retryCount = 0;
@@ -547,7 +548,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
         public override bool CanResizeNow()
         {
-            return Status == ProtocolHostStatus.Connected;
+            return Status == ProtocolHostStatus.Connected && _flagHasLogin == true;
         }
 
         #endregion Base Interface
@@ -639,6 +640,8 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnLoginComplete");
 
+            _flagHasLogin = true;
+            OnCanResizeNowChanged?.Invoke();
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
