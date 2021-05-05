@@ -29,12 +29,12 @@ namespace PRM.ViewModel
                 SetAndNotifyIfChanged(nameof(Content), ref _content, value);
                 MarkColorHex = Content.ProtocolServer.MarkColorHex;
                 IconImg = Content.ProtocolServer.IconImg;
-                CanResizeNow = value.CanResizeNow();
-                value.OnCanResizeNowChanged += () => CanResizeNow = value.CanResizeNow();
+                CanResizeNow = _content.CanResizeNow();
+                _content.OnCanResizeNowChanged += () => CanResizeNow = _content.CanResizeNow();
             }
         }
 
-        private bool _canResizeNow = true;
+        private bool _canResizeNow = false;
 
         public bool CanResizeNow
         {
