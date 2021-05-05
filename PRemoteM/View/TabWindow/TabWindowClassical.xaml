@@ -346,16 +346,6 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Window.Style>
-        <Style TargetType="Window">
-            <Setter Property="ResizeMode" Value="CanResize"></Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
-                    <Setter Property="ResizeMode" Value="NoResize"></Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Style>
 
     <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.RowDefinitions>
@@ -492,7 +482,10 @@
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                            <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsLocked}" Value="true">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -533,7 +526,7 @@
                     <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedItem.CanResizeNow}" Value="false">
+                            <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsLocked}" Value="true">

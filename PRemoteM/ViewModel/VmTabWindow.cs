@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using Dragablz;
 using PRM.Core.Model;
+using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.View.TabWindow;
@@ -69,11 +71,16 @@ namespace PRM.ViewModel
 
 
 
-        private ResizeMode _windowResizeMode = ResizeMode.CanResize;
         public ResizeMode WindowResizeMode
         {
-            get => _windowResizeMode;
-            private set => SetAndNotifyIfChanged(nameof(WindowResizeMode), ref _windowResizeMode, value);
+            get
+            {
+                if (_isLocked 
+                    || SelectedItem?.Content == null
+                    || (SelectedItem?.Content is AxMsRdpClient09Host && SelectedItem?.CanResizeNow == false))
+                    return ResizeMode.NoResize;
+                return ResizeMode.CanResize;
+            }
         }
 
 
@@ -84,7 +91,7 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(IsLocked), ref _isLocked, value);
-                WindowResizeMode = value ? ResizeMode.NoResize : ResizeMode.CanResize;
+                RaisePropertyChanged(nameof(WindowResizeMode));
             }
         }
 
@@ -118,7 +125,17 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
-                SetTitle();
+                if (_selectedItem != null)
+                {
+                    SetTitle();
+                    _selectedItem.PropertyChanged += (sender, args) =>
+                    {
+                        if (args.PropertyName == nameof(TabItemViewModel.CanResizeNow))
+                        {
+                            RaisePropertyChanged(nameof(WindowResizeMode));
+                        }
+                    };
+                }
             }
         }
 

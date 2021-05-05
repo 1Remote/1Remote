@@ -28,12 +28,15 @@ namespace PRM.View.TabWindow
         private IntPtr _lastActivatedWindowHandle = IntPtr.Zero;
         private IntPtr _myWindowHandle;
         private readonly Timer _timer4CheckForegroundWindow;
+        private WindowState _lastWindowState;
 
         protected TabWindowBase(string token)
         {
             Vm = new VmTabWindow(token);
             DataContext = Vm;
             _timer4CheckForegroundWindow = new Timer();
+
+            _lastWindowState = this.WindowState;
 
             this.Loaded += (sender, args) =>
             {
@@ -105,6 +108,17 @@ namespace PRM.View.TabWindow
         {
             this.StateChanged += delegate (object sender, EventArgs args)
             {
+                if (this.WindowState != WindowState.Minimized)
+                    if (Vm.SelectedItem?.CanResizeNow != true)
+                    {
+                        this.WindowState = _lastWindowState;
+                        return;
+                    }
+                    else
+                    {
+                        _lastWindowState = this.WindowState;
+                    }
+
                 if (this.WindowState != WindowState.Minimized)
                 {
                     Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
