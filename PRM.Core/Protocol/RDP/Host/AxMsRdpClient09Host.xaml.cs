@@ -240,11 +240,11 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void RdpInitDisplay(double width = 0, double height = 0, bool isReconn = false)
         {
-            SimpleLogHelper.Debug("RDP Host: init Display");
 
             #region Display
 
             ReadScaleFactor();
+            SimpleLogHelper.Debug($"RDP Host: init Display with ScaleFactor = {_primaryScaleFactor}, W = {width}, H = {height}");
             _rdp.SetExtendedProperty("DesktopScaleFactor", _primaryScaleFactor);
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
             if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch
@@ -287,6 +287,9 @@ namespace PRM.Core.Protocol.RDP.Host
                         }
                         break;
                 }
+
+            SimpleLogHelper.Debug($"RDP Host: Display init as RDP.DesktopWidth = {_rdp.DesktopWidth}, RDP.DesktopWidth = {_rdp.DesktopWidth},");
+
 
             switch (_rdpServer.RdpFullScreenFlag)
             {
@@ -674,7 +677,7 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             try
             {
-                Console.WriteLine($@"RDP resize: W = {w}, H = {h}");
+                SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
                 var p = _primaryScaleFactor;
                 ReadScaleFactor();
                 if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || p != _primaryScaleFactor)
@@ -722,6 +725,9 @@ namespace PRM.Core.Protocol.RDP.Host
             ParentWindow.Height = screenSize.Height / (_primaryScaleFactor / 100.0);
             ParentWindow.Left = screenSize.Left / (_primaryScaleFactor / 100.0);
             ParentWindow.Top = screenSize.Top / (_primaryScaleFactor / 100.0);
+
+            SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {ParentWindow.Width}, H = {ParentWindow.Height}, while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
+
             // WARNING!: EnableFullAllScreens do not need to SetRdpResolution
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
