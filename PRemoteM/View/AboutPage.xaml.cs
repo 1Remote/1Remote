@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Core;
+using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
 
@@ -19,6 +20,10 @@ namespace PRM.View
             DataContext = Vm;
             _vmMain = vmMain;
             TbVersion.Text = PRMVersion.Version;
+
+#if FOR_MICROSOFT_STORE_ONLY
+            TbAppName.Text = SystemConfig.AppName + "(Store)";
+#endif
         }
 
         private void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)

@@ -77,28 +77,6 @@ namespace PRM
             };
         }
 
-        private void UnSetShortcutAutoStart(StartupEventArgs startupEvent)
-        {
-            // TODO delete at 2021.04
-#if !FOR_MICROSOFT_STORE_ONLY
-            var startupMode = SetSelfStartingHelper.StartupMode.Normal;
-            if (startupEvent.Args.Length > 0)
-            {
-                System.Enum.TryParse(startupEvent.Args[0], out startupMode);
-            }
-            if (startupMode == SetSelfStartingHelper.StartupMode.SetSelfStart)
-            {
-                SetSelfStartingHelper.SetSelfStartByShortcut(true, SystemConfig.AppName);
-                Environment.Exit(0);
-            }
-            if (startupMode == SetSelfStartingHelper.StartupMode.UnsetSelfStart)
-            {
-                SetSelfStartingHelper.SetSelfStartByShortcut(false, SystemConfig.AppName);
-                Environment.Exit(0);
-            }
-#endif
-        }
-
         private void OnlyOneAppInstanceCheck()
         {
             _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(SystemConfig.AppName);
@@ -220,7 +198,6 @@ namespace PRM
             // BASE MODULES
             InitLog(appDateFolder);
             InitExceptionHandle();
-            UnSetShortcutAutoStart(startupEvent);
             OnlyOneAppInstanceCheck();
             KillPutty();
             InitEvent();
