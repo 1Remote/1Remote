@@ -87,14 +87,26 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
             _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
-            // TODO delete after 2021.04;
-            SetSelfStartingHelper.SetSelfStartByShortcut(false, SystemConfig.AppName);
+            SimpleLogHelper.Debug($"Set AppStartAutomatically = {AppStartAutomatically}");
 
-#if FOR_MICROSOFT_STORE_ONLY
-            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
-#else
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
-#endif
+            try
+            {
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
+                SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
+                SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
+            }
+
+//#if FOR_MICROSOFT_STORE_ONLY
+//            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
+//            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
+//#else
+//            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
+//            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
+//#endif
 
             StopAutoSave = false;
             _ini.Save();
