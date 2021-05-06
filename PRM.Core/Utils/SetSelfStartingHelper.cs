@@ -1,6 +1,10 @@
-﻿#define SHORTCUT_METHOD
+﻿//#define SHORTCUT_METHOD
 #define REGISTRY_METHOD
 #define STORE_METHOD
+
+#if FOR_MICROSOFT_STORE_ONLY
+#undef REGISTRY_METHOD
+#endif
 
 using System;
 using System.Diagnostics;
@@ -15,9 +19,6 @@ using System.Windows;
 using Windows.ApplicationModel;
 #endif
 
-#if FOR_MICROSOFT_STORE
-
-#endif
 
 namespace Shawn.Utils
 {
@@ -227,12 +228,15 @@ namespace Shawn.Utils
         public static async void SetSelfStartByStartupTask(bool isSetSelfStart, string appName)
         {
             var result = StartupTask.GetAsync(appName).GetResults();
+            SimpleLogHelper.Debug($"SetSelfStartByStartupTask: GetAsync(appName).GetResults() now = {result}");
+
             switch (result.State)
             {
                 case StartupTaskState.Disabled:
                     if (isSetSelfStart)
                     {
                         var newState = result.RequestEnableAsync().GetResults();
+                        SimpleLogHelper.Debug($"SetSelfStartByStartupTask: call StartupTask.RequestEnableAsync() => {newState}");
                     }
                     break;
 
@@ -245,12 +249,15 @@ namespace Shawn.Utils
                     break;
 
                 case StartupTaskState.DisabledByPolicy:
-                    Debug.WriteLine("Startup disabled by group policy, or not supported on this device");
+                    SimpleLogHelper.Debug("Startup disabled by group policy, or not supported on this device");
                     break;
 
                 case StartupTaskState.Enabled:
                     if (!isSetSelfStart)
+                    {
                         result.Disable();
+                        SimpleLogHelper.Debug($"SetSelfStartByStartupTask: call StartupTask.Disable()");
+                    }
                     break;
 
                 case StartupTaskState.EnabledByPolicy:
