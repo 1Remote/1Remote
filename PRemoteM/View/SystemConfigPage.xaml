@@ -147,11 +147,14 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0" Height="Auto">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_start}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                                <StackPanel VerticalAlignment="Center">
+                                    <CheckBox Name="CbAppStartAutomatically" IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                                    <TextBlock Name="TbAppStartAutomaticallyTip" Visibility="Collapsed" Margin="10 0 0 0" Foreground="Gray">Go to task manager to disable it</TextBlock>
+                                </StackPanel>
                             </Grid>
                         </StackPanel>
                     </Grid>

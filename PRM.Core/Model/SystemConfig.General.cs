@@ -82,6 +82,11 @@ namespace PRM.Core.Model
         public override void Save()
         {
             StopAutoSave = true;
+
+#if FOR_MICROSOFT_STORE_ONLY
+            _appStartAutomatically = true;
+#endif
+
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
@@ -89,24 +94,13 @@ namespace PRM.Core.Model
 
             SimpleLogHelper.Debug($"Set AppStartAutomatically = {AppStartAutomatically}");
 
-            try
-            {
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
-                SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
-            }
-            catch (Exception e)
-            {
-                SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
-                SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
-            }
-
-//#if FOR_MICROSOFT_STORE_ONLY
-//            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
-//            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
-//#else
-//            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
-//            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
-//#endif
+#if FOR_MICROSOFT_STORE_ONLY
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(AppStartAutomatically, SystemConfig.AppName);
+#else
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({AppStartAutomatically}, \"{SystemConfig.AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(AppStartAutomatically, SystemConfig.AppName);
+#endif
 
             StopAutoSave = false;
             _ini.Save();

@@ -125,6 +125,7 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+                RaisePropertyChanged(nameof(WindowResizeMode));
                 if (_selectedItem != null)
                 {
                     SetTitle();
