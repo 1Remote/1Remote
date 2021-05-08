@@ -419,9 +419,6 @@
                                                 <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsLocked}" Value="true">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </controls:ButtonEx.Style>
@@ -461,9 +458,6 @@
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsLocked}" Value="true">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                                 <Trigger Property="IsEnabled" Value="False">
