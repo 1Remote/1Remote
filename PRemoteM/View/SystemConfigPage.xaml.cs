@@ -41,6 +41,12 @@ namespace PRM.View
                 TabItemDataBase.IsSelected = true;
             if (t == typeof(SystemConfigTheme))
                 TabItemTheme.IsSelected = true;
+
+#if FOR_MICROSOFT_STORE_ONLY
+            CbAppStartAutomatically.IsChecked = true;
+            CbAppStartAutomatically.IsEnabled = false;
+            TbAppStartAutomaticallyTip.Visibility = Visibility.Visible;
+#endif
         }
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
