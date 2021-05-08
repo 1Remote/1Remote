@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
@@ -83,10 +84,6 @@ namespace PRM.Core.Model
         {
             StopAutoSave = true;
 
-#if FOR_MICROSOFT_STORE_ONLY
-            _appStartAutomatically = true;
-#endif
-
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
@@ -119,6 +116,13 @@ namespace PRM.Core.Model
             if (Enum.TryParse<EnumTabMode>(_ini.GetValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString()), out var tm))
                 TabMode = tm;
             StopAutoSave = false;
+
+#if FOR_MICROSOFT_STORE_ONLY
+            Task.Factory.StartNew(async () =>
+            {
+                AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask(SystemConfig.AppName);
+            });
+#endif
         }
 
         public override void Update(SystemConfigBase newConfig)
