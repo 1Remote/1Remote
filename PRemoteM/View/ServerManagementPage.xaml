@@ -85,7 +85,7 @@
                                 </Grid.Style>
                                 <Grid.ContextMenu>
                                     <ContextMenu Style="{StaticResource ContextMenuStyle}">
-                                        <MenuItem Header="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}" Style="{StaticResource MenuItemStyle}" />
+                                        <MenuItem Header="{DynamicResource word_edit}" Command="{Binding CmdEditServer}" Style="{StaticResource MenuItemStyle}" />
                                         <MenuItem Header="{DynamicResource server_card_operate_duplicate}" Command="{Binding CmdDuplicateServer}" Style="{StaticResource MenuItemStyle}" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
@@ -317,7 +317,7 @@
                                 </Grid.Style>
                                 <Grid.ContextMenu>
                                     <ContextMenu Style="{StaticResource ContextMenuStyle}">
-                                        <MenuItem Header="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}" Style="{StaticResource MenuItemStyle}" />
+                                        <MenuItem Header="{DynamicResource word_edit}" Command="{Binding CmdEditServer}" Style="{StaticResource MenuItemStyle}" />
                                         <MenuItem Header="{DynamicResource server_card_operate_duplicate}" Command="{Binding CmdDuplicateServer}" Style="{StaticResource MenuItemStyle}" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
@@ -387,7 +387,7 @@
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
                                                                  Text="{Binding Server.UserName}" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
 
-                                        <controls1:ButtonEx Grid.Column="8" Margin="0 0 5 0" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource server_card_operate_edit}" Command="{Binding CmdEditServer}"></controls1:ButtonEx>
+                                        <controls1:ButtonEx Grid.Column="8" Margin="0 0 5 0" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_edit}" Command="{Binding CmdEditServer}"></controls1:ButtonEx>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -628,57 +628,6 @@
 
         <Grid Grid.Row="1" Background="{DynamicResource MainColor1Brush}" Height="40">
             <StackPanel Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style x:Key="ContextMenuStyle" TargetType="{x:Type ContextMenu}">
-                        <Setter Property="SnapsToDevicePixels" Value="True" />
-                        <Setter Property="OverridesDefaultStyle" Value="True" />
-                        <Setter Property="Grid.IsSharedSizeScope" Value="true" />
-                        <Setter Property="HasDropShadow" Value="True" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ContextMenu">
-                                    <Border x:Name="Border" Background="{DynamicResource MainColor1DarkerBrush}" BorderThickness="0" BorderBrush="{DynamicResource MainColor2Brush}">
-                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-
-                    <Style x:Key="MenuItemStyle" TargetType="{x:Type MenuItem}">
-                        <Setter Property="Background" Value="{StaticResource MainColor1Brush}" />
-                        <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="MenuItem">
-                                    <Border Name="Border">
-                                        <Grid>
-                                            <ContentPresenter Margin="6,3,6,3" ContentSource="Header" RecognizesAccessKey="True" />
-                                            <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsSubmenuOpen}"
-                                                                               AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
-                                                <Border Name="SubmenuBorder" SnapsToDevicePixels="True" BorderThickness="0"
-                                                                                    Background="{StaticResource MainColor1Brush}">
-                                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
-                                                </Border>
-                                            </Popup>
-                                        </Grid>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="true">
-                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource MainColor2Brush}" />
-                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource MainColor2Brush}" />
-                                            <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}" />
-                                        </Trigger>
-                                        <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True">
-                                            <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="0,0,4,4" />
-                                            <Setter TargetName="SubmenuBorder" Property="Padding" Value="0,0,0,3" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </StackPanel.Resources>
                 <controls1:ButtonEx Style="{StaticResource MainColor2Button}" Margin="0 0" Width="80" Click="ButtonBack_OnClick" Content="{DynamicResource word_back}"></controls1:ButtonEx>
             </StackPanel>
 
@@ -775,7 +724,7 @@
                         <StackPanel>
                             <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_export}" Command="{Binding CmdExportSelectedToJson}"></controls1:ButtonEx>
                             <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_import}" Command="{Binding CmdImportFromJson}"></controls1:ButtonEx>
-                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource managementpage_import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></controls1:ButtonEx>
+                            <controls1:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource phrase_import_from_mremoteng_csv}" Command="{Binding CmdImportFromCsv}"></controls1:ButtonEx>
                         </StackPanel>
                     </Grid>
                 </Popup>
