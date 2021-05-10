@@ -8,6 +8,7 @@
   "word_exit": "Beenden",
   "word_close": "Schließen",
   "word_add": "Hinzufügen",
+  "word_edit": "Bearbeiten",
   "word_save": "Speichern",
   "word_save_as": "Speichern als...",
   "word_back": "Zurück",
@@ -132,7 +133,6 @@
 
   // server operate
   "server_card_operate_conn": "Verbinden",
-  "server_card_operate_edit": "Bearbeiten",
   "server_card_operate_duplicate": "Duplizieren",
   "server_card_operate_copy_address": "Server-Adresse in die Zwischenablage kopieren",
   "server_card_operate_copy_username": "Benutzername in die Zwischenablage kopieren",
@@ -141,7 +141,7 @@
   "managementpage_delete_selected_confirm": "Wirklich alle markierten Einträge löschen?",
   "managementpage_import_dialog_title": "Dateiauswahl",
   "managementpage_import_from_json": "von einer JSON-Datei",
-  "managementpage_import_from_mremoteng_csv": "mRemoteNG CSV-Datei",
+  "phrase_import_from_mremoteng_csv": "mRemoteNG CSV-Datei",
   "managementpage_import_done": "Erfolgreich importiert, {0} Element hinzugefügt.",
   "managementpage_import_error": "Falsches Datenformat!",
   "managementpage_edit_selected": "Ausgewähltes bearbeiten",

@@ -8,6 +8,7 @@
   "word_exit": "Exit",
   "word_close": "Close",
   "word_add": "Add",
+  "word_edit": "Edit",
   "word_save": "Save",
   "word_save_as": "Save as...",
   "word_back": "Back",
@@ -132,7 +133,6 @@
 
   // server operate
   "server_card_operate_conn": "Connect",
-  "server_card_operate_edit": "Edit",
   "server_card_operate_duplicate": "Duplicate",
   "server_card_operate_copy_address": "Copy address to clipboard",
   "server_card_operate_copy_username": "Copy username to clipboard",
@@ -141,7 +141,7 @@
   "managementpage_delete_selected_confirm": "Sure to delete all selected?",
   "managementpage_import_dialog_title": "Select a file",
   "managementpage_import_from_json": "from json",
-  "managementpage_import_from_mremoteng_csv": "from mRemoteNG csv",
+  "phrase_import_from_mremoteng_csv": "from mRemoteNG csv",
   "managementpage_import_done": "Imported successfully, {0} item added.",
   "managementpage_import_error": "Error data format!",
   "managementpage_edit_selected": "Edit selected",
