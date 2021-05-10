@@ -154,7 +154,7 @@ namespace PRM.ViewModel
                 OutAnimationType = AnimationPage.InOutAnimationType.None,
                 Page = new ServerListPage(Context),
             };
-            _managementPage = new ServerManagementPage(Context);
+            //_managementPage = new ServerManagementPage(Context);
             _aboutPage = new AboutPage(VmAboutPage, this);
         }
 

@@ -8,6 +8,7 @@
   "word_exit": "退出",
   "word_close": "关闭",
   "word_add": "添加",
+  "word_edit": "编辑",
   "word_save": "保存",
   "word_save_as": "保存到...",
   "word_back": "返回",
@@ -132,7 +133,6 @@
 
   // server operate
   "server_card_operate_conn": "连接",
-  "server_card_operate_edit": "编辑",
   "server_card_operate_duplicate": "创建副本",
   "server_card_operate_copy_address": "复制地址到剪贴板",
   "server_card_operate_copy_username": "复制用户名到剪贴板",
@@ -141,7 +141,7 @@
   "managementpage_delete_selected_confirm": "确认要删除所选全部项目吗？",
   "managementpage_import_dialog_title": "选择导入文件",
   "managementpage_import_from_json": "从 json",
-  "managementpage_import_from_mremoteng_csv": "从 mRemoteNG csv",
+  "phrase_import_from_mremoteng_csv": "从 mRemoteNG csv",
   "managementpage_import_done": "已导入{0}条记录.",
   "managementpage_import_error": "导入0条，输入的数据文件格式有误!",
   "managementpage_edit_selected": "编辑选中",

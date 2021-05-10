@@ -195,7 +195,7 @@ namespace PRM.ViewModel
                 },
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_edit"),
+                    ActionName = SystemConfig.Instance.Language.GetText("word_edit"),
                     Run = (id) =>
                     {
                         Debug.Assert(SelectedItem?.Server != null);

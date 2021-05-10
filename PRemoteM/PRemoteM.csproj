@@ -159,6 +159,9 @@
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ServerListItem.xaml.cs">
+      <DependentUpon>ServerListItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
@@ -211,6 +214,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\ServerCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ServerListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

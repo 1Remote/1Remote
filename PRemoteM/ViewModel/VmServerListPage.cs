@@ -123,15 +123,54 @@ namespace PRM.ViewModel
             }
         }
 
+
+        private bool _isMultipleSelected;
+
+        public bool IsMultipleSelected
+        {
+            get => _isMultipleSelected;
+            set => SetAndNotifyIfChanged(nameof(IsMultipleSelected), ref _isMultipleSelected, value);
+        }
+
+
         private void RebuildVmServerCardList()
         {
             _serverListItems.Clear();
             foreach (var vs in _context.AppData.VmItemList)
             {
-                ServerListItems.Add(new VmProtocolServer(vs.Server));
+                ServerListItems.Add(vs);
+                try
+                {
+                    vs.PropertyChanged -= VmServerPropertyChanged;
+                }
+                finally
+                {
+                    vs.PropertyChanged += VmServerPropertyChanged;
+                }
             }
             OrderServerList();
             RebuildGroupList();
+        }
+
+        private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(VmProtocolServer.IsSelected))
+            {
+                var displayCount = ServerListItems.Count(x => x.ObjectVisibilityInList == Visibility.Visible);
+                var selectedCount = ServerListItems.Count(x => x.IsSelected);
+
+                IsMultipleSelected = selectedCount >= 1;
+                if (IsSelectedAll == true && selectedCount < displayCount)
+                {
+                    _isSelectedAll = false;
+                    RaisePropertyChanged(nameof(IsSelectedAll));
+                }
+                else if (IsSelectedAll == false && selectedCount >= displayCount)
+                {
+                    _isSelectedAll = true;
+                    RaisePropertyChanged(nameof(IsSelectedAll));
+                }
+            }
         }
 
         private void RebuildGroupList()
@@ -320,7 +359,6 @@ namespace PRM.ViewModel
                         {
                             Filter = "PRM json array|*.prma",
                             Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
-                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -731,6 +769,8 @@ namespace PRM.ViewModel
                 return _cmdMultiEditSelected;
             }
         }
+
+
 
         private DateTime _lastCmdReOrder;
         private RelayCommand _cmdReOrder;
