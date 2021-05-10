@@ -174,9 +174,9 @@
     <Compile Include="Protocol\ITab.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
-    <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
-    <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
-    <Compile Include="Protocol\ProtocolServerFormBase.cs" />
+    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortBase.cs" />
+    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
+    <Compile Include="Protocol\BaseClassForm\ProtocolServerFormBase.cs" />
     <Compile Include="Protocol\Putty\Host\KittyHost.xaml.cs">
       <DependentUpon>KittyHost.xaml</DependentUpon>
     </Compile>
@@ -246,7 +246,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
     <Compile Include="Protocol\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\ProtocolServerBase.cs" />
+    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Utils\NetImageProcessHelper.cs" />
     <Compile Include="Utils\PageHost\AnimationPage.cs" />
