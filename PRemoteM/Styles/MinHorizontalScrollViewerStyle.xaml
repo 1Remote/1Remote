@@ -17,7 +17,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Border Width="{TemplateBinding Width}" x:Name="border" BorderBrush="Transparent" BorderThickness="0" Background="White" SnapsToDevicePixels="true">
-                        <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="Stretch" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="false">

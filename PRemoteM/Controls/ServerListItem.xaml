@@ -1,0 +1,226 @@
+﻿<UserControl x:Class="PRM.Controls.ServerListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PRM.Controls"
+             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid FocusVisualStyle="{x:Null}">
+        <Grid.InputBindings>
+            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
+            <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
+        </Grid.InputBindings>
+
+        <Grid>
+            <Grid.Margin>
+                <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
+            </Grid.Margin>
+            <Grid VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selecter"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
+                    <ColumnDefinition Width="40" SharedSizeGroup="Name"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
+                                      Name="CbIsSelected"
+                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                      Background="{DynamicResource MainColor2Brush}">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="CheckBox">
+                                        <Border Background="{TemplateBinding Control.Background}" 
+                                                            BorderThickness="0" 
+                                                            CornerRadius="5" Name="PART_Background">
+                                            <Grid>
+                                                <Border Name="PATH_UNCHECK" CornerRadius="3" Background="{DynamicResource MainColor2ForegroundBrush}" Margin="4"></Border>
+                                                <Path Name="PATH_CHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Visible"></Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Visible"></Setter>
+                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="PART_Background" Property="Opacity" Value="0.8"></Setter>
+                                                <Setter TargetName="PATH_UNCHECK" Property="Margin" Value="3"></Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+
+                <TextBlock Grid.Column="1" Margin="5 0"
+                                                   Text="{Binding Server.ProtocolDisplayName}"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   HorizontalAlignment="Left"
+                                                   Opacity="0.4"
+                                                   Foreground="{DynamicResource MainColor1Brush}"
+                                                   VerticalAlignment="Center"></TextBlock>
+                <TextBlock Grid.Column="1" Margin="5 0"
+                                                   Text="{Binding Server.ProtocolDisplayName}"
+                                                   FontSize="14" FontWeight="Bold"
+                                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                                   Opacity="0.2"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center">
+                </TextBlock>
+
+                <Grid Grid.Column="2" Width="30" HorizontalAlignment="Center" Margin="5 0">
+                    <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                </Grid>
+
+                <TextBlock Grid.Column="3" Margin="5 0"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.DispName}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="ToolTip" Value="{x:Null}"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <TextBlock Grid.Column="4" Margin="5 0" MaxWidth="100"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.GroupName}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="ToolTip" Value="{x:Null}"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <TextBlock Grid.Column="5" Margin="5 0" MaxWidth="500"
+                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                 Text="{Binding Server.SubTitle}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="ToolTip" Value="{x:Null}"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+
+                <!-- setting menu button -->
+                <controls:ButtonEx Grid.Column="5" 
+                                   x:Name="BtnSettingMenu"
+                                   Margin="10 0"
+                                   Width="20" Height="20" HorizontalAlignment="Right" BorderThickness="0"
+                                   Click="BtnSettingMenu_OnClick">
+                    <controls:ButtonEx.Style>
+                        <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor2Button}">
+                            <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                            <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Setter Property="Padding" Value="5"></Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                                BorderThickness="0" 
+                                                                CornerRadius="5"
+                                                                Name="PART_Background">
+                                            <Path   Name="Symbol" Margin="{TemplateBinding Padding}"
+                                                                Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
+                                                                Fill="{TemplateBinding Foreground}"
+                                                                Stretch="Fill" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Padding" Value="4"></Setter>
+                                </Trigger>
+                                <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu, Path=IsOpen}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                    <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
+                                    <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                    <Setter Property="Padding" Value="4"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </controls:ButtonEx.Style>
+                </controls:ButtonEx>
+            </Grid>
+        </Grid>
+
+
+        <Popup 
+                                    AllowsTransparency="True"
+                                    Name="PopupCardSettingMenu"
+                                    PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
+            <Popup.Resources>
+                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
+                    <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+                    <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                    <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
+                    <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}"/>
+                    <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                    <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
+                    <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+                    <Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>
+                    <Setter Property="ForegroundOnDisabled" Value="Gray"/>
+                    <Setter Property="OpacityOnPressed" Value="1"></Setter>
+                </Style>
+            </Popup.Resources>
+            <Border Padding="0 0 4 4">
+                <Border.Effect>
+                    <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                </Border.Effect>
+                <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
+                    <StackPanel>
+                        <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource word_edit}"></controls:ButtonEx>
+                        <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>
