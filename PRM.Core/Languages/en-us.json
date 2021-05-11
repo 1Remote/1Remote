@@ -152,6 +152,7 @@
   "managementpage_edit_selected_confirm": "Sure to move all selected to new value: '",
 
   // server editor
+  "server_editor_different_options": "<different options>",
   "server_editor_group_title_common": "Common",
   "server_editor_group_title_connection": "Connection",
   "server_editor_group_title_display": "Display",

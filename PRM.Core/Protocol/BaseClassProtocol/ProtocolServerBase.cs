@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
+using PRM.Core.Model;
 using Shawn.Utils;
 using Color = System.Windows.Media.Color;
 
@@ -12,6 +13,8 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase, ICloneable
     {
+        public string Server_editor_different_options { get; private set; }
+
         protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "")
         {
             Protocol = protocol;
@@ -21,6 +24,7 @@ namespace PRM.Core.Protocol
                 ProtocolDisplayNameInShort = ProtocolDisplayName;
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
+            Server_editor_different_options = SystemConfig.Instance.Language.GetText("server_editor_different_options");
         }
 
         public abstract bool IsOnlyOneInstance();
@@ -77,58 +81,40 @@ namespace PRM.Core.Protocol
             set
             {
                 SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
-                try
-                {
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        var bm = NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(value));
-                        _iconImg = bm.ToBitmapSource();
-                        Icon = bm.ToIcon();
-                    }
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Debug(e);
-                    _iconImg = null;
-                    Icon = null;
-                }
+                RaisePropertyChanged(nameof(Icon));
+                RaisePropertyChanged(nameof(IconImg));
             }
         }
 
-        private Icon _icon = null;
 
         [JsonIgnore]
         public Icon Icon
         {
-            get => _icon;
-            private set => SetAndNotifyIfChanged(nameof(Icon), ref _icon, value);
+            get
+            {
+                if (IconImg == null)
+                    return null;
+                var bm = IconImg.ToBitmap();
+                return bm.ToIcon();
+            }
         }
-
-        private BitmapSource _iconImg = null;
 
         [JsonIgnore]
         public BitmapSource IconImg
         {
-            get => _iconImg;
-            set
+            get
             {
-                SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
                 try
                 {
-                    if (value != null)
-                    {
-                        _iconBase64 = Convert.ToBase64String(value.ToBytes());
-                        Icon = value.ToIcon();
-                    }
+                    return NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(_iconBase64)).ToBitmapSource();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    SimpleLogHelper.Error(e);
-                    _iconBase64 = null;
-                    Icon = null;
+                    return null;
                 }
             }
         }
+
 
         private string _markColorHex = "#FFFFFF";
 
@@ -139,9 +125,8 @@ namespace PRM.Core.Protocol
             {
                 try
                 {
-                    var color = (Color)System.Windows.Media.ColorConverter.ConvertFromString(value);
                     SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value);
-                    SetAndNotifyIfChanged(nameof(MarkColor), ref _markColor, color);
+                    RaisePropertyChanged(nameof(MarkColor));
                 }
                 catch (Exception)
                 {
@@ -149,16 +134,21 @@ namespace PRM.Core.Protocol
             }
         }
 
-        private Color _markColor = Colors.White;
-
         [JsonIgnore]
-        public Color MarkColor
+        public Color? MarkColor
         {
-            get => _markColor;
-            set
+            get
             {
-                SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value.ToHexString());
-                SetAndNotifyIfChanged(nameof(MarkColor), ref _markColor, value);
+                try
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    var color = (Color)System.Windows.Media.ColorConverter.ConvertFromString(_markColorHex);
+                    return color;
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 
@@ -207,22 +197,25 @@ namespace PRM.Core.Protocol
             {
                 myType = myType.BaseType;
             }
+
             while (yourType != null && yourType != baseType)
             {
                 yourType = yourType.BaseType;
             }
+
             if (myType != null && myType == yourType)
             {
                 ProtocolServerBase copyObject = this;
                 while (yourType != null)
                 {
-                    var fields = myType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                    var fields = yourType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                     foreach (var fi in fields)
                     {
                         if (!fi.IsInitOnly)
                             fi.SetValue(this, fi.GetValue(copyFromObj));
                     }
-                    var properties = myType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+                    var properties = yourType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                     foreach (var property in properties)
                     {
                         if (property.CanWrite && property.SetMethod != null)
@@ -233,10 +226,14 @@ namespace PRM.Core.Protocol
                             base.RaisePropertyChanged(property.Name);
                         }
                     }
+
                     // update base class
                     yourType = yourType.BaseType;
                 }
+
+                return true;
             }
+
             return false;
         }
 
@@ -294,6 +291,7 @@ namespace PRM.Core.Protocol
         /// </summary>
         public object Clone()
         {
+            Server_editor_different_options = SystemConfig.Instance.Language.GetText("server_editor_different_options");
             return MemberwiseClone();
         }
 

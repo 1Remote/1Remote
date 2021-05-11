@@ -209,7 +209,7 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-    <Style TargetType="{x:Type ComboBox}">
+    <Style TargetType="{x:Type ComboBox}"  x:Key="ComboBoxDefault">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
         <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
@@ -229,6 +229,7 @@
                               ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
                               ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
                         <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3" IsReadOnly="{TemplateBinding IsReadOnly}" 
+                                 Foreground="{TemplateBinding Foreground}"
                                  Visibility="Hidden" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True" >
                             <TextBox.Template>
                                 <ControlTemplate TargetType="TextBox" >
@@ -270,7 +271,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ComboBox}" x:Key="ComboBoxDefault">
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBoxDefault}">
     </Style>
 
 

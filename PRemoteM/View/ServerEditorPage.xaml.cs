@@ -30,21 +30,19 @@ namespace PRM.View
             {
                 ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
                 ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.MainColor1);
-            }
 
-            if (vm.Server.IconImg == null)
-            {
-                ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
-                if (ServerIcons.Instance.Icons.Count > 0)
+                if (vm.Server.IconImg == null 
+                    && ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
-                    vm.Server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                    vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
                 }
             }
 
+
             _oldLogo = vm.Server.IconImg;
             LogoSelector.SetImg(vm.Server.IconImg);
-            LogoSelector.OnLogoChanged += () => Vm.Server.IconImg = LogoSelector.Logo;
+            LogoSelector.OnLogoChanged += () => Vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -57,16 +55,12 @@ namespace PRM.View
 
         private void ButtonLogoSave_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm?.Server != null)
-            {
-                Vm.Server.IconImg = LogoSelector.Logo;
-            }
             PopupLogoSelectorClose();
         }
 
         private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
         {
-            Vm.Server.IconImg = _oldLogo;
+            Vm.Server.IconBase64 = _oldLogo.ToBase64();
             PopupLogoSelectorClose();
         }
 
@@ -134,7 +128,7 @@ namespace PRM.View
         {
             if (Vm?.Server != null)
             {
-                Vm.Server.IconImg = LogoSelector.Logo;
+                Vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
             }
             PopupLogoSelectorClose();
         }
