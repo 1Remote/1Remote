@@ -133,7 +133,7 @@ namespace PRM.Model
                         }
             };
             p.Start();
-            string admin = rdp.IsAdministrativePurposes ? " /admin " : "";
+            string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
             p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
             p.StandardInput.WriteLine("exit");
 

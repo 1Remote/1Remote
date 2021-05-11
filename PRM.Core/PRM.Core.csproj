@@ -131,6 +131,12 @@
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
+    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml.cs">
+      <DependentUpon>ProtocolServerWithAddrPortBaseForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml.cs">
+      <DependentUpon>ProtocolServerWithAddrPortUserPwdBaseForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
@@ -406,6 +412,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Languages\zh-cn.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

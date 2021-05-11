@@ -152,6 +152,7 @@
   "managementpage_edit_selected_confirm": "确认要将所选项目变更为 '",
 
   // server editor
+  "server_editor_different_options": "<不同的选项>",
   "server_editor_group_title_common": "常规",
   "server_editor_group_title_connection": "连接",
   "server_editor_group_title_display": "显示",

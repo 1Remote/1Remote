@@ -148,6 +148,16 @@ namespace PRM.ViewModel
                 };
             });
 
+            GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
+            {
+                DispPage = new AnimationPage()
+                {
+                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    Page = new ServerEditorPage(new VmServerEditorPage(Context, servers)),
+                };
+            };
+
             ServersShownPage = new AnimationPage()
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,

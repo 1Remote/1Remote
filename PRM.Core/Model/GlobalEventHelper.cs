@@ -43,6 +43,9 @@ namespace PRM.Core.Model
         /// </summary>
         public static OnRequestGoToServerEditPageDelegate OnRequestGoToServerEditPage { get; set; } = null;
 
+        public delegate void OnRequestGoToServerMultipleEditPageDelegate(IEnumerable<ProtocolServerBase> servers, bool showAnimation = true);
+        public static OnRequestGoToServerMultipleEditPageDelegate OnRequestGoToServerMultipleEditPage { get; set; } = null;
+
         public delegate void OnRequestUpdateServerDelegate(ProtocolServerBase server);
         public static OnRequestUpdateServerDelegate OnRequestUpdateServer { get; set; } = null;
 

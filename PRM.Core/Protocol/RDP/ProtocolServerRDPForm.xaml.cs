@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Core.Model;
+using PRM.Core.Protocol.BaseClassForm;
 
 
 namespace PRM.Core.Protocol.RDP
@@ -83,11 +84,15 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return null;
             return ((int)((EDisplayPerformance)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return null;
             return (EDisplayPerformance)(int.Parse(value.ToString()));
         }
         #endregion
@@ -133,14 +138,23 @@ namespace PRM.Core.Protocol.RDP
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var a = (bool?)parameter;
-            var b = (bool?) value;
-            return a == b;
+            try
+            {
+                var b = (EAudioRedirectionMode?)value;
+                if (b == null)
+                    return null;
+                var a = (EAudioRedirectionMode?)parameter;
+                return a == b;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (bool)value ? parameter : Binding.DoNothing;
+            return parameter;
         }
     }
 }
