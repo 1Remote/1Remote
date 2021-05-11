@@ -36,7 +36,7 @@ namespace PRM.Core.Protocol.RDP.Host
             {
                 _rdpServer = rdp;
                 _isLastTimeFullScreen = _rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                                        || _rdpServer.IsConnWithFullScreen
+                                        || _rdpServer.IsConnWithFullScreen == true
                                         || (_rdpServer.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false);
                 InitRdp(width, height);
                 GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
@@ -121,7 +121,7 @@ namespace PRM.Core.Protocol.RDP.Host
             _rdp.SecuredSettings3.KeyboardHookMode = 2;
 
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
-            _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes;
+            _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes == true;
         }
 
         private void CreatRdp()
@@ -158,7 +158,7 @@ namespace PRM.Core.Protocol.RDP.Host
         private void RdpInitConnBar()
         {
             SimpleLogHelper.Debug("RDP Host: init conn bar");
-            _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar;
+            _rdp.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar == true;
             _rdp.AdvancedSettings6.ConnectionBarShowPinButton = true;
             _rdp.AdvancedSettings6.PinConnectionBar = false;
             _rdp.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
@@ -183,17 +183,17 @@ namespace PRM.Core.Protocol.RDP.Host
 
             #region Redirect
             // Specifies whether dynamically attached PnP devices that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdevices
-            ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDevices = _rdpServer.EnableDiskDrives;
+            ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDevices = _rdpServer.EnableDiskDrives == true;
             // Specifies or retrieves whether dynamically attached Plug and Play (PnP) drives that are enumerated while in a session are available for redirection. https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable3-redirectdynamicdrives
-            ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDrives = _rdpServer.EnableDiskDrives;
+            ((IMsRdpClientNonScriptable3)_rdp.GetOcx()).RedirectDynamicDrives = _rdpServer.EnableDiskDrives == true;
 
-            _rdp.AdvancedSettings9.RedirectDrives = _rdpServer.EnableDiskDrives;
-            _rdp.AdvancedSettings9.RedirectClipboard = _rdpServer.EnableClipboard;
-            _rdp.AdvancedSettings9.RedirectPrinters = _rdpServer.EnablePrinters;
-            _rdp.AdvancedSettings9.RedirectPOSDevices = _rdpServer.EnablePorts;
-            _rdp.AdvancedSettings9.RedirectSmartCards = _rdpServer.EnableSmartCardsAndWinHello;
+            _rdp.AdvancedSettings9.RedirectDrives = _rdpServer.EnableDiskDrives == true;
+            _rdp.AdvancedSettings9.RedirectClipboard = _rdpServer.EnableClipboard == true;
+            _rdp.AdvancedSettings9.RedirectPrinters = _rdpServer.EnablePrinters == true;
+            _rdp.AdvancedSettings9.RedirectPOSDevices = _rdpServer.EnablePorts == true;
+            _rdp.AdvancedSettings9.RedirectSmartCards = _rdpServer.EnableSmartCardsAndWinHello == true;
 
-            if (_rdpServer.EnableKeyCombinations)
+            if (_rdpServer.EnableKeyCombinations == true)
             {
                 // - 0 Apply key combinations only locally at the client computer.
                 // - 1 Apply key combinations at the remote server.
@@ -203,7 +203,7 @@ namespace PRM.Core.Protocol.RDP.Host
             else
                 _rdp.SecuredSettings3.KeyboardHookMode = 0;
 
-            if (_rdpServer.EnableSounds == true)
+            if (_rdpServer.AudioRedirectionMode == EAudioRedirectionMode.RedirectToLocal)
             {
                 // - 0 (Audio redirection is enabled and the option for redirection is "Bring to this computer". This is the default mode.)
                 // - 1 (Audio redirection is enabled and the option is "Leave at remote computer". The "Leave at remote computer" option is supported only when connecting remotely to a host computer that is running Windows Vista. If the connection is to a host computer that is running Windows Server 2008, the option "Leave at remote computer" is changed to "Do not play".)
@@ -215,18 +215,18 @@ namespace PRM.Core.Protocol.RDP.Host
                 // - 2 High audio quality. The server provides audio output in uncompressed PCM format with lower processing overhead for latency.
                 _rdp.AdvancedSettings8.AudioQualityMode = 0;
             }
-            else if (_rdpServer.EnableSounds == false)
-            {
-                // - 2 Disable sound redirection; do not play sounds at the server.
-                _rdp.SecuredSettings3.AudioRedirectionMode = 2;
-            }
-            else
+            else if (_rdpServer.AudioRedirectionMode == EAudioRedirectionMode.LeaveOnRemote)
             {
                 // - 1 (Audio redirection is enabled and the option is "Leave at remote computer". The "Leave at remote computer" option is supported only when connecting remotely to a host computer that is running Windows Vista. If the connection is to a host computer that is running Windows Server 2008, the option "Leave at remote computer" is changed to "Do not play".)
                 _rdp.SecuredSettings3.AudioRedirectionMode = 1;
             }
+            else if (_rdpServer.AudioRedirectionMode == EAudioRedirectionMode.Disabled)
+            {
+                // - 2 Disable sound redirection; do not play sounds at the server.
+                _rdp.SecuredSettings3.AudioRedirectionMode = 2;
+            }
 
-            if (_rdpServer.EnableAudioCapture)
+            if (_rdpServer.EnableAudioCapture == true)
             {
                 // indicates whether the default audio input device is redirected from the client to the remote session
                 _rdp.AdvancedSettings8.AudioCaptureRedirectionMode = true;

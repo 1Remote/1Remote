@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 using Microsoft.Win32;
+using PRM.Core.Protocol.BaseClassForm;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 

@@ -1,4 +1,6 @@
-﻿namespace PRM.Core.Protocol
+﻿using System;
+
+namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerWithAddrPortBase : ProtocolServerBase
     {
@@ -27,18 +29,8 @@
 
         public string Port
         {
-            get => !string.IsNullOrEmpty(_port) ? _port : "3389";
-            set
-            {
-                if (int.TryParse(value, out var p))
-                {
-                    if (p > 0 && p < 65536)
-                    {
-                        SetAndNotifyIfChanged(nameof(Port), ref _port, value);
-                        return;
-                    }
-                }
-            }
+            get => _port;
+            set => SetAndNotifyIfChanged(nameof(Port), ref _port, value);
         }
 
         protected override string GetSubTitle()

@@ -152,6 +152,7 @@
   "managementpage_edit_selected_confirm": "Sicher, um alle ausgewählten auf den neuen Wert zu aktualisieren: '",
 
   // server editor
+  "server_editor_different_options": "<different options>",
   "server_editor_group_title_common": "Allgemein",
   "server_editor_group_title_connection": "Verbindung",
   "server_editor_group_title_display": "Anzeige",
