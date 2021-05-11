@@ -75,23 +75,7 @@ namespace PRM.ViewModel
             get => _serverGroupList;
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
-
-        private string _multiEditPropertyName = "Group";
-
-        public string MultiEditPropertyName
-        {
-            get => _multiEditPropertyName;
-            set => SetAndNotifyIfChanged(nameof(MultiEditPropertyName), ref _multiEditPropertyName, value);
-        }
-
-        private string _multiEditNewValue = "";
-
-        public string MultiEditNewValue
-        {
-            get => _multiEditNewValue;
-            set => SetAndNotifyIfChanged(nameof(MultiEditNewValue), ref _multiEditNewValue, value);
-        }
-
+        
         private string _selectedGroup = "";
 
         public string SelectedGroup
@@ -515,7 +499,8 @@ namespace PRM.ViewModel
                                                         EnableClipboard = string.Equals(getValue(title, arr, "RedirectClipboard"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnableDiskDrives = string.Equals(getValue(title, arr, "RedirectDiskDrives"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnableKeyCombinations = string.Equals(getValue(title, arr, "RedirectKeys"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableSounds = string.Equals(getValue(title, arr, "BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        // TODO can not divide form LeaveOnRemote
+                                                        AudioRedirectionMode = string.Equals(getValue(title, arr, "BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase) == true ? EAudioRedirectionMode.RedirectToLocal : EAudioRedirectionMode.Disabled,
                                                         EnableAudioCapture = string.Equals(getValue(title, arr, "RedirectAudioCapture"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnablePorts = string.Equals(getValue(title, arr, "RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnablePrinters = string.Equals(getValue(title, arr, "RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
@@ -578,7 +563,7 @@ namespace PRM.ViewModel
 
                                             if (server != null)
                                             {
-                                                server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                                                server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
                                                 list.Add(server);
                                             }
                                         }
@@ -639,7 +624,7 @@ namespace PRM.ViewModel
 
         private RelayCommand _cmdMultiEditSelected;
 
-        public RelayCommand CmdMultiEditSelectedSave
+        public RelayCommand CmdMultiEditSelected
         {
             get
             {
@@ -647,123 +632,7 @@ namespace PRM.ViewModel
                 {
                     _cmdMultiEditSelected = new RelayCommand((o) =>
                     {
-                        _multiEditNewValue = MultiEditNewValue.Trim();
-                        if (MultiEditPropertyName == "Name" || MultiEditPropertyName == "Address"
-                                                            || MultiEditPropertyName == "Port")
-                        {
-                            if (string.IsNullOrWhiteSpace(MultiEditNewValue))
-                            {
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_edit_selected_error_empty_string"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                                return;
-                            }
-
-                            if (MultiEditPropertyName == "Port"
-                            && !int.TryParse(MultiEditNewValue, out var port))
-                            {
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_edit_selected_error_port"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                                return;
-                            }
-                        }
-
-                        if (MessageBoxResult.Yes == MessageBox.Show(
-                        SystemConfig.Instance.Language.GetText("managementpage_edit_selected_confirm") + MultiEditNewValue + "'?",
-                        SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question, MessageBoxResult.None))
-                        {
-                            switch (MultiEditPropertyName)
-                            {
-                                case "Name":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                vs.Server.DispName = MultiEditNewValue;
-                                                _context.DbOperator.DbUpdateServer(vs.Server);
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Group":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                vs.Server.GroupName = MultiEditNewValue;
-                                                _context.DbOperator.DbUpdateServer(vs.Server);
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Address":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0 && int.TryParse(MultiEditNewValue, out var port))
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortBase p)
-                                                {
-                                                    p.Address = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Port":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortBase p)
-                                                {
-                                                    p.Port = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "UserName":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
-                                                {
-                                                    p.UserName = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Password":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
-                                                {
-                                                    p.Password = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                            }
-                        }
+                        GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
                 }
                 return _cmdMultiEditSelected;

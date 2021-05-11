@@ -58,13 +58,21 @@ namespace PRM.Core.Protocol.RDP
         SmartCard = 1,
     }
 
+
+    public enum EAudioRedirectionMode
+    {
+        RedirectToLocal = 0,
+        LeaveOnRemote = 1,
+        Disabled = 2,
+    }
+
     public sealed class ProtocolServerRDP : ProtocolServerWithAddrPortUserPwdBase
     {
         public class LocalSetting : NotifyPropertyChangedBase
         {
-            private bool _fullScreenLastSessionIsFullScreen = false;
+            private bool? _fullScreenLastSessionIsFullScreen = false;
 
-            public bool FullScreenLastSessionIsFullScreen
+            public bool? FullScreenLastSessionIsFullScreen
             {
                 get => _fullScreenLastSessionIsFullScreen;
                 set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
@@ -85,9 +93,9 @@ namespace PRM.Core.Protocol.RDP
             base.UserName = "Administrator";
         }
 
-        private bool _isAdministrativePurposes = false;
+        private bool? _isAdministrativePurposes = false;
 
-        public bool IsAdministrativePurposes
+        public bool? IsAdministrativePurposes
         {
             get => _isAdministrativePurposes;
             set => SetAndNotifyIfChanged(nameof(IsAdministrativePurposes), ref _isAdministrativePurposes, value);
@@ -124,17 +132,17 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        private bool _isConnWithFullScreen = false;
+        private bool? _isConnWithFullScreen = false;
 
-        public bool IsConnWithFullScreen
+        public bool? IsConnWithFullScreen
         {
             get => _isConnWithFullScreen;
             set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
         }
 
-        private bool _isFullScreenWithConnectionBar = true;
+        private bool? _isFullScreenWithConnectionBar = true;
 
-        public bool IsFullScreenWithConnectionBar
+        public bool? IsFullScreenWithConnectionBar
         {
             get => _isFullScreenWithConnectionBar;
             set => SetAndNotifyIfChanged(nameof(IsFullScreenWithConnectionBar), ref _isFullScreenWithConnectionBar, value);
@@ -176,9 +184,9 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(RdpHeight), ref _rdpHeight, value);
         }
 
-        private EDisplayPerformance _displayPerformance = EDisplayPerformance.Auto;
+        private EDisplayPerformance? _displayPerformance = EDisplayPerformance.Auto;
 
-        public EDisplayPerformance DisplayPerformance
+        public EDisplayPerformance? DisplayPerformance
         {
             get => _displayPerformance;
             set => SetAndNotifyIfChanged(nameof(DisplayPerformance), ref _displayPerformance, value);
@@ -188,65 +196,85 @@ namespace PRM.Core.Protocol.RDP
 
         #region resource switch
 
-        private bool _enableClipboard = true;
+        private bool? _enableClipboard = true;
 
-        public bool EnableClipboard
+        public bool? EnableClipboard
         {
             get => _enableClipboard;
             set => SetAndNotifyIfChanged(nameof(EnableClipboard), ref _enableClipboard, value);
         }
 
-        private bool _enableDiskDrives = true;
+        private bool? _enableDiskDrives = true;
 
-        public bool EnableDiskDrives
+        public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
             set => SetAndNotifyIfChanged(nameof(EnableDiskDrives), ref _enableDiskDrives, value);
         }
 
-        private bool _enableKeyCombinations = true;
+        private bool? _enableKeyCombinations = true;
 
-        public bool EnableKeyCombinations
+        public bool? EnableKeyCombinations
         {
             get => _enableKeyCombinations;
             set => SetAndNotifyIfChanged(nameof(EnableKeyCombinations), ref _enableKeyCombinations, value);
         }
 
-        private bool? _enableSounds = true;
+
+
+        private EAudioRedirectionMode? _audioRedirectionMode = EAudioRedirectionMode.RedirectToLocal;
+
+        public EAudioRedirectionMode? AudioRedirectionMode
+        {
+            get => _audioRedirectionMode;
+            set => SetAndNotifyIfChanged(nameof(AudioRedirectionMode), ref _audioRedirectionMode, value);
+        }
+
+        #region None useful, just for the old users.
+        // TODO delete after 2021.08
+        private bool? _enableSounds = null;
 
         public bool? EnableSounds
         {
             get => _enableSounds;
-            set => SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, value);
-        }
+            set
+            {
+                SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, value);
+                if (value == true)
+                    AudioRedirectionMode = EAudioRedirectionMode.RedirectToLocal;
+                else if (value == false)
+                    AudioRedirectionMode = EAudioRedirectionMode.LeaveOnRemote;
+            }
+        } 
+        #endregion
 
-        private bool _enableAudioCapture = false;
+        private bool? _enableAudioCapture = false;
 
-        public bool EnableAudioCapture
+        public bool? EnableAudioCapture
         {
             get => _enableAudioCapture;
             set => SetAndNotifyIfChanged(nameof(EnableAudioCapture), ref _enableAudioCapture, value);
         }
 
-        private bool _enablePorts = false;
+        private bool? _enablePorts = false;
 
-        public bool EnablePorts
+        public bool? EnablePorts
         {
             get => _enablePorts;
             set => SetAndNotifyIfChanged(nameof(EnablePorts), ref _enablePorts, value);
         }
 
-        private bool _enablePrinters = false;
+        private bool? _enablePrinters = false;
 
-        public bool EnablePrinters
+        public bool? EnablePrinters
         {
             get => _enablePrinters;
             set => SetAndNotifyIfChanged(nameof(EnablePrinters), ref _enablePrinters, value);
         }
 
-        private bool _enableSmartCardsAndWinHello = false;
+        private bool? _enableSmartCardsAndWinHello = false;
 
-        public bool EnableSmartCardsAndWinHello
+        public bool? EnableSmartCardsAndWinHello
         {
             get => _enableSmartCardsAndWinHello;
             set => SetAndNotifyIfChanged(nameof(EnableSmartCardsAndWinHello), ref _enableSmartCardsAndWinHello, value);
@@ -264,9 +292,9 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(GatewayMode), ref _gatewayMode, value);
         }
 
-        private bool _gatewayBypassForLocalAddress = true;
+        private bool? _gatewayBypassForLocalAddress = true;
 
-        public bool GatewayBypassForLocalAddress
+        public bool? GatewayBypassForLocalAddress
         {
             get => _gatewayBypassForLocalAddress;
             set => SetAndNotifyIfChanged(nameof(GatewayBypassForLocalAddress), ref _gatewayBypassForLocalAddress, value);
@@ -354,7 +382,7 @@ namespace PRM.Core.Protocol.RDP
         {
             var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DbOperator.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
-            rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar ? 1 : 0;
+            rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar == true ? 1 : 0;
 
             switch (this.RdpFullScreenFlag)
             {
@@ -445,25 +473,25 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.AudioMode = 2;
             rdpConfig.AudioCaptureMode = 0;
 
-            if (this.EnableDiskDrives)
+            if (this.EnableDiskDrives == true)
                 rdpConfig.RedirectDrives = 1;
-            if (this.EnableClipboard)
+            if (this.EnableClipboard == true)
                 rdpConfig.RedirectClipboard = 1;
-            if (this.EnablePrinters)
+            if (this.EnablePrinters == true)
                 rdpConfig.RedirectPrinters = 1;
-            if (this.EnablePorts)
+            if (this.EnablePorts == true)
                 rdpConfig.RedirectComPorts = 1;
-            if (this.EnableSmartCardsAndWinHello)
+            if (this.EnableSmartCardsAndWinHello == true)
                 rdpConfig.RedirectSmartCards = 1;
-            if (this.EnableKeyCombinations)
+            if (this.EnableKeyCombinations == true)
                 rdpConfig.KeyboardHook = 2;
-            if (this.EnableSounds == true)
+            if (this.AudioRedirectionMode == EAudioRedirectionMode.RedirectToLocal)
                 rdpConfig.AudioMode = 0;
-            else if (this.EnableSounds == false)
-                rdpConfig.AudioMode = 2;
-            else
+            else if (this.AudioRedirectionMode == EAudioRedirectionMode.LeaveOnRemote)
                 rdpConfig.AudioMode = 1;
-            if (this.EnableAudioCapture)
+            else if (this.AudioRedirectionMode == EAudioRedirectionMode.Disabled)
+                rdpConfig.AudioMode = 2;
+            if (this.EnableAudioCapture == true)
                 rdpConfig.AudioCaptureMode = 1;
 
             rdpConfig.AutoReconnectionEnabled = 1;

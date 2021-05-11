@@ -680,7 +680,7 @@
                                 <TextBox Margin="10 5" Height="20" VerticalContentAlignment="Center" Text="{Binding MultiEditNewValue, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                 <controls1:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}"
                                                     Margin="10 5 10 15"
-                                                    Content="{DynamicResource word_save}" Command="{Binding CmdMultiEditSelectedSave}" />
+                                                    Content="{DynamicResource word_save}" Command="{Binding CmdMultiEditSelected}" />
                             </StackPanel>
                         </Grid>
                     </Border>

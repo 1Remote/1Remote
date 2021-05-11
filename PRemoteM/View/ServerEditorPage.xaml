@@ -9,8 +9,9 @@
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
+             xmlns:viewModel="clr-namespace:PRM.ViewModel"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
+             d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -47,9 +48,9 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="DispName"
-                                                                    Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
+                                                                    Text="{Binding Server.DispName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
-                                        ></utils:AutoCompleteComboBox>
+                                        />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -111,7 +112,7 @@
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
-                                                    Color="{Binding Server.MarkColor}"
+                                                    HexColor="{Binding Server.MarkColorHex}"
                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Grid>
@@ -226,7 +227,7 @@
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                   Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <ListBox
+                            <ListBox Name="ListBoxProtocols"
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding ProtocolList}"
                                     SelectedValue="{Binding ProtocolSelected}"
