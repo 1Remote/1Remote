@@ -6,6 +6,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
 using PRM.Core.Model;
@@ -220,5 +221,20 @@ namespace PRM.View.TabWindow
 
         [DllImport("user32.dll")]
         private static extern int SetForegroundWindow(IntPtr hWnd);
+
+
+
+
+        protected override void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                if (!Vm.SelectedItem.CanResizeNow)
+                    return;
+                if (Vm.IsLocked)
+                    return;
+            }
+            base.WinTitleBar_MouseDown(sender, e);
+        }
     }
 }
