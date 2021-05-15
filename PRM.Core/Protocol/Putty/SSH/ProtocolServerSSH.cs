@@ -30,9 +30,9 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(PrivateKey), ref _privateKey, value);
         }
 
-        private ESshVersion _sshVersion = ESshVersion.V2;
+        private ESshVersion? _sshVersion = ESshVersion.V2;
 
-        public ESshVersion SshVersion
+        public ESshVersion? SshVersion
         {
             get => _sshVersion;
             set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);

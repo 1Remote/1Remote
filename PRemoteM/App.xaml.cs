@@ -35,11 +35,14 @@ namespace PRM
 
         private static void OnUnhandledException(Exception e)
         {
-            SimpleLogHelper.Fatal(e);
-            CloseAllWindow();
-            var errorReport = new ErrorReportWindow(e);
-            errorReport.ShowDialog();
-            App.Close();
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                SimpleLogHelper.Fatal(e);
+                CloseAllWindow();
+                var errorReport = new ErrorReportWindow(e);
+                errorReport.ShowDialog();
+                App.Close();
+            });
         }
 
         private void InitLog(string appDateFolder)

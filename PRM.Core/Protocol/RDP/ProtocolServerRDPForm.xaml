@@ -17,13 +17,6 @@
                 <ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/GlobalStyle.xaml"></ResourceDictionary>
                     <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Utils/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
-                    <ResourceDictionary>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="IsThreeState" Value="True"></Setter>
-                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
-                        </Style>
-                    </ResourceDictionary>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </StackPanel.Resources>
@@ -97,6 +90,7 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
+                            <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -152,6 +146,7 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}" />
                             <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}" />
                             <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}" />
+                            <ComboBoxItem Visibility="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
 
@@ -188,23 +183,12 @@
                         <Grid.Resources>
                             <local:ConverterEDisplayPerformance x:Key="ConverterEDisplayPerformance" />
                         </Grid.Resources>
-                        <ComboBox Text="{DynamicResource server_editor_different_options}"
-                                  SelectedIndex="{Binding DisplayPerformance, Converter={StaticResource ConverterEDisplayPerformance}}">
-                            <ComboBox.Style>
-                                <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxDefault}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding DisplayPerformance}" Value="{x:Null}">
-                                            <Setter Property="Text" Value="{DynamicResource server_editor_different_options}"></Setter>
-                                            <Setter Property="IsEditable" Value="True"></Setter>
-                                            <Setter Property="IsReadOnly" Value="True"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.Style>
+                        <ComboBox Text="{DynamicResource server_editor_different_options}" SelectedIndex="{Binding DisplayPerformance, Converter={StaticResource ConverterEDisplayPerformance}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_auto}" ToolTip="{DynamicResource server_editor_display_rdp_performance_auto}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_low}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_middle}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_high}" ToolTip="{DynamicResource server_editor_display_rdp_performance_high}" />
+                            <ComboBoxItem Visibility="{Binding DisplayPerformance, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -322,6 +306,7 @@
                                         <ComboBox SelectedIndex="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
                                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_psw}" ToolTip="{DynamicResource server_editor_gateway_logon_method_psw}" />
                                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_smart_card}" ToolTip="{DynamicResource server_editor_gateway_logon_method_smart_card}" />
+                                            <ComboBoxItem Visibility="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>

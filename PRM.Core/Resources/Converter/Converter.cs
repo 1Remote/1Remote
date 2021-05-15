@@ -243,4 +243,25 @@ namespace PRM.Core.Resources.Converter
             throw new NotSupportedException();
         }
     }
+
+
+    public class ConverterEqual2Visible : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            try
+            {
+                return value == parameter ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception)
+            {
+                return Visibility.Collapsed;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return parameter;
+        }
+    }
 }

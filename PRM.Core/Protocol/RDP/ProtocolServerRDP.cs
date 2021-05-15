@@ -103,9 +103,9 @@ namespace PRM.Core.Protocol.RDP
 
         #region Display
 
-        private ERdpFullScreenFlag _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
+        private ERdpFullScreenFlag? _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
 
-        public ERdpFullScreenFlag RdpFullScreenFlag
+        public ERdpFullScreenFlag? RdpFullScreenFlag
         {
             get => _rdpFullScreenFlag;
             set
@@ -148,9 +148,9 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(IsFullScreenWithConnectionBar), ref _isFullScreenWithConnectionBar, value);
         }
 
-        private ERdpWindowResizeMode _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
+        private ERdpWindowResizeMode? _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
 
-        public ERdpWindowResizeMode RdpWindowResizeMode
+        public ERdpWindowResizeMode? RdpWindowResizeMode
         {
             get => _rdpWindowResizeMode;
             set
@@ -168,17 +168,17 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
-        private int _rdpWidth = 800;
+        private int? _rdpWidth = 800;
 
-        public int RdpWidth
+        public int? RdpWidth
         {
             get => _rdpWidth;
             set => SetAndNotifyIfChanged(nameof(RdpWidth), ref _rdpWidth, value);
         }
 
-        private int _rdpHeight = 600;
+        private int? _rdpHeight = 600;
 
-        public int RdpHeight
+        public int? RdpHeight
         {
             get => _rdpHeight;
             set => SetAndNotifyIfChanged(nameof(RdpHeight), ref _rdpHeight, value);
@@ -284,9 +284,9 @@ namespace PRM.Core.Protocol.RDP
 
         #region Gateway
 
-        private EGatewayMode _gatewayMode = EGatewayMode.DoNotUseGateway;
+        private EGatewayMode? _gatewayMode = EGatewayMode.DoNotUseGateway;
 
-        public EGatewayMode GatewayMode
+        public EGatewayMode? GatewayMode
         {
             get => _gatewayMode;
             set => SetAndNotifyIfChanged(nameof(GatewayMode), ref _gatewayMode, value);
@@ -308,9 +308,9 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(GatewayHostName), ref _gatewayHostName, value);
         }
 
-        private EGatewayLogonMethod _gatewayLogonMethod = EGatewayLogonMethod.Password;
+        private EGatewayLogonMethod? _gatewayLogonMethod = EGatewayLogonMethod.Password;
 
-        public EGatewayLogonMethod GatewayLogonMethod
+        public EGatewayLogonMethod? GatewayLogonMethod
         {
             get => _gatewayLogonMethod;
             set => SetAndNotifyIfChanged(nameof(GatewayLogonMethod), ref _gatewayLogonMethod, value);
@@ -388,8 +388,8 @@ namespace PRM.Core.Protocol.RDP
             {
                 case ERdpFullScreenFlag.Disable:
                     rdpConfig.ScreenModeId = 1;
-                    rdpConfig.DesktopWidth = this.RdpWidth;
-                    rdpConfig.DesktopHeight = this.RdpHeight;
+                    rdpConfig.DesktopWidth = this.RdpWidth ?? 800;
+                    rdpConfig.DesktopHeight = this.RdpHeight ?? 600;
                     break;
 
                 case ERdpFullScreenFlag.EnableFullAllScreens:

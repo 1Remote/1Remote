@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -22,6 +23,7 @@ namespace PRM.ViewModel
         /// </summary>
         private readonly ProtocolServerBase _orgServer = null;
         private readonly IEnumerable<ProtocolServerBase> _orgServers = null;
+        private readonly Type _orgServersCommonType = null;
 
         public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
         {
@@ -63,18 +65,18 @@ namespace PRM.ViewModel
                 _orgServer = null;
                 _orgServers = protocolServerBases;
                 // finding the common base class
-                Type t = null;
+                _orgServersCommonType = null;
                 if (protocolServerBases.All(x => x.GetType() == server.GetType()))
                 {
-                    t = server.GetType();
+                    _orgServersCommonType = server.GetType();
                 }
                 else if (protocolServerBases.All(x => x.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))))
                 {
-                    t = typeof(ProtocolServerWithAddrPortUserPwdBase);
+                    _orgServersCommonType = typeof(ProtocolServerWithAddrPortUserPwdBase);
                 }
                 else if (protocolServerBases.All(x => x.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase))))
                 {
-                    t = typeof(ProtocolServerWithAddrPortBase);
+                    _orgServersCommonType = typeof(ProtocolServerWithAddrPortBase);
                 }
                 else
                 {
@@ -86,9 +88,9 @@ namespace PRM.ViewModel
                     throw new Exception(msg);
                 }
 
-                Server.Update(server, typeof(ProtocolServerWithAddrPortBase));
+                Server.Update(server, _orgServersCommonType);
                 // copy the same value properties
-                var properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                var properties = _orgServersCommonType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                 foreach (var property in properties)
                 {
                     if (property.SetMethod?.IsPublic == true && property.SetMethod.IsAbstract == false)
@@ -106,7 +108,7 @@ namespace PRM.ViewModel
 
 
                 // init ui
-                ReflectProtocolEditControl(t);
+                ReflectProtocolEditControl(_orgServersCommonType);
             }
 
             Init();
@@ -216,8 +218,42 @@ namespace PRM.ViewModel
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
-                    _context.AppData.ServerListUpdate(Server);
-                    App.Window.Vm.DispPage = null;
+                    if (_orgServers != null)
+                    {
+                        // copy the same value properties
+                        var properties = _orgServersCommonType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                        foreach (var property in properties)
+                        {
+                            if (property.SetMethod?.IsPublic == true 
+                                && property.SetMethod.IsAbstract == false
+                                && property.Name != nameof(ProtocolServerBase.Id))
+                            {
+                                var obj = property.GetValue(Server);
+                                if(obj == null)
+                                    continue;
+                                else if (obj.ToString() == Server.Server_editor_different_options)
+                                    continue;
+                                else
+                                    foreach (var server in _orgServers)
+                                    {
+                                        property.SetValue(server, obj);
+                                    }
+                            }
+                        }
+
+                        foreach (var server in _orgServers.ToList())
+                        {
+                            _context.AppData.ServerListUpdate(server, false);
+                        }
+
+                        _context.AppData.VmItemListDataChanged?.Invoke();
+                        App.Window.Vm.DispPage = null;
+                    }
+                    else
+                    {
+                        _context.AppData.ServerListUpdate(Server);
+                        App.Window.Vm.DispPage = null;
+                    }
                 }, o => (this.Server.DispName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }

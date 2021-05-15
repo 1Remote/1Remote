@@ -19,13 +19,11 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
 
             GridUserName.Visibility = Visibility.Collapsed;
             GridPwd.Visibility = Visibility.Collapsed;
-            GridPrivateKey.Visibility = Visibility.Collapsed;
 
 
             if (Vm.GetType() == typeof(ProtocolServerFTP)
                 || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
             {
-                GridPrivateKey.Visibility =
                 GridUserName.Visibility =
                     GridPwd.Visibility = Visibility.Visible;
             }
