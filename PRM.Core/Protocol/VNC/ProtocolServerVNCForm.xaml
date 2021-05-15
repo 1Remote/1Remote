@@ -3,12 +3,11 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:protocol="clr-namespace:PRM.Core.Protocol"
-                        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
                         xmlns:local="clr-namespace:PRM.Core.Protocol.VNC"
                         xmlns:passwordEx="clr-namespace:Shawn.Utils"
                         xmlns:baseClassForm="clr-namespace:PRM.Core.Protocol.BaseClassForm"
                         mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance local:ProtocolServerVNC}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel.Resources>
@@ -42,17 +41,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Name="GridPwd">
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                <Setter Property="IsEnabled" Value="False"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -61,6 +50,7 @@
                     </Grid>
                 </StackPanel>
             </Grid>
+
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_window_resize_mode}"></TextBlock>
@@ -71,6 +61,7 @@
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding VncWindowResizeMode, Converter={StaticResource ConverterEVncWindowResizeMode}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}" />
+                            <ComboBoxItem Visibility="{Binding VncWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>

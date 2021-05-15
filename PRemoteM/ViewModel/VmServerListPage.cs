@@ -35,12 +35,13 @@ namespace PRM.ViewModel
         {
             _context = context;
             _list = list;
-            RebuildVmServerCardList();
-            _context.AppData.VmItemListDataChanged += RebuildVmServerCardList;
+            RebuildVmServerList();
+            _context.AppData.VmItemListDataChanged += RebuildVmServerList;
 
             _context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
+                RaisePropertyChanged(nameof(IsMultipleSelected));
             });
         }
 
@@ -108,16 +109,11 @@ namespace PRM.ViewModel
         }
 
 
-        private bool _isMultipleSelected;
 
-        public bool IsMultipleSelected
-        {
-            get => _isMultipleSelected;
-            set => SetAndNotifyIfChanged(nameof(IsMultipleSelected), ref _isMultipleSelected, value);
-        }
+        public bool IsMultipleSelected => ServerListItems.Count(x => x.IsSelected) > 0;
 
 
-        private void RebuildVmServerCardList()
+        private void RebuildVmServerList()
         {
             _serverListItems.Clear();
             foreach (var vs in _context.AppData.VmItemList)
@@ -134,6 +130,7 @@ namespace PRM.ViewModel
             }
             OrderServerList();
             RebuildGroupList();
+            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
         private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -143,7 +140,7 @@ namespace PRM.ViewModel
                 var displayCount = ServerListItems.Count(x => x.ObjectVisibilityInList == Visibility.Visible);
                 var selectedCount = ServerListItems.Count(x => x.IsSelected);
 
-                IsMultipleSelected = selectedCount >= 1;
+                RaisePropertyChanged(nameof(IsMultipleSelected));
                 if (IsSelectedAll == true && selectedCount < displayCount)
                 {
                     _isSelectedAll = false;
@@ -179,6 +176,7 @@ namespace PRM.ViewModel
             }
             else
                 SelectedGroup = "";
+            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
         private void OrderServerList()
@@ -229,6 +227,7 @@ namespace PRM.ViewModel
             dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
             dataView.Refresh();
             SimpleLogHelper.Debug($"OrderServerList: {SystemConfig.Instance.General.ServerOrderBy}");
+            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
         private void CalcVisible()
@@ -342,7 +341,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
-                            Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
+                            Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -361,12 +360,12 @@ namespace PRM.ViewModel
                                     }
                                 }
                                 _context.AppData.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -388,7 +387,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "csv|*.csv",
-                            Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
+                            Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -576,15 +575,15 @@ namespace PRM.ViewModel
                                         _context.DbOperator.DbAddServer(serverBase);
                                     }
                                     _context.AppData.ServerListUpdate();
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -604,7 +603,7 @@ namespace PRM.ViewModel
                     _cmdDeleteSelected = new RelayCommand((o) =>
                     {
                         if (MessageBoxResult.Yes == MessageBox.Show(
-                            SystemConfig.Instance.Language.GetText("managementpage_delete_selected_confirm"),
+                            SystemConfig.Instance.Language.GetText("confirm_to_delete_selected"),
                             SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {

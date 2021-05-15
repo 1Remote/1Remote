@@ -8,7 +8,9 @@
                         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
                         xmlns:passwordEx="clr-namespace:Shawn.Utils"
                         xmlns:baseClassForm="clr-namespace:PRM.Core.Protocol.BaseClassForm"
+                        xmlns:ssh="clr-namespace:PRM.Core.Protocol.Putty.SSH"
                         mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance ssh:ProtocolServerSSH}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel.Resources>
@@ -135,6 +137,7 @@
                         <ComboBox SelectedIndex="{Binding SshVersion, Converter={StaticResource ConverterESshVersion}}">
                             <ComboBoxItem Content="V1" />
                             <ComboBoxItem Content="V2" />
+                            <ComboBoxItem Visibility="{Binding SshVersion, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
