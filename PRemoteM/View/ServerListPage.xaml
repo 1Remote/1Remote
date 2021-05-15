@@ -113,6 +113,15 @@
                         </Grid.RowDefinitions>-->
 
                         <Grid Name="GridHeader" Height="{StaticResource OneItemHeight}" VerticalAlignment="Top" ZIndex="999">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
                             <Grid>
                                 <Grid.Margin>
                                     <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
@@ -449,13 +458,34 @@
                 </Grid>
             </Grid>
 
-            <Grid  Grid.Row="1" Background="{DynamicResource MainColor1Brush}" Height="40">
+            <Grid Grid.Row="1" Background="{DynamicResource MainColor1Brush}" Height="40">
                 <Grid.Style>
                     <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Setter Property="Margin" Value="0 0 0 -50"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsMultipleSelected}" Value="True">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin" AccelerationRatio="0.9">
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,-50" />
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.400" Value="0,0,0,0" />
+                                            </ThicknessAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin">
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,0" />
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.200" Value="0,0,0,-50" />
+                                            </ThicknessAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -664,7 +694,7 @@
                             <StackPanel>
                                 <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></commoncontrols:ButtonEx>
                                 <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></commoncontrols:ButtonEx>
-                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource phrase_import_from_mremoteng_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></commoncontrols:ButtonEx>
+                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></commoncontrols:ButtonEx>
                             </StackPanel>
                         </Grid>
                     </Popup>

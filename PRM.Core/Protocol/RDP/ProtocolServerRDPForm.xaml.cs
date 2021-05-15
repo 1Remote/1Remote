@@ -31,6 +31,8 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return Enum.GetValues(typeof(ERdpFullScreenFlag)).Cast<int>().Max() + 1;
             return ((int)((ERdpFullScreenFlag)value)).ToString();
         }
 
@@ -49,6 +51,8 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return false;
             if ((ERdpFullScreenFlag)value == ERdpFullScreenFlag.Disable)
                 return false;
             return true;
@@ -67,11 +71,15 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return Enum.GetValues(typeof(ERdpWindowResizeMode)).Cast<int>().Max() + 1;
             return ((int)((ERdpWindowResizeMode)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return null;
             return (ERdpWindowResizeMode)(int.Parse(value.ToString()));
         }
         #endregion
@@ -85,14 +93,12 @@ namespace PRM.Core.Protocol.RDP
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
-                return null;
+                return Enum.GetValues(typeof(EDisplayPerformance)).Cast<int>().Max() + 1;
             return ((int)((EDisplayPerformance)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value == null)
-                return null;
             return (EDisplayPerformance)(int.Parse(value.ToString()));
         }
         #endregion
@@ -105,8 +111,18 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var e = (EGatewayMode) parameter;
-            return e == (EGatewayMode) value;
+            try
+            {
+                var b = (EGatewayMode?)value;
+                if (b == null)
+                    return null;
+                var a = (EGatewayMode?)parameter;
+                return a == b;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -124,6 +140,8 @@ namespace PRM.Core.Protocol.RDP
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return Enum.GetValues(typeof(EGatewayLogonMethod)).Cast<int>().Max() + 1;
             return ((int)((EGatewayLogonMethod)value)).ToString();
         }
 

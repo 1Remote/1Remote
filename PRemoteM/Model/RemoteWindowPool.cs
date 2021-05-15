@@ -265,11 +265,7 @@ namespace PRM.Model
             }
 
             // clear selected state
-            foreach (var server in _context.AppData.VmItemList)
-            {
-                if (server.IsSelected)
-                    server.IsSelected = false;
-            }
+            _context.AppData.ServerListClearSelect();
 
 
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));

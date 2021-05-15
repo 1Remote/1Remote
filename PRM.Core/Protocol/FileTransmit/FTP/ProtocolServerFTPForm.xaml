@@ -52,16 +52,6 @@
             </Grid>
 
             <Grid Name="GridPwd">
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                <Setter Property="IsEnabled" Value="False"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -69,18 +59,6 @@
                                      Style="{StaticResource PasswordBoxEx}" />
                     </Grid>
                 </StackPanel>
-            </Grid>
-
-            <Grid Name="GridPrivateKey" Height="Auto">
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                                <Setter Property="Margin" Value="0"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
             </Grid>
 
             <Grid Style="{StaticResource EditorRowGrid}">
