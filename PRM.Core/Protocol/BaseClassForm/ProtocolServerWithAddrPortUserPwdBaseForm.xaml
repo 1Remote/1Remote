@@ -44,17 +44,16 @@
                 </StackPanel>
             </Grid>
 
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
             <Grid Name="GridPwd">
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                <Setter Property="IsEnabled" Value="False"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">

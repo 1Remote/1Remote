@@ -69,7 +69,6 @@
   // sys menu
   "system_menu_options_title": "Options",
   "system_menu_about_title": "About",
-  "system_menu_management_title": "Server Management",
   "system_menu_toggle_server_list": "Toggle Cards/List",
 
   // system options
@@ -137,19 +136,13 @@
   "server_card_operate_copy_address": "Copy address to clipboard",
   "server_card_operate_copy_username": "Copy username to clipboard",
   "server_card_operate_copy_password": "Copy password to clipboard",
-  "string_delete_confirm": "Sure to delete?",
-  "managementpage_delete_selected_confirm": "Sure to delete all selected?",
-  "managementpage_import_dialog_title": "Select a file",
-  "managementpage_import_from_json": "from json",
-  "phrase_import_from_mremoteng_csv": "from mRemoteNG csv",
-  "managementpage_import_done": "Imported successfully, {0} item added.",
-  "managementpage_import_error": "Error data format!",
-  "managementpage_edit_selected": "Edit selected",
-  "managementpage_edit_selected_info": "Edit selected property:",
-  "managementpage_edit_selected_info_to": "To",
-  "managementpage_edit_selected_error_empty_string": "New value can not be empty string!",
-  "managementpage_edit_selected_error_port": "Port should be 1 - 65535!",
-  "managementpage_edit_selected_confirm": "Sure to move all selected to new value: '",
+  "confirm_to_delete": "Sure to delete?",
+  "confirm_to_delete_selected": "Sure to delete all selected?",
+  "import_server_dialog_title": "Select a file",
+  "import_from_json": "from json",
+  "import_from_csv": "from mRemoteNG csv",
+  "import_done_0_items_added": "Imported successfully, {0} item added.",
+  "import_failure_with_data_format_error": "Error data format!",
 
   // server editor
   "server_editor_different_options": "<different options>",

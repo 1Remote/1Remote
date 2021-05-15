@@ -29,7 +29,6 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
         }
 
-        private readonly ServerManagementPage _managementPage;
         private readonly AboutPage _aboutPage;
 
         public AnimationPage ServersShownPage { get; }
@@ -198,33 +197,6 @@ namespace PRM.ViewModel
                     }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
-            }
-        }
-
-        private RelayCommand _cmdGoManagementPage;
-
-        public RelayCommand CmdGoManagementPage
-        {
-            get
-            {
-                if (_cmdGoManagementPage == null)
-                {
-                    _cmdGoManagementPage = new RelayCommand((o) =>
-                    {
-                        if (DispPage != null)
-                        {
-                            DispPage = null;
-                        }
-                        BottomPage = new AnimationPage()
-                        {
-                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = _managementPage,
-                        };
-                        Window.PopupMenu.IsOpen = false;
-                    }, o => TopPage == null && BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
-                }
-                return _cmdGoManagementPage;
             }
         }
 

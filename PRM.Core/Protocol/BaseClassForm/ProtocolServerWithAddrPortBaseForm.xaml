@@ -42,19 +42,6 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-
-            <Grid Name="GridPwd">
-                <Grid.Style>
-                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                <Setter Property="IsEnabled" Value="False"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-            </Grid>
         </StackPanel>
     </StackPanel>
 </baseClassForm:ProtocolServerFormBase>

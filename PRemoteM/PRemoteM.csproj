@@ -185,9 +185,6 @@
     <Compile Include="View\ServerListPage.xaml.cs">
       <DependentUpon>ServerListPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ServerManagementPage.xaml.cs">
-      <DependentUpon>ServerManagementPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\TabWindow\TabWindowBase.cs" />
     <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
       <DependentUpon>TabWindowClassical.xaml</DependentUpon>
@@ -258,10 +255,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ServerListPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ServerManagementPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

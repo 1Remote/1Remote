@@ -22,9 +22,9 @@ namespace PRM.Core.Protocol.VNC
             base.UserName = "";
         }
 
-        private EVncWindowResizeMode _vncWindowResizeMode = EVncWindowResizeMode.Stretch;
+        private EVncWindowResizeMode? _vncWindowResizeMode = EVncWindowResizeMode.Stretch;
 
-        public EVncWindowResizeMode VncWindowResizeMode
+        public EVncWindowResizeMode? VncWindowResizeMode
         {
             get => _vncWindowResizeMode;
             set => SetAndNotifyIfChanged(nameof(VncWindowResizeMode), ref _vncWindowResizeMode, value);
