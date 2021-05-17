@@ -131,7 +131,7 @@
   "system_options_theme_tab_ui_classical": "经典",
 
   // server operate
-  "server_card_operate_conn": "连接",
+  "word_connect": "连接",
   "server_card_operate_duplicate": "创建副本",
   "server_card_operate_copy_address": "复制地址到剪贴板",
   "server_card_operate_copy_username": "复制用户名到剪贴板",
@@ -145,7 +145,9 @@
   "import_failure_with_data_format_error": "导入0条，输入的数据文件格式有误!",
 
   // server editor
-  "server_editor_different_options": "<不同的选项>",
+  "server_editor_different_options": "<不同的值>",
+  "server_editor_bulk_editing_title": "你正在批量编辑: ",
+  "server_editor_multi_selected_count": "选中{0}项",
   "server_editor_group_title_common": "常规",
   "server_editor_group_title_connection": "连接",
   "server_editor_group_title_display": "显示",

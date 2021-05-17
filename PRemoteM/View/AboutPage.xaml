@@ -14,7 +14,7 @@
     </UserControl.Resources>
     <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid.Resources>
-            <system:Double x:Key="BottomHeight">30</system:Double>
+            <system:Double x:Key="BottomHeight">40</system:Double>
             <Style x:Key="EditorRowGrid" TargetType="Grid">
                 <Setter Property="Height" Value="20"></Setter>
                 <Setter Property="Margin">
@@ -245,8 +245,8 @@
             <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource BottomHeight}">
                     <Grid Width="300">
-                        <controls:ButtonEx Style="{StaticResource MainColor2Button}"
-                                Padding="0 1 0 0" Width="80" Height="20"
+                        <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}"
+                                Padding="0 1 0 0" Width="80" Height="30"
                                 HorizontalAlignment="Center"
                                 Click="ButtonBack_OnClick"
                                 BorderThickness="0" Content="Back">
