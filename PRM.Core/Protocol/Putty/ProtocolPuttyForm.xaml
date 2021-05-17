@@ -36,7 +36,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 Width="50" HorizontalAlignment="Left"
+                                 MinWidth="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"
                                  ></TextBox>

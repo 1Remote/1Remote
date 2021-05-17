@@ -34,7 +34,6 @@
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <!--TODO needs a number only text box --> 
                         <TextBox MinWidth="50" Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
                                  HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"

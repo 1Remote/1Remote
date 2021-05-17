@@ -106,32 +106,50 @@ namespace PRM.Core.Protocol.RDP
 
 
 
-    public class ConverterEGatewayMode2Bool : IValueConverter
+    public class ConverterEGatewayMode : IValueConverter
     {
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            try
-            {
-                var b = (EGatewayMode?)value;
-                if (b == null)
-                    return null;
-                var a = (EGatewayMode?)parameter;
-                return a == b;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            if (value == null)
+                return Enum.GetValues(typeof(EGatewayMode)).Cast<int>().Max() + 1;
+            return ((int)((EGatewayMode)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var e = (EGatewayMode) parameter;
-            return e;
+            return (EGatewayMode)(int.Parse(value.ToString()));
         }
         #endregion
     }
+
+
+
+    //public class ConverterEGatewayMode2Bool : IValueConverter
+    //{
+    //    #region IValueConverter 成员  
+    //    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    //    {
+    //        try
+    //        {
+    //            var b = (EGatewayMode?)value;
+    //            if (b == null)
+    //                return null;
+    //            var a = (EGatewayMode?)parameter;
+    //            return a == b;
+    //        }
+    //        catch (Exception)
+    //        {
+    //            return null;
+    //        }
+    //    }
+    //    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    //    {
+    //        var e = (EGatewayMode) parameter;
+    //        return e;
+    //    }
+    //    #endregion
+    //}
 
 
 

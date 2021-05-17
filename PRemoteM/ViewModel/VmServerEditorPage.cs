@@ -34,7 +34,7 @@ namespace PRM.ViewModel
             if (_isDuplicate)
                 Server.Id = 0;
             IsAddMode = Server.Id <= 0;
-
+            Title = "";
             Init();
         }
 
@@ -42,6 +42,15 @@ namespace PRM.ViewModel
         public VmServerEditorPage(PrmContext context, IEnumerable<ProtocolServerBase> servers)
         {
             IsAddMode = false;
+
+            Title = SystemConfig.Instance.Language.GetText("server_editor_bulk_editing_title");
+            foreach (var serverBase in servers)
+            {
+                Title += serverBase.DispName;
+                if (servers.Last() != serverBase)
+                    Title += ", ";
+            }
+
             var protocolServerBases = servers as ProtocolServerBase[] ?? servers.ToArray();
             if (protocolServerBases?.Any() == false)
             {
@@ -153,7 +162,7 @@ namespace PRM.ViewModel
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
         }
 
-
+        public string Title { get; set; }
 
         private ProtocolServerBase _server = null;
 
@@ -181,7 +190,6 @@ namespace PRM.ViewModel
         }
 
         private List<ProtocolServerBase> _protocolList = new List<ProtocolServerBase>();
-
         public List<ProtocolServerBase> ProtocolList
         {
             get => _protocolList;
