@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -69,6 +71,8 @@ namespace PRM.ViewModel
             }
         }
 
+        public string SelectedCount => string.Format(SystemConfig.Instance.Language.GetText("server_editor_multi_selected_count"), ServerListItems.Count(x => x.IsSelected));
+
         private ObservableCollection<string> _serverGroupList = new ObservableCollection<string>();
 
         public ObservableCollection<string> ServerGroupList
@@ -76,7 +80,7 @@ namespace PRM.ViewModel
             get => _serverGroupList;
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
         }
-        
+
         private string _selectedGroup = "";
 
         public string SelectedGroup
@@ -104,6 +108,8 @@ namespace PRM.ViewModel
                 {
                     if (vmServerCard.ObjectVisibilityInList == Visibility.Visible)
                         vmServerCard.IsSelected = value;
+                    else
+                        vmServerCard.IsSelected = false;
                 }
             }
         }
@@ -144,13 +150,13 @@ namespace PRM.ViewModel
                 if (IsSelectedAll == true && selectedCount < displayCount)
                 {
                     _isSelectedAll = false;
-                    RaisePropertyChanged(nameof(IsSelectedAll));
                 }
                 else if (IsSelectedAll == false && selectedCount >= displayCount)
                 {
                     _isSelectedAll = true;
-                    RaisePropertyChanged(nameof(IsSelectedAll));
                 }
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
             }
         }
 
@@ -238,12 +244,6 @@ namespace PRM.ViewModel
                 string keyWord = _context.AppData.MainWindowServerFilter;
                 string selectedGroup = SelectedGroup;
 
-                if (server.Id <= 0)
-                {
-                    card.ObjectVisibilityInList = Visibility.Collapsed;
-                    continue;
-                }
-
                 bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup;
                 if (!bGroupMatched)
                 {
@@ -261,7 +261,7 @@ namespace PRM.ViewModel
                 var dispName = server.DispName;
                 var subTitle = server.SubTitle;
                 var matched = _context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                if (matched)
+                if (matched || server.GroupName == keyWord)
                     card.ObjectVisibilityInList = Visibility.Visible;
                 else
                     card.ObjectVisibilityInList = Visibility.Collapsed;
@@ -638,6 +638,23 @@ namespace PRM.ViewModel
             }
         }
 
+        private RelayCommand _cmdCancelSelected;
+
+        public RelayCommand CmdCancelSelected
+        {
+            get
+            {
+                if (_cmdCancelSelected == null)
+                {
+                    _cmdCancelSelected = new RelayCommand((o) =>
+                    {
+                        _context.AppData.ServerListClearSelect();
+                    });
+                }
+                return _cmdCancelSelected;
+            }
+        }
+
 
 
         private DateTime _lastCmdReOrder;
@@ -673,6 +690,30 @@ namespace PRM.ViewModel
                     });
                 }
                 return _cmdReOrder;
+            }
+        }
+
+
+
+
+        private RelayCommand _cmdConnectSelected;
+
+        public RelayCommand CmdConnectSelected
+        {
+            get
+            {
+                if (_cmdConnectSelected == null)
+                {
+                    _cmdConnectSelected = new RelayCommand((o) =>
+                    {
+                        foreach (var vmProtocolServer in ServerListItems.Where(x => x.IsSelected == true).ToArray())
+                        {
+                            vmProtocolServer.CmdConnServer.Execute();
+                            Thread.Sleep(50);
+                        }
+                    });
+                }
+                return _cmdConnectSelected;
             }
         }
     }

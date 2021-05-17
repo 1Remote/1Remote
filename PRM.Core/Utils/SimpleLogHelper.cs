@@ -234,7 +234,14 @@ namespace Shawn.Utils
                 {
                     Console.WriteLine(obj);
                     if (o[0] is Exception e)
+                    {
                         Console.WriteLine(e.StackTrace);
+                        if (e.InnerException != null)
+                        {
+                            Console.WriteLine(e.InnerException.Message);
+                            Console.WriteLine(e.InnerException.StackTrace);
+                        }
+                    }
                 }
             }
             Console.ResetColor();
@@ -367,7 +374,14 @@ namespace Shawn.Utils
                         {
                             sw.WriteLine(obj);
                             if (o[0] is Exception e)
+                            {
                                 sw.WriteLine(e.StackTrace);
+                                if (e.InnerException != null)
+                                {
+                                    sw.WriteLine(e.InnerException.Message);
+                                    sw.WriteLine(e.InnerException.StackTrace);
+                                }
+                            }
                         }
                         if (LogFileType == SimpleLogHelper.EnumLogFileType.MarkDown)
                             sw.WriteLine("\r\n```\r\n");

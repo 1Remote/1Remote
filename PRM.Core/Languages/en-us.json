@@ -131,7 +131,7 @@
   "system_options_theme_tab_ui_classical": "Classical",
 
   // server operate
-  "server_card_operate_conn": "Connect",
+  "word_connect": "Connect",
   "server_card_operate_duplicate": "Duplicate",
   "server_card_operate_copy_address": "Copy address to clipboard",
   "server_card_operate_copy_username": "Copy username to clipboard",
@@ -146,6 +146,8 @@
 
   // server editor
   "server_editor_different_options": "<different options>",
+  "server_editor_bulk_editing_title": "You are editing in bulk: ",
+  "server_editor_multi_selected_count": "Select {0} items",
   "server_editor_group_title_common": "Common",
   "server_editor_group_title_connection": "Connection",
   "server_editor_group_title_display": "Display",
@@ -204,7 +206,7 @@
   // server editor - RD-gateway group items
   "server_editor_gateway_mode": "Connection",
   "server_editor_gateway_mode_automatically_detect": "Automatically detect RD Gateway server settings",
-  "server_editor_gateway_mode_use_these": "Use these RD Gateway server settings",
+  "server_editor_gateway_mode_use_these": "Use the following RD Gateway server settings",
   "server_editor_gateway_mode_do_not_use": "Do not use RD Gateway server",
   "server_editor_gateway_server_host_name": "Host Name",
   "server_editor_gateway_logon_method": "Logon Method",
