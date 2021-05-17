@@ -131,7 +131,7 @@
   "system_options_theme_tab_ui_classical": "Klassisch",
 
   // server operate
-  "server_card_operate_conn": "Verbinden",
+  "word_connect": "Verbinden",
   "server_card_operate_duplicate": "Duplizieren",
   "server_card_operate_copy_address": "Server-Adresse in die Zwischenablage kopieren",
   "server_card_operate_copy_username": "Benutzername in die Zwischenablage kopieren",
@@ -146,6 +146,8 @@
 
   // server editor
   "server_editor_different_options": "<different options>",
+  "server_editor_bulk_editing_title": "You are editing in bulk: ",
+  "server_editor_multi_selected_count": "Select {0} items",
   "server_editor_group_title_common": "Allgemein",
   "server_editor_group_title_connection": "Verbindung",
   "server_editor_group_title_display": "Anzeige",

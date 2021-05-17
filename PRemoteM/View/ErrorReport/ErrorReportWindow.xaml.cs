@@ -39,6 +39,21 @@ namespace PRM.View.ErrorReport
             sb.AppendLine();
 
             BuildEnvironment(ref sb);
+            
+            if(e.InnerException != null)
+            {
+                sb.AppendLine("## InnerException Info");
+                sb.AppendLine();
+                sb.AppendLine(e.InnerException.Message);
+                sb.AppendLine();
+
+                sb.AppendLine("## InnerException Stack Trace");
+                sb.AppendLine();
+                sb.AppendLine("```");
+                sb.AppendLine(e.InnerException.StackTrace);
+                sb.AppendLine("```");
+                sb.AppendLine();
+            }
 
             sb.AppendLine("## Error Info");
             sb.AppendLine();

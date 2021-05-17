@@ -37,7 +37,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 Width="50" HorizontalAlignment="Left"
+                                 MinWidth="50" HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"></TextBox>
                     </Grid>
@@ -90,7 +90,7 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
-                            <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
+                            <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -146,7 +146,7 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}" />
                             <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}" />
                             <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}" />
-                            <ComboBoxItem Visibility="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
+                            <ComboBoxItem Visibility="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
 
@@ -183,12 +183,12 @@
                         <Grid.Resources>
                             <local:ConverterEDisplayPerformance x:Key="ConverterEDisplayPerformance" />
                         </Grid.Resources>
-                        <ComboBox Text="{DynamicResource server_editor_different_options}" SelectedIndex="{Binding DisplayPerformance, Converter={StaticResource ConverterEDisplayPerformance}}">
+                        <ComboBox SelectedIndex="{Binding DisplayPerformance, Converter={StaticResource ConverterEDisplayPerformance}}">
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_auto}" ToolTip="{DynamicResource server_editor_display_rdp_performance_auto}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_low}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_middle}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}" />
                             <ComboBoxItem Content="{DynamicResource server_editor_display_rdp_performance_high}" ToolTip="{DynamicResource server_editor_display_rdp_performance_high}" />
-                            <ComboBoxItem Visibility="{Binding DisplayPerformance, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
+                            <ComboBoxItem Visibility="{Binding DisplayPerformance, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
                         </ComboBox>
                     </Grid>
                 </StackPanel>
@@ -245,7 +245,6 @@
         <StackPanel>
             <StackPanel.Resources>
                 <local:ConverterEGatewayLogonMethod x:Key="ConverterEGatewayLogonMethod" />
-                <local:ConverterEGatewayMode2Bool x:Key="ConverterEGatewayMode2Bool" />
             </StackPanel.Resources>
 
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_gateway}"></TextBlock>
@@ -254,21 +253,15 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_mode}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <RadioButton GroupName="RDGatewaySetting"
-                                     Name="RbRDGatewayNo"
-                                     IsChecked="{Binding GatewayMode, Converter={StaticResource ConverterEGatewayMode2Bool}, ConverterParameter={x:Static local:EGatewayMode.DoNotUseGateway}}"
-                                     Content="{DynamicResource server_editor_gateway_mode_do_not_use}" VerticalAlignment="Center"></RadioButton>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <RadioButton GroupName="RDGatewaySetting"
-                                     Name="RbRDGatewayAuto"
-                                     IsChecked="{Binding GatewayMode, Converter={StaticResource ConverterEGatewayMode2Bool}, ConverterParameter={x:Static local:EGatewayMode.AutomaticallyDetectGatewayServerSettings}}"
-                                     Content="{DynamicResource server_editor_gateway_mode_automatically_detect}" VerticalAlignment="Center"></RadioButton>
+                        <Grid.Resources>
+                            <local:ConverterEGatewayMode x:Key="ConverterEGatewayMode" />
+                        </Grid.Resources>
+                        <ComboBox SelectedIndex="{Binding GatewayMode, Converter={StaticResource ConverterEGatewayMode}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_gateway_mode_automatically_detect}" ToolTip="{DynamicResource server_editor_display_rdp_performance_low}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_gateway_mode_use_these}" ToolTip="{DynamicResource server_editor_display_rdp_performance_middle}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_gateway_mode_do_not_use}" ToolTip="{DynamicResource server_editor_gateway_mode_do_not_use}" />
+                            <ComboBoxItem Visibility="{Binding GatewayMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
+                        </ComboBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -278,18 +271,12 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="" />
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <StackPanel>
-                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
-                                <RadioButton GroupName="RDGatewaySetting"
-                                             IsChecked="{Binding GatewayMode, Converter={StaticResource ConverterEGatewayMode2Bool}, ConverterParameter={x:Static local:EGatewayMode.UseTheseGatewayServerSettings}}"
-                                             Name="RbRDGatewayUse" Content="{DynamicResource server_editor_gateway_mode_use_these}"
-                                             VerticalAlignment="Center" />
-                            </Grid>
                             <StackPanel Margin="20 0 0 0">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ElementName=RbRDGatewayNo, Path=IsChecked}" Value="True">
-                                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                            <DataTrigger Binding="{Binding GatewayMode}" Value="{x:Static local:EGatewayMode.DoNotUseGateway}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -306,7 +293,7 @@
                                         <ComboBox SelectedIndex="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEGatewayLogonMethod}}" Width="200">
                                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_psw}" ToolTip="{DynamicResource server_editor_gateway_logon_method_psw}" />
                                             <ComboBoxItem Content="{DynamicResource server_editor_gateway_logon_method_smart_card}" ToolTip="{DynamicResource server_editor_gateway_logon_method_smart_card}" />
-                                            <ComboBoxItem Visibility="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
+                                            <ComboBoxItem Visibility="{Binding GatewayLogonMethod, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
                                         </ComboBox>
                                     </StackPanel>
                                 </Grid>

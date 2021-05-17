@@ -218,12 +218,13 @@
 
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource TopHeight}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
+                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                               Margin="50 0" TextTrimming="CharacterEllipsis"
+                               Text="{Binding Title}"
+                               ToolTip="{Binding Title}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
 
-                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto"
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                   Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">

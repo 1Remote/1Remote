@@ -492,10 +492,12 @@
                 </Grid.Style>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_cancel}"></commoncontrols:ButtonEx>
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_cancel}" Command="{Binding CmdCancelSelected}"></commoncontrols:ButtonEx>
+                    <TextBlock Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}"></TextBlock>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_connect}" Command="{Binding CmdConnectSelected}"></commoncontrols:ButtonEx>
                     <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_edit}" Command="{Binding CmdMultiEditSelected}"></commoncontrols:ButtonEx>
                     <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_delete}" Command="{Binding CmdDeleteSelected}"></commoncontrols:ButtonEx>
                     <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_export}" Command="{Binding CmdExportSelectedToJson}"></commoncontrols:ButtonEx>
