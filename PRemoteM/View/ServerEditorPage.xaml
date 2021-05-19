@@ -9,8 +9,9 @@
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
+             xmlns:viewModel="clr-namespace:PRM.ViewModel"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
+             d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -21,11 +22,60 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource MainBgColorBrush}" ClipToBounds="True">
         <Grid.Resources>
             <system:Double x:Key="TopHeight">20</system:Double>
             <system:Double x:Key="BottomHeight">30</system:Double>
         </Grid.Resources>
+
+        <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    ToolTip="{Binding Title}"
+                    RenderTransformOrigin="0.5,0.5" 
+                    Margin="0,35,-130,0" Background="{DynamicResource MainColor2Brush}">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Title}" Value="">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ProtocolList.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <StackPanel.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="42.671"/>
+                    <TranslateTransform X="15.43885806483096" Y="16.392014547605541"/>
+                </TransformGroup>
+            </StackPanel.RenderTransform>
+            <StackPanel.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="10" Direction="0" ShadowDepth="2" Opacity="0.7" RenderingBias="Performance">
+                </DropShadowEffect>
+            </StackPanel.Effect>
+            <TextBlock Name="TbServerType" Opacity="0.9"
+                       FontWeight="Bold" Text="{DynamicResource server_editor_bulk_editing}" 
+                       Margin="0 5"
+                       Width="100"
+                       TextAlignment="Center"
+                       Foreground="{DynamicResource MainColor2ForegroundBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock.FontSize>
+                    <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStyle"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontWeight"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStretch"></Binding>
+                    </MultiBinding>
+                </TextBlock.FontSize>
+            </TextBlock>
+        </StackPanel>
 
         <Grid>
             <Grid.Margin>
@@ -47,9 +97,9 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="DispName"
-                                                                    Text="{Binding Server.DispName,UpdateSourceTrigger=PropertyChanged}"
+                                                                    Text="{Binding Server.DispName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
-                                        ></utils:AutoCompleteComboBox>
+                                        />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -111,7 +161,7 @@
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
-                                                    Color="{Binding Server.MarkColor}"
+                                                    HexColor="{Binding Server.MarkColorHex}"
                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Grid>
@@ -217,16 +267,17 @@
 
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
                 <Grid Height="{StaticResource TopHeight}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
+                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                               Margin="50 0" TextTrimming="CharacterEllipsis"
+                               Text="{Binding Title}"
+                               ToolTip="{Binding Title}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
 
-                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto"
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                   Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <ListBox
+                            <ListBox Name="ListBoxProtocols"
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding ProtocolList}"
                                     SelectedValue="{Binding ProtocolSelected}"

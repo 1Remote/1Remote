@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace PRM.Core.Protocol
+namespace PRM.Core.Protocol.BaseClassForm
 {
     public abstract class ProtocolServerFormBase : UserControl
     {

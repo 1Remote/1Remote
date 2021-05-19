@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -35,12 +37,13 @@ namespace PRM.ViewModel
         {
             _context = context;
             _list = list;
-            RebuildVmServerCardList();
-            _context.AppData.VmItemListDataChanged += RebuildVmServerCardList;
+            RebuildVmServerList();
+            _context.AppData.VmItemListDataChanged += RebuildVmServerList;
 
             _context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
+                RaisePropertyChanged(nameof(IsMultipleSelected));
             });
         }
 
@@ -68,28 +71,14 @@ namespace PRM.ViewModel
             }
         }
 
+        public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
+
         private ObservableCollection<string> _serverGroupList = new ObservableCollection<string>();
 
         public ObservableCollection<string> ServerGroupList
         {
             get => _serverGroupList;
             set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
-        }
-
-        private string _multiEditPropertyName = "Group";
-
-        public string MultiEditPropertyName
-        {
-            get => _multiEditPropertyName;
-            set => SetAndNotifyIfChanged(nameof(MultiEditPropertyName), ref _multiEditPropertyName, value);
-        }
-
-        private string _multiEditNewValue = "";
-
-        public string MultiEditNewValue
-        {
-            get => _multiEditNewValue;
-            set => SetAndNotifyIfChanged(nameof(MultiEditNewValue), ref _multiEditNewValue, value);
         }
 
         private string _selectedGroup = "";
@@ -119,19 +108,56 @@ namespace PRM.ViewModel
                 {
                     if (vmServerCard.ObjectVisibilityInList == Visibility.Visible)
                         vmServerCard.IsSelected = value;
+                    else
+                        vmServerCard.IsSelected = false;
                 }
             }
         }
 
-        private void RebuildVmServerCardList()
+
+
+        public bool IsMultipleSelected => ServerListItems.Count(x => x.IsSelected) > 0;
+
+
+        private void RebuildVmServerList()
         {
             _serverListItems.Clear();
             foreach (var vs in _context.AppData.VmItemList)
             {
-                ServerListItems.Add(new VmProtocolServer(vs.Server));
+                ServerListItems.Add(vs);
+                try
+                {
+                    vs.PropertyChanged -= VmServerPropertyChanged;
+                }
+                finally
+                {
+                    vs.PropertyChanged += VmServerPropertyChanged;
+                }
             }
             OrderServerList();
             RebuildGroupList();
+            RaisePropertyChanged(nameof(IsMultipleSelected));
+        }
+
+        private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(VmProtocolServer.IsSelected))
+            {
+                var displayCount = ServerListItems.Count(x => x.ObjectVisibilityInList == Visibility.Visible);
+                var selectedCount = ServerListItems.Count(x => x.IsSelected);
+
+                RaisePropertyChanged(nameof(IsMultipleSelected));
+                if (IsSelectedAll == true && selectedCount < displayCount)
+                {
+                    _isSelectedAll = false;
+                }
+                else if (IsSelectedAll == false && selectedCount >= displayCount)
+                {
+                    _isSelectedAll = true;
+                }
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+            }
         }
 
         private void RebuildGroupList()
@@ -156,6 +182,7 @@ namespace PRM.ViewModel
             }
             else
                 SelectedGroup = "";
+            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
         private void OrderServerList()
@@ -206,6 +233,7 @@ namespace PRM.ViewModel
             dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
             dataView.Refresh();
             SimpleLogHelper.Debug($"OrderServerList: {SystemConfig.Instance.General.ServerOrderBy}");
+            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
         private void CalcVisible()
@@ -215,12 +243,6 @@ namespace PRM.ViewModel
                 var server = card.Server;
                 string keyWord = _context.AppData.MainWindowServerFilter;
                 string selectedGroup = SelectedGroup;
-
-                if (server.Id <= 0)
-                {
-                    card.ObjectVisibilityInList = Visibility.Collapsed;
-                    continue;
-                }
 
                 bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup;
                 if (!bGroupMatched)
@@ -239,7 +261,7 @@ namespace PRM.ViewModel
                 var dispName = server.DispName;
                 var subTitle = server.SubTitle;
                 var matched = _context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                if (matched)
+                if (matched || server.GroupName == keyWord)
                     card.ObjectVisibilityInList = Visibility.Visible;
                 else
                     card.ObjectVisibilityInList = Visibility.Collapsed;
@@ -319,8 +341,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "PRM json array|*.prma",
-                            Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
-                            FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
+                            Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -339,12 +360,12 @@ namespace PRM.ViewModel
                                     }
                                 }
                                 _context.AppData.ServerListUpdate();
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -366,7 +387,7 @@ namespace PRM.ViewModel
                         var dlg = new OpenFileDialog()
                         {
                             Filter = "csv|*.csv",
-                            Title = SystemConfig.Instance.Language.GetText("managementpage_import_dialog_title"),
+                            Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
                         };
                         if (dlg.ShowDialog() == true)
                         {
@@ -477,7 +498,8 @@ namespace PRM.ViewModel
                                                         EnableClipboard = string.Equals(getValue(title, arr, "RedirectClipboard"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnableDiskDrives = string.Equals(getValue(title, arr, "RedirectDiskDrives"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnableKeyCombinations = string.Equals(getValue(title, arr, "RedirectKeys"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableSounds = string.Equals(getValue(title, arr, "BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
+                                                        // TODO can not divide form LeaveOnRemote
+                                                        AudioRedirectionMode = string.Equals(getValue(title, arr, "BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase) == true ? EAudioRedirectionMode.RedirectToLocal : EAudioRedirectionMode.Disabled,
                                                         EnableAudioCapture = string.Equals(getValue(title, arr, "RedirectAudioCapture"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnablePorts = string.Equals(getValue(title, arr, "RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
                                                         EnablePrinters = string.Equals(getValue(title, arr, "RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
@@ -540,7 +562,7 @@ namespace PRM.ViewModel
 
                                             if (server != null)
                                             {
-                                                server.IconImg = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)];
+                                                server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
                                                 list.Add(server);
                                             }
                                         }
@@ -553,15 +575,15 @@ namespace PRM.ViewModel
                                         _context.DbOperator.DbAddServer(serverBase);
                                     }
                                     _context.AppData.ServerListUpdate();
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_done").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 }
                                 else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                             catch (Exception e)
                             {
                                 SimpleLogHelper.Debug(e);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_import_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });
@@ -581,7 +603,7 @@ namespace PRM.ViewModel
                     _cmdDeleteSelected = new RelayCommand((o) =>
                     {
                         if (MessageBoxResult.Yes == MessageBox.Show(
-                            SystemConfig.Instance.Language.GetText("managementpage_delete_selected_confirm"),
+                            SystemConfig.Instance.Language.GetText("confirm_to_delete_selected"),
                             SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {
@@ -601,7 +623,7 @@ namespace PRM.ViewModel
 
         private RelayCommand _cmdMultiEditSelected;
 
-        public RelayCommand CmdMultiEditSelectedSave
+        public RelayCommand CmdMultiEditSelected
         {
             get
             {
@@ -609,128 +631,31 @@ namespace PRM.ViewModel
                 {
                     _cmdMultiEditSelected = new RelayCommand((o) =>
                     {
-                        _multiEditNewValue = MultiEditNewValue.Trim();
-                        if (MultiEditPropertyName == "Name" || MultiEditPropertyName == "Address"
-                                                            || MultiEditPropertyName == "Port")
-                        {
-                            if (string.IsNullOrWhiteSpace(MultiEditNewValue))
-                            {
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_edit_selected_error_empty_string"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                                return;
-                            }
-
-                            if (MultiEditPropertyName == "Port"
-                            && !int.TryParse(MultiEditNewValue, out var port))
-                            {
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("managementpage_edit_selected_error_port"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                                return;
-                            }
-                        }
-
-                        if (MessageBoxResult.Yes == MessageBox.Show(
-                        SystemConfig.Instance.Language.GetText("managementpage_edit_selected_confirm") + MultiEditNewValue + "'?",
-                        SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question, MessageBoxResult.None))
-                        {
-                            switch (MultiEditPropertyName)
-                            {
-                                case "Name":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                vs.Server.DispName = MultiEditNewValue;
-                                                _context.DbOperator.DbUpdateServer(vs.Server);
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Group":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                vs.Server.GroupName = MultiEditNewValue;
-                                                _context.DbOperator.DbUpdateServer(vs.Server);
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Address":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0 && int.TryParse(MultiEditNewValue, out var port))
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortBase p)
-                                                {
-                                                    p.Address = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Port":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortBase p)
-                                                {
-                                                    p.Port = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "UserName":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
-                                                {
-                                                    p.UserName = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                case "Password":
-                                    {
-                                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
-                                        if (ss?.Count > 0)
-                                        {
-                                            foreach (var vs in ss)
-                                            {
-                                                if (vs.Server is ProtocolServerWithAddrPortUserPwdBase p)
-                                                {
-                                                    p.Password = MultiEditNewValue;
-                                                    _context.DbOperator.DbUpdateServer(p);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                            }
-                        }
+                        GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
                     }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
                 }
                 return _cmdMultiEditSelected;
             }
         }
+
+        private RelayCommand _cmdCancelSelected;
+
+        public RelayCommand CmdCancelSelected
+        {
+            get
+            {
+                if (_cmdCancelSelected == null)
+                {
+                    _cmdCancelSelected = new RelayCommand((o) =>
+                    {
+                        _context.AppData.ServerListClearSelect();
+                    });
+                }
+                return _cmdCancelSelected;
+            }
+        }
+
+
 
         private DateTime _lastCmdReOrder;
         private RelayCommand _cmdReOrder;
@@ -765,6 +690,30 @@ namespace PRM.ViewModel
                     });
                 }
                 return _cmdReOrder;
+            }
+        }
+
+
+
+
+        private RelayCommand _cmdConnectSelected;
+
+        public RelayCommand CmdConnectSelected
+        {
+            get
+            {
+                if (_cmdConnectSelected == null)
+                {
+                    _cmdConnectSelected = new RelayCommand((o) =>
+                    {
+                        foreach (var vmProtocolServer in ServerListItems.Where(x => x.IsSelected == true).ToArray())
+                        {
+                            vmProtocolServer.CmdConnServer.Execute();
+                            Thread.Sleep(50);
+                        }
+                    });
+                }
+                return _cmdConnectSelected;
             }
         }
     }

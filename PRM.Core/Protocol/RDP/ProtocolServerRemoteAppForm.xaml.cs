@@ -1,4 +1,6 @@
-﻿namespace PRM.Core.Protocol.RDP
+﻿using PRM.Core.Protocol.BaseClassForm;
+
+namespace PRM.Core.Protocol.RDP
 {
     public partial class ProtocolServerRemoteAppForm : ProtocolServerFormBase
     {

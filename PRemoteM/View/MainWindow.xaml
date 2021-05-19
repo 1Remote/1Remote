@@ -224,11 +224,6 @@
                                            Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
                                 </TextBlock>
                             </controls:ButtonEx>
-                            <controls:ButtonEx Command="{Binding CmdGoManagementPage}">
-                                <TextBlock Text="{DynamicResource system_menu_management_title}" Margin="20 0 0 0"
-                                           Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ButtonEx}, Path=Foreground}">
-                                </TextBlock>
-                            </controls:ButtonEx>
                             <controls:ButtonEx Command="{Binding CmdGoAboutPage}">
                                 <Grid>
                                     <Grid Width="20" HorizontalAlignment="Left">

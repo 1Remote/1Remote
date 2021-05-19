@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:PRM.Controls"
-             xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:commoncontrols="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
@@ -28,7 +28,6 @@
             <system:Double x:Key="OneItemHeight">40</system:Double>
 
             <Style TargetType="ListBoxItem">
-                <Setter Property="IsSelected" Value="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -50,8 +49,8 @@
                                     Content="{TemplateBinding ContentControl.Content}"
                                     ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                     ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                    HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                    VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
                                     SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                             </Grid>
                             <ControlTemplate.Triggers>
@@ -87,7 +86,7 @@
                 </ControlTemplate.Triggers>
             </ControlTemplate>
             <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerCards">
-                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" />
+                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="0 0 0 20"/>
             </ItemsPanelTemplate>
             <DataTemplate x:Key="DataTemplateForServerCards" DataType="protocol:VmProtocolServer">
                 <Grid>
@@ -103,178 +102,254 @@
                 </Grid>
             </DataTemplate>
 
+
+
             <ControlTemplate x:Key="ListBoxTemplateForServerList" TargetType="{x:Type ListBox}">
                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
-                    <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}"
-                                              Grid.IsSharedSizeScope="True"
-                                              Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
-                        <Grid x:Name="Grid">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="*"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid Height="{StaticResource OneItemHeight}">
+                    <Grid Grid.IsSharedSizeScope="True">
+                        <!--<Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>-->
+
+                        <Grid Name="GridHeader" Height="{StaticResource OneItemHeight}" VerticalAlignment="Top" ZIndex="999">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid>
                                 <Grid.Margin>
                                     <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
                                 </Grid.Margin>
-                                <Grid VerticalAlignment="Center">
-                                    <Grid.Resources>
-                                        <Style TargetType="Path" x:Key="HeaderPathStyle">
-                                            <Setter Property="Visibility" Value="Hidden" />
-                                            <Setter Property="StrokeThickness" Value="1" />
-                                            <Setter Property="Fill" Value="Gray" />
-                                            <Setter Property="Width" Value="20" />
-                                            <Setter Property="HorizontalAlignment" Value="Center" />
-                                            <Setter Property="Margin" Value="5,0,5,0" />
-                                            <Setter Property="SnapsToDevicePixels" Value="True" />
+                                <Border Background="{DynamicResource MainBgColorBrush}">
+                                    <Border.Margin>
+                                        <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
+                                    </Border.Margin>
+                                </Border>
+                            </Grid>
+                            <Grid VerticalAlignment="Center">
+                                <Grid.Margin>
+                                    <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
+                                </Grid.Margin>
+                                <Grid.Resources>
+                                    <Style TargetType="Path" x:Key="HeaderPathStyle">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Setter Property="StrokeThickness" Value="1" />
+                                        <Setter Property="Fill" Value="Gray" />
+                                        <Setter Property="Width" Value="20" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="Margin" Value="5,0,5,0" />
+                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                    </Style>
+                                </Grid.Resources>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selecter"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
+                                    <ColumnDefinition Width="40"   SharedSizeGroup="Name"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox Width="20" Height="20" HorizontalAlignment="Center" 
+                                      IsChecked="{Binding IsSelectedAll, Mode=TwoWay}"
+                                      Background="{DynamicResource MainColor2Brush}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="CheckBox">
+                                                        <Border Background="{TemplateBinding Control.Background}" 
+                                                            BorderThickness="0" 
+                                                            CornerRadius="5" Name="PART_Background">
+                                                            <Grid>
+                                                                <Border Name="PATH_UNCHECK" CornerRadius="3" Background="{DynamicResource MainColor2ForegroundBrush}" Margin="4"></Border>
+                                                                <Path Name="PATH_CHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            </Grid>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsChecked" Value="True">
+                                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsChecked" Value="False">
+                                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="PART_Background" Property="Opacity" Value="0.8"></Setter>
+                                                            </Trigger>
+                                                            <MultiTrigger>
+                                                                <MultiTrigger.Conditions>
+                                                                    <Condition Property="IsChecked" Value="False"></Condition>
+                                                                    <Condition Property="IsMouseOver" Value="True"></Condition>
+                                                                </MultiTrigger.Conditions>
+                                                                <MultiTrigger.Setters>
+                                                                    <Setter TargetName="PATH_UNCHECK" Property="Margin" Value="3"></Setter>
+                                                                    <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Visible"></Setter>
+                                                                </MultiTrigger.Setters>
+                                                            </MultiTrigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
                                         </Style>
-                                    </Grid.Resources>
+                                    </CheckBox.Style>
+                                </CheckBox>
 
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
-                                        <ColumnDefinition Width="40"   SharedSizeGroup="Name"></ColumnDefinition>
-                                        <ColumnDefinition Width="*"></ColumnDefinition>
-                                        <ColumnDefinition Width="Auto" MaxWidth="150" SharedSizeGroup="GroupName"></ColumnDefinition>
-                                        <ColumnDefinition Width="Auto" MaxWidth="200" SharedSizeGroup="Address"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
+                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="1" Style="{StaticResource MainColor1ButtonRadius3}"
+                                                         Margin="0 0 10 0"
+                                                         Background="{DynamicResource MainBgColorBrush}"
+                                                         Foreground="{DynamicResource MainBgColorForegroundBrush}"
+                                                         Command="{Binding CmdReOrder}" CommandParameter="0">
+                                    <Grid>
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Protocol}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.ProtocolDesc}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_protocol}"></TextBlock>
+                                    </Grid>
+                                </commoncontrols:ButtonEx>
 
-                                    <controls1:ButtonEx HorizontalContentAlignment="Left" Grid.Column="0" Style="{StaticResource MainColor1ButtonRadius3}"
-                                                                    Background="{DynamicResource MainBgColorBrush}"
-                                                                    Foreground="{DynamicResource MainBgColorForegroundBrush}"
-                                                                    Command="{Binding CmdReOrder}" CommandParameter="0">
-                                        <Grid>
-                                            <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Protocol}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.ProtocolDesc}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_protocol}"></TextBlock>
-                                        </Grid>
-                                    </controls1:ButtonEx>
-
-                                    <controls1:ButtonEx HorizontalContentAlignment="Left" Grid.Column="2" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="3" Style="{StaticResource MainColor1ButtonRadius3}"
+                                                         Margin="0 0 10 0"
                                                                     Background="{DynamicResource MainBgColorBrush}"
                                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}"
                                                                     Command="{Binding CmdReOrder}" CommandParameter="2">
-                                        <Grid>
-                                            <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Name}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.NameDesc}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource word_name}"></TextBlock>
-                                        </Grid>
-                                    </controls1:ButtonEx>
+                                    <Grid>
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Name}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.NameDesc}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource word_name}"></TextBlock>
+                                    </Grid>
+                                </commoncontrols:ButtonEx>
 
-                                    <controls1:ButtonEx HorizontalContentAlignment="Left" Grid.Column="3" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
+                                                         Margin="0 0 10 0"
                                                                     Background="{DynamicResource MainBgColorBrush}"
                                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}"
                                                                     Command="{Binding CmdReOrder}" CommandParameter="4">
-                                        <Grid>
-                                            <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupName}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupNameDesc}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_group}"></TextBlock>
-                                        </Grid>
-                                    </controls1:ButtonEx>
+                                    <Grid>
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupName}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupNameDesc}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_group}"></TextBlock>
+                                    </Grid>
+                                </commoncontrols:ButtonEx>
 
-                                    <controls1:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource MainColor1ButtonRadius3}"
+                                                         Margin="0 0 10 0"
                                                                     Background="{DynamicResource MainBgColorBrush}"
                                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}"
                                                                     Command="{Binding CmdReOrder}" CommandParameter="6">
-                                        <Grid>
-                                            <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Address}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
-                                                <Path.Style>
-                                                    <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.AddressDesc}">
-                                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Path.Style>
-                                            </Path>
-                                            <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_address}" />
-                                        </Grid>
-                                    </controls1:ButtonEx>
-                                </Grid>
+                                    <Grid>
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Address}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                            <Path.Style>
+                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.AddressDesc}">
+                                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_address}" />
+                                    </Grid>
+                                </commoncontrols:ButtonEx>
                             </Grid>
-                            <ItemsPresenter Grid.Row="1" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         </Grid>
-                    </ScrollViewer>
+                        <ScrollViewer Name="ScrollViewer" Grid.Row="1" Focusable="false" Padding="{TemplateBinding Padding}"
+                                      Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                            <ItemsPresenter Grid.Row="1" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                <ItemsPresenter.Margin>
+                                    <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
+                                </ItemsPresenter.Margin>
+                            </ItemsPresenter>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
                 <ControlTemplate.Triggers>
                     <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Items.Count}" Value="0">
-                        <Setter TargetName="Grid" Property="Visibility" Value="Hidden"></Setter>
+                        <Setter TargetName="ScrollViewer" Property="Visibility" Value="Hidden"></Setter>
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
             <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerList">
-                <StackPanel></StackPanel>
+                <StackPanel Margin="0 0 0 30"></StackPanel>
             </ItemsPanelTemplate>
             <DataTemplate x:Key="DataTemplateForServerList" DataType="protocol:VmProtocolServer">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource MainBgColorBrush}">
@@ -282,96 +357,8 @@
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="{Binding ObjectVisibility, UpdateSourceTrigger=PropertyChanged}"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Server.Id}" Value="0">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
                     <Border x:Name="GridContainer"></Border>
-                    <Grid Height="{StaticResource OneItemHeight}">
-                        <Grid.Margin>
-                            <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
-                        </Grid.Margin>
-                        <Grid VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
-                                <ColumnDefinition Width="40" SharedSizeGroup="Name"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" Margin="5 0"
-                                                   Text="{Binding Server.ProtocolDisplayName}"
-                                                   FontSize="14" FontWeight="Bold"
-                                                   HorizontalAlignment="Left"
-                                                   Opacity="0.4"
-                                                   Foreground="{DynamicResource MainColor1Brush}"
-                                                   VerticalAlignment="Center"></TextBlock>
-                            <TextBlock Grid.Column="0" Margin="5 0"
-                                                   Text="{Binding Server.ProtocolDisplayName}"
-                                                   FontSize="14" FontWeight="Bold"
-                                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                                                   Opacity="0.2"
-                                                   HorizontalAlignment="Left"
-                                                   VerticalAlignment="Center">
-                            </TextBlock>
-
-                            <Grid Grid.Column="1" Width="30" HorizontalAlignment="Center" Margin="5 0">
-                                <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
-                            </Grid>
-
-                            <TextBlock Grid.Column="2" Margin="5 0"
-                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.DispName}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="Text" Value="">
-                                                <Setter Property="ToolTip" Value="{x:Null}"></Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-
-                            <TextBlock Grid.Column="3" Margin="5 0" MaxWidth="100"
-                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.GroupName}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="Text" Value="">
-                                                <Setter Property="ToolTip" Value="{x:Null}"></Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-
-                            <TextBlock Grid.Column="4" Margin="5 0" MaxWidth="500"
-                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.SubTitle}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="Text" Value="">
-                                                <Setter Property="ToolTip" Value="{x:Null}"></Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Grid>
-                    </Grid>
+                    <controls:ServerListItem VmProtocolServer="{Binding}" Height="{StaticResource OneItemHeight}"></controls:ServerListItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
@@ -400,37 +387,123 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+
+
+
+
+
     <Grid Background="{DynamicResource MainColor1Brush}">
         <Grid Margin="0 21 0 0" Background="{DynamicResource MainBgColorBrush}">
-            <Border HorizontalAlignment="Right">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+
+                <!-- tooltip for how to add -->
+                <Border HorizontalAlignment="Right">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Border.Effect>
+                        <DropShadowEffect Color="{DynamicResource MainBgColorForeground}" BlurRadius="5" Opacity="0.8" Direction="300" ShadowDepth="3"></DropShadowEffect>
+                    </Border.Effect>
+                    <StackPanel>
+                        <Path Fill="{DynamicResource MainBgColorForegroundBrush}" Margin="25 10 30 5" Width="50" Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
+                        <TextBlock Foreground="{DynamicResource MainBgColorForegroundBrush}" FontSize="22" FontWeight="Bold">Add</TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <ListBox Name="LvServerCards"
+                         HorizontalContentAlignment="Stretch"
+                         SelectedItem="{Binding SelectedServerListItem}"
+                         ItemsSource="{Binding ServerListItems}"
+                         Margin="0 2 0 0" BorderThickness="0" Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                         Style="{DynamicResource ServerListStyle}">
+                </ListBox>
+
+                <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource MainColor1Brush}" IsHitTestVisible="False">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Opacity" Value="0.9"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
+                                    <Setter Property="Opacity" Value="0"></Setter>
+                                </DataTrigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                <Setter Property="Margin" Value="0 0 5 0"></Setter>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="{Binding SelectedServerListItem.Server.DispName}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerListItem.Server.SubTitle}"></TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1" Background="{DynamicResource MainColor1Brush}" Height="40">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Setter Property="Margin" Value="0 0 0 -50"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ServerListItems.Count}" Value="0">
+                            <DataTrigger Binding="{Binding IsMultipleSelected}" Value="True">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin" AccelerationRatio="0.9">
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,-50" />
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.400" Value="0,0,0,0" />
+                                            </ThicknessAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin">
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,0" />
+                                                <SplineThicknessKeyFrame KeyTime="0:0:0.200" Value="0,0,0,-50" />
+                                            </ThicknessAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Border.Style>
-                <Border.Effect>
-                    <DropShadowEffect Color="{DynamicResource MainBgColorForeground}" BlurRadius="5" Opacity="0.8" Direction="300" ShadowDepth="3"></DropShadowEffect>
-                </Border.Effect>
-                <StackPanel>
-                    <Path Fill="{DynamicResource MainBgColorForegroundBrush}" Margin="25 10 30 5" Width="50" Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
-                    <TextBlock Foreground="{DynamicResource MainBgColorForegroundBrush}" FontSize="22" FontWeight="Bold">Add</TextBlock>
+                </Grid.Style>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_cancel}" Command="{Binding CmdCancelSelected}"></commoncontrols:ButtonEx>
+                    <TextBlock Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}"></TextBlock>
+                    <TextBlock Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
-            </Border>
-            <ListBox
-                Name="LvServerCards"
-                Grid.IsSharedSizeScope="True"
-                HorizontalContentAlignment="Stretch"
-                SelectedItem="{Binding SelectedServerListItem}"
-                ItemsSource="{Binding ServerListItems}"
-                Margin="0 2 0 0" BorderThickness="0" Background="Transparent"
-                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                Style="{DynamicResource ServerListStyle}">
-            </ListBox>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_connect}" Command="{Binding CmdConnectSelected}"></commoncontrols:ButtonEx>
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_edit}" Command="{Binding CmdMultiEditSelected}"></commoncontrols:ButtonEx>
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_delete}" Command="{Binding CmdDeleteSelected}"></commoncontrols:ButtonEx>
+                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_export}" Command="{Binding CmdExportSelectedToJson}"></commoncontrols:ButtonEx>
+                </StackPanel>
+            </Grid>
         </Grid>
 
         <Grid VerticalAlignment="Top">
@@ -447,12 +520,12 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <controls1:ButtonEx Padding="0 1 0 0"
+                    <commoncontrols:ButtonEx Padding="0 1 0 0"
                                         MinWidth="80"
                                         Click="BtnAllServer_Click"
                                         BorderThickness="0" Content="{DynamicResource tab_all}">
-                        <controls1:ButtonEx.Style>
-                            <Style TargetType="{x:Type controls1:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
+                        <commoncontrols:ButtonEx.Style>
+                            <Style TargetType="{x:Type commoncontrols:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
                                 <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
                                 <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}" />
                                 <Setter Property="Template">
@@ -464,8 +537,8 @@
                                                     SnapsToDevicePixels="true">
                                                 </Border>
                                                 <ContentPresenter
-                                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
                                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                             </Grid>
                                         </ControlTemplate>
@@ -486,8 +559,8 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </controls1:ButtonEx.Style>
-                    </controls1:ButtonEx>
+                        </commoncontrols:ButtonEx.Style>
+                    </commoncontrols:ButtonEx>
 
                     <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto"
                                       Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
@@ -531,8 +604,8 @@
                                                                 Content="{TemplateBinding ContentControl.Content}"
                                                                 ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                                 ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
                                                                 SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -591,61 +664,45 @@
                         </StackPanel>
                     </ScrollViewer>
 
-                    <controls1:ButtonEx Grid.Column="2" Padding="0 1 0 0" Width="40" Command="{Binding CmdAdd}">
-                        <controls1:ButtonEx.Style>
-                            <Style TargetType="{x:Type controls1:ButtonEx}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type controls1:ButtonEx}">
-                                            <Grid Name="Grid" Background="{DynamicResource MainColor1Brush}">
-                                                <Grid Width="16" Height="16">
-                                                    <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                                                           Stretch="Fill" Name="Path"
-                                                           Margin="2" Fill="{DynamicResource MainColor1LighterBrush}">
-                                                    </Path>
-                                                </Grid>
-                                            </Grid>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Path" Property="Margin" Value="0"></Setter>
-                                                    <Setter TargetName="Grid" Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
-                                                    <Setter TargetName="Path" Property="Fill" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </controls1:ButtonEx.Style>
-                    </controls1:ButtonEx>
+                    <CheckBox Grid.Column="2" Name="CbPopForInExport" Width="30">
+                        <CheckBox.Template>
+                            <ControlTemplate>
+                                <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
+                                    <Grid Margin="1" VerticalAlignment="Center">
+                                        <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                              Stretch="Uniform" Name="Path"
+                                              Margin="2" Fill="{DynamicResource MainColor1LighterBrush}"></Path>
+                                    </Grid>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="CheckBox.IsMouseOver" Value="True">
+                                        <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
+                                        <Setter TargetName="Path" Property="Margin" Value="1"></Setter>
+                                        <Setter TargetName="Path" Property="Fill" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                    </Trigger>
+                                    <Trigger Property="CheckBox.IsChecked" Value="True">
+                                        <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                                        <Setter TargetName="Path" Property="Fill" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </CheckBox.Template>
+                    </CheckBox>
+
+                    <Popup Grid.Column="2"  Name="PopupMenuInExport"
+                           IsOpen="{Binding ElementName=CbPopForInExport, Path=IsChecked}"
+                           StaysOpen="False"
+                           PlacementTarget="{Binding ElementName=CbPopForInExport}">
+                        <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
+                            <StackPanel>
+                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></commoncontrols:ButtonEx>
+                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></commoncontrols:ButtonEx>
+                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource MainColor1DarkerBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></commoncontrols:ButtonEx>
+                            </StackPanel>
+                        </Grid>
+                    </Popup>
                 </Grid>
             </Border>
-        </Grid>
-
-        <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource MainColor1Brush}">
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Opacity" Value="0.9"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem}" Value="{x:Null}">
-                            <Setter Property="Opacity" Value="0"></Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=LvServerCards, Path=SelectedItem.Server.DispName}" Value="">
-                            <Setter Property="Opacity" Value="0"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <StackPanel.Resources>
-                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                        <Setter Property="Margin" Value="0 0 5 0"></Setter>
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock Text="{Binding SelectedServerListItem.Server.DispName}"></TextBlock>
-                <TextBlock Text="{Binding SelectedServerListItem.Server.SubTitle}"></TextBlock>
-            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

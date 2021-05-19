@@ -1,14 +1,15 @@
-﻿<baseClassForm:ProtocolServerFormBase x:Class="PRM.Core.Protocol.FileTransmit.FTP.ProtocolServerFTPForm"
+﻿<baseClassForm:ProtocolServerFormBase x:Class="PRM.Core.Protocol.BaseClassForm.ProtocolServerWithAddrPortBaseForm"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:putty="clr-namespace:PRM.Core.Protocol.Putty"
                         xmlns:protocol="clr-namespace:PRM.Core.Protocol"
                         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls"
+                        xmlns:local="clr-namespace:PRM.Core.Protocol.VNC"
                         xmlns:passwordEx="clr-namespace:Shawn.Utils"
                         xmlns:baseClassForm="clr-namespace:PRM.Core.Protocol.BaseClassForm"
                         mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance protocol:ProtocolServerWithAddrPortBase}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel.Resources>
@@ -33,41 +34,11 @@
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
-                                 MinWidth="50" HorizontalAlignment="Left"
+                        <TextBox MinWidth="50" Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                 HorizontalAlignment="Left"
                                  InputMethod.IsInputMethodEnabled="False"
                                  InputScope="Number"
-                                 ></TextBox>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-
-            <Grid Style="{StaticResource EditorRowGrid}" Name="GridUserName">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_username}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-
-            <Grid Name="GridPwd" Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox passwordEx:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                     Style="{StaticResource PasswordBoxEx}" />
-                    </Grid>
-                </StackPanel>
-            </Grid>
-
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sftp_startup_path}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding StartupPath,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxWithPlaceHolder}"
-                                 Tag="e.g. /home/user/Desktop"></TextBox>
+                        ></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>

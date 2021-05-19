@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using ColorPickerWPF.Code;
 using Shawn.Utils;
+using Brushes = System.Drawing.Brushes;
 using Color = System.Windows.Media.Color;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -18,30 +19,46 @@ namespace ColorPickerWPF
     {
         #region Color
         public static readonly DependencyProperty ColorProperty =
-            DependencyProperty.Register("Color", typeof(Color), typeof(ColorPickRowPopup),
+            DependencyProperty.Register("Color", typeof(Color?), typeof(ColorPickRowPopup),
                     new FrameworkPropertyMetadata(Colors.White, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnColorPropertyChanged));
 
         private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var color = (Color)e.NewValue;
-            ((ColorPickRowPopup)d).HexColor = ColorAndBrushHelper.ArgbToHexColor(color.A, color.R, color.G, color.B); ;
+            var color = (Color?)e.NewValue;
+            if (color == null)
+            {
+                ((ColorPickRowPopup) d).HexColor = null;
+            }
+            else
+            {
+                var c = (Color) color;
+                ((ColorPickRowPopup) d).HexColor = ColorAndBrushHelper.ArgbToHexColor(c.A, c.R, c.G, c.B);
+            }
         }
 
-        public Color Color
+        public Color? Color
         {
-            get => (Color)GetValue(ColorProperty);
+            get => (Color?)GetValue(ColorProperty);
             set
             {
                 if (value == Color)
                     return;
-                var c = value;
-                var hexColor = value.ToHexString();
-                if (c != Color)
-                    SetValue(ColorProperty, c);
-                if (HexColor != hexColor)
-                    SetValue(HexColorProperty, hexColor);
-                ColorDisplayGrid.Background = new SolidColorBrush(c);
-                ColorPicker.SetColor(c);
+                if (value == null)
+                {
+                    SetValue(ColorProperty, null);
+                    SetValue(HexColorProperty, null);
+                    ColorDisplayGrid.Background = System.Windows.Media.Brushes.LightGray;
+                }
+                else
+                {
+                    var hexColor = value?.ToHexString();
+                    if (value != Color)
+                        SetValue(ColorProperty, value);
+                    if (HexColor != hexColor)
+                        SetValue(HexColorProperty, hexColor);
+                    ColorDisplayGrid.Background = new SolidColorBrush((Color)value);
+                    ColorPicker.SetColor((Color)value);
+                }
             }
         }
         #endregion
@@ -62,7 +79,8 @@ namespace ColorPickerWPF
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                ((ColorPickRowPopup)d).Color = null;
+                ((ColorPickRowPopup) d).ColorDisplayGrid.Background = System.Windows.Media.Brushes.Gray;
             }
         }
         public string HexColor
@@ -74,17 +92,20 @@ namespace ColorPickerWPF
                     return;
                 try
                 {
-                    var c = ColorAndBrushHelper.HexColorToMediaColor(value);
                     var hexColor = value;
-                    if (c != Color)
-                        SetValue(ColorProperty, c);
                     if (HexColor != hexColor)
                         SetValue(HexColorProperty, hexColor);
+                    var c = ColorAndBrushHelper.HexColorToMediaColor(value);
+                    if (c != Color)
+                        SetValue(ColorProperty, c);
                     ColorDisplayGrid.Background = new SolidColorBrush(c);
                     ColorPicker.SetColor(c);
                 }
                 catch (Exception e)
                 {
+                    ColorDisplayGrid.Background = System.Windows.Media.Brushes.Gray;
+                    SetValue(ColorProperty, null);
+                    SetValue(HexColorProperty, null);
                     Console.WriteLine(e);
                 }
             }

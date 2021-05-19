@@ -133,7 +133,7 @@ namespace PRM.Model
                         }
             };
             p.Start();
-            string admin = rdp.IsAdministrativePurposes ? " /admin " : "";
+            string admin = rdp.IsAdministrativePurposes == true ? " /admin " : "";
             p.StandardInput.WriteLine($"mstsc {admin} \"" + rdpFile + "\"");
             p.StandardInput.WriteLine("exit");
 
@@ -250,15 +250,31 @@ namespace PRM.Model
         {
             if (serverId <= 0)
             {
-                throw new Exception($"try to connect Server Id = {serverId}");
+                // START MULTIPLE SESSION
+                var list = _context.AppData.VmItemList.Where(x => x.IsSelected).ToArray();
+                foreach (var server in list)
+                {
+                    ShowRemoteHost(server.Id, assignTabToken);
+                }
+                return;
             }
-            if (_context.AppData.VmItemList.All(x => x.Server.Id != serverId))
+            else if (_context.AppData.VmItemList.All(x => x.Server.Id != serverId))
             {
-                SimpleLogHelper.Warning($@"try to connect Server Id = {serverId} and {serverId} not in the list");
+                SimpleLogHelper.Warning($@"try to connect Server Id = {serverId} while {serverId} is not in the list");
                 _context.AppData.ServerListUpdate();
             }
+
+            // clear selected state
+            _context.AppData.ServerListClearSelect();
+
+
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
-            var vmProtocolServer = _context.AppData.VmItemList.First(x => x.Server.Id == serverId);
+            var vmProtocolServer = _context.AppData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId);
+            if (vmProtocolServer == null)
+            {
+                SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
+                return;
+            }
 
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
