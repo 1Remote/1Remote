@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace PRM.Core
 {
@@ -15,7 +16,7 @@ namespace PRM.Core
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void RaisePropertyChanged(string propertyName)
+        public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             if (NotifyPropertyChangedEnabled)
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -28,6 +29,11 @@ namespace PRM.Core
             if (newValue != null && newValue.Equals(oldValue)) return;
             oldValue = newValue;
             RaisePropertyChanged(propertyName);
+        }
+
+        protected virtual void SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = null)
+        {
+            SetAndNotifyIfChanged(propertyName, ref oldValue, newValue);
         }
 
         #endregion INotifyPropertyChanged

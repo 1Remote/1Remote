@@ -48,7 +48,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -159,6 +159,9 @@
     <Compile Include="Controls\ServerCard.xaml.cs">
       <DependentUpon>ServerCard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ServerListItem.xaml.cs">
+      <DependentUpon>ServerListItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
@@ -181,9 +184,6 @@
     </Compile>
     <Compile Include="View\ServerListPage.xaml.cs">
       <DependentUpon>ServerListPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ServerManagementPage.xaml.cs">
-      <DependentUpon>ServerManagementPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TabWindow\TabWindowBase.cs" />
     <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
@@ -211,6 +211,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\ServerCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ServerListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -251,10 +255,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ServerListPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ServerManagementPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

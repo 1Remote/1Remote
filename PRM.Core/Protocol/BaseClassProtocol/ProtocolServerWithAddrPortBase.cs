@@ -1,4 +1,7 @@
-﻿namespace PRM.Core.Protocol
+﻿using System;
+using PRM.Core.Model;
+
+namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerWithAddrPortBase : ProtocolServerBase
     {
@@ -20,24 +23,21 @@
         {
             if (int.TryParse(Port, out var p))
                 return p;
-            return 0;
+            return 1;
         }
 
         private string _port = "3389";
 
         public string Port
         {
-            get => !string.IsNullOrEmpty(_port) ? _port : "3389";
+            get => _port;
             set
             {
-                if (int.TryParse(value, out var p))
-                {
-                    if (p > 0 && p < 65536)
-                    {
-                        SetAndNotifyIfChanged(nameof(Port), ref _port, value);
-                        return;
-                    }
-                }
+                if (value == base.Server_editor_different_options
+                    || (int.TryParse(value, out int port) == true && port > 0 && port <= 65535))
+                    SetAndNotifyIfChanged(ref _port, value);
+                else
+                    RaisePropertyChanged();
             }
         }
 
