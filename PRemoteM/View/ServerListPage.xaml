@@ -493,7 +493,8 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_cancel}" Command="{Binding CmdCancelSelected}"></commoncontrols:ButtonEx>
-                    <TextBlock Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}"></TextBlock>
+                    <TextBlock Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}"></TextBlock>
+                    <TextBlock Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

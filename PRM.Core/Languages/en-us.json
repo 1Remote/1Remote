@@ -146,8 +146,9 @@
 
   // server editor
   "server_editor_different_options": "<different options>",
+  "server_editor_bulk_editing": "Bulk editing",
   "server_editor_bulk_editing_title": "You are editing in bulk: ",
-  "server_editor_multi_selected_count": "Select {0} items",
+  "server_editor_multi_selected_count": "Number of selected items: ",
   "server_editor_group_title_common": "Common",
   "server_editor_group_title_connection": "Connection",
   "server_editor_group_title_display": "Display",

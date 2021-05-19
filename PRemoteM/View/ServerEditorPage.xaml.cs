@@ -10,8 +10,6 @@ using PRM.Core.Protocol;
 using Shawn.Utils;
 using PRM.ViewModel;
 
-using Shawn.Utils;
-
 namespace PRM.View
 {
     public partial class ServerEditorPage : UserControl

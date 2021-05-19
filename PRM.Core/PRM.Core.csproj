@@ -403,18 +403,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Languages\de-de.xaml">
+    <Resource Include="Languages\de-de.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Languages\en-us.xaml">
+    </Resource>
+    <Resource Include="Languages\en-us.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Languages\zh-cn.xaml">
+    </Resource>
+    <Resource Include="Languages\zh-cn.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
+    </Resource>
     <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
