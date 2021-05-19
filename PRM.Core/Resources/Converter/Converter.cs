@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -168,8 +169,8 @@ namespace PRM.Core.Resources.Converter
                 var size = MeasureText(tb, 20);
                 double k = 1.0 * tb.Width / size.Width;
                 double fs = (int)(20 * k);
-                if (fs > 16)
-                    fs = 16;
+                //if (fs > 16)
+                //    fs = 16;
                 if (fs < 4)
                     fs = 4;
                 return fs;
@@ -225,5 +226,42 @@ namespace PRM.Core.Resources.Converter
         }
 
         #endregion IValueConverter
+    }
+
+
+    public class ConverterIsTheSame : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var _1st = values.FirstOrDefault();
+            return values.All(x => x == _1st);
+        }
+
+        public object[] ConvertBack(
+            object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+
+    public class ConverterEqual2Visible : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            try
+            {
+                return value == parameter ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception)
+            {
+                return Visibility.Collapsed;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return parameter;
+        }
     }
 }

@@ -29,7 +29,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>DEBUG;TRACE;UseKiTTY;FOR_MICROSOFT_STORE;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -131,6 +131,12 @@
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
+    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml.cs">
+      <DependentUpon>ProtocolServerWithAddrPortBaseForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml.cs">
+      <DependentUpon>ProtocolServerWithAddrPortUserPwdBaseForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
@@ -174,9 +180,9 @@
     <Compile Include="Protocol\ITab.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
-    <Compile Include="Protocol\ProtocolServerWithAddrPortBase.cs" />
-    <Compile Include="Protocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
-    <Compile Include="Protocol\ProtocolServerFormBase.cs" />
+    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortBase.cs" />
+    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
+    <Compile Include="Protocol\BaseClassForm\ProtocolServerFormBase.cs" />
     <Compile Include="Protocol\Putty\Host\KittyHost.xaml.cs">
       <DependentUpon>KittyHost.xaml</DependentUpon>
     </Compile>
@@ -246,7 +252,7 @@
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
     <Compile Include="Protocol\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\ProtocolServerBase.cs" />
+    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Utils\NetImageProcessHelper.cs" />
     <Compile Include="Utils\PageHost\AnimationPage.cs" />
@@ -397,15 +403,23 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Languages\de-de.xaml">
+    <Resource Include="Languages\de-de.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Languages\en-us.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Languages\zh-cn.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Languages\en-us.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Languages\zh-cn.xaml">
+    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

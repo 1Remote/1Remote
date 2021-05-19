@@ -62,7 +62,7 @@ namespace PRM.Core.Protocol
                     {
                         if (rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
                             return true;
-                        if (rdp.IsConnWithFullScreen)
+                        if (rdp.IsConnWithFullScreen == true)
                             return true;
                         return rdp.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false;
                     }

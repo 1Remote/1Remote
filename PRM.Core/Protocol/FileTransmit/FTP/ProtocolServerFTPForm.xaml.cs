@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 using Microsoft.Win32;
+using PRM.Core.Protocol.BaseClassForm;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 
@@ -18,13 +19,11 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
 
             GridUserName.Visibility = Visibility.Collapsed;
             GridPwd.Visibility = Visibility.Collapsed;
-            GridPrivateKey.Visibility = Visibility.Collapsed;
 
 
             if (Vm.GetType() == typeof(ProtocolServerFTP)
                 || Vm.GetType().BaseType == typeof(ProtocolServerWithAddrPortUserPwdBase))
             {
-                GridPrivateKey.Visibility =
                 GridUserName.Visibility =
                     GridPwd.Visibility = Visibility.Visible;
             }
