@@ -127,6 +127,7 @@ namespace PRM.ViewModel
 
         private void Init()
         {
+            ProtocolList.Clear();
             // init protocol list for single add / edit mode
             if (_orgServers?.Any() != true)
             {
@@ -134,7 +135,6 @@ namespace PRM.ViewModel
                 var types = assembly.GetTypes();
                 // reflect remote protocols
                 {
-                    ProtocolList.Clear();
                     ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
                 }
@@ -188,13 +188,7 @@ namespace PRM.ViewModel
                 }
             }
         }
-
-        private List<ProtocolServerBase> _protocolList = new List<ProtocolServerBase>();
-        public List<ProtocolServerBase> ProtocolList
-        {
-            get => _protocolList;
-            set => SetAndNotifyIfChanged(nameof(ProtocolList), ref _protocolList, value);
-        }
+        public List<ProtocolServerBase> ProtocolList { get; set; } = new List<ProtocolServerBase>();
 
         private readonly bool _isDuplicate = false;
 

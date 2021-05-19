@@ -146,8 +146,9 @@
 
   // server editor
   "server_editor_different_options": "<不同的值>",
+  "server_editor_bulk_editing": "批量编辑",
   "server_editor_bulk_editing_title": "你正在批量编辑: ",
-  "server_editor_multi_selected_count": "选中{0}项",
+  "server_editor_multi_selected_count": "选中数量：",
   "server_editor_group_title_common": "常规",
   "server_editor_group_title_connection": "连接",
   "server_editor_group_title_display": "显示",
