@@ -169,8 +169,8 @@ namespace PRM.Core.Resources.Converter
                 var size = MeasureText(tb, 20);
                 double k = 1.0 * tb.Width / size.Width;
                 double fs = (int)(20 * k);
-                if (fs > 16)
-                    fs = 16;
+                //if (fs > 16)
+                //    fs = 16;
                 if (fs < 4)
                     fs = 4;
                 return fs;

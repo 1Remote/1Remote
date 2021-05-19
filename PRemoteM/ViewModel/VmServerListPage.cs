@@ -71,7 +71,7 @@ namespace PRM.ViewModel
             }
         }
 
-        public string SelectedCount => string.Format(SystemConfig.Instance.Language.GetText("server_editor_multi_selected_count"), ServerListItems.Count(x => x.IsSelected));
+        public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
         private ObservableCollection<string> _serverGroupList = new ObservableCollection<string>();
 
