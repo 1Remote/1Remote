@@ -22,11 +22,60 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource MainBgColorBrush}" ClipToBounds="True">
         <Grid.Resources>
             <system:Double x:Key="TopHeight">20</system:Double>
             <system:Double x:Key="BottomHeight">30</system:Double>
         </Grid.Resources>
+
+        <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    ToolTip="{Binding Title}"
+                    RenderTransformOrigin="0.5,0.5" 
+                    Margin="0,35,-130,0" Background="{DynamicResource MainColor2Brush}">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Title}" Value="">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ProtocolList.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <StackPanel.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="42.671"/>
+                    <TranslateTransform X="15.43885806483096" Y="16.392014547605541"/>
+                </TransformGroup>
+            </StackPanel.RenderTransform>
+            <StackPanel.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="10" Direction="0" ShadowDepth="2" Opacity="0.7" RenderingBias="Performance">
+                </DropShadowEffect>
+            </StackPanel.Effect>
+            <TextBlock Name="TbServerType" Opacity="0.9"
+                       FontWeight="Bold" Text="{DynamicResource server_editor_bulk_editing}" 
+                       Margin="0 5"
+                       Width="100"
+                       TextAlignment="Center"
+                       Foreground="{DynamicResource MainColor2ForegroundBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock.FontSize>
+                    <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Text"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Width"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStyle"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontWeight"></Binding>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="FontStretch"></Binding>
+                    </MultiBinding>
+                </TextBlock.FontSize>
+            </TextBlock>
+        </StackPanel>
 
         <Grid>
             <Grid.Margin>
