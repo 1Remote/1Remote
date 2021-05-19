@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 using Microsoft.Win32;
+using PRM.Core.Protocol.BaseClassForm;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 
@@ -32,6 +33,10 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             if (Vm.GetType() == typeof(ProtocolServerSFTP))
             {
                 CbUsePrivateKey.IsChecked = false;
+                if(((ProtocolServerSFTP)Vm).PrivateKey == vm.Server_editor_different_options)
+                {
+                    CbUsePrivateKey.IsChecked = null;
+                }
                 if (!string.IsNullOrEmpty(((ProtocolServerSFTP)Vm).PrivateKey))
                 {
                     CbUsePrivateKey.IsChecked = true;

@@ -40,7 +40,7 @@ namespace PRM.Core.Protocol.FileTransmit.Host
                             if (Trans?.IsConnected() != true)
                                 return;
                             if (MessageBox.Show(
-                                SystemConfig.Instance.Language.GetText("string_delete_confirm"),
+                                SystemConfig.Instance.Language.GetText("confirm_to_delete"),
                                 SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
                             {

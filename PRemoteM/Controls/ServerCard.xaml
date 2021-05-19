@@ -18,16 +18,6 @@
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
                 <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
             </Grid.InputBindings>
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Visible"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Server.Id}" Value="0">
-                            <Setter Property="Visibility" Value="Hidden"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
 
             <!-- Card Bottom Layer - with shadow effect -->
             <Border CornerRadius="5" BorderThickness="1" Background="Black" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
@@ -138,6 +128,9 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
                                 </Trigger>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
@@ -148,6 +141,56 @@
                             <RowDefinition Height="20"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid>
+                            <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
+                                      Name="CbIsSelected"
+                                      IsChecked="{Binding IsSelected}"
+                                      Background="{DynamicResource MainColor2Brush}">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="CheckBox">
+                                                    <Border Background="{TemplateBinding Control.Background}" 
+                                                            BorderThickness="0" 
+                                                            CornerRadius="2,0,0,0" Name="PART_Background">
+                                                        <Grid>
+                                                            <Path Name="PATH_UNCHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="3 3 4 4" Data="F1 M 20 0 L 20 20 L 0 20 L 0 0 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Path Name="PATH_CHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="3 3 4 4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                                            <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Visible"></Setter>
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="False">
+                                                            <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Visible"></Setter>
+                                                            <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Collapsed"></Setter>
+                                                        </Trigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="PART_Background" Property="Opacity" Value="0.8"></Setter>
+                                                            <Setter TargetName="PATH_UNCHECK" Property="Margin" Value="2 2 3 3"></Setter>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
+
                             <controls:ButtonEx Width="20" HorizontalAlignment="Right" 
                                     Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
                                     BorderThickness="0" 
@@ -180,9 +223,6 @@
                                             <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                             </DataTrigger>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                            </Trigger>
                                         </Style.Triggers>
                                     </Style>
                                 </controls:ButtonEx.Style>
@@ -245,41 +285,38 @@
                                     Click="BtnSettingMenu_OnClick">
                                     <controls:ButtonEx.Style>
                                         <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1Button}">
+                                            <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                            <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
                                             <Setter Property="Visibility" Value="Hidden"></Setter>
+                                            <Setter Property="Padding" Value="5 6 5 3"></Setter>
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type Button}">
-                                                        <Border Background="{DynamicResource MainColor2Brush}" 
+                                                        <Border Background="{TemplateBinding Background}" 
                                                                 BorderThickness="0" 
                                                                 Name="PART_Background">
-                                                            <Path Margin="5 6 5 3"
+                                                            <Path Margin="{TemplateBinding Padding}"
                                                                   Name="Symbol"
                                                                   Data="M 2.707031 0 L 49.97266 0 L 49.97266 5 L 2.707031 5 Z M 2.707031 20 L 49.97266 20 L 49.97266 25 L 2.707031 25 Z M 2.707031 40 L 49.97266 40 L 49.97266 45 L 2.707031 45 Z"
-                                                                  Fill="{DynamicResource MainColor1ForegroundBrush}"
+                                                                  Fill="{TemplateBinding Foreground}"
                                                                   Stretch="Fill" />
                                                         </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
-                                                            </Trigger>
-                                                            <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
-                                                                <Setter TargetName="Symbol" Property="Margin" Value="4 5 4 2"></Setter>
-                                                                <Setter TargetName="PART_Background" Property="Button.Background" Value="{DynamicResource MainColor1DarkerBrush}" />
-                                                            </DataTrigger>
-                                                        </ControlTemplate.Triggers>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
                                             <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Padding" Value="4 5 4 2"></Setter>
+                                                </Trigger>
                                                 <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
+                                                    <Setter Property="Padding" Value="4 5 4 2"></Setter>
+                                                    <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
                                                 </DataTrigger>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </Trigger>
                                             </Style.Triggers>
                                         </Style>
                                     </controls:ButtonEx.Style>
@@ -309,7 +346,7 @@
                                         </Border.Effect>
                                         <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
                                             <StackPanel>
-                                                <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource server_card_operate_edit}"></controls:ButtonEx>
+                                                <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource word_edit}"></controls:ButtonEx>
                                                 <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
                                             </StackPanel>
                                         </Grid>
@@ -341,64 +378,6 @@
                 </Grid>
             </Grid>
         </Grid>
-
-
-        <Grid Name="AddServerContext">
-            <Grid.InputBindings>
-                <MouseBinding MouseAction="LeftClick" Command="{Binding CmdEditServer}"></MouseBinding>
-            </Grid.InputBindings>
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Hidden"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Server.Id}" Value="0">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-
-            <!-- Card Bottom Layer - with shadow effect -->
-            <Border Opacity="0.2" CornerRadius="5" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
-                <Border.Effect>
-                    <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
-                </Border.Effect>
-            </Border>
-            <Grid Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
-                <Grid.Clip>
-                    <RectangleGeometry RadiusX="5" RadiusY="5" Rect="0 0 144 144"></RectangleGeometry>
-                </Grid.Clip>
-
-                <!-- Card Mask Layer -->
-                <Grid Background="{DynamicResource MainColor1Brush}">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Opacity" Value="0.2"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" Value="True">
-                                    <Setter Property="Opacity" Value="0.5"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                          Fill="{DynamicResource MainColor1LighterBrush}"
-                          Stretch="Fill">
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Setter Property="Margin" Value="50"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid},Path=IsMouseOver}" Value="True">
-                                        <Setter Property="Margin" Value="40"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                    </Path>
-                </Grid>
-            </Grid>
-        </Grid>
-
 
     </Grid>
 </UserControl>

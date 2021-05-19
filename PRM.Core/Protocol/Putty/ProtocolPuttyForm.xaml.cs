@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
+using PRM.Core.Protocol.BaseClassForm;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 
@@ -47,6 +48,10 @@ namespace PRM.Core.Protocol.Putty
             if (Vm.GetType() == typeof(ProtocolServerSSH))
             {
                 CbUsePrivateKey.IsChecked = false;
+                if (((ProtocolServerSSH)Vm).PrivateKey == vm.Server_editor_different_options)
+                {
+                    CbUsePrivateKey.IsChecked = null;
+                }
                 if (!string.IsNullOrEmpty(((ProtocolServerSSH)Vm).PrivateKey))
                 {
                     CbUsePrivateKey.IsChecked = true;
@@ -108,6 +113,8 @@ namespace PRM.Core.Protocol.Putty
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return Enum.GetValues(typeof(ProtocolServerSSH.ESshVersion)).Cast<int>().Max();
             return ((int)((ProtocolServerSSH.ESshVersion)value) - 1).ToString();
         }
 

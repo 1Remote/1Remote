@@ -101,6 +101,45 @@ namespace Shawn.Utils
             set => SetValue(Selections4ShowProperty, value);
         }
 
+        public static readonly DependencyProperty IsShowArrayProperty = DependencyProperty.Register(
+            nameof(IsShowArray), typeof(bool), typeof(AutoCompleteComboBox),
+            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (d, e) =>
+            {
+                if (d is AutoCompleteComboBox cb &&
+                    e.NewValue is bool b)
+                {
+                    if (b)
+                    {
+                        cb.CbNoArray.Visibility = Visibility.Collapsed;
+                        cb.CbContent.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        cb.CbNoArray.Visibility = Visibility.Visible;
+                        cb.CbContent.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }));
+
+        public bool IsShowArray
+        {
+            get => (bool)GetValue(IsShowArrayProperty);
+            set
+            {
+                SetValue(IsShowArrayProperty, value);
+                if (value)
+                {
+                    CbNoArray.Visibility = Visibility.Collapsed;
+                    CbContent.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    CbNoArray.Visibility = Visibility.Visible;
+                    CbContent.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
         public AutoCompleteComboBox()
         {
             InitializeComponent();

@@ -190,12 +190,12 @@ namespace PRM.ViewModel
             {
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_conn"),
+                    ActionName = SystemConfig.Instance.Language.GetText("word_connect"),
                     Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
                 },
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_edit"),
+                    ActionName = SystemConfig.Instance.Language.GetText("word_edit"),
                     Run = (id) =>
                     {
                         Debug.Assert(SelectedItem?.Server != null);

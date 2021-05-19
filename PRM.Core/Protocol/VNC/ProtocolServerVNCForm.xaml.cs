@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using Microsoft.Win32;
-using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.BaseClassForm;
 
 
 namespace PRM.Core.Protocol.VNC
@@ -31,6 +23,8 @@ namespace PRM.Core.Protocol.VNC
         #region IValueConverter 成员  
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null)
+                return Enum.GetValues(typeof(ProtocolServerVNC.EVncWindowResizeMode)).Cast<int>().Max() + 1;
             return ((int)((ProtocolServerVNC.EVncWindowResizeMode)value)).ToString();
         }
 

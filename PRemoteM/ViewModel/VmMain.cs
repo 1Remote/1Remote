@@ -29,7 +29,6 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
         }
 
-        private readonly ServerManagementPage _managementPage;
         private readonly AboutPage _aboutPage;
 
         public AnimationPage ServersShownPage { get; }
@@ -148,13 +147,23 @@ namespace PRM.ViewModel
                 };
             });
 
+            GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
+            {
+                DispPage = new AnimationPage()
+                {
+                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    Page = new ServerEditorPage(new VmServerEditorPage(Context, servers)),
+                };
+            };
+
             ServersShownPage = new AnimationPage()
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,
                 OutAnimationType = AnimationPage.InOutAnimationType.None,
                 Page = new ServerListPage(Context),
             };
-            _managementPage = new ServerManagementPage(Context);
+            //_managementPage = new ServerManagementPage(Context);
             _aboutPage = new AboutPage(VmAboutPage, this);
         }
 
@@ -188,33 +197,6 @@ namespace PRM.ViewModel
                     }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
                 }
                 return _cmdGoSysOptionsPage;
-            }
-        }
-
-        private RelayCommand _cmdGoManagementPage;
-
-        public RelayCommand CmdGoManagementPage
-        {
-            get
-            {
-                if (_cmdGoManagementPage == null)
-                {
-                    _cmdGoManagementPage = new RelayCommand((o) =>
-                    {
-                        if (DispPage != null)
-                        {
-                            DispPage = null;
-                        }
-                        BottomPage = new AnimationPage()
-                        {
-                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = _managementPage,
-                        };
-                        Window.PopupMenu.IsOpen = false;
-                    }, o => TopPage == null && BottomPage?.Page?.GetType() != typeof(ServerManagementPage));
-                }
-                return _cmdGoManagementPage;
             }
         }
 

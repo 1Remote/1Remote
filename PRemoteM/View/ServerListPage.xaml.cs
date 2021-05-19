@@ -11,8 +11,10 @@ namespace PRM.View
 
         public ServerListPage(PrmContext context)
         {
-            Vm = new VmServerListPage(context, LvServerCards);
             InitializeComponent();
+
+
+            Vm = new VmServerListPage(context, LvServerCards);
             DataContext = Vm;
 
             // hide GridBottom when hover.
@@ -26,6 +28,24 @@ namespace PRM.View
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
             Vm.SelectedGroup = "";
+        }
+
+        private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)
+        {
+            PopupMenuInExport.IsOpen = false;
+            Vm.CmdAdd?.Execute();
+        }
+
+        private void ButtonImport_OnClick(object sender, RoutedEventArgs e)
+        {
+            PopupMenuInExport.IsOpen = false;
+            Vm.CmdImportFromJson?.Execute();
+        }
+
+        private void ButtonImportMRemoteNgCsv_OnClick(object sender, RoutedEventArgs e)
+        {
+            PopupMenuInExport.IsOpen = false;
+            Vm.CmdImportFromCsv?.Execute();
         }
     }
 }
