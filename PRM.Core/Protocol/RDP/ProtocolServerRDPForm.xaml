@@ -206,17 +206,19 @@
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
 
             <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                <Grid.Resources>
-                    <local:ConverterSoundsEnable x:Key="ConverterSoundsEnable" />
-                </Grid.Resources>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sounds}"></TextBlock>
-
-                    <UniformGrid Columns="3" Rows="1" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <RadioButton GroupName="Sounds" Content="{DynamicResource server_editor_advantage_sounds_on_local}" IsChecked="{Binding AudioRedirectionMode, Converter={StaticResource ConverterSoundsEnable}, ConverterParameter={x:Static local:EAudioRedirectionMode.RedirectToLocal}}"></RadioButton>
-                        <RadioButton GroupName="Sounds" Content="{DynamicResource server_editor_advantage_sounds_on_remote}" IsChecked="{Binding AudioRedirectionMode, Converter={StaticResource ConverterSoundsEnable}, ConverterParameter={x:Static local:EAudioRedirectionMode.LeaveOnRemote}}"></RadioButton>
-                        <RadioButton GroupName="Sounds" Content="{DynamicResource server_editor_advantage_sounds_disabled}" IsChecked="{Binding AudioRedirectionMode, Converter={StaticResource ConverterSoundsEnable}, ConverterParameter={x:Static local:EAudioRedirectionMode.Disabled}}"></RadioButton>
-                    </UniformGrid>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <Grid.Resources>
+                            <local:ConverterEAudioRedirectionMode x:Key="ConverterEAudioRedirectionMode" />
+                        </Grid.Resources>
+                        <ComboBox SelectedIndex="{Binding AudioRedirectionMode, Converter={StaticResource ConverterEAudioRedirectionMode}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_local}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_local}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_remote}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_remote}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_disabled}" ToolTip="{DynamicResource server_editor_advantage_sounds_disabled}" />
+                            <ComboBoxItem Visibility="{Binding AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
+                        </ComboBox>
+                    </Grid>
                 </StackPanel>
             </Grid>
 
