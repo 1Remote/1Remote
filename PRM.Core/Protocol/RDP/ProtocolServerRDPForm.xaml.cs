@@ -125,34 +125,6 @@ namespace PRM.Core.Protocol.RDP
 
 
 
-    //public class ConverterEGatewayMode2Bool : IValueConverter
-    //{
-    //    #region IValueConverter 成员  
-    //    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    //    {
-    //        try
-    //        {
-    //            var b = (EGatewayMode?)value;
-    //            if (b == null)
-    //                return null;
-    //            var a = (EGatewayMode?)parameter;
-    //            return a == b;
-    //        }
-    //        catch (Exception)
-    //        {
-    //            return null;
-    //        }
-    //    }
-    //    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-    //    {
-    //        var e = (EGatewayMode) parameter;
-    //        return e;
-    //    }
-    //    #endregion
-    //}
-
-
-
     public class ConverterEGatewayLogonMethod : IValueConverter
     {
         #region IValueConverter 成员  
@@ -170,27 +142,18 @@ namespace PRM.Core.Protocol.RDP
         #endregion
     }
 
-    public class ConverterSoundsEnable : IValueConverter
+    public class ConverterEAudioRedirectionMode : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            try
-            {
-                var b = (EAudioRedirectionMode?)value;
-                if (b == null)
-                    return null;
-                var a = (EAudioRedirectionMode?)parameter;
-                return a == b;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            if (value == null)
+                return Enum.GetValues(typeof(EAudioRedirectionMode)).Cast<int>().Max() + 1;
+            return ((int)((EAudioRedirectionMode)value)).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return parameter;
+            return (EAudioRedirectionMode)(int.Parse(value.ToString()));
         }
     }
 }

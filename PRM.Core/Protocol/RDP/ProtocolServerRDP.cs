@@ -227,7 +227,11 @@ namespace PRM.Core.Protocol.RDP
         public EAudioRedirectionMode? AudioRedirectionMode
         {
             get => _audioRedirectionMode;
-            set => SetAndNotifyIfChanged(nameof(AudioRedirectionMode), ref _audioRedirectionMode, value);
+            set
+            {
+                _enableSounds = null;
+                SetAndNotifyIfChanged(nameof(AudioRedirectionMode), ref _audioRedirectionMode, value);
+            }
         }
 
         #region None useful, just for the old users.
