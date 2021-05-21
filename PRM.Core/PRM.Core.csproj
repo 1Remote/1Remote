@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props" Condition="Exists('..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -82,6 +83,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="PropertyChanged, Version=3.3.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
+      <HintPath>..\packages\PropertyChanged.Fody.3.3.3\lib\net40\PropertyChanged.dll</HintPath>
+    </Reference>
     <Reference Include="Renci.SshNet, Version=2020.0.1.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2020.0.1\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
@@ -121,8 +125,8 @@
     <Compile Include="Model\DbOperator.cs" />
     <Compile Include="DB\DbExtensions.cs" />
     <None Include="DB\freesql\FreeSqlDb.csexp" />
-    <Compile Include="DB\IDB\IDb.cs" />
-    <Compile Include="DB\IDB\IDbServer.cs" />
+    <Compile Include="I\IDb.cs" />
+    <Compile Include="I\IDbServer.cs" />
     <Compile Include="DB\Dapper\Config.cs" />
     <Compile Include="DB\Dapper\Server.cs" />
     <Compile Include="Model\KeywordMatchProviderInfo.cs" />
@@ -177,7 +181,7 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
-    <Compile Include="Protocol\ITab.cs" />
+    <Compile Include="I\ITab.cs" />
     <Compile Include="Protocol\ProtocolHostFactory.cs" />
     <Compile Include="Protocol\ProtocolHostBase.cs" />
     <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortBase.cs" />
@@ -383,6 +387,7 @@
     <Resource Include="Resources\Icons\20210106\20210106_105.png" />
     <Resource Include="kitty_portable.exe" />
     <Resource Include="Resources\Logo\author_avatar.jpg" />
+    <Resource Include="FodyWeavers.xml" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
     <Resource Include="Resources\Logo\logo256.png" />
@@ -532,5 +537,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.6.4.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.4.0\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props'))" />
   </Target>
+  <Import Project="..\packages\Fody.6.4.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.4.0\build\Fody.targets')" />
 </Project>

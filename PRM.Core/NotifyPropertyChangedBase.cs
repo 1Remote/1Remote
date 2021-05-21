@@ -5,6 +5,8 @@ namespace PRM.Core
 {
     public class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         #region INotifyPropertyChanged
 
         protected bool NotifyPropertyChangedEnabled = true;
@@ -14,7 +16,6 @@ namespace PRM.Core
             NotifyPropertyChangedEnabled = isEnabled;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
