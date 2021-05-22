@@ -167,10 +167,13 @@ namespace PRM.ViewModel
             ServerGroupList.Clear();
             foreach (var serverAbstract in ServerListItems.Select(x => x.Server))
             {
-                if (!string.IsNullOrEmpty(serverAbstract.GroupName) &&
-                    !ServerGroupList.Contains(serverAbstract.GroupName))
+                foreach (var tag in serverAbstract.Tags)
                 {
-                    ServerGroupList.Add(serverAbstract.GroupName);
+                    if (!string.IsNullOrEmpty(tag) &&
+                        !ServerGroupList.Contains(tag))
+                    {
+                        ServerGroupList.Add(tag);
+                    }
                 }
             }
             if (ServerGroupList.Contains(selectedGroup))
@@ -193,7 +196,7 @@ namespace PRM.ViewModel
             dataView.SortDescriptions.Clear();
             switch (SystemConfig.Instance.General.ServerOrderBy)
             {
-                case EnumServerOrderBy.Protocol:
+                case EnumServerOrderBy.ProtocolAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Ascending));
                     break;
 
@@ -201,7 +204,7 @@ namespace PRM.ViewModel
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Descending));
                     break;
 
-                case EnumServerOrderBy.Name:
+                case EnumServerOrderBy.NameAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Ascending));
                     break;
 
@@ -209,15 +212,15 @@ namespace PRM.ViewModel
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
                     break;
 
-                case EnumServerOrderBy.GroupName:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Ascending));
+                case EnumServerOrderBy.GroupNameAsc:
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Ascending));
                     break;
 
                 case EnumServerOrderBy.GroupNameDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Descending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Descending));
                     break;
 
-                case EnumServerOrderBy.Address:
+                case EnumServerOrderBy.AddressAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
                     break;
 
@@ -244,7 +247,7 @@ namespace PRM.ViewModel
                 string keyWord = _context.AppData.MainWindowServerFilter;
                 string selectedGroup = SelectedGroup;
 
-                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup;
+                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.Tags?.Contains(selectedGroup) == true;
                 if (!bGroupMatched)
                 {
                     card.ObjectVisibilityInList = Visibility.Collapsed;
@@ -261,7 +264,7 @@ namespace PRM.ViewModel
                 var dispName = server.DispName;
                 var subTitle = server.SubTitle;
                 var matched = _context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                if (matched || server.GroupName == keyWord)
+                if (matched || server.Tags?.Contains(keyWord) == true)
                     card.ObjectVisibilityInList = Visibility.Visible;
                 else
                     card.ObjectVisibilityInList = Visibility.Collapsed;
@@ -314,7 +317,7 @@ namespace PRM.ViewModel
                                     list.Add(serverBase);
                                 }
                             else
-                                foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true))
+                                foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true))
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                     _context.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
@@ -466,9 +469,10 @@ namespace PRM.ViewModel
                                             var nodeType = getValue(title, arr, "NodeType").ToLower();
                                             if (!string.Equals("Connection", nodeType, StringComparison.CurrentCultureIgnoreCase))
                                                 continue;
-                                            var group = "";
+                                            List<string> tags = null;
                                             if (groupNames.ContainsKey(parentId))
-                                                group = groupNames[parentId];
+                                                tags = new List<string>() {groupNames[parentId]};
+                                            
                                             var protocol = getValue(title, arr, "protocol").ToLower();
                                             var user = getValue(title, arr, "username");
                                             var pwd = getValue(title, arr, "password");
@@ -485,7 +489,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerRDP()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         UserName = user,
                                                         Password = pwd,
@@ -516,7 +520,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerSSH()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         UserName = user,
                                                         Password = pwd,
@@ -529,7 +533,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerSSH()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         UserName = user,
                                                         Password = pwd,
@@ -542,7 +546,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerVNC()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         Password = pwd,
                                                         Port = port.ToString(),
@@ -553,7 +557,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerTelnet()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         Port = port.ToString(),
                                                     };
@@ -607,7 +611,7 @@ namespace PRM.ViewModel
                             SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {
-                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true).ToList();
                             if (!(ss?.Count > 0)) return;
                             foreach (var vs in ss)
                             {
@@ -615,7 +619,7 @@ namespace PRM.ViewModel
                             }
                             _context.AppData.ServerListUpdate();
                         }
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true));
                 }
                 return _cmdDeleteSelected;
             }
@@ -632,7 +636,7 @@ namespace PRM.ViewModel
                     _cmdMultiEditSelected = new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true));
                 }
                 return _cmdMultiEditSelected;
             }

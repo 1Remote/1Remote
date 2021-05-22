@@ -10,6 +10,7 @@
              xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
@@ -108,39 +109,9 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <utils:AutoCompleteComboBox x:Name="TbGroup"
-                                                                    Text="{Binding Server.GroupName, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Text="{Binding Server.Tags, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding GroupSelections}"
                                                                     ></utils:AutoCompleteComboBox>
-                                        <Popup
-                                               Name="PopupGroup"
-                                               PlacementTarget="{Binding ElementName=TbGroup}"
-                                               Width="{Binding ElementName=TbGroup, Path=ActualWidth}"
-                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-                                            <Popup.Style>
-                                                <Style TargetType="Popup">
-                                                    <Setter Property="IsOpen" Value="False"></Setter>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ElementName=TbGroup, Path=IsFocused}" Value="true">
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ElementName=PopupGroup, Path=IsFocused}" Value="true">
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ElementName=PopupGroup, Path=IsMouseOver}" Value="true">
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </DataTrigger>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding ElementName=PopupGroup, Path=IsFocused}" Value="true"></Condition>
-                                                                <Condition Binding="{Binding ElementName=TbGroup, Path=IsMouseOver}" Value="true"></Condition>
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </MultiDataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Popup.Style>
-                                            <Grid Height="200" Background="AliceBlue"></Grid>
-                                        </Popup>
                                     </Grid>
                                 </StackPanel>
                             </Grid>

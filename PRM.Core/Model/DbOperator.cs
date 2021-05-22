@@ -201,7 +201,10 @@ namespace PRM.Core.Model
             if (_rsa == null) return;
             Debug.Assert(_rsa.DecodeOrNull(server.DispName) == null);
             server.DispName = _rsa.Encode(server.DispName);
-            server.GroupName = _rsa.Encode(server.GroupName);
+            for (var i = 0; i < server.Tags.Count; i++)
+            {
+                server.Tags[i] = _rsa.Encode(server.Tags[i]);
+            }
 
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
@@ -218,7 +221,10 @@ namespace PRM.Core.Model
             if (_rsa == null) return;
             Debug.Assert(_rsa.DecodeOrNull(server.DispName) != null);
             server.DispName = DecryptOrReturnOriginalString(server.DispName);
-            server.GroupName = DecryptOrReturnOriginalString(server.GroupName);
+            for (var i = 0; i < server.Tags.Count; i++)
+            {
+                server.Tags[i] = DecryptOrReturnOriginalString(server.Tags[i]);
+            }
 
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
