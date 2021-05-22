@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Media;
@@ -59,12 +60,27 @@ namespace PRM.Core.Protocol
         [JsonIgnore]
         public string SubTitle => GetSubTitle();
 
+
         private string _groupName = "";
 
         public string GroupName
         {
             get => _groupName;
             set => SetAndNotifyIfChanged(nameof(GroupName), ref _groupName, value);
+        }
+
+
+        private List<string> _tags = new List<string>();
+
+        public List<string> Tags
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(GroupName) == false && (_tags == null || _tags.Count == 0))
+                    _tags = new List<string>() { GroupName};
+                return _tags;
+            }
+            set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
         }
 
         private string _iconBase64 = "";

@@ -156,10 +156,13 @@ namespace PRM.ViewModel
             NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DispName)
                 .Distinct()
                 .Where(x => !string.IsNullOrEmpty(x)).ToList();
-
-            GroupSelections = _context.AppData.VmItemList.Select(x => x.Server.GroupName)
-                .Distinct()
-                .Where(x => !string.IsNullOrEmpty(x)).ToList();
+            var tagsArray = _context.AppData.VmItemList.Select(x => x.Server.Tags);
+            var tags = new List<string>();
+            foreach (var t in tagsArray)
+            {
+                tags.AddRange(t);
+            }
+            GroupSelections = tags.Distinct().ToList();
         }
 
         public string Title { get; set; }

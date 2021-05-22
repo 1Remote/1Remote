@@ -315,11 +315,18 @@ namespace PRM.ViewModel
             if (!SystemConfig.Instance.Launcher.AllowGroupNameSearch) return false;
 
             bool anyGroupMatched = false;
+
+            // TODO need a better tag matching
             // if group name search enabled, show group name as prefix
-            var gs = Context.AppData.VmItemList.Select(x => x.Server.GroupName).Distinct();
-            foreach (var g in gs)
+            var tagsArray = Context.AppData.VmItemList.Select(x => x.Server.Tags);
+            var tags = new List<string>();
+            foreach (var t in tagsArray)
             {
-                if (keywords.Any(keyword => g.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)))
+                tags.AddRange(t);
+            }
+            foreach (var tag in tags.Distinct())
+            {
+                if (keywords.Any(keyword => tag.StartsWith(keyword, StringComparison.OrdinalIgnoreCase)))
                 {
                     anyGroupMatched = true;
                 }
@@ -330,14 +337,15 @@ namespace PRM.ViewModel
 
         private string GetItemDispName(ProtocolServerBase server, bool anyGroupMatched)
         {
+            // TODO need a better tag display
             var dispName = server.DispName;
             // if group name search enabled, and keyword match the group name, show group name as prefix
-            if (anyGroupMatched && !string.IsNullOrEmpty(server.GroupName))
-                dispName = $"{server.GroupName} - {dispName}";
+            if (anyGroupMatched && !string.IsNullOrEmpty(server.Tags[0]))
+                dispName = $"{server.Tags} - {dispName}";
             return dispName;
         }
 
-        private SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
+        private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
 
         public void UpdateItemsList(string keyword)
         {
