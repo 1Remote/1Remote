@@ -162,6 +162,9 @@
     <Compile Include="Controls\ServerListItem.xaml.cs">
       <DependentUpon>ServerListItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TagsEditor.xaml.cs">
+      <DependentUpon>TagsEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
@@ -215,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ServerListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TagsEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
