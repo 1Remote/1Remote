@@ -23,9 +23,9 @@ namespace PRM.Controls
     {
         public static readonly DependencyProperty VmProtocolServerProperty =
             DependencyProperty.Register("VmProtocolServer", typeof(VmProtocolServer), typeof(ServerListItem),
-                new PropertyMetadata(null, new PropertyChangedCallback(OnServerDataChanged)));
+                new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
-        private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var value = (VmProtocolServer)e.NewValue;
             ((ServerListItem)d).DataContext = value;

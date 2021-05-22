@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -138,7 +139,10 @@ namespace PRM.ViewModel
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
             {
-                var server = new ProtocolServerRDP { GroupName = groupName };
+                var server = new ProtocolServerRDP();
+                if (string.IsNullOrWhiteSpace(groupName) == false)
+                    server.Tags = new List<string>() {groupName};
+
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
