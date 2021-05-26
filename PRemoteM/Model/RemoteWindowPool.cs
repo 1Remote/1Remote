@@ -63,8 +63,13 @@ namespace PRM.Model
             GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
         }
 
+        private bool isReleased = false;    
         public void Release()
         {
+            if(isReleased)
+                return;
+            isReleased = true;
+
             foreach (var tabWindow in _tabWindows.ToArray())
             {
                 tabWindow.Value.Hide();

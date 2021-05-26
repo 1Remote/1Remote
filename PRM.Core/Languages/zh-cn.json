@@ -152,6 +152,7 @@
   "server_editor_group_title_gateway": "RD 网关服务器",
   // server editor - common group items
   "server_editor_group": "分组",
+  "server_editor_tags_tag": "可以输入多个，用 ',' 分隔",
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
   "server_editor_cmd_before_connected": "连接前cmd",
