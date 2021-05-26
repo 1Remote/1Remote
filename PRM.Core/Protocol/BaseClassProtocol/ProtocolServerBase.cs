@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -78,6 +79,7 @@ namespace PRM.Core.Protocol
             {
                 if (string.IsNullOrEmpty(GroupName) == false && (_tags == null || _tags.Count == 0))
                     _tags = new List<string>() { GroupName};
+                _tags = _tags.Distinct().ToList();
                 return _tags;
             }
             set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);

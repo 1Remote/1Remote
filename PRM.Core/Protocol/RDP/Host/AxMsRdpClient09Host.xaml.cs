@@ -533,6 +533,13 @@ namespace PRM.Core.Protocol.RDP.Host
         public override void GoFullScreen()
         {
             Debug.Assert(this.ParentWindow != null);
+
+            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
+            else
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
+
+            Context.DbOperator.DbUpdateServer(_rdpServer);
             _rdp.FullScreen = true;
         }
 

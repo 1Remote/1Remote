@@ -152,6 +152,7 @@
   "server_editor_group_title_gateway": "Remotedesktop-Gatewayserver",
   // server editor - common group items
   "server_editor_group": "Gruppe",
+  "server_editor_tags_tag": "Can enter multiple, separated by ','",
   "server_editor_icon": "Logo",
   "server_editor_color_mark": "Farbe",
   "server_editor_cmd_before_connected": "App vorher starten",
