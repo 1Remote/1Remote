@@ -108,10 +108,15 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <utils:AutoCompleteComboBox x:Name="TbGroup"
+                                        <TextBox x:Name="TbGroup" Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                                 ToolTip="{DynamicResource server_editor_tags_tag}"
+                                                 Tag="{DynamicResource server_editor_tags_tag}">
+                                        </TextBox>
+                                            <!--<utils:AutoCompleteComboBox x:Name="TbGroup"
                                                                     Text="{Binding Server.Tags, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding GroupSelections}"
-                                                                    ></utils:AutoCompleteComboBox>
+                                        ></utils:AutoCompleteComboBox>-->
                                     </Grid>
                                 </StackPanel>
                             </Grid>
