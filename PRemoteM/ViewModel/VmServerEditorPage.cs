@@ -28,7 +28,7 @@ namespace PRM.ViewModel
         public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
         {
             _context = context;
-            _orgServer = server;
+            _orgServer = (ProtocolServerBase)server.Clone();
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
             if (_isDuplicate)
@@ -213,6 +213,26 @@ namespace PRM.ViewModel
 
         public List<string> NameSelections { get; set; }
         public List<string> GroupSelections { get; set; }
+
+        private string _tags = null;
+        public string Tags
+        {
+            get
+            {
+                if (_tags == null)
+                {
+                    _tags = "";
+                    if (Server.Tags.Count > 0)
+                        _tags = string.Join(", ", Server.Tags);
+                }
+                return _tags;
+            }
+            set
+            {
+                SetAndNotifyIfChanged(ref _tags, value);
+                Server.Tags = _tags.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+            }
+        }
 
         private RelayCommand _cmdSave;
 
