@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Core;
@@ -718,6 +720,105 @@ namespace PRM.ViewModel
                     });
                 }
                 return _cmdConnectSelected;
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand _cmdTagDelete;
+
+        public RelayCommand CmdTagDelete
+        {
+            get
+            {
+                if (_cmdTagDelete == null)
+                {
+                    _cmdTagDelete = new RelayCommand((o) =>
+                    {
+                        var obj = o as string;
+                        foreach (var vmProtocolServer in _context.AppData.VmItemList.ToArray())
+                        {
+                            var s = vmProtocolServer.Server;
+                            if (s.Tags.Contains(obj))
+                            {
+                                s.Tags.Remove(obj);
+                            }
+                            _context.AppData.ServerListUpdate(s, false);
+                        }
+                        _context.AppData.ServerListUpdate();
+                    });
+                }
+                return _cmdTagDelete;
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand _cmdTagRename;
+
+        public RelayCommand CmdTagRename
+        {
+            get
+            {
+                if (_cmdTagRename == null)
+                {
+                    // todo open a dialog to type in new tag name.
+
+                    string newTag = "123";
+                    _cmdTagRename = new RelayCommand((o) =>
+                    {
+                        var obj = o as string;
+                        foreach (var vmProtocolServer in _context.AppData.VmItemList.ToArray())
+                        {
+                            var s = vmProtocolServer.Server;
+                            if (s.Tags.Contains(obj))
+                            {
+                                s.Tags.Remove(obj);
+                                s.Tags.Add(newTag);
+                            }
+                            _context.AppData.ServerListUpdate(s, false);
+                        }
+                        _context.AppData.ServerListUpdate();
+                    });
+                }
+                return _cmdTagRename;
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand _cmdTagConnect;
+
+        public RelayCommand CmdTagConnect
+        {
+            get
+            {
+                if (_cmdTagConnect == null)
+                {
+                    _cmdTagConnect = new RelayCommand((o) =>
+                    {
+                        var obj = o as string;
+                        foreach (var vmProtocolServer in _context.AppData.VmItemList.ToArray())
+                        {
+                            if (vmProtocolServer.Server.Tags.Contains(obj))
+                            {
+                                vmProtocolServer.CmdConnServer.Execute();
+                                Thread.Sleep(100);
+                            }
+                        }
+                    });
+                }
+
+                return _cmdTagConnect;
             }
         }
     }

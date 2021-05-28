@@ -275,6 +275,9 @@
     </Style>
 
 
+    <!-- End of Flat ComboBox -->
+
+
 
 
 
@@ -311,10 +314,6 @@
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
         <Setter Property="Margin" Value="50 20 0 10"></Setter>
     </Style>
-
-
-    <!-- End of Flat ComboBox -->
-
 
 
     <Style x:Key="CheckBoxSwitchStyle" TargetType="{x:Type CheckBox}">
@@ -430,4 +429,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+
 </ResourceDictionary>
