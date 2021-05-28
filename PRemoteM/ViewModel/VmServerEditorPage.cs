@@ -162,7 +162,8 @@ namespace PRM.ViewModel
             {
                 tags.AddRange(t);
             }
-            GroupSelections = tags.Distinct().ToList();
+
+            TagSelections = tags.Distinct().OrderBy(x => x).ToList();
         }
 
         public string Title { get; set; }
@@ -212,27 +213,7 @@ namespace PRM.ViewModel
         }
 
         public List<string> NameSelections { get; set; }
-        public List<string> GroupSelections { get; set; }
-
-        private string _tags = null;
-        public string Tags
-        {
-            get
-            {
-                if (_tags == null)
-                {
-                    _tags = "";
-                    if (Server.Tags.Count > 0)
-                        _tags = string.Join(", ", Server.Tags);
-                }
-                return _tags;
-            }
-            set
-            {
-                SetAndNotifyIfChanged(ref _tags, value);
-                Server.Tags = _tags.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
-            }
-        }
+        public List<string> TagSelections { get; set; }
 
         private RelayCommand _cmdSave;
 

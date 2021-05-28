@@ -114,8 +114,7 @@
                 </TextBlock>
 
 
-                <!--<local:TagsEditor Grid.Column="4" Margin="5 0" MaxWidth="100" Tags="{Binding Server.Tags}"></local:TagsEditor>-->
-                <ItemsControl Grid.Column="4" Margin="5 0" MaxWidth="100" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
+                <ItemsControl Grid.Column="4" Margin="5 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />

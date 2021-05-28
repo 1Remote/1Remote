@@ -78,7 +78,10 @@ namespace PRM.Core.Protocol
             get
             {
                 if (string.IsNullOrEmpty(GroupName) == false && (_tags == null || _tags.Count == 0))
-                    _tags = new List<string>() { GroupName};
+                {
+                    _tags = new List<string>() { GroupName };
+                    GroupName = string.Empty;
+                }
                 _tags = _tags.Distinct().ToList();
                 return _tags;
             }
@@ -98,7 +101,20 @@ namespace PRM.Core.Protocol
         }
 
         [JsonIgnore]
-        public BitmapSource IconImg => Convert.FromBase64String(_iconBase64).BitmapFromBytes().ToBitmapSource();
+        public BitmapSource IconImg
+        {
+            get
+            {
+                try
+                {
+                    return Convert.FromBase64String(_iconBase64).BitmapFromBytes().ToBitmapSource();
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+        }
 
 
         private string _markColorHex = "#FFFFFF";

@@ -30,6 +30,7 @@
   "word_lock": "Lock",
   "word_topmost": "Always on top",
   "word_close_all": "Close all",
+  "word_rename": "Rename",
 
   "filter_mainwindow": "Input your keywords",
   "filter_searchbox": "Search (Ctrl+F)",
