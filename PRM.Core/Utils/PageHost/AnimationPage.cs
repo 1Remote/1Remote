@@ -1,10 +1,17 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace Shawn.Utils.PageHost
 {
     public class AnimationPage
     {
+        ~AnimationPage()
+        {
+            Console.WriteLine($"Release {this.GetType().Name}({this.GetHashCode()})");
+        }
+
         public InOutAnimationType InAnimationType { get; set; } = InOutAnimationType.None;
         public InOutAnimationType OutAnimationType { get; set; } = InOutAnimationType.None;
         public UserControl Page { get; set; } = null;
