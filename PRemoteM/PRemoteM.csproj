@@ -166,6 +166,7 @@
       <DependentUpon>TagsEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />

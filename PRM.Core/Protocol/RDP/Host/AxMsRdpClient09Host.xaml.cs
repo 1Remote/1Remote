@@ -47,6 +47,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
         ~AxMsRdpClient09Host()
         {
+            Console.WriteLine($"Release {this.GetType().Name}({this.GetHashCode()})");
             Dispose();
         }
 
