@@ -27,7 +27,7 @@ namespace PRM.View
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            Vm.SelectedGroup = "";
+            Vm.SelectedTag = "";
         }
 
         private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)
