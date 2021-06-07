@@ -12,8 +12,8 @@ namespace PRM.Core.Model
         ProtocolDesc = 1,
         NameAsc = 2,
         NameDesc = 3,
-        GroupNameAsc = 4,
-        GroupNameDesc = 5,
+        //TagAsc = 4,
+        //TagDesc = 5,
         AddressAsc = 6,
         AddressDesc = 7,
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,15 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Threading;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
@@ -23,10 +19,6 @@ using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
-
-using Shawn.Utils;
-
-using MessageBox = System.Windows.MessageBox;
 
 namespace PRM.ViewModel
 {
@@ -75,24 +67,24 @@ namespace PRM.ViewModel
 
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
-        private ObservableCollection<string> _serverGroupList = new ObservableCollection<string>();
+        private ObservableCollection<string> _serverTagList = new ObservableCollection<string>();
 
-        public ObservableCollection<string> ServerGroupList
+        public ObservableCollection<string> ServerTagList
         {
-            get => _serverGroupList;
-            set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
+            get => _serverTagList;
+            set => SetAndNotifyIfChanged(nameof(ServerTagList), ref _serverTagList, value);
         }
 
-        private string _selectedGroup = "";
+        private string _selectedTag = "";
 
-        public string SelectedGroup
+        public string SelectedTag
         {
-            get => _selectedGroup;
+            get => _selectedTag;
             set
             {
-                if (_selectedGroup == value) return;
+                if (_selectedTag == value) return;
                 _context.AppData.MainWindowServerFilter = "";
-                SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
+                SetAndNotifyIfChanged(nameof(SelectedTag), ref _selectedTag, value);
                 SystemConfig.Instance.Locality.MainWindowTabSelected = value;
                 CalcVisible();
             }
@@ -137,7 +129,7 @@ namespace PRM.ViewModel
                 }
             }
             OrderServerList();
-            RebuildGroupList();
+            RebuildTagList();
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -162,31 +154,31 @@ namespace PRM.ViewModel
             }
         }
 
-        private void RebuildGroupList()
+        private void RebuildTagList()
         {
-            var selectedGroup = _selectedGroup;
+            var selectedTag = _selectedTag;
 
-            ServerGroupList.Clear();
+            ServerTagList.Clear();
             foreach (var serverAbstract in ServerListItems.Select(x => x.Server))
             {
                 foreach (var tag in serverAbstract.Tags)
                 {
                     if (!string.IsNullOrEmpty(tag) &&
-                        !ServerGroupList.Contains(tag))
+                        !ServerTagList.Contains(tag))
                     {
-                        ServerGroupList.Add(tag);
+                        ServerTagList.Add(tag);
                     }
                 }
             }
-            if (ServerGroupList.Contains(selectedGroup))
-                SelectedGroup = selectedGroup;
+            if (ServerTagList.Contains(selectedTag))
+                SelectedTag = selectedTag;
             else if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected)
-                && ServerGroupList.Contains(SystemConfig.Instance.Locality.MainWindowTabSelected))
+                && ServerTagList.Contains(SystemConfig.Instance.Locality.MainWindowTabSelected))
             {
-                SelectedGroup = SystemConfig.Instance.Locality.MainWindowTabSelected;
+                SelectedTag = SystemConfig.Instance.Locality.MainWindowTabSelected;
             }
             else
-                SelectedGroup = "";
+                SelectedTag = "";
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -214,13 +206,13 @@ namespace PRM.ViewModel
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
                     break;
 
-                case EnumServerOrderBy.GroupNameAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Ascending));
-                    break;
+                //case EnumServerOrderBy.TagAsc:
+                //    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Ascending));
+                //    break;
 
-                case EnumServerOrderBy.GroupNameDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Descending));
-                    break;
+                //case EnumServerOrderBy.TagDesc:
+                //    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Descending));
+                //    break;
 
                 case EnumServerOrderBy.AddressAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
@@ -247,10 +239,10 @@ namespace PRM.ViewModel
             {
                 var server = card.Server;
                 string keyWord = _context.AppData.MainWindowServerFilter;
-                string selectedGroup = SelectedGroup;
+                string selectedTag = SelectedTag;
 
-                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.Tags?.Contains(selectedGroup) == true;
-                if (!bGroupMatched)
+                bool bTagMatched = string.IsNullOrEmpty(selectedTag) || server.Tags?.Contains(selectedTag) == true;
+                if (!bTagMatched)
                 {
                     card.ObjectVisibilityInList = Visibility.Collapsed;
                     continue;
@@ -287,7 +279,7 @@ namespace PRM.ViewModel
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedGroup);
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedTag);
                 });
             }
         }
@@ -319,7 +311,7 @@ namespace PRM.ViewModel
                                     list.Add(serverBase);
                                 }
                             else
-                                foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true))
+                                foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTag) || x.Server.Tags?.Contains(SelectedTag) == true) && x.IsSelected == true))
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                     _context.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
@@ -408,11 +400,11 @@ namespace PRM.ViewModel
                             }
                             try
                             {
-                                var groupNames = new Dictionary<string, string>(); // id -> name
+                                var tagNames = new Dictionary<string, string>(); // id -> name
                                 var list = new List<ProtocolServerBase>();
                                 using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
                                 {
-                                    var groupParents = new Dictionary<string, string>(); // id -> name
+                                    var tagParents = new Dictionary<string, string>(); // id -> name
                                     var firstLine = sr.ReadLine();
                                     if (string.IsNullOrWhiteSpace(firstLine))
                                         return;
@@ -430,22 +422,22 @@ namespace PRM.ViewModel
                                             var nodeType = getValue(title, arr, "NodeType").ToLower();
                                             if (string.Equals("Container", nodeType, StringComparison.CurrentCultureIgnoreCase))
                                             {
-                                                groupNames.Add(id, name);
-                                                groupParents.Add(id, parentId);
+                                                tagNames.Add(id, name);
+                                                tagParents.Add(id, parentId);
                                             }
                                         }
                                     }
 
-                                    foreach (var kv in groupNames.ToArray())
+                                    foreach (var kv in tagNames.ToArray())
                                     {
                                         var name = kv.Value;
-                                        var pid = groupParents[kv.Key];
-                                        while (groupNames.ContainsKey(pid))
+                                        var pid = tagParents[kv.Key];
+                                        while (tagNames.ContainsKey(pid))
                                         {
-                                            name = $"{groupNames[pid]}-{name}";
-                                            pid = groupParents[pid];
+                                            name = $"{tagNames[pid]}-{name}";
+                                            pid = tagParents[pid];
                                         }
-                                        groupNames[kv.Key] = name;
+                                        tagNames[kv.Key] = name;
                                     }
                                 }
 
@@ -472,8 +464,8 @@ namespace PRM.ViewModel
                                             if (!string.Equals("Connection", nodeType, StringComparison.CurrentCultureIgnoreCase))
                                                 continue;
                                             List<string> tags = null;
-                                            if (groupNames.ContainsKey(parentId))
-                                                tags = new List<string>() {groupNames[parentId]};
+                                            if (tagNames.ContainsKey(parentId))
+                                                tags = new List<string>() {tagNames[parentId]};
                                             
                                             var protocol = getValue(title, arr, "protocol").ToLower();
                                             var user = getValue(title, arr, "username");
@@ -613,7 +605,7 @@ namespace PRM.ViewModel
                             SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {
-                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true).ToList();
+                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTag) || x.Server.Tags?.Contains(SelectedTag) == true) && x.IsSelected == true).ToList();
                             if (!(ss?.Count > 0)) return;
                             foreach (var vs in ss)
                             {
@@ -621,7 +613,7 @@ namespace PRM.ViewModel
                             }
                             _context.AppData.ServerListUpdate();
                         }
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTag) || x.Server.Tags?.Contains(SelectedTag) == true) && x.IsSelected == true));
                 }
                 return _cmdDeleteSelected;
             }
@@ -638,7 +630,7 @@ namespace PRM.ViewModel
                     _cmdMultiEditSelected = new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.Tags?.Contains(SelectedGroup) == true) && x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTag) || x.Server.Tags?.Contains(SelectedTag) == true) && x.IsSelected == true));
                 }
                 return _cmdMultiEditSelected;
             }

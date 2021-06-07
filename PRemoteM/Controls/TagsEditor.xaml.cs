@@ -67,7 +67,7 @@ namespace PRM.Controls
             ListViewTags.MouseMove += ListViewTagsOnMouseMove;
             TextBox.MouseMove += ListViewTagsOnMouseMove;
             TextBox.KeyDown += TextBoxOnKeyDown;
-            TextBox.MouseLeave += (sender, args) =>
+            TextBox.LostFocus += (sender, args) =>
             {
                 Parse();
             };
@@ -141,14 +141,15 @@ namespace PRM.Controls
                     && (DateTime.Now - _lastMouseMove).TotalMilliseconds > 1000)
                     if (ListViewTags.IsMouseOver == false && TextBox.IsMouseOver == false && string.IsNullOrWhiteSpace(TextBox.Text) == false)
                     {
-                        TextBox.Visibility = Visibility.Hidden;
-                        ListViewTags.Visibility = Visibility.Visible;
+                        Parse();
                     }
             });
         }
 
         private void Parse()
         {
+            TextBox.Visibility = Visibility.Hidden;
+            ListViewTags.Visibility = Visibility.Visible;
             if (_lastValue != TextBox.Text)
             {
                 var newTags = TextBox.Text.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).Distinct().OrderBy(x => x).ToList();

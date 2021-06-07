@@ -82,7 +82,7 @@ namespace PRM.Core.Protocol
                     _tags = new List<string>() { GroupName };
                     GroupName = string.Empty;
                 }
-                _tags = _tags.Distinct().ToList();
+                _tags = _tags?.Distinct()?.ToList();
                 return _tags;
             }
             set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
