@@ -267,7 +267,7 @@
                                     </Grid>
                                 </commoncontrols:ButtonEx>
 
-                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <!--<commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
                                                          Margin="0 0 10 0"
                                                                     Background="{DynamicResource MainBgColorBrush}"
                                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}"
@@ -277,7 +277,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupNameAsc}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.TagAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -288,7 +288,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupNameDesc}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.TagDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -297,7 +297,7 @@
                                         </Path>
                                         <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_group}"></TextBlock>
                                     </Grid>
-                                </commoncontrols:ButtonEx>
+                                </commoncontrols:ButtonEx>-->
 
                                 <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource MainColor1ButtonRadius3}"
                                                          Margin="0 0 10 0"
@@ -549,11 +549,11 @@
                                         <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding SelectedGroup}" Value="">
+                                    <DataTrigger Binding="{Binding SelectedTag}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </DataTrigger>
@@ -569,8 +569,8 @@
                         <StackPanel Orientation="Horizontal">
                             <ListBox
                                     IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding ServerGroupList}"
-                                    SelectedValue="{Binding SelectedGroup}"
+                                    ItemsSource="{Binding ServerTagList}"
+                                    SelectedValue="{Binding SelectedTag}"
                                     Background="{DynamicResource MainColor1Brush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
