@@ -115,6 +115,29 @@ namespace PRM.ViewModel
                     }
                 }
 
+                // tags
+                List<string> tags = new List<string>();
+                if (servers.All(x => x.Tags.Count == servers.First().Tags.Count))
+                {
+                    bool flag = true;
+                    foreach (var tag in servers.First().Tags)
+                    {
+                        if (servers.All(x => x.Tags.Contains(tag)) == false)
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+
+                    if (servers.First().Tags.Count == 0 || flag)
+                        tags = new List<string>(servers.First().Tags);
+                    else
+                        tags.Add(Server.Server_editor_different_options);
+                }
+                else
+                    tags.Add(Server.Server_editor_different_options);
+
+                Server.Tags = tags;
 
                 // init ui
                 ReflectProtocolEditControl(_orgServersCommonType);
@@ -232,7 +255,8 @@ namespace PRM.ViewModel
                         {
                             if (property.SetMethod?.IsPublic == true 
                                 && property.SetMethod.IsAbstract == false
-                                && property.Name != nameof(ProtocolServerBase.Id))
+                                && property.Name != nameof(ProtocolServerBase.Id)
+                                && property.Name != nameof(ProtocolServerBase.Tags))
                             {
                                 var obj = property.GetValue(Server);
                                 if(obj == null)
@@ -244,6 +268,29 @@ namespace PRM.ViewModel
                                     {
                                         property.SetValue(server, obj);
                                     }
+                            }
+                        }
+
+
+                        // merge tags
+                        if (Server.Tags.Contains(Server.Server_editor_different_options))
+                        {
+                            foreach (var server in _orgServers)
+                            {
+                                foreach (var tag in Server.Tags)
+                                {
+                                    if (tag != Server.Server_editor_different_options)
+                                        server.Tags.Add(tag);
+                                }
+
+                                server.Tags = server.Tags.Distinct().ToList();
+                            }
+                        }
+                        else
+                        {
+                            foreach (var server in _orgServers)
+                            {
+                                server.Tags = Server.Tags;
                             }
                         }
 
