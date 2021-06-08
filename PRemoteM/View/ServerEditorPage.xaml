@@ -106,9 +106,9 @@
 
                             <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_tag}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls2:TagsEditor Width="600"
+                                        <controls2:TagsEditor Width="600" x:Name="TagsEditor"
                                                               Tags="{Binding Server.Tags, Mode=TwoWay}"
                                                               TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls2:TagsEditor>
                                     </Grid>

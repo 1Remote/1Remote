@@ -135,6 +135,7 @@
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
+    <Compile Include="Model\Tag.cs" />
     <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml.cs">
       <DependentUpon>ProtocolServerWithAddrPortBaseForm.xaml</DependentUpon>
     </Compile>
