@@ -67,10 +67,8 @@ namespace PRM.Controls
             ListViewTags.MouseMove += ListViewTagsOnMouseMove;
             TextBox.MouseMove += ListViewTagsOnMouseMove;
             TextBox.KeyDown += TextBoxOnKeyDown;
-            TextBox.LostFocus += (sender, args) =>
-            {
-                Parse();
-            };
+            TextBox.LostFocus += (sender, args) => Parse();
+            this.LostFocus += (sender, args) => Parse();
             ListViewTagsForSelect.SelectionChanged += Selector_OnSelectionChanged;
             ListViewTagsForSelect.MouseLeave += (sender, args) => ListViewTagsForSelectClose();
 
@@ -146,7 +144,7 @@ namespace PRM.Controls
             });
         }
 
-        private void Parse()
+        public void Parse()
         {
             TextBox.Visibility = Visibility.Hidden;
             ListViewTags.Visibility = Visibility.Visible;

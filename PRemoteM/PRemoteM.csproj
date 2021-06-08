@@ -153,6 +153,9 @@
     <Compile Include="Controls\AutoCompleteComboBox.xaml.cs">
       <DependentUpon>AutoCompleteComboBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\InputWindow.xaml.cs">
+      <DependentUpon>InputWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
@@ -209,6 +212,10 @@
     <Page Include="Controls\AutoCompleteComboBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\InputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LogoSelector.xaml">
       <Generator>MSBuild:Compile</Generator>

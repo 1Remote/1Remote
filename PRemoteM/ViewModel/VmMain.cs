@@ -137,11 +137,11 @@ namespace PRM.ViewModel
                 Window.ActivateMe();
             });
 
-            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((groupName, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagName, isInAnimationShow) =>
             {
                 var server = new ProtocolServerRDP();
-                if (string.IsNullOrWhiteSpace(groupName) == false)
-                    server.Tags = new List<string>() {groupName};
+                if (string.IsNullOrWhiteSpace(tagName) == false)
+                    server.Tags = new List<string>() {tagName};
 
                 DispPage = new AnimationPage()
                 {

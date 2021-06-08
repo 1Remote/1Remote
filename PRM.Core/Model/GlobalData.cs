@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace PRM.Core.Model
             {
                 if (value != _mainWindowServerFilter)
                 {
-                    SetAndNotifyIfChanged(nameof(MainWindowServerFilter), ref _mainWindowServerFilter, value);
+                    SetAndNotifyIfChanged(ref _mainWindowServerFilter, value);
                     OnMainWindowServerFilterChanged?.Invoke(value);
                 }
             }
@@ -44,9 +45,55 @@ namespace PRM.Core.Model
             get => _vmItemList;
             set
             {
-                SetAndNotifyIfChanged(nameof(VmItemList), ref _vmItemList, value);
+                SetAndNotifyIfChanged(ref _vmItemList, value);
                 VmItemListDataChanged?.Invoke();
             }
+        }
+
+        private ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();
+        public ObservableCollection<Tag> Tags
+        {
+            get => _tags;
+            set => SetAndNotifyIfChanged(ref _tags, value);
+        }
+
+        private string _selectedTagName = "";
+        public string SelectedTagName
+        {
+            get => _selectedTagName;
+            set
+            {
+                if (_selectedTagName == value) return;
+                MainWindowServerFilter = "";
+                SetAndNotifyIfChanged(nameof(SelectedTagName), ref _selectedTagName, value);
+                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+            }
+        }
+
+        private void UpdateTags()
+        {
+            var t = SelectedTagName;
+
+            // set pinned
+            var allExistedTags = Tag.GetPinnedTags();
+            var pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
+
+            // get distinct tag from servers
+            var tags = new List<Tag>();
+            foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
+            {
+                foreach (var tagName in tagNames)
+                {
+                    if (tags.All(x => x.Name != tagName))
+                        tags.Add(new Tag(tagName, allExistedTags.ContainsKey(tagName) == false || pinnedTags.Contains(tagName) ? true : false) { ItemsCount = 1 });
+                    else
+                        tags.First(x => x.Name == tagName).ItemsCount++;
+                }
+            }
+
+            Tags = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
+            Tag.UpdateTagsCache(tags);
+            SelectedTagName = t;
         }
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null, bool doInvoke = true)
@@ -96,6 +143,8 @@ namespace PRM.Core.Model
                 _dbOperator.DbAddServer(protocolServer);
                 ServerListUpdate(null, doInvoke);
             }
+
+            UpdateTags();
         }
 
         public void ServerListClearSelect()

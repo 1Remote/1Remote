@@ -23,6 +23,8 @@ namespace PRM.View
             InitializeComponent();
             Vm = vm;
             DataContext = vm;
+            vm.TagsEditor = TagsEditor;
+
             // add mode
             if (vm.IsAddMode)
             {

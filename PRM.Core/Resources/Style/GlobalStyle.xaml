@@ -325,7 +325,7 @@
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="OnChecking">
                             <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="slider" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="36" />
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="16" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="OnUnchecking">
@@ -337,13 +337,14 @@
                     <DockPanel x:Name="dockPanel">
                         <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                         <Grid>
-                            <Border BorderBrush="#FF939393" BorderThickness="1" CornerRadius="8" Height="{TemplateBinding Height}" Width="80">
+                            <Border Name="Border" BorderBrush="{DynamicResource MainColor1Brush}" BorderThickness="1" 
+                                    CornerRadius="8" Height="{TemplateBinding Height}" Width="40">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                        <GradientStop Color="#38abcf" Offset="0" />
-                                        <GradientStop Color="#38abcf" Offset="0.5" />
-                                        <GradientStop Color="#d9d9d9" Offset="0.51" />
-                                        <GradientStop Color="#d9d9d9" Offset="1" />
+                                        <GradientStop Color="{DynamicResource MainColor2}" Offset="0" />
+                                        <GradientStop Color="{DynamicResource MainColor2}" Offset="0.5" />
+                                        <GradientStop Color="{DynamicResource MainBgColor}" Offset="0.51" />
+                                        <GradientStop Color="{DynamicResource MainBgColor}" Offset="1" />
                                     </LinearGradientBrush>
                                 </Border.Background>
                                 <Grid>
@@ -351,15 +352,13 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <Ellipse x:Name="Off" Width="14" Height="14" Stroke="#FF7A7A7A" StrokeThickness="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <Line x:Name="On" X1="0" Y1="0" X2="0" Y2="14" Stroke="White" StrokeThickness="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Grid>
                             </Border>
-                            <Border BorderBrush="#FF939393" HorizontalAlignment="Left" x:Name="slider" 
-                                    Width="44" 
+                            <Border BorderBrush="{DynamicResource MainColor1Brush}" HorizontalAlignment="Left" x:Name="slider" 
+                                    Width="24" 
                                     Height="{TemplateBinding Height}" 
                                     BorderThickness="1" 
-                                    CornerRadius="8" RenderTransformOrigin="0.5,0.5" Margin="0">
+                                    CornerRadius="{Binding ElementName=Border, Path= CornerRadius}" RenderTransformOrigin="0.5,0.5" Margin="0">
                                 <Border.RenderTransform>
                                     <TransformGroup>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -370,9 +369,8 @@
                                 </Border.RenderTransform>
                                 <Border.Background>
                                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                        <GradientStop Color="#FFF0F0F0" Offset="0" />
-                                        <GradientStop Color="#FFCDCDCD" Offset="0.1" />
-                                        <GradientStop Color="#FFFBFBFB" Offset="1" />
+                                        <GradientStop Color="{DynamicResource MainColor2Foreground}" Offset="0" />
+                                        <GradientStop Color="{DynamicResource MainColor2Foreground}" Offset="1" />
                                     </LinearGradientBrush>
                                 </Border.Background>
                             </Border>

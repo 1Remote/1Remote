@@ -95,24 +95,30 @@ namespace PRM.Core.Protocol
             get => _iconBase64;
             set
             {
+                iconCache = null;
                 SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
                 RaisePropertyChanged(nameof(IconImg));
             }
         }
+
+        private BitmapSource iconCache = null;
 
         [JsonIgnore]
         public BitmapSource IconImg
         {
             get
             {
+                if (iconCache != null)
+                    return iconCache;
                 try
                 {
-                    return Convert.FromBase64String(_iconBase64).BitmapFromBytes().ToBitmapSource();
+                    iconCache = Convert.FromBase64String(_iconBase64).BitmapFromBytes().ToBitmapSource();
                 }
                 catch (Exception)
                 {
                     return null;
                 }
+                return iconCache;
             }
         }
 
