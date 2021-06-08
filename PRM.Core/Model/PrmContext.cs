@@ -38,9 +38,5 @@ namespace PRM.Core.Model
                 AppData.SetDbOperator(DbOperator);
             return ret;
         }
-
-        //public void InitMysqlDb(string connectionString)
-        //{
-        //}
     }
 }
