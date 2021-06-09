@@ -6,14 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using PRM.Controls;
 using PRM.Core;
-using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
@@ -22,29 +21,34 @@ using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
 
-using Shawn.Utils;
-
-using MessageBox = System.Windows.MessageBox;
-
 namespace PRM.ViewModel
 {
     public class VmServerListPage : NotifyPropertyChangedBase
     {
-        private readonly PrmContext _context;
+        public const string TagsListViewMark = "tags_selector_for_list@#@1__()!";
+        public PrmContext PrmContext { get; }
         private readonly ListBox _list;
 
-        public VmServerListPage(PrmContext context, ListBox list)
+        public VmServerListPage(PrmContext prmContext, ListBox list)
         {
-            _context = context;
+            PrmContext = prmContext;
             _list = list;
             RebuildVmServerList();
-            _context.AppData.VmItemListDataChanged += RebuildVmServerList;
+            PrmContext.AppData.VmItemListDataChanged += RebuildVmServerList;
 
-            _context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
+            PrmContext.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
                 RaisePropertyChanged(nameof(IsMultipleSelected));
             });
+
+            PrmContext.AppData.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(GlobalData.SelectedTagName))
+                {
+                    CalcVisible();
+                }
+            };
         }
 
         private VmProtocolServer _selectedServerListItem = null;
@@ -73,31 +77,34 @@ namespace PRM.ViewModel
 
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
-        private ObservableCollection<string> _serverGroupList = new ObservableCollection<string>();
 
-        public ObservableCollection<string> ServerGroupList
+        private ObservableCollection<string> _serverTagList = new ObservableCollection<string>();
+        public ObservableCollection<string> ServerTagList
         {
-            get => _serverGroupList;
-            set => SetAndNotifyIfChanged(nameof(ServerGroupList), ref _serverGroupList, value);
+            get => _serverTagList;
+            set => SetAndNotifyIfChanged(nameof(ServerTagList), ref _serverTagList, value);
         }
 
-        private string _selectedGroup = "";
+        private string SelectedTagName => PrmContext.AppData.SelectedTagName;
 
-        public string SelectedGroup
-        {
-            get => _selectedGroup;
-            set
-            {
-                if (_selectedGroup == value) return;
-                _context.AppData.MainWindowServerFilter = "";
-                SetAndNotifyIfChanged(nameof(SelectedGroup), ref _selectedGroup, value);
-                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
-                CalcVisible();
-            }
-        }
+        //private string _selectedTagName = "";
+        //public string SelectedTagName
+        //{
+        //    get => _selectedTagName;
+        //    set
+        //    {
+        //        if (_selectedTagName == value) return;
+        //        PrmContext.AppData.MainWindowServerFilter = "";
+        //        SetAndNotifyIfChanged(nameof(SelectedTagName), ref _selectedTagName, value);
+        //        SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+        //        CalcVisible();
+        //    }
+        //}
 
         private bool _isSelectedAll;
-
+        /// <summary>
+        /// MultipleSelected all
+        /// </summary>
         public bool IsSelectedAll
         {
             get => _isSelectedAll;
@@ -122,7 +129,7 @@ namespace PRM.ViewModel
         private void RebuildVmServerList()
         {
             _serverListItems.Clear();
-            foreach (var vs in _context.AppData.VmItemList)
+            foreach (var vs in PrmContext.AppData.VmItemList)
             {
                 ServerListItems.Add(vs);
                 try
@@ -135,7 +142,6 @@ namespace PRM.ViewModel
                 }
             }
             OrderServerList();
-            RebuildGroupList();
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -160,31 +166,6 @@ namespace PRM.ViewModel
             }
         }
 
-        private void RebuildGroupList()
-        {
-            var selectedGroup = _selectedGroup;
-
-            ServerGroupList.Clear();
-            foreach (var serverAbstract in ServerListItems.Select(x => x.Server))
-            {
-                if (!string.IsNullOrEmpty(serverAbstract.GroupName) &&
-                    !ServerGroupList.Contains(serverAbstract.GroupName))
-                {
-                    ServerGroupList.Add(serverAbstract.GroupName);
-                }
-            }
-            if (ServerGroupList.Contains(selectedGroup))
-                SelectedGroup = selectedGroup;
-            else if (!string.IsNullOrEmpty(SystemConfig.Instance.Locality.MainWindowTabSelected)
-                && ServerGroupList.Contains(SystemConfig.Instance.Locality.MainWindowTabSelected))
-            {
-                SelectedGroup = SystemConfig.Instance.Locality.MainWindowTabSelected;
-            }
-            else
-                SelectedGroup = "";
-            RaisePropertyChanged(nameof(IsMultipleSelected));
-        }
-
         private void OrderServerList()
         {
             if (!(ServerListItems?.Count > 0) || _list?.ItemsSource == null) return;
@@ -193,7 +174,7 @@ namespace PRM.ViewModel
             dataView.SortDescriptions.Clear();
             switch (SystemConfig.Instance.General.ServerOrderBy)
             {
-                case EnumServerOrderBy.Protocol:
+                case EnumServerOrderBy.ProtocolAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Ascending));
                     break;
 
@@ -201,7 +182,7 @@ namespace PRM.ViewModel
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Descending));
                     break;
 
-                case EnumServerOrderBy.Name:
+                case EnumServerOrderBy.NameAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Ascending));
                     break;
 
@@ -209,15 +190,15 @@ namespace PRM.ViewModel
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
                     break;
 
-                case EnumServerOrderBy.GroupName:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Ascending));
-                    break;
+                //case EnumServerOrderBy.TagAsc:
+                //    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Ascending));
+                //    break;
 
-                case EnumServerOrderBy.GroupNameDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.GroupName), ListSortDirection.Descending));
-                    break;
+                //case EnumServerOrderBy.TagDesc:
+                //    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Descending));
+                //    break;
 
-                case EnumServerOrderBy.Address:
+                case EnumServerOrderBy.AddressAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
                     break;
 
@@ -241,11 +222,11 @@ namespace PRM.ViewModel
             foreach (var card in ServerListItems)
             {
                 var server = card.Server;
-                string keyWord = _context.AppData.MainWindowServerFilter;
-                string selectedGroup = SelectedGroup;
+                string keyWord = PrmContext.AppData.MainWindowServerFilter;
+                string selectedTag = SelectedTagName;
 
-                bool bGroupMatched = string.IsNullOrEmpty(selectedGroup) || server.GroupName == selectedGroup;
-                if (!bGroupMatched)
+                bool bTagMatched = string.IsNullOrEmpty(selectedTag) || server.Tags?.Contains(selectedTag) == true;
+                if (!bTagMatched)
                 {
                     card.ObjectVisibilityInList = Visibility.Collapsed;
                     continue;
@@ -260,8 +241,8 @@ namespace PRM.ViewModel
                 var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                 var dispName = server.DispName;
                 var subTitle = server.SubTitle;
-                var matched = _context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                if (matched || server.GroupName == keyWord)
+                var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
+                if (matched || server.Tags?.Contains(keyWord) == true)
                     card.ObjectVisibilityInList = Visibility.Visible;
                 else
                     card.ObjectVisibilityInList = Visibility.Collapsed;
@@ -282,7 +263,10 @@ namespace PRM.ViewModel
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedGroup);
+                    if (PrmContext.AppData.Tags.Any(x => x.Name == SelectedTagName))
+                        GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedTagName);
+                    else
+                        GlobalEventHelper.OnGoToServerAddPage?.Invoke();
                 });
             }
         }
@@ -307,17 +291,17 @@ namespace PRM.ViewModel
                         {
                             var list = new List<ProtocolServerBase>();
                             if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
-                                foreach (var vs in _context.AppData.VmItemList)
+                                foreach (var vs in PrmContext.AppData.VmItemList)
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                    _context.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
+                                    PrmContext.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
                                     list.Add(serverBase);
                                 }
                             else
-                                foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true))
+                                foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
                                 {
                                     var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                    _context.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
+                                    PrmContext.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
                                     list.Add(serverBase);
                                 }
                             File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
@@ -356,10 +340,10 @@ namespace PRM.ViewModel
                                     {
                                         server.Id = 0;
                                         list.Add(server);
-                                        _context.DbOperator.DbAddServer(server);
+                                        PrmContext.DbOperator.DbAddServer(server);
                                     }
                                 }
-                                _context.AppData.ServerListUpdate();
+                                PrmContext.AppData.ServerListUpdate();
                                 MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
                             catch (Exception e)
@@ -403,11 +387,11 @@ namespace PRM.ViewModel
                             }
                             try
                             {
-                                var groupNames = new Dictionary<string, string>(); // id -> name
+                                var tagNames = new Dictionary<string, string>(); // id -> name
                                 var list = new List<ProtocolServerBase>();
                                 using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
                                 {
-                                    var groupParents = new Dictionary<string, string>(); // id -> name
+                                    var tagParents = new Dictionary<string, string>(); // id -> name
                                     var firstLine = sr.ReadLine();
                                     if (string.IsNullOrWhiteSpace(firstLine))
                                         return;
@@ -425,22 +409,22 @@ namespace PRM.ViewModel
                                             var nodeType = getValue(title, arr, "NodeType").ToLower();
                                             if (string.Equals("Container", nodeType, StringComparison.CurrentCultureIgnoreCase))
                                             {
-                                                groupNames.Add(id, name);
-                                                groupParents.Add(id, parentId);
+                                                tagNames.Add(id, name);
+                                                tagParents.Add(id, parentId);
                                             }
                                         }
                                     }
 
-                                    foreach (var kv in groupNames.ToArray())
+                                    foreach (var kv in tagNames.ToArray())
                                     {
                                         var name = kv.Value;
-                                        var pid = groupParents[kv.Key];
-                                        while (groupNames.ContainsKey(pid))
+                                        var pid = tagParents[kv.Key];
+                                        while (tagNames.ContainsKey(pid))
                                         {
-                                            name = $"{groupNames[pid]}-{name}";
-                                            pid = groupParents[pid];
+                                            name = $"{tagNames[pid]}-{name}";
+                                            pid = tagParents[pid];
                                         }
-                                        groupNames[kv.Key] = name;
+                                        tagNames[kv.Key] = name;
                                     }
                                 }
 
@@ -466,9 +450,10 @@ namespace PRM.ViewModel
                                             var nodeType = getValue(title, arr, "NodeType").ToLower();
                                             if (!string.Equals("Connection", nodeType, StringComparison.CurrentCultureIgnoreCase))
                                                 continue;
-                                            var group = "";
-                                            if (groupNames.ContainsKey(parentId))
-                                                group = groupNames[parentId];
+                                            List<string> tags = null;
+                                            if (tagNames.ContainsKey(parentId))
+                                                tags = new List<string>() { tagNames[parentId] };
+
                                             var protocol = getValue(title, arr, "protocol").ToLower();
                                             var user = getValue(title, arr, "username");
                                             var pwd = getValue(title, arr, "password");
@@ -485,7 +470,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerRDP()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         UserName = user,
                                                         Password = pwd,
@@ -516,7 +501,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerSSH()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         UserName = user,
                                                         Password = pwd,
@@ -529,7 +514,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerSSH()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         UserName = user,
                                                         Password = pwd,
@@ -542,7 +527,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerVNC()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         Password = pwd,
                                                         Port = port.ToString(),
@@ -553,7 +538,7 @@ namespace PRM.ViewModel
                                                     server = new ProtocolServerTelnet()
                                                     {
                                                         DispName = name,
-                                                        GroupName = group,
+                                                        Tags = tags,
                                                         Address = address,
                                                         Port = port.ToString(),
                                                     };
@@ -572,9 +557,9 @@ namespace PRM.ViewModel
                                 {
                                     foreach (var serverBase in list)
                                     {
-                                        _context.DbOperator.DbAddServer(serverBase);
+                                        PrmContext.DbOperator.DbAddServer(serverBase);
                                     }
-                                    _context.AppData.ServerListUpdate();
+                                    PrmContext.AppData.ServerListUpdate();
                                     MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 }
                                 else
@@ -607,15 +592,15 @@ namespace PRM.ViewModel
                             SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
                             MessageBoxImage.Question, MessageBoxResult.None))
                         {
-                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true).ToList();
+                            var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true).ToList();
                             if (!(ss?.Count > 0)) return;
                             foreach (var vs in ss)
                             {
-                                _context.DbOperator.DbDeleteServer(vs.Server.Id);
+                                PrmContext.DbOperator.DbDeleteServer(vs.Server.Id);
                             }
-                            _context.AppData.ServerListUpdate();
+                            PrmContext.AppData.ServerListUpdate();
                         }
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
                 }
                 return _cmdDeleteSelected;
             }
@@ -632,7 +617,7 @@ namespace PRM.ViewModel
                     _cmdMultiEditSelected = new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedGroup) || x.Server.GroupName == SelectedGroup) && x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
                 }
                 return _cmdMultiEditSelected;
             }
@@ -648,7 +633,7 @@ namespace PRM.ViewModel
                 {
                     _cmdCancelSelected = new RelayCommand((o) =>
                     {
-                        _context.AppData.ServerListClearSelect();
+                        PrmContext.AppData.ServerListClearSelect();
                     });
                 }
                 return _cmdCancelSelected;
@@ -714,6 +699,116 @@ namespace PRM.ViewModel
                     });
                 }
                 return _cmdConnectSelected;
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand _cmdTagDelete;
+
+        public RelayCommand CmdTagDelete
+        {
+            get
+            {
+                if (_cmdTagDelete == null)
+                {
+                    _cmdTagDelete = new RelayCommand((o) =>
+                    {
+                        var obj = o as Tag;
+                        if (obj == null)
+                            return;
+                        foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                        {
+                            var s = vmProtocolServer.Server;
+                            if (s.Tags.Contains(obj.Name))
+                            {
+                                s.Tags.Remove(obj.Name);
+                            }
+                            PrmContext.AppData.ServerListUpdate(s, false);
+                        }
+                        PrmContext.AppData.ServerListUpdate();
+                        PrmContext.AppData.SelectedTagName = "";
+                    });
+                }
+                return _cmdTagDelete;
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand _cmdTagRename;
+
+        public RelayCommand CmdTagRename
+        {
+            get
+            {
+                if (_cmdTagRename == null)
+                {
+                    _cmdTagRename = new RelayCommand((o) =>
+                    {
+                        var t = SelectedTagName;
+                        string newTag = InputWindow.InputBox(SystemConfig.Instance.Language.GetText("server_editor_tag"), SystemConfig.Instance.Language.GetText("server_editor_tag"), t);
+                        if (string.IsNullOrEmpty(newTag) || t == newTag)
+                            return;
+                        var obj = o as Tag;
+                        if (obj == null)
+                            return;
+                        if (t == obj.Name)
+                            t = newTag;
+                        foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                        {
+                            var s = vmProtocolServer.Server;
+                            if (s.Tags.Contains(obj.Name))
+                            {
+                                s.Tags.Remove(obj.Name);
+                                s.Tags.Add(newTag);
+                            }
+                            PrmContext.AppData.ServerListUpdate(s, false);
+                        }
+                        PrmContext.AppData.ServerListUpdate();
+                        PrmContext.AppData.SelectedTagName = t;
+                    });
+                }
+                return _cmdTagRename;
+            }
+        }
+
+
+
+
+
+
+        private RelayCommand _cmdTagConnect;
+
+        public RelayCommand CmdTagConnect
+        {
+            get
+            {
+                if (_cmdTagConnect == null)
+                {
+                    _cmdTagConnect = new RelayCommand((o) =>
+                    {
+                        var obj = o as Tag;
+                        if (obj == null)
+                            return;
+                        foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                        {
+                            if (vmProtocolServer.Server.Tags.Contains(obj.Name))
+                            {
+                                vmProtocolServer.CmdConnServer.Execute();
+                                Thread.Sleep(100);
+                            }
+                        }
+                    });
+                }
+
+                return _cmdTagConnect;
             }
         }
     }

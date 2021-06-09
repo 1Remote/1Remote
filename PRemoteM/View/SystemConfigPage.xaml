@@ -168,28 +168,6 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel.Resources>
-                                <Style TargetType="RadioButton">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
-                                </Style>
-                            </StackPanel.Resources>
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_tab_mode}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <RadioButton Margin="0 2" Grid.Row="0" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToLatestActivate}}" Content="{DynamicResource system_options_general_tab_mode_new_to_latest}" />
-                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToGroup}}" Content="{DynamicResource system_options_general_tab_mode_new_to_group}" />
-                                <RadioButton Margin="0 2" Grid.Row="2" IsChecked="{Binding Path= SystemConfig.General.TabMode, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabMode.NewItemGoesToProtocol}}" Content="{DynamicResource system_options_general_tab_mode_new_to_protocol}" />
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-
                     <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}"></TextBlock>

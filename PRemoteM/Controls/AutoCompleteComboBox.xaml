@@ -46,7 +46,8 @@
                                       ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
                             <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3" IsReadOnly="{TemplateBinding IsReadOnly}" 
                                  Foreground="{TemplateBinding Foreground}"
-                                 Visibility="Hidden" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True" >
+                                 Visibility="Hidden" Background="Transparent"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True" >
                                 <TextBox.Template>
                                     <ControlTemplate TargetType="TextBox" >
                                         <Border Name="PART_ContentHost" Focusable="False" />
@@ -88,7 +89,7 @@
         </Style>
     </UserControl.Resources>
     <Grid Name="Grid">
-        <ComboBox 
+        <ComboBox
             Name="CbContent"
             Style="{StaticResource ComboBoxDefault}"
             Foreground="{Binding ElementName=UserControl, Path=Foreground, Mode=OneWay}"
@@ -101,7 +102,7 @@
             IsTextSearchEnabled="False"
             StaysOpenOnEdit="True">
         </ComboBox>
-        <ComboBox 
+        <ComboBox
             Name="CbNoArray" Visibility="Collapsed"
             Style="{StaticResource ComboBoxNoArray}"
             Foreground="{Binding ElementName=UserControl, Path=Foreground, Mode=OneWay}"

@@ -8,21 +8,14 @@ namespace PRM.Core.Model
     public enum EnumServerOrderBy
     {
         IdAsc = -1,
-        Protocol = 0,
+        ProtocolAsc = 0,
         ProtocolDesc = 1,
-        Name = 2,
+        NameAsc = 2,
         NameDesc = 3,
-        GroupName = 4,
-        GroupNameDesc = 5,
-        Address = 6,
+        //TagAsc = 4,
+        //TagDesc = 5,
+        AddressAsc = 6,
         AddressDesc = 7,
-    }
-
-    public enum EnumTabMode
-    {
-        NewItemGoesToLatestActivate,
-        NewItemGoesToGroup,
-        NewItemGoesToProtocol,
     }
 
     public sealed class SystemConfigGeneral : SystemConfigBase
@@ -60,20 +53,12 @@ namespace PRM.Core.Model
             private set => SetAndNotifyIfChanged(nameof(IconFolderPath), ref _iconFolderPath, value);
         }
 
-        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.Name;
+        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.NameAsc;
 
         public EnumServerOrderBy ServerOrderBy
         {
             get => _serverOrderBy;
             set => SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
-        }
-
-        private EnumTabMode _tabMode = EnumTabMode.NewItemGoesToLatestActivate;
-
-        public EnumTabMode TabMode
-        {
-            get => _tabMode;
-            set => SetAndNotifyIfChanged(nameof(TabMode), ref _tabMode, value);
         }
 
         #region Interface
@@ -87,7 +72,6 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(AppStartAutomatically).ToLower(), _sectionName, AppStartAutomatically.ToString());
             _ini.WriteValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized.ToString());
             _ini.WriteValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString());
-            _ini.WriteValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString());
 
             SimpleLogHelper.Debug($"Set AppStartAutomatically = {AppStartAutomatically}");
 
@@ -113,8 +97,6 @@ namespace PRM.Core.Model
             AppStartMinimized = _ini.GetValue(nameof(AppStartMinimized).ToLower(), _sectionName, AppStartMinimized);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), _sectionName, ServerOrderBy.ToString()), out var so))
                 ServerOrderBy = so;
-            if (Enum.TryParse<EnumTabMode>(_ini.GetValue(nameof(TabMode).ToLower(), _sectionName, TabMode.ToString()), out var tm))
-                TabMode = tm;
             StopAutoSave = false;
 
 #if FOR_MICROSOFT_STORE_ONLY

@@ -30,6 +30,7 @@
   "word_lock": "锁定",
   "word_topmost": "置顶",
   "word_close_all": "全部关闭",
+  "word_rename": "重命名",
 
   "filter_mainwindow": "在此输入关键词",
   "filter_searchbox": "搜索 (Ctrl+F)",
@@ -77,10 +78,6 @@
   "system_options_general_start": "启动",
   "system_options_general_start_when_win_login": "开机自启动",
   "system_options_general_start_minimized": "启动时最小化到托盘",
-  "system_options_general_tab_mode": "Tab管理",
-  "system_options_general_tab_mode_new_to_latest": "显示远程连接到最新的Tab",
-  "system_options_general_tab_mode_new_to_group": "Tab按组显示远程连接",
-  "system_options_general_tab_mode_new_to_protocol": "Tab按远程协议显示远程连接",
   "system_options_general_log_file_path": "日志文件",
   "system_options_general_icons_folder_path": "客制化图标",
   "system_options_general_icons_folder_path_description": "在此放置客制化备选图标",
@@ -155,7 +152,8 @@
   "server_editor_group_title_advantage": "高级",
   "server_editor_group_title_gateway": "RD 网关服务器",
   // server editor - common group items
-  "server_editor_group": "分组",
+  "server_editor_tag": "标签",
+  "server_editor_tags_tag": "可以输入多个，用 ',' 分隔",
   "server_editor_icon": "图标",
   "server_editor_color_mark": "颜色标记",
   "server_editor_cmd_before_connected": "连接前cmd",

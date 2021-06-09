@@ -108,16 +108,30 @@ namespace Shawn.Utils
             return bitmapImage;
         }
 
-        public static Bitmap BitmapFromBytes(byte[] bytes)
+        public static Bitmap BitmapFromBytes(this byte[] bytes)
         {
-            var ms = new MemoryStream(bytes);
-            var ret = new Bitmap(ms);
-            return ret;
+            try
+            {
+                var ms = new MemoryStream(bytes);
+                var ret = new Bitmap(ms);
+                return ret;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public static Bitmap BitmapFromBase64(string base64)
+        public static Bitmap BitmapFromBase64(this string base64)
         {
-            return BitmapFromBytes(Convert.FromBase64String(base64));
+            try
+            {
+                return BitmapFromBytes(Convert.FromBase64String(base64));
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public static byte[] ToBytes(this Image img)
