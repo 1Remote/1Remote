@@ -588,6 +588,15 @@ namespace PRM.Core.Protocol.RDP.Host
             // disconnectReasonByServer (3 (0x3))
             // https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
 
+            try
+            {
+                _resizeEndTimer?.Dispose();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
             if (!string.IsNullOrWhiteSpace(reason)
                 && (_flagHasConnected != true ||
                  e.discReason != UI_ERR_NORMAL_DISCONNECT
@@ -863,9 +872,9 @@ namespace PRM.Core.Protocol.RDP.Host
                     if (_resizeEndStartFire == true)
                     {
                         _resizeEndStartFire = false;
-                        _resizeEndTimer?.Stop();
                         try
                         {
+                            _resizeEndTimer?.Stop();
                             _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                         }
                         catch
@@ -894,8 +903,15 @@ namespace PRM.Core.Protocol.RDP.Host
 
         private void _InvokeResizeEndEnd(object sender, ElapsedEventArgs e)
         {
-            _resizeEndTimer?.Stop();
-            _onResizeEnd?.Invoke();
+            try
+            {
+                _resizeEndTimer?.Stop();
+                _onResizeEnd?.Invoke();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         #endregion WindowOnResizeEnd
