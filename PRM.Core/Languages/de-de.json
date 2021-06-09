@@ -30,6 +30,7 @@
   "word_lock": "Sperren",
   "word_topmost": "Always on top",
   "word_close_all": "Alle schließen",
+  "word_rename": "Umbenennen",
 
   "filter_mainwindow": "Suchbegriffe eingeben",
   "filter_searchbox": "Suche (STRG + F)",
@@ -77,10 +78,6 @@
   "system_options_general_start": "Start",
   "system_options_general_start_when_win_login": "Mit dem Betriebssystem starten",
   "system_options_general_start_minimized": "Minimiert starten",
-  "system_options_general_tab_mode": "Tab-Modus",
-  "system_options_general_tab_mode_new_to_latest": "Neue Verbindung zur letzten Registerkarte anzeigen",
-  "system_options_general_tab_mode_new_to_group": "Neue Verbindung nach Gruppe anzeigen",
-  "system_options_general_tab_mode_new_to_protocol": "Neue Verbindung nach Protokoll anzeigen",
   "system_options_general_log_file_path": "Logdatei",
   "system_options_general_icons_folder_path": "Eigene Icons",
   "system_options_general_icons_folder_path_description": "Eigene Server-Icons hier einfügen",
@@ -155,7 +152,8 @@
   "server_editor_group_title_advantage": "Erweitert",
   "server_editor_group_title_gateway": "Remotedesktop-Gatewayserver",
   // server editor - common group items
-  "server_editor_group": "Gruppe",
+  "server_editor_tag": "Etikett",
+  "server_editor_tags_tag": "Can enter multiple, separated by ','",
   "server_editor_icon": "Logo",
   "server_editor_color_mark": "Farbe",
   "server_editor_cmd_before_connected": "App vorher starten",

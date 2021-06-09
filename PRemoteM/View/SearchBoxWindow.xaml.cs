@@ -131,7 +131,7 @@ namespace PRM.View
 
         private readonly object _keyDownLocker = new object();
 
-        private void TbKeyWord_OnKeyDown(object sender, KeyEventArgs e)
+        private void TbKeyWord_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (_isHidden) return;
             lock (_keyDownLocker)

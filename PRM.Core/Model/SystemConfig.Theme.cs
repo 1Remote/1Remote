@@ -358,6 +358,7 @@ namespace PRM.Core.Model
                 SetKey(rd, "MainBgColor", ColorAndBrushHelper.HexColorToMediaColor(MainBgColor));
                 SetKey(rd, "MainBgColorForeground", ColorAndBrushHelper.HexColorToMediaColor(MainBgColorForeground));
 
+
                 SetKey(rd, "MainColor1Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1));
                 SetKey(rd, "MainColor1LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Lighter));
                 SetKey(rd, "MainColor1DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Darker));
@@ -368,6 +369,10 @@ namespace PRM.Core.Model
                 SetKey(rd, "MainColor2ForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Foreground));
                 SetKey(rd, "MainBgColorBrush", ColorAndBrushHelper.ColorToMediaBrush(MainBgColor));
                 SetKey(rd, "MainBgColorForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainBgColorForeground));
+
+                SetKey(rd, "PrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(MainColor2));
+                SetKey(rd, "DarkPrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Darker));
+                SetKey(rd, "MainColor1Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Foreground));
 
                 foreach (var r in rs)
                 {

@@ -13,9 +13,7 @@ using PRM.Core.Model;
 using PRM.Core.Properties;
 using Shawn.Utils;
 
-using Shawn.Utils;
-
-namespace PRM.Core.Resources.Controls
+namespace PRM.Controls
 {
     public partial class LogoSelector : UserControl, INotifyPropertyChanged
     {

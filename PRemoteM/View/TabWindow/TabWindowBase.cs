@@ -51,6 +51,12 @@ namespace PRM.View.TabWindow
                 var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
                 source.AddHook(new HwndSourceHook(WndProc));
             };
+
+
+            this.Unloaded += (sender, args) =>
+            {
+                _timer4CheckForegroundWindow.Dispose();
+            };
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
