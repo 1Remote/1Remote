@@ -63,8 +63,13 @@ namespace PRM.Model
             GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
         }
 
+        private bool isReleased = false;    
         public void Release()
         {
+            if(isReleased)
+                return;
+            isReleased = true;
+
             foreach (var tabWindow in _tabWindows.ToArray())
             {
                 tabWindow.Value.Hide();
@@ -280,7 +285,7 @@ namespace PRM.Model
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
             _context.DbOperator.DbUpdateServer(vmProtocolServer.Server);
 
-            // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
+            // if is OnlyOneInstance protocol and it is connected now, activate it and return.
             if (ActivateOrReConnIfServerSessionIsOpened(vmProtocolServer))
                 return;
 
@@ -463,31 +468,10 @@ namespace PRM.Model
                 && _tabWindows.ContainsKey(assignTabToken))
                 return _tabWindows[assignTabToken];
 
-            // get TabWindowBase by TabMode
-            TabWindowBase tab = null;
             if (_tabWindows.Count <= 0) return null;
-            switch (SystemConfig.Instance.General.TabMode)
-            {
-                case EnumTabMode.NewItemGoesToGroup:
-                    // work in tab by group mode
-                    if (_tabWindows.Any(x => x.Value.GetViewModel().Tag == server.GroupName))
-                        tab = _tabWindows.First(x => x.Value.GetViewModel().Tag == server.GroupName).Value;
-                    break;
-
-                case EnumTabMode.NewItemGoesToProtocol:
-                    // work in tab by protocol mode
-                    if (_tabWindows.Any(x => x.Value.GetViewModel().Tag == server.ProtocolDisplayName))
-                        tab = _tabWindows.First(x => x.Value.GetViewModel().Tag == server.ProtocolDisplayName).Value;
-                    break;
-
-                case EnumTabMode.NewItemGoesToLatestActivate:
-                default:
-                    // work in tab by latest tab mode
-                    if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
-                        tab = _tabWindows[_lastTabToken];
-                    break;
-            }
-            return tab;
+            if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
+                return _tabWindows[_lastTabToken];
+            return null;
         }
 
         private TabWindowBase CreateNewTabWindow(ProtocolServerBase server)
@@ -502,13 +486,7 @@ namespace PRM.Model
                 AddTab(new TabWindowClassical(token));
             }
             var tab = _tabWindows[token];
-
-            // set tag
-            if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToGroup)
-                tab.GetViewModel().Tag = server.GroupName;
-            else if (SystemConfig.Instance.General.TabMode == EnumTabMode.NewItemGoesToProtocol)
-                tab.GetViewModel().Tag = server.ProtocolDisplayName;
-
+            
             // set location
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
             tab.WindowStartupLocation = WindowStartupLocation.Manual;

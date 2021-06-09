@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:PRM.Controls"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -21,11 +22,11 @@
             </Grid.Margin>
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selecter"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
                     <ColumnDefinition Width="40" SharedSizeGroup="Name"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
@@ -112,20 +113,21 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <TextBlock Grid.Column="4" Margin="5 0" MaxWidth="100"
-                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.GroupName}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="ToolTip" Value="{x:Null}"></Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+
+                <ItemsControl Grid.Column="4" Margin="5 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="system:String">
+                            <Border CornerRadius="5" Padding="5 2" Background="{DynamicResource MainColor2Brush}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3">
+                                <TextBlock Text="{Binding}" Foreground="{DynamicResource MainColor2ForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <TextBlock Grid.Column="5" Margin="5 0" MaxWidth="500"
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"

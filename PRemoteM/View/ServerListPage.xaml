@@ -149,11 +149,11 @@
                                 </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selecter"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
                                     <ColumnDefinition Width="40"   SharedSizeGroup="Name"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="GroupName"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
@@ -213,7 +213,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Protocol}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.ProtocolAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -245,7 +245,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Name}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.NameAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -267,7 +267,7 @@
                                     </Grid>
                                 </commoncontrols:ButtonEx>
 
-                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <!--<commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
                                                          Margin="0 0 10 0"
                                                                     Background="{DynamicResource MainBgColorBrush}"
                                                                     Foreground="{DynamicResource MainBgColorForegroundBrush}"
@@ -277,7 +277,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupName}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.TagAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -288,16 +288,16 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.GroupNameDesc}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.TagDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_group}"></TextBlock>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_tag}"></TextBlock>
                                     </Grid>
-                                </commoncontrols:ButtonEx>
+                                </commoncontrols:ButtonEx>-->
 
                                 <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource MainColor1ButtonRadius3}"
                                                          Margin="0 0 10 0"
@@ -309,7 +309,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.Address}">
+                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.AddressAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -332,7 +332,7 @@
                                 </commoncontrols:ButtonEx>
                             </Grid>
                         </Grid>
-                        <ScrollViewer Name="ScrollViewer" Grid.Row="1" Focusable="false" Padding="{TemplateBinding Padding}"
+                        <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="{TemplateBinding Padding}"
                                       Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
                             <ItemsPresenter Grid.Row="1" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
                                 <ItemsPresenter.Margin>
@@ -358,7 +358,7 @@
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem VmProtocolServer="{Binding}" Height="{StaticResource OneItemHeight}"></controls:ServerListItem>
+                    <controls:ServerListItem VmProtocolServer="{Binding}" MinHeight="{StaticResource OneItemHeight}"></controls:ServerListItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
@@ -506,6 +506,78 @@
             </Grid>
         </Grid>
 
+
+
+
+
+
+
+
+
+        <Grid Margin="0 21 0 0" Background="{DynamicResource MainBgColorBrush}">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <ListBox ItemsSource="{Binding PrmContext.AppData.Tags}" Margin="20" MaxWidth="700">
+                <ListBox.Template>
+                    <ControlTemplate TargetType="ListBox">
+                        <ItemsPresenter></ItemsPresenter>
+                    </ControlTemplate>
+                </ListBox.Template>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel></WrapPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{DynamicResource word_delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="{DynamicResource word_rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="{DynamicResource word_connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="model:Tag">
+                        <Grid Width="300" Margin="20 5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="5" Padding="5 2" Background="{DynamicResource MainColor2Brush}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3">
+                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource MainColor2ForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                            </Border>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                <Label Content="{Binding ItemsCount}" Margin="10 0"></Label>
+                                <CheckBox IsChecked="{Binding IsPinned, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+
+
+
+
         <Grid VerticalAlignment="Top">
             <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="20">
                 <Border.Effect>
@@ -517,6 +589,7 @@
                 <Grid Height="20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
@@ -525,9 +598,7 @@
                                         Click="BtnAllServer_Click"
                                         BorderThickness="0" Content="{DynamicResource tab_all}">
                         <commoncontrols:ButtonEx.Style>
-                            <Style TargetType="{x:Type commoncontrols:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
-                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
-                                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}" />
+                            <Style TargetType="{x:Type commoncontrols:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -549,11 +620,11 @@
                                         <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding SelectedGroup}" Value="">
+                                    <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Null}">
                                         <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
                                     </DataTrigger>
@@ -562,15 +633,52 @@
                         </commoncontrols:ButtonEx.Style>
                     </commoncontrols:ButtonEx>
 
-                    <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto"
+                    <commoncontrols:ButtonEx Grid.Column="1" Padding="0 1 0 0"
+                                        MinWidth="80"
+                                        Click="BtnTagsListView_Click"
+                                        BorderThickness="0" Content="{DynamicResource server_editor_tag}">
+                        <commoncontrols:ButtonEx.Style>
+                            <Style TargetType="{x:Type commoncontrols:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Grid>
+                                                <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    SnapsToDevicePixels="true">
+                                                </Border>
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
+                                    </Trigger>
+                                    <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
+                                        <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </commoncontrols:ButtonEx.Style>
+                    </commoncontrols:ButtonEx>
+
+                    <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto"
                                       Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                       utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                       Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ListBox
                                     IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding ServerGroupList}"
-                                    SelectedValue="{Binding SelectedGroup}"
+                                    ItemsSource="{Binding PrmContext.AppData.Tags}"
+                                    SelectedValuePath="Name"
+                                    SelectedValue="{Binding PrmContext.AppData.SelectedTagName}"
                                     Background="{DynamicResource MainColor1Brush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
@@ -578,6 +686,13 @@
                                     BorderThickness="0"
                                     Margin="0"
                                     Padding="0">
+                                <ListBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{DynamicResource word_delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                                        <MenuItem Header="{DynamicResource word_rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                                        <MenuItem Header="{DynamicResource word_connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                                    </ContextMenu>
+                                </ListBox.ContextMenu>
                                 <ListBox.Style>
                                     <Style TargetType="ListBox">
                                         <Setter Property="Template">
@@ -595,13 +710,13 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListBoxItem">
-                                                    <Border BorderThickness="0" Margin="{TemplateBinding Margin}"
+                                                    <Border BorderThickness="0" Margin="{TemplateBinding Margin}" FocusVisualStyle="{x:Null}"
                                                         Padding="{TemplateBinding Control.Padding}"
                                                         Background="{TemplateBinding Panel.Background}"
                                                         Name="Bd"
                                                         SnapsToDevicePixels="True">
-                                                        <ContentPresenter
-                                                                Content="{TemplateBinding ContentControl.Content}"
+                                                        <ContentPresenter Margin="8 0"
+                                                                Content="{Binding Name}"
                                                                 ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                                 ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
                                                                 HorizontalAlignment="Center"
@@ -609,6 +724,9 @@
                                                                 SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding IsPinned}" Value="false">
+                                                            <Setter Property="Visibility" TargetName="Bd" Value="Collapsed"></Setter>
+                                                        </DataTrigger>
                                                         <Trigger Property="Selector.IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
                                                             <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2Brush}"></Setter>
@@ -664,7 +782,7 @@
                         </StackPanel>
                     </ScrollViewer>
 
-                    <CheckBox Grid.Column="2" Name="CbPopForInExport" Width="30">
+                    <CheckBox Grid.Column="3" Name="CbPopForInExport" Width="30">
                         <CheckBox.Template>
                             <ControlTemplate>
                                 <Border Name="BG" Background="{DynamicResource MainColor1Brush}">

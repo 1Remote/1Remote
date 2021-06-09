@@ -314,7 +314,7 @@
                          Height="44"
                          FontSize="18"
                          Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
-                         PreviewKeyDown="TbKeyWord_OnKeyDown"
+                         PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using PRM.Controls;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -28,7 +29,7 @@ namespace PRM.ViewModel
         public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
         {
             _context = context;
-            _orgServer = server;
+            _orgServer = (ProtocolServerBase)server.Clone();
             Server = (ProtocolServerBase)server.Clone();
             _isDuplicate = isDuplicate;
             if (_isDuplicate)
@@ -115,6 +116,29 @@ namespace PRM.ViewModel
                     }
                 }
 
+                // tags
+                var tags = new List<string>();
+                if (servers.All(x => x.Tags.Count == servers.First().Tags.Count))
+                {
+                    bool flag = true;
+                    foreach (var tag in servers.First().Tags)
+                    {
+                        if (servers.All(x => x.Tags.Contains(tag)) == false)
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+
+                    if (servers.First().Tags.Count == 0 || flag)
+                        tags = new List<string>(servers.First().Tags);
+                    else
+                        tags.Add(Server.Server_editor_different_options);
+                }
+                else
+                    tags.Add(Server.Server_editor_different_options);
+
+                Server.Tags = tags;
 
                 // init ui
                 ReflectProtocolEditControl(_orgServersCommonType);
@@ -135,8 +159,7 @@ namespace PRM.ViewModel
                 var types = assembly.GetTypes();
                 // reflect remote protocols
                 {
-                    ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
-                        .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
+                    ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract).Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
                 }
 
                 // set selected protocol
@@ -153,13 +176,8 @@ namespace PRM.ViewModel
             // decrypt pwd
             _context.DbOperator.DecryptPwdIfItIsEncrypted(Server);
 
-            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DispName)
-                .Distinct()
-                .Where(x => !string.IsNullOrEmpty(x)).ToList();
-
-            GroupSelections = _context.AppData.VmItemList.Select(x => x.Server.GroupName)
-                .Distinct()
-                .Where(x => !string.IsNullOrEmpty(x)).ToList();
+            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DispName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
+            TagSelections = _context.AppData.Tags.Select(x=>x.Name).Distinct().OrderBy(x => x).ToList();
         }
 
         public string Title { get; set; }
@@ -209,10 +227,10 @@ namespace PRM.ViewModel
         }
 
         public List<string> NameSelections { get; set; }
-        public List<string> GroupSelections { get; set; }
+        public List<string> TagSelections { get; set; }
 
+        public TagsEditor TagsEditor { get; set; }
         private RelayCommand _cmdSave;
-
         public RelayCommand CmdSave
         {
             get
@@ -220,6 +238,8 @@ namespace PRM.ViewModel
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
+                    TagsEditor?.Parse();
+
                     if (_orgServers != null)
                     {
                         // copy the same value properties
@@ -228,7 +248,8 @@ namespace PRM.ViewModel
                         {
                             if (property.SetMethod?.IsPublic == true 
                                 && property.SetMethod.IsAbstract == false
-                                && property.Name != nameof(ProtocolServerBase.Id))
+                                && property.Name != nameof(ProtocolServerBase.Id)
+                                && property.Name != nameof(ProtocolServerBase.Tags))
                             {
                                 var obj = property.GetValue(Server);
                                 if(obj == null)
@@ -240,6 +261,29 @@ namespace PRM.ViewModel
                                     {
                                         property.SetValue(server, obj);
                                     }
+                            }
+                        }
+
+
+                        // merge tags
+                        if (Server.Tags.Contains(Server.Server_editor_different_options))
+                        {
+                            foreach (var server in _orgServers)
+                            {
+                                foreach (var tag in Server.Tags)
+                                {
+                                    if (tag != Server.Server_editor_different_options)
+                                        server.Tags.Add(tag);
+                                }
+
+                                server.Tags = server.Tags.Distinct().ToList();
+                            }
+                        }
+                        else
+                        {
+                            foreach (var server in _orgServers)
+                            {
+                                server.Tags = Server.Tags;
                             }
                         }
 

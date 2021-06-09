@@ -23,6 +23,8 @@ namespace PRM.View
             InitializeComponent();
             Vm = vm;
             DataContext = vm;
+            vm.TagsEditor = TagsEditor;
+
             // add mode
             if (vm.IsAddMode)
             {
@@ -41,6 +43,16 @@ namespace PRM.View
             _oldLogo = vm.Server.IconImg;
             LogoSelector.SetImg(vm.Server.IconImg);
             LogoSelector.OnLogoChanged += () => Vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
+
+
+            this.Unloaded += (sender, args) =>
+            {
+                vm = null;
+            };
+        }
+        ~ServerEditorPage()
+        {
+            Console.WriteLine($"Release {this.GetType().Name}({this.GetHashCode()})");
         }
 
         private void ImgLogo_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
