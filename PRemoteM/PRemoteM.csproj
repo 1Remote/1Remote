@@ -153,6 +153,9 @@
     <Compile Include="Controls\AutoCompleteComboBox.xaml.cs">
       <DependentUpon>AutoCompleteComboBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\InputWindow.xaml.cs">
+      <DependentUpon>InputWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LogoSelector.xaml.cs">
       <DependentUpon>LogoSelector.xaml</DependentUpon>
     </Compile>
@@ -162,7 +165,11 @@
     <Compile Include="Controls\ServerListItem.xaml.cs">
       <DependentUpon>ServerListItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TagsEditor.xaml.cs">
+      <DependentUpon>TagsEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />
@@ -206,6 +213,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\InputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\LogoSelector.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -215,6 +226,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ServerListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TagsEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

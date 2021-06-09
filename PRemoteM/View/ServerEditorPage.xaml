@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
+             xmlns:controls2="clr-namespace:PRM.Controls"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
@@ -103,44 +103,14 @@
                                     </Grid>
                                 </StackPanel>
                             </Grid>
-                            <Grid Style="{StaticResource EditorRowGrid}">
+
+                            <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_group}"></TextBlock>
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_tag}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <utils:AutoCompleteComboBox x:Name="TbGroup"
-                                                                    Text="{Binding Server.GroupName, UpdateSourceTrigger=PropertyChanged}"
-                                                                    Selections="{Binding GroupSelections}"
-                                                                    ></utils:AutoCompleteComboBox>
-                                        <Popup
-                                               Name="PopupGroup"
-                                               PlacementTarget="{Binding ElementName=TbGroup}"
-                                               Width="{Binding ElementName=TbGroup, Path=ActualWidth}"
-                                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-                                            <Popup.Style>
-                                                <Style TargetType="Popup">
-                                                    <Setter Property="IsOpen" Value="False"></Setter>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ElementName=TbGroup, Path=IsFocused}" Value="true">
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ElementName=PopupGroup, Path=IsFocused}" Value="true">
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ElementName=PopupGroup, Path=IsMouseOver}" Value="true">
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </DataTrigger>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding ElementName=PopupGroup, Path=IsFocused}" Value="true"></Condition>
-                                                                <Condition Binding="{Binding ElementName=TbGroup, Path=IsMouseOver}" Value="true"></Condition>
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="IsOpen" Value="True"></Setter>
-                                                        </MultiDataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Popup.Style>
-                                            <Grid Height="200" Background="AliceBlue"></Grid>
-                                        </Popup>
+                                        <controls2:TagsEditor Width="600" x:Name="TagsEditor"
+                                                              Tags="{Binding Server.Tags, Mode=TwoWay}"
+                                                              TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls2:TagsEditor>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -180,7 +150,7 @@
                                                     <ColumnDefinition></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Background="{DynamicResource MainBgColorBrush}">
-                                                    <controls1:LogoSelector x:Name="LogoSelector"></controls1:LogoSelector>
+                                                    <controls2:LogoSelector x:Name="LogoSelector"></controls2:LogoSelector>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>

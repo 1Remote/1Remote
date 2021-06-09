@@ -56,13 +56,10 @@
 
         <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
-                <Grid Background="Transparent" Width="24" Height="24" Margin="5 0 0 0">
+                <Grid Background="Transparent" Width="24" Height="24" Margin="5">
                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>
                 </Grid>
-
-                <Label VerticalContentAlignment="Center" Margin="0,0,105,0" Foreground="{DynamicResource MainColor1ForegroundBrush}">
-                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
-                </Label>
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
             </StackPanel>
         </Grid>
 

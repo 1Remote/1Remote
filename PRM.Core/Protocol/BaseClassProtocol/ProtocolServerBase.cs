@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -53,17 +55,12 @@ namespace PRM.Core.Protocol
         public string DispName
         {
             get => _dispName;
-            set
-            {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
-                }
-            }
+            set => SetAndNotifyIfChanged(nameof(DispName), ref _dispName, value);
         }
 
         [JsonIgnore]
         public string SubTitle => GetSubTitle();
+
 
         private string _groupName = "";
 
@@ -73,6 +70,24 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(GroupName), ref _groupName, value);
         }
 
+
+        private List<string> _tags = new List<string>();
+
+        public List<string> Tags
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(GroupName) == false && (_tags == null || _tags.Count == 0))
+                {
+                    _tags = new List<string>() { GroupName };
+                    GroupName = string.Empty;
+                }
+                _tags = _tags?.Distinct()?.ToList();
+                return _tags;
+            }
+            set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
+        }
+
         private string _iconBase64 = "";
 
         public string IconBase64
@@ -80,38 +95,30 @@ namespace PRM.Core.Protocol
             get => _iconBase64;
             set
             {
+                iconCache = null;
                 SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
-                RaisePropertyChanged(nameof(Icon));
                 RaisePropertyChanged(nameof(IconImg));
             }
         }
 
-
-        [JsonIgnore]
-        public Icon Icon
-        {
-            get
-            {
-                if (IconImg == null)
-                    return null;
-                var bm = IconImg.ToBitmap();
-                return bm.ToIcon();
-            }
-        }
+        private BitmapSource iconCache = null;
 
         [JsonIgnore]
         public BitmapSource IconImg
         {
             get
             {
+                if (iconCache != null)
+                    return iconCache;
                 try
                 {
-                    return NetImageProcessHelper.BitmapFromBytes(Convert.FromBase64String(_iconBase64)).ToBitmapSource();
+                    iconCache = Convert.FromBase64String(_iconBase64).BitmapFromBytes().ToBitmapSource();
                 }
                 catch (Exception)
                 {
                     return null;
                 }
+                return iconCache;
             }
         }
 
@@ -121,35 +128,7 @@ namespace PRM.Core.Protocol
         public string MarkColorHex
         {
             get => _markColorHex;
-            set
-            {
-                try
-                {
-                    SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value);
-                    RaisePropertyChanged(nameof(MarkColor));
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
-        [JsonIgnore]
-        public Color? MarkColor
-        {
-            get
-            {
-                try
-                {
-                    // ReSharper disable once PossibleNullReferenceException
-                    var color = (Color)System.Windows.Media.ColorConverter.ConvertFromString(_markColorHex);
-                    return color;
-                }
-                catch
-                {
-                    return null;
-                }
-            }
+            set => SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value);
         }
 
         private DateTime _lastConnTime = DateTime.MinValue;
@@ -167,13 +146,6 @@ namespace PRM.Core.Protocol
             get => _commandBeforeConnected;
             set => SetAndNotifyIfChanged(nameof(CommandBeforeConnected), ref _commandBeforeConnected, value);
         }
-
-        //private string _commandAfterConnected = "";
-        //public string CommandAfterConnected
-        //{
-        //    get => _commandAfterConnected;
-        //    set => SetAndNotifyIfChanged(nameof(CommandAfterConnected), ref _commandAfterConnected, value);
-        //}
 
         private string _commandAfterDisconnected = "";
 
@@ -237,31 +209,6 @@ namespace PRM.Core.Protocol
             return false;
         }
 
-        ///// <summary>
-        ///// copy all value ProtocolServerBase fields
-        ///// </summary>
-        //public bool Update(ProtocolServerBase copyFromObj)
-        //{
-        //    var baseType = levelType;
-        //    ProtocolServerBase copyObject = this;
-        //    var fields = baseType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-        //    foreach (var fi in fields)
-        //    {
-        //        fi.SetValue(this, fi.GetValue(copyFromObj));
-        //    }
-        //    var properties = baseType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-        //    foreach (var property in properties)
-        //    {
-        //        if (property.SetMethod != null)
-        //        {
-        //            // update properties without notify
-        //            property.SetValue(this, property.GetValue(copyFromObj));
-        //            // then raise notify
-        //            base.RaisePropertyChanged(property.Name);
-        //        }
-        //    }
-        //    return false;
-        //}
         public virtual string ToJsonString()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
@@ -299,22 +246,17 @@ namespace PRM.Core.Protocol
         {
             var t1 = this.GetType();
             var t2 = compare.GetType();
-            if (t1 == t2)
+            if (t1 != t2) return false;
+            var properties = t1.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var property in properties)
             {
-                var properties = t1.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                foreach (var property in properties)
-                {
-                    if (property.CanWrite && property.SetMethod != null)
-                    {
-                        var v1 = property.GetValue(this)?.ToString();
-                        var v2 = property.GetValue(compare)?.ToString();
-                        if (v1 != v2)
-                            return false;
-                    }
-                }
-                return true;
+                if (!property.CanWrite || property.SetMethod == null) continue;
+                var v1 = property.GetValue(this)?.ToString();
+                var v2 = property.GetValue(compare)?.ToString();
+                if (v1 != v2)
+                    return false;
             }
-            return false;
+            return true;
         }
 
         public void RunScriptBeforConnect()
