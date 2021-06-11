@@ -38,20 +38,12 @@ namespace Shawn.Utils
             var fi = new FileInfo(jsonPath);
             if (!fi.Exists) return null;
             var rd = LangDictFromJsonString(File.ReadAllText(fi.FullName));
-#if DEV
-            if (jsonPath.IndexOf("zh-cn") >= 0)
-                SaveToLangResourceDictionary(rd, "zh-cn.xaml");
-            if (jsonPath.IndexOf("en-us") >= 0)
-                SaveToLangResourceDictionary(rd, "en-us.xaml");
-            if (jsonPath.IndexOf("de-de") >= 0)
-                SaveToLangResourceDictionary(rd, "de-de.xaml");
-#endif
             SetKey(rd, LangFilePathKey, fi.FullName);
             SetKey(rd, ResourceTypeKey, ResourceTypeValue);
             return rd;
         }
 
-        private static ResourceDictionary LangDictFromJsonString(string jsonString)
+        public static ResourceDictionary LangDictFromJsonString(string jsonString)
         {
             try
             {

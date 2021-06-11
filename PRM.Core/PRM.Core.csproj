@@ -406,6 +406,9 @@
     <Resource Include="Languages\de-de.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Languages\fr-FR.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +424,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
+    <Page Include="Languages\fr-FR.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
