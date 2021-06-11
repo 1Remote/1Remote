@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Windows;
 using Windows.ApplicationModel.VoiceCommands;
 using PRM.Core.Properties;
@@ -53,29 +54,84 @@ namespace PRM.Core.Model
             LanguageJsonDir = Path.Combine(appDateFolder, "Languages");
             if (!Directory.Exists(LanguageJsonDir))
                 Directory.CreateDirectory(LanguageJsonDir);
+
+//#if DEV
+//            {
+//                var zh_cn_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.json")).Stream;
+//                using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "zh-cn.json")))
+//                {
+//                    zh_cn_json.Seek(0, SeekOrigin.Begin);
+//                    zh_cn_json.CopyTo(fileStream);
+//                }
+//                zh_cn_json.Close();
+//
+//                var en_us_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/en-us.json")).Stream;
+//                using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "en-us.json")))
+//                {
+//                    en_us_json.Seek(0, SeekOrigin.Begin);
+//                    en_us_json.CopyTo(fileStream);
+//                }
+//                en_us_json.Close();
+//
+//                var de_de_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/de-de.json")).Stream;
+//                using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "de-de.json")))
+//                {
+//                    de_de_json.Seek(0, SeekOrigin.Begin);
+//                    de_de_json.CopyTo(fileStream);
+//                }
+//                de_de_json.Close();
+//
+//                var fr_fr_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/fr-fr.json")).Stream;
+//                using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "fr-fr.json")))
+//                {
+//                    fr_fr_json.Seek(0, SeekOrigin.Begin);
+//                    fr_fr_json.CopyTo(fileStream);
+//                }
+//                fr_fr_json.Close();
+//            }
+//#endif
+
 #if DEV
-            var zh_cn_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.json")).Stream;
-            using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "zh-cn.json")))
             {
-                zh_cn_json.Seek(0, SeekOrigin.Begin);
-                zh_cn_json.CopyTo(fileStream);
+                var zh_cn_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/zh-cn.json")).Stream;
+                byte[] buffer = new byte[zh_cn_json.Length];
+                zh_cn_json.Read(buffer, 0, (int) zh_cn_json.Length);
+                var json = Encoding.UTF8.GetString(buffer);
+                var rd = MultiLangHelper.LangDictFromJsonString(json);
+                MultiLangHelper.SaveToLangResourceDictionary(rd, "zh-cn.xaml");
+                zh_cn_json.Close();
             }
-            zh_cn_json.Close();
-            var en_us_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/en-us.json")).Stream;
-            using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "en-us.json")))
             {
-                en_us_json.Seek(0, SeekOrigin.Begin);
-                en_us_json.CopyTo(fileStream);
+                var en_us_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/en-us.json")).Stream;
+                byte[] buffer = new byte[en_us_json.Length];
+                en_us_json.Read(buffer, 0, (int) en_us_json.Length);
+                var json = Encoding.UTF8.GetString(buffer);
+                var rd = MultiLangHelper.LangDictFromJsonString(json);
+                MultiLangHelper.SaveToLangResourceDictionary(rd, "en-us.xaml");
+                en_us_json.Close();
             }
-            en_us_json.Close();
-            var de_de_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/de-de.json")).Stream;
-            using (var fileStream = File.Create(Path.Combine(LanguageJsonDir, "de-de.json")))
             {
-                de_de_json.Seek(0, SeekOrigin.Begin);
-                de_de_json.CopyTo(fileStream);
+                var de_de_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/de-de.json")).Stream;
+                byte[] buffer = new byte[de_de_json.Length];
+                de_de_json.Read(buffer, 0, (int) de_de_json.Length);
+                var json = Encoding.UTF8.GetString(buffer);
+                var rd = MultiLangHelper.LangDictFromJsonString(json);
+                MultiLangHelper.SaveToLangResourceDictionary(rd, "de-de.xaml");
+                de_de_json.Close();
             }
-            de_de_json.Close();
+            {
+                var fr_fr_json = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/Languages/fr-fr.json")).Stream;
+                byte[] buffer = new byte[fr_fr_json.Length];
+                fr_fr_json.Read(buffer, 0, (int) fr_fr_json.Length);
+                var json = Encoding.UTF8.GetString(buffer);
+                var rd = MultiLangHelper.LangDictFromJsonString(json);
+                MultiLangHelper.SaveToLangResourceDictionary(rd, "fr-fr.xaml");
+                fr_fr_json.Close();
+            }
 #endif
+
+
+
             Init();
             _defaultLanguageResourceDictionary = GetResourceDictionaryByCode(DefaultLanguageCode);
             _currentLanguageResourceDictionary = _defaultLanguageResourceDictionary;
@@ -91,6 +147,7 @@ namespace PRM.Core.Model
             AddStaticLanguageResources("en-us");
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("de-de");
+            AddStaticLanguageResources("fr-fr");
 
             // add dynamic json
             var di = new DirectoryInfo(LanguageJsonDir);
