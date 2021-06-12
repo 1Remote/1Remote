@@ -267,38 +267,6 @@
                                     </Grid>
                                 </commoncontrols:ButtonEx>
 
-                                <!--<commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="4" Style="{StaticResource MainColor1ButtonRadius3}"
-                                                         Margin="0 0 10 0"
-                                                                    Background="{DynamicResource MainBgColorBrush}"
-                                                                    Foreground="{DynamicResource MainBgColorForegroundBrush}"
-                                                                    Command="{Binding CmdReOrder}" CommandParameter="4">
-                                    <Grid>
-                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
-                                            <Path.Style>
-                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.TagAsc}">
-                                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Path.Style>
-                                        </Path>
-                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
-                                            <Path.Style>
-                                                <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.TagDesc}">
-                                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Path.Style>
-                                        </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_tag}"></TextBlock>
-                                    </Grid>
-                                </commoncontrols:ButtonEx>-->
-
                                 <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource MainColor1ButtonRadius3}"
                                                          Margin="0 0 10 0"
                                                                     Background="{DynamicResource MainBgColorBrush}"
@@ -556,14 +524,20 @@
                 </ListBox.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="model:Tag">
-                        <Grid Width="300" Margin="20 5">
+                        <Grid Width="300" Margin="20 5" Visibility="{Binding ObjectVisibilityInList}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Border CornerRadius="5" Padding="5 2" Background="{DynamicResource MainColor2Brush}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3">
+
+                            <Grid>
+                                <commoncontrols:ButtonEx Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding Name}" Style="{DynamicResource MainColor2ButtonRadius5}" HorizontalAlignment="Left"></commoncontrols:ButtonEx>
+                            </Grid>
+
+                            <!--<Border CornerRadius="5" Padding="5 2" Background="{DynamicResource MainColor2Brush}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3">
                                 <TextBlock Text="{Binding Name}" Foreground="{DynamicResource MainColor2ForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-                            </Border>
+                            </Border>-->
+
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Label Content="{Binding ItemsCount}" Margin="10 0"></Label>
                                 <CheckBox IsChecked="{Binding IsPinned, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
@@ -669,8 +643,9 @@
                         </commoncontrols:ButtonEx.Style>
                     </commoncontrols:ButtonEx>
 
-                    <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto"
-                                      Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
+                    <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto" 
+                                  Margin="10 0 0 0"
+                                  Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                       utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                       Style="{StaticResource MinHorizontalScrollViewerStyle}">
                         <StackPanel Orientation="Horizontal">

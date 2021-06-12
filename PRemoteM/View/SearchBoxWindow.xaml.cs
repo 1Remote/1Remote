@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -211,18 +212,13 @@ namespace PRM.View
                         case Key.Right:
                             if (sender is TextBox tb)
                             {
-                                if (tb.CaretIndex != tb.Text.Length)
+                                if (tb.CaretIndex == tb.Text.Length)
                                 {
+                                        _vm.ShowActionsList();
                                     return;
                                 }
                             }
-
-                            if (_vm.SelectedIndex >= 0 &&
-                                _vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count)
-                            {
-                                _vm.ShowActionsList();
-                            }
-                            return;
+                            break;
 
                         case Key.Enter:
                             OpenSessionAndHide();

@@ -7,6 +7,7 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:view="clr-namespace:PRM.View"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -122,9 +123,9 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="system:String">
-                            <Border CornerRadius="5" Padding="5 2" Background="{DynamicResource MainColor2Brush}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3">
-                                <TextBlock Text="{Binding}" Foreground="{DynamicResource MainColor2ForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-                            </Border>
+                            <Grid Margin="3">
+                                <controls:ButtonEx Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding }" Style="{DynamicResource MainColor2ButtonRadius5}" HorizontalAlignment="Left"></controls:ButtonEx>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

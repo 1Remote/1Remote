@@ -159,6 +159,10 @@
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}" x:Key="MainColor2ButtonRadius3">
         <Setter Property="BorderCornerRadius" Value="3"/>
     </Style>
+
+    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}" x:Key="MainColor2ButtonRadius5">
+        <Setter Property="BorderCornerRadius" Value="5"/>
+    </Style>
     <!--ButtonEx Style End-->
 
 
