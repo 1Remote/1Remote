@@ -197,6 +197,13 @@ namespace PRM.ViewModel
 
         public void ShowActionsList()
         {
+            if (Context.AppData.VmItemList.All(x => x.ObjectVisibility != Visibility.Visible) 
+                || SelectedIndex < 0 
+                || SelectedIndex >= Context.AppData.VmItemList.Count)
+            {
+                return;
+            }
+
             #region Build Actions
 
             var actions = new ObservableCollection<ActionItem>
