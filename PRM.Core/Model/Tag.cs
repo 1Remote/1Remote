@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows;
 using Newtonsoft.Json;
 using Shawn.Utils;
 
@@ -42,6 +43,15 @@ namespace PRM.Core.Model
                 UpdateTagsCache(this);
             }
         }
+
+        private Visibility _objectVisibilityInList = Visibility.Visible;
+        [JsonIgnore]
+        public Visibility ObjectVisibilityInList
+        {
+            get => _objectVisibilityInList;
+            set => SetAndNotifyIfChanged(nameof(ObjectVisibilityInList), ref _objectVisibilityInList, value);
+        }
+
 
 
         private const string PinnedTagsPath = "PinnedTags.json";
