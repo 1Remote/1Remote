@@ -808,6 +808,8 @@ namespace PRM.ViewModel
                         if (obj == null)
                             return;
                         string newTag = InputWindow.InputBox(SystemConfig.Instance.Language.GetText("server_editor_tag"), SystemConfig.Instance.Language.GetText("server_editor_tag"), obj.Name);
+                        if (t == obj.Name)
+                            t = newTag;
                         if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
                             return;
                         foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
