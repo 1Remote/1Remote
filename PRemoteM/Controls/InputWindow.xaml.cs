@@ -38,7 +38,7 @@ namespace PRM.Controls
 
         public static string InputBox(string prompt, string title = "", string defaultResponse = "")
         {
-            InputWindow inputWindow = new InputWindow
+            var inputWindow = new InputWindow
             {
                 Title = title,
                 Prompt = prompt,
@@ -56,6 +56,7 @@ namespace PRM.Controls
             textBlock.Text = Prompt;
             textBox.Text = Response;
             textBox.Focus();
+            textBox.CaretIndex = Response?.Length ?? 0;
         }
 
         private void textBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

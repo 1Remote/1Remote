@@ -108,7 +108,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_tag}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls2:TagsEditor Width="600" x:Name="TagsEditor"
+                                        <controls2:TagsEditor x:Name="TagsEditor"
                                                               Tags="{Binding Server.Tags, Mode=TwoWay}"
                                                               TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls2:TagsEditor>
                                     </Grid>
@@ -284,8 +284,8 @@
                                                                 Content="{TemplateBinding ContentControl.Content}"
                                                                 ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                                 ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
                                                                 SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
