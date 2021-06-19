@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Shawn.Utils
 {
@@ -46,8 +47,7 @@ namespace Shawn.Utils
             }
             else
             {
-                o.Selections4Show = new ObservableCollection<string>(o.Selections
-                    .Where(x => x.IndexOf(newValue, StringComparison.OrdinalIgnoreCase) >= 0));
+                o.Selections4Show = new ObservableCollection<string>(o.Selections.Where(x => x.IndexOf(newValue, StringComparison.OrdinalIgnoreCase) >= 0));
                 if (o.Selections4Show?.Count() > 0)
                 {
                     o.CbContent.IsDropDownOpen = true;
@@ -144,6 +144,21 @@ namespace Shawn.Utils
         {
             InitializeComponent();
             Grid.DataContext = this;
+        }
+
+        private void CbContent_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                if (CbContent.IsDropDownOpen && Selections4Show.Any())
+                {
+                    var cmbTextBox = (TextBox)CbContent.Template.FindName("PART_EditableTextBox", CbContent);
+                    cmbTextBox.Text = Selections4Show.First();
+                    cmbTextBox.CaretIndex = cmbTextBox.Text.Length;
+                    CbContent.IsDropDownOpen = false;
+                }
+                e.Handled = true;
+            }
         }
     }
 }

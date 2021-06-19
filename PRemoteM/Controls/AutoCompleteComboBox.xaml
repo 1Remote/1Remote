@@ -91,6 +91,7 @@
     <Grid Name="Grid">
         <ComboBox
             Name="CbContent"
+            KeyDown="CbContent_OnKeyDown"
             Style="{StaticResource ComboBoxDefault}"
             Foreground="{Binding ElementName=UserControl, Path=Foreground, Mode=OneWay}"
             Background="{Binding ElementName=UserControl, Path=Background, Mode=OneWay}"
