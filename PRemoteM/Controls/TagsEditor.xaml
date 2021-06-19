@@ -4,69 +4,73 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:controls="clr-namespace:PRM.Controls"
-             xmlns:controls1="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:self="clr-namespace:PRM.Controls"
+             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
+             xmlns:utils="clr-namespace:Shawn.Utils"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance controls:TagsEditor}"
+             d:DataContext="{d:DesignInstance self:TagsEditor}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <StackPanel>
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <controls1:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Click="Button_OnClick" Margin="0 0 5 0">+</controls1:ButtonEx>
 
-                <Grid Grid.Column="1">
-                    <ItemsControl Name="ListViewTags" Background="{DynamicResource MainBgColorBrush}" ItemsSource="{Binding Tags, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="system:String">
-                                <Border VerticalAlignment="Center" Background="{DynamicResource MainColor2Brush}" CornerRadius="5" Margin="3 0">
-                                    <Label Content="{Binding}" Foreground="{DynamicResource MainColor2ForegroundBrush}"></Label>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <TextBox Name="TextBox" MinWidth="100" HorizontalAlignment="Stretch" Tag="{DynamicResource server_editor_tags_tag}" Style="{StaticResource TextBoxWithPlaceHolder}"></TextBox>
+                    <Grid Grid.Column="1">
+                        <ItemsControl Name="ListViewTags" Background="{DynamicResource MainBgColorBrush}" ItemsSource="{Binding Tags, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="system:String">
+                                    <Border VerticalAlignment="Center" Background="{DynamicResource MainColor2Brush}" CornerRadius="5" Margin="3 5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding}" Foreground="{DynamicResource MainColor2ForegroundBrush}"></Label>
+                                            
+                                            <controls:ButtonEx Width="10" Height="10" Click="ButtonDel_OnClick" Tag="{Binding}"
+                                                       Margin="0 0 5 0" Padding="0" VerticalAlignment="Center">
+                                                <controls:ButtonEx.Style>
+                                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
+                                                        <Setter Property="Background" Value="Transparent" />
+                                                        <Setter Property="BackgroundOnMouseOver" Value="Transparent" />
+                                                        <Setter Property="BackgroundOnPressed" Value="Transparent" />
+                                                        <Setter Property="ForegroundOnPressed" Value="Gainsboro" />
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                    </Style>
+                                                </controls:ButtonEx.Style>
+
+                                                <Grid Height="10" Width="8">
+                                                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
+                                                  StrokeThickness="2" Stretch="Uniform" />
+                                                </Grid>
+                                            </controls:ButtonEx>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <utils:AutoCompleteComboBox x:Name="TbNewTag" KeyDown="TextBoxOnKeyDown" Margin="0 0 20 0"></utils:AutoCompleteComboBox>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Click="Button_OnClick">+</controls:ButtonEx>
+                    </StackPanel>
                 </Grid>
             </Grid>
-
-
-
-            <ListView Name="ListViewTagsForSelect" Height="0" Width="500" HorizontalAlignment="Left" Margin="0 5"
-                      ItemsSource="{Binding TagsForSelect, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                      SelectionMode="Multiple">
-                <ListView.ItemTemplate>
-                    <DataTemplate DataType="system:String">
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" />
-                            <Border VerticalAlignment="Center" Background="{DynamicResource MainColor2Brush}" CornerRadius="5" Margin="3 3">
-                                <Label Content="{Binding}" Foreground="{DynamicResource MainColor2ForegroundBrush}"></Label>
-                            </Border>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
-            </ListView>
         </StackPanel>
     </Grid>
 </UserControl>

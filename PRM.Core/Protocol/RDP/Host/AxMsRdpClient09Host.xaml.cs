@@ -83,6 +83,7 @@ namespace PRM.Core.Protocol.RDP.Host
 
             // server info
             _rdp.Server = _rdpServer.Address;
+            //_rdp.Domain = "blabla";
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
