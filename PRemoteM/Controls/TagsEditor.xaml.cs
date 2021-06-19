@@ -29,12 +29,7 @@ namespace PRM.Controls
 
         private static void OnTagsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (List<string>)e.NewValue;
-            if (value?.Count > 0)
-                ((TagsEditor)d).SetTextBox(string.Join(", ", value));
-            else
-                ((TagsEditor)d).SetTextBox("");
-            ((TagsEditor)d).UpdateCheckBoxFromTags();
+            ((TagsEditor)d).UpdateSelections();
         }
 
 
@@ -50,8 +45,7 @@ namespace PRM.Controls
 
         private static void OnTagsForSelectPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            //var value = (List<string>)e.NewValue;
-            ((TagsEditor)d).UpdateCheckBoxFromTags();
+            ((TagsEditor)d).UpdateSelections();
         }
 
         public List<string> TagsForSelect
@@ -60,173 +54,53 @@ namespace PRM.Controls
             set => SetValue(TagsForSelectProperty, value);
         }
 
-        private readonly Timer _t = new Timer();
         public TagsEditor()
         {
             InitializeComponent();
-            ListViewTags.MouseMove += ListViewTagsOnMouseMove;
-            TextBox.MouseMove += ListViewTagsOnMouseMove;
-            TextBox.KeyDown += TextBoxOnKeyDown;
-            TextBox.LostFocus += (sender, args) => Parse();
-            this.LostFocus += (sender, args) => Parse();
-            ListViewTagsForSelect.SelectionChanged += Selector_OnSelectionChanged;
-            ListViewTagsForSelect.MouseLeave += (sender, args) => ListViewTagsForSelectClose();
-
-            if (Tags?.Count > 0)
-                TextBox.Text = string.Join(", ", Tags);
-            _t.AutoReset = true;
-            _t.Interval = 200;
-            _t.Elapsed += TOnElapsed;
-            _t.Start();
-
-            this.Unloaded += (sender, args) =>
-            {
-                _t.Dispose();
-            };
         }
 
-        ~TagsEditor()
+        private void UpdateSelections()
         {
-            _t.Dispose();
+            TbNewTag.Selections = TagsForSelect;
         }
 
-        private void UpdateCheckBoxFromTags()
+        private void AddNewTag()
         {
-            ListViewTagsForSelect.SelectionChanged -= Selector_OnSelectionChanged;
-            ListViewTagsForSelect.SelectedItems.Clear();
-            if (TagsForSelect != null && Tags != null)
+            var newTag = TbNewTag.Text.Trim();
+            if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(TbNewTag.Text.Trim()) == false)
             {
-                foreach (var str in TagsForSelect)
-                {
-                    if (Tags.Contains(str.ToString()) && ListViewTagsForSelect.SelectedItems.Contains(str) == false)
-                        ListViewTagsForSelect.SelectedItems.Add(str);
-                }
+                Tags.Add(TbNewTag.Text.Trim());
+                Tags = Tags;
             }
-            ListViewTagsForSelect.SelectionChanged += Selector_OnSelectionChanged;
-
-            if (Tags?.Count == 0)
-                TextBox.Visibility = Visibility.Visible;
+            TbNewTag.Text = "";
+            TbNewTag.Selections = TagsForSelect.Where(x => Tags.Contains(x) == false);
         }
-
-        private void ListViewTagsOnMouseMove(object sender, MouseEventArgs e)
-        {
-            if (ListViewTags.IsMouseOver == true || TextBox.IsMouseOver == true)
-            {
-                _lastMouseMove = DateTime.Now;
-            }
-
-            if (TextBox.Visibility != Visibility.Visible)
-            {
-                TextBox.Visibility = Visibility.Visible;
-                ListViewTags.Visibility = Visibility.Hidden;
-            }
-        }
-
-        private string _lastValue = "";
-        private DateTime _lastMouseMove = DateTime.MinValue;
-        private DateTime _lastKeyDownTime = DateTime.MinValue;
-        private void TOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                //if (TextBox.IsFocused == false
-                //    && (DateTime.Now - _lastKeyDownTime).TotalMilliseconds > 1000)
-                //{
-                //    Parse();
-                //}
-                
-                if ((DateTime.Now - _lastKeyDownTime).TotalMilliseconds > 1000
-                    && (DateTime.Now - _lastMouseMove).TotalMilliseconds > 1000)
-                    if (ListViewTags.IsMouseOver == false && TextBox.IsMouseOver == false && string.IsNullOrWhiteSpace(TextBox.Text) == false)
-                    {
-                        Parse();
-                    }
-            });
-        }
-
-        public void Parse()
-        {
-            TextBox.Visibility = Visibility.Hidden;
-            ListViewTags.Visibility = Visibility.Visible;
-            if (_lastValue != TextBox.Text)
-            {
-                var newTags = TextBox.Text.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).Distinct().OrderBy(x => x).ToList();
-                if (newTags.Count != Tags.Count || newTags.Any(x => !Tags.Contains(x)))
-                {
-                    Tags = newTags;
-                }
-
-                SetTextBox(string.Join(", ", Tags));
-                _lastValue = TextBox.Text;
-                TextBox.CaretIndex = TextBox.Text.Length;
-            }
-        }
-
-        public void SetTextBox(string tags)
-        {
-            if (TextBox.Text != tags)
-            {
-                TextBox.Text = tags;
-                TextBox.CaretIndex = TextBox.Text.Length;
-            }
-        }
-
 
         private void TextBoxOnKeyDown(object sender, KeyEventArgs e)
         {
-            _lastKeyDownTime = DateTime.Now;
-
             if (e.Key == Key.Enter)
             {
-                Parse();
-                TextBox.CaretIndex = TextBox.Text.Length;
+                AddNewTag();
             }
         }
 
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selected = (from object str in ListViewTagsForSelect.SelectedItems select str.ToString());
-
-            var tags = selected.ToList();
-            tags.AddRange(Tags.Where(str => TagsForSelect.Contains(str) == false));
-            Tags = tags.Distinct().OrderBy(x => x).ToList();
-        }
-
-        private void ListViewTagsForSelectHeightAnimation(double to)
-        {
-            var animation = new DoubleAnimation
-            {
-                From = ListViewTagsForSelect.Height,
-                To = to,
-                Duration = new Duration(TimeSpan.FromMilliseconds(200)),
-                AccelerationRatio = 0.9,
-            };
-            ListViewTagsForSelect.BeginAnimation(HeightProperty, null);
-            ListViewTagsForSelect.BeginAnimation(HeightProperty, animation);
-        }
-
-        private void ListViewTagsForSelectOpen()
-        {
-            if (Math.Abs(ListViewTagsForSelect.Height) < 1)
-            {
-                ListViewTagsForSelectHeightAnimation(197);
-            }
-        }
-
-        private void ListViewTagsForSelectClose()
-        {
-            if (ListViewTagsForSelect.Height > 0.5)
-            {
-                ListViewTagsForSelectHeightAnimation(0);
-            }
-        }
 
         private void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            if (ListViewTagsForSelect.Height > 0)
-                ListViewTagsForSelectClose();
-            else
-                ListViewTagsForSelectOpen();
+            AddNewTag();
+        }
+
+        private void ButtonDel_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button b)
+            {
+                if (Tags.Contains(b.Tag.ToString()))
+                {
+                    Tags.Remove(b.Tag.ToString());
+                    Tags = Tags;
+                    TbNewTag.Selections = TagsForSelect.Where(x => Tags.Contains(x) == false);
+                }
+            }
         }
     }
 }

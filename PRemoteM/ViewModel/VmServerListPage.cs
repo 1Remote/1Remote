@@ -219,40 +219,59 @@ namespace PRM.ViewModel
 
         private void CalcVisible()
         {
-            foreach (var card in ServerListItems)
+            var keyWord = PrmContext.AppData.MainWindowServerFilter;
+            var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            if (SelectedTagName != TagsListViewMark)
             {
-                var server = card.Server;
-                string keyWord = PrmContext.AppData.MainWindowServerFilter;
-                string selectedTag = SelectedTagName;
-
-                bool bTagMatched = string.IsNullOrEmpty(selectedTag) || server.Tags?.Contains(selectedTag) == true;
-                if (!bTagMatched)
+                foreach (var card in ServerListItems)
                 {
-                    card.ObjectVisibilityInList = Visibility.Collapsed;
-                    continue;
+                    var server = card.Server;
+                    bool bTagMatched = string.IsNullOrEmpty(SelectedTagName) || server.Tags?.Contains(SelectedTagName) == true;
+                    if (!bTagMatched)
+                    {
+                        card.ObjectVisibilityInList = Visibility.Collapsed;
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(keyWord))
+                    {
+                        card.ObjectVisibilityInList = Visibility.Visible;
+                        continue;
+                    }
+
+                    var dispName = server.DispName;
+                    var subTitle = server.SubTitle;
+                    var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
+                    if (matched)
+                        card.ObjectVisibilityInList = Visibility.Visible;
+                    else
+                        card.ObjectVisibilityInList = Visibility.Collapsed;
                 }
 
-                if (string.IsNullOrEmpty(keyWord))
-                {
-                    card.ObjectVisibilityInList = Visibility.Visible;
-                    continue;
-                }
-
-                var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                var dispName = server.DispName;
-                var subTitle = server.SubTitle;
-                var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                if (matched || server.Tags?.Contains(keyWord) == true)
-                    card.ObjectVisibilityInList = Visibility.Visible;
+                if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
+                    _isSelectedAll = true;
                 else
-                    card.ObjectVisibilityInList = Visibility.Collapsed;
+                    _isSelectedAll = false;
+                RaisePropertyChanged(nameof(IsSelectedAll));
             }
-
-            if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
-                _isSelectedAll = true;
             else
-                _isSelectedAll = false;
-            RaisePropertyChanged(nameof(IsSelectedAll));
+            {
+                foreach (var tag in PrmContext.AppData.Tags)
+                {
+                    if (string.IsNullOrEmpty(keyWord))
+                    {
+                        tag.ObjectVisibilityInList = Visibility.Visible;
+                    }
+                    else
+                    {
+                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() {tag.Name}, keyWords).IsMatchAllKeywords;
+                        if (matched)
+                            tag.ObjectVisibilityInList = Visibility.Visible;
+                        else
+                            tag.ObjectVisibilityInList = Visibility.Collapsed;
+                    }
+                }
+            }
         }
 
         private RelayCommand _cmdAdd;
@@ -707,6 +726,38 @@ namespace PRM.ViewModel
 
 
 
+
+
+        private RelayCommand _cmdTagSelect;
+
+        public RelayCommand CmdTagSelect
+        {
+            get
+            {
+                if (_cmdTagSelect == null)
+                {
+                    _cmdTagSelect = new RelayCommand((o) =>
+                    {
+                        if (o == null)
+                            return;
+                        if (o is Tag obj
+                        && PrmContext.AppData.Tags.Any(x => x.Name == obj.Name))
+                        {
+                            PrmContext.AppData.SelectedTagName = obj.Name;
+                        }
+                        else if (o is string str
+                                 && PrmContext.AppData.Tags.Any(x => x.Name == str))
+                        {
+                            PrmContext.AppData.SelectedTagName = str;
+                        }
+                    });
+                }
+                return _cmdTagSelect;
+            }
+        }
+
+
+
         private RelayCommand _cmdTagDelete;
 
         public RelayCommand CmdTagDelete
@@ -753,14 +804,14 @@ namespace PRM.ViewModel
                     _cmdTagRename = new RelayCommand((o) =>
                     {
                         var t = SelectedTagName;
-                        string newTag = InputWindow.InputBox(SystemConfig.Instance.Language.GetText("server_editor_tag"), SystemConfig.Instance.Language.GetText("server_editor_tag"), t);
-                        if (string.IsNullOrEmpty(newTag) || t == newTag)
-                            return;
                         var obj = o as Tag;
                         if (obj == null)
                             return;
+                        string newTag = InputWindow.InputBox(SystemConfig.Instance.Language.GetText("server_editor_tag"), SystemConfig.Instance.Language.GetText("server_editor_tag"), obj.Name);
                         if (t == obj.Name)
                             t = newTag;
+                        if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
+                            return;
                         foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
                         {
                             var s = vmProtocolServer.Server;

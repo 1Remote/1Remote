@@ -82,10 +82,10 @@ namespace PRM.Core.Protocol
                     _tags = new List<string>() { GroupName };
                     GroupName = string.Empty;
                 }
-                _tags = _tags?.Distinct()?.ToList();
+                _tags = _tags?.Distinct()?.OrderBy(x => x).ToList();
                 return _tags;
             }
-            set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
+            set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
         }
 
         private string _iconBase64 = "";
