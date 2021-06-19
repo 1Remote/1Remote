@@ -238,8 +238,6 @@ namespace PRM.ViewModel
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
-                    TagsEditor?.Parse();
-
                     if (_orgServers != null)
                     {
                         // copy the same value properties
