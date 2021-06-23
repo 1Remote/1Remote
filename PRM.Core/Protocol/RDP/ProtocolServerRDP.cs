@@ -385,6 +385,8 @@ namespace PRM.Core.Protocol.RDP
         public RdpConfig ToRdpConfig(PrmContext context)
         {
             var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DbOperator.DecryptOrReturnOriginalString(Password));
+            rdpConfig.Domain = this.Domain;
+            rdpConfig.LoadBalanceInfo = this.LoadBalanceInfo;
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar == true ? 1 : 0;
 
