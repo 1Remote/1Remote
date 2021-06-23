@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -83,9 +84,23 @@ namespace PRM.Core.Protocol.RDP.Host
 
             // server info
             _rdp.Server = _rdpServer.Address;
-            //_rdp.Domain = "blabla";
+            _rdp.Domain = _rdpServer.Domain;
             _rdp.UserName = _rdpServer.UserName;
             _rdp.AdvancedSettings2.RDPPort = _rdpServer.GetPort();
+
+
+            if (string.IsNullOrWhiteSpace(_rdpServer.LoadBalanceInfo) == false)
+            {
+                var loadBalanceInfo = _rdpServer.LoadBalanceInfo;
+                if (loadBalanceInfo.Length % 2 == 1)
+                    loadBalanceInfo += " ";
+                loadBalanceInfo += "\r\n";
+                var bytes = Encoding.UTF8.GetBytes(loadBalanceInfo);
+                _rdp.AdvancedSettings2.LoadBalanceInfo = Encoding.Unicode.GetString(bytes);
+            }
+
+
+
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
             secured.ClearTextPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.Password);
             _rdp.FullScreenTitle = _rdpServer.DispName + " - " + _rdpServer.SubTitle;
