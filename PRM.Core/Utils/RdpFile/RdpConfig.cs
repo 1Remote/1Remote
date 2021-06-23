@@ -247,6 +247,12 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("full address:s:")]
         private string FullAddress { get; set; } = "";
 
+        [RdpConfName("domain:s:")]
+        public string Domain { get; set; } = "";
+
+        [RdpConfName("loadbalanceinfo:s:")]
+        public string LoadBalanceInfo { get; set; } = "";
+
         [RdpConfName("username:s:")]
         private string Username { get; set; } = "";
 
