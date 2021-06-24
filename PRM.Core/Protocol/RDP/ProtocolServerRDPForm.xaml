@@ -210,17 +210,20 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="/admin"></TextBlock>
-                    <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" IsChecked="{Binding IsAdministrativePurposes}"></CheckBox>
-                </StackPanel>
-            </Grid>
         </StackPanel>
 
         <StackPanel>
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
+
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="/admin"></TextBlock>
+                    <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" 
+                              Content="{DynamicResource server_editor_advantage_admin}"
+                              IsChecked="{Binding IsAdministrativePurposes}"></CheckBox>
+                </StackPanel>
+            </Grid>
 
             <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                 <StackPanel Orientation="Horizontal">

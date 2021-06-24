@@ -92,7 +92,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <StackPanel>
-                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource MainBgColorForegroundBrush}" Text="Note: you can not register a RemoteApp directly, I should config it on Server side, otherwise you will get error 'The following RemoteApp program is not in the list of authorized programs'"></TextBlock>
+                            <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource MainBgColorForegroundBrush}" Text="Note: You can not register a RemoteApp directly, you have to config it on the server side first, or you will get the error 'The following RemoteApp program is not in the list of authorized programs'."></TextBlock>
                             <TextBlock>
                                 <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RemoteApp-program#how-to-use" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
                                     check how to config.
