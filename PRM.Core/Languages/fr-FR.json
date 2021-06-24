@@ -1,5 +1,5 @@
 {
-  "language_name": "Français(fr-FR)",
+  "language_name": "Français (fr-FR)",
 
   "messagebox_title_warning": "PRemoteM Avertissement",
   "messagebox_title_error": "PRemoteM Erreur",
@@ -184,6 +184,7 @@
   "server_editor_display_rdp_performance_middle": "Milieu (couleur 16 bits avec uniquement le lissage de la police et la composition du bureau)",
   "server_editor_display_rdp_performance_low": "Faible (couleur 8 bits sans prise en charge des fonctionnalités)",
   // server editor - Advantage group items
+  "server_editor_advantage_admin": "For administering a server",
   "server_editor_advantage_resources": "Ressources",
   "server_editor_advantage_clipboard": "Presse-papiers",
   "server_editor_advantage_key_combinations": "Combinaisons de clés",
