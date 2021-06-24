@@ -203,9 +203,9 @@
 
                     <Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_quick_launcher_enable}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.Enable, Mode=TwoWay}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.Enable, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
