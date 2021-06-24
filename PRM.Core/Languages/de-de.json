@@ -1,5 +1,5 @@
 {
-  "language_name": "Deutsch(DE)",
+  "language_name": "Deutsch (DE)",
 
   "messagebox_title_warning": "PRemoteM Warnung",
   "messagebox_title_error": "PRemoteM Fehler",
@@ -184,6 +184,7 @@
   "server_editor_display_rdp_performance_middle": "Mittel (16bit Farbe mit nur Schriftglättung und Desktopaufbau)",
   "server_editor_display_rdp_performance_low": "Niedrig (8-Bit-Farbe ohne Unterstützung von Funktionen)",
   // server editor - Advantage group items
+  "server_editor_advantage_admin": "For administering a server",
   "server_editor_advantage_resources": "Ressourcen",
   "server_editor_advantage_clipboard": "Zwischenablage",
   "server_editor_advantage_key_combinations": "Tastenkombinationen",
