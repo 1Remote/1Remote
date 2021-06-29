@@ -103,7 +103,7 @@ namespace PRM.Model
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
                     var s = t?.GetViewModel()?.Items?.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
-                    if (t != null && s != null)
+                    if (s != null)
                         t.GetViewModel().SelectedItem = s;
                     t?.Activate();
                     if (s?.Content?.Status != ProtocolHostStatus.Connected)
@@ -117,7 +117,7 @@ namespace PRM.Model
         private void ConnectRdpWithFullScreenByMstsc(ProtocolServerRDP rdp)
         {
             var tmp = Path.GetTempPath();
-            var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{rdp.UserName}";
+            var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
             var invalid = new string(Path.GetInvalidFileNameChars()) +
                           new string(Path.GetInvalidPathChars());
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
@@ -143,7 +143,7 @@ namespace PRM.Model
             p.StandardInput.WriteLine("exit");
 
             // delete tmp rdp file, ETA 10s
-            var t = new Task(() =>
+            Task.Factory.StartNew(() =>
             {
                 try
                 {
@@ -156,7 +156,6 @@ namespace PRM.Model
                     SimpleLogHelper.Error(e);
                 }
             });
-            t.Start();
         }
 
         private void ConnectRemoteApp(ProtocolServerRemoteApp remoteApp)
