@@ -82,6 +82,8 @@ namespace PRM.Core.Model
             var tags = new List<Tag>();
             foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
             {
+                if(tagNames == null)
+                    continue;
                 foreach (var tagName in tagNames)
                 {
                     if (tags.All(x => x.Name != tagName))
