@@ -19,6 +19,7 @@ using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
+using PRM.Core.Utils.mRemoteNG;
 using Shawn.Utils;
 
 namespace PRM.ViewModel
@@ -392,203 +393,26 @@ namespace PRM.ViewModel
                             Filter = "csv|*.csv",
                             Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
                         };
-                        if (dlg.ShowDialog() == true)
+                        if (dlg.ShowDialog() != true) return;
+                        try
                         {
-                            string getValue(List<string> keyList, List<string> valueList, string fieldName)
+                            var list = MRemoteNgImporter.FromCsv(dlg.FileName);
+                            if (list?.Count > 0)
                             {
-                                var i = keyList.IndexOf(fieldName.ToLower());
-                                if (i >= 0)
+                                foreach (var serverBase in list)
                                 {
-                                    var val = valueList[i];
-                                    return val;
+                                    PrmContext.DbOperator.DbAddServer(serverBase);
                                 }
-                                return "";
+                                PrmContext.AppData.ServerListUpdate();
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             }
-                            try
-                            {
-                                var tagNames = new Dictionary<string, string>(); // id -> name
-                                var list = new List<ProtocolServerBase>();
-                                using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
-                                {
-                                    var tagParents = new Dictionary<string, string>(); // id -> name
-                                    var firstLine = sr.ReadLine();
-                                    if (string.IsNullOrWhiteSpace(firstLine))
-                                        return;
-
-                                    var title = firstLine.ToLower().Split(';').ToList();
-                                    string line;
-                                    while (!string.IsNullOrEmpty(line = sr.ReadLine()))
-                                    {
-                                        var arr = line.Split(';').ToList();
-                                        if (arr.Count >= 7)
-                                        {
-                                            var id = getValue(title, arr, "Id");
-                                            var name = getValue(title, arr, "name");
-                                            var parentId = getValue(title, arr, "Parent").ToLower();
-                                            var nodeType = getValue(title, arr, "NodeType").ToLower();
-                                            if (string.Equals("Container", nodeType, StringComparison.CurrentCultureIgnoreCase))
-                                            {
-                                                tagNames.Add(id, name);
-                                                tagParents.Add(id, parentId);
-                                            }
-                                        }
-                                    }
-
-                                    foreach (var kv in tagNames.ToArray())
-                                    {
-                                        var name = kv.Value;
-                                        var pid = tagParents[kv.Key];
-                                        while (tagNames.ContainsKey(pid))
-                                        {
-                                            name = $"{tagNames[pid]}-{name}";
-                                            pid = tagParents[pid];
-                                        }
-                                        tagNames[kv.Key] = name;
-                                    }
-                                }
-
-                                using (var sr = new StreamReader(new FileStream(dlg.FileName, FileMode.Open)))
-                                {
-                                    var firstLine = sr.ReadLine();
-                                    if (string.IsNullOrWhiteSpace(firstLine))
-                                        return;
-
-                                    // title
-                                    var title = firstLine.ToLower().Split(';').ToList();
-
-                                    var r = new Random();
-                                    string line;
-                                    while (!string.IsNullOrEmpty(line = sr.ReadLine()))
-                                    {
-                                        var arr = line.Split(';').ToList();
-                                        if (arr.Count >= 7)
-                                        {
-                                            ProtocolServerBase server = null;
-                                            var name = getValue(title, arr, "name");
-                                            var parentId = getValue(title, arr, "Parent").ToLower();
-                                            var nodeType = getValue(title, arr, "NodeType").ToLower();
-                                            if (!string.Equals("Connection", nodeType, StringComparison.CurrentCultureIgnoreCase))
-                                                continue;
-                                            List<string> tags = null;
-                                            if (tagNames.ContainsKey(parentId))
-                                                tags = new List<string>() { tagNames[parentId] };
-
-                                            var protocol = getValue(title, arr, "protocol").ToLower();
-                                            var user = getValue(title, arr, "username");
-                                            var pwd = getValue(title, arr, "password");
-                                            var address = getValue(title, arr, "hostname");
-                                            int port = 22;
-                                            if (int.TryParse(getValue(title, arr, "port"), out var new_port))
-                                            {
-                                                port = new_port;
-                                            }
-
-                                            switch (protocol)
-                                            {
-                                                case "rdp":
-                                                    server = new ProtocolServerRDP()
-                                                    {
-                                                        DispName = name,
-                                                        Tags = tags,
-                                                        Address = address,
-                                                        UserName = user,
-                                                        Password = pwd,
-                                                        Port = port.ToString(),
-                                                        RdpWindowResizeMode = ERdpWindowResizeMode.AutoResize, // string.Equals( getValue(title, arr, "AutomaticResize"), "TRUE", StringComparison.CurrentCultureIgnoreCase) ? ERdpWindowResizeMode.AutoResize : ERdpWindowResizeMode.Fixed,
-                                                        IsConnWithFullScreen = string.Equals(getValue(title, arr, "Resolution"), "Fullscreen", StringComparison.CurrentCultureIgnoreCase),
-                                                        RdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen,
-                                                        DisplayPerformance = getValue(title, arr, "Colors")?.IndexOf("32") >= 0 ? EDisplayPerformance.High : EDisplayPerformance.Auto,
-                                                        IsAdministrativePurposes = string.Equals(getValue(title, arr, "ConnectToConsole"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableClipboard = string.Equals(getValue(title, arr, "RedirectClipboard"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableDiskDrives = string.Equals(getValue(title, arr, "RedirectDiskDrives"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableKeyCombinations = string.Equals(getValue(title, arr, "RedirectKeys"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        // TODO can not divide form LeaveOnRemote
-                                                        AudioRedirectionMode = string.Equals(getValue(title, arr, "BringToThisComputer"), "TRUE", StringComparison.CurrentCultureIgnoreCase) == true ? EAudioRedirectionMode.RedirectToLocal : EAudioRedirectionMode.Disabled,
-                                                        EnableAudioCapture = string.Equals(getValue(title, arr, "RedirectAudioCapture"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnablePorts = string.Equals(getValue(title, arr, "RedirectPorts"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnablePrinters = string.Equals(getValue(title, arr, "RedirectPrinters"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        EnableSmartCardsAndWinHello = string.Equals(getValue(title, arr, "RedirectSmartCards"), "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                                                        GatewayMode = string.Equals(getValue(title, arr, "RDGatewayUsageMethod"), "Never", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.DoNotUseGateway :
-                                                                            (string.Equals(getValue(title, arr, "RDGatewayUsageMethod"), "Detect", StringComparison.CurrentCultureIgnoreCase) ? EGatewayMode.AutomaticallyDetectGatewayServerSettings : EGatewayMode.UseTheseGatewayServerSettings),
-                                                        GatewayHostName = getValue(title, arr, "RDGatewayHostname"),
-                                                        GatewayPassword = getValue(title, arr, "RDGatewayPassword"),
-                                                    };
-
-                                                    break;
-
-                                                case "ssh1":
-                                                    server = new ProtocolServerSSH()
-                                                    {
-                                                        DispName = name,
-                                                        Tags = tags,
-                                                        Address = address,
-                                                        UserName = user,
-                                                        Password = pwd,
-                                                        Port = port.ToString(),
-                                                        SshVersion = ProtocolServerSSH.ESshVersion.V1
-                                                    };
-                                                    break;
-
-                                                case "ssh2":
-                                                    server = new ProtocolServerSSH()
-                                                    {
-                                                        DispName = name,
-                                                        Tags = tags,
-                                                        Address = address,
-                                                        UserName = user,
-                                                        Password = pwd,
-                                                        Port = port.ToString(),
-                                                        SshVersion = ProtocolServerSSH.ESshVersion.V2
-                                                    };
-                                                    break;
-
-                                                case "vnc":
-                                                    server = new ProtocolServerVNC()
-                                                    {
-                                                        DispName = name,
-                                                        Tags = tags,
-                                                        Address = address,
-                                                        Password = pwd,
-                                                        Port = port.ToString(),
-                                                    };
-                                                    break;
-
-                                                case "telnet":
-                                                    server = new ProtocolServerTelnet()
-                                                    {
-                                                        DispName = name,
-                                                        Tags = tags,
-                                                        Address = address,
-                                                        Port = port.ToString(),
-                                                    };
-                                                    break;
-                                            }
-
-                                            if (server != null)
-                                            {
-                                                server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
-                                                list.Add(server);
-                                            }
-                                        }
-                                    }
-                                }
-                                if (list?.Count > 0)
-                                {
-                                    foreach (var serverBase in list)
-                                    {
-                                        PrmContext.DbOperator.DbAddServer(serverBase);
-                                    }
-                                    PrmContext.AppData.ServerListUpdate();
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
-                                }
-                                else
-                                    MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            }
-                            catch (Exception e)
-                            {
-                                SimpleLogHelper.Debug(e);
-                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            }
+                            else
+                                MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Debug(e);
+                            MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         }
                     });
                 }
