@@ -409,7 +409,19 @@ namespace PRM.Core.Model
                 {
                     _cmdPrmThemeReset = new RelayCommand((o) =>
                     {
-                        PrmColorThemeName = PrmColorThemeName;
+                        var theme = PrmColorThemes[PrmColorThemeName];
+                        _mainColor1 = theme.MainColor1;
+                        _mainColor1Lighter = theme.MainColor1Lighter;
+                        _mainColor1Darker = theme.MainColor1Darker;
+                        _mainColor1Foreground = theme.MainColor1Foreground;
+                        _mainColor2 = theme.MainColor2;
+                        _mainColor2Lighter = theme.MainColor2Lighter;
+                        _mainColor2Darker = theme.MainColor2Darker;
+                        _mainColor2Foreground = theme.MainColor2Foreground;
+                        _mainBgColor = theme.MainBgColor;
+                        _mainBgColorForeground = theme.MainBgColorForeground;
+                        Save();
+                        RaisePropertyChanged(nameof(PrmColorThemeName));
                     });
                 }
                 return _cmdPrmThemeReset;
