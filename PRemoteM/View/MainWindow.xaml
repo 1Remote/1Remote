@@ -68,29 +68,39 @@
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
 
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
-                <TextBox Name="TbFilter" Width="150" Height="20"
+                <TextBox Name="TbFilter" Width="150" Height="25"
                          Visibility="{Binding TbFilterVisible}"
                          Text="{Binding Context.AppData.MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Resources>
                         <VisualBrush x:Key="HintText" TileMode="None" Stretch="None" AlignmentX="Left">
                             <VisualBrush.Visual>
-                                <TextBlock FontStyle="Italic" Text="{DynamicResource filter_searchbox}"
-                                           Foreground="{DynamicResource MainColor1ForegroundBrush}" />
+                                <Grid Background="Transparent">
+                                    <TextBlock FontStyle="Italic" Text="{DynamicResource filter_searchbox}" Margin="5 0 0 0"
+                                           VerticalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" />
+                                </Grid>
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </TextBox.Resources>
                     <TextBox.Style>
                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
-                            <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
+                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type TextBox}">
-                                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                        <Border CornerRadius="5" ClipToBounds="True" x:Name="border" 
+                                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" 
+                                                Padding="2"
+                                                Background="{TemplateBinding Background}" 
+                                                SnapsToDevicePixels="True">
                                             <Grid>
-                                                <Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}"></Grid>
+                                                <!--<Grid x:Name="grid0" Background="#fff" Opacity="{TemplateBinding Opacity}"></Grid>-->
                                                 <Grid x:Name="grid1" Opacity="{TemplateBinding Opacity}">
-                                                    <ScrollViewer Foreground="{DynamicResource MainColor1ForegroundBrush}" x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
+                                                    <ScrollViewer 
+                                                        VerticalContentAlignment="Center"
+                                                        Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                                                        x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                                                 </Grid>
                                             </Grid>
                                         </Border>
