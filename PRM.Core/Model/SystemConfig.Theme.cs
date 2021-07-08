@@ -209,7 +209,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(MainBgColorForeground), ref _mainBgColorForeground, value);
         }
 
-        private EnumTabUI _tabUi = EnumTabUI.Classical;
+        private EnumTabUI _tabUi = EnumTabUI.ChromeLike;
 
         public EnumTabUI TabUI
         {
