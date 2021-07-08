@@ -5,9 +5,6 @@ using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.View;
 using PRM.ViewModel;
-
-using Shawn.Utils;
-
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
