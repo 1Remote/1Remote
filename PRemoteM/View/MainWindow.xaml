@@ -17,7 +17,7 @@
     </WindowChrome.WindowChrome>
     <utils:WindowChromeBase.Template>
         <ControlTemplate TargetType="Window">
-            <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource MainColor1Brush}">
+            <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource PrimaryMidBrush}">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="BorderThickness" Value="0"></Setter>
@@ -48,24 +48,24 @@
         <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
     </utils:WindowChromeBase.InputBindings>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource BackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid Background="{DynamicResource MainColor1Brush}" Name="WinTitleBar">
+        <Grid Background="{DynamicResource PrimaryMidBrush}" Name="WinTitleBar">
             <StackPanel Orientation="Horizontal">
                 <Grid Background="Transparent" Width="24" Height="24" Margin="5">
                     <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>
                 </Grid>
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
             </StackPanel>
         </Grid>
 
         <!-- System Button Area -->
         <StackPanel Grid.Row="0"
-                    Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource MainColor1Brush}">
+                    Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource PrimaryMidBrush}">
 
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="25"
@@ -77,15 +77,15 @@
                             <VisualBrush.Visual>
                                 <Grid Background="Transparent">
                                     <TextBlock FontStyle="Italic" Text="{DynamicResource filter_searchbox}" Margin="5 0 0 0"
-                                           VerticalAlignment="Center" Foreground="{DynamicResource MainColor1ForegroundBrush}" />
+                                           VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" />
                                 </Grid>
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </TextBox.Resources>
                     <TextBox.Style>
                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
-                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -99,7 +99,7 @@
                                                 <Grid x:Name="grid1" Opacity="{TemplateBinding Opacity}">
                                                     <ScrollViewer 
                                                         VerticalContentAlignment="Center"
-                                                        Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                                                        Foreground="{DynamicResource PrimaryTextBrush}" 
                                                         x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                                                 </Grid>
                                             </Grid>
@@ -112,11 +112,11 @@
                             <Setter Property="IsEnabled" Value="False" />
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor1LighterBrush}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryLightBrush}" />
                                     <Setter Property="Opacity" Value="0.8"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsFocused" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
                                     <Setter Property="Opacity" Value="0.8"></Setter>
                                 </Trigger>
                                 <Trigger Property="Text" Value="{x:Null}">
@@ -138,20 +138,20 @@
                 <CheckBox Name="CbPopForMenu" Width="35" Height="35" VerticalAlignment="Top" Margin="0">
                     <CheckBox.Template>
                         <ControlTemplate>
-                            <Border Name="BG" Background="{DynamicResource MainColor1Brush}">
+                            <Border Name="BG" Background="{DynamicResource PrimaryMidBrush}">
                                 <Grid VerticalAlignment="Center">
                                     <Grid Width="15" Height="15">
                                         <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
-                                              Fill="{DynamicResource MainColor1ForegroundBrush}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
+                                              Fill="{DynamicResource PrimaryTextBrush}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
                                     </Grid>
                                 </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="CheckBox.IsMouseOver" Value="True">
-                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1LighterBrush}"></Setter>
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryLightBrush}"></Setter>
                                 </Trigger>
                                 <Trigger Property="CheckBox.IsChecked" Value="True">
-                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
+                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -186,13 +186,13 @@
                 <Popup.Resources>
                     <Style x:Key="ButtonExStyle0" TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                         <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                        <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
-                        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                         <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
-                        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}" />
-                        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}" />
-                        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}" />
-                        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}" />
+                        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentMidBrush}" />
+                        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}" />
+                        <Setter Property="BackgroundOnPressed" Value="{DynamicResource AccentLightBrush}" />
+                        <Setter Property="ForegroundOnPressed" Value="{DynamicResource AccentTextBrush}" />
                         <Setter Property="OpacityOnPressed" Value="1"></Setter>
                     </Style>
 
@@ -202,7 +202,7 @@
                     <Border.Effect>
                         <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
                     </Border.Effect>
-                    <Grid MinWidth="150" Background="{DynamicResource MainColor1DarkerBrush}">
+                    <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
                         <StackPanel>
                             <controls:ButtonEx Command="{Binding CmdGoSysOptionsPage}">
                                 <TextBlock Text="{DynamicResource system_menu_options_title}" Margin="20 0 0 0"
@@ -269,13 +269,13 @@
 
             <controls:ButtonEx Name="BtnMinimize"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
-                <Rectangle Width="15" Height="1" Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" />
+                <Rectangle Width="15" Height="1" Stroke="{DynamicResource PrimaryTextBrush}" StrokeThickness="1" />
             </controls:ButtonEx>
 
             <controls:ButtonEx Name="BtnMaximize"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
                 <Grid>
-                    <Path Fill="{DynamicResource MainColor1ForegroundBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
+                    <Path Fill="{DynamicResource PrimaryTextBrush}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
                           Stretch="Uniform">
                         <Path.Style>
                             <Style TargetType="Path">
@@ -288,7 +288,7 @@
                         </Path.Style>
                     </Path>
 
-                    <Path Stroke="{DynamicResource MainColor1ForegroundBrush}" StrokeThickness="1" Height="15" Width="15"
+                    <Path Stroke="{DynamicResource PrimaryTextBrush}" StrokeThickness="1" Height="15" Width="15"
                           Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
                           Stretch="Uniform">
                         <Path.Style>
@@ -342,11 +342,11 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Grid Background="{DynamicResource MainColor1Brush}" Opacity="0.5"></Grid>
+                <Grid Background="{DynamicResource PrimaryMidBrush}" Opacity="0.5"></Grid>
                 <Grid>
                     <StackPanel VerticalAlignment="Center">
                         <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
-                        <TextBlock Width="200" Foreground="{DynamicResource MainColor1ForegroundBrush}" Text="{Binding ProgressBarInfo}" TextWrapping="Wrap"></TextBlock>
+                        <TextBlock Width="200" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding ProgressBarInfo}" TextWrapping="Wrap"></TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>

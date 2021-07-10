@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="{DynamicResource MainColor1Brush}">
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid.Resources>
             <system:Double x:Key="BottomHeight">40</system:Double>
             <Style x:Key="EditorRowGrid" TargetType="Grid">
@@ -24,7 +24,7 @@
                 </Setter>
             </Style>
             <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="Opacity" Value="0.9"></Setter>
                 <Setter Property="Margin" Value="0 0 20 0"></Setter>
@@ -32,18 +32,18 @@
             <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                 <Setter Property="FontSize" Value="16"></Setter>
                 <Setter Property="FontWeight" Value="Bold"></Setter>
-                <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                 <Setter Property="TextAlignment" Value="Left"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="Margin" Value="0 10 0 10"></Setter>
             </Style>
 
             <Style TargetType="{x:Type Hyperlink}">
-                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                         <Setter Property="TextBlock.TextDecorations">
                             <Setter.Value>
                                 <TextDecorationCollection>
@@ -100,7 +100,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
-                                    <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
+                                    <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock>
                                             <Hyperlink NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
@@ -236,13 +236,13 @@
         </Grid>
 
         <Grid VerticalAlignment="Bottom">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource BottomHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource BottomHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="90"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
                     <Grid Width="300">
                         <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}"

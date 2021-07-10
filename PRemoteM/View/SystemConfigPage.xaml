@@ -27,7 +27,7 @@
                 <Setter Property="Padding" Value="2" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}" />
+                <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
                 <Setter Property="Template">
@@ -41,7 +41,7 @@
 
                                 <Border SnapsToDevicePixels="True">
                                     <TabPanel x:Name="headerPanel"
-                                          Background="{DynamicResource MainColor1Brush}" IsItemsHost="true"
+                                          Background="{DynamicResource PrimaryMidBrush}" IsItemsHost="true"
                                           Margin="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" />
                                 </Border>
                                 <Border x:Name="contentPanel" SnapsToDevicePixels="True"
@@ -56,11 +56,11 @@
             </Style>
 
             <Style TargetType="TabItem">
-                <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TabItem">
-                            <Border Name="Border" Padding="0 2" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MainColor2Brush}">
+                            <Border Name="Border" Padding="0 2" SnapsToDevicePixels="True" BorderBrush="{DynamicResource AccentMidBrush}">
                                 <TextBlock x:Name="TabItemContent"
                                            HorizontalAlignment="Center"
                                            Margin="10"
@@ -68,13 +68,13 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainBgColorBrush}" />
-                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}" />
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrush}" />
+                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
                                     <Setter TargetName="Border" Property="BorderThickness" Value="0 0 0 1"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="False">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor1Brush}" />
-                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}" />
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -82,8 +82,8 @@
                                         <Condition Property="IsMouseOver" Value="True"></Condition>
                                     </MultiTrigger.Conditions>
                                     <MultiTrigger.Setters>
-                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor2Brush}" />
-                                        <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentMidBrush}" />
+                                        <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </MultiTrigger.Setters>
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
@@ -92,7 +92,7 @@
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="False">
-                        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}">
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}">
                         </Setter>
                     </Trigger>
                 </Style.Triggers>
@@ -100,9 +100,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource BackgroundBrush}">
 
-        <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}">
+        <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource BackgroundBrush}">
             <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
                 <StackPanel Margin="0 20 0 0">
 
@@ -126,11 +126,11 @@
                                            NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
                                     <Hyperlink.Style>
                                         <Style TargetType="{x:Type Hyperlink}">
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                                             <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
                                                     <Setter Property="TextBlock.TextDecorations">
                                                         <Setter.Value>
                                                             <TextDecorationCollection>
@@ -464,20 +464,20 @@
                             <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource system_options_theme_prm_color_foreground}"></TextBlock>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_main_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor1}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor1Lighter}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor1Darker}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor1Foreground}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.PrimaryMidColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.PrimaryLightColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.PrimaryDarkColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.PrimaryTextColor}" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_secondary_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor2}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor2Lighter}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor2Darker}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.AccentMidColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.AccentLightColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.AccentDarkColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.AccentTextColor}" />
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_background_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainBgColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainBgColorForeground}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.BackgroundColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.BackgroundTextColor}" />
                         </Grid>
                     </Grid>
 
@@ -521,7 +521,7 @@
                             <StackPanel.Resources>
                                 <Style TargetType="RadioButton">
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                                 </Style>
                             </StackPanel.Resources>
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_tab_ui}"></TextBlock>
@@ -545,13 +545,13 @@
                 HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
                 BorderThickness="0"
-                Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                Background="{DynamicResource MainColor1DarkerBrush}"
-                BackgroundOnMouseOver="{DynamicResource MainColor2Brush}"
-                ForegroundOnMouseOver="{DynamicResource MainColor2ForegroundBrush}"
+                Foreground="{DynamicResource PrimaryTextBrush}"
+                Background="{DynamicResource PrimaryDarkBrush}"
+                BackgroundOnMouseOver="{DynamicResource AccentMidBrush}"
+                ForegroundOnMouseOver="{DynamicResource AccentTextBrush}"
                 OpacityOnMouseOver="1"
-                BackgroundOnPressed="{DynamicResource MainColor2Brush}"
-                ForegroundOnPressed="{DynamicResource MainColor2ForegroundBrush}"
+                BackgroundOnPressed="{DynamicResource AccentMidBrush}"
+                ForegroundOnPressed="{DynamicResource AccentTextBrush}"
                 OpacityOnPressed="0.5"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource word_back}">
