@@ -101,6 +101,20 @@ namespace PRM.Core.Protocol.RDP
             set => SetAndNotifyIfChanged(nameof(IsAdministrativePurposes), ref _isAdministrativePurposes, value);
         }
 
+        private string _domain = "";
+        public string Domain
+        {
+            get => _domain;
+            set => SetAndNotifyIfChanged(nameof(Domain), ref _domain, value);
+        }
+
+        private string _loadBalanceInfo = "";
+        public string LoadBalanceInfo
+        {
+            get => _loadBalanceInfo;
+            set => SetAndNotifyIfChanged(nameof(LoadBalanceInfo), ref _loadBalanceInfo, value);
+        }
+
         #region Display
 
         private ERdpFullScreenFlag? _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
