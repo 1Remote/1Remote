@@ -25,7 +25,7 @@ namespace Shawn.Utils
 
         public string Text
         {
-            get => (string)GetValue(TextProperty);
+            get => (string)(GetValue(TextProperty) ?? "");
             set
             {
                 if (value != Text)
