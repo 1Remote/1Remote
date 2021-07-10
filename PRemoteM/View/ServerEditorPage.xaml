@@ -22,7 +22,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}" ClipToBounds="True">
+    <Grid Background="{DynamicResource BackgroundBrush}" ClipToBounds="True">
         <Grid.Resources>
             <system:Double x:Key="TopHeight">20</system:Double>
             <system:Double x:Key="BottomHeight">30</system:Double>
@@ -31,7 +31,7 @@
         <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
                     ToolTip="{Binding Title}"
                     RenderTransformOrigin="0.5,0.5" 
-                    Margin="0,35,-130,0" Background="{DynamicResource MainColor2Brush}">
+                    Margin="0,35,-130,0" Background="{DynamicResource AccentMidBrush}">
             <StackPanel.Style>
                 <Style TargetType="StackPanel">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -62,7 +62,7 @@
                        Margin="0 5"
                        Width="100"
                        TextAlignment="Center"
-                       Foreground="{DynamicResource MainColor2ForegroundBrush}"
+                       Foreground="{DynamicResource AccentTextBrush}"
                        HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock.FontSize>
                     <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
@@ -132,7 +132,7 @@
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
                                                     HexColor="{Binding Server.MarkColorHex}"
-                                                    Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                    Foreground="{DynamicResource BackgroundTextBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
@@ -143,13 +143,13 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                        <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
+                                        <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1" Background="{DynamicResource BackgroundBrush}">
                                             <Grid Width="510">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                                                     <ColumnDefinition></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
-                                                <StackPanel Background="{DynamicResource MainBgColorBrush}">
+                                                <StackPanel Background="{DynamicResource BackgroundBrush}">
                                                     <controls2:LogoSelector x:Name="LogoSelector"></controls2:LogoSelector>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
@@ -164,7 +164,7 @@
                                                     </Grid>
                                                 </StackPanel>
                                                 <Grid Grid.Column="1">
-                                                    <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
+                                                    <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
                                                     <ListView BorderThickness="0"
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
@@ -229,15 +229,15 @@
         </Grid>
 
         <Grid VerticalAlignment="Top">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource TopHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource TopHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
+            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource TopHeight}">
-                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                    <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" 
                                Margin="50 0" TextTrimming="CharacterEllipsis"
                                Text="{Binding Title}"
                                ToolTip="{Binding Title}"
@@ -251,7 +251,7 @@
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding ProtocolList}"
                                     SelectedValue="{Binding ProtocolSelected}"
-                                    Background="{StaticResource MainColor1Brush}"
+                                    Background="{StaticResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -291,7 +291,7 @@
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="Selector.IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
-                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                         </Trigger>
                                                         <MultiTrigger>
                                                             <MultiTrigger.Conditions>
@@ -299,7 +299,7 @@
                                                                 <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
                                                             </MultiTrigger.Conditions>
                                                             <MultiTrigger.Setters>
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentLightBrush}"></Setter>
                                                             </MultiTrigger.Setters>
                                                         </MultiTrigger>
                                                     </ControlTemplate.Triggers>
@@ -307,10 +307,10 @@
                                             </Setter.Value>
                                         </Setter>
 
-                                        <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
+                                                <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -339,13 +339,13 @@
         </Grid>
 
         <Grid VerticalAlignment="Bottom">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource BottomHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource BottomHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="90"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
 
                     <Grid Width="300">

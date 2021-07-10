@@ -27,13 +27,13 @@
         </ControlTemplate>
         <Style TargetType="{x:Type ComboBox}"  x:Key="ComboBoxNoArray">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-            <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
             <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
             <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
             <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-            <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"/>
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
             <Setter Property="Control.Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">

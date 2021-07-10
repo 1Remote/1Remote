@@ -17,7 +17,7 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border Padding="40" Background="Transparent">
-                <Border CornerRadius="16" Background="{DynamicResource MainColor1Brush}">
+                <Border CornerRadius="16" Background="{DynamicResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" />
                     </Border.Effect>
@@ -207,13 +207,13 @@
                                FontSize="18" FontWeight="Bold"
                                HorizontalAlignment="Right"
                                Opacity="0.4"
-                               Foreground="{DynamicResource MainColor1Brush}"
+                               Foreground="{DynamicResource PrimaryMidBrush}"
                                Margin="10 0"
                                VerticalAlignment="Center"></TextBlock>
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                Text="{Binding Server.ProtocolDisplayName}"
                                FontSize="18" FontWeight="Bold"
-                               Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                Opacity="0.2"
                                HorizontalAlignment="Right"
                                Margin="10 0"
@@ -257,13 +257,13 @@
                                     </Grid>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                             <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                                            <Setter Property="Background" Value="{DynamicResource MainColor2Brush}" TargetName="GridContainer" />
+                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
@@ -301,16 +301,16 @@
           Width="{StaticResource GridMainWidth}"
           Height="{Binding GridMainHeight}"
           Clip="{Binding GridMainClip}"
-          Background="{DynamicResource MainColor1Brush}">
+          Background="{DynamicResource PrimaryMidBrush}">
 
         <Grid Name="GridKeyword"
               VerticalAlignment="Top"
               Height="{Binding GridKeywordHeight}"
-              Background="{DynamicResource MainColor1Brush}">
+              Background="{DynamicResource PrimaryMidBrush}">
             <TextBox Name="TbKeyWord"
                          Margin="10 0 0 0"
-                         Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                         CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
+                         Foreground="{DynamicResource PrimaryTextBrush}"
+                         CaretBrush="{DynamicResource PrimaryTextBrush}"
                          Height="44"
                          FontSize="18"
                          Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
@@ -319,7 +319,7 @@
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
             <Grid Width="50" Height="40" HorizontalAlignment="Right"
-                          Background="{DynamicResource MainColor1Brush}"
+                          Background="{DynamicResource PrimaryMidBrush}"
                           PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
 
@@ -336,7 +336,7 @@
                          SelectedIndex="{Binding SelectedIndex}"
                          ItemsSource="{Binding Context.AppData.VmItemList}"
                          Background="Transparent"
-                         Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                         Foreground="{DynamicResource PrimaryTextBrush}"
                          Style="{StaticResource SearchBoxSelectionList}">
                 </ListBox>
             </StackPanel>
@@ -344,7 +344,7 @@
 
         <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}"
                 VerticalAlignment="Top"
-                Background="{DynamicResource MainColor1Brush}">
+                Background="{DynamicResource PrimaryMidBrush}">
             <StackPanel>
                 <Grid Margin="0 5" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>
@@ -354,8 +354,8 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0" Grid.Column="0" Background="{DynamicResource MainColor1Brush}" MouseDown="ButtonActionBack_OnMouseDown">
-                        <Path Margin="2" Fill="{DynamicResource MainColor1LighterBrush}" Height="25"
+                    <Grid Grid.Row="0" Grid.Column="0" Background="{DynamicResource PrimaryMidBrush}" MouseDown="ButtonActionBack_OnMouseDown">
+                        <Path Margin="2" Fill="{DynamicResource PrimaryLightBrush}" Height="25"
                                   Data="F1 M 16.591797 2.431641 L 9.023438 10 L 16.591797 17.568359 L 14.238281 19.931641 L 4.306641 10 L 14.238281 0.068359 L 16.591797 2.431641 Z " Stretch="Uniform">
                         </Path>
                     </Grid>
@@ -376,14 +376,14 @@
 
                         <Grid Grid.Row="0" Grid.Column="0">
                             <TextBlock TextTrimming="CharacterEllipsis"
-                                   FontSize="18" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}"
                                    VerticalAlignment="Center"
                                    Text="{Binding SelectedItem.Server.DispName}"></TextBlock>
                         </Grid>
 
                         <Grid Grid.Row="1" Grid.Column="0" Opacity="0.5">
                             <TextBlock TextTrimming="CharacterEllipsis"
-                                   FontSize="12" Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   FontSize="12" Foreground="{DynamicResource PrimaryTextBrush}"
                                    VerticalAlignment="Top"
                                    Text="{Binding SelectedItem.Server.SubTitle}"></TextBlock>
                         </Grid>
@@ -391,7 +391,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{DynamicResource MainColor1Brush}"
+                                   Foreground="{DynamicResource PrimaryMidBrush}"
                                    Opacity="0.4"
                                    HorizontalAlignment="Right"
                                    Margin="10 0"
@@ -399,7 +399,7 @@
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                    Text="{Binding SelectedItem.Server.ProtocolDisplayName}"
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                    Opacity="0.2"
                                    HorizontalAlignment="Right"
                                    Margin="10 0"
@@ -413,8 +413,8 @@
                                 BorderThickness="0"
                                 SelectedIndex="{Binding SelectedActionIndex}"
                                 ItemsSource="{Binding Actions}"
-                                Background="{DynamicResource MainColor1Brush}"
-                                Foreground="{DynamicResource MainColor1ForegroundBrush}">
+                                Background="{DynamicResource PrimaryMidBrush}"
+                                Foreground="{DynamicResource PrimaryTextBrush}">
                 </ListBox>
             </StackPanel>
         </Grid>

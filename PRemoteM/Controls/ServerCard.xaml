@@ -20,7 +20,7 @@
             </Grid.InputBindings>
 
             <!-- Card Bottom Layer - with shadow effect -->
-            <Border CornerRadius="5" BorderThickness="1" Background="Black" BorderBrush="{DynamicResource MainBgColorBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+            <Border CornerRadius="5" BorderThickness="1" Background="Black" BorderBrush="{DynamicResource BackgroundBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
                 </Border.Effect>
@@ -32,7 +32,7 @@
                     <RectangleGeometry RadiusX="5" RadiusY="5" Rect="0 0 144 144"></RectangleGeometry>
                 </Grid.Clip>
                 <!-- Card Content Middle Layer - with icon -->
-                <Grid Name="CardContent" Background="{DynamicResource MainColor1Brush}">
+                <Grid Name="CardContent" Background="{DynamicResource PrimaryMidBrush}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
@@ -120,16 +120,16 @@
                             <Setter Property="BorderBrush" Value="Transparent"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
                                 </Trigger>
                                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -144,7 +144,7 @@
                             <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
                                       Name="CbIsSelected"
                                       IsChecked="{Binding IsSelected}"
-                                      Background="{DynamicResource MainColor2Brush}">
+                                      Background="{DynamicResource AccentMidBrush}">
                                 <CheckBox.Style>
                                     <Style TargetType="CheckBox">
                                         <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -155,8 +155,8 @@
                                                             BorderThickness="0" 
                                                             CornerRadius="2,0,0,0" Name="PART_Background">
                                                         <Grid>
-                                                            <Path Name="PATH_UNCHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="3 3 4 4" Data="F1 M 20 0 L 20 20 L 0 20 L 0 0 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                            <Path Name="PATH_CHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="3 3 4 4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Path Name="PATH_UNCHECK" Fill="{DynamicResource AccentTextBrush}" Stretch="Fill" Margin="3 3 4 4" Data="F1 M 20 0 L 20 20 L 0 20 L 0 0 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                            <Path Name="PATH_CHECK" Fill="{DynamicResource AccentTextBrush}" Stretch="Fill" Margin="3 3 4 4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                         </Grid>
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -205,7 +205,7 @@
                                                         <Path Margin="5"
                                                               Name="Symbol"
                                                               Data="M 50.864 62.832 L 41.888 62.832 L 25.256 35.552 L 8.360001 62.832 L 0 62.832 L 20.856 30.096 L 1.320002 0 L 10.12 0 L 25.52 24.64 L 41.008 0 L 49.368 0 L 29.92 29.92 Z"
-                                                              Fill="{DynamicResource MainColor2ForegroundBrush}"
+                                                              Fill="{DynamicResource AccentTextBrush}"
                                                               Stretch="Fill" />
                                                     </Border>
                                                     <ControlTemplate.Triggers>
@@ -234,16 +234,16 @@
                                 <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -251,7 +251,7 @@
                                     <TextBlock.Effect>
                                         <DropShadowEffect ShadowDepth="0"
                                                           Direction="0"
-                                                          Color="{DynamicResource MainColor1Darker}"
+                                                          Color="{DynamicResource PrimaryDarkColor}"
                                                           Opacity="10"
                                                           BlurRadius="3"
                                         />
@@ -260,16 +260,16 @@
                                 <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -285,8 +285,8 @@
                                     Click="BtnSettingMenu_OnClick">
                                     <controls:ButtonEx.Style>
                                         <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1Button}">
-                                            <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
-                                            <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
+                                            <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
+                                            <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
                                             <Setter Property="Visibility" Value="Hidden"></Setter>
                                             <Setter Property="Padding" Value="5 6 5 3"></Setter>
                                             <Setter Property="Template">
@@ -314,8 +314,8 @@
                                                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                                     <Setter Property="Padding" Value="4 5 4 2"></Setter>
-                                                    <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
-                                                    <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -328,14 +328,14 @@
                                     <Popup.Resources>
                                         <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
                                             <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                                            <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                                            <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                             <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
-                                            <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}"/>
-                                            <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                                            <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
-                                            <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                                            <Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>
+                                            <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentMidBrush}"/>
+                                            <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}"/>
+                                            <Setter Property="BackgroundOnPressed" Value="{DynamicResource AccentLightBrush}"/>
+                                            <Setter Property="ForegroundOnPressed" Value="{DynamicResource AccentTextBrush}"/>
+                                            <Setter Property="BackgroundOnDisabled" Value="{DynamicResource PrimaryDarkBrush}"/>
                                             <Setter Property="ForegroundOnDisabled" Value="Gray"/>
                                             <Setter Property="OpacityOnPressed" Value="1"></Setter>
                                         </Style>
@@ -344,7 +344,7 @@
                                         <Border.Effect>
                                             <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
                                         </Border.Effect>
-                                        <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
+                                        <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                                             <StackPanel>
                                                 <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource word_edit}"></controls:ButtonEx>
                                                 <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>

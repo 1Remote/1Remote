@@ -29,7 +29,7 @@ namespace PRM.View
             if (vm.IsAddMode)
             {
                 ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
-                ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.MainColor1);
+                ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.PrimaryMidColor);
 
                 if (vm.Server.IconImg == null 
                     && ServerIcons.Instance.Icons.Count > 0)
