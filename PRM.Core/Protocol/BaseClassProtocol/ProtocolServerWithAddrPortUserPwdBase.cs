@@ -10,20 +10,6 @@ namespace PRM.Core.Protocol
 
         #region Conn
 
-        private string _domain = "";
-        public string Domain
-        {
-            get => _domain;
-            set => SetAndNotifyIfChanged(nameof(Domain), ref _domain, value);
-        }
-
-        private string _loadBalanceInfo = "";
-        public string LoadBalanceInfo
-        {
-            get => _loadBalanceInfo;
-            set => SetAndNotifyIfChanged(nameof(LoadBalanceInfo), ref _loadBalanceInfo, value);
-        }
-
         private string _userName = "Administrator";
         public string UserName
         {
