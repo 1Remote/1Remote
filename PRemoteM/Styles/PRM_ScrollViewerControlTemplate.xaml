@@ -36,7 +36,7 @@
                             x:Name="rectangle"
                             CornerRadius="5"
                             Margin="0 0 0 0"
-                            Background="{DynamicResource MainColor1Brush}"
+                            Background="{DynamicResource PrimaryMidBrush}"
                             Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"
                             >
                         <Border.Effect>
@@ -45,10 +45,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor1LighterBrush}"/>
+                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource PrimaryLightBrush}"/>
                         </Trigger>
                         <Trigger Property="IsDragging" Value="true">
-                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor1DarkerBrush}"/>
+                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource PrimaryDarkBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -65,20 +65,20 @@
                             x:Name="rectangle"
                             CornerRadius="5"
                             Margin="0"
-                            Background="{DynamicResource MainColor1Brush}"
+                            Background="{DynamicResource PrimaryMidBrush}"
                             Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"
                             >
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="3" ShadowDepth="1" Opacity="0.8"></DropShadowEffect>
                         </Border.Effect>
                     </Border>
-                    <!--<Rectangle x:Name="rectangle" Fill="{DynamicResource MainColor1Brush}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>-->
+                    <!--<Rectangle x:Name="rectangle" Fill="{DynamicResource PrimaryMidBrush}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>-->
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}"/>
+                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource AccentMidBrush}"/>
                         </Trigger>
                         <Trigger Property="IsDragging" Value="true">
-                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource MainColor2Brush}"/>
+                            <Setter Property="Background" TargetName="rectangle" Value="{DynamicResource AccentMidBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

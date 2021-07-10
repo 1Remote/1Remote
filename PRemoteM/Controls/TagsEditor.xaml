@@ -25,7 +25,7 @@
 
 
                     <Grid Grid.Column="1">
-                        <ItemsControl Name="ListViewTags" Background="{DynamicResource MainBgColorBrush}" ItemsSource="{Binding Tags, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl Name="ListViewTags" Background="{DynamicResource BackgroundBrush}" ItemsSource="{Binding Tags, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel />
@@ -33,9 +33,9 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="system:String">
-                                    <Border VerticalAlignment="Center" Background="{DynamicResource MainColor2Brush}" CornerRadius="5" Margin="3 5">
+                                    <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 5">
                                         <StackPanel Orientation="Horizontal">
-                                            <Label Content="{Binding}" Foreground="{DynamicResource MainColor2ForegroundBrush}"></Label>
+                                            <Label Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}"></Label>
                                             
                                             <controls:ButtonEx Width="10" Height="10" Click="ButtonDel_OnClick" Tag="{Binding}"
                                                        Margin="0 0 5 0" Padding="0" VerticalAlignment="Center">

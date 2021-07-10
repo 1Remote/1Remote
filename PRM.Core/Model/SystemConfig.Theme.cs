@@ -68,16 +68,16 @@ namespace PRM.Core.Model
             {
                 if (!PrmColorThemes.ContainsKey(value)) return;
                 var theme = PrmColorThemes[value];
-                _mainColor1 = theme.MainColor1;
-                _mainColor1Lighter = theme.MainColor1Lighter;
-                _mainColor1Darker = theme.MainColor1Darker;
-                _mainColor1Foreground = theme.MainColor1Foreground;
-                _mainColor2 = theme.MainColor2;
-                _mainColor2Lighter = theme.MainColor2Lighter;
-                _mainColor2Darker = theme.MainColor2Darker;
-                _mainColor2Foreground = theme.MainColor2Foreground;
-                _mainBgColor = theme.MainBgColor;
-                _mainBgColorForeground = theme.MainBgColorForeground;
+                _mainColor1 = theme.PrimaryMidColor;
+                _mainColor1Lighter = theme.PrimaryLightColor;
+                _mainColor1Darker = theme.PrimaryDarkColor;
+                _mainColor1Foreground = theme.PrimaryTextColor;
+                _mainColor2 = theme.AccentMidColor;
+                _mainColor2Lighter = theme.AccentLightColor;
+                _mainColor2Darker = theme.AccentDarkColor;
+                _mainColor2Foreground = theme.AccentTextColor;
+                _mainBgColor = theme.BackgroundColor;
+                _mainBgColorForeground = theme.BackgroundTextColor;
                 Save();
                 SetAndNotifyIfChanged(nameof(PrmColorThemeName), ref _prmColorThemeName, value);
             }
@@ -101,7 +101,7 @@ namespace PRM.Core.Model
 
         private string _mainColor1 = "#102b3e";
 
-        public string MainColor1
+        public string PrimaryMidColor
         {
             get => _mainColor1;
             set
@@ -109,11 +109,11 @@ namespace PRM.Core.Model
                 try
                 {
                     var color = ColorAndBrushHelper.HexColorToMediaColor(value);
-                    MainColor1Lighter = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
-                    MainColor1Darker = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
-                    SetAndNotifyIfChanged(nameof(MainColor1), ref _mainColor1, value);
-                    RaisePropertyChanged(nameof(MainColor1Lighter));
-                    RaisePropertyChanged(nameof(MainColor1Darker));
+                    PrimaryLightColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
+                    PrimaryDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
+                    SetAndNotifyIfChanged(nameof(PrimaryMidColor), ref _mainColor1, value);
+                    RaisePropertyChanged(nameof(PrimaryLightColor));
+                    RaisePropertyChanged(nameof(PrimaryDarkColor));
                 }
                 catch (Exception e)
                 {
@@ -124,31 +124,31 @@ namespace PRM.Core.Model
 
         private string _mainColor1Lighter = "#445a68";
 
-        public string MainColor1Lighter
+        public string PrimaryLightColor
         {
             get => _mainColor1Lighter;
-            set => SetAndNotifyIfChanged(nameof(MainColor1Lighter), ref _mainColor1Lighter, value);
+            set => SetAndNotifyIfChanged(nameof(PrimaryLightColor), ref _mainColor1Lighter, value);
         }
 
         private string _mainColor1Darker = "#0c2230";
 
-        public string MainColor1Darker
+        public string PrimaryDarkColor
         {
             get => _mainColor1Darker;
-            set => SetAndNotifyIfChanged(nameof(MainColor1Darker), ref _mainColor1Darker, value);
+            set => SetAndNotifyIfChanged(nameof(PrimaryDarkColor), ref _mainColor1Darker, value);
         }
 
         private string _mainColor1Foreground = "#ffffff";
 
-        public string MainColor1Foreground
+        public string PrimaryTextColor
         {
             get => _mainColor1Foreground;
-            set => SetAndNotifyIfChanged(nameof(MainColor1Foreground), ref _mainColor1Foreground, value);
+            set => SetAndNotifyIfChanged(nameof(PrimaryTextColor), ref _mainColor1Foreground, value);
         }
 
         private string _mainColor2 = "#e83d61";
 
-        public string MainColor2
+        public string AccentMidColor
         {
             get => _mainColor2;
             set
@@ -156,11 +156,11 @@ namespace PRM.Core.Model
                 try
                 {
                     var color = ColorAndBrushHelper.HexColorToMediaColor(value);
-                    MainColor2Lighter = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
-                    MainColor2Darker = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
-                    SetAndNotifyIfChanged(nameof(MainColor2), ref _mainColor2, value);
-                    RaisePropertyChanged(nameof(MainColor2Lighter));
-                    RaisePropertyChanged(nameof(MainColor2Darker));
+                    AccentLightColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
+                    AccentDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
+                    SetAndNotifyIfChanged(nameof(AccentMidColor), ref _mainColor2, value);
+                    RaisePropertyChanged(nameof(AccentLightColor));
+                    RaisePropertyChanged(nameof(AccentDarkColor));
                 }
                 catch (Exception e)
                 {
@@ -171,42 +171,42 @@ namespace PRM.Core.Model
 
         private string _mainColor2Lighter = "#ed6884";
 
-        public string MainColor2Lighter
+        public string AccentLightColor
         {
             get => _mainColor2Lighter;
-            set => SetAndNotifyIfChanged(nameof(MainColor2Lighter), ref _mainColor2Lighter, value);
+            set => SetAndNotifyIfChanged(nameof(AccentLightColor), ref _mainColor2Lighter, value);
         }
 
         private string _mainColor2Darker = "#b5304c";
 
-        public string MainColor2Darker
+        public string AccentDarkColor
         {
             get => _mainColor2Darker;
-            set => SetAndNotifyIfChanged(nameof(MainColor2Darker), ref _mainColor2Darker, value);
+            set => SetAndNotifyIfChanged(nameof(AccentDarkColor), ref _mainColor2Darker, value);
         }
 
         private string _mainColor2Foreground = "#ffffff";
 
-        public string MainColor2Foreground
+        public string AccentTextColor
         {
             get => _mainColor2Foreground;
-            set => SetAndNotifyIfChanged(nameof(MainColor2Foreground), ref _mainColor2Foreground, value);
+            set => SetAndNotifyIfChanged(nameof(AccentTextColor), ref _mainColor2Foreground, value);
         }
 
         private string _mainBgColor = "#ced8e1";
 
-        public string MainBgColor
+        public string BackgroundColor
         {
             get => _mainBgColor;
-            set => SetAndNotifyIfChanged(nameof(MainBgColor), ref _mainBgColor, value);
+            set => SetAndNotifyIfChanged(nameof(BackgroundColor), ref _mainBgColor, value);
         }
 
         private string _mainBgColorForeground = "#000000";
 
-        public string MainBgColorForeground
+        public string BackgroundTextColor
         {
             get => _mainBgColorForeground;
-            set => SetAndNotifyIfChanged(nameof(MainBgColorForeground), ref _mainBgColorForeground, value);
+            set => SetAndNotifyIfChanged(nameof(BackgroundTextColor), ref _mainBgColorForeground, value);
         }
 
         private EnumTabUI _tabUi = EnumTabUI.ChromeLike;
@@ -232,16 +232,16 @@ namespace PRM.Core.Model
         public override void Save()
         {
             _ini.WriteValue(nameof(PrmColorThemeName).ToLower(), _sectionName, PrmColorThemeName);
-            _ini.WriteValue(nameof(MainColor1).ToLower(), _sectionName, MainColor1);
-            _ini.WriteValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
-            _ini.WriteValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
-            _ini.WriteValue(nameof(MainColor1Foreground).ToLower(), _sectionName, MainColor1Foreground);
-            _ini.WriteValue(nameof(MainColor2).ToLower(), _sectionName, MainColor2);
-            _ini.WriteValue(nameof(MainColor2Lighter).ToLower(), _sectionName, MainColor2Lighter);
-            _ini.WriteValue(nameof(MainColor2Darker).ToLower(), _sectionName, MainColor2Darker);
-            _ini.WriteValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
-            _ini.WriteValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
-            _ini.WriteValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
+            _ini.WriteValue(nameof(PrimaryMidColor).ToLower(), _sectionName, PrimaryMidColor);
+            _ini.WriteValue(nameof(PrimaryLightColor).ToLower(), _sectionName, PrimaryLightColor);
+            _ini.WriteValue(nameof(PrimaryDarkColor).ToLower(), _sectionName, PrimaryDarkColor);
+            _ini.WriteValue(nameof(PrimaryTextColor).ToLower(), _sectionName, PrimaryTextColor);
+            _ini.WriteValue(nameof(AccentMidColor).ToLower(), _sectionName, AccentMidColor);
+            _ini.WriteValue(nameof(AccentLightColor).ToLower(), _sectionName, AccentLightColor);
+            _ini.WriteValue(nameof(AccentDarkColor).ToLower(), _sectionName, AccentDarkColor);
+            _ini.WriteValue(nameof(AccentTextColor).ToLower(), _sectionName, AccentTextColor);
+            _ini.WriteValue(nameof(BackgroundColor).ToLower(), _sectionName, BackgroundColor);
+            _ini.WriteValue(nameof(BackgroundTextColor).ToLower(), _sectionName, BackgroundTextColor);
             _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
             _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
             _ini.WriteValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString());
@@ -259,16 +259,16 @@ namespace PRM.Core.Model
             if (!PrmColorThemeNames.Contains(_prmColorThemeName))
                 _prmColorThemeName = PrmColorThemeNames.First();
 
-            _mainColor1 = _ini.GetValue(nameof(MainColor1).ToLower(), _sectionName, MainColor1);
-            _mainColor1Lighter = _ini.GetValue(nameof(MainColor1Lighter).ToLower(), _sectionName, MainColor1Lighter);
-            _mainColor1Darker = _ini.GetValue(nameof(MainColor1Darker).ToLower(), _sectionName, MainColor1Darker);
-            _mainColor1Foreground = _ini.GetValue(nameof(MainColor1Foreground).ToLower(), _sectionName, MainColor1Foreground);
-            _mainColor2 = _ini.GetValue(nameof(MainColor2).ToLower(), _sectionName, MainColor2);
-            _mainColor2Lighter = _ini.GetValue(nameof(MainColor2Lighter).ToLower(), _sectionName, MainColor2Lighter);
-            _mainColor2Darker = _ini.GetValue(nameof(MainColor2Darker).ToLower(), _sectionName, MainColor2Darker);
-            _mainColor2Foreground = _ini.GetValue(nameof(MainColor2Foreground).ToLower(), _sectionName, MainColor2Foreground);
-            _mainBgColor = _ini.GetValue(nameof(MainBgColor).ToLower(), _sectionName, MainBgColor);
-            _mainBgColorForeground = _ini.GetValue(nameof(MainBgColorForeground).ToLower(), _sectionName, MainBgColorForeground);
+            _mainColor1 = _ini.GetValue(nameof(PrimaryMidColor).ToLower(), _sectionName, PrimaryMidColor);
+            _mainColor1Lighter = _ini.GetValue(nameof(PrimaryLightColor).ToLower(), _sectionName, PrimaryLightColor);
+            _mainColor1Darker = _ini.GetValue(nameof(PrimaryDarkColor).ToLower(), _sectionName, PrimaryDarkColor);
+            _mainColor1Foreground = _ini.GetValue(nameof(PrimaryTextColor).ToLower(), _sectionName, PrimaryTextColor);
+            _mainColor2 = _ini.GetValue(nameof(AccentMidColor).ToLower(), _sectionName, AccentMidColor);
+            _mainColor2Lighter = _ini.GetValue(nameof(AccentLightColor).ToLower(), _sectionName, AccentLightColor);
+            _mainColor2Darker = _ini.GetValue(nameof(AccentDarkColor).ToLower(), _sectionName, AccentDarkColor);
+            _mainColor2Foreground = _ini.GetValue(nameof(AccentTextColor).ToLower(), _sectionName, AccentTextColor);
+            _mainBgColor = _ini.GetValue(nameof(BackgroundColor).ToLower(), _sectionName, BackgroundColor);
+            _mainBgColorForeground = _ini.GetValue(nameof(BackgroundTextColor).ToLower(), _sectionName, BackgroundTextColor);
         }
 
         private void LoadPuttyThemeFromIni()
@@ -347,32 +347,32 @@ namespace PRM.Core.Model
                 // create new theme resources
                 var rd = new ResourceDictionary();
                 SetKey(rd, resourceTypeKey, resourceTypeValue);
-                SetKey(rd, "MainColor1", ColorAndBrushHelper.HexColorToMediaColor(MainColor1));
-                SetKey(rd, "MainColor1Lighter", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Lighter));
-                SetKey(rd, "MainColor1Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Darker));
-                SetKey(rd, "MainColor1Foreground", ColorAndBrushHelper.HexColorToMediaColor(MainColor1Foreground));
-                SetKey(rd, "MainColor2", ColorAndBrushHelper.HexColorToMediaColor(MainColor2));
-                SetKey(rd, "MainColor2Lighter", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Lighter));
-                SetKey(rd, "MainColor2Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Darker));
-                SetKey(rd, "MainColor2Foreground", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Foreground));
-                SetKey(rd, "MainBgColor", ColorAndBrushHelper.HexColorToMediaColor(MainBgColor));
-                SetKey(rd, "MainBgColorForeground", ColorAndBrushHelper.HexColorToMediaColor(MainBgColorForeground));
+                SetKey(rd, "PrimaryMidColor", ColorAndBrushHelper.HexColorToMediaColor(PrimaryMidColor));
+                SetKey(rd, "PrimaryLightColor", ColorAndBrushHelper.HexColorToMediaColor(PrimaryLightColor));
+                SetKey(rd, "PrimaryDarkColor", ColorAndBrushHelper.HexColorToMediaColor(PrimaryDarkColor));
+                SetKey(rd, "PrimaryTextColor", ColorAndBrushHelper.HexColorToMediaColor(PrimaryTextColor));
+                SetKey(rd, "AccentMidColor", ColorAndBrushHelper.HexColorToMediaColor(AccentMidColor));
+                SetKey(rd, "AccentLightColor", ColorAndBrushHelper.HexColorToMediaColor(AccentLightColor));
+                SetKey(rd, "AccentDarkColor", ColorAndBrushHelper.HexColorToMediaColor(AccentDarkColor));
+                SetKey(rd, "AccentTextColor", ColorAndBrushHelper.HexColorToMediaColor(AccentTextColor));
+                SetKey(rd, "BackgroundColor", ColorAndBrushHelper.HexColorToMediaColor(BackgroundColor));
+                SetKey(rd, "BackgroundTextColor", ColorAndBrushHelper.HexColorToMediaColor(BackgroundTextColor));
 
 
-                SetKey(rd, "MainColor1Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1));
-                SetKey(rd, "MainColor1LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Lighter));
-                SetKey(rd, "MainColor1DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Darker));
-                SetKey(rd, "MainColor1ForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor1Foreground));
-                SetKey(rd, "MainColor2Brush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2));
-                SetKey(rd, "MainColor2LighterBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Lighter));
-                SetKey(rd, "MainColor2DarkerBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Lighter));
-                SetKey(rd, "MainColor2ForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainColor2Foreground));
-                SetKey(rd, "MainBgColorBrush", ColorAndBrushHelper.ColorToMediaBrush(MainBgColor));
-                SetKey(rd, "MainBgColorForegroundBrush", ColorAndBrushHelper.ColorToMediaBrush(MainBgColorForeground));
+                SetKey(rd, "PrimaryMidBrush", ColorAndBrushHelper.ColorToMediaBrush(PrimaryMidColor));
+                SetKey(rd, "PrimaryLightBrush", ColorAndBrushHelper.ColorToMediaBrush(PrimaryLightColor));
+                SetKey(rd, "PrimaryDarkBrush", ColorAndBrushHelper.ColorToMediaBrush(PrimaryDarkColor));
+                SetKey(rd, "PrimaryTextBrush", ColorAndBrushHelper.ColorToMediaBrush(PrimaryTextColor));
+                SetKey(rd, "AccentMidBrush", ColorAndBrushHelper.ColorToMediaBrush(AccentMidColor));
+                SetKey(rd, "AccentLightBrush", ColorAndBrushHelper.ColorToMediaBrush(AccentLightColor));
+                SetKey(rd, "AccentDarkBrush", ColorAndBrushHelper.ColorToMediaBrush(AccentLightColor));
+                SetKey(rd, "AccentTextBrush", ColorAndBrushHelper.ColorToMediaBrush(AccentTextColor));
+                SetKey(rd, "BackgroundBrush", ColorAndBrushHelper.ColorToMediaBrush(BackgroundColor));
+                SetKey(rd, "BackgroundTextBrush", ColorAndBrushHelper.ColorToMediaBrush(BackgroundTextColor));
 
-                SetKey(rd, "PrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(MainColor2));
-                SetKey(rd, "DarkPrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Darker));
-                SetKey(rd, "MainColor1Darker", ColorAndBrushHelper.HexColorToMediaColor(MainColor2Foreground));
+                SetKey(rd, "PrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(AccentMidColor));
+                SetKey(rd, "DarkPrimaryColor", ColorAndBrushHelper.HexColorToMediaColor(AccentDarkColor));
+                SetKey(rd, "PrimaryDarkColor", ColorAndBrushHelper.HexColorToMediaColor(AccentTextColor));
 
                 foreach (var r in rs)
                 {
@@ -380,16 +380,16 @@ namespace PRM.Core.Model
                 }
                 _appResourceDictionary.MergedDictionaries.Add(rd);
 
-                RaisePropertyChanged(nameof(MainColor1));
-                RaisePropertyChanged(nameof(MainColor1Lighter));
-                RaisePropertyChanged(nameof(MainColor1Darker));
-                RaisePropertyChanged(nameof(MainColor1Foreground));
-                RaisePropertyChanged(nameof(MainColor2));
-                RaisePropertyChanged(nameof(MainColor2Lighter));
-                RaisePropertyChanged(nameof(MainColor2Darker));
-                RaisePropertyChanged(nameof(MainColor2Foreground));
-                RaisePropertyChanged(nameof(MainBgColor));
-                RaisePropertyChanged(nameof(MainBgColorForeground));
+                RaisePropertyChanged(nameof(PrimaryMidColor));
+                RaisePropertyChanged(nameof(PrimaryLightColor));
+                RaisePropertyChanged(nameof(PrimaryDarkColor));
+                RaisePropertyChanged(nameof(PrimaryTextColor));
+                RaisePropertyChanged(nameof(AccentMidColor));
+                RaisePropertyChanged(nameof(AccentLightColor));
+                RaisePropertyChanged(nameof(AccentDarkColor));
+                RaisePropertyChanged(nameof(AccentTextColor));
+                RaisePropertyChanged(nameof(BackgroundColor));
+                RaisePropertyChanged(nameof(BackgroundTextColor));
             }
             catch (Exception e)
             {
@@ -410,16 +410,16 @@ namespace PRM.Core.Model
                     _cmdPrmThemeReset = new RelayCommand((o) =>
                     {
                         var theme = PrmColorThemes[PrmColorThemeName];
-                        _mainColor1 = theme.MainColor1;
-                        _mainColor1Lighter = theme.MainColor1Lighter;
-                        _mainColor1Darker = theme.MainColor1Darker;
-                        _mainColor1Foreground = theme.MainColor1Foreground;
-                        _mainColor2 = theme.MainColor2;
-                        _mainColor2Lighter = theme.MainColor2Lighter;
-                        _mainColor2Darker = theme.MainColor2Darker;
-                        _mainColor2Foreground = theme.MainColor2Foreground;
-                        _mainBgColor = theme.MainBgColor;
-                        _mainBgColorForeground = theme.MainBgColorForeground;
+                        _mainColor1 = theme.PrimaryMidColor;
+                        _mainColor1Lighter = theme.PrimaryLightColor;
+                        _mainColor1Darker = theme.PrimaryDarkColor;
+                        _mainColor1Foreground = theme.PrimaryTextColor;
+                        _mainColor2 = theme.AccentMidColor;
+                        _mainColor2Lighter = theme.AccentLightColor;
+                        _mainColor2Darker = theme.AccentDarkColor;
+                        _mainColor2Foreground = theme.AccentTextColor;
+                        _mainBgColor = theme.BackgroundColor;
+                        _mainBgColorForeground = theme.BackgroundTextColor;
                         Save();
                         RaisePropertyChanged(nameof(PrmColorThemeName));
                     });

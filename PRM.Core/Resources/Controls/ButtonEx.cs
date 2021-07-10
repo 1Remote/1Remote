@@ -20,13 +20,13 @@ namespace PRM.Core.Resources.Controls
         <Setter Property="BorderBrush" Value="Gray"></Setter>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor1LighterBrush}"/>
-        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="OpacityOnMouseOver" Value="1"/>
-        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor1LighterBrush}"/>
-        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="BackgroundOnPressed" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="ForegroundOnPressed" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="OpacityOnPressed" Value="0.5"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template">

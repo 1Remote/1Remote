@@ -1,21 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <system:String x:Key="ResourceTypeKey">__Resource_Type_Value=colortheme</system:String>
+    <Color x:Key="PrimaryLightColor">#f3fbff</Color>
+    <Color x:Key="PrimaryMidColor">#326cf3</Color>
+    <Color x:Key="PrimaryDarkColor">#326cf3</Color>
+    <Color x:Key="PrimaryTextColor">#212121</Color>
 
-    <Color x:Key="PrimaryLightColor">#445a68</Color>
-    <Color x:Key="PrimaryMidColor">#102b3e</Color>
-    <Color x:Key="PrimaryDarkColor">#0c2230</Color>
-    <Color x:Key="PrimaryTextColor">White</Color>
+    <Color x:Key="AccentLightColor">#f8491e</Color>
+    <Color x:Key="AccentMidColor">#f8491e</Color>
+    <Color x:Key="AccentDarkColor">#f8491e</Color>
+    <Color x:Key="AccentTextColor">#eeeeee</Color>
 
-    <Color x:Key="AccentLightColor">#ed6884</Color>
-    <Color x:Key="AccentMidColor">#e83d61</Color>
-    <Color x:Key="AccentDarkColor">#b5304c</Color>
-    <Color x:Key="AccentTextColor">#ffffff</Color>
-
-    <Color x:Key="BackgroundColor">#ced8e1</Color>
-    <Color x:Key="BackgroundTextColor">#000000</Color>
+    <Color x:Key="BackgroundColor">#eeeeee</Color>
+    <Color x:Key="BackgroundTextColor">#212121</Color>
 
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{DynamicResource PrimaryLightColor}"/>
     <SolidColorBrush x:Key="PrimaryMidBrush" Color="{DynamicResource PrimaryMidColor}"/>
@@ -29,5 +26,4 @@
 
     <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
     <SolidColorBrush x:Key="BackgroundTextBrush" Color="{DynamicResource BackgroundTextColor}"/>
-
 </ResourceDictionary>
