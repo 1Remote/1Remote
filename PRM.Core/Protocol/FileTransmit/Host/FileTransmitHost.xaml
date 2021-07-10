@@ -44,13 +44,13 @@
                 <Setter Property="BorderBrush" Value="Gray"></Setter>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-                <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor1LighterBrush}"/>
-                <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource PrimaryLightBrush}"/>
+                <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
                 <Setter Property="OpacityOnMouseOver" Value="1"/>
-                <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor1LighterBrush}"/>
-                <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+                <Setter Property="BackgroundOnPressed" Value="{DynamicResource PrimaryLightBrush}"/>
+                <Setter Property="ForegroundOnPressed" Value="{DynamicResource PrimaryTextBrush}"/>
                 <Setter Property="OpacityOnPressed" Value="0.5"/>
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="Template">
@@ -134,7 +134,7 @@
 
 
     <Grid>
-        <Grid Background="{DynamicResource MainColor1Brush}">
+        <Grid Background="{DynamicResource PrimaryMidBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="38"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
@@ -156,7 +156,7 @@
                 <controls:ButtonEx
                     IsEnabled="{Binding CmdGoToPathPreviousEnable}"
                                 BackgroundOnDisabled="Transparent"
-                                ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                                ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                Style="{StaticResource ButtonExStyleBase}"
                                Width="30" BorderThickness="0"
                                Command="{Binding CmdGoToPathPrevious}">
@@ -168,7 +168,7 @@
                 <controls:ButtonEx Grid.Column="1"
                     IsEnabled="{Binding CmdGoToPathFollowingEnable}"
                                BackgroundOnDisabled="Transparent"
-                               ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                               ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                Style="{StaticResource ButtonExStyleBase}"
                                Width="30" BorderThickness="0"
                                Command="{Binding CmdGoToPathFollowing}">
@@ -181,7 +181,7 @@
                 <controls:ButtonEx Grid.Column="2"
                                 IsEnabled="{Binding CmdGoToPathParentEnable}"
                                BackgroundOnDisabled="Transparent"
-                               ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                               ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                Style="{StaticResource ButtonExStyleBase}"
                                Width="30" BorderThickness="0"
                                Command="{Binding CmdGoToParent}">
@@ -192,11 +192,11 @@
                 <TextBox Grid.Column="3" Text="{Binding CurrentPathEdit, UpdateSourceTrigger=PropertyChanged}" 
                      Height="30"
                      Margin="2"
-                     BorderBrush="{DynamicResource MainColor1LighterBrush}" 
+                     BorderBrush="{DynamicResource PrimaryLightBrush}" 
                      BorderThickness="2"
                      Background="Transparent"
-                     CaretBrush="{DynamicResource MainColor1ForegroundBrush}"
-                     Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                     CaretBrush="{DynamicResource PrimaryTextBrush}"
+                     Foreground="{DynamicResource PrimaryTextBrush}"
                      VerticalAlignment="Center" VerticalContentAlignment="Center">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding Path=CmdGoToPathCurrent}" Key="Enter" />
@@ -419,7 +419,7 @@
 
             <Grid Grid.Row="2">
                 <ListView x:Name="ListViewTransmitTasks"
-                          Background="{DynamicResource  MainColor1Brush}" 
+                          Background="{DynamicResource  PrimaryMidBrush}" 
                           ItemsSource="{Binding TransmitTasks}" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                           BorderThickness="0">
@@ -479,7 +479,7 @@
                                         <TextBlock TextTrimming="CharacterEllipsis" 
                                            Grid.Column="0"
                                            Margin="5 0 10 0"
-                                           Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            HorizontalAlignment="Left" 
                                            VerticalAlignment="Center" 
                                            Text="{Binding TransmitItemNames, Mode=OneWay}"
@@ -489,19 +489,19 @@
                                         <TextBlock TextTrimming="CharacterEllipsis" 
                                            Grid.Column="1"
                                            Margin="5 0"
-                                           Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            HorizontalAlignment="Right" 
                                            VerticalAlignment="Center" 
                                            Text="{Binding TransmitItemSrcDirectoryPath, Mode=OneWay}"
                                            ToolTip="{Binding TransmitItemSrcDirectoryPath, Mode=OneWay}"
                                            ></TextBlock>
 
-                                        <Label Grid.Column="2" Foreground="{DynamicResource MainColor1ForegroundBrush}" HorizontalContentAlignment="Center">→</Label>
+                                        <Label Grid.Column="2" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalContentAlignment="Center">→</Label>
 
                                         <TextBlock TextTrimming="CharacterEllipsis" 
                                            Grid.Column="3"
                                            Margin="5 0"
-                                           Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            HorizontalAlignment="Left" 
                                            VerticalAlignment="Center" 
                                            Text="{Binding TransmitItemDstDirectoryPath, Mode=OneWay}"
@@ -519,7 +519,7 @@
                                             <!--<controls:ButtonEx
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
-                                                ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                                                ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                                 ToolTip="TXT:Continue"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdContinueTransmitTask}"
                                                 CommandParameter="{Binding}"
@@ -541,7 +541,7 @@
                                             <controls:ButtonEx
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
-                                                ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                                                ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                                 ToolTip="TXT:Pause"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdPauseTransmitTask}"
                                                 CommandParameter="{Binding}"
@@ -563,7 +563,7 @@
                                             <controls:ButtonEx
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
-                                                ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                                                ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                                 ToolTip="{DynamicResource word_explore_to}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdShowTransmitDstPath}"
                                                 CommandParameter="{Binding}"
@@ -575,7 +575,7 @@
                                             <controls:ButtonEx
                                                 Background="Transparent"
                                                 BackgroundOnDisabled="Transparent"
-                                                ForegroundOnDisabled="{DynamicResource MainColor1LighterBrush}"
+                                                ForegroundOnDisabled="{DynamicResource PrimaryLightBrush}"
                                                 ToolTip="{DynamicResource word_delete}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdDeleteTransmitTask}"
                                                 CommandParameter="{Binding}"
@@ -597,10 +597,10 @@
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Visible"></Setter>
-                        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="0">
-                                <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"></Setter>
+                                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
@@ -614,7 +614,7 @@
                 </Grid.Style>
                 <TextBlock Margin="5 0" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" 
                            Text="{Binding IoMessage}"
-                           Foreground="{DynamicResource MainColor1ForegroundBrush}">
+                           Foreground="{DynamicResource PrimaryTextBrush}">
                 </TextBlock>
             </Grid>
         </Grid>

@@ -4,12 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-        mc:Ignorable="d" Background="{DynamicResource MainBgColorBrush}"
+        mc:Ignorable="d" Background="{DynamicResource BackgroundBrush}"
         SizeToContent="WidthAndHeight"
         x:Name="inputWindow" Title="Input" Height="150" Width="200" ResizeMode="NoResize" Loaded="inputWindow_Loaded" WindowStartupLocation="CenterScreen">
     <StackPanel>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" FontSize="14" MaxWidth="300"
-                   Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource MainBgColorForegroundBrush}"/>
+                   Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource BackgroundTextBrush}"/>
         <TextBox x:Name="textBox" Height="30" Margin="5"
                  Text="" TextWrapping="Wrap" Padding="5"
                  VerticalAlignment="Center" HorizontalAlignment="Stretch" KeyDown="textBox_KeyDown"/>

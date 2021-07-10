@@ -8,17 +8,17 @@
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FontFamily" Value="Microsoft YaHei"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
     </Style>
     <Style TargetType="Button" x:Key="ButtonBase">
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
     </Style>
     <Style TargetType="TextBox" x:Key="TextBoxBase">
         <Setter Property="FontSize" Value="12"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
         <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
     </Style>
     <Style TargetType="TextBlock" x:Key="TextBlockBase">
@@ -27,19 +27,19 @@
     <Style TargetType="CheckBox" x:Key="CheckBoxBase">
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
     <Style TargetType="RadioButton" x:Key="RadioButtonBase">
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
     </Style>
     <Style TargetType="TextElement" x:Key="TextElementBase">
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
     </Style>
 
     <Style TargetType="Control" BasedOn="{StaticResource ControlBase}" />
@@ -61,13 +61,13 @@
         <Setter Property="BorderBrush" Value="Gray"></Setter>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Background" Value="{DynamicResource MainColor1Brush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"/>
-        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor1LighterBrush}"/>
-        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="OpacityOnMouseOver" Value="1"/>
-        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor1LighterBrush}"/>
-        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor1ForegroundBrush}"/>
+        <Setter Property="BackgroundOnPressed" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="ForegroundOnPressed" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="OpacityOnPressed" Value="0.5"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template">
@@ -144,12 +144,12 @@
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}"/>
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}" x:Key="MainColor1Button"/>
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}" x:Key="MainColor2Button">
-        <Setter Property="Background" Value="{DynamicResource MainColor2Brush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2LighterBrush}"/>
-        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-        <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
-        <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentLightBrush}"/>
+        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="BackgroundOnPressed" Value="{DynamicResource AccentLightBrush}"/>
+        <Setter Property="ForegroundOnPressed" Value="{DynamicResource AccentTextBrush}"/>
         <Setter Property="FontSize" Value="12"></Setter>
     </Style>
 
@@ -219,13 +219,13 @@
     </ControlTemplate>
     <Style TargetType="{x:Type ComboBox}"  x:Key="ComboBoxDefault">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
         <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
         <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
@@ -298,7 +298,7 @@
         </Setter>
     </Style>
     <Style x:Key="EditorRowGridTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
         <Setter Property="Width" Value="100"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
         <Setter Property="HorizontalAlignment" Value="Center"></Setter>
@@ -315,7 +315,7 @@
     </Style>
 
     <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
         <Setter Property="FontSize" Value="16"></Setter>
         <Setter Property="FontWeight" Value="Bold"></Setter>
         <Setter Property="TextAlignment" Value="Left"></Setter>
@@ -345,14 +345,14 @@
                     <DockPanel x:Name="dockPanel">
                         <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center" />
                         <Grid>
-                            <Border Name="Border" BorderBrush="{DynamicResource MainColor1Brush}" BorderThickness="1" 
+                            <Border Name="Border" BorderBrush="{DynamicResource PrimaryMidBrush}" BorderThickness="1" 
                                     CornerRadius="8" Height="{TemplateBinding Height}" Width="40">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                        <GradientStop Color="{DynamicResource MainColor2}" Offset="0" />
-                                        <GradientStop Color="{DynamicResource MainColor2}" Offset="0.5" />
-                                        <GradientStop Color="{DynamicResource MainBgColor}" Offset="0.51" />
-                                        <GradientStop Color="{DynamicResource MainBgColor}" Offset="1" />
+                                        <GradientStop Color="{DynamicResource AccentMidColor}" Offset="0" />
+                                        <GradientStop Color="{DynamicResource AccentMidColor}" Offset="0.5" />
+                                        <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0.51" />
+                                        <GradientStop Color="{DynamicResource BackgroundColor}" Offset="1" />
                                     </LinearGradientBrush>
                                 </Border.Background>
                                 <Grid>
@@ -362,7 +362,7 @@
                                     </Grid.ColumnDefinitions>
                                 </Grid>
                             </Border>
-                            <Border BorderBrush="{DynamicResource MainColor1Brush}" HorizontalAlignment="Left" x:Name="slider" 
+                            <Border BorderBrush="{DynamicResource PrimaryMidBrush}" HorizontalAlignment="Left" x:Name="slider" 
                                     Width="24" 
                                     Height="{TemplateBinding Height}" 
                                     BorderThickness="1" 
@@ -377,8 +377,8 @@
                                 </Border.RenderTransform>
                                 <Border.Background>
                                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                        <GradientStop Color="{DynamicResource MainColor2Foreground}" Offset="0" />
-                                        <GradientStop Color="{DynamicResource MainColor2Foreground}" Offset="1" />
+                                        <GradientStop Color="{DynamicResource AccentTextColor}" Offset="0" />
+                                        <GradientStop Color="{DynamicResource AccentTextColor}" Offset="1" />
                                     </LinearGradientBrush>
                                 </Border.Background>
                             </Border>
@@ -394,8 +394,8 @@
                             </Trigger.EnterActions>
                             <!--<Setter TargetName="On" Property="Stroke" Value="White" />
                             <Setter TargetName="Off" Property="Stroke" Value="White" />-->
-                            <!--<Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource MainColor2Brush}" />
-                            <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{DynamicResource MainColor2DarkerBrush}" />-->
+                            <!--<Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource AccentMidBrush}" />
+                            <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{DynamicResource AccentDarkBrush}" />-->
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.3" />

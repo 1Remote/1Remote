@@ -20,7 +20,7 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border Padding="40" Background="Transparent">
-                <Border CornerRadius="16" Background="{StaticResource MainColor1Brush}">
+                <Border CornerRadius="16" Background="{StaticResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" />
                     </Border.Effect>
@@ -30,7 +30,7 @@
         </ControlTemplate>
     </Window.Template>
 
-    <Grid Margin="16" Name="WinGrid" Background="{StaticResource MainColor1Brush}">
+    <Grid Margin="16" Name="WinGrid" Background="{StaticResource PrimaryMidBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -65,28 +65,28 @@
                         <Border Grid.ColumnSpan="2" Name="Border"
                                 BorderBrush="{StaticResource ComboBoxNormalBorderBrush}"
                                 CornerRadius="0" BorderThickness="0"
-                                Background="{StaticResource MainColor1Brush}" />
+                                Background="{StaticResource PrimaryMidBrush}" />
                         <Border Grid.Column="1" Margin="1, 1, 1, 1" BorderBrush="#444" Name="ButtonBorder"
                                 CornerRadius="0, 0, 0, 0" BorderThickness="0, 0, 0, 0"
-                                Background="{StaticResource MainColor1Brush}" />
+                                Background="{StaticResource PrimaryMidBrush}" />
                         <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" Margin="1,-1,0,0" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#FFDDDDDD" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsMouseOver" Value="True">
-                            <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource MainColor2Brush}" />
+                            <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource AccentMidBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
 
                 <Style TargetType="{x:Type ComboBox}" x:Key="ComboBoxFlatStyle">
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                     <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
                     <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
                     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
                     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
                     <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MainBgColorForegroundBrush}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource BackgroundTextBrush}" />
                     <Setter Property="Control.Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ComboBox">
@@ -98,7 +98,7 @@
                                           ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
                                     <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3" IsReadOnly="{TemplateBinding IsReadOnly}"
-                                            Visibility="Hidden" Background="{StaticResource MainColor1Brush}" HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True">
+                                            Visibility="Hidden" Background="{StaticResource PrimaryMidBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" Focusable="True">
                                         <TextBox.Template>
                                             <ControlTemplate TargetType="TextBox">
                                                 <Border Name="PART_ContentHost" Focusable="False" />
@@ -111,7 +111,7 @@
                                             IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
                                            PopupAnimation="Slide">
                                         <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding FrameworkElement.ActualWidth}" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
-                                            <Border Name="DropDownBorder" Background="{StaticResource MainColor1Brush}" Margin="0, 1, 0, 0" CornerRadius="0" BorderThickness="1" BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" />
+                                            <Border Name="DropDownBorder" Background="{StaticResource PrimaryMidBrush}" Margin="0, 1, 0, 0" CornerRadius="0" BorderThickness="1" BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" />
                                             <ScrollViewer Margin="4" SnapsToDevicePixels="True">
                                                 <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
                                             </ScrollViewer>
@@ -145,10 +145,10 @@
 
                 <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-                        <TextBlock Margin="2" Foreground="{StaticResource MainColor1ForegroundBrush}">Language:</TextBlock>
+                        <TextBlock Margin="2" Foreground="{StaticResource PrimaryTextBrush}">Language:</TextBlock>
                         <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}"
                               Style="{StaticResource ComboBoxFlatStyle}"
-                              Foreground="{StaticResource MainColor1ForegroundBrush}"
+                              Foreground="{StaticResource PrimaryTextBrush}"
                               SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
                               SelectedValuePath="Key"
                               HorizontalAlignment="Right"
@@ -159,11 +159,11 @@
                         <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">
                             <Hyperlink.Style>
                                 <Style TargetType="{x:Type Hyperlink}">
-                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                                     <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
                                             <Setter Property="TextBlock.TextDecorations">
                                                 <Setter.Value>
                                                     <TextDecorationCollection>
@@ -281,7 +281,7 @@
                         </Grid>
                     </Grid>
 
-                    <Grid Name="Grid2" Background="{StaticResource MainColor1Brush}" Visibility="Collapsed">
+                    <Grid Name="Grid2" Background="{StaticResource PrimaryMidBrush}" Visibility="Collapsed">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -364,10 +364,10 @@
                 <Border CornerRadius="5" BorderBrush="Gray" BorderThickness="1"  Width="10" Height="10" Margin="5">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
+                            <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Step}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                    <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -376,10 +376,10 @@
                 <Border CornerRadius="5" BorderBrush="Gray" BorderThickness="1"  Width="10" Height="10" Margin="5">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
+                            <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Step}" Value="1">
-                                    <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
+                                    <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

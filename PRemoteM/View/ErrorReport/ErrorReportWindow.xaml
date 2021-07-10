@@ -17,7 +17,7 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border Padding="40" Background="Transparent">
-                <Border CornerRadius="16" Background="{StaticResource MainColor1Brush}">
+                <Border CornerRadius="16" Background="{StaticResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" />
                     </Border.Effect>
@@ -27,7 +27,7 @@
         </ControlTemplate>
     </Window.Template>
 
-    <Grid Margin="12" Background="{StaticResource MainColor1Brush}">
+    <Grid Margin="12" Background="{StaticResource PrimaryMidBrush}">
         <Grid.Resources>
             <Style TargetType="ScrollBar" BasedOn="{StaticResource PRM_ScrollBarStyle}"></Style>
             <Style TargetType="ScrollViewer">
@@ -39,13 +39,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0" Name="WinGrid" Background="{StaticResource MainColor1Brush}">
+        <Grid Grid.Row="0" Margin="0" Name="WinGrid" Background="{StaticResource PrimaryMidBrush}">
             <StackPanel HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Grid HorizontalAlignment="Center" Margin="5">
                         <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="30" HorizontalAlignment="Left"></Image>
                     </Grid>
-                    <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{StaticResource MainColor1ForegroundBrush}"
+                    <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{StaticResource PrimaryTextBrush}"
                                Text="{DynamicResource word_oops}"
                                VerticalAlignment="Center" />
                 </StackPanel>
@@ -64,8 +64,8 @@
 
             <Grid Margin="0 5 0 0">
                 <TextBox Name="TbErrorInfo"
-                             Background="{DynamicResource MainBgColorBrush}"
-                             Foreground="{DynamicResource MainBgColorForegroundBrush}"
+                             Background="{DynamicResource BackgroundBrush}"
+                             Foreground="{DynamicResource BackgroundTextBrush}"
                              AcceptsReturn="True" AcceptsTab="True"
                              HorizontalScrollBarVisibility="Hidden"
                              VerticalScrollBarVisibility="Auto"
