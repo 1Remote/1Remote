@@ -231,7 +231,7 @@
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
                             <Grid HorizontalAlignment="Center" Margin="0 4 0 0">
-                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
+                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryMidBrush}"></Setter>
@@ -257,7 +257,7 @@
                                         />
                                     </TextBlock.Effect>
                                 </TextBlock>
-                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DispName}">
+                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>

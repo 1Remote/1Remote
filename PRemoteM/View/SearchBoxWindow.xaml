@@ -378,7 +378,7 @@
                             <TextBlock TextTrimming="CharacterEllipsis"
                                    FontSize="18" Foreground="{DynamicResource PrimaryTextBrush}"
                                    VerticalAlignment="Center"
-                                   Text="{Binding SelectedItem.Server.DispName}"></TextBlock>
+                                   Text="{Binding SelectedItem.Server.DisplayName}"></TextBlock>
                         </Grid>
 
                         <Grid Grid.Row="1" Grid.Column="0" Opacity="0.5">

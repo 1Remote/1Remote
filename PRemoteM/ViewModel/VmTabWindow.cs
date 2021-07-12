@@ -6,9 +6,9 @@ using System.Windows;
 using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils;
 using PRM.Model;
+using PRM.View.ProtocolHosts;
 using PRM.View.TabWindow;
 
 using Shawn.Utils;

@@ -63,20 +63,11 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AxMSTSCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll</HintPath>
-    </Reference>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.78\lib\net461\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="FluentFTP, Version=33.0.3.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentFTP.33.0.3\lib\net45\FluentFTP.dll</HintPath>
-    </Reference>
-    <Reference Include="MSTSCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>Protocol\RDP\Host\RDPv9\MSTSCLib.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -115,7 +106,6 @@
       <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DB\Dapper\DapperDb.cs" />
@@ -136,12 +126,6 @@
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
     <Compile Include="Model\Tag.cs" />
-    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml.cs">
-      <DependentUpon>ProtocolServerWithAddrPortBaseForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml.cs">
-      <DependentUpon>ProtocolServerWithAddrPortUserPwdBaseForm.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
@@ -160,22 +144,9 @@
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Protocol\FileTransmit\FTP\ProtocolServerFTP.cs" />
-    <Compile Include="Protocol\FileTransmit\FTP\ProtocolServerFTPForm.xaml.cs">
-      <DependentUpon>ProtocolServerFTPForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml.cs">
-      <DependentUpon>FileTransmitHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Properties.cs" />
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Commands.cs" />
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Tasks.cs" />
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.cs" />
+    <Compile Include="Protocol\FileTransmit\ProtocolServerFTP.cs" />
     <Compile Include="Protocol\FileTransmit\IProtocolFileTransmittable.cs" />
-    <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml.cs">
-      <DependentUpon>ProtocolServerSFTPForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTP.cs" />
+    <Compile Include="Protocol\FileTransmit\ProtocolServerSFTP.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\ITransmitter.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\RemoteItem.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\ETransmissionType.cs" />
@@ -184,44 +155,17 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
     <Compile Include="I\ITab.cs" />
-    <Compile Include="Protocol\ProtocolHostFactory.cs" />
-    <Compile Include="Protocol\ProtocolHostBase.cs" />
-    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortBase.cs" />
-    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
-    <Compile Include="Protocol\BaseClassForm\ProtocolServerFormBase.cs" />
-    <Compile Include="Protocol\Putty\Host\KittyHost.xaml.cs">
-      <DependentUpon>KittyHost.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Protocol\Base\ProtocolServerWithAddrPortBase.cs" />
+    <Compile Include="Protocol\Base\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
     <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
-    <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
-      <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\Putty\PuttyOptions.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
-    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
-    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml.cs">
-      <DependentUpon>ProtocolServerRemoteAppForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\ServerIcons.cs" />
-    <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
-      <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\RDP\Host\AxMsRdpClient09NotSafeForScriptingEx.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
-      <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Helper\ServerIcons.cs" />
     <Compile Include="Protocol\VmProtocolServer.cs" />
-    <Compile Include="Protocol\VNC\Host\VncHost.xaml.cs">
-      <DependentUpon>VncHost.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\VNC\ProtocolServerVNC.cs" />
-    <Compile Include="Protocol\VNC\ProtocolServerVNCForm.xaml.cs">
-      <DependentUpon>ProtocolServerVNCForm.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Controls\ButtonEx.cs" />
     <Compile Include="Resources\Theme\PrmColorThemes.cs" />
     <Compile Include="Utils\ColorAndBrushHelper.cs" />
@@ -256,9 +200,9 @@
     <Compile Include="Utils\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="Protocol\ItemCreateHelper.cs" />
+    <Compile Include="Helper\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerBase.cs" />
+    <Compile Include="Protocol\Base\ProtocolServerBase.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Utils\NetImageProcessHelper.cs" />
     <Compile Include="Utils\PageHost\AnimationPage.cs" />
@@ -282,6 +226,37 @@
     <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Icons\20200501\Env_DotNet.png" />
+    <Resource Include="Resources\Icons\20200501\Env_Java.png" />
+    <Resource Include="Resources\Icons\20200501\Env_Python.png" />
+    <Resource Include="Resources\Icons\20200501\L_Arch.png" />
+    <Resource Include="Resources\Icons\20200501\L_Centos.png" />
+    <Resource Include="Resources\Icons\20200501\L_Linux.png" />
+    <Resource Include="Resources\Icons\20200501\L_RaspberryPi.png" />
+    <Resource Include="Resources\Icons\20200501\L_RedHat.png" />
+    <Resource Include="Resources\Icons\20200501\L_Ubuntu.png" />
+    <Resource Include="Resources\Icons\20200501\M_Apple.png" />
+    <Resource Include="Resources\Icons\20200501\M_Hp1.png" />
+    <Resource Include="Resources\Icons\20200501\M_Hp2.png" />
+    <Resource Include="Resources\Icons\20200501\T_Docker1.png" />
+    <Resource Include="Resources\Icons\20200501\T_Docker2.png" />
+    <Resource Include="Resources\Icons\20200501\T_Gitea.png" />
+    <Resource Include="Resources\Icons\20200501\T_GitHub1.png" />
+    <Resource Include="Resources\Icons\20200501\T_GitHub2.png" />
+    <Resource Include="Resources\Icons\20200501\T_Gitlab.png" />
+    <Resource Include="Resources\Icons\20200501\T_Gogs.png" />
+    <Resource Include="Resources\Icons\20200501\T_Nginx.png" />
+    <Resource Include="Resources\Icons\20200501\T_PHP.png" />
+    <Resource Include="Resources\Icons\20200501\T_Wordpress.png" />
+    <Resource Include="Resources\Icons\20200501\Win10.png" />
+    <Resource Include="Resources\Icons\20200501\Win2003.png" />
+    <Resource Include="Resources\Icons\20200501\Win2008.png" />
+    <Resource Include="Resources\Icons\20200501\Win2012.png" />
+    <Resource Include="Resources\Icons\20200501\Win2016.png" />
+    <Resource Include="Resources\Icons\20200501\Win7.png" />
+    <Resource Include="Resources\Icons\20200501\Win8.png" />
+    <Resource Include="Resources\Icons\20200501\Windows10.png" />
+    <Resource Include="Resources\Icons\20200501\Windows7.png" />
     <Resource Include="Resources\Icons\20210106\20210106_001.png" />
     <Resource Include="Resources\Icons\20210106\20210106_002.png" />
     <Resource Include="Resources\Icons\20210106\20210106_003.png" />
@@ -429,54 +404,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\FileTransmit\FTP\ProtocolServerFTPForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\Putty\Host\KittyHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\Putty\ProtocolPuttyForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Protocol\VNC\Host\VncHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\VNC\ProtocolServerVNCForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Resources\Converter\Converter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -517,17 +444,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="IWshRuntimeLibrary">
-      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

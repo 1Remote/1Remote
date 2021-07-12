@@ -420,7 +420,7 @@
                                 <Setter Property="Margin" Value="0 0 5 0"></Setter>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="{Binding SelectedServerListItem.Server.DispName}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerListItem.Server.DisplayName}"></TextBlock>
                         <TextBlock Text="{Binding SelectedServerListItem.Server.SubTitle}"></TextBlock>
                     </StackPanel>
                 </Grid>

@@ -26,7 +26,7 @@ namespace PRM.View
             double oneItemHeight = (double)FindResource("OneItemHeight");
             double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
             double cornerRadius = (double)FindResource("CornerRadius");
-            _vm = new VmSearchBox(context, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
+            _vm = new VmSearchBox(context, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridMenuActions);
 
             DataContext = _vm;
             Loaded += (sender, args) =>

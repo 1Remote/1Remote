@@ -101,7 +101,7 @@
 
                 <TextBlock Grid.Column="3" Margin="5 0"
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.DispName}">
+                                                                 Text="{Binding Server.DisplayName}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
