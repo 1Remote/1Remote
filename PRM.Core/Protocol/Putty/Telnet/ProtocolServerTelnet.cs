@@ -45,6 +45,14 @@ namespace PRM.Core.Protocol.Putty.Telnet
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
         }
 
+        private string _startupAutoCommand = "";
+
+        public string StartupAutoCommand
+        {
+            get => _startupAutoCommand;
+            set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
+        }
+
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
 

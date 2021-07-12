@@ -1,6 +1,7 @@
 ﻿using System;
 using PRM.Core;
 using PRM.Core.Protocol;
+using PRM.View.ProtocolHosts;
 
 namespace PRM.ViewModel
 {
@@ -19,9 +20,9 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(Header), ref _header, value);
         }
 
-        private ProtocolHostBase _content;
+        private HostBase _content;
 
-        public ProtocolHostBase Content
+        public HostBase Content
         {
             get => _content;
             set

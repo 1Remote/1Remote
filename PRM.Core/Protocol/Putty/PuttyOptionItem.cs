@@ -4,10 +4,6 @@ namespace PRM.Core.Protocol.Putty
 {
     public class PuttyOptionItem
     {
-        public PuttyOptionItem()
-        {
-        }
-
         public static PuttyOptionItem Create(string key, int value)
         {
             return new PuttyOptionItem

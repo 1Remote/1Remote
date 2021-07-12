@@ -12,10 +12,11 @@ using Dragablz;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.RDP.Host;
 using Shawn.Utils;
 using PRM.Model;
+using PRM.View.ProtocolHosts;
 using PRM.ViewModel;
+using ProtocolHostType = PRM.View.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
 
 namespace PRM.View.TabWindow

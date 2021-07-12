@@ -14,10 +14,11 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 using PRM.View;
+using PRM.View.ProtocolHosts;
 using PRM.View.TabWindow;
 using PRM.ViewModel;
+using ProtocolHostStatus = PRM.View.ProtocolHosts.ProtocolHostStatus;
 
-using Shawn.Utils;
 
 namespace PRM.Model
 {
@@ -63,12 +64,12 @@ namespace PRM.Model
             GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
         }
 
-        private bool isReleased = false;    
+        private bool _isReleased = false;
         public void Release()
         {
-            if(isReleased)
+            if (_isReleased)
                 return;
-            isReleased = true;
+            _isReleased = true;
 
             foreach (var tabWindow in _tabWindows.ToArray())
             {
@@ -91,7 +92,7 @@ namespace PRM.Model
 
         private string _lastTabToken = null;
         private readonly Dictionary<string, TabWindowBase> _tabWindows = new Dictionary<string, TabWindowBase>();
-        private readonly Dictionary<string, ProtocolHostBase> _protocolHosts = new Dictionary<string, ProtocolHostBase>();
+        private readonly Dictionary<string, HostBase> _protocolHosts = new Dictionary<string, HostBase>();
         private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
 
         private bool ActivateOrReConnIfServerSessionIsOpened(VmProtocolServer vmProtocolServer)
@@ -117,7 +118,7 @@ namespace PRM.Model
         private void ConnectRdpWithFullScreenByMstsc(ProtocolServerRDP rdp)
         {
             var tmp = Path.GetTempPath();
-            var rdpFileName = $"{rdp.DispName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
+            var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
             var invalid = new string(Path.GetInvalidFileNameChars()) +
                           new string(Path.GetInvalidPathChars());
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
@@ -161,7 +162,7 @@ namespace PRM.Model
         private void ConnectRemoteApp(ProtocolServerRemoteApp remoteApp)
         {
             var tmp = Path.GetTempPath();
-            var rdpFileName = $"{remoteApp.DispName}_{remoteApp.Port}_{remoteApp.UserName}";
+            var rdpFileName = $"{remoteApp.DisplayName}_{remoteApp.Port}_{remoteApp.UserName}";
             var invalid = new string(Path.GetInvalidFileNameChars()) +
                           new string(Path.GetInvalidPathChars());
             rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
@@ -227,7 +228,7 @@ namespace PRM.Model
             var full = MoveProtocolHostToFullScreen(host.ConnectionId);
             host.ParentWindow = full;
             host.Conn();
-            SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DispName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with full");
+            SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
         private void ConnectWithTab(VmProtocolServer vmProtocolServer, string assignTabToken)
@@ -241,13 +242,13 @@ namespace PRM.Model
             tab.AddItem(new TabItemViewModel()
             {
                 Content = host,
-                Header = vmProtocolServer.Server.DispName,
+                Header = vmProtocolServer.Server.DisplayName,
             });
             host.ParentWindow = tab;
             _protocolHosts.Add(host.ConnectionId, host);
             host.Conn();
             tab.Activate();
-            SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DispName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
+            SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
         }
 
         public void ShowRemoteHost(long serverId, string assignTabToken)
@@ -289,7 +290,7 @@ namespace PRM.Model
                 return;
 
             // run script before connected
-            vmProtocolServer.Server.RunScriptBeforConnect();
+            vmProtocolServer.Server.RunScriptBeforeConnect();
 
             if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
             {
@@ -380,7 +381,7 @@ namespace PRM.Model
             full.SetProtocolHost(host);
             full.Loaded += (sender, args) => { host.GoFullScreen(); };
 
-            _host2FullScreenWindows.Add(full.ProtocolHostBase.ConnectionId, full);
+            _host2FullScreenWindows.Add(full.HostBase.ConnectionId, full);
             host.ParentWindow = full;
             full.Show();
             return full;
@@ -443,7 +444,7 @@ namespace PRM.Model
         /// <param name="host"></param>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private TabWindowBase GetOrCreateTabWindow(ProtocolHostBase host, string assignTabToken = null)
+        private TabWindowBase GetOrCreateTabWindow(HostBase host, string assignTabToken = null)
         {
             var parentWindow = host.ParentWindow;
             // remove from old parent
@@ -485,7 +486,7 @@ namespace PRM.Model
                 AddTab(new TabWindowClassical(token));
             }
             var tab = _tabWindows[token];
-            
+
             // set location
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
             tab.WindowStartupLocation = WindowStartupLocation.Manual;
@@ -527,7 +528,7 @@ namespace PRM.Model
                 tab.AddItem(new TabItemViewModel()
                 {
                     Content = host,
-                    Header = host.ProtocolServer.DispName,
+                    Header = host.ProtocolServer.DisplayName,
                 });
             }
             else
