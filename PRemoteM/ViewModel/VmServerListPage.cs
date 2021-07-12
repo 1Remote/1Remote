@@ -184,11 +184,11 @@ namespace PRM.ViewModel
                     break;
 
                 case EnumServerOrderBy.NameAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Ascending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DisplayName), ListSortDirection.Ascending));
                     break;
 
                 case EnumServerOrderBy.NameDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DispName), ListSortDirection.Descending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DisplayName), ListSortDirection.Descending));
                     break;
 
                 //case EnumServerOrderBy.TagAsc:
@@ -240,7 +240,7 @@ namespace PRM.ViewModel
                         continue;
                     }
 
-                    var dispName = server.DispName;
+                    var dispName = server.DisplayName;
                     var subTitle = server.SubTitle;
                     var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
                     if (matched)

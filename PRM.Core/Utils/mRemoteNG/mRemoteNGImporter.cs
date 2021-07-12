@@ -290,7 +290,7 @@ namespace PRM.Core.Utils.mRemoteNG
                     case "rdp":
                         server = new ProtocolServerRDP()
                         {
-                            DispName = item.Name,
+                            DisplayName = item.Name,
                             Tags = tags,
                             Address = item.Hostname,
                             UserName = item.Username,
@@ -323,7 +323,7 @@ namespace PRM.Core.Utils.mRemoteNG
                     case "ssh1":
                         server = new ProtocolServerSSH()
                         {
-                            DispName = item.Name,
+                            DisplayName = item.Name,
                             Tags = tags,
                             Address = item.Hostname,
                             UserName = item.Username,
@@ -336,7 +336,7 @@ namespace PRM.Core.Utils.mRemoteNG
                     case "ssh2":
                         server = new ProtocolServerSSH()
                         {
-                            DispName = item.Name,
+                            DisplayName = item.Name,
                             Tags = tags,
                             Address = item.Hostname,
                             UserName = item.Username,
@@ -349,7 +349,7 @@ namespace PRM.Core.Utils.mRemoteNG
                     case "vnc":
                         server = new ProtocolServerVNC()
                         {
-                            DispName = item.Name,
+                            DisplayName = item.Name,
                             Tags = tags,
                             Address = item.Hostname,
                             Password = item.Password,
@@ -360,7 +360,7 @@ namespace PRM.Core.Utils.mRemoteNG
                     case "telnet":
                         server = new ProtocolServerTelnet()
                         {
-                            DispName = item.Name,
+                            DisplayName = item.Name,
                             Tags = tags,
                             Address = item.Hostname,
                             Port = item.Port,
