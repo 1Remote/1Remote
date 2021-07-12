@@ -199,8 +199,8 @@ namespace PRM.Core.Model
         public void EncryptInfo(ProtocolServerBase server)
         {
             if (_rsa == null) return;
-            Debug.Assert(_rsa.DecodeOrNull(server.DispName) == null);
-            server.DispName = _rsa.Encode(server.DispName);
+            Debug.Assert(_rsa.DecodeOrNull(server.DisplayName) == null);
+            server.DisplayName = _rsa.Encode(server.DisplayName);
             for (var i = 0; i < server.Tags.Count; i++)
             {
                 server.Tags[i] = _rsa.Encode(server.Tags[i]);
@@ -219,8 +219,8 @@ namespace PRM.Core.Model
         public void DecryptInfo(ProtocolServerBase server)
         {
             if (_rsa == null) return;
-            Debug.Assert(_rsa.DecodeOrNull(server.DispName) != null);
-            server.DispName = DecryptOrReturnOriginalString(server.DispName);
+            Debug.Assert(_rsa.DecodeOrNull(server.DisplayName) != null);
+            server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
             for (var i = 0; i < server.Tags.Count; i++)
             {
                 server.Tags[i] = DecryptOrReturnOriginalString(server.Tags[i]);

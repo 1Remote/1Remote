@@ -3,29 +3,29 @@ using PRM.Core.Protocol;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
-using PRM.Core.Protocol.RDP.Host;
 using PRM.Model;
+using PRM.View.ProtocolHosts;
 using Shawn.Utils;
 
 namespace PRM.View
 {
     public partial class FullScreenWindow : Window
     {
-        public ProtocolHostBase ProtocolHostBase { get; private set; } = null;
+        public HostBase HostBase { get; private set; } = null;
         public FullScreenWindow()
         {
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                this.Content = ProtocolHostBase;
+                this.Content = HostBase;
                 var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
                 source.AddHook(new HwndSourceHook(WndProc));
             };
             Closed += (sender, args) =>
             {
-                if (ProtocolHostBase != null)
+                if (HostBase != null)
                 {
-                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(ProtocolHostBase.ConnectionId);
+                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(HostBase.ConnectionId);
                 }
             };
         }
@@ -35,7 +35,7 @@ namespace PRM.View
             const int WM_DEVICECHANGE = 0x0219;
             if (msg == WM_DEVICECHANGE)
             {
-                if (ProtocolHostBase is AxMsRdpClient09Host rdp)
+                if (HostBase is AxMsRdpClient09Host rdp)
                 {
                     SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
                     rdp.NotifyRedirectDeviceChange(msg, (uint) wParam, (int) lParam);
@@ -45,14 +45,14 @@ namespace PRM.View
             return IntPtr.Zero;
         }
 
-        public void SetProtocolHost(ProtocolHostBase content)
+        public void SetProtocolHost(HostBase content)
         {
             Debug.Assert(content != null);
             this.Content = null;
-            ProtocolHostBase = content;
-            this.Title = ProtocolHostBase.ProtocolServer.DispName + " - " + ProtocolHostBase.ProtocolServer.SubTitle;
-            this.Icon = ProtocolHostBase.ProtocolServer.IconImg;
-            ProtocolHostBase.ParentWindow = this;
+            HostBase = content;
+            this.Title = HostBase.ProtocolServer.DisplayName + " - " + HostBase.ProtocolServer.SubTitle;
+            this.Icon = HostBase.ProtocolServer.IconImg;
+            HostBase.ParentWindow = this;
             if (IsLoaded)
                 this.Content = content;
         }

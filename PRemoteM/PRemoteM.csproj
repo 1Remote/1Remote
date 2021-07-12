@@ -104,8 +104,18 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AxMSTSCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\PRM.Core\Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
+    </Reference>
+    <Reference Include="MSTSCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\PRM.Core\Protocol\RDP\Host\RDPv9\MSTSCLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -137,6 +147,9 @@
     <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.1.0.5\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.dll</HintPath>
     </Reference>
+    <Reference Include="VncSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=61974755c7bfea7c, processorArchitecture=MSIL">
+      <HintPath>..\packages\VncSharp.1.0.7.0\lib\VncSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Windows, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
@@ -144,6 +157,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -188,6 +202,49 @@
     </Compile>
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\FTPForm.xaml.cs">
+      <DependentUpon>FTPForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\BaseFormWithAddressPortUserPwd.xaml.cs">
+      <DependentUpon>BaseFormWithAddressPortUserPwd.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\ProtocolServerFormBase.cs" />
+    <Compile Include="View\ProtocolEditors\SftpForm.xaml.cs">
+      <DependentUpon>SftpForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\RdpForm.xaml.cs">
+      <DependentUpon>RdpForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\RdpAppForm.xaml.cs">
+      <DependentUpon>RdpAppForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\SshForm.xaml.cs">
+      <DependentUpon>SshForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\TelnetForm.xaml.cs">
+      <DependentUpon>TelnetForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\VncForm.xaml.cs">
+      <DependentUpon>VncForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ProtocolHostFactory.cs" />
+    <Compile Include="View\ProtocolHosts\AxMsRdpClient09Host.xaml.cs">
+      <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolHosts\FileTransmitHost.xaml.cs">
+      <DependentUpon>FileTransmitHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolHosts\KittyHost.xaml.cs">
+      <DependentUpon>KittyHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolEditors\BaseFormWithAddressPort.xaml.cs">
+      <DependentUpon>BaseFormWithAddressPort.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolHosts\HostBase.cs" />
+    <Compile Include="ViewModel\VmFileTransmitHost.cs" />
+    <Compile Include="View\ProtocolHosts\VncHost.xaml.cs">
+      <DependentUpon>VncHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ServerListPage.xaml.cs">
       <DependentUpon>ServerListPage.xaml</DependentUpon>
@@ -276,6 +333,58 @@
     <Page Include="View\Guidance\GuidanceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ProtocolEditors\FTPForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\BaseFormWithAddressPortUserPwd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\SftpForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\RdpForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\RdpAppForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\SshForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\TelnetForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\VncForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolHosts\AxMsRdpClient09Host.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolHosts\FileTransmitHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolHosts\KittyHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolEditors\BaseFormWithAddressPort.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolHosts\VncHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ServerListPage.xaml">
       <Generator>MSBuild:Compile</Generator>

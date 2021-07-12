@@ -37,19 +37,17 @@ namespace PRM.ViewModel
         private readonly double _oneItemHeight;
         private readonly double _oneActionHeight;
         private readonly double _cornerRadius;
-        private readonly FrameworkElement _listSelections;
-        private readonly FrameworkElement _listActions;
+        private readonly FrameworkElement _gridMenuActions;
 
         public PrmContext Context { get; }
 
-        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
+        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
         {
             Context = context;
             _gridMainWidth = gridMainWidth;
             _oneItemHeight = oneItemHeight;
             _oneActionHeight = oneActionHeight;
-            this._listSelections = listSelections;
-            this._listActions = listActions;
+            this._gridMenuActions = gridMenuActions;
             _cornerRadius = cornerRadius;
             GridKeywordHeight = 46;
             ReCalcWindowHeight(false);
@@ -300,11 +298,11 @@ namespace PRM.ViewModel
 
             ReCalcWindowHeight(true);
 
-            _listActions.Visibility = Visibility.Visible;
+            _gridMenuActions.Visibility = Visibility.Visible;
 
             var sb = new Storyboard();
             sb.AddSlideFromLeft(0.3, _gridMainWidth);
-            sb.Begin(_listActions);
+            sb.Begin(_gridMenuActions);
         }
 
         public void HideActionsList()
@@ -313,10 +311,10 @@ namespace PRM.ViewModel
             sb.AddSlideToLeft(0.3, _gridMainWidth);
             sb.Completed += (o, args) =>
             {
-                _listActions.Visibility = Visibility.Hidden;
+                _gridMenuActions.Visibility = Visibility.Hidden;
                 ReCalcWindowHeight(false);
             };
-            sb.Begin(_listActions);
+            sb.Begin(_gridMenuActions);
         }
 
         private void ShowAllItems()
@@ -378,7 +376,7 @@ namespace PRM.ViewModel
                         if (string.IsNullOrEmpty(matchedTag) == false && vm.Server.Tags.Contains(matchedTag) == false)
                             continue;
 
-                        var dispName = vm.Server.DispName;
+                        var dispName = vm.Server.DisplayName;
                         // if tag name search enabled, and keyword match the tag name, show tag name as prefix
                         if (string.IsNullOrEmpty(matchedTag) == false)
                             dispName = $"{matchedTag} - {dispName}";

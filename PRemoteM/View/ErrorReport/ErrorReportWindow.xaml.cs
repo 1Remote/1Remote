@@ -8,14 +8,8 @@ using Microsoft.Win32;
 using PRM.Core;
 using PRM.Core.Model;
 using Shawn.Utils;
-using System.Management;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
-
-using Shawn.Utils;
-
 using Shawn.Utils.PageHost;
 
 namespace PRM.View.ErrorReport
@@ -39,8 +33,8 @@ namespace PRM.View.ErrorReport
             sb.AppendLine();
 
             BuildEnvironment(ref sb);
-            
-            if(e.InnerException != null)
+
+            if (e.InnerException != null)
             {
                 sb.AppendLine("## InnerException Info");
                 sb.AppendLine();

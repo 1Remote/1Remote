@@ -26,7 +26,7 @@ namespace PRM.Core.Protocol
         public object OrgDispNameControl =>
             new TextBlock()
             {
-                Text = Server.DispName,
+                Text = Server.DisplayName,
             };
 
         public object OrgSubTitleControl =>
@@ -151,10 +151,10 @@ namespace PRM.Core.Protocol
 
                 _cmdSave = new RelayCommand((o) =>
                 {
-                    if (string.IsNullOrWhiteSpace(this.Server.DispName)) return;
+                    if (string.IsNullOrWhiteSpace(this.Server.DisplayName)) return;
 
                     GlobalEventHelper.OnRequestUpdateServer?.Invoke(Server);
-                }, o => (this.Server.DispName.Trim() != ""));
+                }, o => (this.Server.DisplayName.Trim() != ""));
                 return _cmdSave;
             }
         }

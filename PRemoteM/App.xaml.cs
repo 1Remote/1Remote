@@ -6,12 +6,12 @@ using System.Windows;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty.Host;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.View;
 using PRM.View.ErrorReport;
 using PRM.View.Guidance;
+using PRM.View.ProtocolHosts;
 
 namespace PRM
 {
