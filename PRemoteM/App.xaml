@@ -13,7 +13,7 @@
                 <ResourceDictionary Source="./Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Utils/PasswordEx/PasswordBoxEx.xaml"></ResourceDictionary>
 
-                <ResourceDictionary Source="./Resources/Theme/Basic/ColorsAndBrushes/Default.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="./Resources/Theme/DefaultTheme.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

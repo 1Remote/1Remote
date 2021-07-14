@@ -4,7 +4,7 @@
     <Color x:Key="PrimaryLightColor">#f3fbff</Color>
     <Color x:Key="PrimaryMidColor">#326cf3</Color>
     <Color x:Key="PrimaryDarkColor">#326cf3</Color>
-    <Color x:Key="PrimaryTextColor">#212121</Color>
+    <Color x:Key="PrimaryTextColor">GreenYellow</Color>
 
     <Color x:Key="AccentLightColor">#f8491e</Color>
     <Color x:Key="AccentMidColor">#f8491e</Color>
@@ -26,4 +26,11 @@
 
     <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
     <SolidColorBrush x:Key="BackgroundTextBrush" Color="{DynamicResource BackgroundTextColor}"/>
+
+    <Color x:Key="DefaultBorderColor">#707A8C</Color>
+    <SolidColorBrush x:Key="DefaultBorderBrush" Color="{DynamicResource DefaultBorderColor}" />
+    <!--<Color x:Key="TextBoxDefaultBackgroundColor">#ffffff</Color>
+    <SolidColorBrush x:Key="TextBoxDefaultBackgroundBrush" Color="{DynamicResource TextBoxDefaultBackgroundColor}" />
+    <Color x:Key="TextBoxDefaultBackgroundColor">#ffffff</Color>
+    <SolidColorBrush x:Key="TextBoxDefaultBackgroundBrush" Color="{DynamicResource TextBoxDefaultBackgroundColor}" />-->
 </ResourceDictionary>

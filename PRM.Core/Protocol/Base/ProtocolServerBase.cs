@@ -15,6 +15,7 @@ namespace PRM.Core.Protocol
 {
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase, ICloneable
     {
+        [JsonIgnore]
         public string Server_editor_different_options { get; private set; }
 
         protected ProtocolServerBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "")
@@ -50,6 +51,13 @@ namespace PRM.Core.Protocol
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
+        [Obsolete]
+        public string DispName
+        {
+            get => DisplayName;
+            set => DisplayName = value;
+        }
+
         private string _displayName = "";
 
         public string DisplayName
@@ -63,7 +71,7 @@ namespace PRM.Core.Protocol
 
 
         private string _groupName = "";
-
+        [Obsolete]
         public string GroupName
         {
             get => _groupName;
