@@ -201,7 +201,7 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
                                                  ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
                                     </Grid>
@@ -214,7 +214,7 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <TextBox Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
                                                  ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
                                     </Grid>
