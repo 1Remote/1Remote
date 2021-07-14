@@ -7,6 +7,7 @@
                   xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
+                  xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
@@ -83,8 +84,7 @@
                         </VisualBrush>
                     </TextBox.Resources>
                     <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBase}">
-                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxBaseStyle}">
                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -350,6 +350,42 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid.Resources>
+                </Grid.Resources>
+                <StackPanel>
+                    <Button Width="80" Height="40" Margin="5" Style="{StaticResource ButtonBaseStyle}">
+                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
+                    </Button>
+                    <controls:ButtonEx Margin="5">Test</controls:ButtonEx>
+                    <TextBlock Margin="5" Tag="xxxx">Test</TextBlock>
+                    <TextBox Margin="5" Tag="xxxx">Test</TextBox>
+                    <TextBox Margin="5" IsEnabled="False">
+                        <TextBox.Effect>
+                            <DropShadowEffect Opacity="1" Color="Red" BlurRadius="10" Direction="20"></DropShadowEffect>
+                        </TextBox.Effect> 
+                        Test
+                    </TextBox>
+                    <ComboBox Style="{StaticResource ComboBoxBaseStyle}" Width="100">
+                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
+                        <ComboBoxItem>2</ComboBoxItem>
+                        <ComboBoxItem>3</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox Style="{StaticResource ComboBoxPrimaryStyle}" IsEditable="True" Width="100">
+                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
+                        <ComboBoxItem>2</ComboBoxItem>
+                        <ComboBoxItem>3</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox Style="{StaticResource ComboBoxBaseStyle}" IsEnabled="False" IsEditable="True" Width="100">
+                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
+                        <ComboBoxItem>2</ComboBoxItem>
+                        <ComboBoxItem>3</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+
         </Grid>
     </Grid>
 </utils:WindowChromeBase>

@@ -28,7 +28,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxWithPlaceHolder}"
+                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
                                  Tag="e.g. 192.168.0.101"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
