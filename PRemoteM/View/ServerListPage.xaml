@@ -567,18 +567,17 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <commoncontrols:ButtonEx Padding="0 1 0 0"
+                    <Button Padding="0 1 0 0"
                                         MinWidth="80"
                                         Click="BtnAllServer_Click"
-                                        BorderThickness="0" Content="{DynamicResource tab_all}">
-                        <commoncontrols:ButtonEx.Style>
-                            <Style TargetType="{x:Type commoncontrols:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
+                                        Content="{DynamicResource tab_all}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Grid>
                                                 <Border Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
                                                     SnapsToDevicePixels="true">
                                                 </Border>
                                                 <ContentPresenter
@@ -597,29 +596,30 @@
                                     <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                        <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Null}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                        <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </commoncontrols:ButtonEx.Style>
-                    </commoncontrols:ButtonEx>
+                        </Button.Style>
+                    </Button>
 
-                    <commoncontrols:ButtonEx Grid.Column="1" Padding="0 1 0 0"
+                    <Button Grid.Column="1" Padding="0 1 0 0"
                                         MinWidth="80"
                                         Click="BtnTagsListView_Click"
                                         BorderThickness="0" Content="{DynamicResource server_editor_tag}">
-                        <commoncontrols:ButtonEx.Style>
-                            <Style TargetType="{x:Type commoncontrols:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Grid>
                                                 <Border Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    SnapsToDevicePixels="true">
+                                                        SnapsToDevicePixels="true">
                                                 </Border>
                                                 <ContentPresenter
                                                     HorizontalAlignment="Center"
@@ -637,11 +637,12 @@
                                     <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                        <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </commoncontrols:ButtonEx.Style>
-                    </commoncontrols:ButtonEx>
+                        </Button.Style>
+                    </Button>
 
                     <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto" 
                                   Margin="10 0 0 0"
