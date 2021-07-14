@@ -41,6 +41,7 @@
         <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Focusable" Value="false" />
         <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -86,6 +87,7 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value=".4" />
+                            <Setter Property="Cursor" Value="Arrow" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -117,7 +119,7 @@
                                                       ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
                                                       ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Content="{TemplateBinding SelectionBoxItem}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="false" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
 
-                    <TextBox Margin="8 4 0 4" 
+                    <TextBox Margin="6 4 0 4" MinWidth="100"
                                              Grid.Column="0" Name="PART_EditableTextBox" 
                                              IsReadOnly="{TemplateBinding IsReadOnly}" 
                                              Foreground="{TemplateBinding Foreground}"
