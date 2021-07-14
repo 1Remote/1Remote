@@ -12,7 +12,6 @@
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Padding" Value="{StaticResource DefaultControlPadding}" />
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
@@ -75,5 +74,27 @@
     </Style>
 
     <Style TargetType="Button" BasedOn="{StaticResource ButtonBaseStyle}" />
+
+    <Style x:Key="ButtonPrimaryStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundOnMouseOver" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource PrimaryMidBrush}"/>
+    </Style>
+
+    <Style x:Key="ButtonAccentStyle" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundOnMouseOver" Value="{DynamicResource AccentMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource AccentMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseOver" Value="{DynamicResource AccentMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BorderBrushOnMouseDown" Value="{DynamicResource AccentMidBrush}"/>
+    </Style>
 
 </ResourceDictionary>
