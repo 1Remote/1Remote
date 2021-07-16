@@ -22,5 +22,7 @@
         <ResourceDictionary Source="Styles/ButtonStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/TextBoxStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/ScrollViewer.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"></ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

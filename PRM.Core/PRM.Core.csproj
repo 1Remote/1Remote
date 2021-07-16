@@ -210,7 +210,6 @@
       <DependentUpon>PageHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\PageHost\StoryboardHelpers.cs" />
-    <Compile Include="Utils\PasswordEx\PasswordBoxEx.xaml.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
@@ -437,10 +436,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Utils\PageHost\PageHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\PasswordEx\PasswordBoxEx.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

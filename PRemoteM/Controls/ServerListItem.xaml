@@ -19,7 +19,7 @@
 
         <Grid>
             <Grid.Margin>
-                <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
+                <Thickness Left="10" Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
             </Grid.Margin>
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -33,40 +33,10 @@
 
                 <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
                                       Name="CbIsSelected"
-                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                      Background="{DynamicResource AccentMidBrush}">
+                                      IsChecked="{Binding IsSelected, Mode=TwoWay}">
                     <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                             <Setter Property="Visibility" Value="Hidden"></Setter>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="CheckBox">
-                                        <Border Background="{TemplateBinding Control.Background}" 
-                                                            BorderThickness="0" 
-                                                            CornerRadius="5" Name="PART_Background">
-                                            <Grid>
-                                                <Border Name="PATH_UNCHECK" CornerRadius="3" Background="{DynamicResource AccentTextBrush}" Margin="4"></Border>
-                                                <Path Name="PATH_CHECK" Fill="{DynamicResource AccentTextBrush}" Stretch="Fill" Margin="4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Visible"></Setter>
-                                            </Trigger>
-                                            <Trigger Property="IsChecked" Value="False">
-                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Visible"></Setter>
-                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                            </Trigger>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="PART_Background" Property="Opacity" Value="0.8"></Setter>
-                                                <Setter TargetName="PATH_UNCHECK" Property="Margin" Value="3"></Setter>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>

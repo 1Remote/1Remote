@@ -13,14 +13,6 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
 
     <Grid Background="{DynamicResource BackgroundBrush}" ClipToBounds="True">
         <Grid.Resources>
@@ -86,8 +78,7 @@
                 x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
                 HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Auto"
-                Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                VerticalScrollBarVisibility="Auto">
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
@@ -171,11 +162,6 @@
                                                               ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}"
                                                               Background="Transparent"
                                                               ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                                                        <ListView.Resources>
-                                                            <Style TargetType="ScrollViewer">
-                                                                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-                                                            </Style>
-                                                        </ListView.Resources>
                                                         <ListView.ItemsPanel>
                                                             <ItemsPanelTemplate>
                                                                 <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}" />
@@ -201,8 +187,7 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
-                                                 ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
+                                                                                                  ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
                                     </Grid>
                                     <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
@@ -214,8 +199,7 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <TextBox Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
-                                                 ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
+                                                                                                  ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
                                     </Grid>
                                     <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>

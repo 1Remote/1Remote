@@ -6,7 +6,7 @@
         <ResourceDictionary Source="BaseStyle.xaml"></ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
-    <Style x:Key="ComboBoxItemBaseStyle" TargetType="ComboBoxItem">
+    <Style x:Key="ComboBoxItemBaseStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ControlBase}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Padding" Value="8 4" />
         <Setter Property="Background" Value="Transparent" />
@@ -14,20 +14,39 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="MinHeight" Value="{DynamicResource DefaultControlHeight}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">
-                    <Border x:Name="Bd" Background="{TemplateBinding Background}" 
-                                            CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"
-                                            Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                        <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                    </Border>
+                    <Grid>
+                        <Border x:Name="Background" 
+                                Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true"/>
+                        <Border x:Name="Bd" 
+                                BorderThickness="0"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true"/>
+                        <Border CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"
+                                Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="False" />
+                                <Condition Property="IsSelected" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="BorderThickness" TargetName="Bd" Value="5 0 0 0" />
+                            <Setter Property="Background" TargetName="Background" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Opacity" TargetName="Background" Value="0.1" />
+                        </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Bd" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Background" TargetName="Background" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
@@ -36,7 +55,19 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+    <Style x:Key="ComboBoxItemPrimaryStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
+    </Style>
+
+    <Style x:Key="ComboBoxItemAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
+        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource AccentMidBrush}"/>
+    </Style>
+
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+    </Style>
+
+
+    <Style x:Key="ComboBoxToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource ControlBase}">
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Focusable" Value="false" />
@@ -96,12 +127,20 @@
     </Style>
     <ControlTemplate x:Key="ComboBoxTemplate" TargetType="ComboBox">
         <Grid>
+            <Border Name="BorderForBackground" 
+                    SnapsToDevicePixels="True"
+                    Background="{TemplateBinding Background}"
+                    BorderThickness="0"
+                    BorderBrush="Transparent"
+                    CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"/>
+
+
+
             <Border Name="BorderForText" 
-                                    SnapsToDevicePixels="True"
-                                    Background="{TemplateBinding Background}" 
-                                    BorderThickness="{Binding Path=(attachProperty:VisionElement.BorderThickness),RelativeSource={RelativeSource TemplatedParent}}" 
-                                    BorderBrush="{TemplateBinding BorderBrush}" 
-                                    CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
+                    SnapsToDevicePixels="True"
+                    Background="Transparent" 
+                    BorderThickness="0" 
+                    CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -147,6 +186,16 @@
                 </Grid>
             </Border>
 
+            <Border Name="Border" 
+                    SnapsToDevicePixels="True"
+                    Background="Transparent"
+                    IsHitTestVisible="False"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
+            </Border>
+
+
             <!-- Popup showing items -->
             <Popup Name="Popup" Placement="Bottom"
                                Focusable="False" AllowsTransparency="True"
@@ -182,26 +231,36 @@
                 <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
                 <Setter Property="UIElement.Visibility" TargetName="ContentPresenter" Value="Hidden"/>
             </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsDropDownOpen" Value="False"></Condition>
+                    <Condition Property="IsMouseOver" Value="True"></Condition>
+                </MultiTrigger.Conditions>
+                <Setter Property="Opacity" TargetName="Border" Value="0.6" />
+            </MultiTrigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" TargetName="BorderForText" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                 <Setter Property="BorderBrush" TargetName="BorderForItemsPresenter" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
             </Trigger>
             <Trigger Property="IsDropDownOpen" Value="True">
-                <Setter Property="BorderBrush" TargetName="BorderForText" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                 <Setter Property="BorderBrush" TargetName="BorderForItemsPresenter" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.4"/>
             </Trigger>
+            <DataTrigger Binding="{Binding Path=Items.Count, RelativeSource={RelativeSource TemplatedParent}}" Value="0">
+                <Setter Property="IsEnabled" TargetName="ToggleButton" Value="False"/>
+                <Setter Property="Visibility" TargetName="ToggleButton" Value="Collapsed"/>
+                <Setter Property="Visibility" TargetName="Popup" Value="Collapsed"/>
+            </DataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
     <Style x:Key="ComboBoxBaseStyle" TargetType="ComboBox" BasedOn="{StaticResource ControlBase}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Foreground" Value="Black" />
-        <Setter Property="Background" Value="White" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemBaseStyle}" />
-        <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="MinHeight" Value="{DynamicResource DefaultControlHeight}" />
@@ -212,11 +271,18 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="attachProperty:VisionElement.BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
-        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource AccentTextBrush}"/>
-        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource AccentMidBrush}"/>
-    </Style>
-
-    <Style x:Key="ComboBoxAccentStyle" TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
+        <!--<Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemBaseStyle}" />-->
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
+                    <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource Self}}"/>
+                    <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource Self}}"/>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="ComboBoxPrimaryStyle" TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
@@ -224,8 +290,13 @@
         <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
     </Style>
 
+    <Style x:Key="ComboBoxAccentStyle" TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource AccentMidBrush}"/>
+    </Style>
 
-    <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxBaseStyle}">
+
+    <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxAccentStyle}">
     </Style>
 
 </ResourceDictionary>

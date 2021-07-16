@@ -8,8 +8,17 @@ using System.Windows.Input;
 
 namespace Shawn.Utils
 {
+    public class ComboboxWithKeyInvoke : ComboBox
+    {
+        public Action<KeyEventArgs> OnPreviewKeyDownAction;
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            OnPreviewKeyDownAction?.Invoke(e);
+        }
+    }
     public partial class AutoCompleteComboBox : UserControl
     {
+
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(AutoCompleteComboBox),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, TextPropertyChangedCallback));
@@ -40,6 +49,9 @@ namespace Shawn.Utils
         {
             if ((o.Selections?.Count() ?? 0) == 0)
                 return;
+            if (o._textChangedEnabled == false)
+                return;
+            o._textChangedEnabled = false;
             if (string.IsNullOrWhiteSpace(newValue))
             {
                 o.CbContent.IsDropDownOpen = false;
@@ -68,13 +80,13 @@ namespace Shawn.Utils
 
         private static void SelectionsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is AutoCompleteComboBox cb &&
-                e.NewValue is IEnumerable<string> selections)
+            if (d is AutoCompleteComboBox cb
+                && e.NewValue is IEnumerable<string> selections)
             {
                 cb.Selections4Show = new ObservableCollection<string>(selections);
             }
-            if (d is AutoCompleteComboBox cb2 &&
-                e.NewValue == null)
+            if (d is AutoCompleteComboBox cb2
+                && e.NewValue == null)
             {
                 cb2.Selections4Show = new ObservableCollection<string>();
             }
@@ -101,49 +113,11 @@ namespace Shawn.Utils
             set => SetValue(Selections4ShowProperty, value);
         }
 
-        public static readonly DependencyProperty IsShowArrayProperty = DependencyProperty.Register(
-            nameof(IsShowArray), typeof(bool), typeof(AutoCompleteComboBox),
-            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (d, e) =>
-            {
-                if (d is AutoCompleteComboBox cb &&
-                    e.NewValue is bool b)
-                {
-                    if (b)
-                    {
-                        cb.CbNoArray.Visibility = Visibility.Collapsed;
-                        cb.CbContent.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        cb.CbNoArray.Visibility = Visibility.Visible;
-                        cb.CbContent.Visibility = Visibility.Collapsed;
-                    }
-                }
-            }));
-
-        public bool IsShowArray
-        {
-            get => (bool)GetValue(IsShowArrayProperty);
-            set
-            {
-                SetValue(IsShowArrayProperty, value);
-                if (value)
-                {
-                    CbNoArray.Visibility = Visibility.Collapsed;
-                    CbContent.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    CbNoArray.Visibility = Visibility.Visible;
-                    CbContent.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
         public AutoCompleteComboBox()
         {
             InitializeComponent();
             Grid.DataContext = this;
+            CbContent.OnPreviewKeyDownAction += HandleUpDown;
         }
 
         private void CbContent_OnKeyDown(object sender, KeyEventArgs e)
@@ -158,6 +132,37 @@ namespace Shawn.Utils
                     CbContent.IsDropDownOpen = false;
                 }
                 e.Handled = true;
+            }
+        }
+
+        private bool _textChangedEnabled = false;
+        private void HandleUpDown(KeyEventArgs e)
+        {
+            _textChangedEnabled = true;
+            if (e.Key == Key.Down || e.Key == Key.Up)
+            {
+                if (CbContent.IsDropDownOpen == true)
+                {
+                    int i = 0;
+                    int j = CbContent.SelectedIndex;
+                    _textChangedEnabled = false;
+                    if (Selections4Show.Any(x => x == Text))
+                    {
+                        i = Selections4Show.ToList().IndexOf(Text);
+                    }
+
+                    CbContent.SelectedIndex = i;
+                    if (i == j)
+                    {
+                        if (e.Key == Key.Down && i < Selections4Show.Count() - 1)
+                            CbContent.SelectedIndex += 1;
+                        else if (e.Key == Key.Up && i > 0)
+                            CbContent.SelectedIndex -= 1;
+                    }
+
+                    CbContent.IsDropDownOpen = true;
+                    e.Handled = true;
+                }
             }
         }
     }
