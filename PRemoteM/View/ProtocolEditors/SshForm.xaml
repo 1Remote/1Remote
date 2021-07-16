@@ -7,6 +7,7 @@
                         xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
+                        xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance ssh2:ProtocolServerSSH}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -19,8 +20,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
-                                 Tag="e.g. 192.168.0.101"></TextBox>
+                                                                  Tag="e.g. 192.168.0.101"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -56,8 +56,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                     Style="{StaticResource PasswordBoxEx}" />
+                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -136,8 +135,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding StartupAutoCommand,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
-                                 Tag="e.g. cd /home/user/Desktop/"></TextBox>
+                                                                  Tag="e.g. cd /home/user/Desktop/"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -146,8 +144,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="KiTTY Session"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding ExternalKittySessionConfigPath,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
-                                 ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
+                                                                  ToolTip="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
                                  Tag="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
                                  ></TextBox>
                     </Grid>

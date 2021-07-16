@@ -28,12 +28,6 @@
     </Window.Template>
 
     <Grid Margin="12" Background="{StaticResource PrimaryMidBrush}">
-        <Grid.Resources>
-            <Style TargetType="ScrollBar" BasedOn="{StaticResource PRM_ScrollBarStyle}"></Style>
-            <Style TargetType="ScrollViewer">
-                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-            </Style>
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

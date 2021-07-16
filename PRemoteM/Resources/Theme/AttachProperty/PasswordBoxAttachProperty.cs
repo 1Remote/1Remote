@@ -1,12 +1,17 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
-namespace Shawn.Utils
+namespace PRM.Resources.Theme.AttachProperty
 {
-    public static class PasswordBoxEx
+    public class PasswordBoxAttachProperty
     {
         public static readonly DependencyProperty DependencyEnabledProperty = DependencyProperty.RegisterAttached("DependencyEnabled", typeof(bool),
-                                                    typeof(PasswordBoxEx), new PropertyMetadata(false, OnDependencyEnabledChanged));
+                                                    typeof(PasswordBoxAttachProperty), new PropertyMetadata(false, OnDependencyEnabledChanged));
 
         private static void OnDependencyEnabledChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
@@ -37,7 +42,7 @@ namespace Shawn.Utils
         }
 
         public static readonly DependencyProperty PasswordProperty = DependencyProperty.RegisterAttached("Password", typeof(string),
-                                                    typeof(PasswordBoxEx), new PropertyMetadata("", OnPasswordPropertyChanged));
+                                                    typeof(PasswordBoxAttachProperty), new PropertyMetadata("", OnPasswordPropertyChanged));
 
         public static string GetPassword(DependencyObject dp)
         {
@@ -49,7 +54,7 @@ namespace Shawn.Utils
             dp.SetValue(PasswordProperty, value);
         }
 
-        private static readonly DependencyProperty IsUpdatingProperty = DependencyProperty.RegisterAttached("IsUpdating", typeof(bool), typeof(PasswordBoxEx));
+        private static readonly DependencyProperty IsUpdatingProperty = DependencyProperty.RegisterAttached("IsUpdating", typeof(bool), typeof(PasswordBoxAttachProperty));
 
         private static bool GetIsUpdating(DependencyObject dp)
         {
@@ -84,7 +89,7 @@ namespace Shawn.Utils
             }
         }
 
-        public static readonly DependencyProperty PlaceHolderProperty = DependencyProperty.RegisterAttached("PlaceHolder", typeof(string), typeof(PasswordBoxEx), new FrameworkPropertyMetadata(""));
+        public static readonly DependencyProperty PlaceHolderProperty = DependencyProperty.RegisterAttached("PlaceHolder", typeof(string), typeof(PasswordBoxAttachProperty), new FrameworkPropertyMetadata(""));
 
         public static string GetPlaceHolder(DependencyObject d)
         {
