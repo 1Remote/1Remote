@@ -4,8 +4,8 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:rdp1="clr-namespace:PRM.Core.Protocol.RDP;assembly=PRM.Core"
-                        xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
+                        xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance rdp1:ProtocolServerRDP}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -19,7 +19,6 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
                                  Tag="e.g. 192.168.0.101"
                                  ></TextBox>
                     </Grid>
@@ -56,8 +55,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <!--<TextBox Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}"></TextBox>-->
-                        <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                     Style="{StaticResource PasswordBoxEx}" />
+                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -341,36 +339,9 @@
                                     </Grid.Style>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
-                                        <PasswordBox utils:PasswordBoxEx.Password="{Binding GatewayPassword,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                                     Style="{StaticResource PasswordBoxEx}" Width="200" />
+                                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding GatewayPassword,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="200" />
                                     </StackPanel>
                                 </Grid>
-
-                                <!--<Grid>
-                                    <Grid.Style>
-                                        <Style BasedOn="{StaticResource EditorRowGrid}" TargetType="Grid">
-                                            <Setter Property="Margin" Value="0 6 0 0"></Setter>
-                                            <Setter Property="Visibility" Value="Visible"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static local:EGatewayLogonMethod.SmartCard}">
-                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Domain"></TextBlock>
-                                        <PasswordBox utils:PasswordBoxEx.Password="{Binding GatewayPassword,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                                     Style="{StaticResource PasswordBoxEx}" Width="200" />
-                                    </StackPanel>
-                                </Grid>-->
-
-                                <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="0 6 0 0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                                        <CheckBox IsChecked="{Binding GatewayBypassForLocalAddress}" Content="{DynamicResource server_editor_gateway_bypass_gateway_for_local_address}"></CheckBox>
-                                    </StackPanel>
-                                </Grid>-->
                             </StackPanel>
                         </StackPanel>
                     </Grid>

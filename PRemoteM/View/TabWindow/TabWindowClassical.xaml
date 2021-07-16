@@ -51,10 +51,6 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
 
             <system:Double x:Key="TitleBarHeight">30</system:Double>
             <!--cs code will read this vale-->

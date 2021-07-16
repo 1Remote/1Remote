@@ -14,8 +14,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary>
                     <view:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool" />
                     <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
@@ -308,9 +306,6 @@
                                                     <Setter Property="Background" Value="{x:Null}" />
                                                 </Trigger>
                                             </Style.Triggers>
-                                        </Style>
-                                        <Style TargetType="ScrollViewer">
-                                            <Setter Property="Template" Value="{DynamicResource PRM_ScrollViewerControlTemplate}"></Setter>
                                         </Style>
                                     </ListView.Resources>
                                 </ListView>

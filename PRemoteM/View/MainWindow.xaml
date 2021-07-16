@@ -14,7 +14,7 @@
                   KeyDown="MainWindow_OnKeyDown"
                   Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <utils:WindowChromeBase.Template>
         <ControlTemplate TargetType="Window">
@@ -351,40 +351,54 @@
                 </Grid>
             </Grid>
 
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Grid.Resources>
-                </Grid.Resources>
-                <StackPanel>
+            <ScrollViewer VerticalAlignment="Center" HorizontalAlignment="Right" Width="300" Height="400"
+                          VerticalScrollBarVisibility="Visible" 
+                          >
+                <StackPanel  Width="500" Height="600" Background="Azure">
+
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <CheckBox>123123</CheckBox>
+                        <CheckBox Style="{StaticResource CheckBoxBaseStyle}">3232</CheckBox>
+                        <CheckBox IsChecked="{x:Null}">123123</CheckBox>
+                    </StackPanel>
+
                     <Button Width="80" Height="40" Margin="5" Style="{StaticResource ButtonBaseStyle}">
                         <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
                               Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
                     </Button>
-                    <controls:ButtonEx Margin="5">Test</controls:ButtonEx>
+
                     <TextBlock Margin="5" Tag="xxxx">Test</TextBlock>
                     <TextBox Margin="5" Tag="xxxx">Test</TextBox>
                     <TextBox Margin="5" IsEnabled="False">
                         <TextBox.Effect>
                             <DropShadowEffect Opacity="1" Color="Red" BlurRadius="10" Direction="20"></DropShadowEffect>
-                        </TextBox.Effect> 
+                        </TextBox.Effect>
                         Test
                     </TextBox>
-                    <ComboBox Style="{StaticResource ComboBoxBaseStyle}" Width="100">
+                    <PasswordBox Margin="5" Password="123"></PasswordBox>
+                    <PasswordBox Margin="5" 
+                                 attachProperty:PasswordBoxAttachProperty.PlaceHolder="hi pas"
+                                 attachProperty:PasswordBoxAttachProperty.Password="hi pas"
+                                 Style="{DynamicResource PasswordBoxBaseStyle}"></PasswordBox>
+                    <ComboBox Width="100">
                         <ComboBoxItem IsSelected="True">1</ComboBoxItem>
                         <ComboBoxItem>2</ComboBoxItem>
                         <ComboBoxItem>3</ComboBoxItem>
                     </ComboBox>
-                    <ComboBox Style="{StaticResource ComboBoxPrimaryStyle}" IsEditable="True" Width="100">
+                    <ComboBox IsEditable="True" Width="100">
                         <ComboBoxItem IsSelected="True">1</ComboBoxItem>
                         <ComboBoxItem>2</ComboBoxItem>
                         <ComboBoxItem>3</ComboBoxItem>
                     </ComboBox>
-                    <ComboBox Style="{StaticResource ComboBoxBaseStyle}" IsEnabled="False" IsEditable="True" Width="100">
+                    <ComboBox IsEnabled="False" IsEditable="True" Width="100">
                         <ComboBoxItem IsSelected="True">1</ComboBoxItem>
                         <ComboBoxItem>2</ComboBoxItem>
                         <ComboBoxItem>3</ComboBoxItem>
                     </ComboBox>
+
+                    <TextBox Margin="5" Tag="xxxx" Width="500" Height="600">Test</TextBox>
                 </StackPanel>
-            </Grid>
+            </ScrollViewer>
 
         </Grid>
     </Grid>

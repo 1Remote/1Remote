@@ -16,14 +16,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="ScrollViewer">
-                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-            </Style>
 
             <system:Double x:Key="OneItemHeight">40</system:Double>
 
@@ -124,17 +116,17 @@
                             </Grid.Style>
                             <Grid>
                                 <Grid.Margin>
-                                    <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
+                                    <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
                                 </Grid.Margin>
                                 <Border Background="{DynamicResource BackgroundBrush}">
                                     <Border.Margin>
-                                        <Thickness Right="{StaticResource ScrollBarWidth}"></Thickness>
+                                        <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
                                     </Border.Margin>
                                 </Border>
                             </Grid>
                             <Grid VerticalAlignment="Center">
                                 <Grid.Margin>
-                                    <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
+                                    <Thickness Left="10" Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
                                 </Grid.Margin>
                                 <Grid.Resources>
                                     <Style TargetType="Path" x:Key="HeaderPathStyle">
@@ -300,9 +292,8 @@
                                 </commoncontrols:ButtonEx>
                             </Grid>
                         </Grid>
-                        <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="{TemplateBinding Padding}"
-                                      Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
-                            <ItemsPresenter Grid.Row="1" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                        <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="{TemplateBinding Padding}" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
                                 <ItemsPresenter.Margin>
                                     <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
                                 </ItemsPresenter.Margin>
