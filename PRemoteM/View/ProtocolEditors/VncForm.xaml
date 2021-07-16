@@ -4,8 +4,8 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:vnc="clr-namespace:PRM.Core.Protocol.VNC;assembly=PRM.Core"
-                        xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
+                        xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance vnc:ProtocolServerVNC}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -20,8 +20,7 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_address}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource TextBoxAccentWithPlaceHolderStyle}"
-                                 Tag="e.g. 192.168.0.101"></TextBox>
+                                                                  Tag="e.g. 192.168.0.101"></TextBox>
                     </Grid>
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource server_editor_connection_port}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -38,8 +37,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <PasswordBox utils:PasswordBoxEx.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                     Style="{StaticResource PasswordBoxEx}" />
+                        <PasswordBox attachProperty:PasswordBoxAttachProperty.Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
             </Grid>

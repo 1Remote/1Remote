@@ -50,10 +50,6 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
 
             <system:Double x:Key="TitleBarHeight">35</system:Double>
             <system:Double x:Key="TabHeaderBarHeight">35</system:Double>

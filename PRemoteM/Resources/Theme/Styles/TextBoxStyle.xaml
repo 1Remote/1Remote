@@ -8,22 +8,21 @@
 
     <Thickness x:Key="DefaultInputPadding">8,4</Thickness>
 
-    <Style TargetType="TextBox" x:Key="TextBoxBaseStyle" BasedOn="{StaticResource ControlBase}">
+
+    <Style x:Key="TextBoxBaseStyle" TargetType="TextBox" BasedOn="{StaticResource ControlBase}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
         <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="AllowDrop" Value="true" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
-        <Setter Property="CaretBrush" Value="Black" />
-        <Setter Property="Foreground" Value="Black" />
-        <Setter Property="Background" Value="White" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
         <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
-    </Style>
-
-    <Style x:Key="TextBoxPrimaryStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}">
         <Setter Property="Padding" Value="{StaticResource DefaultInputPadding}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -31,19 +30,18 @@
                     <Grid Name="Grid">
                         <Border Name="BorderForBackground" 
                                 SnapsToDevicePixels="True"
-                            Background="{TemplateBinding Background}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"/>
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                BorderBrush="Transparent"
+                                CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"/>
                         <Border Name="Border" 
-                            SnapsToDevicePixels="True"
-                            Background="{TemplateBinding Background}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
-                        </Border>
+                                SnapsToDevicePixels="True"
+                                Background="Transparent"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"/>
 
-                        <TextBlock Text="{TemplateBinding Tag}" Background="{TemplateBinding Background}" VerticalAlignment="Center" Margin="5 0 0 0">
+                        <TextBlock Text="{TemplateBinding Tag}" Background="{TemplateBinding Background}" VerticalAlignment="Center" Margin="{TemplateBinding Padding}">
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Opacity" Value="0.4"/>
@@ -63,10 +61,6 @@
                                           x:Name="PART_ContentHost" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Opacity" TargetName="Border" Value="0.4" />
-                            <Setter Property="Opacity" TargetName="BorderForBackground" Value="0.1" />
-                        </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsFocused" Value="False"></Condition>
@@ -74,6 +68,185 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="Opacity" TargetName="Border" Value="0.6" />
                         </MultiTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" TargetName="Border" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TextBoxPrimaryStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxBaseStyle}"/>
+
+
+    <Style x:Key="TextBoxAccentStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxPrimaryStyle}">
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource AccentDarkBrush}"/>
+    </Style>
+
+    <Style BasedOn="{StaticResource TextBoxAccentStyle}" TargetType="TextBox"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <Style x:Key="PasswordBoxBaseStyle" TargetType="{x:Type PasswordBox}">
+        <Setter Property="PasswordChar" Value="●" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
+        <Setter Property="attachProperty:PasswordBoxAttachProperty.DependencyEnabled" Value="True" />
+        <Setter Property="Padding" Value="{StaticResource DefaultInputPadding}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type PasswordBox}">
+                    <Grid Name="Grid">
+                        <Border Name="BorderForBackground" 
+                                SnapsToDevicePixels="True"
+                                Background="{TemplateBinding Background}" 
+                                BorderThickness="0" 
+                                BorderBrush="Transparent" 
+                                CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <Border Name="Border" 
+                                SnapsToDevicePixels="True"
+                                Background="Transparent" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
+                        </Border>
+                        <Border x:Name="BorderContent" 
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Background="Transparent"                         
+                                BorderThickness="0" 
+                                ClipToBounds="True"
+                                CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
+                            <Grid x:Name="PART_InnerGrid">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+
+                                <ScrollViewer x:Name="PART_ContentHost" Grid.Column="0"
+                                                Padding="{TemplateBinding Padding}" Margin="-2,0,-1,0" 
+                                                BorderThickness="0" IsTabStop="False"
+                                                VerticalAlignment="Stretch" Background="{x:Null}"
+                                                VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden"
+                                                VerticalContentAlignment="Center" />
+
+                                <!--<ScrollViewer Grid.Column="0"
+                                              Padding="{TemplateBinding Padding}" Margin="-2,0,-1,0" 
+                                              BorderThickness="0" IsTabStop="False"
+                                              VerticalAlignment="Stretch" Background="{x:Null}"
+                                              VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden"
+                                              VerticalContentAlignment="Center">
+                                </ScrollViewer>-->
+
+
+                                <Grid Grid.Column="0" Margin="{TemplateBinding Padding}">
+                                    <TextBox x:Name="PART_DecryptPassword" Grid.Column="0" Style="{x:Null}"
+                                        IsTabStop="True" Focusable="False"
+                                        Padding="0"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                        BorderBrush="Transparent" BorderThickness="0"
+                                        Visibility="Collapsed" IsHitTestVisible="False"
+                                        Text="{Binding Path=(attachProperty:PasswordBoxAttachProperty.Password), RelativeSource={RelativeSource TemplatedParent}}"
+                                        FontSize="{TemplateBinding FontSize}"/>
+                                </Grid>
+
+
+                                <TextBlock x:Name="PART_PlaceHolder" Grid.Column="0" Foreground="{DynamicResource BackgroundTextBrush}"
+                                    IsHitTestVisible="False" Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                                    SnapsToDevicePixels="True"
+                                    Visibility="Collapsed" Opacity="0.6"
+                                    TextAlignment="Center"
+                                    Text="{Binding Path=(attachProperty:PasswordBoxAttachProperty.PlaceHolder), RelativeSource={RelativeSource TemplatedParent}}"
+                                    FontSize="12" />
+
+                                <CheckBox x:Name="PART_DecryptButton" Grid.Column="1" Background="Transparent" VerticalAlignment="Center"
+                                          HorizontalAlignment="Center" HorizontalContentAlignment="Center">
+                                    <CheckBox.Style>
+                                        <Style TargetType="{x:Type CheckBox}">
+                                            <Setter Property="Focusable" Value="False" />
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                            <Setter Property="Padding" Value="0" />
+                                            <Setter Property="HorizontalAlignment" Value="Right" />
+                                            <Setter Property="VerticalAlignment" Value="Top" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Cursor" Value="Hand" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                                                        <Border Background="{TemplateBinding Background}"  BorderThickness="0">
+                                                            <Grid Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                                <Path Name="Lock"
+                                                                    Data="F1 M 17.5 8.75 L 17.5 20 L 2.5 20 L 2.5 8.75 L 5 8.75 L 5 5.097656 C 5 4.394531 5.126953 3.733725 5.380859 3.115234 C 5.634766 2.496746 5.986328 1.956381 6.435547 1.494141 C 6.884766 1.031902 7.413737 0.667318 8.022461 0.400391 C 8.631185 0.133465 9.290364 0 10 0 C 10.709635 0 11.368814 0.133465 11.977539 0.400391 C 12.586262 0.667318 13.115233 1.031902 13.564453 1.494141 C 14.013671 1.956381 14.365233 2.496746 14.619141 3.115234 C 14.873046 3.733725 14.999999 4.394531 15 5.097656 L 15 8.75 Z M 6.25 8.75 L 13.75 8.75 L 13.75 5.097656 C 13.75 4.570313 13.655599 4.073894 13.466797 3.608398 C 13.277994 3.142904 13.015949 2.734375 12.680664 2.382813 C 12.345377 2.03125 11.948242 1.754559 11.489258 1.552734 C 11.030273 1.350912 10.533854 1.25 10 1.25 C 9.466146 1.25 8.969727 1.350912 8.510742 1.552734 C 8.051758 1.754559 7.654622 2.03125 7.319336 2.382813 C 6.984049 2.734375 6.722005 3.142904 6.533203 3.608398 C 6.344401 4.073894 6.25 4.570313 6.25 5.097656 Z M 16.25 10 L 3.75 10 L 3.75 18.75 L 16.25 18.75 Z "
+                                                                    Fill="{DynamicResource BackgroundTextBrush}" Opacity="0.8" StrokeThickness="0.75" Stretch="Uniform" />
+                                                            </Grid>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsChecked" Value="True">
+                                                                <Setter Property="Opacity" Value="0.5" />
+                                                                <Setter TargetName="Lock" Property="Data" Value="F1 M 17.5 8.75 L 17.5 20 L 2.5 20 L 2.5 8.75 L 13.75 8.75 L 13.75 5 C 13.75 4.466146 13.653971 3.971355 13.461914 3.515625 C 13.269856 3.059896 13.006185 2.664389 12.670898 2.329102 C 12.335611 1.993816 11.940104 1.730145 11.484375 1.538086 C 11.028646 1.346029 10.533854 1.25 10 1.25 C 9.466146 1.25 8.971354 1.346029 8.515625 1.538086 C 8.059896 1.730145 7.664388 1.993816 7.329102 2.329102 C 6.993814 2.664389 6.730143 3.059896 6.538086 3.515625 C 6.346028 3.971355 6.25 4.466146 6.25 5 L 5 5 C 5 4.290365 5.126953 3.631186 5.380859 3.022461 C 5.634766 2.413738 5.986328 1.884766 6.435547 1.435547 C 6.884766 0.986328 7.413737 0.634766 8.022461 0.380859 C 8.631185 0.126953 9.290364 0 10 0 C 10.709635 0 11.368814 0.126953 11.977539 0.380859 C 12.586262 0.634766 13.115233 0.986328 13.564453 1.435547 C 14.013671 1.884766 14.365233 2.413738 14.619141 3.022461 C 14.873046 3.631186 14.999999 4.290365 15 5 L 15 8.75 Z M 16.25 10 L 3.75 10 L 3.75 18.75 L 16.25 18.75 Z " />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Opacity" Value="0.9" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="attachProperty:PasswordBoxAttachProperty.Password" Value="">
+                            <Setter TargetName="PART_PlaceHolder" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_DecryptButton" Property="Visibility" Value="Hidden" />
+                        </Trigger>
+
+                        <DataTrigger Binding="{Binding IsChecked, ElementName=PART_DecryptButton}" Value="True">
+                            <Setter TargetName="PART_DecryptPassword" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_DecryptPassword" Property="IsHitTestVisible" Value="True" />
+                            <Setter TargetName="PART_DecryptPassword" Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />
+                            <Setter TargetName="PART_DecryptPassword" Property="Focusable" Value="True" />
+                        </DataTrigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"></Condition>
+                                <Condition Property="IsMouseOver" Value="True"></Condition>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Opacity" TargetName="Border" Value="0.6" />
+                        </MultiTrigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" TargetName="Border" Value="0.4" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -88,7 +261,8 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="TextBoxAccentStyle" TargetType="TextBox" BasedOn="{StaticResource TextBoxPrimaryStyle}">
+    <Style x:Key="PasswordBoxPrimaryStyle" BasedOn="{StaticResource PasswordBoxBaseStyle}" TargetType="PasswordBox"/>
+    <Style x:Key="PasswordBoxAccentStyle" BasedOn="{StaticResource PasswordBoxBaseStyle}" TargetType="PasswordBox">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="true">
                 <Setter Property="BorderBrush" Value="{DynamicResource AccentDarkBrush}" />
@@ -100,20 +274,5 @@
     </Style>
 
 
-    <Style x:Key="TextBoxPrimaryWithPlaceHolderStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxPrimaryStyle}">
-    </Style>
-
-
-    <Style x:Key="TextBoxAccentWithPlaceHolderStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxPrimaryWithPlaceHolderStyle}">
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="BorderBrush" Value="{DynamicResource AccentDarkBrush}" />
-            </Trigger>
-            <Trigger Property="IsFocused" Value="true">
-                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style BasedOn="{StaticResource TextBoxAccentStyle}" TargetType="TextBox"/>
+    <Style BasedOn="{StaticResource PasswordBoxAccentStyle}" TargetType="PasswordBox"/>
 </ResourceDictionary>

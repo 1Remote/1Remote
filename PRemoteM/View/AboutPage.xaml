@@ -9,9 +9,6 @@
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-    </UserControl.Resources>
     <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid.Resources>
             <system:Double x:Key="BottomHeight">40</system:Double>
@@ -64,8 +61,7 @@
                 x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
                 HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Auto"
-                Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                VerticalScrollBarVisibility="Auto">
 
                 <Grid Margin="20 0">
                     <Grid.ColumnDefinitions>
