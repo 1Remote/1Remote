@@ -150,6 +150,7 @@
                     <ToggleButton Grid.ColumnSpan="2" Name="ToggleButton" 
                                                   IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" 
                                                   Background="{TemplateBinding Background}"
+                                                  Foreground="{TemplateBinding Foreground}"
                                                   BorderThickness="{Binding Path=(attachProperty:VisionElement.BorderThickness),RelativeSource={RelativeSource TemplatedParent}}"
                                                   Style="{StaticResource ComboBoxToggleButton}"/>
 
@@ -239,21 +240,23 @@
                 <Setter Property="Opacity" TargetName="Border" Value="0.6" />
             </MultiTrigger>
             <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" TargetName="ToggleButton" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                 <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                 <Setter Property="BorderBrush" TargetName="BorderForItemsPresenter" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
             </Trigger>
             <Trigger Property="IsDropDownOpen" Value="True">
+                <Setter Property="Foreground" TargetName="ToggleButton" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                 <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                 <Setter Property="BorderBrush" TargetName="BorderForItemsPresenter" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.4"/>
             </Trigger>
-            <DataTrigger Binding="{Binding Path=Items.Count, RelativeSource={RelativeSource TemplatedParent}}" Value="0">
+            <Trigger Property="HasItems" Value="False">
                 <Setter Property="IsEnabled" TargetName="ToggleButton" Value="False"/>
                 <Setter Property="Visibility" TargetName="ToggleButton" Value="Collapsed"/>
                 <Setter Property="Visibility" TargetName="Popup" Value="Collapsed"/>
-            </DataTrigger>
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 

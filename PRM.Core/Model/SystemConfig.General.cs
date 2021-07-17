@@ -37,7 +37,12 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(AppStartAutomatically), ref _appStartAutomatically, value);
         }
 
+
+#if DEV
+        private bool _appStartMinimized = false;
+#else
         private bool _appStartMinimized = true;
+#endif
 
         public bool AppStartMinimized
         {

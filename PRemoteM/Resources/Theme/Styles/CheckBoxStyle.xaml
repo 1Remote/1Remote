@@ -60,7 +60,7 @@
                         <ContentPresenter x:Name="ContentPresenter"
                                           Visibility="Collapsed" Grid.Column="1" Focusable="False" 
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                          Margin="{TemplateBinding Padding}" 
+                                          Margin="5 0" 
                                           RecognizesAccessKey="True" 
                                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
