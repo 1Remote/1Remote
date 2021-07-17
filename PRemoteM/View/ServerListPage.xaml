@@ -10,6 +10,7 @@
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
              Name="ThisServerListPage"
@@ -132,7 +133,6 @@
                                     <Style TargetType="Path" x:Key="HeaderPathStyle">
                                         <Setter Property="Visibility" Value="Hidden" />
                                         <Setter Property="StrokeThickness" Value="1" />
-                                        <Setter Property="Fill" Value="Gray" />
                                         <Setter Property="Width" Value="20" />
                                         <Setter Property="HorizontalAlignment" Value="Center" />
                                         <Setter Property="Margin" Value="5,0,5,0" />
@@ -149,59 +149,18 @@
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <CheckBox Width="20" Height="20" HorizontalAlignment="Center" 
-                                      IsChecked="{Binding IsSelectedAll, Mode=TwoWay}"
-                                      Background="{DynamicResource AccentMidBrush}">
-                                    <CheckBox.Style>
-                                        <Style TargetType="CheckBox">
-                                            <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="CheckBox">
-                                                        <Border Background="{TemplateBinding Control.Background}" 
-                                                            BorderThickness="0" 
-                                                            CornerRadius="5" Name="PART_Background">
-                                                            <Grid>
-                                                                <Border Name="PATH_UNCHECK" CornerRadius="3" Background="{DynamicResource AccentTextBrush}" Margin="4"></Border>
-                                                                <Path Name="PATH_CHECK" Fill="{DynamicResource AccentTextBrush}" Stretch="Fill" Margin="4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                            </Grid>
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsChecked" Value="True">
-                                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                                            </Trigger>
-                                                            <Trigger Property="IsChecked" Value="False">
-                                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="PART_Background" Property="Opacity" Value="0.8"></Setter>
-                                                            </Trigger>
-                                                            <MultiTrigger>
-                                                                <MultiTrigger.Conditions>
-                                                                    <Condition Property="IsChecked" Value="False"></Condition>
-                                                                    <Condition Property="IsMouseOver" Value="True"></Condition>
-                                                                </MultiTrigger.Conditions>
-                                                                <MultiTrigger.Setters>
-                                                                    <Setter TargetName="PATH_UNCHECK" Property="Margin" Value="3"></Setter>
-                                                                    <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Visible"></Setter>
-                                                                </MultiTrigger.Setters>
-                                                            </MultiTrigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </CheckBox.Style>
+                                <CheckBox HorizontalAlignment="Center" 
+                                      IsChecked="{Binding IsSelectedAll, Mode=TwoWay}">
                                 </CheckBox>
 
-                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="1" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <Button HorizontalContentAlignment="Left" Grid.Column="1" Style="{StaticResource ButtonBarPrimaryStyle}"
                                                          Margin="0 0 10 0"
+                                                         attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                          Background="{DynamicResource BackgroundBrush}"
                                                          Foreground="{DynamicResource BackgroundTextBrush}"
                                                          Command="{Binding CmdReOrder}" CommandParameter="0">
                                     <Grid>
-                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
@@ -212,7 +171,7 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
@@ -223,17 +182,18 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_protocol}"></TextBlock>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_protocol}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                                     </Grid>
-                                </commoncontrols:ButtonEx>
+                                </Button>
 
-                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="3" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <Button HorizontalContentAlignment="Left" Grid.Column="3" Style="{StaticResource ButtonBarPrimaryStyle}"
                                                          Margin="0 0 10 0"
+                                                         attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                                     Background="{DynamicResource BackgroundBrush}"
                                                                     Foreground="{DynamicResource BackgroundTextBrush}"
                                                                     Command="{Binding CmdReOrder}" CommandParameter="2">
                                     <Grid>
-                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
@@ -244,7 +204,7 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
@@ -255,17 +215,18 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource word_name}"></TextBlock>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource word_name}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                                     </Grid>
-                                </commoncontrols:ButtonEx>
+                                </Button>
 
-                                <commoncontrols:ButtonEx HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource MainColor1ButtonRadius3}"
+                                <Button HorizontalContentAlignment="Left" Grid.Column="5" Style="{StaticResource ButtonBarPrimaryStyle}"
                                                          Margin="0 0 10 0"
+                                                         attachProperty:VisionElement.BorderCornerRadius="{StaticResource DefaultCornerRadius}"
                                                                     Background="{DynamicResource BackgroundBrush}"
                                                                     Foreground="{DynamicResource BackgroundTextBrush}"
                                                                     Command="{Binding CmdReOrder}" CommandParameter="6">
                                     <Grid>
-                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3">
+                                        <Path Data="M 7,3 L 13,3 L 10,0 L 7,3" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
@@ -276,7 +237,7 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0">
+                                        <Path Data="M 7,0 L 10,3 L 13,0 L 7,0" Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
@@ -287,9 +248,9 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_address}" />
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_address}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                                     </Grid>
-                                </commoncontrols:ButtonEx>
+                                </Button>
                             </Grid>
                         </Grid>
                         <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="{TemplateBinding Padding}" HorizontalScrollBarVisibility="Disabled">
@@ -451,16 +412,16 @@
                 </Grid.Style>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_cancel}" Command="{Binding CmdCancelSelected}"></commoncontrols:ButtonEx>
+                    <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource word_cancel}" Command="{Binding CmdCancelSelected}"></Button>
                     <TextBlock Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
                     <TextBlock Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0 0 0"></TextBlock>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_connect}" Command="{Binding CmdConnectSelected}"></commoncontrols:ButtonEx>
-                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_edit}" Command="{Binding CmdMultiEditSelected}"></commoncontrols:ButtonEx>
-                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_delete}" Command="{Binding CmdDeleteSelected}"></commoncontrols:ButtonEx>
-                    <commoncontrols:ButtonEx Height="30" MinWidth="80" Style="{StaticResource MainColor2ButtonRadius3}" Margin="5 0" Content="{DynamicResource word_export}" Command="{Binding CmdExportSelectedToJson}"></commoncontrols:ButtonEx>
+                    <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource word_connect}" Command="{Binding CmdConnectSelected}"></Button>
+                    <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource word_edit}" Command="{Binding CmdMultiEditSelected}"></Button>
+                    <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource word_delete}" Command="{Binding CmdDeleteSelected}"></Button>
+                    <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource word_export}" Command="{Binding CmdExportSelectedToJson}"></Button>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -507,7 +468,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                        <ContentPresenter />
+                                    <ContentPresenter />
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
@@ -522,7 +483,8 @@
                             </Grid.ColumnDefinitions>
 
                             <Grid>
-                                <commoncontrols:ButtonEx Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding Name}" Style="{DynamicResource MainColor2ButtonRadius5}" HorizontalAlignment="Left"></commoncontrols:ButtonEx>
+                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding Name}" 
+                                        HorizontalAlignment="Left"></Button>
                             </Grid>
 
                             <!--<Border CornerRadius="5" Padding="5 2" Background="{DynamicResource AccentMidBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3">
@@ -531,7 +493,7 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Label Content="{Binding ItemsCount}" Margin="10 0"></Label>
-                                <CheckBox IsChecked="{Binding IsPinned, Mode=TwoWay}" Style="{StaticResource CheckBoxSwitchStyle}" Height="20"></CheckBox>
+                                <ToggleButton IsChecked="{Binding IsPinned, Mode=TwoWay}"></ToggleButton>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
@@ -563,7 +525,7 @@
                                         Click="BtnAllServer_Click"
                                         Content="{DynamicResource tab_all}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -604,7 +566,7 @@
                                         Click="BtnTagsListView_Click"
                                         BorderThickness="0" Content="{DynamicResource server_editor_tag}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -780,9 +742,9 @@
                            PlacementTarget="{Binding ElementName=CbPopForInExport}">
                         <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
                             <StackPanel>
-                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></commoncontrols:ButtonEx>
-                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></commoncontrols:ButtonEx>
-                                <commoncontrols:ButtonEx Style="{StaticResource MainColor1Button}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></commoncontrols:ButtonEx>
+                                <Button Style="{StaticResource ButtonBarAccentStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></Button>
+                                <Button Style="{StaticResource ButtonBarAccentStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></Button>
+                                <Button Style="{StaticResource ButtonBarAccentStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></Button>
                             </StackPanel>
                         </Grid>
                     </Popup>
