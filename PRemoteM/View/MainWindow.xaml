@@ -352,20 +352,30 @@
             </Grid>
 
             <ScrollViewer VerticalAlignment="Center" HorizontalAlignment="Right" Width="300" Height="400"
+                          BorderBrush="Aqua" BorderThickness="1"
                           VerticalScrollBarVisibility="Visible" 
                           >
-                <StackPanel  Width="500" Height="600" Background="Azure">
+                <StackPanel  Width="500" Height="600" Background="{DynamicResource BackgroundBrush}">
 
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <CheckBox>123123</CheckBox>
                         <CheckBox Style="{StaticResource CheckBoxBaseStyle}">3232</CheckBox>
                         <CheckBox IsChecked="{x:Null}">123123</CheckBox>
                     </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <ToggleButton Height="30" Width="90" Style="{StaticResource ToggleButtonSwitchBaseStyle}">123</ToggleButton>
+                        <ToggleButton Height="30" Width="90" IsEnabled="False" Style="{StaticResource ToggleButtonSwitchBaseStyle}">123</ToggleButton>
+                        <ToggleButton Height="30" Width="90" IsChecked="True">123</ToggleButton>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <Button Style="{StaticResource ButtonBarPrimaryStyle}" Foreground="GreenYellow">123</Button>
 
-                    <Button Width="80" Height="40" Margin="5" Style="{StaticResource ButtonBaseStyle}">
-                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
-                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
-                    </Button>
+                        <Button Width="80" Height="40" Margin="5" Style="{StaticResource ButtonBaseStyle}">
+                            <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
+                                  Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" Opacity="0.8" StrokeThickness="1" Stretch="Fill" />
+                        </Button>
+                    </StackPanel>
+
 
                     <TextBlock Margin="5" Tag="xxxx">Test</TextBlock>
                     <TextBox Margin="5" Tag="xxxx">Test</TextBox>

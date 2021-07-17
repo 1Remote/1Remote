@@ -55,7 +55,11 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(Enable), ref _enable, value);
         }
 
+#if DEV
+        private HotkeyModifierKeys _hotKeyModifiers = HotkeyModifierKeys.ShiftAlt;
+#else
         private HotkeyModifierKeys _hotKeyModifiers = HotkeyModifierKeys.Alt;
+#endif
 
         public HotkeyModifierKeys HotKeyModifiers
         {
