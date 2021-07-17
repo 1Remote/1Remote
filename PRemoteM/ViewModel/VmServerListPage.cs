@@ -228,25 +228,28 @@ namespace PRM.ViewModel
                 {
                     var server = card.Server;
                     bool bTagMatched = string.IsNullOrEmpty(SelectedTagName) || server.Tags?.Contains(SelectedTagName) == true;
+
                     if (!bTagMatched)
                     {
                         card.ObjectVisibilityInList = Visibility.Collapsed;
-                        continue;
                     }
-
-                    if (string.IsNullOrEmpty(keyWord))
+                    else if (string.IsNullOrEmpty(keyWord))
                     {
                         card.ObjectVisibilityInList = Visibility.Visible;
-                        continue;
+                    }
+                    else
+                    {
+                        var dispName = server.DisplayName;
+                        var subTitle = server.SubTitle;
+                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() {dispName, subTitle}, keyWords).IsMatchAllKeywords;
+                        if (matched)
+                            card.ObjectVisibilityInList = Visibility.Visible;
+                        else
+                            card.ObjectVisibilityInList = Visibility.Collapsed;
                     }
 
-                    var dispName = server.DisplayName;
-                    var subTitle = server.SubTitle;
-                    var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                    if (matched)
-                        card.ObjectVisibilityInList = Visibility.Visible;
-                    else
-                        card.ObjectVisibilityInList = Visibility.Collapsed;
+                    if (card.ObjectVisibilityInList == Visibility.Collapsed && card.IsSelected)
+                        card.IsSelected = false;
                 }
 
                 if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))

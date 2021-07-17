@@ -199,21 +199,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                             _ftp?.CreateDirectory(parent);
                     }
 
-                    // Todo ADD resume;
-
-                    //using var fileStream = File.OpenRead(localFilePath);
-                    //_ftp?.Upload(fileStream, saveToRemotePath, FtpRemoteExists.Overwrite, true, progress =>
-                    //{
-                    //    if (cancellationToken.IsCancellationRequested)
-                    //    {
-                    //        SimpleLogHelper.Debug("FTP Upload: cancel by CancellationToken");
-                    //        // not a perfect solution
-                    //        fileStream.Close();
-                    //        fileStream.Dispose();
-                    //    }
-                    //    writeCallBack?.Invoke((ulong)progress.TransferredBytes);
-                    //});
-
                     _ftp?.UploadFileAsync(localFilePath, saveToRemotePath, FtpRemoteExists.Overwrite, true, FtpVerify.Delete,
                         new Progress<FtpProgress>(progress =>
                         {
