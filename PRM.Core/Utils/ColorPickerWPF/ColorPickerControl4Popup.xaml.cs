@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -12,6 +13,13 @@ using UserControl = System.Windows.Controls.UserControl;
 
 namespace ColorPickerWPF
 {
+    public class ColorSwatchItem
+    {
+        public Color Color { get; set; }
+        public string HexString { get; set; }
+    }
+
+
     /// <summary>
     /// Interaction logic for ColorPickerControl.xaml
     /// </summary>
@@ -23,35 +31,18 @@ namespace ColorPickerWPF
 
         public event ColorPickerChangeHandler OnPickColor;
 
-        internal List<ColorSwatchItem> ColorSwatch1 = new List<ColorSwatchItem>();
-        internal List<ColorSwatchItem> ColorSwatch2 = new List<ColorSwatchItem>();
+        internal List<Brush> ColorSwatches = new List<Brush>();
 
         public bool IsSettingValues = false;
 
-        protected const int NumColorsFirstSwatch = 39;
-        protected const int NumColorsSecondSwatch = 112;
-
-        internal static ColorPalette ColorPalette;
-
+        protected const int NumColorsFirstSwatch = 13 * 4;
 
         public ColorPickerControl4Popup()
         {
             InitializeComponent();
 
-            if (ColorPalette == null)
-            {
-                ColorPalette = new ColorPalette();
-                ColorPalette.InitializeDefaults();
-            }
-
-
-            ColorSwatch1.AddRange(ColorPalette.BuiltInColors.Take(NumColorsFirstSwatch).ToArray());
-
-            ColorSwatch2.AddRange(ColorPalette.BuiltInColors.Skip(NumColorsFirstSwatch).Take(NumColorsSecondSwatch).ToArray());
-
-            Swatch1.SwatchListBox.ItemsSource = ColorSwatch1;
-            Swatch2.SwatchListBox.ItemsSource = ColorSwatch2;
-
+            ColorSwatches.AddRange(GetColors().Take(NumColorsFirstSwatch).ToArray());
+            Swatch1.ItemsSource = ColorSwatches;
 
             RSlider.Slider.Maximum = 255;
             GSlider.Slider.Maximum = 255;
@@ -62,27 +53,27 @@ namespace ColorPickerWPF
             LSlider.Slider.Maximum = 1;
 
 
-            RSlider.Label.Content = "R";
+            RSlider.Label.Text = "R";
             RSlider.Slider.TickFrequency = 1;
             RSlider.Slider.IsSnapToTickEnabled = true;
-            GSlider.Label.Content = "G";
+            GSlider.Label.Text = "G";
             GSlider.Slider.TickFrequency = 1;
             GSlider.Slider.IsSnapToTickEnabled = true;
-            BSlider.Label.Content = "B";
+            BSlider.Label.Text = "B";
             BSlider.Slider.TickFrequency = 1;
             BSlider.Slider.IsSnapToTickEnabled = true;
 
-            ASlider.Label.Content = "A";
+            ASlider.Label.Text = "A";
             ASlider.Slider.TickFrequency = 1;
             ASlider.Slider.IsSnapToTickEnabled = true;
 
-            HSlider.Label.Content = "H";
+            HSlider.Label.Text = "H";
             HSlider.Slider.TickFrequency = 1;
             HSlider.Slider.IsSnapToTickEnabled = true;
-            SSlider.Label.Content = "S";
+            SSlider.Label.Text = "S";
             //SSlider.Slider.TickFrequency = 1;
             //SSlider.Slider.IsSnapToTickEnabled = true;
-            LSlider.Label.Content = "V";
+            LSlider.Label.Text = "V";
             //LSlider.Slider.TickFrequency = 1;
             //LSlider.Slider.IsSnapToTickEnabled = true;
 
@@ -91,6 +82,69 @@ namespace ColorPickerWPF
 
         }
 
+
+        protected internal List<Brush> GetColors()
+        {
+            return new List<Brush>()
+            {
+                Brushes.Black,
+                Brushes.Red,
+                Brushes.DarkOrange,
+                Brushes.Yellow,
+                Brushes.LawnGreen,
+                Brushes.Blue,
+                Brushes.Purple,
+                Brushes.DeepPink,
+                Brushes.Aqua,
+                Brushes.SaddleBrown,
+                Brushes.Wheat,
+                Brushes.BurlyWood,
+                Brushes.Teal,
+
+                Brushes.White,
+                Brushes.OrangeRed,
+                Brushes.Orange,
+                Brushes.Gold,
+                Brushes.LimeGreen,
+                Brushes.DodgerBlue,
+                Brushes.Orchid,
+                Brushes.HotPink,
+                Brushes.Turquoise,
+                Brushes.SandyBrown,
+                Brushes.SeaGreen,
+                Brushes.SlateBlue,
+                Brushes.RoyalBlue,
+
+                Brushes.Tan,
+                Brushes.Peru,
+                Brushes.DarkBlue,
+                Brushes.DarkGreen,
+                Brushes.DarkSlateBlue,
+                Brushes.Navy,
+                Brushes.MistyRose,
+                Brushes.LemonChiffon,
+                Brushes.ForestGreen,
+                Brushes.Firebrick,
+                Brushes.DarkViolet,
+                Brushes.Aquamarine,
+                Brushes.CornflowerBlue,
+
+
+                new SolidColorBrush(Color.FromArgb(255, 5, 5, 5)),
+                new SolidColorBrush(Color.FromArgb(255, 35, 35, 35)),
+                new SolidColorBrush(Color.FromArgb(255, 55, 55, 55)),
+                new SolidColorBrush(Color.FromArgb(255, 75, 75, 75)),
+                new SolidColorBrush(Color.FromArgb(255, 95, 95, 95)),
+                new SolidColorBrush(Color.FromArgb(255, 115, 115, 115)),
+                new SolidColorBrush(Color.FromArgb(255, 135, 135, 135)),
+                new SolidColorBrush(Color.FromArgb(255, 155, 155, 155)),
+                new SolidColorBrush(Color.FromArgb(255, 175, 175, 175)),
+                new SolidColorBrush(Color.FromArgb(255, 195, 195, 195)),
+                new SolidColorBrush(Color.FromArgb(255, 215, 215, 215)),
+                new SolidColorBrush(Color.FromArgb(255, 235, 235, 235)),
+                new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)),
+            };
+        }
 
         public void SetColor(Color color)
         {
@@ -112,6 +166,8 @@ namespace ColorPickerWPF
             IsSettingValues = false;
             OnPickColor?.Invoke(color);
             TbHex.Text = color.ToHexString();
+            if (TbHex.IsFocused)
+                TbHex.CaretIndex = TbHex.Text.Length;
         }
 
 
@@ -150,6 +206,14 @@ namespace ColorPickerWPF
             this.MouseUp += ColorPickerControl_MouseUp;
         }
 
+        private void Swatch_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var border = (sender as Border);
+            if (border == null)
+                return;
+            var color = border.Background as SolidColorBrush;
+            OnPickColor?.Invoke(color.Color);
+        }
 
         private void ColorPickerControl_MouseMove(object sender, MouseEventArgs e)
         {
@@ -165,11 +229,6 @@ namespace ColorPickerWPF
             Mouse.Capture(null);
             this.MouseMove -= ColorPickerControl_MouseMove;
             this.MouseUp -= ColorPickerControl_MouseUp;
-        }
-
-        private void Swatch_OnOnPickColor(Color color)
-        {
-            SetColor(color);
         }
 
         private void HSlider_OnOnValueChanged(double value)
@@ -253,7 +312,6 @@ namespace ColorPickerWPF
                 var h = Color.GetHue();
                 var a = (int)ASlider.Slider.Value;
                 Color = Util.FromAhsb(a, h, s, l);
-
                 SetColor(Color);
             }
         }
@@ -262,9 +320,14 @@ namespace ColorPickerWPF
         {
             try
             {
-                var (a, r, g, b) = ColorAndBrushHelper.HexColorToArgb(TbHex.Text);
-                var color = Color.FromArgb(a, r, g, b);
-                SetColor(color);
+                TbHex.Text = TbHex.Text.Trim();
+                if (TbHex.Text.TrimStart('#').Length == 8 && 
+                    !string.Equals(Color.ToHexString(), TbHex.Text, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    var (a, r, g, b) = ColorAndBrushHelper.HexColorToArgb(TbHex.Text);
+                    var color = Color.FromArgb(a, r, g, b);
+                    SetColor(color);
+                }
             }
             catch (Exception exception)
             {

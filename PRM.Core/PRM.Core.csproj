@@ -169,15 +169,9 @@
     <Compile Include="Resources\Controls\ButtonEx.cs" />
     <Compile Include="Resources\Theme\PrmColorThemes.cs" />
     <Compile Include="Utils\ColorAndBrushHelper.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\ColorPalette.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\ColorSwatchItem.cs" />
     <Compile Include="Utils\ColorPickerWPF\Code\Util.cs" />
     <Compile Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml.cs">
       <DependentUpon>ColorPickerControl4Popup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\ColorPickerWPF\ColorPickerSwatch.xaml.cs">
-      <DependentUpon>ColorPickerSwatch.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ColorPickerWPF\ColorPickRowPopup.xaml.cs">
       <DependentUpon>ColorPickRowPopup.xaml</DependentUpon>
@@ -416,10 +410,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\ColorPickerWPF\ColorPickerSwatch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
