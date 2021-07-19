@@ -13,38 +13,15 @@
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
                 <Setter Property="Foreground" Value="#000"></Setter>
             </Style>
-            <Style TargetType="Button">
-                <Setter Property="Focusable" Value="False"/>
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                <Setter Property="Foreground" Value="#000"></Setter>
-            </Style>
-            <Style TargetType="TextBox">
-                <Setter Property="Foreground" Value="#000"></Setter>
-                <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
-            </Style>
-            <Style TargetType="CheckBox">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                <Setter Property="Foreground" Value="#000"></Setter>
-                <Setter Property="TextElement.Foreground" Value="#000"></Setter>
-                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-            </Style>
-            <Style TargetType="RadioButton">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                <Setter Property="Foreground" Value="#000"></Setter>
-            </Style>
-            <Style TargetType="TextElement">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                <Setter Property="Foreground" Value="#000"></Setter>
-            </Style>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="326"  />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="245" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid>
@@ -63,7 +40,7 @@
             <colorPickerWpf:SliderRow x:Name="BSlider" HorizontalAlignment="Stretch" Margin="0,54,0,0" VerticalAlignment="Top"
                              OnValueChanged="BSlider_OnOnValueChanged" FormatString="F0"/>
             <colorPickerWpf:SliderRow x:Name="ASlider" HorizontalAlignment="Stretch" Margin="0,82,0,0" VerticalAlignment="Top"
-                                       OnValueChanged="ASlider_OnOnValueChanged" FormatString="F0"/>
+                                      OnValueChanged="ASlider_OnOnValueChanged" FormatString="F0"/>
 
             <colorPickerWpf:SliderRow x:Name="HSlider" HorizontalAlignment="Stretch" Margin="0,143,0,0" VerticalAlignment="Top"
                              OnValueChanged="HSlider_OnOnValueChanged" FormatString="F0"/>
@@ -74,26 +51,42 @@
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="0" Margin="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60" />
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Border x:Name="ColorDisplayBorder" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                    BorderBrush="Black" Background="White" BorderThickness="2"  Width="58" Height="58" Margin="0,0,0,0"/>
-
-                <colorPickerWpf:ColorPickerSwatch x:Name="Swatch1" HorizontalAlignment="Left" Height="60" Margin="60,0,0,0" VerticalAlignment="Top" Width="260"
-                                           OnPickColor="Swatch_OnOnPickColor"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Border Grid.Column="0" x:Name="ColorDisplayBorder"
+                    BorderBrush="Black" 
+                    Background="White" 
+                    BorderThickness="1" 
+                    CornerRadius="{DynamicResource DefaultCornerRadius}" 
+                    Width="56" Margin="0 0 3 0"/>
             </Grid>
-            <colorPickerWpf:ColorPickerSwatch x:Name="Swatch2" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Stretch"
-                                           OnPickColor="Swatch_OnOnPickColor"/>
+
+            <ItemsControl Margin="0" Grid.Column="1"
+                          x:Name="Swatch1"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{Binding}" Width="20" Height="20" MouseDown="Swatch_OnMouseDown">
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
 
 
         <Grid Grid.Row="1" Grid.Column="1" Margin="3">
             <StackPanel>
-                <TextBlock>Hex:</TextBlock>
-                <TextBox Name="TbHex" KeyUp="TbHex_OnKeyUp"></TextBox>
+                <TextBox VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="90" Text="#FFFFFFFF"
+                         Style="{DynamicResource TextBoxAccentStyle}" Name="TbHex" KeyUp="TbHex_OnKeyUp"></TextBox>
             </StackPanel>
         </Grid>
     </Grid>

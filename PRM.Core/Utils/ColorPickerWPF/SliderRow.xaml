@@ -5,18 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              d:DesignHeight="32" d:DesignWidth="250">
-    <Grid>
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="3">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30"  />
-            <ColumnDefinition Width="*" MinWidth="120" />
+            <ColumnDefinition Width="15"  />
+            <ColumnDefinition Width="*" MinWidth="80" />
             <ColumnDefinition Width="60" />
         </Grid.ColumnDefinitions>
 
-        <Label x:Name="Label" Content=" " HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="0,2,0,0"/>
-        <Slider x:Name="Slider" Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,7,10,0" VerticalAlignment="Top"
+        <TextBlock x:Name="Label" Text=" " HorizontalAlignment="Left" VerticalAlignment="Center" Style="{DynamicResource TextBlockBase}"/>
+        <Slider x:Name="Slider" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0" VerticalAlignment="Center"
                 ValueChanged="Slider_OnValueChanged"/>
-        <TextBox x:Name="TextBox" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="0,5,0,0" TextWrapping="Wrap" Text="0.0" VerticalAlignment="Top" Width="57"
+        <TextBox x:Name="TextBox" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="0" TextWrapping="Wrap" Text="0.0" VerticalAlignment="Center" Width="57"
+                 Style="{DynamicResource TextBoxAccentStyle}"
                  TextChanged="TextBox_OnTextChanged"/>
-
     </Grid>
 </UserControl>

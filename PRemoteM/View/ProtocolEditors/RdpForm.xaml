@@ -234,11 +234,6 @@
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_resources}"></TextBlock>
 
                     <UniformGrid Columns="3" Rows="3" Width="400" Height="90" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <UniformGrid.Resources>
-                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}">
-                                <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
-                            </Style>
-                        </UniformGrid.Resources>
                         <CheckBox Content="{DynamicResource server_editor_advantage_clipboard}" IsChecked="{Binding EnableClipboard}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_key_combinations}" IsChecked="{Binding EnableKeyCombinations}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_disk_drives}" IsChecked="{Binding EnableDiskDrives}"></CheckBox>

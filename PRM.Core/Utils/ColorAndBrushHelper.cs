@@ -23,24 +23,18 @@ namespace Shawn.Utils
 
             int start = 0;
 
-            try
+            if (hex.Length != 8 && hex.Length != 6)
+                throw new ArgumentException("Error hex color string length.");
+            //handle ARGB strings (8 characters long)
+            if (hex.Length == 8)
             {
-                if (hex.Length != 8 && hex.Length != 6)
-                    throw new ArgumentException("Error hex color string length.");
-                //handle ARGB strings (8 characters long)
-                if (hex.Length == 8)
-                {
-                    a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-                    start = 2;
-                }
-                //convert RGB characters to bytes
-                r = byte.Parse(hex.Substring(start, 2), System.Globalization.NumberStyles.HexNumber);
-                g = byte.Parse(hex.Substring(start + 2, 2), System.Globalization.NumberStyles.HexNumber);
-                b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
+                a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                start = 2;
             }
-            catch (Exception)
-            {
-            }
+            //convert RGB characters to bytes
+            r = byte.Parse(hex.Substring(start, 2), System.Globalization.NumberStyles.HexNumber);
+            g = byte.Parse(hex.Substring(start + 2, 2), System.Globalization.NumberStyles.HexNumber);
+            b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
             return new Tuple<byte, byte, byte, byte>(a, r, g, b);
         }
 

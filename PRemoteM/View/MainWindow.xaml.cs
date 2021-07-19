@@ -68,7 +68,7 @@ namespace PRM
             if (App.Window?.WindowState == WindowState.Minimized)
                 App.Window.WindowState = WindowState.Normal;
             if (isForceActivate)
-                HideMe(false);
+                HideMe();
             Dispatcher?.Invoke(() =>
             {
                 this.Visibility = Visibility.Visible;
@@ -85,8 +85,6 @@ namespace PRM
             {
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
-                if (isShowTip && !string.IsNullOrEmpty(App.TaskTrayIcon?.BalloonTipText))
-                    App.TaskTrayIcon?.ShowBalloonTip(1000);
             });
         }
 
