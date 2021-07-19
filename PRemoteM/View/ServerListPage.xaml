@@ -59,8 +59,8 @@
             </Style>
 
             <ControlTemplate x:Key="ListBoxTemplateForServerCards" TargetType="{x:Type ListBox}">
-                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="True">
-                    <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
+                <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="True" HorizontalAlignment="Center">
+                    <ScrollViewer Focusable="False">
                         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </ScrollViewer>
                 </Border>
@@ -742,9 +742,9 @@
                            PlacementTarget="{Binding ElementName=CbPopForInExport}">
                         <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
                             <StackPanel>
-                                <Button Style="{StaticResource ButtonBarAccentStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></Button>
-                                <Button Style="{StaticResource ButtonBarAccentStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></Button>
-                                <Button Style="{StaticResource ButtonBarAccentStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></Button>
+                                <Button Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></Button>
+                                <Button Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></Button>
+                                <Button Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></Button>
                             </StackPanel>
                         </Grid>
                     </Popup>

@@ -73,5 +73,10 @@ namespace PRM.Resources.Theme.AttachProperty
         public static readonly DependencyProperty BackgroundAccentProperty = DependencyProperty.RegisterAttached("BackgroundAccent", typeof(Brush), typeof(VisionElement), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.Inherits));
         public static void SetBackgroundAccent(DependencyObject element, Brush value) => element.SetValue(BackgroundAccentProperty, value);
         public static Brush GetBackgroundAccent(DependencyObject element) => (Brush)element.GetValue(BackgroundAccentProperty);
+
+
+        public static readonly DependencyProperty ContentGeometryProperty = DependencyProperty.RegisterAttached("ContentGeometry", typeof(Geometry), typeof(VisionElement), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
+        public static void SetContentGeometry(DependencyObject element, Geometry value) => element.SetValue(ContentGeometryProperty, value);
+        public static Geometry GetContentGeometry(DependencyObject element) => (Geometry)element.GetValue(ContentGeometryProperty);
     }
 }

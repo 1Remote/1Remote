@@ -16,10 +16,10 @@
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="AllowDrop" Value="true" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
         <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
         <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
@@ -165,6 +165,7 @@
                                     <TextBox x:Name="PART_DecryptPassword" Grid.Column="0" Style="{x:Null}"
                                         IsTabStop="True" Focusable="False"
                                         Padding="0"
+                                        Background="{TemplateBinding Background}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
                                         BorderBrush="Transparent" BorderThickness="0"
                                         Visibility="Collapsed" IsHitTestVisible="False"
@@ -183,6 +184,7 @@
                                     FontSize="12" />
 
                                 <CheckBox x:Name="PART_DecryptButton" Grid.Column="1" Background="Transparent" VerticalAlignment="Center"
+                                          Visibility="Hidden"
                                           HorizontalAlignment="Center" HorizontalContentAlignment="Center">
                                     <CheckBox.Style>
                                         <Style TargetType="{x:Type CheckBox}">
@@ -226,10 +228,17 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="attachProperty:PasswordBoxAttachProperty.Password" Value="">
                             <Setter TargetName="PART_PlaceHolder" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_DecryptButton" Property="Visibility" Value="Hidden" />
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_DecryptButton" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="PART_DecryptButton" Property="Visibility" Value="Visible" />
                         </Trigger>
 
                         <DataTrigger Binding="{Binding IsChecked, ElementName=PART_DecryptButton}" Value="True">
+                            <Setter TargetName="PART_DecryptButton" Property="Visibility" Value="Visible" />
                             <Setter TargetName="PART_DecryptPassword" Property="Visibility" Value="Visible" />
                             <Setter TargetName="PART_DecryptPassword" Property="IsHitTestVisible" Value="True" />
                             <Setter TargetName="PART_DecryptPassword" Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />

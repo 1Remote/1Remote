@@ -389,7 +389,7 @@
                     <Setter Property="CommandParameter" Value="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" />
                     <Setter Property="Focusable" Value="False" />
                 </Style>
-                <Style TargetType="{x:Type CheckBox}" x:Key="WinTitleBarCbStyle" BasedOn="{StaticResource CheckBoxBase}">
+                <Style TargetType="{x:Type CheckBox}" x:Key="WinTitleBarCbStyle" BasedOn="{StaticResource CheckBoxBaseStyle}">
                     <Setter Property="Width" Value="35" />
                     <Setter Property="Height" Value="40" />
                     <Setter Property="CommandParameter" Value="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" />
