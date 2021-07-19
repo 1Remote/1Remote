@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty">
 
     <Thickness x:Key="DefaultInputPadding">8,4</Thickness>
 
@@ -7,17 +8,15 @@
         <Setter Property="FontSize" Value="{StaticResource TextFontSize}"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource YaHei}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-    </Style>
-    <Style TargetType="CheckBox" x:Key="CheckBoxBase" BasedOn="{StaticResource ControlBase}">
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-    </Style>
-    <Style TargetType="RadioButton" x:Key="RadioButtonBase" BasedOn="{StaticResource ControlBase}">
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
     </Style>
 
     <Style TargetType="Control" BasedOn="{StaticResource ControlBase}" />
-    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}" />
-    <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonBase}" />
 
     <Style TargetType="TextElement" x:Key="TextElementBase">
         <Setter Property="FontSize" Value="{StaticResource TextFontSize}"></Setter>

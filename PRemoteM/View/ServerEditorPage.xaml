@@ -117,13 +117,15 @@
                                                   Background="Transparent"
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
-                                                    <Border BorderThickness="1" BorderBrush="Black"></Border>
+                                                    <Border BorderThickness="1" BorderBrush="Black" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
                                                     <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                    </Border>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
                                                     HexColor="{Binding Server.MarkColorHex}"
-                                                    Foreground="{DynamicResource BackgroundTextBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                    Foreground="{DynamicResource BackgroundTextBrush}" 
+                                                    Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>

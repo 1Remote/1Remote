@@ -31,7 +31,7 @@ namespace PRM.View
                 ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
                 ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.PrimaryMidColor);
 
-                if (vm.Server.IconImg == null 
+                if (vm.Server.IconImg == null
                     && ServerIcons.Instance.Icons.Count > 0)
                 {
                     var r = new Random(DateTime.Now.Millisecond);
