@@ -176,11 +176,11 @@
                     <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
                     <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentMidBrush}"/>
                     <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}"/>
-                    <Setter Property="BackgroundOnPressed" Value="{DynamicResource AccentLightBrush}"/>
-                    <Setter Property="ForegroundOnPressed" Value="{DynamicResource AccentTextBrush}"/>
+                    <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource AccentLightBrush}"/>
+                    <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource AccentTextBrush}"/>
                     <Setter Property="BackgroundOnDisabled" Value="{DynamicResource PrimaryDarkBrush}"/>
                     <Setter Property="ForegroundOnDisabled" Value="Gray"/>
-                    <Setter Property="OpacityOnPressed" Value="1"></Setter>
+                    <Setter Property="OpacityOnMouseDown" Value="1"></Setter>
                 </Style>
             </Popup.Resources>
             <Border Padding="0 0 4 4">

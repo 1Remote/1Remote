@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace PRM.Controls
 {
-    /// <summary>
-    /// InputWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class InputWindow : Window
     {
         public enum Results

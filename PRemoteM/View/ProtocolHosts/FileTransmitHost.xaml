@@ -47,9 +47,9 @@
                 <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource PrimaryLightBrush}"/>
                 <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
                 <Setter Property="OpacityOnMouseOver" Value="1"/>
-                <Setter Property="BackgroundOnPressed" Value="{DynamicResource PrimaryLightBrush}"/>
-                <Setter Property="ForegroundOnPressed" Value="{DynamicResource PrimaryTextBrush}"/>
-                <Setter Property="OpacityOnPressed" Value="0.5"/>
+                <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource PrimaryLightBrush}"/>
+                <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource PrimaryTextBrush}"/>
+                <Setter Property="OpacityOnMouseDown" Value="0.5"/>
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -89,9 +89,9 @@
                                         <Condition Property="IsPressed" Value="True"></Condition>
                                     </MultiTrigger.Conditions>
                                     <MultiTrigger.Setters>
-                                        <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                        <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                        <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                        <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                        <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                        <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                                     </MultiTrigger.Setters>
                                 </MultiTrigger>
                                 <Trigger Property="IsEnabled" Value="False">
@@ -119,7 +119,7 @@
                             <Condition Property="IsPressed" Value="True"></Condition>
                         </MultiTrigger.Conditions>
                         <MultiTrigger.Setters>
-                            <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
+                            <Setter Property="Foreground" Value="{Binding ForegroundOnMouseDown, RelativeSource={x:Static RelativeSource.Self}}"/>
                         </MultiTrigger.Setters>
                     </MultiTrigger>
                     <Trigger Property="IsEnabled" Value="False">

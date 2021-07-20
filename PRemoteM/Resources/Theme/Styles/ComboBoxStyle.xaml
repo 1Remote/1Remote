@@ -151,7 +151,7 @@
                                                   IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" 
                                                   Background="{TemplateBinding Background}"
                                                   Foreground="{TemplateBinding Foreground}"
-                                                  BorderThickness="{Binding Path=(attachProperty:VisionElement.BorderThickness),RelativeSource={RelativeSource TemplatedParent}}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
                                                   Style="{StaticResource ComboBoxToggleButton}"/>
 
                     <ContentPresenter Grid.Column="0" Margin="8 4 0 4" 
@@ -212,7 +212,7 @@
                                       MinWidth="{TemplateBinding FrameworkElement.ActualWidth}" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
                         <Border SnapsToDevicePixels="True"
                                                 Name="BorderForItemsPresenter"
-                                                BorderThickness="{Binding Path=(attachProperty:VisionElement.BorderThickness),RelativeSource={RelativeSource TemplatedParent}}" 
+                                                BorderThickness="{TemplateBinding BorderThickness}" 
                                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                                 CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}">
                             <ScrollViewer SnapsToDevicePixels="True">
@@ -272,7 +272,7 @@
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="Template" Value="{StaticResource ComboBoxTemplate}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="attachProperty:VisionElement.BorderThickness" Value="1"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
         <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>

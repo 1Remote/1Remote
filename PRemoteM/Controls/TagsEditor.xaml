@@ -7,6 +7,7 @@
              xmlns:self="clr-namespace:PRM.Controls"
              xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance self:TagsEditor}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -36,26 +37,18 @@
                                     <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 5">
                                         <StackPanel Orientation="Horizontal">
                                             <Label Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}"></Label>
-                                            
-                                            <controls:ButtonEx Width="10" Height="10" Click="ButtonDel_OnClick" Tag="{Binding}"
-                                                       Margin="0 0 5 0" Padding="0" VerticalAlignment="Center">
-                                                <controls:ButtonEx.Style>
-                                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
-                                                        <Setter Property="Background" Value="Transparent" />
-                                                        <Setter Property="BackgroundOnMouseOver" Value="Transparent" />
-                                                        <Setter Property="BackgroundOnPressed" Value="Transparent" />
-                                                        <Setter Property="ForegroundOnPressed" Value="Gainsboro" />
-                                                        <Setter Property="Opacity" Value="0.5" />
-                                                    </Style>
-                                                </controls:ButtonEx.Style>
-
+                                            <Button Width="10" Height="10" Click="ButtonDel_OnClick" Tag="{Binding}"
+                                                    Style="{StaticResource ButtonBarAccentStyle}"
+                                                    attachProperty:VisionElement.Opacity="0.5"
+                                                    attachProperty:VisionElement.OpacityAccent="0.9"
+                                                    Margin="0 0 5 0">
                                                 <Grid Height="10" Width="8">
                                                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
-                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                                   StrokeThickness="2" Stretch="Uniform" />
                                                 </Grid>
-                                            </controls:ButtonEx>
+                                            </Button>
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>
@@ -65,10 +58,12 @@
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <utils:AutoCompleteComboBox x:Name="TbNewTag" KeyDown="TextBoxOnKeyDown" Margin="0 0 20 0"></utils:AutoCompleteComboBox>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Click="Button_OnClick">+</controls:ButtonEx>
-                    </StackPanel>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="20"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <utils:AutoCompleteComboBox x:Name="TbNewTag" KeyDown="TextBoxOnKeyDown" Margin="0 0 5 0"></utils:AutoCompleteComboBox>
+                    <Button Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" VerticalAlignment="Stretch" Click="Button_OnClick">+</Button>
                 </Grid>
             </Grid>
         </StackPanel>
