@@ -241,12 +241,10 @@
             <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
                     <Grid Width="300">
-                        <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}"
-                                Padding="0 1 0 0" Width="80" Height="30"
-                                HorizontalAlignment="Center"
-                                Click="ButtonBack_OnClick"
-                                BorderThickness="0" Content="Back">
-                        </controls:ButtonEx>
+                        <Button Padding="0 1 0 0" Width="80" Height="30"
+                                Click="ButtonBack_OnClick" 
+                                Content="Back">
+                        </Button>
                     </Grid>
                 </Grid>
             </Border>

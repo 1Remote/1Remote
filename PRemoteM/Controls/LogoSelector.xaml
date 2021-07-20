@@ -3,13 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DesignHeight="180" d:DesignWidth="144"
              MouseWheel="Window_OnMouseWheel">
     <UserControl.Resources>
         <ResourceDictionary>
-            <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="#606060" />
             <Style x:Key="ScrollBarThumbHorizontal" TargetType="{x:Type Thumb}">
                 <Setter Property="OverridesDefaultStyle" Value="true" />
                 <Setter Property="IsTabStop" Value="false" />
@@ -129,7 +127,7 @@
                 </Grid>
             </Grid>
 
-            <controls:ButtonEx Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource word_select}" Style="{StaticResource ButtonExStyleBase}" />
+            <Button Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource word_select}" Style="{StaticResource ButtonBarPrimaryStyle}" />
         </Grid>
     </Grid>
 </UserControl>

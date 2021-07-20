@@ -9,7 +9,7 @@
 
 
     <!--ButtonEx Style Start-->
-    <Style TargetType="{x:Type controls:ButtonEx}" x:Key="ButtonExStyleBase" BasedOn="{StaticResource ControlBaseXXX}">
+    <Style TargetType="{x:Type controls:ButtonEx}" x:Key="ButtonExStyleBase" BasedOn="{StaticResource ControlBase}">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Opacity" Value="1"></Setter>
         <Setter Property="Padding" Value="5"></Setter>
@@ -21,9 +21,9 @@
         <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource PrimaryLightBrush}"/>
         <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="OpacityOnMouseOver" Value="1"/>
-        <Setter Property="BackgroundOnPressed" Value="{DynamicResource PrimaryLightBrush}"/>
-        <Setter Property="ForegroundOnPressed" Value="{DynamicResource PrimaryTextBrush}"/>
-        <Setter Property="OpacityOnPressed" Value="0.5"/>
+        <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="OpacityOnMouseDown" Value="0.5"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -64,12 +64,11 @@
                             <MultiTrigger.Setters>
                                 <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding Background, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                                 <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding Foreground, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                <Setter TargetName="Grid" Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="Grid" Property="Opacity" Value="{Binding OpacityOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                            <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                            <Setter Property="Opacity" Value="0.4"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -88,12 +87,8 @@
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
-                <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="{Binding OpacityOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
-                <Setter Property="Foreground" Value="{Binding ForegroundOnDisabled, RelativeSource={x:Static RelativeSource.Self}}"/>
+                <Setter Property="Opacity" Value="{Binding OpacityOnMouseDown, RelativeSource={x:Static RelativeSource.Self}}"/>
+                <Setter Property="Foreground" Value="{Binding ForegroundOnMouseDown, RelativeSource={x:Static RelativeSource.Self}}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -105,8 +100,8 @@
         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
         <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentLightBrush}"/>
         <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}"/>
-        <Setter Property="BackgroundOnPressed" Value="{DynamicResource AccentLightBrush}"/>
-        <Setter Property="ForegroundOnPressed" Value="{DynamicResource AccentTextBrush}"/>
+        <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource AccentLightBrush}"/>
+        <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource AccentTextBrush}"/>
     </Style>
 
     <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}" x:Key="MainColor1ButtonRadius3">

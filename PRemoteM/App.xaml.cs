@@ -167,6 +167,7 @@ namespace PRM
 //            // TODO remove
 //            isNewUser = true;
 //#endif
+
             if (isNewUser)
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -236,6 +237,10 @@ namespace PRM
             {
                 ActivateWindow();
             }
+
+
+            var errorReport = new ErrorReportWindow(new Exception("123"));
+            errorReport.ShowDialog();
         }
 
         private static void ActivateWindow()

@@ -5,6 +5,7 @@
     <Thickness x:Key="DefaultInputPadding">8,4</Thickness>
 
     <Style TargetType="Control" x:Key="ControlBase">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="FontSize" Value="{StaticResource TextFontSize}"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource YaHei}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
