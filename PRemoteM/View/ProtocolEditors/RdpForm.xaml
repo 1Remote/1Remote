@@ -118,7 +118,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
                                         <CheckBox.Style>
-                                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBase}">
+                                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp1:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                         <Setter Property="CheckBox.IsChecked" Value="True"></Setter>

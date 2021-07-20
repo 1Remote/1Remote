@@ -25,9 +25,9 @@ namespace PRM.Core.Resources.Controls
         <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource PrimaryLightBrush}"/>
         <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="OpacityOnMouseOver" Value="1"/>
-        <Setter Property="BackgroundOnPressed" Value="{DynamicResource PrimaryLightBrush}"/>
-        <Setter Property="ForegroundOnPressed" Value="{DynamicResource PrimaryTextBrush}"/>
-        <Setter Property="OpacityOnPressed" Value="0.5"/>
+        <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="OpacityOnMouseDown" Value="0.5"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -67,9 +67,9 @@ namespace PRM.Core.Resources.Controls
                                 <Condition Property="IsPressed" Value="True"></Condition>
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
-                                <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{Binding BackgroundOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="{Binding OpacityOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
+                                <Setter TargetName="ButtonContentPresenter" Property="TextBlock.Foreground" Value="{Binding ForegroundOnMouseDown, RelativeSource={x:Static RelativeSource.TemplatedParent}}"/>
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
@@ -97,7 +97,7 @@ namespace PRM.Core.Resources.Controls
                     <Condition Property="IsPressed" Value="True"></Condition>
                 </MultiTrigger.Conditions>
                 <MultiTrigger.Setters>
-                    <Setter Property="Foreground" Value="{Binding ForegroundOnPressed, RelativeSource={x:Static RelativeSource.Self}}"/>
+                    <Setter Property="Foreground" Value="{Binding ForegroundOnMouseDown, RelativeSource={x:Static RelativeSource.Self}}"/>
                 </MultiTrigger.Setters>
             </MultiTrigger>
             <Trigger Property="IsEnabled" Value="False">
@@ -129,16 +129,16 @@ namespace PRM.Core.Resources.Controls
         }
         #endregion
 
-        #region ForegroundOnPressed
-        public static readonly DependencyProperty ForegroundOnPressedProperty = DependencyProperty.Register("ForegroundOnPressed", typeof(Brush), typeof(ButtonEx), new PropertyMetadata(Brushes.Black));
-        public Brush ForegroundOnPressed
+        #region ForegroundOnMouseDown
+        public static readonly DependencyProperty ForegroundOnMouseDownProperty = DependencyProperty.Register("ForegroundOnMouseDown", typeof(Brush), typeof(ButtonEx), new PropertyMetadata(Brushes.Black));
+        public Brush ForegroundOnMouseDown
         {
             get
             {
-                var v = GetValue(ForegroundOnPressedProperty);
+                var v = GetValue(ForegroundOnMouseDownProperty);
                 return (Brush)v;
             }
-            set => SetValue(ForegroundOnPressedProperty, value);
+            set => SetValue(ForegroundOnMouseDownProperty, value);
         }
         #endregion
 
@@ -169,16 +169,16 @@ namespace PRM.Core.Resources.Controls
         }
         #endregion
 
-        #region BackgroundOnPressed
-        public static readonly DependencyProperty BackgroundOnPressedProperty = DependencyProperty.Register("BackgroundOnPressed", typeof(Brush), typeof(ButtonEx), new PropertyMetadata(Brushes.Aquamarine));
-        public Brush BackgroundOnPressed
+        #region BackgroundOnMouseDown
+        public static readonly DependencyProperty BackgroundOnMouseDownProperty = DependencyProperty.Register("BackgroundOnMouseDown", typeof(Brush), typeof(ButtonEx), new PropertyMetadata(Brushes.Aquamarine));
+        public Brush BackgroundOnMouseDown
         {
             get
             {
-                var v = GetValue(BackgroundOnPressedProperty);
+                var v = GetValue(BackgroundOnMouseDownProperty);
                 return (Brush)v;
             }
-            set => SetValue(BackgroundOnPressedProperty, value);
+            set => SetValue(BackgroundOnMouseDownProperty, value);
         }
         #endregion
 
@@ -209,16 +209,16 @@ namespace PRM.Core.Resources.Controls
         }
         #endregion
 
-        #region OpacityOnPressed
-        public static readonly DependencyProperty OpacityOnPressedProperty = DependencyProperty.Register("OpacityOnPressed", typeof(double), typeof(ButtonEx), new PropertyMetadata(0.5));
-        public double OpacityOnPressed
+        #region OpacityOnMouseDown
+        public static readonly DependencyProperty OpacityOnMouseDownProperty = DependencyProperty.Register("OpacityOnMouseDown", typeof(double), typeof(ButtonEx), new PropertyMetadata(0.5));
+        public double OpacityOnMouseDown
         {
             get
             {
-                var v = GetValue(OpacityOnPressedProperty);
+                var v = GetValue(OpacityOnMouseDownProperty);
                 return (double)v;
             }
-            set => SetValue(OpacityOnPressedProperty, value);
+            set => SetValue(OpacityOnMouseDownProperty, value);
         }
         #endregion
 
