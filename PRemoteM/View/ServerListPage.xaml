@@ -65,10 +65,6 @@
                     </ScrollViewer>
                 </Border>
                 <ControlTemplate.Triggers>
-                    <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="Background" TargetName="Bd" Value="White" />
-                        <Setter Property="BorderBrush" TargetName="Bd" Value="#FFD9D9D9" />
-                    </Trigger>
                     <MultiTrigger>
                         <MultiTrigger.Conditions>
                             <Condition Property="IsGrouping" Value="True" />

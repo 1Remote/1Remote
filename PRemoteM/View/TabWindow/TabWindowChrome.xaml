@@ -166,8 +166,8 @@
                                                 <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
                                                     <Setter Property="Background" Value="Transparent" />
                                                     <Setter Property="BackgroundOnMouseOver" Value="Transparent" />
-                                                    <Setter Property="BackgroundOnPressed" Value="Transparent" />
-                                                    <Setter Property="ForegroundOnPressed" Value="Gainsboro" />
+                                                    <Setter Property="BackgroundOnMouseDown" Value="Transparent" />
+                                                    <Setter Property="ForegroundOnMouseDown" Value="Gainsboro" />
                                                     <Setter Property="Opacity" Value="0.5" />
                                                 </Style>
                                             </controls:ButtonEx.Style>
@@ -273,7 +273,7 @@
                                         <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
                                             <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
                                             <Setter Property="Opacity" Value="0.3" />
-                                            <Setter Property="OpacityOnPressed" Value="0.6" />
+                                            <Setter Property="OpacityOnMouseDown" Value="0.6" />
                                         </Style>
                                     </controls:ButtonEx.Style>
                                     <Grid Width="12" Height="20">
@@ -300,7 +300,7 @@
                                         <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
                                             <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
                                             <Setter Property="Opacity" Value="0.3" />
-                                            <Setter Property="OpacityOnPressed" Value="0.6" />
+                                            <Setter Property="OpacityOnMouseDown" Value="0.6" />
                                         </Style>
                                     </controls:ButtonEx.Style>
                                     <Grid Width="12" Height="20">
@@ -473,9 +473,9 @@
                                     <controls:ButtonEx.Style>
                                         <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                                             <Setter Property="BackgroundOnMouseOver" Value="Red" />
-                                            <Setter Property="BackgroundOnPressed" Value="Red" />
+                                            <Setter Property="BackgroundOnMouseDown" Value="Red" />
                                             <Setter Property="ForegroundOnMouseOver" Value="White" />
-                                            <Setter Property="ForegroundOnPressed" Value="White" />
+                                            <Setter Property="ForegroundOnMouseDown" Value="White" />
                                         </Style>
                                     </controls:ButtonEx.Style>
                                     <Grid Width="15" Height="15">
@@ -488,9 +488,9 @@
                                     <controls:ButtonEx.Style>
                                         <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                                             <Setter Property="BackgroundOnMouseOver" Value="Red" />
-                                            <Setter Property="BackgroundOnPressed" Value="Red" />
+                                            <Setter Property="BackgroundOnMouseDown" Value="Red" />
                                             <Setter Property="ForegroundOnMouseOver" Value="White" />
-                                            <Setter Property="ForegroundOnPressed" Value="White" />
+                                            <Setter Property="ForegroundOnMouseDown" Value="White" />
                                         </Style>
                                     </controls:ButtonEx.Style>
 

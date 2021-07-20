@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
         mc:Ignorable="d" Background="{DynamicResource BackgroundBrush}"
         SizeToContent="WidthAndHeight"
         x:Name="inputWindow" Title="Input" Height="150" Width="200" ResizeMode="NoResize" Loaded="inputWindow_Loaded" WindowStartupLocation="CenterScreen">
@@ -15,8 +14,8 @@
                  VerticalAlignment="Center" HorizontalAlignment="Stretch" KeyDown="textBox_KeyDown"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <controls:ButtonEx Margin="5" MinWidth="50" Style="{StaticResource MainColor1ButtonRadius3}" x:Name="okButton" Content="{DynamicResource word_done}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="okButton_Click"/>
-            <controls:ButtonEx Margin="5" MinWidth="50" Style="{StaticResource MainColor1ButtonRadius3}" x:Name="cancelButton" Content="{DynamicResource word_cancel}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="cancelButton_Click"/>
+            <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="okButton" Content="{DynamicResource word_done}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="okButton_Click"/>
+            <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="cancelButton" Content="{DynamicResource word_cancel}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="cancelButton_Click"/>
         </StackPanel>
     </StackPanel>
 </Window>

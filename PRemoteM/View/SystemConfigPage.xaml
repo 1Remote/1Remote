@@ -545,9 +545,9 @@
                 BackgroundOnMouseOver="{DynamicResource AccentMidBrush}"
                 ForegroundOnMouseOver="{DynamicResource AccentTextBrush}"
                 OpacityOnMouseOver="1"
-                BackgroundOnPressed="{DynamicResource AccentMidBrush}"
-                ForegroundOnPressed="{DynamicResource AccentTextBrush}"
-                OpacityOnPressed="0.5"
+                BackgroundOnMouseDown="{DynamicResource AccentMidBrush}"
+                ForegroundOnMouseDown="{DynamicResource AccentTextBrush}"
+                OpacityOnMouseDown="0.5"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource word_back}">
         </controls:ButtonEx>
