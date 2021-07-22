@@ -94,7 +94,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="system:String">
                             <Grid Margin="3">
-                                <controls:ButtonEx Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding }" Style="{DynamicResource MainColor2ButtonRadius5}" HorizontalAlignment="Left"></controls:ButtonEx>
+                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding }" HorizontalAlignment="Left"></Button>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -117,36 +117,14 @@
 
 
                 <!-- setting menu button -->
-                <controls:ButtonEx Grid.Column="5" 
+                <Button Grid.Column="5" 
                                    x:Name="BtnSettingMenu"
                                    Margin="10 0"
-                                   Width="20" Height="20" HorizontalAlignment="Right" BorderThickness="0"
+                                   Width="20" Height="20" HorizontalAlignment="Right"
                                    Click="BtnSettingMenu_OnClick">
-                    <controls:ButtonEx.Style>
-                        <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor2Button}">
-                            <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
-                            <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Setter Property="Padding" Value="5"></Setter>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border Background="{TemplateBinding Background}" 
-                                                                BorderThickness="0" 
-                                                                CornerRadius="5"
-                                                                Name="PART_Background">
-                                            <Path   Name="Symbol" Margin="{TemplateBinding Padding}"
-                                                                Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
-                                                                Fill="{TemplateBinding Foreground}"
-                                                                Stretch="Fill" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                             <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Padding" Value="4"></Setter>
-                                </Trigger>
                                 <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                 </DataTrigger>
@@ -158,39 +136,28 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </controls:ButtonEx.Style>
-                </controls:ButtonEx>
+                    </Button.Style>
+
+                    <Path Name="Symbol" Margin="2"
+                          Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Stretch="Uniform" />
+                </Button>
             </Grid>
         </Grid>
 
 
-        <Popup 
-                                    AllowsTransparency="True"
-                                    Name="PopupCardSettingMenu"
-                                    PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
-            <Popup.Resources>
-                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                    <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                    <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
-                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                    <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
-                    <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentMidBrush}"/>
-                    <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}"/>
-                    <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource AccentLightBrush}"/>
-                    <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource AccentTextBrush}"/>
-                    <Setter Property="BackgroundOnDisabled" Value="{DynamicResource PrimaryDarkBrush}"/>
-                    <Setter Property="ForegroundOnDisabled" Value="Gray"/>
-                    <Setter Property="OpacityOnMouseDown" Value="1"></Setter>
-                </Style>
-            </Popup.Resources>
+        <Popup Name="PopupCardSettingMenu"
+               AllowsTransparency="True"
+               PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
             <Border Padding="0 0 4 4">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
                 </Border.Effect>
                 <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                     <StackPanel>
-                        <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource word_edit}"></controls:ButtonEx>
-                        <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
+                        <Button Padding="5" Click="ButtonEditServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource word_edit}"></Button>
+                        <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                     </StackPanel>
                 </Grid>
             </Border>
