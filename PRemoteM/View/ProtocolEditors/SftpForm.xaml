@@ -3,7 +3,6 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         mc:Ignorable="d"
@@ -92,19 +91,15 @@
             </Grid.Style>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" Width="300"></TextBox>
-                        <controls:ButtonEx Content="{DynamicResource word_select}" Click="ButtonOpenPrivateKey_OnClick">
-                            <controls:ButtonEx.Style>
-                                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                                    <Setter Property="Height" Value="{Binding ElementName=TbPrivateKey, Path=Height}"></Setter>
-                                    <Setter Property="BorderCornerRadius" Value="0 5 5 0"></Setter>
-                                </Style>
-                            </controls:ButtonEx.Style>
-                        </controls:ButtonEx>
-                    </StackPanel>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
                 </Grid>
+                <Button Content="{DynamicResource word_select}" 
+                        Margin="5 0 0 0"
+                        Click="ButtonOpenPrivateKey_OnClick" 
+                        Style="{StaticResource ButtonPrimaryStyle}"
+                        VerticalAlignment="Stretch">
+                </Button>
             </StackPanel>
         </Grid>
 

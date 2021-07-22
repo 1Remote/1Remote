@@ -239,8 +239,8 @@ namespace PRM
             }
 
 
-            var errorReport = new ErrorReportWindow(new Exception("123"));
-            errorReport.ShowDialog();
+            //var errorReport = new ErrorReportWindow(new Exception("123"));
+            //errorReport.ShowDialog();
         }
 
         private static void ActivateWindow()

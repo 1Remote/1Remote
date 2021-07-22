@@ -44,6 +44,7 @@
                         <Border Name="Border" 
                                 SnapsToDevicePixels="True"
                                 Background="Transparent"
+                                Opacity="0.5"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}" />
@@ -81,6 +82,7 @@
                             <Setter Property="Foreground" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Opacity" TargetName="Border" Value="1" />
                             <Setter Property="Opacity" TargetName="Grid" Value="{Binding Path=(attachProperty:VisionElement.OpacityAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="Background" TargetName="BorderForBackground" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
                         </MultiTrigger>
@@ -89,6 +91,7 @@
                             <Setter Property="Foreground" Value="{Binding Path=(attachProperty:VisionElement.ForegroundOnMouseDown),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="{Binding Path=(attachProperty:VisionElement.ForegroundOnMouseDown),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.ForegroundOnMouseDown),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Opacity" TargetName="Border" Value="1" />
                             <Setter Property="Opacity" TargetName="Grid" Value="{Binding Path=(attachProperty:VisionElement.OpacityOnMouseDown),RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter Property="Background" TargetName="BorderForBackground" Value="{Binding Path=(attachProperty:VisionElement.BackgroundOnMouseDown),RelativeSource={RelativeSource TemplatedParent}}" />
                         </Trigger>

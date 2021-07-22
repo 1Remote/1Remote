@@ -4,15 +4,16 @@
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:local="clr-namespace:PRM.View"
-                  xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+                  xmlns:guidance="clr-namespace:PRM.View.Guidance"
                   mc:Ignorable="d"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
                   Background="Transparent"
                   Topmost="True"
+                  d:DataContext="{d:DesignInstance guidance:GuidanceWindow}"
                   Title="Guidance" Height="600" Width="800">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
@@ -320,12 +321,13 @@
                 </Border>
             </StackPanel>
 
-            <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+            <Button Padding="0 1 0 0" Width="80" Height="20"
                                BorderThickness="1"
                                Click="ButtonPrevious_OnClick"
                                Content="{DynamicResource word_previous}">
-                <controls:ButtonEx.Style>
-                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                        <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Step}" Value="0">
@@ -333,32 +335,34 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </controls:ButtonEx.Style>
-            </controls:ButtonEx>
+                </Button.Style>
+            </Button>
 
-            <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+            <Button Padding="0 1 0 0" Width="80" Height="20"
                                HorizontalAlignment="Right"
                                BorderThickness="1"
                                Click="ButtonNext_OnClick"
                                Content="{DynamicResource word_next}">
-                <controls:ButtonEx.Style>
-                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                        <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Step}" Value="1">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </controls:ButtonEx.Style>
-            </controls:ButtonEx>
+                </Button.Style>
+            </Button>
 
-            <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+            <Button Padding="0 1 0 0" Width="80" Height="20"
                                HorizontalAlignment="Right"
                                BorderThickness="1"
                                Click="ButtonExit_OnClick"
                                Content="{DynamicResource word_done}">
-                <controls:ButtonEx.Style>
-                    <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor2ButtonRadius3}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                        <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Step}" Value="1">
@@ -366,8 +370,8 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </controls:ButtonEx.Style>
-            </controls:ButtonEx>
+                </Button.Style>
+            </Button>
         </Grid>
     </Grid>
 </utils:WindowChromeBase>

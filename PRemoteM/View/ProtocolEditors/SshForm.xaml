@@ -4,7 +4,6 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:ssh2="clr-namespace:PRM.Core.Protocol.Putty.SSH;assembly=PRM.Core"
-                        xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
@@ -95,20 +94,15 @@
                 </Grid.Style>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}" Width="500">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}" Width="300"></TextBox>
-                            <controls:ButtonEx Content="{DynamicResource word_select}" Click="ButtonOpenPrivateKey_OnClick">
-                                <controls:ButtonEx.Style>
-                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                                        <Setter Property="Height" Value="{Binding ElementName=TbPrivateKey, Path=Height}"></Setter>
-                                        <Setter Property="BorderCornerRadius" Value="0 5 5 0"></Setter>
-                                        <Setter Property="Padding" Value="5"></Setter>
-                                    </Style>
-                                </controls:ButtonEx.Style>
-                            </controls:ButtonEx>
-                        </StackPanel>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
                     </Grid>
+                    <Button Content="{DynamicResource word_select}" 
+                            Margin="5 0 0 0"
+                            Click="ButtonOpenPrivateKey_OnClick" 
+                            Style="{StaticResource ButtonPrimaryStyle}"
+                            VerticalAlignment="Stretch">
+                    </Button>
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -148,7 +142,7 @@
                                  Tag="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
                                  ></TextBox>
                     </Grid>
-                    <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Click="ButtonSelectSessionConfigFile_OnClick"></controls:ButtonEx>
+                    <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
                 </StackPanel>
             </Grid>
         </StackPanel>

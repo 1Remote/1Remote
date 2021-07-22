@@ -215,9 +215,16 @@ namespace PRM.Core.Resources.Converter
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string hex = value.ToString();
-            var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
-            return brush;
+            try
+            {
+                string hex = value.ToString();
+                var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
+                return brush;
+            }
+            catch (Exception e)
+            {
+                return Brushes.White;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
