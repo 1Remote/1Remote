@@ -12,4 +12,5 @@
     <converter:ConverterColorHexString2Color x:Key="ConverterColorHexString2Color"></converter:ConverterColorHexString2Color>
     <converter:ConverterIsTheSame x:Key="ConverterIsTheSame"></converter:ConverterIsTheSame>
     <converter:ConverterEqual2Visible x:Key="ConverterEqual2Visible"></converter:ConverterEqual2Visible>
+    <converter:DoubleAdd x:Key="DoubleAdd_2" AddValue="-2"></converter:DoubleAdd>
 </ResourceDictionary>

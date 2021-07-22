@@ -121,9 +121,6 @@
   "system_options_theme_putty_title": "Kitty",
   "system_options_theme_putty_font_size": "字体大小",
   "system_options_theme_putty_theme": "主题",
-  "system_options_theme_tab_ui": "Tab外观",
-  "system_options_theme_tab_ui_chrome": "Chrome风格",
-  "system_options_theme_tab_ui_classical": "经典",
 
   // server operate
   "word_connect": "连接",

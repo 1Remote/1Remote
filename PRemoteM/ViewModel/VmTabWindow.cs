@@ -332,18 +332,9 @@ namespace PRM.ViewModel
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
-            if (SystemConfig.Instance.Theme.TabUI == EnumTabUI.ChromeLike)
-            {
-                var v = new TabWindowChrome(token);
-                RemoteWindowPool.Instance.AddTab(v);
-                return new NewTabHost<Window>(v, v.TabablzControl);
-            }
-            else
-            {
-                var v = new TabWindowClassical(token);
-                RemoteWindowPool.Instance.AddTab(v);
-                return new NewTabHost<Window>(v, v.TabablzControl);
-            }
+            var v = new TabWindowChrome(token);
+            RemoteWindowPool.Instance.AddTab(v);
+            return new NewTabHost<Window>(v, v.TabablzControl);
         }
 
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)

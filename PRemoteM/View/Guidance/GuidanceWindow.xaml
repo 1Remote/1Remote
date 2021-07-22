@@ -271,20 +271,6 @@
                                     </TextBlock>
                                     <ToggleButton IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
                                 </StackPanel>
-
-                                <StackPanel Orientation="Horizontal">
-                                    <StackPanel.Resources>
-                                        <local:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool" />
-                                    </StackPanel.Resources>
-                                    <TextBlock
-                                        Style="{StaticResource HeaderStyle}"
-                                        Text="{DynamicResource system_options_theme_tab_ui}">
-                                    </TextBlock>
-                                    <StackPanel Margin="0" MinHeight="0" VerticalAlignment="Center">
-                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}" />
-                                        <RadioButton VerticalAlignment="Center" Foreground="{DynamicResource Gray600}" Margin="0 2" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}" />
-                                    </StackPanel>
-                                </StackPanel>
                             </StackPanel>
                         </Grid>
                     </Grid>

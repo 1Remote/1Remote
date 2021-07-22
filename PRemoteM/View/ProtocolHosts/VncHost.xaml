@@ -4,7 +4,6 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:vncSharp="clr-namespace:VncSharp;assembly=VncSharp"
-                   xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                    xmlns:protocolHosts="clr-namespace:PRM.View.ProtocolHosts"
                    mc:Ignorable="d"
                    d:DesignHeight="450" d:DesignWidth="800">
@@ -143,9 +142,8 @@
                 <TextBlock Name="TbMessageTitle" FontSize="20" HorizontalAlignment="Center" Text="Title" Foreground="White" Margin="10"></TextBlock>
                 <TextBlock Name="TbMessage" FontSize="14" HorizontalAlignment="Center" Text="Say something:blablablablablablablablablablablablablablablablablabla" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow"></TextBlock>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 0">
-                    <!--<controls:ButtonEx x:Name="BtnOk" Style="{StaticResource MainColor1ButtonRadius3}" Width="60" Margin="5">OK</controls:ButtonEx>-->
-                    <controls:ButtonEx x:Name="BtnReconn" Click="BtnReconn_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Width="80" Margin="5" Content="{DynamicResource word_reconnect}"></controls:ButtonEx>
-                    <controls:ButtonEx x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Width="80" Margin="5" Content="{DynamicResource word_dismiss}"></controls:ButtonEx>
+                    <Button x:Name="BtnReconn" Click="BtnReconn_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource word_reconnect}"></Button>
+                    <Button x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource word_dismiss}"></Button>
                 </StackPanel>
             </StackPanel>
         </Grid>

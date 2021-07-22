@@ -166,7 +166,6 @@
     <Compile Include="Helper\ServerIcons.cs" />
     <Compile Include="Protocol\VmProtocolServer.cs" />
     <Compile Include="Protocol\VNC\ProtocolServerVNC.cs" />
-    <Compile Include="Resources\Controls\ButtonEx.cs" />
     <Compile Include="Resources\Theme\PrmColorThemes.cs" />
     <Compile Include="Utils\ColorAndBrushHelper.cs" />
     <Compile Include="Utils\ColorPickerWPF\Code\Util.cs" />
