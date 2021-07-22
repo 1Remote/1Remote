@@ -735,14 +735,20 @@
                     <Popup Grid.Column="2"  Name="PopupMenuInExport"
                            IsOpen="{Binding ElementName=CbPopForInExport, Path=IsChecked}"
                            StaysOpen="False"
+                           AllowsTransparency="True"
                            PlacementTarget="{Binding ElementName=CbPopForInExport}">
-                        <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
-                            <StackPanel>
-                                <Button Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></Button>
-                                <Button Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></Button>
-                                <Button Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></Button>
-                            </StackPanel>
-                        </Grid>
+                        <Border Padding="0 0 4 4">
+                            <Border.Effect>
+                                <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                            </Border.Effect>
+                            <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
+                                <StackPanel>
+                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_add}" Click="ButtonAdd_OnClick"></Button>
+                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource word_import}" Click="ButtonImport_OnClick"></Button>
+                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
                     </Popup>
                 </Grid>
             </Border>

@@ -182,21 +182,6 @@
                    IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}"
                    StaysOpen="False"
                    PlacementTarget="{Binding ElementName=CbPopForMenu}">
-                <Popup.Resources>
-                    <Style x:Key="ButtonExStyle0" TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                        <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                        <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
-                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                        <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
-                        <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource AccentMidBrush}" />
-                        <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource AccentTextBrush}" />
-                        <Setter Property="BackgroundOnMouseDown" Value="{DynamicResource AccentLightBrush}" />
-                        <Setter Property="ForegroundOnMouseDown" Value="{DynamicResource AccentTextBrush}" />
-                        <Setter Property="OpacityOnMouseDown" Value="1"></Setter>
-                    </Style>
-
-                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyle0}" />
-                </Popup.Resources>
                 <Border Padding="0 0 4 4">
                     <Border.Effect>
                         <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
@@ -207,11 +192,10 @@
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource system_menu_options_title}"></Button>
-                            <Button Click="ButtonToggleServerListViewUi_OnClick" Content="{DynamicResource system_menu_toggle_server_list}">
+                            <Button Click="ButtonToggleServerListViewUi_OnClick" Content="{DynamicResource system_menu_toggle_server_list}"
+                                    Padding="25 8 0 8" HorizontalContentAlignment="Left" >
                                 <Button.Style>
                                     <Style TargetType="Button"  BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                        <Setter Property="Padding" Value="25 8 0 8"></Setter>
-                                        <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
                                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                                         <Style.Triggers>
                                             <MultiDataTrigger>

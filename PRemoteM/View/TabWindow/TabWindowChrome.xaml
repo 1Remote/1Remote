@@ -4,11 +4,11 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
-                     xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                      xmlns:system="clr-namespace:System;assembly=mscorlib"
                      xmlns:tabWindow="clr-namespace:PRM.View.TabWindow"
                      xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                      xmlns:vm="clr-namespace:PRM.ViewModel"
+                     xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                      mc:Ignorable="d"
                      d:DataContext="{d:DesignInstance vm:VmTabWindow}"
                      ResizeMode="{Binding WindowResizeMode}"
@@ -159,26 +159,20 @@
                                             </Thumb.Style>
                                         </Thumb>
 
-                                        <controls:ButtonEx Grid.Column="4" Width="10" Height="10"
-                                                       Margin="5 0" Padding="0" VerticalAlignment="Center"
-                                                       Command="dragablz:TabablzControl.CloseItemCommand">
-                                            <controls:ButtonEx.Style>
-                                                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2Button}">
-                                                    <Setter Property="Background" Value="Transparent" />
-                                                    <Setter Property="BackgroundOnMouseOver" Value="Transparent" />
-                                                    <Setter Property="BackgroundOnMouseDown" Value="Transparent" />
-                                                    <Setter Property="ForegroundOnMouseDown" Value="Gainsboro" />
-                                                    <Setter Property="Opacity" Value="0.5" />
-                                                </Style>
-                                            </controls:ButtonEx.Style>
 
+                                        <Button Grid.Column="4" Width="10" Height="10" 
+                                                Style="{StaticResource ButtonBarAccentStyle}"
+                                                attachProperty:VisionElement.Opacity="0.5"
+                                                attachProperty:VisionElement.OpacityAccent="0.9"
+                                                Margin="5 0"
+                                                Command="dragablz:TabablzControl.CloseItemCommand">
                                             <Grid Height="10" Width="8">
                                                 <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
-                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
-                                                  StrokeThickness="2" Stretch="Uniform" />
+                                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                      Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                      StrokeThickness="2" Stretch="Uniform" />
                                             </Grid>
-                                        </controls:ButtonEx>
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -268,22 +262,20 @@
                             </Grid.ColumnDefinitions>
 
                             <Grid Background="{DynamicResource PrimaryMidBrush}">
-                                <controls:ButtonEx Width="25" HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" Height="{StaticResource TrapezoidHeight}">
-                                    <controls:ButtonEx.Style>
-                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
+                                <Button Width="25" HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" Height="{StaticResource TrapezoidHeight}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                             <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
-                                            <Setter Property="Opacity" Value="0.3" />
-                                            <Setter Property="OpacityOnMouseDown" Value="0.6" />
                                         </Style>
-                                    </controls:ButtonEx.Style>
+                                    </Button.Style>
                                     <Grid Width="12" Height="20">
                                         <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
-                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                               StrokeThickness="1" Stretch="Uniform">
                                         </Path>
                                     </Grid>
-                                </controls:ButtonEx>
+                                </Button>
                             </Grid>
 
                             <Grid Grid.Column="0" Background="{DynamicResource PrimaryMidBrush}">
@@ -294,30 +286,25 @@
 
                                 <Grid Grid.Column="1" MouseDown="WinTitleBar_MouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource PrimaryMidBrush}"></Grid>
 
-                                <controls:ButtonEx Grid.Column="0" Width="25" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Bottom"
-                                                   HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}">
-                                    <controls:ButtonEx.Style>
-                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1Button}">
-                                            <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
-                                            <Setter Property="Opacity" Value="0.3" />
-                                            <Setter Property="OpacityOnMouseDown" Value="0.6" />
-                                        </Style>
-                                    </controls:ButtonEx.Style>
+                                <Button Grid.Column="0" Width="25" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Bottom"
+                                        Style="{StaticResource ButtonBarPrimaryStyle}"
+                                        attachProperty:VisionElement.Opacity="0.5"
+                                        attachProperty:VisionElement.OpacityAccent="0.9"
+                                        HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}">
                                     <Grid Width="12" Height="20">
                                         <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
-                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
-                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                               StrokeThickness="1" Stretch="Uniform">
                                         </Path>
                                     </Grid>
-                                </controls:ButtonEx>
+                                </Button>
                             </Grid>
 
 
-                            <!-- System controls:ButtonEx Area -->
                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource PrimaryMidBrush}">
                                 <StackPanel.Resources>
-                                    <Style TargetType="{x:Type controls:ButtonEx}" x:Key="WinTitleBarBtnStyle" BasedOn="{StaticResource ButtonExStyleBase}">
+                                    <Style TargetType="Button" x:Key="WinTitleBarBtnStyle" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                         <Setter Property="Width" Value="35" />
                                         <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualHeight}" />
                                         <Setter Property="CommandParameter" Value="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}" />
@@ -403,13 +390,13 @@
                                     </CheckBox.Style>
                                 </CheckBox>
 
-                                <controls:ButtonEx Name="BtnMinimize"  Command="{Binding CmdGoMinimize}" Style="{StaticResource WinTitleBarBtnStyle}">
-                                    <Rectangle Width="15" Height="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" />
-                                </controls:ButtonEx>
+                                <Button Name="BtnMinimize"  Command="{Binding CmdGoMinimize}" Style="{StaticResource WinTitleBarBtnStyle}">
+                                    <Rectangle Width="15" Height="1" Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" />
+                                </Button>
 
-                                <controls:ButtonEx Name="BtnMaximize" Command="{Binding CmdGoMaximize}">
-                                    <controls:ButtonEx.Style>
-                                        <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                                <Button Name="BtnMaximize" Command="{Binding CmdGoMaximize}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
@@ -417,9 +404,9 @@
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </controls:ButtonEx.Style>
+                                    </Button.Style>
                                     <Grid>
-                                        <Path Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z " Stretch="Uniform">
+                                        <Path Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" Height="15" Width="15" Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z " Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Style.Triggers>
@@ -431,7 +418,7 @@
                                             </Path.Style>
                                         </Path>
 
-                                        <Path Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Height="15" Width="15" Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z" Stretch="Uniform">
+                                        <Path Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Height="15" Width="15" Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z" Stretch="Uniform">
                                             <Path.Style>
                                                 <Style TargetType="Path">
                                                     <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -444,61 +431,60 @@
                                             </Path.Style>
                                         </Path>
                                     </Grid>
-                                </controls:ButtonEx>
+                                </Button>
 
-                                <controls:ButtonEx IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
+                                <Button IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
                                                    Command="{Binding CmdHostGoFullScreen}" 
                                                    CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
-                                    <controls:ButtonEx.Style>
-                                        <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource WinTitleBarBtnStyle}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding WindowResizeMode}" Value="NoResize">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                                 <Trigger Property="IsEnabled" Value="False">
-                                                    <Setter Property="controls:ButtonEx.Visibility" Value="Collapsed" />
+                                                    <Setter Property="Visibility" Value="Collapsed" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </controls:ButtonEx.Style>
+                                    </Button.Style>
                                     <Grid Height="15" Width="15">
                                         <Path Data="F1 M 82.500000 -82.500000 L 82.500000 -55.000000 L 77.000000 -55.000000 L 77.000000 -73.089844 L 14.910156 -11.000000 L 33.000000 -11.000000 L 33.000000 -5.500000 L 5.500000 -5.500000 L 5.500000 -33.000000 L 11.000000 -33.000000 L 11.000000 -14.910156 L 73.089844 -77.000000 L 55.000000 -77.000000 L 55.000000 -82.500000 Z "
-                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                     </Grid>
-                                </controls:ButtonEx>
+                                </Button>
 
-                                <controls:ButtonEx Name="BtnCloseAll" ToolTip="{DynamicResource word_close_all}" Command="{Binding CmdCloseAll}" IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
-                                    Visibility="{Binding BtnCloseAllVisibility}">
-                                    <controls:ButtonEx.Style>
-                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                                            <Setter Property="BackgroundOnMouseOver" Value="Red" />
-                                            <Setter Property="BackgroundOnMouseDown" Value="Red" />
-                                            <Setter Property="ForegroundOnMouseOver" Value="White" />
-                                            <Setter Property="ForegroundOnMouseDown" Value="White" />
-                                        </Style>
-                                    </controls:ButtonEx.Style>
+                                <Button Name="BtnCloseAll" ToolTip="{DynamicResource word_close_all}" 
+                                        Command="{Binding CmdCloseAll}" 
+                                        IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
+                                        Style="{StaticResource WinTitleBarBtnStyle}"
+                                        attachProperty:VisionElement.ForegroundAccent="White"
+                                        attachProperty:VisionElement.BackgroundAccent="Red"
+                                        attachProperty:VisionElement.ForegroundOnMouseDown="White"
+                                        attachProperty:VisionElement.BackgroundOnMouseDown="Red"
+                                        Visibility="{Binding BtnCloseAllVisibility}">
                                     <Grid Width="15" Height="15">
                                         <Path Data="F1 M 87.871094 -29.003906 L 75.410156 -16.500000 L 87.871094 -3.996094 L 84.003906 -0.128906 L 71.500000 -12.589844 L 58.996094 -0.128906 L 55.128906 -3.996094 L 67.589844 -16.500000 L 55.128906 -29.003906 L 58.996094 -32.871094 L 71.500000 -20.410156 L 84.003906 -32.871094 Z M 82.500000 -77.000000 L 82.500000 -38.500000 L 49.500000 -38.500000 L 49.500000 -5.500000 L 11.000000 -5.500000 L 11.000000 -77.000000 Z M 16.500000 -71.500000 L 16.500000 -44.000000 L 44.000000 -44.000000 L 44.000000 -71.500000 Z M 44.000000 -11.000000 L 44.000000 -38.500000 L 16.500000 -38.500000 L 16.500000 -11.000000 Z M 77.000000 -44.000000 L 77.000000 -71.500000 L 49.500000 -71.500000 L 49.500000 -44.000000 Z "
-                                            Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
+                                            Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                     </Grid>
-                                </controls:ButtonEx>
+                                </Button>
 
-                                <controls:ButtonEx Name="BtnClose" ToolTip="{DynamicResource word_close}" Command="{Binding CmdClose}" IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}">
-                                    <controls:ButtonEx.Style>
-                                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource WinTitleBarBtnStyle}">
-                                            <Setter Property="BackgroundOnMouseOver" Value="Red" />
-                                            <Setter Property="BackgroundOnMouseDown" Value="Red" />
-                                            <Setter Property="ForegroundOnMouseOver" Value="White" />
-                                            <Setter Property="ForegroundOnMouseDown" Value="White" />
-                                        </Style>
-                                    </controls:ButtonEx.Style>
-
+                                <Button Name="BtnClose" 
+                                                   ToolTip="{DynamicResource word_close}" 
+                                                   Command="{Binding CmdClose}" 
+                                                   IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
+                                                   Style="{StaticResource WinTitleBarBtnStyle}"
+                                                   attachProperty:VisionElement.ForegroundAccent="White"
+                                                   attachProperty:VisionElement.BackgroundAccent="Red"
+                                                   attachProperty:VisionElement.ForegroundOnMouseDown="White"
+                                                   attachProperty:VisionElement.BackgroundOnMouseDown="Red"
+                                                   >
                                     <Grid Height="15" Width="15">
                                         <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                                Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
+                                                Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                     </Grid>
-                                </controls:ButtonEx>
+                                </Button>
                             </StackPanel>
 
 

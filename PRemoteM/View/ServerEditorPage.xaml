@@ -118,7 +118,7 @@
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
                                                     <Border BorderThickness="1" BorderBrush="Black" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
-                                                    <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                        <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                                     </Border>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
@@ -192,7 +192,9 @@
                                                                                                   ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
                                     </Grid>
-                                    <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                    <Button Margin="5 0 0 0" 
+                                            VerticalAlignment="Stretch"
+                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_test}"></Button>
                                 </StackPanel>
                             </Grid>
 
@@ -204,7 +206,9 @@
                                                                                                   ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
                                     </Grid>
-                                    <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                    <Button Margin="5 0 0 0" 
+                                            VerticalAlignment="Stretch"
+                                            Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_test}"></Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -335,21 +339,20 @@
                 <Grid Height="{StaticResource BottomHeight}">
 
                     <Grid Width="300">
-                        <controls:ButtonEx Name="ButtonSave"
-                                Padding="0 1 0 0" Width="80" Height="20"
+                        <Button Name="ButtonSave"
+                                Padding="0 1 0 0" Width="80"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
-                                Style="{StaticResource MainColor2ButtonRadius3}"
-                                BorderThickness="0" Content="{DynamicResource word_save}">
-                        </controls:ButtonEx>
+                                Style="{StaticResource ButtonAccentStyle}"
+                                Content="{DynamicResource word_save}">
+                        </Button>
 
-                        <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+                        <Button Padding="0 1 0 0" Width="80"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
-                                Style="{StaticResource MainColor1ButtonRadius3}"
-                                BorderThickness="1"
+                                Style="{StaticResource ButtonPrimaryStyle}"
                                 Content="{DynamicResource word_cancel}">
-                        </controls:ButtonEx>
+                        </Button>
                     </Grid>
                 </Grid>
             </Border>
