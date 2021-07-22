@@ -477,14 +477,7 @@ namespace PRM.Model
         private TabWindowBase CreateNewTabWindow(ProtocolServerBase server)
         {
             var token = DateTime.Now.Ticks.ToString();
-            if (SystemConfig.Instance.Theme.TabUI == EnumTabUI.ChromeLike)
-            {
-                AddTab(new TabWindowChrome(token));
-            }
-            else
-            {
-                AddTab(new TabWindowClassical(token));
-            }
+            AddTab(new TabWindowChrome(token));
             var tab = _tabWindows[token];
 
             // set location

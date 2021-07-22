@@ -121,9 +121,6 @@
   "system_options_theme_putty_title": "Kitty",
   "system_options_theme_putty_font_size": "Schriftgröße",
   "system_options_theme_putty_theme": "Farbthema",
-  "system_options_theme_tab_ui": "Tab UI",
-  "system_options_theme_tab_ui_chrome": "Chrome",
-  "system_options_theme_tab_ui_classical": "Klassisch",
 
   // server operate
   "word_connect": "Verbinden",

@@ -51,6 +51,27 @@ namespace PRM.Core.Resources.Converter
         #endregion IValueConverter 成员
     }
 
+    public class DoubleAdd : IValueConverter
+    {
+        public double AddValue { get; set; } = 1;
+        // Converter={StaticResource ConverterIsGreaterThan},ConverterParameter=50}
+
+        #region IValueConverter 成员
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            double v = (double)value;
+            return v + AddValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion IValueConverter 成员
+    }
+
     public class ConverterBool2Visible : IValueConverter
     {
         #region IValueConverter 成员
@@ -196,9 +217,16 @@ namespace PRM.Core.Resources.Converter
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string hex = value.ToString();
-            var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
-            return brush;
+            try
+            {
+                string hex = value.ToString();
+                var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
+                return brush;
+            }
+            catch (Exception e)
+            {
+                return Brushes.White;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -244,8 +272,7 @@ namespace PRM.Core.Resources.Converter
             return values.All(x => x == _1st);
         }
 
-        public object[] ConvertBack(
-            object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }
