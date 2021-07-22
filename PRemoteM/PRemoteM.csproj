@@ -252,9 +252,6 @@
       <DependentUpon>ServerListPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TabWindow\TabWindowBase.cs" />
-    <Compile Include="View\TabWindow\TabWindowClassical.xaml.cs">
-      <DependentUpon>TabWindowClassical.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\TabWindow\TabWindowChrome.xaml.cs">
       <DependentUpon>TabWindowChrome.xaml</DependentUpon>
     </Compile>
@@ -309,10 +306,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Theme\Styles\BaseStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\ButtonExStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -429,10 +422,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ServerListPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\TabWindow\TabWindowClassical.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

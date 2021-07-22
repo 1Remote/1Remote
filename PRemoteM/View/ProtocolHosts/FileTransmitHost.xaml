@@ -4,7 +4,6 @@
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                            xmlns:protocolHosts="clr-namespace:PRM.View.ProtocolHosts"
-                           xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                            xmlns:viewModel="clr-namespace:PRM.ViewModel"
                            xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                            xmlns:transmissionController="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;assembly=PRM.Core"

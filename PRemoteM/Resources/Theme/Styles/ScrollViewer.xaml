@@ -178,7 +178,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <!--<Rectangle x:Name="Corner" Grid.Row="1" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />-->
+
             <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" 
                                     CanContentScroll="{TemplateBinding CanContentScroll}" 
                                     CanHorizontallyScroll="False" 
@@ -198,7 +198,8 @@
                        Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
                        Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
                        ViewportSize="{TemplateBinding ViewportHeight}" 
-                       Style="{StaticResource ScrollBarBaseStyle}"/>
+                       Style="{StaticResource ScrollBarBaseStyle}"
+                       />
             <ScrollBar x:Name="PART_HorizontalScrollBar" 
                        attachProperty:VisionElement.ForegroundAccent="{TemplateBinding attachProperty:VisionElement.ForegroundAccent}"
                        attachProperty:VisionElement.BackgroundAccent="{TemplateBinding attachProperty:VisionElement.BackgroundAccent}" 
@@ -210,7 +211,8 @@
                        Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" 
                        Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" 
                        ViewportSize="{TemplateBinding ViewportWidth}" 
-                       Style="{StaticResource ScrollBarBaseStyle}"/>
+                       Style="{StaticResource ScrollBarBaseStyle}"
+                       />
         </Grid>
         <ControlTemplate.Triggers>
             <Trigger Property="IsFocused" Value="true">
@@ -236,8 +238,6 @@
 
 
     <Style x:Key="ScrollViewBaseStyle" TargetType="ScrollViewer" BasedOn="{StaticResource ControlBase}">
-        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
         <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
@@ -273,4 +273,5 @@
     </Style>
 
 
+    <!--<Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarBaseStyle}"></Style>-->
 </ResourceDictionary>

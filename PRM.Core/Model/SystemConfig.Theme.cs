@@ -12,12 +12,6 @@ using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
-    public enum EnumTabUI
-    {
-        ChromeLike,
-        Classical,
-    }
-
     public enum EnumServerListPageUI
     {
         Card,
@@ -209,14 +203,6 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(BackgroundTextColor), ref _mainBgColorForeground, value);
         }
 
-        private EnumTabUI _tabUi = EnumTabUI.ChromeLike;
-
-        public EnumTabUI TabUI
-        {
-            get => _tabUi;
-            set => SetAndNotifyIfChanged(nameof(TabUI), ref _tabUi, value);
-        }
-
         private EnumServerListPageUI _serverListPageUi = EnumServerListPageUI.Card;
 
         public EnumServerListPageUI ServerListPageUI
@@ -244,7 +230,6 @@ namespace PRM.Core.Model
             _ini.WriteValue(nameof(BackgroundTextColor).ToLower(), _sectionName, BackgroundTextColor);
             _ini.WriteValue(nameof(PuttyFontSize).ToLower(), _sectionName, PuttyFontSize.ToString());
             _ini.WriteValue(nameof(PuttyThemeName).ToLower(), _sectionName, PuttyThemeName);
-            _ini.WriteValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString());
             _ini.WriteValue(nameof(ServerListPageUI).ToLower(), _sectionName, ServerListPageUI.ToString());
             _ini.Save();
             ApplyPrmColorTheme();
@@ -290,9 +275,6 @@ namespace PRM.Core.Model
             LoadThemeFromIni();
 
             LoadPuttyThemeFromIni();
-
-            if (Enum.TryParse<EnumTabUI>(_ini.GetValue(nameof(TabUI).ToLower(), _sectionName, TabUI.ToString()), out var tu))
-                TabUI = tu;
 
             if (Enum.TryParse<EnumServerListPageUI>(_ini.GetValue(nameof(ServerListPageUI).ToLower(), _sectionName, ServerListPageUI.ToString()), out var slu))
                 ServerListPageUI = slu;

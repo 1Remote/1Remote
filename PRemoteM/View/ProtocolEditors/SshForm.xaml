@@ -4,7 +4,6 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:ssh2="clr-namespace:PRM.Core.Protocol.Putty.SSH;assembly=PRM.Core"
-                        xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         mc:Ignorable="d"

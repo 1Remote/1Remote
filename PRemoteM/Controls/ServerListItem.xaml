@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PRM.Controls"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
@@ -124,6 +123,7 @@
                                    Click="BtnSettingMenu_OnClick">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
