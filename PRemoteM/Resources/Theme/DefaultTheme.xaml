@@ -19,7 +19,6 @@
         <ResourceDictionary Source="Basic/ColorsAndBrushes/Default.xaml"></ResourceDictionary>
 
         <ResourceDictionary Source="Styles/BaseStyle.xaml"></ResourceDictionary>
-        <ResourceDictionary Source="Styles/ButtonExStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ButtonStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/TextBoxStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"></ResourceDictionary>

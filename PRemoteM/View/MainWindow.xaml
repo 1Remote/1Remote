@@ -3,7 +3,6 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
                   xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
@@ -335,100 +334,7 @@
                         <TextBlock Width="200" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding ProgressBarInfo}" TextWrapping="Wrap"></TextBlock>
                     </StackPanel>
                 </Grid>
-            </Grid> 
-
-            <ScrollViewer VerticalAlignment="Center" HorizontalAlignment="Right" Width="300" Height="400"
-                          BorderBrush="Aqua" BorderThickness="1"
-                          VerticalScrollBarVisibility="Visible" 
-                          >
-                <StackPanel  Width="500" Height="600" Background="{DynamicResource BackgroundBrush}">
-
-                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <Slider Maximum="100" Value="50" Height="100" Orientation="Vertical" Style="{StaticResource SliderBaseStyle}"></Slider>
-                        <Slider Maximum="100" Width="100" Height="20" Orientation="Horizontal" IsSelectionRangeEnabled="True" Style="{StaticResource SliderBaseStyle}"></Slider>
-                        <Slider Maximum="100" Value="50" Height="100" Width="20" Orientation="Vertical"></Slider>
-                        <Slider Maximum="100" Width="100" Height="20" Orientation="Horizontal" IsSelectionRangeEnabled="True"></Slider>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <CheckBox>123123</CheckBox>
-                        <CheckBox Style="{StaticResource CheckBoxBaseStyle}">3232</CheckBox>
-                        <CheckBox IsChecked="{x:Null}">123123</CheckBox>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <ToggleButton Height="30" Width="90" Style="{StaticResource ToggleButtonSwitchBaseStyle}">123</ToggleButton>
-                        <ToggleButton Height="30" Width="90" IsEnabled="False" Style="{StaticResource ToggleButtonSwitchBaseStyle}">123</ToggleButton>
-                        <ToggleButton Height="30" Width="90" IsChecked="True">123</ToggleButton>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
-                                Foreground="GreenYellow"
-                                attachProperty:VisionElement.ForegroundAccent="White"
-                                attachProperty:VisionElement.BackgroundAccent="Red"
-                                >123</Button>
-
-                        <Button Width="80" Height="40" Margin="5" Style="{StaticResource ButtonBaseStyle}" 
-                                attachProperty:VisionElement.Opacity="0.5"
-                                attachProperty:VisionElement.OpacityAccent="0.1"
-                                attachProperty:VisionElement.ForegroundOnMouseDown="Yellow"
-                                attachProperty:VisionElement.BackgroundOnMouseDown="Violet"
-                                attachProperty:VisionElement.ForegroundAccent="Aqua"
-                                attachProperty:VisionElement.BackgroundAccent="Red">
-                            <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
-                                  Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" Opacity="0.8" StrokeThickness="0.5" Stretch="Fill" />
-                        </Button>
-
-                        <Button>123</Button>
-                        <Button 
-                            attachProperty:VisionElement.ForegroundOnMouseDown="Yellow"
-                            attachProperty:VisionElement.BackgroundOnMouseDown="Violet"
-                            attachProperty:VisionElement.ForegroundAccent="Aqua"
-                            attachProperty:VisionElement.BackgroundAccent="Red">
-                            <TextBlock Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">123</TextBlock>
-                        </Button>
-                        <Button 
-                            Foreground="Navy"
-                            attachProperty:VisionElement.ForegroundOnMouseDown="Yellow"
-                            attachProperty:VisionElement.BackgroundOnMouseDown="Violet"
-                            attachProperty:VisionElement.ForegroundAccent="Aqua"
-                            attachProperty:VisionElement.BackgroundAccent="Red">
-                            <TextBlock Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">123</TextBlock>
-                        </Button>
-                    </StackPanel>
-
-
-                    <TextBlock Margin="5" Tag="xxxx">Test</TextBlock>
-                    <TextBox Margin="5" Tag="xxxx">Test</TextBox>
-                    <TextBox Margin="5" IsEnabled="False">
-                        <TextBox.Effect>
-                            <DropShadowEffect Opacity="1" Color="Red" BlurRadius="10" Direction="20"></DropShadowEffect>
-                        </TextBox.Effect>
-                        Test
-                    </TextBox>
-                    <PasswordBox Margin="5" Password="123"></PasswordBox>
-                    <PasswordBox Margin="5" 
-                                 attachProperty:PasswordBoxAttachProperty.PlaceHolder="hi pas"
-                                 attachProperty:PasswordBoxAttachProperty.Password="hi pas"
-                                 Style="{DynamicResource PasswordBoxBaseStyle}"></PasswordBox>
-                    <ComboBox Width="100">
-                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
-                        <ComboBoxItem>2</ComboBoxItem>
-                        <ComboBoxItem>3</ComboBoxItem>
-                    </ComboBox>
-                    <ComboBox IsEditable="True" Width="100">
-                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
-                        <ComboBoxItem>2</ComboBoxItem>
-                        <ComboBoxItem>3</ComboBoxItem>
-                    </ComboBox>
-                    <ComboBox IsEnabled="False" IsEditable="True" Width="100">
-                        <ComboBoxItem IsSelected="True">1</ComboBoxItem>
-                        <ComboBoxItem>2</ComboBoxItem>
-                        <ComboBoxItem>3</ComboBoxItem>
-                    </ComboBox>
-
-                    <TextBox Margin="5" Tag="xxxx" Width="500" Height="600">Test</TextBox>
-                </StackPanel>
-            </ScrollViewer>
-
+            </Grid>
         </Grid>
     </Grid>
 </utils:WindowChromeBase>

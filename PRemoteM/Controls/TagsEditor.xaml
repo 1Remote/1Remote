@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:self="clr-namespace:PRM.Controls"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d" 

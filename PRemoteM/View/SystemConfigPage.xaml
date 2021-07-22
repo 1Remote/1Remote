@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance model:SystemConfig}"
              d:DesignHeight="2450" d:DesignWidth="800">
@@ -165,33 +165,11 @@
                             </Grid>
                         </StackPanel>
                     </Grid>
-
-                    <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
-                            </Grid>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></controls:ButtonEx>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}" Visibility="Hidden"></TextBlock>
-                            <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
-                        </StackPanel>
-                    </Grid>-->
                 </StackPanel>
             </TabItem>
 
             <TabItem Name="TabItemQuick" Header="{DynamicResource system_options_quick_title}">
                 <StackPanel Margin="0 20 0 0">
-
-                    <!--<Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="20 0 0 0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="450" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
-                        </StackPanel>
-                    </Grid>-->
 
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
@@ -324,8 +302,8 @@
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath, Mode=OneWay}"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></controls:ButtonEx>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></controls:ButtonEx>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></Button>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -334,10 +312,10 @@
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <controls:ButtonEx Margin="0" Command="{Binding SystemConfig.DataSecurity.CmdGenRsaKey}"
+                                    <Button Margin="0" Command="{Binding SystemConfig.DataSecurity.CmdGenRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_encrypt}">
-                                        <controls:ButtonEx.Style>
-                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2ButtonRadius3}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
@@ -345,20 +323,20 @@
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </controls:ButtonEx.Style>
-                                    </controls:ButtonEx>
-                                    <controls:ButtonEx Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdClearRsaKey}"
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdClearRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_decrypt}">
-                                        <controls:ButtonEx.Style>
-                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2ButtonRadius3}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                         <Setter Property="IsEnabled" Value="False"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </controls:ButtonEx.Style>
-                                    </controls:ButtonEx>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -368,7 +346,10 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Name="TbPublicKey" Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="200" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
+                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" 
+                                         VerticalContentAlignment="Center" 
+                                         TextWrapping="Wrap" Height="200" 
+                                         IsReadOnly="True"></TextBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -379,17 +360,17 @@
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
-                                <controls:ButtonEx.Style>
-                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                            <Button Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </controls:ButtonEx.Style>
-                            </controls:ButtonEx>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
@@ -421,7 +402,7 @@
                             <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
                                 (?)
                             </TextBlock>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -506,11 +487,6 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Tab" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                        </StackPanel>
-                    </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                         <StackPanel Orientation="Horizontal">
                             <StackPanel.Resources>
@@ -526,8 +502,6 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <RadioButton Margin="0 2" Grid.Row="0"  IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}" />
-                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}" />
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -535,21 +509,16 @@
             </TabItem>
         </TabControl>
 
-        <controls:ButtonEx VerticalAlignment="Bottom"
+        <Button VerticalAlignment="Bottom"
                 Width="200" Height="40"
-                HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
-                BorderThickness="0"
                 Foreground="{DynamicResource PrimaryTextBrush}"
                 Background="{DynamicResource PrimaryDarkBrush}"
-                BackgroundOnMouseOver="{DynamicResource AccentMidBrush}"
-                ForegroundOnMouseOver="{DynamicResource AccentTextBrush}"
-                OpacityOnMouseOver="1"
-                BackgroundOnMouseDown="{DynamicResource AccentMidBrush}"
-                ForegroundOnMouseDown="{DynamicResource AccentTextBrush}"
-                OpacityOnMouseDown="0.5"
+                Style="{StaticResource ButtonBarAccentStyle}"
+                attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
+                attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource word_back}">
-        </controls:ButtonEx>
+        </Button>
     </Grid>
 </UserControl>

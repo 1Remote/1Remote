@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
@@ -136,24 +135,28 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                        <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1" Background="{DynamicResource BackgroundBrush}">
+                                        <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1">
                                             <Grid Width="510">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                                                     <ColumnDefinition></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
-                                                <StackPanel Background="{DynamicResource BackgroundBrush}">
+                                                <StackPanel >
                                                     <controls2:LogoSelector x:Name="LogoSelector"></controls2:LogoSelector>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
-                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource word_done}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
-                                                        </controls:ButtonEx>
+                                                        <Button Style="{StaticResource ButtonBarAccentStyle}" 
+                                                                Content="{DynamicResource word_done}" 
+                                                                Click="ButtonLogoSave_OnClick">
+                                                        </Button>
 
-                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource word_reset}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
-                                                        </controls:ButtonEx>
+                                                        <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
+                                                                Content="{DynamicResource word_reset}" 
+                                                                Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                        </Button>
                                                     </Grid>
                                                 </StackPanel>
                                                 <Grid Grid.Column="1">
@@ -162,16 +165,16 @@
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
                                                               ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}"
-                                                              Background="Transparent"
-                                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+                                                              Background="Transparent">
                                                         <ListView.ItemsPanel>
                                                             <ItemsPanelTemplate>
-                                                                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}" />
+                                                                <WrapPanel Orientation="Horizontal" 
+                                                                           Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleAdd_2}}" />
                                                             </ItemsPanelTemplate>
                                                         </ListView.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Grid Margin="5">
+                                                                <Grid Margin="2">
                                                                     <Image Source="{Binding}" Height="30"></Image>
                                                                 </Grid>
                                                             </DataTemplate>
