@@ -37,7 +37,7 @@
             <StackPanel HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Grid HorizontalAlignment="Center" Margin="5">
-                        <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="30" HorizontalAlignment="Left"></Image>
+                        <Image Source="/Resources/Image/Logo/logo64.png" Width="30" HorizontalAlignment="Left"></Image>
                     </Grid>
                     <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{StaticResource PrimaryTextBrush}"
                                Text="{DynamicResource word_oops}"

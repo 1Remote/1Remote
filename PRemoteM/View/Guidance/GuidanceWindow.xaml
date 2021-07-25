@@ -68,7 +68,7 @@
                 <Grid Grid.Row="0" Margin="0 20 0 0">
                     <StackPanel HorizontalAlignment="Center">
                         <Grid HorizontalAlignment="Center">
-                            <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
+                            <Image Source="/Resources/Image/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
                         </Grid>
                         <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{StaticResource Primary300}">PRemoteM</TextBlock>
                         <TextBlock HorizontalAlignment="Center" FontSize="8" Foreground="{StaticResource Primary300}">

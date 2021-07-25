@@ -184,6 +184,7 @@
     </Compile>
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Resources\Theme\AttachProperty\PasswordBoxAttachProperty.cs" />
     <Compile Include="Resources\Theme\AttachProperty\VisionElement.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
@@ -289,6 +290,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Converter\Converter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Resources\Theme\Basic\ColorsAndBrushes\Default.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -302,6 +307,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Theme\DefaultTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Theme\Styles\AppStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -498,6 +507,11 @@
     <Resource Include="View\Guidance\Resources\demo.png" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Image\Logo\author_avatar.jpg" />
+    <Resource Include="Resources\Image\Logo\logo256.png" />
+    <Resource Include="Resources\Image\Logo\logo64.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo copy $(TargetDir)zh-cn.xaml to $(SolutionDir)PRM.Core\Languages\zh-cn.xaml

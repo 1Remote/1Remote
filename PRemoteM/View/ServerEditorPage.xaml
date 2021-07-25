@@ -16,7 +16,7 @@
     <Grid Background="{DynamicResource BackgroundBrush}" ClipToBounds="True">
         <Grid.Resources>
             <system:Double x:Key="TopHeight">20</system:Double>
-            <system:Double x:Key="BottomHeight">30</system:Double>
+            <system:Double x:Key="BottomHeight">40</system:Double>
         </Grid.Resources>
 
         <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
@@ -343,14 +343,14 @@
 
                     <Grid Width="300">
                         <Button Name="ButtonSave"
-                                Padding="0 1 0 0" Width="80"
+                                Padding="0 1 0 0" Width="80" Height="25"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
                                 Style="{StaticResource ButtonAccentStyle}"
                                 Content="{DynamicResource word_save}">
                         </Button>
 
-                        <Button Padding="0 1 0 0" Width="80"
+                        <Button Padding="0 1 0 0" Width="80" Height="25"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
                                 Style="{StaticResource ButtonPrimaryStyle}"
