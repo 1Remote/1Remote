@@ -155,10 +155,23 @@ namespace PRM.View.TabWindow
         {
             Closed += (sender, args) =>
             {
-                DataContext = null;
-                _timer4CheckForegroundWindow?.Dispose();
-                Vm?.CmdCloseAll.Execute();
-                Vm?.Dispose();
+                try
+                {
+                    _timer4CheckForegroundWindow?.Dispose();
+                }
+                finally
+                {
+                }
+                try
+                {
+                    Vm?.CmdCloseAll.Execute();
+                    Vm?.Dispose();
+                }
+                finally
+                {
+                    Vm = null;
+                    DataContext = null;
+                }
             };
         }
 

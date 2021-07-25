@@ -7,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using Shawn.Utils;
 
-namespace PRM.Core.Resources.Converter
+namespace PRM.Resources.Converter
 {
     public class ConverterIsGreaterThan : IValueConverter
     {

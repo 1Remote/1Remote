@@ -1,17 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using Dragablz;
 using PRM.Core.Model;
-using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.View.ProtocolHosts;
 using PRM.View.TabWindow;
 
-using Shawn.Utils;
 
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -46,17 +45,17 @@ namespace PRM.ViewModel
             Items.Clear();
         }
 
-        private string _tag = "";
+        private ObservableCollection<string> _tags = new ObservableCollection<string>();
 
         /// <summary>
         /// tag of the Tab, e.g. tag = Group1 then the servers in Group1 will be shown on this Tab.
         /// </summary>
-        public string Tag
+        public ObservableCollection<string> Tags
         {
-            get => _tag;
+            get => _tags;
             set
             {
-                SetAndNotifyIfChanged(nameof(Tag), ref _tag, value);
+                SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
                 SetTitle();
             }
         }
@@ -75,7 +74,7 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_isLocked 
+                if (_isLocked
                     || SelectedItem?.Content == null
                     || (SelectedItem?.Content is AxMsRdpClient09Host && SelectedItem?.CanResizeNow == false))
                     return ResizeMode.NoResize;
@@ -151,16 +150,7 @@ namespace PRM.ViewModel
         {
             if (SelectedItem != null)
             {
-                if (!string.IsNullOrEmpty(Tag))
-                    this.Title = Tag + " - " + SelectedItem.Header;
-                else
-                    this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
-#if DEV
-                if (!string.IsNullOrEmpty(Tag))
-                    this.Title = Tag + " - " + SelectedItem.Header;
-                else
-                    this.Title = SelectedItem.Header + " - PRemoteM";
-#endif
+                this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
             }
         }
 
@@ -176,7 +166,7 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        if(IsLocked) return;
+                        if (IsLocked) return;
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
                             RemoteWindowPool.Instance.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));

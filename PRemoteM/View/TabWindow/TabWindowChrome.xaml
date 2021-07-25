@@ -50,9 +50,7 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-
             <system:Double x:Key="TitleBarHeight">35</system:Double>
-            <system:Double x:Key="TabHeaderBarHeight">35</system:Double>
             <system:Double x:Key="TrapezoidHeight">30</system:Double>
             <!--cs code will read this vale-->
             <Thickness x:Key="TabContentBorder">2,1,2,2</Thickness>
@@ -75,12 +73,12 @@
                 <Setter Property="Margin" Value="0" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                <Setter Property="Height" Value="{StaticResource TabHeaderBarHeight}" />
+                <Setter Property="Height" Value="{StaticResource TitleBarHeight}" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
-                            <Grid Background="{DynamicResource PrimaryMidBrush}" Height="{StaticResource TabHeaderBarHeight}">
+                            <Grid Background="{DynamicResource PrimaryMidBrush}" Height="{StaticResource TitleBarHeight}">
                                 <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True"
                                       SnapsToDevicePixels="true"
                                       utils:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
@@ -162,6 +160,7 @@
 
                                         <Button Grid.Column="4" Width="10" Height="10" 
                                                 Style="{StaticResource ButtonBarAccentStyle}"
+                                                Background="Transparent"
                                                 attachProperty:VisionElement.Opacity="0.5"
                                                 attachProperty:VisionElement.OpacityAccent="0.9"
                                                 Margin="5 0"
@@ -187,7 +186,7 @@
                                     <Setter Property="Visibility" Value="Visible" TargetName="ColorMark" />
                                     <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="Trapezoid" />
                                     <Setter Property="Foreground" Value="{DynamicResource WhiteBrush}" />
-                                    <Setter Property="Height" TargetName="DragablzHeaderItemContent" Value="{StaticResource TabHeaderBarHeight}" />
+                                    <Setter Property="Height" TargetName="DragablzHeaderItemContent" Value="{StaticResource TitleBarHeight}" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -217,10 +216,10 @@
                                         Padding="{TemplateBinding Control.Padding}" BorderBrush="{TemplateBinding Border.BorderBrush}"
                                         Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
                                 </Border>-->
-                                <Grid Height="{StaticResource TabHeaderBarHeight}" VerticalAlignment="Bottom">
+                                <Grid Height="{StaticResource TitleBarHeight}" VerticalAlignment="Bottom">
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                                   Width="{TemplateBinding ActualWidth}"
-                                                  Height="{StaticResource TabHeaderBarHeight}"
+                                                  Height="{StaticResource TitleBarHeight}"
                                                   VerticalAlignment="Bottom"
                                                   VerticalContentAlignment="Bottom"
                                                   utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
@@ -230,7 +229,7 @@
                                                         HorizontalAlignment="Left"
                                                         VerticalAlignment="Bottom"
                                                         Width="{TemplateBinding ItemsPresenterWidth}"
-                                                        Height="{StaticResource TabHeaderBarHeight}" />
+                                                        Height="{StaticResource TitleBarHeight}" />
                                     </ScrollViewer>
                                 </Grid>
                             </Grid>
@@ -246,7 +245,7 @@
                     <Setter.Value>
                         <Grid Margin="5 0" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Bottom">
                             <Grid Width="24" Height="24" VerticalAlignment="Center">
-                                <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo64.png"></Image>
+                                <Image Source="/Resources/Image/Logo/logo64.png"></Image>
                             </Grid>
                         </Grid>
                     </Setter.Value>
@@ -262,7 +261,9 @@
                             </Grid.ColumnDefinitions>
 
                             <Grid Background="{DynamicResource PrimaryMidBrush}">
-                                <Button Width="25" HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" Height="{StaticResource TrapezoidHeight}">
+                                <Button Width="25" 
+                                        Height="{StaticResource TrapezoidHeight}"
+                                        HorizontalAlignment="Left" Command="{Binding CmdInvokeLauncher}" >
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                             <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
@@ -317,6 +318,24 @@
                                         <Setter Property="Focusable" Value="False" />
                                     </Style>
                                 </StackPanel.Resources>
+
+
+                                <!--<ItemsControl Name="ListViewTags" Height="{StaticResource TitleBarHeight}"
+                                              ItemsSource="{Binding Tags}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="system:String">
+                                            <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" 
+                                                    CornerRadius="4" Margin="3 5">
+                                                <Label VerticalAlignment="Center" Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}"></Label>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>-->
 
                                 <CheckBox Name="CbLock" ToolTip="{DynamicResource word_lock}" IsChecked="{Binding IsLocked}">
                                     <CheckBox.Style>

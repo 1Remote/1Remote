@@ -179,9 +179,6 @@
       <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ConsoleManager.cs" />
-    <Compile Include="Utils\EditableTextBlock\EditableTextBlock.xaml.cs">
-      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\CmdRunner.cs" />
@@ -196,7 +193,6 @@
     <Compile Include="Helper\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\Base\ProtocolServerBase.cs" />
-    <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Utils\NetImageProcessHelper.cs" />
     <Compile Include="Utils\PageHost\AnimationPage.cs" />
     <Compile Include="Utils\PageHost\PageHost.xaml.cs">
@@ -355,12 +351,9 @@
     <Resource Include="Resources\Icons\20210106\20210106_104.png" />
     <Resource Include="Resources\Icons\20210106\20210106_105.png" />
     <Resource Include="kitty_portable.exe" />
-    <Resource Include="Resources\Logo\author_avatar.jpg" />
     <Resource Include="FodyWeavers.xml" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
-    <Resource Include="Resources\Logo\logo256.png" />
-    <Resource Include="Resources\Logo\logo64.png" />
     <Resource Include="Utils\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
@@ -396,18 +389,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Converter\Converter.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Theme\Default.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Style\GlobalStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -417,10 +398,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Utils\ColorPickerWPF\SliderRow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\EditableTextBlock\EditableTextBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
