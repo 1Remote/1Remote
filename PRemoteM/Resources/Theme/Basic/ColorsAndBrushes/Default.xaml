@@ -42,8 +42,4 @@
 
     <Color x:Key="DefaultBorderColor">#707A8C</Color>
     <SolidColorBrush x:Key="DefaultBorderBrush" Color="{DynamicResource DefaultBorderColor}" />
-    <!--<Color x:Key="TextBoxDefaultBackgroundColor">#ffffff</Color>
-    <SolidColorBrush x:Key="TextBoxDefaultBackgroundBrush" Color="{DynamicResource TextBoxDefaultBackgroundColor}" />
-    <Color x:Key="TextBoxDefaultBackgroundColor">#ffffff</Color>
-    <SolidColorBrush x:Key="TextBoxDefaultBackgroundBrush" Color="{DynamicResource TextBoxDefaultBackgroundColor}" />-->
 </ResourceDictionary>
