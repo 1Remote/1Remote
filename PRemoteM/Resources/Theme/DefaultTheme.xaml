@@ -18,6 +18,7 @@
         <ResourceDictionary Source="Basic/Effects.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Basic/ColorsAndBrushes/Default.xaml"></ResourceDictionary>
 
+        <ResourceDictionary Source="Styles/AppStyles.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/BaseStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ButtonStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/TextBoxStyle.xaml"></ResourceDictionary>

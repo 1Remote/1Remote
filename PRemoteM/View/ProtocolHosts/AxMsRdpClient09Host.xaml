@@ -126,13 +126,6 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <Grid.Resources>
-            <ResourceDictionary>
-                <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Resources/Style/GlobalStyle.xaml"></ResourceDictionary>
-                </ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary>
-        </Grid.Resources>
         <WindowsFormsHost x:Name="RdpHost"/>
         <Control Name="GridLoading" Style="{StaticResource BusyAnimationStyle}" Background="Black"/>
         <Grid Name="GridMessageBox" Background="Black">

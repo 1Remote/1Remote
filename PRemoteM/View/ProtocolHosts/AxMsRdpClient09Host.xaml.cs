@@ -997,10 +997,16 @@ namespace PRM.View.ProtocolHosts
                 var tmp = _rdp;
                 var t = new Task(() =>
                 {
-                    if (tmp.Connected > 0)
-                        tmp.Disconnect();
-                    tmp.Dispose();
-                    tmp = null;
+                    try
+                    {
+                        if (tmp.Connected > 0)
+                            tmp.Disconnect();
+                        tmp.Dispose();
+                    }
+                    finally
+                    {
+                        tmp = null;
+                    }
                 });
                 t.Start();
                 _rdp = null;
