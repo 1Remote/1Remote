@@ -53,15 +53,29 @@ namespace PRM.Core.Model
         }
 
 
+        private static string GetJsonPath()
+        {
+            const string pinnedTagsPath = "PinnedTags.json";
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            var path = Path.Combine(Environment.CurrentDirectory, pinnedTagsPath);
+            if (IOPermissionHelper.IsFileCanWriteNow(path) == false)
+            {
+                path = Path.Combine(appDateFolder, pinnedTagsPath);
+            }
+#if FOR_MICROSOFT_STORE_ONLY
+            path = Path.Combine(appDateFolder, PinnedTagsPath);
+#endif
+            return path;
+        }
 
-        private const string PinnedTagsPath = "PinnedTags.json";
         public static Dictionary<string, bool> GetPinnedTags()
         {
             try
             {
-                if (File.Exists(PinnedTagsPath))
+                var path = GetJsonPath();
+                if (File.Exists(path))
                 {
-                    var json = File.ReadAllText(PinnedTagsPath, Encoding.UTF8);
+                    var json = File.ReadAllText(path, Encoding.UTF8);
                     return JsonConvert.DeserializeObject<Dictionary<string, bool>>(json);
                 }
             }
@@ -75,6 +89,7 @@ namespace PRM.Core.Model
 
         public static void UpdateTagsCache(Tag changedTag)
         {
+            var path = GetJsonPath();
             Debug.Assert(changedTag != null);
             var tags = GetPinnedTags();
             tags.TryGetValue(changedTag.Name, out var isPinned);
@@ -82,24 +97,25 @@ namespace PRM.Core.Model
             {
                 tags.Remove(changedTag.Name);
                 tags.Add(changedTag.Name, true);
-                File.WriteAllText(PinnedTagsPath, JsonConvert.SerializeObject(tags), Encoding.UTF8);
+                File.WriteAllText(path, JsonConvert.SerializeObject(tags), Encoding.UTF8);
             }
             if (changedTag.IsPinned == false && isPinned == true)
             {
                 tags.Remove(changedTag.Name);
                 tags.Add(changedTag.Name, false);
-                File.WriteAllText(PinnedTagsPath, JsonConvert.SerializeObject(tags), Encoding.UTF8);
+                File.WriteAllText(path, JsonConvert.SerializeObject(tags), Encoding.UTF8);
             }
         }
 
         public static void UpdateTagsCache(IEnumerable<Tag> tags)
         {
+            var path = GetJsonPath();
             var dict = new Dictionary<string, bool>();
             foreach (var tag in tags)
             {
                 dict.Add(tag.Name, tag.IsPinned);
             }
-            File.WriteAllText(PinnedTagsPath, JsonConvert.SerializeObject(dict), Encoding.UTF8);
+            File.WriteAllText(path, JsonConvert.SerializeObject(dict), Encoding.UTF8);
         }
     }
 }

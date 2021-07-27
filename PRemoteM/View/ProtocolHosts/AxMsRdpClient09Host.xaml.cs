@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Forms;
 using AxMSTSCLib;
 using MSTSCLib;
+using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;

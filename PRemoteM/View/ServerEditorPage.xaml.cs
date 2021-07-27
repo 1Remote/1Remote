@@ -7,6 +7,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Resources.Icons;
 using Shawn.Utils;
 using PRM.ViewModel;
 

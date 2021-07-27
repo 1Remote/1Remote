@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using PRM.Core.Protocol;
 
-namespace PRM.Core.DB.IDB
+namespace PRM.Core.I
 {
     public enum DatabaseType
     {
