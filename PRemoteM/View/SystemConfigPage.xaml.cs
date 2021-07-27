@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -132,23 +135,32 @@ namespace PRM.View
         private void ContentElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var dlg = new OpenFileDialog();
-            dlg.Filter = "json|*.json";
-            dlg.Title = "Select a language json file for translation test.";
+            dlg.Filter = "xaml|*.xaml";
+            dlg.Title = "Select a language resource file for translation test.";
             dlg.CheckFileExists = false;
             if (dlg.ShowDialog() != true) return;
 
             var path = dlg.FileName;
             var fi = new FileInfo(path);
-            var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
-            if (resourceDictionary?.Contains("language_name") == true)
+            var resourceDictionary = MultiLangHelper.LangDictFromXamlFile(fi.FullName);
+            if (resourceDictionary?.Contains("language_name") != true)
             {
-                var code = fi.Name.ReplaceLast(fi.Extension, "");
-                SystemConfig.Instance.Language.AddJsonLanguageResources(code, fi.FullName);
+                MessageBox.Show("language resource must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                return;
             }
-            else
+
+            var en = SystemConfig.Instance.Language.GetResourceDictionaryByCode("en-us");
+            Debug.Assert(en != null);
+            var missingFields = MultiLangHelper.FindMissingFields(en, resourceDictionary);
+            if (missingFields.Count > 0)
             {
-                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                var mf = string.Join(", ", missingFields);
+                MessageBox.Show($"language resource missing:\r\n {mf}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                return;
             }
+
+            var code = fi.Name.ReplaceLast(fi.Extension, "");
+            SystemConfig.Instance.Language.AddXamlLanguageResources(code, fi.FullName);
         }
     }
 

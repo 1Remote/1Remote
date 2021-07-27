@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using PRM.Core.DB;
-using PRM.Core.DB.IDB;
+using PRM.Core.I;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;

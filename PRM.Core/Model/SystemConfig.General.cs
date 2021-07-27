@@ -23,10 +23,6 @@ namespace PRM.Core.Model
         public SystemConfigGeneral(Ini ini) : base(ini)
         {
             Load();
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-            StopAutoSave = true;
-            IconFolderPath = Path.Combine(appDateFolder, "icons");
-            StopAutoSave = false;
         }
 
         private bool _appStartAutomatically = true;
@@ -48,14 +44,6 @@ namespace PRM.Core.Model
         {
             get => _appStartMinimized;
             set => SetAndNotifyIfChanged(nameof(AppStartMinimized), ref _appStartMinimized, value);
-        }
-
-        private string _iconFolderPath = "./icons";
-
-        public string IconFolderPath
-        {
-            get => _iconFolderPath;
-            private set => SetAndNotifyIfChanged(nameof(IconFolderPath), ref _iconFolderPath, value);
         }
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.NameAsc;

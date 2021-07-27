@@ -8,7 +8,7 @@ using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
 using PRM.Core.DB;
-using PRM.Core.DB.IDB;
+using PRM.Core.I;
 using Shawn.Utils;
 
 namespace PRM.Core.Model

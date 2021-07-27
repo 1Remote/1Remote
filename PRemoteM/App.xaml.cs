@@ -163,10 +163,10 @@ namespace PRM
             SystemConfig.Instance.DataSecurity = dataSecurity;
             SystemConfig.Instance.Theme = theme;
             SystemConfig.Instance.Locality = locality;
-//#if DEBUG
-//            // TODO remove
-//            isNewUser = true;
-//#endif
+            //#if DEBUG
+            //            // TODO remove
+            //            isNewUser = true;
+            //#endif
 
             if (isNewUser)
             {
