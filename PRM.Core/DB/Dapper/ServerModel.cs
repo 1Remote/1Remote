@@ -1,9 +1,10 @@
-﻿using PRM.Core.DB.IDB;
+﻿using PRM.Core.Helper;
+using PRM.Core.I;
 using PRM.Core.Protocol;
 
 namespace PRM.Core.DB.Dapper
 {
-    public class Server : IDbServer
+    public class Server : IDbServerModel
     {
         public int Id { get; set; }
         public string Protocol { get; set; } = "";

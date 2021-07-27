@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
@@ -247,7 +248,7 @@ namespace PRM.Core.Utils.mRemoteNG
             }
         }
 
-        public static List<ProtocolServerBase> FromCsv(string csvPath)
+        public static List<ProtocolServerBase> FromCsv(string csvPath, List<BitmapSource> icons)
         {
             if (!File.Exists(csvPath))
                 return null;
@@ -368,9 +369,9 @@ namespace PRM.Core.Utils.mRemoteNG
                         break;
                 }
 
-                if (server != null)
+                if (server != null && icons.Count > 0)
                 {
-                    server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                    server.IconBase64 = icons[r.Next(0, icons.Count)].ToBase64();
                     list.Add(server);
                 }
             }

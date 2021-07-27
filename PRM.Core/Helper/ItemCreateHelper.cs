@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using PRM.Core.DB;
-using PRM.Core.DB.IDB;
+using PRM.Core.I;
+using PRM.Core.Protocol;
 
-namespace PRM.Core.Protocol
+namespace PRM.Core.Helper
 {
     public class ItemCreateHelper
     {
         private static readonly object Locker = new object();
         private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
 
-        public static ProtocolServerBase CreateFromDbOrm(IDbServer dbIdbServer)
+        public static ProtocolServerBase CreateFromDbOrm(IDbServerModel iServerModel)
         {
             // reflect all the child class
             lock (Locker)
@@ -24,21 +24,22 @@ namespace PRM.Core.Protocol
                     _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolServerBase)) && !x.IsAbstract)
                         .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
                 }
+            }
 
-                // get instance form json string
-                foreach (var serverBase in _baseList)
+            // get instance form json string
+            foreach (var serverBase in _baseList)
+            {
+                if (iServerModel.GetProtocol() == serverBase.Protocol
+                    && iServerModel.GetClassVersion() == serverBase.ClassVersion)
                 {
-                    if (dbIdbServer.GetProtocol() == serverBase.Protocol
-                        && dbIdbServer.GetClassVersion() == serverBase.ClassVersion)
-                    {
-                        var jsonString = dbIdbServer.GetJson();
-                        var ret = serverBase.CreateFromJsonString(jsonString);
-                        if (ret == null) continue;
-                        ret.Id = dbIdbServer.GetId();
-                        return ret;
-                    }
+                    var jsonString = iServerModel.GetJson();
+                    var ret = serverBase.CreateFromJsonString(jsonString);
+                    if (ret == null) continue;
+                    ret.Id = iServerModel.GetId();
+                    return ret;
                 }
             }
+
             return null;
         }
 

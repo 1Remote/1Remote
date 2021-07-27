@@ -11,7 +11,6 @@ using VariableKeywordMatcher.Provider.DiscreteMatch;
 
 namespace PRM.Core.Model
 {
-
     public class KeywordMatchService
     {
         public class Cache
@@ -104,18 +103,5 @@ namespace PRM.Core.Model
             var newCache = _matcher.CreateStringCache(originalString);
             GetCache(originalString).SpellCaches = newCache.SpellCaches;
         }
-
-        //public static List<bool> MergeHitFlags(List<List<bool>> flagss)
-        //{
-        //    var mergedFlags = new List<bool>();
-        //    for (var i = 0; i < flagss.First().Count; i++)
-        //        mergedFlags.Add(false);
-        //    foreach (var flags in flagss)
-        //    {
-        //        for (int j = 0; j < flags.Count; j++)
-        //            mergedFlags[j] |= flags[j];
-        //    }
-        //    return mergedFlags;
-        //}
     }
 }
