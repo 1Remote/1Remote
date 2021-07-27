@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Controls;
 using PRM.Core;
+using PRM.Core.Helper;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
@@ -20,6 +21,7 @@ using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
 using PRM.Core.Utils.mRemoteNG;
+using PRM.Resources.Icons;
 using Shawn.Utils;
 
 namespace PRM.ViewModel
@@ -241,7 +243,7 @@ namespace PRM.ViewModel
                     {
                         var dispName = server.DisplayName;
                         var subTitle = server.SubTitle;
-                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() {dispName, subTitle}, keyWords).IsMatchAllKeywords;
+                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
                         if (matched)
                             card.ObjectVisibilityInList = Visibility.Visible;
                         else
@@ -268,7 +270,7 @@ namespace PRM.ViewModel
                     }
                     else
                     {
-                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() {tag.Name}, keyWords).IsMatchAllKeywords;
+                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { tag.Name }, keyWords).IsMatchAllKeywords;
                         if (matched)
                             tag.ObjectVisibilityInList = Visibility.Visible;
                         else
@@ -399,7 +401,7 @@ namespace PRM.ViewModel
                         if (dlg.ShowDialog() != true) return;
                         try
                         {
-                            var list = MRemoteNgImporter.FromCsv(dlg.FileName);
+                            var list = MRemoteNgImporter.FromCsv(dlg.FileName, ServerIcons.Instance.Icons);
                             if (list?.Count > 0)
                             {
                                 foreach (var serverBase in list)

@@ -9,6 +9,7 @@
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:controls2="clr-namespace:PRM.Controls"
+             xmlns:icons="clr-namespace:PRM.Resources.Icons"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
@@ -164,7 +165,7 @@
                                                     <ListView BorderThickness="0"
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
-                                                              ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}"
+                                                              ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
                                                               Background="Transparent">
                                                         <ListView.ItemsPanel>
                                                             <ItemsPanelTemplate>
