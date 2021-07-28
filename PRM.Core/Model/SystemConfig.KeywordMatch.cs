@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Shawn.Utils;
 using VariableKeywordMatcher;
 using VariableKeywordMatcher.Provider.DirectMatch;
+using VariableKeywordMatcher.Provider.InitialsMatch;
+using VariableKeywordMatcher.Provider.DiscreteMatch;
+using VariableKeywordMatcher.Provider.ChineseZhCnPinYin;
+using VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials;
 
 namespace PRM.Core.Model
 {
@@ -75,9 +80,25 @@ namespace PRM.Core.Model
             }
             else
             {
+                // first time init.
+
+                CultureInfo ci = CultureInfo.CurrentCulture;
+                string code = ci.Name.ToLower();
                 foreach (var matchProviderInfo in matchProviderInfos)
                 {
-                    matchProviderInfo.Enabled = true;
+                    matchProviderInfo.Enabled = false;
+                }
+                // ReSharper disable once PossibleNullReferenceException
+                matchProviderInfos.FirstOrDefault(x => x.Name == InitialsMatchProvider.GetName()).Enabled = true;
+                // ReSharper disable once PossibleNullReferenceException
+                matchProviderInfos.FirstOrDefault(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
+
+                if (code.StartsWith("zh"))
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    matchProviderInfos.FirstOrDefault(x => x.Name == ChineseZhCnPinYinMatchProvider.GetName()).Enabled = true;
+                    // ReSharper disable once PossibleNullReferenceException
+                    matchProviderInfos.FirstOrDefault(x => x.Name == ChineseZhCnPinYinInitialsMatchProvider.GetName()).Enabled = true;
                 }
             }
 

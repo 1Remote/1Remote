@@ -86,12 +86,10 @@ namespace PRM.Core.Protocol
         {
             get
             {
-                if (_cmdConnServer == null)
-                    _cmdConnServer = new RelayCommand((o) =>
-                    {
-                        GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id);
-                    });
-                return _cmdConnServer;
+                return _cmdConnServer ??= new RelayCommand(o =>
+                {
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id);
+                });
             }
         }
 

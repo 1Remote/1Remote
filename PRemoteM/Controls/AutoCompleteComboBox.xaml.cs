@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Shawn.Utils
+namespace PRM.Controls
 {
     public class ComboboxWithKeyInvoke : ComboBox
     {

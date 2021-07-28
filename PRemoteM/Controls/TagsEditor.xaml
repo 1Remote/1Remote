@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:self="clr-namespace:PRM.Controls"
-             xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance self:TagsEditor}"
@@ -61,7 +60,7 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition Width="20"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <utils:AutoCompleteComboBox x:Name="TbNewTag" KeyDown="TextBoxOnKeyDown" Margin="0 0 5 0"></utils:AutoCompleteComboBox>
+                    <self:AutoCompleteComboBox x:Name="TbNewTag" KeyDown="TextBoxOnKeyDown" Margin="0 0 5 0"></self:AutoCompleteComboBox>
                     <Button Grid.Column="1" Style="{StaticResource ButtonPrimaryStyle}" VerticalAlignment="Stretch" Click="Button_OnClick">+</Button>
                 </Grid>
             </Grid>

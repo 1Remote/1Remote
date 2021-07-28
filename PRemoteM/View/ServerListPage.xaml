@@ -48,8 +48,6 @@
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="IsSelected" Value="True" />
-                                    <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                    <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -63,15 +61,6 @@
                         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </ScrollViewer>
                 </Border>
-                <ControlTemplate.Triggers>
-                    <MultiTrigger>
-                        <MultiTrigger.Conditions>
-                            <Condition Property="IsGrouping" Value="True" />
-                            <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False" />
-                        </MultiTrigger.Conditions>
-                        <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
-                    </MultiTrigger>
-                </ControlTemplate.Triggers>
             </ControlTemplate>
             <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerCards">
                 <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="0 0 0 20"/>
@@ -94,7 +83,7 @@
 
             <ControlTemplate x:Key="ListBoxTemplateForServerList" TargetType="{x:Type ListBox}">
                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
-                    <Grid Grid.IsSharedSizeScope="True">
+                    <Grid>
                         <!--<Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
@@ -248,7 +237,8 @@
                                 </Button>
                             </Grid>
                         </Grid>
-                        <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="{TemplateBinding Padding}" HorizontalScrollBarVisibility="Disabled">
+
+                        <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="0" HorizontalScrollBarVisibility="Disabled">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
                                 <ItemsPresenter.Margin>
                                     <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
@@ -263,9 +253,6 @@
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerList">
-                <StackPanel Margin="0 0 0 30"></StackPanel>
-            </ItemsPanelTemplate>
             <DataTemplate x:Key="DataTemplateForServerList" DataType="protocol:VmProtocolServer">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                     <Grid.InputBindings>
@@ -285,16 +272,20 @@
 
             <Style x:Key="ServerListStyle" TargetType="ListBox">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Padding" Value="10 0 0 0"></Setter>
                 <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>
                 <Setter Property="ItemsPanel" Value="{StaticResource ItemsPanelTemplateForServerCards}"></Setter>
                 <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>
 
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="{x:Static model:EnumServerListPageUI.List}">
-                        <Setter Property="Padding" Value="0 0 0 0"></Setter>
                         <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
-                        <Setter Property="ItemsPanel" Value="{StaticResource ItemsPanelTemplateForServerList}"></Setter>
+                        <Setter Property="ItemsPanel">
+                            <Setter.Value>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="0 0 0 30"/>
+                                </ItemsPanelTemplate>
+                            </Setter.Value>
+                        </Setter>
                         <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
                     </DataTrigger>
                 </Style.Triggers>
@@ -307,7 +298,7 @@
 
 
 
-    <Grid Background="{DynamicResource PrimaryMidBrush}">
+    <Grid Background="{DynamicResource PrimaryMidBrush}" Grid.IsSharedSizeScope="True">
         <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
@@ -456,6 +447,7 @@
                         <MenuItem Header="{DynamicResource word_delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource word_rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                         <MenuItem Header="{DynamicResource word_connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="{DynamicResource word_connect_to_new_tab}" Command="{Binding CmdTagConnectToNewTab}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                     </ContextMenu>
                 </ItemsControl.ContextMenu>
                 <ListBox.ItemContainerStyle>
@@ -487,7 +479,7 @@
                             </Border>-->
 
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                <Label Content="{Binding ItemsCount}" Margin="10 0"></Label>
+                                <TextBlock Text="{Binding ItemsCount}" Margin="10 0" VerticalAlignment="Center" Foreground="{DynamicResource BackgroundTextBrush}"></TextBlock>
                                 <ToggleButton IsChecked="{Binding IsPinned, Mode=TwoWay}"></ToggleButton>
                             </StackPanel>
                         </Grid>
@@ -595,8 +587,10 @@
                     <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto" 
                                   Margin="10 0 0 0"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                      utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
-                                      Style="{StaticResource MinHorizontalScrollViewerStyle}">
+                                  utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                  attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
+                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
+                                  Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ListBox
                                     IsSynchronizedWithCurrentItem="True"
@@ -615,6 +609,7 @@
                                         <MenuItem Header="{DynamicResource word_delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                         <MenuItem Header="{DynamicResource word_rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                         <MenuItem Header="{DynamicResource word_connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
+                                        <MenuItem Header="{DynamicResource word_connect_to_new_tab}" Command="{Binding CmdTagConnectToNewTab}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                     </ContextMenu>
                                 </ListBox.ContextMenu>
                                 <ListBox.Style>

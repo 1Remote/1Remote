@@ -49,7 +49,6 @@ namespace PRM.ViewModel
             _oneActionHeight = oneActionHeight;
             this._gridMenuActions = gridMenuActions;
             _cornerRadius = cornerRadius;
-            GridKeywordHeight = 46;
             ReCalcWindowHeight(false);
         }
 
@@ -134,7 +133,6 @@ namespace PRM.ViewModel
         }
 
         private double _gridMainHeight;
-
         public double GridMainHeight
         {
             get => _gridMainHeight;
@@ -146,17 +144,15 @@ namespace PRM.ViewModel
         }
 
         private RectangleGeometry _gridMainClip = null;
-
         public RectangleGeometry GridMainClip
         {
             get => _gridMainClip;
             set => SetAndNotifyIfChanged(nameof(GridMainClip), ref _gridMainClip, value);
         }
 
-        public double GridKeywordHeight { get; }
+        public double GridKeywordHeight { get; } = 46;
 
         private double _gridSelectionsHeight;
-
         public double GridSelectionsHeight
         {
             get => _gridSelectionsHeight;
@@ -164,7 +160,6 @@ namespace PRM.ViewModel
         }
 
         private double _gridActionsHeight;
-
         public double GridActionsHeight
         {
             get => _gridActionsHeight;
@@ -195,8 +190,8 @@ namespace PRM.ViewModel
 
         public void ShowActionsList()
         {
-            if (Context.AppData.VmItemList.All(x => x.ObjectVisibility != Visibility.Visible) 
-                || SelectedIndex < 0 
+            if (Context.AppData.VmItemList.All(x => x.ObjectVisibility != Visibility.Visible)
+                || SelectedIndex < 0
                 || SelectedIndex >= Context.AppData.VmItemList.Count)
             {
                 return;
@@ -210,6 +205,11 @@ namespace PRM.ViewModel
                 {
                     ActionName = SystemConfig.Instance.Language.GetText("word_connect"),
                     Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
+                },
+                new ActionItem()
+                {
+                    ActionName = SystemConfig.Instance.Language.GetText("word_connect_to_new_tab"),
+                    Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
                 },
                 new ActionItem()
                 {

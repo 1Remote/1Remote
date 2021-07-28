@@ -31,6 +31,8 @@
     <s:String x:Key="word_topmost">置顶</s:String>
     <s:String x:Key="word_close_all">全部关闭</s:String>
     <s:String x:Key="word_rename">重命名</s:String>
+    <s:String x:Key="word_connect">连接</s:String>
+    <s:String x:Key="word_connect_to_new_tab">连接 (新窗口)</s:String>
 
     <s:String x:Key="filter_mainwindow">在此输入关键词</s:String>
     <s:String x:Key="filter_searchbox">搜索 (Ctrl+F)</s:String>
@@ -123,7 +125,6 @@
     <s:String x:Key="system_options_theme_putty_theme">主题</s:String>
 
     <!-- server operate -->
-    <s:String x:Key="word_connect">连接</s:String>
     <s:String x:Key="server_card_operate_duplicate">创建副本</s:String>
     <s:String x:Key="server_card_operate_copy_address">复制地址到剪贴板</s:String>
     <s:String x:Key="server_card_operate_copy_username">复制用户名到剪贴板</s:String>
