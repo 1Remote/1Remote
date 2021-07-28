@@ -31,6 +31,8 @@
     <s:String x:Key="word_topmost">Always on top</s:String>
     <s:String x:Key="word_close_all">Alle schließen</s:String>
     <s:String x:Key="word_rename">Umbenennen</s:String>
+    <s:String x:Key="word_connect">Verbinden</s:String>
+    <s:String x:Key="word_connect_to_new_tab">Verbinden (Neues Fenster)</s:String>
 
     <s:String x:Key="filter_mainwindow">Suchbegriffe eingeben</s:String>
     <s:String x:Key="filter_searchbox">Suche (STRG + F)</s:String>
@@ -123,7 +125,6 @@
     <s:String x:Key="system_options_theme_putty_theme">Farbthema</s:String>
 
     <!-- server operate -->
-    <s:String x:Key="word_connect">Verbinden</s:String>
     <s:String x:Key="server_card_operate_duplicate">Duplizieren</s:String>
     <s:String x:Key="server_card_operate_copy_address">Server-Adresse in die Zwischenablage kopieren</s:String>
     <s:String x:Key="server_card_operate_copy_username">Benutzername in die Zwischenablage kopieren</s:String>

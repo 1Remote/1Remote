@@ -31,6 +31,8 @@
     <s:String x:Key="word_topmost">Garder au premier plan</s:String>
     <s:String x:Key="word_close_all">Tout fermer</s:String>
     <s:String x:Key="word_rename">Renommer</s:String>
+    <s:String x:Key="word_connect">Connexion</s:String>
+    <s:String x:Key="word_connect_to_new_tab">Connexion (Nouvelle fenetre)</s:String>
 
     <s:String x:Key="filter_mainwindow">Saisissez vos mots clés</s:String>
     <s:String x:Key="filter_searchbox">Rechercher (Ctrl+F)</s:String>
@@ -123,7 +125,6 @@
     <s:String x:Key="system_options_theme_putty_theme">Thèmes de couleurs</s:String>
 
     <!-- server operate -->
-    <s:String x:Key="word_connect">Connexion</s:String>
     <s:String x:Key="server_card_operate_duplicate">Dupliquer</s:String>
     <s:String x:Key="server_card_operate_copy_address">Copier l'adresse dans le presse-papiers</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copier le nom d'utilisateur dans le presse-papiers</s:String>

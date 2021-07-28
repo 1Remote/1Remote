@@ -1,10 +1,11 @@
 ﻿<utils:WindowChromeBase x:Class="PRM.View.SearchBoxWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:system="clr-namespace:System;assembly=mscorlib"
-                  xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
                   xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  xmlns:viewModel="clr-namespace:PRM.ViewModel"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -188,6 +189,7 @@
                                     <Setter Property="FontSize" Value="18"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"></Setter>
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
@@ -198,6 +200,7 @@
                                     <Setter Property="FontSize" Value="12"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
+                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"></Setter>
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
@@ -226,11 +229,15 @@
 
         <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBox}">
                         <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
-                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Template="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplate}">
+                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" 
+                                          Background="{DynamicResource PrimaryMidBrush}"
+                                          Template="{DynamicResource SearchBoxSelectionList_ScrollViewerTemplate}">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                             </ScrollViewer>
                         </Border>
@@ -253,7 +260,7 @@
                                                     BottomLeft="{StaticResource CornerRadius}" />
                                             </Border.CornerRadius>-->
                                         </Border>
-                                        <ContentPresenter />
+                                        <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
@@ -263,7 +270,10 @@
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
                                             <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
@@ -275,7 +285,7 @@
             </Setter>
         </Style>
 
-        <DataTemplate x:Key="SearchBoxActionItemDataTemplate">
+        <DataTemplate x:Key="SearchBoxActionItemDataTemplate" DataType="viewModel:ActionItem">
             <Grid Height="{StaticResource OneActionItemHeight}">
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
@@ -287,7 +297,10 @@
 
                     <Grid Grid.Row="0" Grid.Column="1"></Grid>
 
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" FontSize="14" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ActionName}" 
+                               Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"
+                               FontSize="14" VerticalAlignment="Center">
+                    </TextBlock>
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -318,7 +331,7 @@
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
-            <Grid Width="50" Height="40" HorizontalAlignment="Right"
+            <Grid Width="50" Height="40" HorizontalAlignment="Right" Cursor="SizeAll"
                           Background="{DynamicResource PrimaryMidBrush}"
                           PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
@@ -335,7 +348,7 @@
                          PreviewMouseLeftButtonDown="ListBoxSelections_OnMouseDoubleClick"
                          SelectedIndex="{Binding SelectedIndex}"
                          ItemsSource="{Binding Context.AppData.VmItemList}"
-                         Background="Transparent"
+                         Background="{DynamicResource PrimaryMidBrush}"
                          Foreground="{DynamicResource PrimaryTextBrush}"
                          Style="{StaticResource SearchBoxSelectionList}">
                 </ListBox>
@@ -343,8 +356,8 @@
         </Grid>
 
         <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}"
-                VerticalAlignment="Top"
-                Background="{DynamicResource PrimaryMidBrush}">
+              Background="{DynamicResource PrimaryMidBrush}"
+                VerticalAlignment="Top">
             <StackPanel>
                 <Grid Margin="0 5" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>

@@ -62,7 +62,7 @@
                 <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=CbUsePrivateKey,Path= IsChecked}" Value="True">
-                            <Setter Property="Margin" Value="0"></Setter>
+                            <Setter Property="Margin" Value="0 0 0 5"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
