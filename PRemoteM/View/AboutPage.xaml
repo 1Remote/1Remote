@@ -88,7 +88,7 @@
                                         <Style TargetType="Grid" BasedOn="{StaticResource RowGrid}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=TbNewVersion,Path=Text}" Value="">
-                                                    <!--<Setter Property="Visibility" Value="Collapsed"></Setter>-->
+                                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

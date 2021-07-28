@@ -9,9 +9,6 @@ namespace PRM.Core.Model
     {
         public SystemConfigLocality(Ini ini) : base(ini)
         {
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
-            if (!Directory.Exists(appDateFolder))
-                Directory.CreateDirectory(appDateFolder);
             Load();
         }
 
