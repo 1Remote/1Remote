@@ -215,20 +215,16 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdShowTabByIndex == null)
+                return _cmdShowTabByIndex ??= new RelayCommand((o) =>
                 {
-                    _cmdShowTabByIndex = new RelayCommand((o) =>
+                    if (int.TryParse(o.ToString(), out int i))
                     {
-                        if (int.TryParse(o.ToString(), out int i))
+                        if (i > 0 && i <= Items.Count)
                         {
-                            if (i > 0 && i <= Items.Count)
-                            {
-                                SelectedItem = Items[i - 1];
-                            }
+                            SelectedItem = Items[i - 1];
                         }
-                    }, o => this.SelectedItem != null);
-                }
-                return _cmdShowTabByIndex;
+                    }
+                }, o => this.SelectedItem != null);
             }
         }
 
@@ -238,18 +234,14 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdGoMinimize == null)
+                return _cmdGoMinimize ??= new RelayCommand((o) =>
                 {
-                    _cmdGoMinimize = new RelayCommand((o) =>
+                    if (o is Window window)
                     {
-                        if (o is Window window)
-                        {
-                            window.WindowState = WindowState.Minimized;
-                            SelectedItem.Content.ToggleAutoResize(false);
-                        }
-                    });
-                }
-                return _cmdGoMinimize;
+                        window.WindowState = WindowState.Minimized;
+                        SelectedItem.Content.ToggleAutoResize(false);
+                    }
+                });
             }
         }
 
@@ -259,15 +251,11 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdGoMaximize == null)
+                return _cmdGoMaximize ??= new RelayCommand((o) =>
                 {
-                    _cmdGoMaximize = new RelayCommand((o) =>
-                    {
-                        if (o is Window window)
-                            window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-                    });
-                }
-                return _cmdGoMaximize;
+                    if (o is Window window)
+                        window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                });
             }
         }
 
@@ -277,15 +265,11 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdCloseAll == null)
+                return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
-                    _cmdCloseAll = new RelayCommand((o) =>
-                    {
-                        if (IsLocked) return;
-                        RemoteWindowPool.Instance.DelTabWindow(Token);
-                    });
-                }
-                return _cmdCloseAll;
+                    if (IsLocked) return;
+                    RemoteWindowPool.Instance.DelTabWindow(Token);
+                });
             }
         }
 
@@ -295,22 +279,18 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdClose == null)
+                return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    _cmdClose = new RelayCommand((o) =>
+                    if (IsLocked) return;
+                    if (SelectedItem != null)
                     {
-                        if (IsLocked) return;
-                        if (SelectedItem != null)
-                        {
-                            RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
-                        }
-                        else
-                        {
-                            CmdCloseAll.Execute();
-                        }
-                    }, o => this.SelectedItem != null);
-                }
-                return _cmdClose;
+                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
+                    }
+                    else
+                    {
+                        CmdCloseAll.Execute();
+                    }
+                }, o => this.SelectedItem != null);
             }
         }
 

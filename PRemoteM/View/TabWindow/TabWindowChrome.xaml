@@ -223,7 +223,9 @@
                                                   VerticalAlignment="Bottom"
                                                   VerticalContentAlignment="Bottom"
                                                   utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
-                                                  Style="{StaticResource MinHorizontalScrollViewerStyle}"
+                                                  attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
+                                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
+                                                  Style="{StaticResource ScrollViewMiniStyle}"
                                                   Background="{x:Null}">
                                         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
                                                         HorizontalAlignment="Left"

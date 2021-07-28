@@ -1,18 +1,18 @@
-﻿<UserControl x:Class="Shawn.Utils.AutoCompleteComboBox"
+﻿<UserControl x:Class="PRM.Controls.AutoCompleteComboBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:utils="clr-namespace:Shawn.Utils"
+             xmlns:controls="clr-namespace:PRM.Controls"
              mc:Ignorable="d" 
              Name="UserControl"
-             d:DataContext="{d:DesignInstance utils:AutoCompleteComboBox}"
+             d:DataContext="{d:DesignInstance controls:AutoCompleteComboBox}"
              d:DesignHeight="30" d:DesignWidth="80">
     <UserControl.Resources>
-        <Style TargetType="utils:ComboboxWithKeyInvoke" BasedOn="{StaticResource ComboBoxAccentStyle}"></Style>
+        <Style TargetType="controls:ComboboxWithKeyInvoke" BasedOn="{StaticResource ComboBoxAccentStyle}"></Style>
     </UserControl.Resources>
     <Grid Name="Grid">
-        <utils:ComboboxWithKeyInvoke
+        <controls:ComboboxWithKeyInvoke
             x:Name="CbContent"
             PreviewKeyDown="CbContent_OnKeyDown"
             FontSize="{Binding ElementName=UserControl, Path=FontSize, Mode=OneWay}"
@@ -22,6 +22,6 @@
             IsDropDownOpen="False"
             IsTextSearchEnabled="False"
             StaysOpenOnEdit="True">
-        </utils:ComboboxWithKeyInvoke>
+        </controls:ComboboxWithKeyInvoke>
     </Grid>
 </UserControl>

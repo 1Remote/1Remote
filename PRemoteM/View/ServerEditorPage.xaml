@@ -4,12 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
-             xmlns:controls2="clr-namespace:PRM.Controls"
+             xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:icons="clr-namespace:PRM.Resources.Icons"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
@@ -87,7 +87,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <utils:AutoCompleteComboBox x:Name="DisplayName"
+                                        <controls:AutoCompleteComboBox x:Name="DisplayName"
                                                                     Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
                                         />
@@ -99,9 +99,9 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_tag}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls2:TagsEditor x:Name="TagsEditor"
+                                        <controls:TagsEditor x:Name="TagsEditor"
                                                               Tags="{Binding Server.Tags, Mode=TwoWay}"
-                                                              TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls2:TagsEditor>
+                                                              TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls:TagsEditor>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -143,7 +143,7 @@
                                                     <ColumnDefinition></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel >
-                                                    <controls2:LogoSelector x:Name="LogoSelector"></controls2:LogoSelector>
+                                                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -239,7 +239,10 @@
 
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                  Style="{StaticResource MinHorizontalScrollViewerStyle}">
+                                  utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                  attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
+                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
+                                  Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ListBox Name="ListBoxProtocols"
                                     IsSynchronizedWithCurrentItem="True"
