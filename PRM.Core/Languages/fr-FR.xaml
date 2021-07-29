@@ -163,6 +163,7 @@
     <s:String x:Key="server_editor_connection_password">Mot de passe</s:String>
     <s:String x:Key="server_editor_connection_private_key_checker">utiliser la clé privée</s:String>
     <s:String x:Key="server_editor_connection_private_key">Clé privée</s:String>
+    <s:String x:Key="server_editor_open_sftp_when_connected">Ouvrir SFTP lorsqu'il est connecté</s:String>
     <!-- server editor - display group items -->
     <s:String x:Key="server_editor_display_full_screen_flag">Plein écran</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Désactiver</s:String>

@@ -54,6 +54,14 @@ namespace PRM.Core.Protocol.Putty.SSH
             set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
         }
 
+
+        private bool _openSftpOnConnected = false;
+        public bool OpenSftpOnConnected
+        {
+            get => _openSftpOnConnected;
+            set => SetAndNotifyIfChanged(nameof(OpenSftpOnConnected), ref _openSftpOnConnected, value);
+        }
+
         public override bool IsOnlyOneInstance()
         {
             return false;

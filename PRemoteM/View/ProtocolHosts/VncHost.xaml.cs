@@ -76,6 +76,7 @@ namespace PRM.View.ProtocolHosts
 
         public override void Conn()
         {
+            Status = ProtocolHostStatus.Connecting;
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
             Status = ProtocolHostStatus.Connecting;
@@ -91,6 +92,7 @@ namespace PRM.View.ProtocolHosts
                 VncFormsHost.Visibility = Visibility.Visible;
                 GridLoading.Visibility = Visibility.Collapsed;
                 GridMessageBox.Visibility = Visibility.Collapsed;
+                Status = ProtocolHostStatus.Connected;
             }
             catch (Exception e)
             {
@@ -120,6 +122,7 @@ namespace PRM.View.ProtocolHosts
             Status = ProtocolHostStatus.Disconnected;
             if (Vnc.IsConnected)
                 Vnc.Disconnect();
+            Status = ProtocolHostStatus.Disconnected;
             base.Close();
         }
 
