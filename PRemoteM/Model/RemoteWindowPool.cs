@@ -11,6 +11,8 @@ using System.Windows.Threading;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.FileTransmit.SFTP;
+using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 using PRM.View;
@@ -233,6 +235,24 @@ namespace PRM.Model
 
         private void ConnectWithTab(VmProtocolServer vmProtocolServer, string assignTabToken)
         {
+            // open SFTP when connected.
+            if (vmProtocolServer.Server is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
+            {
+                var sftp = new ProtocolServerSFTP
+                {
+                    MarkColorHex = ssh.MarkColorHex,
+                    IconBase64 = ssh.IconBase64,
+                    DisplayName = ssh.DisplayName + " (SFTP)",
+                    Address = ssh.Address,
+                    Port = ssh.Port,
+                    UserName = ssh.UserName,
+                    Password = ssh.Password,
+                    PrivateKey = ssh.PrivateKey
+                };
+                var vm = new VmProtocolServer(sftp);
+                ConnectWithTab(vm, assignTabToken);
+            }
+
             var tab = GetOrCreateTabWindow(assignTabToken);
             // get display area size for host
             var size = tab.GetTabContentSize();
@@ -600,16 +620,12 @@ namespace PRM.Model
             // Dispose
             try
             {
-                if (host.Status == ProtocolHostStatus.Connected)
-                    host.Close();
+                host.Close();
             }
             catch (Exception e)
             {
                 SimpleLogHelper.Error(e);
             }
-
-            if (host is IDisposable dp)
-                dp.Dispose();
 
             host.ProtocolServer.RunScriptAfterDisconnected();
 

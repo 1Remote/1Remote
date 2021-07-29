@@ -143,6 +143,15 @@
                     <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
                 </StackPanel>
             </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="SFTP"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <CheckBox Content="{DynamicResource server_editor_open_sftp_when_connected}" IsChecked="{Binding OpenSftpOnConnected}"></CheckBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </StackPanel>
 </protocolEditors:ProtocolServerFormBase>
