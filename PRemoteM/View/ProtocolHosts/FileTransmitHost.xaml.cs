@@ -12,7 +12,7 @@ using PRM.Core.Protocol.FileTransmit.SFTP;
 
 namespace PRM.View.ProtocolHosts
 {
-    public partial class FileTransmitHost : HostBase, IDisposable
+    public partial class FileTransmitHost : HostBase
     {
         private readonly ViewModel.VmFileTransmitHost _vmRemote;
         public FileTransmitHost(PrmContext context, ProtocolServerBase protocolServer) : base(context, protocolServer, false)
@@ -46,12 +46,15 @@ namespace PRM.View.ProtocolHosts
         #region Base Interface
         public override void Conn()
         {
+            Status = ProtocolHostStatus.Connecting;
             _vmRemote?.Conn();
+            Status = ProtocolHostStatus.Connected;
         }
 
         public override void Close()
         {
             _vmRemote?.Release();
+            Status = ProtocolHostStatus.Disconnected;
             base.Close();
         }
 
@@ -219,11 +222,6 @@ namespace PRM.View.ProtocolHosts
         public override void ReConn()
         {
             _vmRemote?.Conn();
-        }
-
-        public void Dispose()
-        {
-            _vmRemote?.Release();
         }
     }
 

@@ -59,9 +59,6 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             return 4;
         }
 
-        [JsonIgnore]
-        public ProtocolServerBase ProtocolServerBase => this;
-
         public ITransmitter GeTransmitter(PrmContext context)
         {
             var hostname = this.Address;

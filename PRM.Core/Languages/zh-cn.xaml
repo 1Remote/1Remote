@@ -163,6 +163,7 @@
     <s:String x:Key="server_editor_connection_password">密码</s:String>
     <s:String x:Key="server_editor_connection_private_key_checker">使用私钥连接</s:String>
     <s:String x:Key="server_editor_connection_private_key">私钥</s:String>
+    <s:String x:Key="server_editor_open_sftp_when_connected">同时打开 SFTP</s:String>
     <!-- server editor - display group items -->
     <s:String x:Key="server_editor_display_full_screen_flag">全屏模式</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">禁用</s:String>

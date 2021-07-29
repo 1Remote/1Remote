@@ -7,6 +7,7 @@
                            xmlns:viewModel="clr-namespace:PRM.ViewModel"
                            xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                            xmlns:transmissionController="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;assembly=PRM.Core"
+                           xmlns:transmitters="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters;assembly=PRM.Core"
                            mc:Ignorable="d" 
                            d:DataContext="{d:DesignInstance viewModel:VmFileTransmitHost}"
                            d:DesignHeight="450" d:DesignWidth="800">
@@ -173,6 +174,13 @@
                             <Setter Property="SnapsToDevicePixels" Value="True" />
                         </Style>
 
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewBackgroundInvertStyle}"></Style>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarBaseStyle}">
+                            <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"/>
+                            <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundTextBrush}"/>
+                        </Style>
+
+
                         <DataTemplate x:Key="HeaderTemplateDefault">
                             <Grid Style="{StaticResource HeaderGridStyle}">
                                 <TextBlock Text="{Binding }" Style="{StaticResource HeaderTextBlockStyle}" />
@@ -198,14 +206,6 @@
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Margin" Value="0 0 0 10"/>
                             <Setter Property="BorderBrush" Value="Transparent"/>
-                            <!--<Setter Property="OverridesDefaultStyle" Value="True"></Setter>-->
-                            <!--<Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                                <ContentPresenter></ContentPresenter>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>-->
                         </Style>
 
 
@@ -219,7 +219,7 @@
                     </ListView.ItemContainerStyle>
                     <ListView.View>
                         <GridView ColumnHeaderTemplate="{StaticResource HeaderTemplateDefault}">
-                            <GridViewColumn Width="500">
+                            <GridViewColumn Width="Auto">
                                 <GridViewColumnHeader Content="{DynamicResource word_filename}" HorizontalContentAlignment="Left">
                                     <GridViewColumnHeader.Style>
                                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
@@ -357,7 +357,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="transmissionController:TransmitTask">
                             <Grid Margin="0 3"
-                                  HorizontalAlignment="Stretch" MinWidth="600" 
+                                  HorizontalAlignment="Stretch" MinWidth="400" 
                                   Width="{Binding ElementName=ListViewTransmitTasks, Path=ActualWidth, Converter={StaticResource WidthSub5}}">
                                 <Grid VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
