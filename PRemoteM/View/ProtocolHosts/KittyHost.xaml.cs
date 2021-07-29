@@ -5,11 +5,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.Win32;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using Shawn.Utils;
@@ -17,7 +19,7 @@ using Path = System.IO.Path;
 
 namespace PRM.View.ProtocolHosts
 {
-    public partial class KittyHost : HostBase, IDisposable
+    public partial class KittyHost : HostBase
     {
         [DllImport("User32.dll")]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
@@ -135,6 +137,9 @@ namespace PRM.View.ProtocolHosts
         public override void Close()
         {
             CloseKitty();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+            Status = ProtocolHostStatus.Disconnected;
             base.Close();
         }
 
@@ -240,6 +245,7 @@ reload=yes
         {
             lock (this)
             {
+                Status = ProtocolHostStatus.Connecting;
                 // var arg = $"-ssh {port} {user} {pw} {server}";
                 // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
                 //ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
@@ -261,6 +267,7 @@ reload=yes
                 _kittyProcess.Refresh();
                 _kittyProcess.WaitForInputIdle();
                 _kittyHandleOfWindow = _kittyProcess.MainWindowHandle;
+                Status = ProtocolHostStatus.Connected;
             }
         }
 
@@ -480,12 +487,6 @@ reload=yes
             _kittyProcess?.Dispose();
             _kittyMasterPanel?.Dispose();
             FormsHost?.Dispose();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
