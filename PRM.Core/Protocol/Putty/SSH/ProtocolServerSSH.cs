@@ -10,7 +10,7 @@ using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty.SSH
 {
-    public class ProtocolServerSSH : ProtocolServerWithAddrPortUserPwdBase, IPuttyConnectable
+    public class ProtocolServerSSH : ProtocolServerWithAddrPortUserPwdBase, IKittyConnectable
     {
         public enum ESshVersion
         {
@@ -88,6 +88,8 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         public string GetPuttyConnString(PrmContext context)
         {
+            // var arg = $"-ssh {port} {user} {pw} {server}";
+            // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
             var arg = $@" -load ""{this.GetSessionName()}"" {Address} -P {Port} -l {UserName} -pw {context.DbOperator.DecryptOrReturnOriginalString(Password)} -{(int)SshVersion}";
             if (!string.IsNullOrWhiteSpace(StartupAutoCommand))
@@ -97,5 +99,15 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
+
+        public string GetExeFullPath()
+        {
+            return this.GetKittyExeFullName();
+        }
+
+        public string GetExeArguments(PrmContext context)
+        {
+            return GetPuttyConnString(context);
+        }
     }
 }

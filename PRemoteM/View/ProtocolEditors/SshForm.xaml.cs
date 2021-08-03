@@ -78,7 +78,7 @@ namespace PRM.View.ProtocolEditors
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm is IPuttyConnectable pc)
+            if (Vm is IKittyConnectable pc)
             {
                 var dlg = new OpenFileDialog
                 {

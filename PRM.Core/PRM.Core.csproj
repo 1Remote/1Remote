@@ -138,6 +138,7 @@
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
     <Compile Include="Model\Tag.cs" />
+    <Compile Include="Protocol\IIntegratable.cs" />
     <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
@@ -170,7 +171,7 @@
     <Compile Include="Protocol\Base\ProtocolServerWithAddrPortBase.cs" />
     <Compile Include="Protocol\Base\ProtocolServerWithAddrPortUserPwdBase.cs" />
     <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
-    <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
+    <Compile Include="External\KiTTY\IKittyConnectable.cs" />
     <Compile Include="Protocol\Putty\PuttyOptions.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
@@ -269,7 +270,9 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="External\WinSCP\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />
   <PropertyGroup>

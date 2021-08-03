@@ -6,6 +6,7 @@ using System.Windows;
 using PRM.Core.DB;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.Putty;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.View;
@@ -180,8 +181,9 @@ namespace PRM
 
         private void KillPutty()
         {
+            var fi = new FileInfo(PuttyConnectableExtension.GetKittyExeFullName());
             // kill putty process
-            foreach (var process in Process.GetProcessesByName(KittyHost.KittyExeName.ToLower().Replace(".exe", "")))
+            foreach (var process in Process.GetProcessesByName(fi.Name.ToLower().Replace(".exe", "")))
             {
                 process.Kill();
             }

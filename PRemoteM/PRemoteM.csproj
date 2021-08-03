@@ -239,6 +239,9 @@
     <Compile Include="View\ProtocolHosts\FileTransmitHost.xaml.cs">
       <DependentUpon>FileTransmitHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ProtocolHosts\IntegrateHost.xaml.cs">
+      <DependentUpon>IntegrateHost.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ProtocolHosts\KittyHost.xaml.cs">
       <DependentUpon>KittyHost.xaml</DependentUpon>
     </Compile>
@@ -412,6 +415,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ProtocolHosts\FileTransmitHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ProtocolHosts\IntegrateHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
