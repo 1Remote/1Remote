@@ -43,14 +43,13 @@ namespace PRM.View.TabWindow
 
             this.Loaded += (sender, args) =>
             {
-                var wih = new WindowInteropHelper(this);
-                _myWindowHandle = wih.Handle;
                 _timer4CheckForegroundWindow.Interval = 100;
                 _timer4CheckForegroundWindow.AutoReset = true;
                 _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
                 _timer4CheckForegroundWindow.Start();
 
-                var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+                _myWindowHandle = new WindowInteropHelper(this).Handle;
+                var source = HwndSource.FromHwnd(_myWindowHandle);
                 source.AddHook(new HwndSourceHook(WndProc));
             };
 
@@ -61,6 +60,10 @@ namespace PRM.View.TabWindow
             };
         }
 
+        /// <summary>
+        /// Redirect USB Device, TODO move to main window.
+        /// </summary>
+        /// <returns></returns>
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_DEVICECHANGE = 0x0219;
@@ -75,7 +78,6 @@ namespace PRM.View.TabWindow
 
         private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)
         {
-            // bring Tab window to top, when the host content is Integrate
             if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
                 return;
 
@@ -83,6 +85,8 @@ namespace PRM.View.TabWindow
             if (hWnd == IntPtr.Zero) return;
 
             var nowActivatedWindowHandle = GetForegroundWindow();
+
+            // bring Tab window to top, when the host content is Integrate.
             if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
             {
                 SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
@@ -90,11 +94,13 @@ namespace PRM.View.TabWindow
                 SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
                 BringWindowToTop(_myWindowHandle);
             }
-            else if (nowActivatedWindowHandle == _myWindowHandle &&
-                     System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+
+            // focus content when tab is focused and host is Integrate and left mouse is not pressed
+            if (nowActivatedWindowHandle == _myWindowHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
             {
                 Vm?.SelectedItem?.Content?.MakeItFocus();
             }
+
             _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
@@ -239,9 +245,6 @@ namespace PRM.View.TabWindow
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        private static extern int SetForegroundWindow(IntPtr hWnd);
 
 
 
