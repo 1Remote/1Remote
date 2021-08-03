@@ -3,6 +3,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
+using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
@@ -25,8 +26,12 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var host = new KittyHost(context, ssh);
-                        return host;
+                        //var host = new KittyHost(context, ssh);
+                        //return host;
+                        var host2 = new IntegrateHost(context, ssh);
+                        host2.RunBeforeConnect = () => ssh.SetPuttySessionConfig();
+                        host2.RunAfterConnected = () => ssh.DelKittySessionConfig();
+                        return host2;
                     }
                 case ProtocolServerTelnet telnet:
                     {

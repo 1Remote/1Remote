@@ -48,16 +48,6 @@ namespace PRM.Core.Protocol.Putty
                 Options.Add(PuttyOptionItem.Create(EnumKittyOptionKey.AltF4.ToString(), 0x00000000)); // DISABLED ALTF4
         }
 
-        private static string GetDefaultIni()
-        {
-            var uri = new Uri("pack://application:,,,/PRM.Core;component/Protocol/Putty/KittyDefaultOptons.ini", UriKind.Absolute);
-            var s = Application.GetResourceStream(uri).Stream;
-            byte[] bytes = new byte[s.Length];
-            s.Read(bytes, 0, (int)s.Length);
-            var txt = Encoding.UTF8.GetString(bytes);
-            return txt;
-        }
-
         private void InitDefault()
         {
             Options.Clear();
