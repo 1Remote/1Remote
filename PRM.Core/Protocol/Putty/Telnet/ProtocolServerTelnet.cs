@@ -10,7 +10,7 @@ using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty.Telnet
 {
-    public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IPuttyConnectable
+    public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IKittyConnectable
     {
         public ProtocolServerTelnet() : base("Telnet", "Putty.Telnet.V1", "Telnet")
         {
@@ -62,6 +62,16 @@ namespace PRM.Core.Protocol.Putty.Telnet
         {
             get => _externalKittySessionConfigPath;
             set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
+        }
+
+        public string GetExeFullPath()
+        {
+            return this.GetKittyExeFullName();
+        }
+
+        public string GetExeArguments(PrmContext context)
+        {
+            return GetPuttyConnString(context);
         }
     }
 }

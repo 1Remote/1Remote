@@ -55,14 +55,6 @@ namespace PRM.View.ProtocolHosts
         private const int SW_HIDE = 0;
         private const int SW_SHOWNORMAL = 1;
         private const int SW_SHOWMAXIMIZED = 3;
-#if DEV
-        public const string KittyExeName = "kitty_portable_PRemoteM_debug.exe";
-#else
-        public const string KittyExeName = "kitty_portable_PRemoteM.exe";
-#endif
-        public const string KittyIniName = "kitty.ini";
-        private readonly string KittyExeFolderPath = null;
-        private readonly string KittyExeFullName = null;
 
         private const int KittyWindowMargin = 0;
         private Process _kittyProcess = null;
@@ -70,17 +62,12 @@ namespace PRM.View.ProtocolHosts
         private System.Windows.Forms.Panel _kittyMasterPanel = null;
         private IntPtr KittyMasterPanelHandle { get; set; } = IntPtr.Zero;
 
-        private readonly IPuttyConnectable _protocolPuttyBase = null;
+        private readonly IKittyConnectable _protocolKittyBase = null;
 
-        public KittyHost(PrmContext context, IPuttyConnectable iPuttyConnectable) : base(context, iPuttyConnectable.ProtocolServerBase, false)
+        public KittyHost(PrmContext context, IKittyConnectable iKittyConnectable) : base(context, iKittyConnectable.ProtocolServerBase, false)
         {
-            _protocolPuttyBase = iPuttyConnectable;
+            _protocolKittyBase = iKittyConnectable;
             InitializeComponent();
-
-            KittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Kitty");
-            if (!Directory.Exists(KittyExeFolderPath))
-                Directory.CreateDirectory(KittyExeFolderPath);
-            KittyExeFullName = Path.Combine(KittyExeFolderPath, KittyExeName);
         }
 
         ~KittyHost()
@@ -91,9 +78,9 @@ namespace PRM.View.ProtocolHosts
         public override void Conn()
         {
             Debug.Assert(ParentWindow != null);
-            Debug.Assert(_protocolPuttyBase.ProtocolServerBase.Id > 0);
+            Debug.Assert(_protocolKittyBase.ProtocolServerBase.Id > 0);
 
-            // set putty bg color
+            // set kitty bg color
             var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             var bgOption = options?.First(x => x.Key == EnumKittyOptionKey.Colour2.ToString());
             if (bgOption != null
@@ -152,95 +139,6 @@ namespace PRM.View.ProtocolHosts
             }
         }
 
-        private void InstallKitty()
-        {
-            if (!Directory.Exists(KittyExeFolderPath))
-                Directory.CreateDirectory(KittyExeFolderPath);
-
-            if (File.Exists(KittyExeFullName))
-            {
-#if !DEV
-                // verify MD5
-                var md5 = MD5Helper.GetMd5Hash32BitString(File.ReadAllBytes(KittyExeFullName));
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/kitty_portable.exe")).Stream;
-                byte[] bytes = new byte[kitty.Length];
-                kitty.Read(bytes, 0, bytes.Length);
-                var md5_2 = MD5Helper.GetMd5Hash32BitString(bytes);
-                if (md5_2 != md5)
-                {
-                    foreach (var process in Process.GetProcessesByName(KittyExeName.ToLower().ReplaceLast(".exe", "")))
-                    {
-                        try
-                        {
-                            process.Kill();
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    File.Delete(KittyExeFullName);
-                    using var fileStream = File.Create(KittyExeFullName);
-                    kitty.Seek(0, SeekOrigin.Begin);
-                    kitty.CopyTo(fileStream);
-                }
-#endif
-            }
-            else
-            {
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/kitty_portable.exe")).Stream;
-                using (var fileStream = File.Create(KittyExeFullName))
-                {
-                    kitty.Seek(0, SeekOrigin.Begin);
-                    kitty.CopyTo(fileStream);
-                }
-                kitty.Close();
-            }
-
-            File.WriteAllText(Path.Combine(KittyExeFolderPath, KittyIniName),
-                @"
-[Agent]
-[ConfigBox]
-dblclick=open
-filter=yes
-height=21
-[KiTTY]
-adb=yes
-; antiidle: character string regularly sent to maintain the connection alive
-antiidle=\k08\
-; antiidledelay: time delay between two sending
-antiidledelay=60
-; autoreconnect: enable/disable the automatic reconnection feature
-autoreconnect=yes
-backgroundimage=no
-capslock=no
-conf=yes
-ctrltab=no
-cygterm=no
-hyperlink=yes
-icon=no
-maxblinkingtime=5
-mouseshortcuts=yes
-paste=no
-ReconnectDelay=5
-size=no
-transparency=yes
-userpasssshnosave=no
-winrol=yes
-wintitle=yes
-zmodem=yes
-[Shortcuts]
-;input=SHIFT+CONTROL+ALT+F11
-;inputm=SHIFT+CONTROL+ALT+F12
-;rollup=SHIFT+CONTROL+ALT+F10
-[Print]
-height=100
-maxline=60
-maxchar=85
-[Launcher]
-reload=yes
-");
-        }
-
         private void StartKitty()
         {
             lock (this)
@@ -248,16 +146,15 @@ reload=yes
                 Status = ProtocolHostStatus.Connecting;
                 // var arg = $"-ssh {port} {user} {pw} {server}";
                 // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
-                //ps.Arguments = _protocolPuttyBase.GetPuttyConnString();
                 var ps = new ProcessStartInfo
                 {
-                    FileName = KittyExeFullName,
-                    WorkingDirectory = KittyExeFolderPath,
-                    Arguments = _protocolPuttyBase.GetPuttyConnString(Context),
+                    FileName = _protocolKittyBase.GetKittyExeFullName(),
+                    WorkingDirectory = new FileInfo(_protocolKittyBase.GetKittyExeFullName()).Directory.FullName,
+                    Arguments = _protocolKittyBase.GetPuttyConnString(Context),
                     WindowStyle = ProcessWindowStyle.Minimized
                 };
 
-                Debug.Assert(ps.Arguments.IndexOf(_protocolPuttyBase.GetSessionName(), StringComparison.Ordinal) >= 0);
+                Debug.Assert(ps.Arguments.IndexOf(_protocolKittyBase.GetSessionName(), StringComparison.Ordinal) >= 0);
 
                 _kittyProcess = new Process { StartInfo = ps };
                 _kittyProcess.EnableRaisingEvents = true;
@@ -280,7 +177,7 @@ reload=yes
         private void SetKittyWindowStyle()
         {
             SimpleLogHelper.Debug("SetParent");
-            // must be set or putty will be shown out of panel
+            // must be set or kitty will be shown out of panel
             SetParent(_kittyHandleOfWindow, KittyMasterPanelHandle);
             SimpleLogHelper.Debug("ShowWindow");
             ShowWindow(_kittyHandleOfWindow, SW_SHOWMAXIMIZED);
@@ -299,21 +196,34 @@ reload=yes
 
         private void InitKitty()
         {
-            SetPuttySessionConfig();
-            InstallKitty();
+            string sshPrivateKeyPath = "";
+            if (_protocolKittyBase is ProtocolServerSSH server)
+            {
+                if (!string.IsNullOrEmpty(server.PrivateKey))
+                {
+                    // set key
+                    var ppk = Context.DbOperator.DecryptOrReturnOriginalString(server.PrivateKey);
+                    Debug.Assert(ppk != null);
+                    sshPrivateKeyPath = ppk;
+                }
+            }
+
+            _protocolKittyBase.InstallKitty();
+            _protocolKittyBase.SetPuttySessionConfig(sshPrivateKeyPath);
             SimpleLogHelper.Debug("ParentWindowHandle = " + ParentWindowHandle);
             SimpleLogHelper.Debug("KittyMasterPanel " + KittyMasterPanelHandle);
+
             StartKitty();
             Thread.Sleep(100);
             SetKittyWindowStyle();
-            DelKittySessionConfig();
+            _protocolKittyBase.DelKittySessionConfig();
         }
 
         private void CloseKitty()
         {
             lock (this)
             {
-                DelKittySessionConfig();
+                _protocolKittyBase.DelKittySessionConfig();
                 if (_kittyProcess != null)
                     try
                     {
@@ -331,133 +241,6 @@ reload=yes
                 }
                 _kittyProcess = null;
             }
-        }
-
-        private void SetPuttySessionConfig()
-        {
-            var puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName(), _protocolPuttyBase.ExternalKittySessionConfigPath);
-            if (_protocolPuttyBase is ProtocolServerSSH server)
-            {
-                if (!string.IsNullOrEmpty(server.PrivateKey))
-                {
-                    // set key
-                    var ppk = Context.DbOperator.DecryptOrReturnOriginalString(server.PrivateKey);
-                    Debug.Assert(ppk != null);
-                    puttyOption.Set(EnumKittyOptionKey.PublicKeyFile, ppk);
-                }
-#if UseKiTTY
-                puttyOption.Set(EnumKittyOptionKey.HostName, server.Address);
-                puttyOption.Set(EnumKittyOptionKey.PortNumber, server.GetPort());
-                puttyOption.Set(EnumKittyOptionKey.Protocol, "ssh");
-#endif
-            }
-
-            // set color theme
-            puttyOption.Set(EnumKittyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
-            var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
-            if (options != null)
-                foreach (var option in options)
-                {
-                    try
-                    {
-                        if (Enum.TryParse(option.Key, out EnumKittyOptionKey key))
-                        {
-                            if (option.ValueKind == RegistryValueKind.DWord)
-                                puttyOption.Set(key, (int)(option.Value));
-                            else
-                                puttyOption.Set(key, (string)option.Value);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        SimpleLogHelper.Warning($"Putty theme error: can't set up key(value)=> {option.Key}({option.ValueKind})");
-                    }
-                }
-
-            puttyOption.Set(EnumKittyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
-
-            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "51,51,51");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "77,77,77");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "187,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour10, "152,251,152");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour11, "85,255,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour12, "240,230,140");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour13, "255,255,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour14, "205,133,63");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour15, "135,206,235");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour16, "255,222,173");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour17, "255,85,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour18, "255,160,160");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour19, "255,215,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour20, "245,222,179");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour21, "255,255,255");
-
-            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "192,192,192");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "0,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,85,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "0,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,85,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "255,0,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "255,85,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour10,"0,255,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour11,"85,255,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour12,"187,187,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour13,"255,255,85");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour14,"0,255,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour15,"0,0,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour16,"0,0,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour17,"255,85,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour18,"0,187,187");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour19,"85,255,255");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour20,"187,187,187");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour21,"255,255,255");
-
-            //_puttyOption.Set(PuttyRegOptionKey.UseSystemColours, 0);
-            //_puttyOption.Set(PuttyRegOptionKey.TryPalette, 0);
-            //_puttyOption.Set(PuttyRegOptionKey.ANSIColour, 1);
-            //_puttyOption.Set(PuttyRegOptionKey.Xterm256Colour, 1);
-            //_puttyOption.Set(PuttyRegOptionKey.BoldAsColour, 1);
-
-            //_puttyOption.Set(PuttyRegOptionKey.Colour0, "211,215,207");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour1, "238,238,236");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour2, "46,52,54");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour3, "85,87,83");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour4, "0,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour5, "0,255,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour6, "46,52,54");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour7, "85,87,83");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour8, "204,0,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour9, "239,41,41");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour10,"78,154,6");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour11,"138,226,52");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour12,"196,160,0");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour13,"252,233,79");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour14,"52,101,164");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour15,"114,159,207");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour16,"117,80,123");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour17,"173,127,168");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour18,"6,152,154");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour19,"52,226,226");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
-            //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
-
-            puttyOption.SaveToKittyConfig(KittyExeFolderPath);
-        }
-
-        private void DelKittySessionConfig()
-        {
-            var puttyOption = new PuttyOptions(_protocolPuttyBase.GetSessionName());
-            puttyOption.DelFromKittyConfig(KittyExeFolderPath);
         }
 
         public override void GoFullScreen()
