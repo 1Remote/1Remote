@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 using Shawn.Utils;

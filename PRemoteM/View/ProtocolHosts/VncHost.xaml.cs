@@ -83,7 +83,7 @@ namespace PRM.View.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncServer.GetPort();
-            Vnc.GetPassword = () => Context.DbOperator.DecryptOrReturnOriginalString(_vncServer.Password);
+            Vnc.GetPassword = () => Context.DataService.DecryptOrReturnOriginalString(_vncServer.Password);
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try

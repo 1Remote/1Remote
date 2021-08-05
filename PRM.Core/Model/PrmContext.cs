@@ -12,10 +12,8 @@ namespace PRM.Core.Model
 {
     public class PrmContext : NotifyPropertyChangedBase
     {
-        protected IDb Db { get; private set; } = new DapperDb();
-
         public GlobalData AppData { get; } = new GlobalData();
-        public DbOperator DbOperator { get; private set; } = null;
+        public DataService DataService { get; private set; } = null;
 
         public KeywordMatchService KeywordMatchService { get; } = new KeywordMatchService();
 
@@ -27,15 +25,15 @@ namespace PRM.Core.Model
         {
             if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
-                DbOperator = null;
+                DataService = null;
                 return EnumDbStatus.AccessDenied;
             }
-
-            Db.OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
-            DbOperator = new DbOperator(Db);
-            var ret = DbOperator.CheckDbRsaStatus();
+            
+            DataService = new DataService();
+            DataService.OpenDatabaseConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
+            var ret = DataService.CheckDbRsaStatus();
             if (ret == EnumDbStatus.OK)
-                AppData.SetDbOperator(DbOperator);
+                AppData.SetDbOperator(DataService);
             return ret;
         }
     }

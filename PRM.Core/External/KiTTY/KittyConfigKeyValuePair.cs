@@ -2,11 +2,11 @@
 
 namespace PRM.Core.Protocol.Putty
 {
-    public class PuttyOptionItem
+    public class KittyConfigKeyValuePair
     {
-        public static PuttyOptionItem Create(string key, int value)
+        public static KittyConfigKeyValuePair Create(string key, int value)
         {
-            return new PuttyOptionItem
+            return new KittyConfigKeyValuePair
             {
                 Key = key,
                 Value = value,
@@ -14,11 +14,11 @@ namespace PRM.Core.Protocol.Putty
             };
         }
 
-        public static PuttyOptionItem Create(string key, string value)
+        public static KittyConfigKeyValuePair Create(string key, string value)
         {
             if (double.TryParse(value.Replace(',', '_'), out double nValue))
             {
-                return new PuttyOptionItem
+                return new KittyConfigKeyValuePair
                 {
                     Key = key,
                     Value = value,
@@ -27,7 +27,7 @@ namespace PRM.Core.Protocol.Putty
             }
             else
             {
-                return new PuttyOptionItem
+                return new KittyConfigKeyValuePair
                 {
                     Key = key,
                     Value = value,

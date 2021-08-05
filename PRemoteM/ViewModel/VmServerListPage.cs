@@ -318,14 +318,14 @@ namespace PRM.ViewModel
                             foreach (var vs in PrmContext.AppData.VmItemList)
                             {
                                 var serverBase = (ProtocolServerBase) vs.Server.Clone();
-                                PrmContext.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
+                                PrmContext.DataService.DecryptPwdIfItIsEncrypted(serverBase);
                                 list.Add(serverBase);
                             }
                         else
                             foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
                             {
                                 var serverBase = (ProtocolServerBase) vs.Server.Clone();
-                                PrmContext.DbOperator.DecryptPwdIfItIsEncrypted(serverBase);
+                                PrmContext.DataService.DecryptPwdIfItIsEncrypted(serverBase);
                                 list.Add(serverBase);
                             }
 
@@ -361,7 +361,7 @@ namespace PRM.ViewModel
                                 {
                                     server.Id = 0;
                                     list.Add(server);
-                                    PrmContext.DbOperator.DbAddServer(server);
+                                    PrmContext.DataService.DbAddServer(server);
                                 }
                             }
 
@@ -401,7 +401,7 @@ namespace PRM.ViewModel
                         {
                             foreach (var serverBase in list)
                             {
-                                PrmContext.DbOperator.DbAddServer(serverBase);
+                                PrmContext.DataService.DbAddServer(serverBase);
                             }
 
                             PrmContext.AppData.ServerListUpdate();
@@ -439,7 +439,7 @@ namespace PRM.ViewModel
                         if (!(ss?.Count > 0)) return;
                         foreach (var vs in ss)
                         {
-                            PrmContext.DbOperator.DbDeleteServer(vs.Server.Id);
+                            PrmContext.DataService.DbDeleteServer(vs.Server.Id);
                         }
 
                         PrmContext.AppData.ServerListUpdate();

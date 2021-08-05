@@ -124,13 +124,13 @@
     <Compile Include="DB\EnumDbStatus.cs" />
     <None Include="DB\freesql\DbConfig.csexp" />
     <None Include="DB\freesql\DbServer.csexp" />
-    <Compile Include="Model\DbOperator.cs" />
-    <Compile Include="DB\DbExtensions.cs" />
+    <Compile Include="Model\DataService.cs" />
     <None Include="DB\freesql\FreeSqlDb.csexp" />
     <Compile Include="I\IDb.cs" />
     <Compile Include="I\IDbServerModel.cs" />
     <Compile Include="DB\Dapper\Config.cs" />
     <Compile Include="DB\Dapper\ServerModel.cs" />
+    <Compile Include="Model\EncryptService.cs" />
     <Compile Include="Model\KeywordMatchProviderInfo.cs" />
     <Compile Include="Model\KeywordMatchService.cs" />
     <Compile Include="Model\PrmContext.cs" />
@@ -138,8 +138,7 @@
     <Compile Include="Model\GlobalEventHelper.cs" />
     <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
     <Compile Include="Model\Tag.cs" />
-    <Compile Include="Protocol\IIntegratable.cs" />
-    <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
+    <Compile Include="I\IIntegratable.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Model\SystemConfig.cs" />
     <Compile Include="Model\SystemConfig.DataSecurity.cs" />
@@ -149,8 +148,8 @@
     <Compile Include="Model\SystemConfig.Theme.cs" />
     <Compile Include="Model\SystemConfig.Launcher.cs" />
     <Compile Include="Model\SystemConfigBase.cs" />
-    <Compile Include="Protocol\Putty\PuttyOptionItem.cs" />
-    <Compile Include="Protocol\Putty\EnumKittyOptionKey.cs" />
+    <Compile Include="External\KiTTY\KittyConfigKeyValuePair.cs" />
+    <Compile Include="External\KiTTY\EnumKittyConfigKey.cs" />
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
     <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
     <Compile Include="Utils\MouseMiddleClick.cs" />
@@ -170,9 +169,9 @@
     <Compile Include="I\ITab.cs" />
     <Compile Include="Protocol\Base\ProtocolServerWithAddrPortBase.cs" />
     <Compile Include="Protocol\Base\ProtocolServerWithAddrPortUserPwdBase.cs" />
-    <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
+    <Compile Include="External\KiTTY\PuttyThemes.cs" />
     <Compile Include="External\KiTTY\IKittyConnectable.cs" />
-    <Compile Include="Protocol\Putty\PuttyOptions.cs" />
+    <Compile Include="External\KiTTY\KittyConfig.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
@@ -226,14 +225,14 @@
     <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="kitty_portable.exe" />
+    <Resource Include="External\KiTTY\kitty_portable.exe" />
     <Resource Include="FodyWeavers.xml" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
     <Resource Include="Utils\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Theme\puttyThems.json" />
+    <Resource Include="External\KiTTY\PuttyThemes.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using PRM.Core.Model;
 
-namespace PRM.Core.Protocol
+namespace PRM.Core.I
 {
     public interface IIntegratable
     {

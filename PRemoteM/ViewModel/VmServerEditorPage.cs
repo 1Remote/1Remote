@@ -176,7 +176,7 @@ namespace PRM.ViewModel
             }
 
             // decrypt pwd
-            _context.DbOperator.DecryptPwdIfItIsEncrypted(Server);
+            _context.DataService.DecryptPwdIfItIsEncrypted(Server);
 
             NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
             TagSelections = _context.AppData.Tags.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();

@@ -64,7 +64,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = context.DbOperator.DecryptOrReturnOriginalString(this.Password);
+            var password = context.DataService.DecryptOrReturnOriginalString(this.Password);
             var sshKey = this.PrivateKey;
             if (sshKey == "")
                 return new TransmitterSFtp(hostname, port, username, password);

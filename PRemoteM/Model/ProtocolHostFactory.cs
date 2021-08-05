@@ -1,9 +1,9 @@
 ﻿using System;
+using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
-using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
@@ -28,7 +28,7 @@ namespace PRM.Model
                     {
                         //var host = new KittyHost(context, ssh);
                         //return host;
-                        var host2 = new IntegrateHost(context, ssh);
+                        var host2 = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context));
                         host2.RunBeforeConnect = () => ssh.SetPuttySessionConfig();
                         host2.RunAfterConnected = () => ssh.DelKittySessionConfig();
                         return host2;
@@ -47,6 +47,8 @@ namespace PRM.Model
                     {
                         var host = new FileTransmitHost(context, sftp);
                         return host;
+                        //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DbOperator.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
+                        //return host2;
                     }
                 case ProtocolServerFTP ftp:
                     {

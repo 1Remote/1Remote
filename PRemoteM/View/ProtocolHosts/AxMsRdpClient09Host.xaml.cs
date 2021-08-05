@@ -137,7 +137,7 @@ namespace PRM.View.ProtocolHosts
 
 
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdp.GetOcx();
-            secured.ClearTextPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.Password);
+            secured.ClearTextPassword = Context.DataService.DecryptOrReturnOriginalString(_rdpServer.Password);
             _rdp.FullScreenTitle = _rdpServer.DisplayName + " - " + _rdpServer.SubTitle;
 
             #endregion server info
@@ -477,7 +477,7 @@ namespace PRM.View.ProtocolHosts
                     case EGatewayLogonMethod.Password:
                         _rdp.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
                         _rdp.TransportSettings2.GatewayUsername = _rdpServer.GatewayUserName;
-                        _rdp.TransportSettings2.GatewayPassword = Context.DbOperator.DecryptOrReturnOriginalString(_rdpServer.GatewayPassword);
+                        _rdp.TransportSettings2.GatewayPassword = Context.DataService.DecryptOrReturnOriginalString(_rdpServer.GatewayPassword);
                         break;
 
                     default:
@@ -591,7 +591,7 @@ namespace PRM.View.ProtocolHosts
             else
                 _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
 
-            Context.DbOperator.DbUpdateServer(_rdpServer);
+            Context.DataService.DbUpdateServer(_rdpServer);
             _rdp.FullScreen = true;
         }
 
@@ -812,7 +812,7 @@ namespace PRM.View.ProtocolHosts
             }
             else
                 _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-            Context.DbOperator.DbUpdateServer(_rdpServer);
+            Context.DataService.DbUpdateServer(_rdpServer);
         }
 
         private System.Drawing.Rectangle GetScreenSize()
@@ -850,7 +850,7 @@ namespace PRM.View.ProtocolHosts
             ParentWindow.Left = _normalLeft;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
             _isLastTimeFullScreen = false;
-            Context.DbOperator.DbUpdateServer(_rdpServer);
+            Context.DataService.DbUpdateServer(_rdpServer);
         }
 
         private void MakeForm2Minimize()

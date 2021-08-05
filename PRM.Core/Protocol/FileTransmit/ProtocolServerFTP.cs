@@ -55,7 +55,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = context.DbOperator.DecryptOrReturnOriginalString(this.Password);
+            var password = context.DataService.DecryptOrReturnOriginalString(this.Password);
             return new TransmitterFtp(hostname, port, username, password);
         }
 
