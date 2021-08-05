@@ -1,6 +1,6 @@
-﻿namespace PRM.Core.Protocol.Putty
+﻿namespace PRM.Core.External.KiTTY
 {
-    public enum EnumKittyOptionKey
+    public enum EnumKittyConfigKey
     {
         #region Enum
 

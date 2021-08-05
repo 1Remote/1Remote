@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
 using PRM.Core.DB;
+using PRM.Core.DB.Dapper;
 using PRM.Core.I;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
@@ -12,20 +13,22 @@ using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
-    public class DbOperator
+    public class DataService
     {
         private readonly IDb _db;
 
-        public DbOperator(IDb db)
+        public DataService()
         {
-            _db = db;
-            OpenConnection();
+            _db = new DapperDb();
         }
 
-        public bool OpenConnection(DatabaseType? type = null, string newConnectionString = "")
+        public bool OpenDatabaseConnection(DatabaseType? type = null, string newConnectionString = "")
         {
+            // open db connection
             Debug.Assert(_db != null);
             _db.OpenConnection(type, newConnectionString);
+
+            // check database rsa encrypt
             if (IsDbEncrypted()
                 && File.Exists(GetRsaPrivateKeyPath()))
             {
@@ -38,7 +41,7 @@ namespace PRM.Core.Model
             return true;
         }
 
-        public void CloseConnection()
+        public void CloseDatabaseConnection()
         {
             Debug.Assert(_db != null);
             if (_db.IsConnected())
@@ -48,20 +51,10 @@ namespace PRM.Core.Model
         public bool IsDbEncrypted()
         {
             Debug.Assert(_db != null);
-            var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();
+            var rsaPrivateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
             return !string.IsNullOrWhiteSpace(rsaPrivateKeyPath);
         }
 
-        /// <summary>
-        /// return:
-        /// 0: encrypt ok
-        /// 0: no encrypt
-        /// -1: private key not existed
-        /// -2: private key is not in correct format
-        /// -3: private key not matched
-        /// -4: db is not connected
-        /// </summary>
-        /// <returns></returns>
         public EnumDbStatus CheckDbRsaStatus()
         {
             if(_db == null)
@@ -70,7 +63,7 @@ namespace PRM.Core.Model
             if (_db.IsConnected() != true)
                 return EnumDbStatus.NotConnected;
 
-            var rsaPrivateKeyPath = _db.Get_RSA_PrivateKeyPath();
+            var rsaPrivateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
 
             // NO RSA
             if (IsDbEncrypted() == false)
@@ -81,7 +74,7 @@ namespace PRM.Core.Model
 
             try
             {
-                var rsa = new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
+                new RSA(File.ReadAllText(rsaPrivateKeyPath), true);
             }
             catch (Exception)
             {
@@ -91,7 +84,7 @@ namespace PRM.Core.Model
             // make sure public key is PEM format key
             try
             {
-                var rsaPublicKeyObj = new RSA(_db.Get_RSA_PublicKey(), true);
+                new RSA(_db.Get_RSA_PublicKey(), true);
             }
             catch (Exception)
             {
@@ -105,7 +98,7 @@ namespace PRM.Core.Model
             }
 
             // check if RSA private key is matched public key?
-            if (!VerifyRsaPrivateKey(rsaPrivateKeyPath))
+            if (!RsaPrivatePublicKeyIsMatched(rsaPrivateKeyPath, _db.Get_RSA_PublicKey()))
             {
                 return EnumDbStatus.RsaNotMatched;
             }
@@ -114,7 +107,7 @@ namespace PRM.Core.Model
 
         private RSA _rsa = null;
 
-        public string GetRsaPublicKey()
+        public string GetFromDatabase_RSA_PublicKey()
         {
             Debug.Assert(_db != null);
             return _db?.Get_RSA_PublicKey();
@@ -123,33 +116,17 @@ namespace PRM.Core.Model
         public string GetRsaPrivateKeyPath()
         {
             Debug.Assert(_db != null);
-            return _db?.Get_RSA_PrivateKeyPath();
+            return _db?.GetFromDatabase_RSA_PrivateKeyPath();
         }
 
-        public bool VerifyRsaPrivateKey(string privateKeyPath)
+        public bool RsaPrivatePublicKeyIsMatched(string privateKeyPath, string publicKey)
         {
             Debug.Assert(File.Exists(privateKeyPath));
             Debug.Assert(!string.IsNullOrWhiteSpace(privateKeyPath));
 
             if (IsDbEncrypted() == false)
                 return false;
-
-            // check if RSA private key is matched public key?
-            try
-            {
-                var rsa = new RSA(File.ReadAllText(privateKeyPath), true);
-                var sha1Tmp = rsa.Sign("SHA1", SystemConfig.AppName);
-                var rsaPublicKeyObj = new RSA(_db.Get_RSA_PublicKey(), true);
-                if (rsaPublicKeyObj?.Verify("SHA1", sha1Tmp, SystemConfig.AppName) != true)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-            return true;
+            return RSA.PrivatePublicKeyIsMatched(privateKeyPath, publicKey) == RSA.EnumRsaStatus.NoError;
         }
 
         /// <summary>
@@ -208,11 +185,16 @@ namespace PRM.Core.Model
 
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
+                var p = (ProtocolServerWithAddrPortBase)server;
+                if (!string.IsNullOrEmpty(p.Address))
+                    p.Address = _rsa.Encode(p.Address);
+                p.Port = _rsa.Encode(p.Port);
+            }
+            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            {
                 var p = (ProtocolServerWithAddrPortUserPwdBase)server;
                 if (!string.IsNullOrEmpty(p.UserName))
                     p.UserName = _rsa.Encode(p.UserName);
-                if (!string.IsNullOrEmpty(p.Address))
-                    p.Address = _rsa.Encode(p.Address);
             }
         }
 
@@ -228,9 +210,15 @@ namespace PRM.Core.Model
 
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
+                var p = (ProtocolServerWithAddrPortBase)server;
+                p.Address = DecryptOrReturnOriginalString(p.Address);
+                p.Port = DecryptOrReturnOriginalString(p.Port);
+            }
+
+            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            {
                 var p = (ProtocolServerWithAddrPortUserPwdBase)server;
                 p.UserName = DecryptOrReturnOriginalString(p.UserName);
-                p.Address = DecryptOrReturnOriginalString(p.Address);
             }
         }
 

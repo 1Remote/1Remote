@@ -281,7 +281,7 @@ namespace PRM.ViewModel
                         if (pb.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             try
                             {
-                                Clipboard.SetText(Context.DbOperator.DecryptOrReturnOriginalString(server.Password));
+                                Clipboard.SetText(Context.DataService.DecryptOrReturnOriginalString(server.Password));
                             }
                             catch (Exception)
                             {

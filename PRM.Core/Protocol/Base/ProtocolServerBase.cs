@@ -13,7 +13,7 @@ using Color = System.Windows.Media.Color;
 
 namespace PRM.Core.Protocol
 {
-    public abstract class ProtocolServerBase : NotifyPropertyChangedBase, ICloneable
+    public abstract class ProtocolServerBase : NotifyPropertyChangedBase
     {
         [JsonIgnore]
         public string Server_editor_different_options { get; private set; }
@@ -244,10 +244,12 @@ namespace PRM.Core.Protocol
         /// <summary>
         /// cation: it is a shallow
         /// </summary>
-        public object Clone()
+        public ProtocolServerBase Clone()
         {
             Server_editor_different_options = SystemConfig.Instance.Language.GetText("server_editor_different_options");
-            return MemberwiseClone();
+            var clone = this.MemberwiseClone() as ProtocolServerBase;
+            clone.Tags = new List<string>(this.Tags);
+            return clone;
         }
 
         public void RunScriptBeforeConnect()
@@ -280,6 +282,12 @@ namespace PRM.Core.Protocol
             {
                 Console.WriteLine(e);
             }
+        }
+
+        public virtual void ConnectPreprocess(PrmContext context)
+        {
+            context.DataService.DecryptInfo(this);
+            context.DataService.DecryptPwdIfItIsEncrypted(this);
         }
     }
 }

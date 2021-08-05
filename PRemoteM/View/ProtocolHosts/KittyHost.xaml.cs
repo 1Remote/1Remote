@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.Win32;
+using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.SFTP;
@@ -82,7 +83,7 @@ namespace PRM.View.ProtocolHosts
 
             // set kitty bg color
             var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
-            var bgOption = options?.First(x => x.Key == EnumKittyOptionKey.Colour2.ToString());
+            var bgOption = options?.First(x => x.Key == EnumKittyConfigKey.Colour2.ToString());
             if (bgOption != null
                 && bgOption.Value.ToString().Split(',').Length == 3)
             {
@@ -202,7 +203,7 @@ namespace PRM.View.ProtocolHosts
                 if (!string.IsNullOrEmpty(server.PrivateKey))
                 {
                     // set key
-                    var ppk = Context.DbOperator.DecryptOrReturnOriginalString(server.PrivateKey);
+                    var ppk = Context.DataService.DecryptOrReturnOriginalString(server.PrivateKey);
                     Debug.Assert(ppk != null);
                     sshPrivateKeyPath = ppk;
                 }

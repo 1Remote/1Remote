@@ -1,16 +1,16 @@
-﻿using PRM.Core.Model;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
-using System.Runtime.Remoting.Contexts;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using PRM.Core.I;
+using PRM.Core.Model;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using Shawn.Utils;
 
-namespace PRM.Core.Protocol.Putty
+namespace PRM.Core.External.KiTTY
 {
-    public interface IKittyConnectable: IIntegratable
+    public interface IKittyConnectable : IIntegratable
     {
         string GetPuttyConnString(PrmContext context);
 
@@ -40,32 +40,32 @@ namespace PRM.Core.Protocol.Putty
             var fi = new FileInfo(kittyExeFullName);
             if (fi.Directory.Exists == false)
                 fi.Directory.Create();
-            if(fi.Exists == false)
+            if (fi.Exists == false)
                 iKittyConnectable.InstallKitty();
             var kittyExeFolderPath = fi.Directory.FullName;
 
-            var puttyOption = new PuttyOptions(iKittyConnectable.GetSessionName(), iKittyConnectable.ExternalKittySessionConfigPath);
+            var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName(), iKittyConnectable.ExternalKittySessionConfigPath);
             if (iKittyConnectable is ProtocolServerSSH server)
             {
                 if (!string.IsNullOrEmpty(sshPrivateKeyPath))
                 {
                     // set key
-                    puttyOption.Set(EnumKittyOptionKey.PublicKeyFile, sshPrivateKeyPath);
+                    puttyOption.Set(EnumKittyConfigKey.PublicKeyFile, sshPrivateKeyPath);
                 }
-                puttyOption.Set(EnumKittyOptionKey.HostName, server.Address);
-                puttyOption.Set(EnumKittyOptionKey.PortNumber, server.GetPort());
-                puttyOption.Set(EnumKittyOptionKey.Protocol, "ssh");
+                puttyOption.Set(EnumKittyConfigKey.HostName, server.Address);
+                puttyOption.Set(EnumKittyConfigKey.PortNumber, server.GetPort());
+                puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
             }
 
             // set color theme
-            puttyOption.Set(EnumKittyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
             var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
             if (options != null)
                 foreach (var option in options)
                 {
                     try
                     {
-                        if (Enum.TryParse(option.Key, out EnumKittyOptionKey key))
+                        if (Enum.TryParse(option.Key, out EnumKittyConfigKey key))
                         {
                             if (option.ValueKind == RegistryValueKind.DWord)
                                 puttyOption.Set(key, (int)(option.Value));
@@ -79,7 +79,7 @@ namespace PRM.Core.Protocol.Putty
                     }
                 }
 
-            puttyOption.Set(EnumKittyOptionKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
 
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
@@ -169,7 +169,7 @@ namespace PRM.Core.Protocol.Putty
                 iKittyConnectable.InstallKitty();
             var kittyExeFolderPath = fi.Directory.FullName;
 
-            var puttyOption = new PuttyOptions(iKittyConnectable.GetSessionName());
+            var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName());
             puttyOption.DelFromKittyConfig(kittyExeFolderPath);
         }
 
@@ -185,7 +185,7 @@ namespace PRM.Core.Protocol.Putty
 #if !DEV
                 // verify MD5
                 var md5 = MD5Helper.GetMd5Hash32BitString(File.ReadAllBytes(kittyExeFullName));
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/kitty_portable.exe")).Stream;
+                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/External/KiTTY/kitty_portable.exe")).Stream;
                 byte[] bytes = new byte[kitty.Length];
                 kitty.Read(bytes, 0, bytes.Length);
                 var md5_2 = MD5Helper.GetMd5Hash32BitString(bytes);
@@ -210,7 +210,7 @@ namespace PRM.Core.Protocol.Putty
             }
             else
             {
-                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/kitty_portable.exe")).Stream;
+                var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/External/KiTTY/kitty_portable.exe")).Stream;
                 using (var fileStream = File.Create(kittyExeFullName))
                 {
                     kitty.Seek(0, SeekOrigin.Begin);
@@ -267,7 +267,7 @@ reload=yes
         public static string GetKittyExeFullName()
         {
 #if DEV
-        const string kittyExeName = "kitty_portable_PRemoteM_debug.exe";
+            const string kittyExeName = "kitty_portable_PRemoteM_debug.exe";
 #else
             const string kittyExeName = "kitty_portable_PRemoteM.exe";
 #endif
