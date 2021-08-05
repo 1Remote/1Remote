@@ -304,7 +304,7 @@ namespace PRM.Model
 
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
-            _context.DbOperator.DbUpdateServer(vmProtocolServer.Server);
+            _context.DataService.DbUpdateServer(vmProtocolServer.Server);
 
             // if is OnlyOneInstance protocol and it is connected now, activate it and return.
             if (ActivateOrReConnIfServerSessionIsOpened(vmProtocolServer))

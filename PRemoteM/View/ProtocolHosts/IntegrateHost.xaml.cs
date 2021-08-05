@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Microsoft.Win32;
+using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.SFTP;
@@ -108,12 +109,13 @@ namespace PRM.View.ProtocolHosts
         private readonly System.Windows.Forms.Panel _panel;
         private readonly HashSet<IntPtr> _exeHandles = new HashSet<IntPtr>();
         private Timer _timer = null;
-        private readonly IIntegratable integratable;
+        public readonly string ExeFullName;
+        public readonly string ExeArguments;
 
-        public IntegrateHost(PrmContext context, ProtocolServerBase protocolServer) : base(context, protocolServer, false)
+        public IntegrateHost(PrmContext context, ProtocolServerBase protocolServer, string exeFullName, string exeArguments) : base(context, protocolServer, false)
         {
-            Debug.Assert(protocolServer is IIntegratable);
-            integratable = (IIntegratable)protocolServer;
+            ExeFullName = exeFullName;
+            ExeArguments = exeArguments;
             InitializeComponent();
 
             _panel = new System.Windows.Forms.Panel
@@ -223,13 +225,13 @@ namespace PRM.View.ProtocolHosts
         public void Start()
         {
             RunBeforeConnect?.Invoke();
-            var exeFullName = integratable.GetExeFullPath();
+            var exeFullName = ExeFullName;
             Debug.Assert(File.Exists(exeFullName));
             var ps = new ProcessStartInfo
             {
                 FileName = exeFullName,
-                WorkingDirectory = new FileInfo(exeFullName).Directory.FullName,
-                Arguments = integratable.GetExeArguments(Context),
+                WorkingDirectory = new FileInfo(exeFullName).DirectoryName,
+                Arguments = ExeArguments,
                 WindowStyle = ProcessWindowStyle.Minimized
             };
 
