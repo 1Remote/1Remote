@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using PRM.Core.External.KiTTY;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Resources.Theme;
@@ -288,9 +289,9 @@ namespace PRM.Core.Model
             UpdateBase(this, newConfig, typeof(SystemConfigTheme));
         }
 
-        private Dictionary<string, List<PuttyOptionItem>> _puttyThemes = new Dictionary<string, List<PuttyOptionItem>>();
+        private Dictionary<string, List<KittyConfigKeyValuePair>> _puttyThemes = new Dictionary<string, List<KittyConfigKeyValuePair>>();
 
-        public List<PuttyOptionItem> SelectedPuttyTheme
+        public List<KittyConfigKeyValuePair> SelectedPuttyTheme
         {
             get
             {
@@ -302,7 +303,7 @@ namespace PRM.Core.Model
 
         public void ReloadPuttyThemes()
         {
-            _puttyThemes = PuttyColorThemes.GetThemes();
+            _puttyThemes = PuttyThemes.GetThemes();
             var puttyThemeNames = new ObservableCollection<string>(_puttyThemes.Keys);
             _puttyThemeNames = puttyThemeNames;
         }

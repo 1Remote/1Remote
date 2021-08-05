@@ -11,11 +11,11 @@ namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        private DbOperator _dbOperator;
+        private DataService _dataService;
 
-        public void SetDbOperator(DbOperator dbOperator)
+        public void SetDbOperator(DataService dataService)
         {
-            _dbOperator = dbOperator;
+            _dataService = dataService;
         }
 
         public Action<string> OnMainWindowServerFilterChanged;
@@ -100,7 +100,7 @@ namespace PRM.Core.Model
 
         public void ServerListUpdate(ProtocolServerBase protocolServer = null, bool doInvoke = true)
         {
-            if (_dbOperator == null)
+            if (_dataService == null)
             {
                 return;
             }
@@ -108,11 +108,11 @@ namespace PRM.Core.Model
             if (protocolServer == null)
             {
                 var tmp = new ObservableCollection<VmProtocolServer>();
-                foreach (var serverAbstract in _dbOperator.GetServers())
+                foreach (var serverAbstract in _dataService.GetServers())
                 {
                     try
                     {
-                        _dbOperator.DecryptInfo(serverAbstract);
+                        _dataService.DecryptInfo(serverAbstract);
                         tmp.Add(new VmProtocolServer(serverAbstract));
                     }
                     catch (Exception e)
@@ -126,7 +126,7 @@ namespace PRM.Core.Model
             else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
             {
                 ServerListClearSelect();
-                _dbOperator.DbUpdateServer(protocolServer);
+                _dataService.DbUpdateServer(protocolServer);
                 int i = VmItemList.Count;
                 if (VmItemList.Any(x => x.Server.Id == protocolServer.Id))
                 {
@@ -142,7 +142,7 @@ namespace PRM.Core.Model
             // add
             else
             {
-                _dbOperator.DbAddServer(protocolServer);
+                _dataService.DbAddServer(protocolServer);
                 ServerListUpdate(null, doInvoke);
             }
 
@@ -159,12 +159,12 @@ namespace PRM.Core.Model
 
         public void ServerListRemove(int id)
         {
-            if (_dbOperator == null)
+            if (_dataService == null)
             {
                 return;
             }
             Debug.Assert(id > 0);
-            if (_dbOperator.DbDeleteServer(id))
+            if (_dataService.DbDeleteServer(id))
             {
                 ServerListUpdate();
             }
