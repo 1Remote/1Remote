@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Contexts;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
 using PRM.Core.Model;
+using PRM.Core.Service;
 using Shawn.Utils;
 using Color = System.Windows.Media.Color;
 
@@ -27,7 +29,8 @@ namespace PRM.Core.Protocol
                 ProtocolDisplayNameInShort = ProtocolDisplayName;
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
-            Server_editor_different_options = SystemConfig.Instance.Language.GetText("server_editor_different_options");
+            // TODO fix static resource
+            Server_editor_different_options = LanguageService.TmpLanguageService.Translate("server_editor_different_options");
         }
 
         public abstract bool IsOnlyOneInstance();
@@ -246,8 +249,9 @@ namespace PRM.Core.Protocol
         /// </summary>
         public ProtocolServerBase Clone()
         {
-            Server_editor_different_options = SystemConfig.Instance.Language.GetText("server_editor_different_options");
             var clone = this.MemberwiseClone() as ProtocolServerBase;
+            // TODO fix static resource
+            clone.Server_editor_different_options = LanguageService.TmpLanguageService.Translate("server_editor_different_options");
             clone.Tags = new List<string>(this.Tags);
             return clone;
         }
@@ -286,8 +290,8 @@ namespace PRM.Core.Protocol
 
         public virtual void ConnectPreprocess(PrmContext context)
         {
-            context.DataService.DecryptInfo(this);
-            context.DataService.DecryptPwdIfItIsEncrypted(this);
+            context.DataService.DecryptToRamLevel(this);
+            context.DataService.DecryptToConnectLevel(this);
         }
     }
 }

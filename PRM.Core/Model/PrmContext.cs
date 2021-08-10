@@ -1,19 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using PRM.Core.DB;
 using PRM.Core.DB.Dapper;
 using PRM.Core.I;
+using PRM.Core.Service;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
     public class PrmContext : NotifyPropertyChangedBase
     {
-        public GlobalData AppData { get; } = new GlobalData();
-        public DataService DataService { get; private set; } = null;
+        public readonly ConfigurationService ConfigurationService;
+        public DataService DataService;
+        public readonly LanguageService LanguageService;
+        public readonly LauncherService LauncherService;
+        public readonly ThemeService ThemeService;
+        public readonly LocalityService LocalityService;
+
+        public PrmContext(ResourceDictionary applicationResourceDictionary)
+        {
+            ConfigurationService = new ConfigurationService();
+            ConfigurationService.Load();
+            LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
+            PRM.Core.Service.LanguageService.TmpLanguageService = LanguageService;
+            LauncherService = new LauncherService(LanguageService);
+            ThemeService = new ThemeService(applicationResourceDictionary);
+            DataService = new DataService();
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+            LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
+            AppData = new GlobalData(LocalityService);
+        }
+
+        public GlobalData AppData { get; }
+
 
         public KeywordMatchService KeywordMatchService { get; } = new KeywordMatchService();
 
@@ -30,8 +54,8 @@ namespace PRM.Core.Model
             }
             
             DataService = new DataService();
-            DataService.OpenDatabaseConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
-            var ret = DataService.CheckDbRsaStatus();
+            DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
+            var ret = DataService.Database_SelfCheck();
             if (ret == EnumDbStatus.OK)
                 AppData.SetDbOperator(DataService);
             return ret;

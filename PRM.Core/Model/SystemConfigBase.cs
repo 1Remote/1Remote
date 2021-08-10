@@ -8,15 +8,16 @@ namespace PRM.Core.Model
     {
         public bool StopAutoSave { get; set; } = false;
 
-        protected override void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
+        protected override bool SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
         {
-            if (oldValue == null && newValue == null) return;
-            if (oldValue != null && oldValue.Equals(newValue)) return;
-            if (newValue != null && newValue.Equals(oldValue)) return;
+            if (oldValue == null && newValue == null) return false;
+            if (oldValue != null && oldValue.Equals(newValue)) return false;
+            if (newValue != null && newValue.Equals(oldValue)) return false;
             oldValue = newValue;
             RaisePropertyChanged(propertyName);
             if (!StopAutoSave)
                 Save();
+            return true;
         }
 
         private protected Ini _ini = null;

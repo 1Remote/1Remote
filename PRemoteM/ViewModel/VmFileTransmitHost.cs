@@ -26,11 +26,11 @@ namespace PRM.ViewModel
 {
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
-        private readonly PrmContext _context;
+        public readonly PrmContext Context;
 
         public VmFileTransmitHost(PrmContext context, IProtocolFileTransmittable protocol)
         {
-            _context = context;
+            Context = context;
             _protocol = protocol;
         }
 
@@ -58,7 +58,7 @@ namespace PRM.ViewModel
                 {
                     try
                     {
-                        Trans = _protocol.GeTransmitter(_context);
+                        Trans = _protocol.GeTransmitter(Context);
                         if (!string.IsNullOrWhiteSpace(_protocol.GetStartupPath()))
                             ShowFolder(_protocol.GetStartupPath());
                     }
@@ -331,7 +331,7 @@ namespace PRM.ViewModel
 
             var aMenu = new System.Windows.Controls.ContextMenu();
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_refresh") };
+                var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_refresh") };
                 menu.Click += (o, a) =>
                 {
                     CmdGoToPathCurrent.Execute();
@@ -339,7 +339,7 @@ namespace PRM.ViewModel
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_create_folder") };
+                var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_create_folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();
@@ -362,7 +362,7 @@ namespace PRM.ViewModel
                 ((ListView)sender).SelectedItem = null;
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUploadClipboard.CanExecute())
@@ -373,7 +373,7 @@ namespace PRM.ViewModel
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_select_files_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_select_files_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -383,7 +383,7 @@ namespace PRM.ViewModel
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_select_folder_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_select_folder_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -395,7 +395,7 @@ namespace PRM.ViewModel
             else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
             {
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_delete") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_delete") };
                     menu.Click += (o, a) =>
                     {
                         CmdDelete.Execute();
@@ -403,7 +403,7 @@ namespace PRM.ViewModel
                     aMenu.Items.Add(menu);
                 }
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = SystemConfig.Instance.Language.GetText("file_transmit_host_command_save_to") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_save_to") };
                     menu.Click += (o, a) =>
                     {
                         CmdDownload.Execute();
@@ -433,8 +433,8 @@ namespace PRM.ViewModel
                             if (Trans?.IsConnected() != true)
                                 return;
                             if (MessageBox.Show(
-                                SystemConfig.Instance.Language.GetText("confirm_to_delete"),
-                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
+                                Context.LanguageService.Translate("confirm_to_delete"),
+                                Context.LanguageService.Translate("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
                             {
                                 foreach (var itemInfo in RemoteItems)
@@ -609,12 +609,12 @@ namespace PRM.ViewModel
                         else if (SelectedRemoteItem?.IsSymlink == false)
                         {
                             const int limit = 1;
-                            var msg = SystemConfig.Instance.Language.GetText("file_transmit_host_message_preview_over_size");
+                            var msg = Context.LanguageService.Translate("file_transmit_host_message_preview_over_size");
                             msg = msg.Replace("1 MB", $"{limit} MB");
                             if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
                             && MessageBox.Show(
                                 msg,
-                                SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
+                                Context.LanguageService.Translate("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) != MessageBoxResult.Yes)
                             {
                                 return;
@@ -630,7 +630,7 @@ namespace PRM.ViewModel
 
                                 var fi = new FileInfo(tmpPath);
                                 var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                                var t = new TransmitTask(Trans, fi.Directory.FullName, ris);
+                                var t = new TransmitTask(Context.LanguageService, Trans, fi.Directory.FullName, ris);
                                 AddTransmitTask(t);
                                 t.StartTransmitAsync();
                                 t.OnTaskEnd += (status, exception) =>
@@ -780,10 +780,10 @@ namespace PRM.ViewModel
 
                         var dlg = new System.Windows.Forms.SaveFileDialog
                         {
-                            Title = SystemConfig.Instance.Language.GetText("file_transmit_host_message_files_download_to"),
+                            Title = Context.LanguageService.Translate("file_transmit_host_message_files_download_to"),
                             CheckFileExists = false,
                             ValidateNames = false,
-                            FileName = SystemConfig.Instance.Language.GetText("file_transmit_host_message_files_download_to_dir"),
+                            FileName = Context.LanguageService.Translate("file_transmit_host_message_files_download_to_dir"),
                         };
                         if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
@@ -792,13 +792,13 @@ namespace PRM.ViewModel
                             if (!IOPermissionHelper.HasWritePermissionOnFile(dlg.FileName)
                             || !IOPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
                             {
-                                IoMessage = SystemConfig.Instance.Language.GetText("string_permission_denied") + $": {dlg.FileName}";
+                                IoMessage = Context.LanguageService.Translate("string_permission_denied") + $": {dlg.FileName}";
                                 IoMessageLevel = 2;
                                 return;
                             }
 
                             var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                            var t = new TransmitTask(Trans, destinationDirectoryPath, ris);
+                            var t = new TransmitTask(Context.LanguageService, Trans, destinationDirectoryPath, ris);
                             AddTransmitTask(t);
                             t.StartTransmitAsync();
                         }
@@ -824,7 +824,7 @@ namespace PRM.ViewModel
                                 return;
                             List<string> fl = new List<string>();
                             var dlg = new System.Windows.Forms.OpenFileDialog();
-                            dlg.Title = SystemConfig.Instance.Language.GetText(
+                            dlg.Title = Context.LanguageService.Translate(
                                 "file_transmit_host_message_select_files_to_upload");
                             dlg.CheckFileExists = true;
                             dlg.Multiselect = true;
@@ -844,7 +844,7 @@ namespace PRM.ViewModel
                                 return;
                             List<string> fl = new List<string>();
                             var fbd = new FolderBrowserDialog();
-                            fbd.Description = SystemConfig.Instance.Language.GetText("file_transmit_host_message_select_files_to_upload");
+                            fbd.Description = Context.LanguageService.Translate("file_transmit_host_message_select_files_to_upload");
                             fbd.ShowNewFolderButton = false;
                             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
@@ -911,50 +911,11 @@ namespace PRM.ViewModel
 
             if (fis.Count > 0 || dis.Count > 0)
             {
-                var t = new TransmitTask(Trans, CurrentPath, fis.ToArray(), dis.ToArray());
+                var t = new TransmitTask(Context.LanguageService, Trans, CurrentPath, fis.ToArray(), dis.ToArray());
                 AddTransmitTask(t);
                 t.StartTransmitAsync();
             }
         }
-
-        //private RelayCommand _cmdContinueTransmitTask;
-        //public RelayCommand CmdContinueTransmitTask
-        //{
-        //    get
-        //    {
-        //        if (_cmdContinueTransmitTask == null)
-        //        {
-        //            _cmdContinueTransmitTask = new RelayCommand((o) =>
-        //            {
-        //                if (o is TransmitTask t)
-        //                {
-        //                    SimpleLogHelper.Debug($"Try to continue Task:{t.GetHashCode()}");
-        //                    t.TryContinue();
-        //                }
-        //            }, o => _trans?.IsConnected() == true);
-        //        }
-        //        return _cmdContinueTransmitTask;
-        //    }
-        //}
-        //private RelayCommand _cmdPauseTransmitTask;
-        //public RelayCommand CmdPauseTransmitTask
-        //{
-        //    get
-        //    {
-        //        if (_cmdPauseTransmitTask == null)
-        //        {
-        //            _cmdPauseTransmitTask = new RelayCommand((o) =>
-        //            {
-        //                if (o is TransmitTask t)
-        //                {
-        //                    SimpleLogHelper.Debug($"Try to pause Task:{t.GetHashCode()}");
-        //                    t.TryPause();
-        //                }
-        //            }, o => _trans?.IsConnected() == true);
-        //        }
-        //        return _cmdPauseTransmitTask;
-        //    }
-        //}
 
         private RelayCommand _cmdShowTransmitDstPath;
 

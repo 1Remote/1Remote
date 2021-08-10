@@ -13,6 +13,7 @@ using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.View.ProtocolHosts;
@@ -32,9 +33,11 @@ namespace PRM.View.TabWindow
         private IntPtr _myWindowHandle;
         private readonly Timer _timer4CheckForegroundWindow;
         private WindowState _lastWindowState;
+        private readonly LocalityService _localityService;
 
-        protected TabWindowBase(string token)
+        protected TabWindowBase(string token, LocalityService localityService)
         {
+            _localityService = localityService;
             Vm = new VmTabWindow(token);
             DataContext = Vm;
             _timer4CheckForegroundWindow = new Timer();
@@ -111,9 +114,9 @@ namespace PRM.View.TabWindow
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                    _localityService.TabWindowHeight = this.Height;
+                    _localityService.TabWindowWidth = this.Width;
+                    _localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -137,9 +140,9 @@ namespace PRM.View.TabWindow
                 if (this.WindowState != WindowState.Minimized)
                 {
                     Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
-                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                    _localityService.TabWindowHeight = this.Height;
+                    _localityService.TabWindowWidth = this.Width;
+                    _localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -191,11 +194,11 @@ namespace PRM.View.TabWindow
             };
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
-            this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
+            this.Width = _localityService.TabWindowWidth;
+            this.Height = _localityService.TabWindowHeight;
             this.MinWidth = this.MinHeight = 300;
-            if (SystemConfig.Instance.Locality.TabWindowState != WindowState.Minimized)
-                this.WindowState = SystemConfig.Instance.Locality.TabWindowState;
+            if (_localityService.TabWindowState != WindowState.Minimized)
+                this.WindowState = _localityService.TabWindowState;
 
             InitSizeChanged();
             InitStateChanged();

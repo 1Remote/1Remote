@@ -20,14 +20,14 @@ namespace PRM
             Vm = new VmMain(context, this);
             this.DataContext = Vm;
             Title = SystemConfig.AppName;
-            this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
-            this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
+            this.Width = context.LocalityService.MainWindowWidth;
+            this.Height = context.LocalityService.MainWindowHeight;
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.Instance.Locality.MainWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.MainWindowWidth = this.Width;
+                    context.LocalityService.MainWindowHeight = this.Height;
+                    context.LocalityService.MainWindowWidth = this.Width;
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };
