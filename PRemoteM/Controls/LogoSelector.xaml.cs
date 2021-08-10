@@ -392,7 +392,7 @@ namespace PRM.Controls
         {
             var ofd = new OpenFileDialog
             {
-                Title = SystemConfig.Instance.Language.GetText("logo_selector_open_file_dialog_title"),
+                Title = App.Context.LanguageService.Translate("logo_selector_open_file_dialog_title"),
                 Filter = "image|*.jpg;*.png;*.bmp|all files|*.*",
                 RestoreDirectory = true
             };

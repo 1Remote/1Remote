@@ -131,7 +131,7 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server, isDuplicate)),
+                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
@@ -141,13 +141,13 @@ namespace PRM.ViewModel
             {
                 var server = new ProtocolServerRDP();
                 if (string.IsNullOrWhiteSpace(tagName) == false)
-                    server.Tags = new List<string>() {tagName};
+                    server.Tags = new List<string>() { tagName };
 
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server)),
+                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server)),
                 };
             });
 
@@ -157,7 +157,7 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(Context, servers)),
+                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, servers)),
                 };
             };
 
