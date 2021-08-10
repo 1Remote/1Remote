@@ -425,13 +425,13 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
+                        <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <ListBox ItemsSource="{Binding PrmContext.AppData.Tags}" Margin="20" MaxWidth="700">
+            <ListBox ItemsSource="{Binding Context.AppData.Tags}" Margin="20" MaxWidth="700">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ItemsPresenter></ItemsPresenter>
@@ -533,12 +533,12 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="">
+                                    <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="{x:Null}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
@@ -574,7 +574,7 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding PrmContext.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
+                                    <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
@@ -594,9 +594,9 @@
                         <StackPanel Orientation="Horizontal">
                             <ListBox
                                     IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding PrmContext.AppData.Tags}"
+                                    ItemsSource="{Binding Context.AppData.Tags}"
                                     SelectedValuePath="Name"
-                                    SelectedValue="{Binding PrmContext.AppData.SelectedTagName}"
+                                    SelectedValue="{Binding Context.AppData.SelectedTagName}"
                                     Background="{DynamicResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"

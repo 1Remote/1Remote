@@ -223,7 +223,7 @@ namespace com.github.xiangyuecn.rsacsharp {
             NoError,
         }
 
-        public static EnumRsaStatus KeyCheck(string key)
+        public static EnumRsaStatus KeyCheck(string key, bool isPrivateKey)
         {
             try
             {
@@ -232,27 +232,30 @@ namespace com.github.xiangyuecn.rsacsharp {
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return EnumRsaStatus.PrivateKeyFormatError;
+                if (isPrivateKey)
+                    return EnumRsaStatus.PrivateKeyFormatError;
+                else
+                    return EnumRsaStatus.PublicKeyFormatError;
             }
             return EnumRsaStatus.NoError;
         }
-		public static EnumRsaStatus KeyFileCheck(string keyPath)
+        public static EnumRsaStatus KeyFileCheck(string keyPath, bool isPrivateKey)
         {
             if (File.Exists(keyPath) == false)
                 return EnumRsaStatus.CannotReadPrivateKeyFile;
-            return KeyCheck(File.ReadAllText(keyPath, Encoding.UTF8));
+            return KeyCheck(File.ReadAllText(keyPath, Encoding.UTF8), isPrivateKey);
         }
 
-        public static EnumRsaStatus PrivatePublicKeyIsMatched(string privateKeyPath, string publicKey)
+        public static EnumRsaStatus CheckPrivatePublicKeyMatch(string privateKeyPath, string publicKey)
         {
             if (File.Exists(privateKeyPath) == false)
                 return EnumRsaStatus.CannotReadPrivateKeyFile;
 
 
-            var pks = KeyFileCheck(privateKeyPath);
+            var pks = KeyFileCheck(privateKeyPath, true);
             if (pks != EnumRsaStatus.NoError)
                 return pks;
-            pks = KeyCheck(publicKey);
+            pks = KeyCheck(publicKey, false);
             if (pks != EnumRsaStatus.NoError)
                 return pks;
 

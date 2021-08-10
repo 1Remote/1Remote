@@ -30,23 +30,23 @@ namespace PRM.ViewModel
     public class VmServerListPage : NotifyPropertyChangedBase
     {
         public const string TagsListViewMark = "tags_selector_for_list@#@1__()!";
-        public PrmContext PrmContext { get; }
+        public PrmContext Context { get; }
         private readonly ListBox _list;
 
-        public VmServerListPage(PrmContext prmContext, ListBox list)
+        public VmServerListPage(PrmContext context, ListBox list)
         {
-            PrmContext = prmContext;
+            Context = context;
             _list = list;
             RebuildVmServerList();
-            PrmContext.AppData.VmItemListDataChanged += RebuildVmServerList;
+            Context.AppData.VmItemListDataChanged += RebuildVmServerList;
 
-            PrmContext.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
+            Context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
             {
                 CalcVisible();
                 RaisePropertyChanged(nameof(IsMultipleSelected));
             });
 
-            PrmContext.AppData.PropertyChanged += (sender, args) =>
+            Context.AppData.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(GlobalData.SelectedTagName))
                 {
@@ -89,7 +89,7 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(nameof(ServerTagList), ref _serverTagList, value);
         }
 
-        private string SelectedTagName => PrmContext.AppData.SelectedTagName;
+        private string SelectedTagName => Context.AppData.SelectedTagName;
 
         //private string _selectedTagName = "";
         //public string SelectedTagName
@@ -98,9 +98,9 @@ namespace PRM.ViewModel
         //    set
         //    {
         //        if (_selectedTagName == value) return;
-        //        PrmContext.AppData.MainWindowServerFilter = "";
+        //        Context.AppData.MainWindowServerFilter = "";
         //        SetAndNotifyIfChanged(nameof(SelectedTagName), ref _selectedTagName, value);
-        //        SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+        //        context.LocalityService.MainWindowTabSelected = value;
         //        CalcVisible();
         //    }
         //}
@@ -133,7 +133,7 @@ namespace PRM.ViewModel
         private void RebuildVmServerList()
         {
             _serverListItems.Clear();
-            foreach (var vs in PrmContext.AppData.VmItemList)
+            foreach (var vs in Context.AppData.VmItemList)
             {
                 ServerListItems.Add(vs);
                 try
@@ -223,7 +223,7 @@ namespace PRM.ViewModel
 
         private void CalcVisible()
         {
-            var keyWord = PrmContext.AppData.MainWindowServerFilter;
+            var keyWord = Context.AppData.MainWindowServerFilter;
             var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             if (SelectedTagName != TagsListViewMark)
             {
@@ -244,7 +244,7 @@ namespace PRM.ViewModel
                     {
                         var dispName = server.DisplayName;
                         var subTitle = server.SubTitle;
-                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
+                        var matched = Context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
                         if (matched)
                             card.ObjectVisibilityInList = Visibility.Visible;
                         else
@@ -263,7 +263,7 @@ namespace PRM.ViewModel
             }
             else
             {
-                foreach (var tag in PrmContext.AppData.Tags)
+                foreach (var tag in Context.AppData.Tags)
                 {
                     if (string.IsNullOrEmpty(keyWord))
                     {
@@ -271,7 +271,7 @@ namespace PRM.ViewModel
                     }
                     else
                     {
-                        var matched = PrmContext.KeywordMatchService.Matchs(new List<string>() { tag.Name }, keyWords).IsMatchAllKeywords;
+                        var matched = Context.KeywordMatchService.Matchs(new List<string>() { tag.Name }, keyWords).IsMatchAllKeywords;
                         if (matched)
                             tag.ObjectVisibilityInList = Visibility.Visible;
                         else
@@ -289,7 +289,7 @@ namespace PRM.ViewModel
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (PrmContext.AppData.Tags.Any(x => x.Name == SelectedTagName))
+                    if (Context.AppData.Tags.Any(x => x.Name == SelectedTagName))
                         GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedTagName);
                     else
                         GlobalEventHelper.OnGoToServerAddPage?.Invoke();
@@ -308,24 +308,24 @@ namespace PRM.ViewModel
                     var dlg = new SaveFileDialog
                     {
                         Filter = "PRM json array|*.prma",
-                        Title = SystemConfig.Instance.Language.GetText("system_options_data_security_export_dialog_title"),
+                        Title = Context.LanguageService.Translate("system_options_data_security_export_dialog_title"),
                         FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
                     };
                     if (dlg.ShowDialog() == true)
                     {
                         var list = new List<ProtocolServerBase>();
                         if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
-                            foreach (var vs in PrmContext.AppData.VmItemList)
+                            foreach (var vs in Context.AppData.VmItemList)
                             {
                                 var serverBase = (ProtocolServerBase) vs.Server.Clone();
-                                PrmContext.DataService.DecryptPwdIfItIsEncrypted(serverBase);
+                                Context.DataService.DecryptToConnectLevel(serverBase);
                                 list.Add(serverBase);
                             }
                         else
                             foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
                             {
                                 var serverBase = (ProtocolServerBase) vs.Server.Clone();
-                                PrmContext.DataService.DecryptPwdIfItIsEncrypted(serverBase);
+                                Context.DataService.DecryptToConnectLevel(serverBase);
                                 list.Add(serverBase);
                             }
 
@@ -346,7 +346,7 @@ namespace PRM.ViewModel
                     var dlg = new OpenFileDialog()
                     {
                         Filter = "PRM json array|*.prma",
-                        Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
+                        Title = Context.LanguageService.Translate("import_server_dialog_title"),
                     };
                     if (dlg.ShowDialog() == true)
                     {
@@ -361,18 +361,18 @@ namespace PRM.ViewModel
                                 {
                                     server.Id = 0;
                                     list.Add(server);
-                                    PrmContext.DataService.DbAddServer(server);
+                                    Context.DataService.Database_InsertServer(server);
                                 }
                             }
 
-                            PrmContext.AppData.ServerListUpdate();
-                            MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK,
+                            Context.AppData.ReloadServerList();
+                            MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
                                 MessageBoxImage.None, MessageBoxResult.None);
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.Debug(e);
-                            MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
+                            MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
                                 MessageBoxResult.None);
                         }
                     }
@@ -391,7 +391,7 @@ namespace PRM.ViewModel
                     var dlg = new OpenFileDialog()
                     {
                         Filter = "csv|*.csv",
-                        Title = SystemConfig.Instance.Language.GetText("import_server_dialog_title"),
+                        Title = Context.LanguageService.Translate("import_server_dialog_title"),
                     };
                     if (dlg.ShowDialog() != true) return;
                     try
@@ -401,21 +401,21 @@ namespace PRM.ViewModel
                         {
                             foreach (var serverBase in list)
                             {
-                                PrmContext.DataService.DbAddServer(serverBase);
+                                Context.DataService.Database_InsertServer(serverBase);
                             }
 
-                            PrmContext.AppData.ServerListUpdate();
-                            MessageBox.Show(SystemConfig.Instance.Language.GetText("import_done_0_items_added").Replace("{0}", list.Count.ToString()), SystemConfig.Instance.Language.GetText("messagebox_title_info"), MessageBoxButton.OK,
+                            Context.AppData.ReloadServerList();
+                            MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
                                 MessageBoxImage.None, MessageBoxResult.None);
                         }
                         else
-                            MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
+                            MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
                                 MessageBoxResult.None);
                     }
                     catch (Exception e)
                     {
                         SimpleLogHelper.Debug(e);
-                        MessageBox.Show(SystemConfig.Instance.Language.GetText("import_failure_with_data_format_error") + $": {e.Message}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK,
+                        MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error") + $": {e.Message}", Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK,
                             MessageBoxImage.Error, MessageBoxResult.None);
                     }
                 });
@@ -431,18 +431,18 @@ namespace PRM.ViewModel
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
                     if (MessageBoxResult.Yes == MessageBox.Show(
-                        SystemConfig.Instance.Language.GetText("confirm_to_delete_selected"),
-                        SystemConfig.Instance.Language.GetText("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        Context.LanguageService.Translate("confirm_to_delete_selected"),
+                        Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
                         var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true).ToList();
                         if (!(ss?.Count > 0)) return;
                         foreach (var vs in ss)
                         {
-                            PrmContext.DataService.DbDeleteServer(vs.Server.Id);
+                            Context.DataService.Database_DeleteServer(vs.Server.Id);
                         }
 
-                        PrmContext.AppData.ServerListUpdate();
+                        Context.AppData.ReloadServerList();
                     }
                 }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
             }
@@ -467,7 +467,7 @@ namespace PRM.ViewModel
         {
             get
             {
-                return _cmdCancelSelected ??= new RelayCommand((o) => { PrmContext.AppData.ServerListClearSelect(); });
+                return _cmdCancelSelected ??= new RelayCommand((o) => { Context.AppData.UnselectAllServers(); });
             }
         }
 
@@ -548,14 +548,14 @@ namespace PRM.ViewModel
                     if (o == null)
                         return;
                     if (o is Tag obj
-                        && PrmContext.AppData.Tags.Any(x => x.Name == obj.Name))
+                        && Context.AppData.Tags.Any(x => x.Name == obj.Name))
                     {
-                        PrmContext.AppData.SelectedTagName = obj.Name;
+                        Context.AppData.SelectedTagName = obj.Name;
                     }
                     else if (o is string str
-                             && PrmContext.AppData.Tags.Any(x => x.Name == str))
+                             && Context.AppData.Tags.Any(x => x.Name == str))
                     {
-                        PrmContext.AppData.SelectedTagName = str;
+                        Context.AppData.SelectedTagName = str;
                     }
                 });
             }
@@ -574,7 +574,7 @@ namespace PRM.ViewModel
                     var obj = o as Tag;
                     if (obj == null)
                         return;
-                    foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
                         var s = vmProtocolServer.Server;
                         if (s.Tags.Contains(obj.Name))
@@ -582,11 +582,11 @@ namespace PRM.ViewModel
                             s.Tags.Remove(obj.Name);
                         }
 
-                        PrmContext.AppData.ServerListUpdate(s, false);
+                        Context.AppData.UpdateServer(s, false);
                     }
 
-                    PrmContext.AppData.ServerListUpdate();
-                    PrmContext.AppData.SelectedTagName = "";
+                    Context.AppData.ReloadServerList();
+                    Context.AppData.SelectedTagName = "";
                 });
             }
         }
@@ -610,12 +610,12 @@ namespace PRM.ViewModel
                         var obj = o as Tag;
                         if (obj == null)
                             return;
-                        string newTag = InputWindow.InputBox(SystemConfig.Instance.Language.GetText("server_editor_tag"), SystemConfig.Instance.Language.GetText("server_editor_tag"), obj.Name);
+                        string newTag = InputWindow.InputBox(Context.LanguageService.Translate("server_editor_tag"), Context.LanguageService.Translate("server_editor_tag"), obj.Name);
                         if (t == obj.Name)
                             t = newTag;
                         if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
                             return;
-                        foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                        foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                         {
                             var s = vmProtocolServer.Server;
                             if (s.Tags.Contains(obj.Name))
@@ -623,10 +623,10 @@ namespace PRM.ViewModel
                                 s.Tags.Remove(obj.Name);
                                 s.Tags.Add(newTag);
                             }
-                            PrmContext.AppData.ServerListUpdate(s, false);
+                            Context.AppData.UpdateServer(s, false);
                         }
-                        PrmContext.AppData.ServerListUpdate();
-                        PrmContext.AppData.SelectedTagName = t;
+                        Context.AppData.ReloadServerList();
+                        Context.AppData.SelectedTagName = t;
                     });
                 }
                 return _cmdTagRename;
@@ -648,7 +648,7 @@ namespace PRM.ViewModel
                 {
                     if (!(o is Tag obj))
                         return;
-                    foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {
@@ -673,7 +673,7 @@ namespace PRM.ViewModel
                         return;
 
                     var token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in PrmContext.AppData.VmItemList.ToArray())
+                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
                         if (vmProtocolServer.Server.Tags.Contains(obj.Name))
                         {

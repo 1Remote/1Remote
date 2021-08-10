@@ -284,17 +284,12 @@ namespace PRM.Model
                 }
                 return;
             }
-            else if (_context.AppData.VmItemList.All(x => x.Server.Id != serverId))
-            {
-                SimpleLogHelper.Warning($@"try to connect Server Id = {serverId} while {serverId} is not in the list");
-                _context.AppData.ServerListUpdate();
-            }
-
-            // clear selected state
-            _context.AppData.ServerListClearSelect();
-
 
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
+
+            // clear selected state
+            _context.AppData.UnselectAllServers();
+
             var vmProtocolServer = _context.AppData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId);
             if (vmProtocolServer == null)
             {
@@ -304,7 +299,7 @@ namespace PRM.Model
 
             // update the last conn time
             vmProtocolServer.Server.LastConnTime = DateTime.Now;
-            _context.DataService.DbUpdateServer(vmProtocolServer.Server);
+            _context.AppData.UpdateServer(vmProtocolServer.Server, false);
 
             // if is OnlyOneInstance protocol and it is connected now, activate it and return.
             if (ActivateOrReConnIfServerSessionIsOpened(vmProtocolServer))
@@ -499,7 +494,7 @@ namespace PRM.Model
             var token = DateTime.Now.Ticks.ToString();
             if (string.IsNullOrEmpty(assignTabToken) == false)
                 token = assignTabToken;
-            AddTab(new TabWindowChrome(token));
+            AddTab(new TabWindowChrome(token, _context.LocalityService));
             var tab = _tabWindows[token];
 
             // set location

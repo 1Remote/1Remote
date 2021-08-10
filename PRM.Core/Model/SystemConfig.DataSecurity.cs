@@ -32,12 +32,20 @@ namespace PRM.Core.Model
         private bool ValidateDbStatusAndShowMessageBox()
         {
             // validate rsa key
-            var res = _context.DataService?.CheckDbRsaStatus() ?? EnumDbStatus.AccessDenied;
+            var res = EnumDbStatus.OK;
+            if (!IOPermissionHelper.HasWritePermissionOnFile(DbPath))
+            {
+                res = EnumDbStatus.AccessDenied;
+            }
+            else if (_context.DataService != null)
+            {
+                res = _context.DataService.Database_SelfCheck();
+            }
             RaisePropertyChanged(nameof(RsaPublicKey));
             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
             if (res != EnumDbStatus.OK)
             {
-                MessageBox.Show(res.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                //MessageBox.Show(res.GetErrorInfo(SystemConfig.Instance.Language, DbPath), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return false;
             }
             return true;
@@ -68,15 +76,15 @@ namespace PRM.Core.Model
             }
         }
 
-        public string RsaPublicKey => this._context.DataService?.GetFromDatabase_RSA_PublicKey() ?? "";
-        public string RsaPrivateKeyPath => this._context.DataService?.GetRsaPrivateKeyPath() ?? "";
+        public string RsaPublicKey => this._context.DataService?.Database_GetPublicKey() ?? "";
+        public string RsaPrivateKeyPath => this._context.DataService?.Database_GetPrivateKeyPath() ?? "";
 
         /// <summary>
         /// Invoke Progress bar percent = arg1 / arg2
         /// </summary>
         private void OnRsaProgress(int now, int total)
         {
-            GlobalEventHelper.OnLongTimeProgress?.Invoke(now, total, SystemConfig.Instance.Language.GetText("system_options_data_security_info_data_processing"));
+            //GlobalEventHelper.OnLongTimeProgress?.Invoke(now, total, Context.LanguageService.Translate("system_options_data_security_info_data_processing"));
         }
 
         private readonly object _lockerForRsa = new object();
@@ -86,15 +94,15 @@ namespace PRM.Core.Model
         {
             if (_context.DataService == null) return;
             // validate rsa key
-            Debug.Assert(_context.DataService.IsDbEncrypted() == false);
+            Debug.Assert(_context.DataService.Database_IsEncrypted() == false);
             var t = new Task(() =>
             {
                 lock (_lockerForRsa)
                 {
-                    if (_context.DataService.IsDbEncrypted()) return;
+                    if (_context.DataService.Database_IsEncrypted()) return;
                     var dlg = new OpenFileDialog
                     {
-                        Title = SystemConfig.Instance.Language.GetText("system_options_data_security_rsa_encrypt_dialog_title"),
+                        //Title = Context.LanguageService.Translate("system_options_data_security_rsa_encrypt_dialog_title"),
                         Filter = $"PRM RSA private key|*{PrivateKeyFileExt}",
                         FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                         CheckFileExists = false,
@@ -119,9 +127,9 @@ namespace PRM.Core.Model
 
                     OnRsaProgress(++val, max);
 
-                    if (_context.DataService.SetRsaPrivateKey(dlg.FileName) < 0)
+                    if (_context.DataService.Database_SetEncryptionKey(dlg.FileName) < 0)
                     {
-                        MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        //MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(SystemConfig.Instance.Language, DbPath), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(0, 0);
                         return;
                     }
@@ -130,7 +138,7 @@ namespace PRM.Core.Model
                     foreach (var vmProtocolServer in this._context.AppData.VmItemList)
                     {
                         OnRsaProgress(++val, max);
-                        this._context.DataService.DbUpdateServer(vmProtocolServer.Server);
+                        this._context.DataService.Database_UpdateServer(vmProtocolServer.Server);
                         OnRsaProgress(++val, max);
                     }
 
@@ -150,12 +158,12 @@ namespace PRM.Core.Model
         private void CleanRsa()
         {
             if (_context.DataService == null) return;
-            Debug.Assert(_context.DataService.IsDbEncrypted() == true);
+            Debug.Assert(_context.DataService.Database_IsEncrypted() == true);
             var t = new Task(() =>
                 {
                     lock (_lockerForRsa)
                     {
-                        if (!_context.DataService.IsDbEncrypted()) return;
+                        if (!_context.DataService.Database_IsEncrypted()) return;
                         OnRsaProgress(0, 1);
                         int max = this._context.AppData.VmItemList.Count() * 3 + 2 + 1;
                         int val = 1;
@@ -169,17 +177,17 @@ namespace PRM.Core.Model
                         // decrypt pwd
                         foreach (var vmProtocolServer in this._context.AppData.VmItemList)
                         {
-                            this._context.DataService.DecryptPwdIfItIsEncrypted(vmProtocolServer.Server);
+                            this._context.DataService.DecryptToConnectLevel(vmProtocolServer.Server);
                             OnRsaProgress(++val, max);
                         }
 
                         // remove rsa keys from db
-                        this._context.DataService.SetRsaPrivateKey("");
+                        this._context.DataService.Database_SetEncryptionKey("");
 
                         // update db
                         foreach (var vmProtocolServer in this._context.AppData.VmItemList)
                         {
-                            this._context.DataService.DbUpdateServer(vmProtocolServer.Server);
+                            this._context.DataService.Database_UpdateServer(vmProtocolServer.Server);
                             OnRsaProgress(++val, max);
                         }
 
@@ -242,7 +250,7 @@ namespace PRM.Core.Model
                 {
                     _cmdSelectRsaPrivateKey = new RelayCommand((o) =>
                     {
-                        if (!_context.DataService.IsDbEncrypted())
+                        if (!_context.DataService.Database_IsEncrypted())
                         {
                             return;
                         }
@@ -252,16 +260,16 @@ namespace PRM.Core.Model
                             InitialDirectory = new FileInfo(RsaPrivateKeyPath).DirectoryName,
                         };
                         if (dlg.ShowDialog() != true) return;
-                        var res = _context.DataService.RsaPrivatePublicKeyIsMatched(dlg.FileName);
-                        if (res)
+                        var pks = RSA.CheckPrivatePublicKeyMatch(dlg.FileName, _context.DataService.Database_GetPublicKey());
+                        if (pks == RSA.EnumRsaStatus.NoError)
                         {
-                            _context.DataService.SetRsaPrivateKey(dlg.FileName);
+                            _context.DataService.Database_SetEncryptionKey(dlg.FileName);
                         }
                         else
                         {
-                            MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(SystemConfig.Instance.Language, DbPath), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            //MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(SystemConfig.Instance.Language, DbPath), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         }
-                    }, o => _context.DataService != null && _context.DataService.IsDbEncrypted());
+                    }, o => _context.DataService != null && _context.DataService.Database_IsEncrypted());
                 }
                 return _cmdSelectRsaPrivateKey;
             }
@@ -280,7 +288,7 @@ namespace PRM.Core.Model
                     {
                         return;
                     }
-                    if (_context.DataService?.IsDbEncrypted() == true)
+                    if (_context.DataService?.Database_IsEncrypted() == true)
                     {
                         return;
                     }
@@ -302,7 +310,7 @@ namespace PRM.Core.Model
                     {
                         return;
                     }
-                    if (_context.DataService?.IsDbEncrypted() != true)
+                    if (_context.DataService?.Database_IsEncrypted() != true)
                     {
                         return;
                     }
@@ -334,7 +342,6 @@ namespace PRM.Core.Model
 
                     if (!IOPermissionHelper.HasWritePermissionOnFile(path))
                     {
-                        MessageBox.Show(SystemConfig.Instance.Language.GetText("string_database_error_permission_denied"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
 
@@ -343,8 +350,8 @@ namespace PRM.Core.Model
                         if (this._context.DataService == null)
                             _context.InitSqliteDb(path);
                         else
-                            this._context.DataService.OpenDatabaseConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
-                        this._context.AppData.ServerListUpdate();
+                            this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        this._context.AppData.ReloadServerList();
                     }
                     catch (Exception ee)
                     {
@@ -352,10 +359,9 @@ namespace PRM.Core.Model
                         if (this._context.DataService == null)
                             _context.InitSqliteDb(path);
                         else
-                            this._context.DataService.OpenDatabaseConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
-                        this._context.AppData.ServerListUpdate();
+                            this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        this._context.AppData.ReloadServerList();
                         SimpleLogHelper.Warning(ee);
-                        MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     }
 
                     DbPath = path;
@@ -388,24 +394,22 @@ namespace PRM.Core.Model
                     {
                         if (IOPermissionHelper.HasWritePermissionOnFile(path))
                         {
-                            this._context.DataService?.CloseDatabaseConnection();
+                            this._context.DataService?.Database_CloseConnection();
                             File.Move(oldDbPath, path);
                             File.Delete(oldDbPath);
                             if (this._context.DataService == null)
                                 _context.InitSqliteDb(path);
-                            this._context.DataService?.OpenDatabaseConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                            this._context.DataService?.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                             // Migrate do not need reload data
-                            // this._appContext.AppData.ServerListUpdate();
+                            // this._appContext.AppData.ReloadServerList();
                             DbPath = path;
                         }
-                        else
-                            MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     }
                     catch (Exception ee)
                     {
                         SimpleLogHelper.Error(ee);
                         DbPath = oldDbPath;
-                        MessageBox.Show(SystemConfig.Instance.Language.GetText("system_options_data_security_error_can_not_open"), SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        //MessageBox.Show(Context.LanguageService.Translate("system_options_data_security_error_can_not_open"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     }
                 });
             }

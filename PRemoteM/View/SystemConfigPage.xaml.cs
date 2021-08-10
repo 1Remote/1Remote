@@ -9,12 +9,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using MSTSCLib;
 using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
-
-using Shawn.Utils;
-
+using PRM.ViewModel.Configuration;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -26,14 +25,18 @@ namespace PRM.View
     public partial class SystemConfigPage : UserControl
     {
         public VmMain Host;
-        public VmSystemConfigPage VmSystemConfigPage;
+
+        private readonly ConfigurationViewModel _vm;
+
+        private readonly PrmContext _context;
 
         public SystemConfigPage(VmMain host, PrmContext context, Type t = null)
         {
             Host = host;
-            VmSystemConfigPage = new VmSystemConfigPage(host, context);
+            _context = context;
             InitializeComponent();
-            DataContext = VmSystemConfigPage;
+            _vm = new ConfigurationViewModel(host, context);
+            DataContext = _vm;
 
             if (t == typeof(SystemConfigGeneral)
             || t == typeof(SystemConfigLanguage))
@@ -59,77 +62,30 @@ namespace PRM.View
                 _ => key
             };
 
-            var specialKeys = new[] { Key.Tab ,
-                                      Key.CapsLock ,
-                                      Key.PrintScreen ,
-                                      Key.Scroll ,
-                                      Key.Sleep ,
-                                      Key.Pause ,
-                                      Key.LeftCtrl ,
-                                      Key.RightCtrl ,
-                                      Key.LeftAlt ,
-                                      Key.RightAlt ,
-                                      Key.LeftShift ,
-                                      Key.RightShift ,
-                                      Key.LWin ,
-                                      Key.RWin ,
-                                      Key.Clear ,
-                                      Key.OemClear ,
-                                      Key.Escape ,
+            var specialKeys = new[] { Key.Tab,
+                                      Key.CapsLock,
+                                      Key.PrintScreen,
+                                      Key.Scroll,
+                                      Key.Sleep,
+                                      Key.Pause,
+                                      Key.LeftCtrl,
+                                      Key.RightCtrl,
+                                      Key.LeftAlt,
+                                      Key.RightAlt,
+                                      Key.LeftShift,
+                                      Key.RightShift,
+                                      Key.LWin,
+                                      Key.RWin,
+                                      Key.Clear,
+                                      Key.OemClear,
+                                      Key.Escape,
                                       Key.Apps };
 
             if (!specialKeys.Contains(key)
             && this.IsLoaded)
             {
-                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, key);
+                _vm.LauncherHotKeyKey = key;
             }
-        }
-
-        private void Modifiers_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (this.IsLoaded)
-            {
-                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey);
-            }
-        }
-
-        private bool SetHotkeyIsRegistered(HotkeyModifierKeys modifier, Key key)
-        {
-            if (modifier == SystemConfig.Instance.Launcher.HotKeyModifiers
-                && key == SystemConfig.Instance.Launcher.HotKeyKey)
-            {
-                VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
-                VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
-                return false;
-            }
-
-            // check if HOTKEY_ALREADY_REGISTERED
-            var r = GlobalHotkeyHooker.Instance.Register(null, (uint)modifier, key, () => { });
-            switch (r.Item1)
-            {
-                case GlobalHotkeyHooker.RetCode.Success:
-                    GlobalHotkeyHooker.Instance.Unregist(r.Item3);
-                    VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
-                    VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
-                    return true;
-
-                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                    break;
-
-                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(r.Item1.ToString());
-            }
-
-            // HotKey will be auto registered in SearchBox.xaml.cs
-            VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = SystemConfig.Instance.Launcher.HotKeyModifiers;
-            VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = SystemConfig.Instance.Launcher.HotKeyKey;
-
-            return false;
         }
 
         private void ContentElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)

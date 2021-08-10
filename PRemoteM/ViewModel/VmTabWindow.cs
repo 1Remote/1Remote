@@ -302,7 +302,7 @@ namespace PRM.ViewModel
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
-            var v = new TabWindowChrome(token);
+            var v = new TabWindowChrome(token, App.Context.LocalityService);
             RemoteWindowPool.Instance.AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }

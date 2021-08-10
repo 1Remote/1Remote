@@ -119,44 +119,6 @@ namespace PRM.Core.Protocol
             }
         }
 
-        private RelayCommand _cmdDeleteServer;
-
-        public RelayCommand CmdDeleteServer
-        {
-            get
-            {
-                return _cmdDeleteServer ??= new RelayCommand((o) =>
-                {
-                    if (MessageBoxResult.Yes == MessageBox.Show(
-                            SystemConfig.Instance.Language.GetText("confirm_to_delete"),
-                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
-                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
-                        )
-                    {
-                        GlobalEventHelper.OnRequestDeleteServer?.Invoke(Server.Id);
-                    }
-                });
-            }
-        }
-
-        private RelayCommand _cmdSave;
-
-        public RelayCommand CmdSave
-        {
-            get
-            {
-                if (_cmdSave != null) return _cmdSave;
-
-                _cmdSave = new RelayCommand((o) =>
-                {
-                    if (string.IsNullOrWhiteSpace(this.Server.DisplayName)) return;
-
-                    GlobalEventHelper.OnRequestUpdateServer?.Invoke(Server);
-                }, o => (this.Server.DisplayName.Trim() != ""));
-                return _cmdSave;
-            }
-        }
-
         #endregion CMD
     }
 }

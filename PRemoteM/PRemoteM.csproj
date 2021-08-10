@@ -188,6 +188,7 @@
     <Compile Include="Resources\Icons\ServerIcons.cs" />
     <Compile Include="Resources\Theme\AttachProperty\PasswordBoxAttachProperty.cs" />
     <Compile Include="Resources\Theme\AttachProperty\VisionElement.cs" />
+    <Compile Include="ViewModel\Configuration\ConfigurationViewModel.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmSystemConfigPage.cs" />

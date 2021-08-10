@@ -6,9 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using PRM.Core.External.KiTTY;
-using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty;
-using PRM.Core.Resources.Theme;
+using PRM.Core.Service;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
@@ -86,9 +85,9 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(PrmColorThemeNames), ref _prmColorThemeNames, value);
         }
 
-        private Dictionary<string, PrmColorTheme> _prmColorThemes;
+        private Dictionary<string, Theme> _prmColorThemes;
 
-        public Dictionary<string, PrmColorTheme> PrmColorThemes
+        public Dictionary<string, Theme> PrmColorThemes
         {
             get => _prmColorThemes;
             set => SetAndNotifyIfChanged(nameof(PrmColorThemes), ref _prmColorThemes, value);
@@ -238,7 +237,7 @@ namespace PRM.Core.Model
 
         private void LoadThemeFromIni()
         {
-            PrmColorThemes = PRM.Core.Resources.Theme.PrmColorThemes.GetThemes();
+            PrmColorThemes = new ThemeService(_appResourceDictionary).Themes;
             PrmColorThemeNames = new ObservableCollection<string>(PrmColorThemes.Keys);
 
             _prmColorThemeName = _ini.GetValue(nameof(PrmColorThemeName).ToLower(), _sectionName, _prmColorThemeName);

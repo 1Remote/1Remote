@@ -47,7 +47,6 @@ namespace PRM.Core.Model
         }
 
         private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.NameAsc;
-
         public EnumServerOrderBy ServerOrderBy
         {
             get => _serverOrderBy;
