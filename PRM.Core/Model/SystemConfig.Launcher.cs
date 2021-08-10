@@ -64,7 +64,7 @@ namespace PRM.Core.Model
         public HotkeyModifierKeys HotKeyModifiers
         {
             get => _hotKeyModifiers;
-            set => SetAndNotifyIfChanged(nameof(HotKeyModifiers), ref _hotKeyModifiers, value);
+            set => SetAndNotifyIfChanged(ref _hotKeyModifiers, value);
         }
 
         private Key _hotKeyKey = Key.M;
@@ -72,7 +72,7 @@ namespace PRM.Core.Model
         public Key HotKeyKey
         {
             get => _hotKeyKey;
-            set => SetAndNotifyIfChanged(nameof(HotKeyKey), ref _hotKeyKey, value);
+            set => SetAndNotifyIfChanged(ref _hotKeyKey, value);
         }
 
         private bool _allowGroupNameSearch = true;

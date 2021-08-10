@@ -47,7 +47,6 @@ namespace PRM.Core.Model
         public const string AppName = "PRemoteM";
         public const string AppFullName = "PersonalRemoteManager";
 #endif
-        public SystemConfigLocality Locality { get; set; }
         public SystemConfigLanguage Language { get; set; }
         public SystemConfigGeneral General { get; set; }
         public SystemConfigKeywordMatch KeywordMatch { get; set; }
@@ -81,7 +80,6 @@ namespace PRM.Core.Model
             Launcher.Save();
             DataSecurity.Save();
             Theme.Save();
-            Locality.Save();
         }
     }
 }

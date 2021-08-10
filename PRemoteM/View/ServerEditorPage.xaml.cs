@@ -17,11 +17,13 @@ namespace PRM.View
     {
         public readonly VmServerEditorPage Vm;
         private readonly BitmapSource _oldLogo;
+        public readonly PrmContext Context;
 
-        public ServerEditorPage(VmServerEditorPage vm)
+        public ServerEditorPage(PrmContext context, VmServerEditorPage vm)
         {
             Debug.Assert(vm?.Server != null);
             InitializeComponent();
+            Context = context;
             Vm = vm;
             DataContext = vm;
             vm.TagsEditor = TagsEditor;
@@ -29,7 +31,7 @@ namespace PRM.View
             // add mode
             if (vm.IsAddMode)
             {
-                ButtonSave.Content = SystemConfig.Instance.Language.GetText("word_add");
+                ButtonSave.Content = Context.LanguageService.Translate("word_add");
                 ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(SystemConfig.Instance.Theme.PrimaryMidColor);
 
                 if (vm.Server.IconImg == null
@@ -119,7 +121,7 @@ namespace PRM.View
             TryCmd(Vm.Server.CommandAfterDisconnected);
         }
 
-        private static void TryCmd(string cmd)
+        private void TryCmd(string cmd)
         {
             try
             {
@@ -131,7 +133,7 @@ namespace PRM.View
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBox.Show(ex.Message, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
             }
         }
 

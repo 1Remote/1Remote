@@ -591,7 +591,7 @@ namespace PRM.View.ProtocolHosts
             else
                 _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
 
-            Context.DataService.DbUpdateServer(_rdpServer);
+            Context.DataService.Database_UpdateServer(_rdpServer);
             _rdp.FullScreen = true;
         }
 
@@ -671,7 +671,7 @@ namespace PRM.View.ProtocolHosts
                 {
                     ++_retryCount;
                     TbMessageTitle.Visibility = Visibility.Visible;
-                    TbMessageTitle.Text = SystemConfig.Instance.Language.GetText("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
+                    TbMessageTitle.Text = Context.LanguageService.Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
                     TbMessage.Text = reason;
                     ReConn();
                 }
@@ -812,7 +812,7 @@ namespace PRM.View.ProtocolHosts
             }
             else
                 _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
-            Context.DataService.DbUpdateServer(_rdpServer);
+            Context.DataService.Database_UpdateServer(_rdpServer);
         }
 
         private System.Drawing.Rectangle GetScreenSize()
@@ -850,7 +850,7 @@ namespace PRM.View.ProtocolHosts
             ParentWindow.Left = _normalLeft;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
             _isLastTimeFullScreen = false;
-            Context.DataService.DbUpdateServer(_rdpServer);
+            Context.DataService.Database_UpdateServer(_rdpServer);
         }
 
         private void MakeForm2Minimize()

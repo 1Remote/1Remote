@@ -1,5 +1,5 @@
 ﻿using System;
-using PRM.Core.Model;
+using PRM.Core.Service;
 
 namespace PRM.Core.DB
 {
@@ -11,31 +11,35 @@ namespace PRM.Core.DB
         RsaPrivateKeyFormatError,
         RsaNotMatched,
         NotConnected,
+        DataIsDamaged
     }
 
     public static class EnumConnectResultErrorInfo
     {
-        public static string GetErrorInfo(this EnumDbStatus result, SystemConfigLanguage lang, string dbPath)
+        public static string GetErrorInfo(this EnumDbStatus result, LanguageService lang)
         {
             switch (result)
             {
                 case EnumDbStatus.AccessDenied:
-                    return SystemConfig.Instance.Language.GetText("string_database_error_permission_denied");
+                    return lang.Translate("string_database_error_permission_denied");
 
                 case EnumDbStatus.RsaPrivateKeyNotFound:
-                    return SystemConfig.Instance.Language.GetText("string_database_error_rsa_private_key_not_found");
+                    return lang.Translate("string_database_error_rsa_private_key_not_found");
 
                 case EnumDbStatus.RsaPrivateKeyFormatError:
-                    return SystemConfig.Instance.Language.GetText("string_database_error_rsa_private_key_format_error");
+                    return lang.Translate("string_database_error_rsa_private_key_format_error");
 
                 case EnumDbStatus.RsaNotMatched:
-                    return SystemConfig.Instance.Language.GetText("string_database_error_rsa_private_key_not_match");
+                    return lang.Translate("string_database_error_rsa_private_key_not_match");
 
                 case EnumDbStatus.OK:
                     break;
 
                 case EnumDbStatus.NotConnected:
                     return "database: NotConnected!";
+
+                case EnumDbStatus.DataIsDamaged:
+                    return "database: Data is damaged!"; // todo translate
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);

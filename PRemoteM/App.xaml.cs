@@ -29,7 +29,7 @@ namespace PRM
 
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
-        public static readonly PrmContext Context = new PrmContext();
+        public static PrmContext Context { get; private set; }
 
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
 
@@ -108,14 +108,6 @@ namespace PRM
         private void InitEvent()
         {
             // Event register
-            GlobalEventHelper.OnRequestDeleteServer += delegate (int id)
-            {
-                Context.AppData.ServerListRemove(id);
-            };
-            GlobalEventHelper.OnRequestUpdateServer += delegate (ProtocolServerBase server)
-            {
-                Context.AppData.ServerListUpdate(server);
-            };
             _desktopResolutionWatcher = new DesktopResolutionWatcher();
             _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
             {
@@ -124,7 +116,7 @@ namespace PRM
             };
         }
 
-        private bool InitSystemConfig(string appDateFolder)
+        private void InitSystemConfig(string appDateFolder)
         {
             var iniPath = Path.Combine(Environment.CurrentDirectory, SystemConfig.AppName + ".ini");
             if (IOPermissionHelper.IsFileCanWriteNow(iniPath) == false)
@@ -141,17 +133,12 @@ namespace PRM
 
             //ConfigHelper.Instance.SetLang("en");
 
-
-            // if ini is not existed, then it would be a new user
-            bool isNewUser = !File.Exists(iniPath);
-
             var ini = new Ini(iniPath);
             var language = new SystemConfigLanguage(this.Resources, ini);
             var general = new SystemConfigGeneral(ini);
             var keyword = new SystemConfigKeywordMatch(Context, ini);
             var launcher = new SystemConfigLauncher(ini);
             var theme = new SystemConfigTheme(this.Resources, ini);
-            var locality = new SystemConfigLocality(new Ini(Path.Combine(appDateFolder, "locality.ini")));
 
             // read dbPath.
             var dataSecurity = new SystemConfigDataSecurity(Context, ini);
@@ -164,20 +151,10 @@ namespace PRM
             SystemConfig.Instance.Launcher = launcher;
             SystemConfig.Instance.DataSecurity = dataSecurity;
             SystemConfig.Instance.Theme = theme;
-            SystemConfig.Instance.Locality = locality;
             //#if DEBUG
             //            // TODO remove
             //            isNewUser = true;
             //#endif
-
-            if (isNewUser)
-            {
-                ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                var gw = new GuidanceWindow(SystemConfig.Instance);
-                gw.ShowDialog();
-            }
-
-            return isNewUser;
         }
 
         private void KillPutty()
@@ -214,10 +191,21 @@ namespace PRM
             OnlyOneAppInstanceCheck();
             KillPutty();
             InitEvent();
+
+            Context = new PrmContext(this.Resources);
             RemoteWindowPool.Init(Context);
 
             // UI
-            bool isNewUser = InitSystemConfig(appDateFolder);
+            // if cfg is not existed, then it would be a new user
+            bool isNewUser = !File.Exists(Context.ConfigurationService.JsonPath);
+            if (isNewUser)
+            {
+                ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                var gw = new GuidanceWindow(SystemConfig.Instance);
+                gw.ShowDialog();
+            }
+
+            InitSystemConfig(appDateFolder);
             InitMainWindow(isNewUser);
             InitLauncher();
             InitTaskTray();
@@ -226,13 +214,13 @@ namespace PRM
             var connStatus = Context.InitSqliteDb(SystemConfig.Instance.DataSecurity.DbPath);
             if (connStatus != EnumDbStatus.OK)
             {
-                string error = connStatus.GetErrorInfo(SystemConfig.Instance.Language, SystemConfig.Instance.DataSecurity.DbPath);
-                MessageBox.Show(error, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                string error = connStatus.GetErrorInfo(Context.LanguageService);
+                MessageBox.Show(error, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 Window.Vm.CmdGoSysOptionsPage.Execute(typeof(SystemConfigDataSecurity));
             }
             else
             {
-                Context.AppData.ServerListUpdate();
+                Context.AppData.ReloadServerList();
             }
 
             if (!SystemConfig.Instance.General.AppStartMinimized
@@ -284,17 +272,17 @@ namespace PRM
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
             };
             var @break = new System.Windows.Forms.MenuItem("-");
-            var linkHowToUse = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_how_to_use"));
+            var linkHowToUse = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
             };
-            var linkFeedback = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("about_page_feedback"));
+            var linkFeedback = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
             {
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
             };
-            var exit = new System.Windows.Forms.MenuItem(SystemConfig.Instance.Language.GetText("word_exit"));
+            var exit = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("word_exit"));
             exit.Click += (sender, args) => App.Close();
             var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
             TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);

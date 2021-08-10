@@ -203,17 +203,17 @@ namespace PRM.ViewModel
             {
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("word_connect"),
+                    ActionName = Context.LanguageService.Translate("word_connect"),
                     Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
                 },
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("word_connect_to_new_tab"),
+                    ActionName = Context.LanguageService.Translate("word_connect_to_new_tab"),
                     Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
                 },
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("word_edit"),
+                    ActionName = Context.LanguageService.Translate("word_edit"),
                     Run = (id) =>
                     {
                         Debug.Assert(SelectedItem?.Server != null);
@@ -222,7 +222,7 @@ namespace PRM.ViewModel
                 },
                 new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_duplicate"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_duplicate"),
                     Run = (id) =>
                     {
                         Debug.Assert(SelectedItem?.Server != null);
@@ -234,7 +234,7 @@ namespace PRM.ViewModel
             {
                 actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_address"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_copy_address"),
                     Run = (id) =>
                     {
                         var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
@@ -254,7 +254,7 @@ namespace PRM.ViewModel
             {
                 actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_username"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_copy_username"),
                     Run = (id) =>
                     {
                         var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
@@ -274,7 +274,7 @@ namespace PRM.ViewModel
             {
                 actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_password"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_copy_password"),
                     Run = (id) =>
                     {
                         var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
@@ -445,6 +445,19 @@ namespace PRM.ViewModel
                 // reorder
                 OrderItemByLastConnTime();
 
+
+                // index the list to first item
+                for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
+                {
+                    var vm = Context.AppData.VmItemList[i];
+                    if (vm.ObjectVisibility == Visibility.Visible)
+                    {
+                        SelectedIndex = i;
+                        SelectedItem = vm;
+                        break;
+                    }
+                }
+
                 ReCalcWindowHeight(false);
             });
         }
@@ -458,18 +471,6 @@ namespace PRM.ViewModel
                 if (s0.Server.LastConnTime < s1.Server.LastConnTime)
                 {
                     Context.AppData.VmItemList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
-                    break;
-                }
-            }
-
-            // index the list to first item
-            for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
-            {
-                var vm = Context.AppData.VmItemList[i];
-                if (vm.ObjectVisibility == Visibility.Visible)
-                {
-                    SelectedIndex = i;
-                    SelectedItem = vm;
                     break;
                 }
             }

@@ -48,7 +48,7 @@ namespace PRM.ViewModel
         {
             IsAddMode = false;
 
-            Title = SystemConfig.Instance.Language.GetText("server_editor_bulk_editing_title");
+            Title = context.LanguageService.Translate("server_editor_bulk_editing_title");
             foreach (var serverBase in servers)
             {
                 Title += serverBase.DisplayName;
@@ -176,7 +176,7 @@ namespace PRM.ViewModel
             }
 
             // decrypt pwd
-            _context.DataService.DecryptPwdIfItIsEncrypted(Server);
+            _context.DataService.DecryptToConnectLevel(Server);
 
             NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
             TagSelections = _context.AppData.Tags.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();
@@ -240,6 +240,7 @@ namespace PRM.ViewModel
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
+                    // bulk edit
                     if (_orgServers != null)
                     {
                         // copy the same value properties
@@ -289,17 +290,23 @@ namespace PRM.ViewModel
 
                         foreach (var server in _orgServers.ToList())
                         {
-                            _context.AppData.ServerListUpdate(server, false);
+                            _context.AppData.UpdateServer(server, false);
                         }
 
                         _context.AppData.VmItemListDataChanged?.Invoke();
                         App.Window.Vm.DispPage = null;
                     }
+                    // edit
+                    else if (Server.Id > 0)
+                    {
+                        _context.AppData.UpdateServer(Server);
+                    }
+                    // add
                     else
                     {
-                        _context.AppData.ServerListUpdate(Server);
-                        App.Window.Vm.DispPage = null;
+                        _context.AppData.AddServer(Server);
                     }
+                    App.Window.Vm.DispPage = null;
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
