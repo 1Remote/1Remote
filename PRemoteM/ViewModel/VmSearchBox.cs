@@ -410,6 +410,10 @@ namespace PRM.ViewModel
 
                                 vm.DispNameControl = sp;
                             }
+                            else
+                            {
+                                vm.DispNameControl = vm.OrgDispNameControl;
+                            }
 
                             var m2 = mrs.HitFlags[1];
                             if (m2.Any(x => x == true))
@@ -431,6 +435,10 @@ namespace PRM.ViewModel
                                 }
 
                                 vm.SubTitleControl = sp;
+                            }
+                            else
+                            {
+                                vm.SubTitleControl = vm.OrgSubTitleControl;
                             }
                         }
                         else
