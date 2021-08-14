@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
+using PRM.Core.Service;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
@@ -56,7 +57,7 @@ namespace PRM.Core.Model
         private static string GetJsonPath()
         {
             const string pinnedTagsPath = "PinnedTags.json";
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName);
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             var path = Path.Combine(Environment.CurrentDirectory, pinnedTagsPath);
             if (IOPermissionHelper.IsFileCanWriteNow(path) == false)
             {

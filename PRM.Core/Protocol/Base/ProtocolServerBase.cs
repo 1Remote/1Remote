@@ -62,7 +62,6 @@ namespace PRM.Core.Protocol
         }
 
         private string _displayName = "";
-
         public string DisplayName
         {
             get => _displayName;
@@ -293,5 +292,7 @@ namespace PRM.Core.Protocol
             context.DataService.DecryptToRamLevel(this);
             context.DataService.DecryptToConnectLevel(this);
         }
+
+
     }
 }

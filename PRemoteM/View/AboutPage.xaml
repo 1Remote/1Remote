@@ -6,6 +6,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+             xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="{DynamicResource PrimaryMidBrush}">
@@ -71,7 +72,7 @@
                         <Image Source="/Resources/Image/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Grid.IsSharedSizeScope="True">
-                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static model:SystemConfig.AppName}" Margin="0 10 0 0"></TextBlock>
+                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static service:ConfigurationService.AppName}" Margin="0 10 0 0"></TextBlock>
                                 <Grid Style="{StaticResource RowGrid}">
                                     <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>
@@ -120,7 +121,7 @@
                             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Author"></TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <Grid Width="32" Height="32">
-                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/author_avatar.jpg" Width="32"></Image>
+                                    <Image Source="pack://application:,,,/Resources/Image/Logo/author_avatar.jpg" Width="32"></Image>
                                 </Grid>
                                 <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
                                     <TextBlock>

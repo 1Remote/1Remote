@@ -62,5 +62,7 @@ namespace PRM.Core.Model
         /// OnScreenResolutionChanged
         /// </summary>
         public static Action OnScreenResolutionChanged { get; set; } = null;
+
+        public static Action OnLauncherHotKeyChanged { get; set; }
     }
 }

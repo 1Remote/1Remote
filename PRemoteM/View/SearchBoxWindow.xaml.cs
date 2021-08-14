@@ -40,14 +40,7 @@ namespace PRM.View
             };
             Show();
 
-            SystemConfig.Instance.Launcher.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(SystemConfigLauncher.HotKeyKey) ||
-                    args.PropertyName == nameof(SystemConfigLauncher.HotKeyModifiers))
-                {
-                    SetHotKey();
-                }
-            };
+            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
 
             _vm.PropertyChanged += (sender, args) =>
             {
@@ -89,7 +82,7 @@ namespace PRM.View
             SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
-            if (!SystemConfig.Instance.Launcher.Enable) return;
+            if (!Context.ConfigurationService.Launcher.LauncherEnabled) return;
             if (_isHidden != true) return;
 
             lock (_hideToggleLocker)
@@ -214,7 +207,7 @@ namespace PRM.View
                             {
                                 if (tb.CaretIndex == tb.Text.Length)
                                 {
-                                        _vm.ShowActionsList();
+                                    _vm.ShowActionsList();
                                     return;
                                 }
                             }
@@ -247,7 +240,9 @@ namespace PRM.View
         public void SetHotKey()
         {
             GlobalHotkeyHooker.Instance.Unregist(this);
-            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)SystemConfig.Instance.Launcher.HotKeyModifiers, SystemConfig.Instance.Launcher.HotKeyKey, this.ShowMe);
+            if (Context.ConfigurationService.Launcher.LauncherEnabled == false)
+                return;
+            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)Context.ConfigurationService.Launcher.HotKeyModifiers, Context.ConfigurationService.Launcher.HotKeyKey, this.ShowMe);
             var title = Context.LanguageService.Translate("messagebox_title_warning");
             switch (r.Item1)
             {

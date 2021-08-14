@@ -16,12 +16,8 @@ using PRM.Core;
 using PRM.Core.Helper;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.Putty.Telnet;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.VNC;
+using PRM.Core.Service;
 using PRM.Core.Utils.mRemoteNG;
-using PRM.Model;
 using PRM.Resources.Icons;
 using Shawn.Utils;
 
@@ -176,7 +172,7 @@ namespace PRM.ViewModel
 
             ICollectionView dataView = CollectionViewSource.GetDefaultView(_list.ItemsSource);
             dataView.SortDescriptions.Clear();
-            switch (SystemConfig.Instance.General.ServerOrderBy)
+            switch (ServerOrderBy)
             {
                 case EnumServerOrderBy.ProtocolAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Protocol), ListSortDirection.Ascending));
@@ -217,8 +213,21 @@ namespace PRM.ViewModel
 
             dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
             dataView.Refresh();
-            SimpleLogHelper.Debug($"OrderServerList: {SystemConfig.Instance.General.ServerOrderBy}");
+            SimpleLogHelper.Debug($"OrderServerList: {ServerOrderBy}");
             RaisePropertyChanged(nameof(IsMultipleSelected));
+        }
+
+        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.NameAsc;
+        public EnumServerOrderBy ServerOrderBy
+        {
+            get => _serverOrderBy;
+            set
+            {
+                if (SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value))
+                {
+                    Context.LocalityService.ServerOrderBy = value;
+                }
+            }
         }
 
         private void CalcVisible()
@@ -489,16 +498,16 @@ namespace PRM.ViewModel
                             if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
                             {
                                 // cancel order
-                                if (SystemConfig.Instance.General.ServerOrderBy == (EnumServerOrderBy)(ot + 1))
+                                if (ServerOrderBy == (EnumServerOrderBy)(ot + 1))
                                 {
                                     ot = -1;
                                 }
-                                else if (SystemConfig.Instance.General.ServerOrderBy == (EnumServerOrderBy)ot)
+                                else if (ServerOrderBy == (EnumServerOrderBy)ot)
                                 {
                                     ++ot;
                                 }
 
-                                SystemConfig.Instance.General.ServerOrderBy = (EnumServerOrderBy)ot;
+                                ServerOrderBy = (EnumServerOrderBy)ot;
                                 OrderServerList();
                                 _lastCmdReOrder = DateTime.Now;
                             }

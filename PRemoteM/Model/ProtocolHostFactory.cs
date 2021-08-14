@@ -26,16 +26,20 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        //var host = new KittyHost(context, ssh);
-                        //return host;
-                        var host2 = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context));
-                        host2.RunBeforeConnect = () => ssh.SetPuttySessionConfig();
-                        host2.RunAfterConnected = () => ssh.DelKittySessionConfig();
-                        return host2;
+                        var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
+                        {
+                            RunBeforeConnect = () => ssh.SetPuttySessionConfig(),
+                            RunAfterConnected = () => ssh.DelKittySessionConfig()
+                        };
+                        return host;
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var host = new KittyHost(context, telnet);
+                        var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
+                        {
+                            RunBeforeConnect = () => telnet.SetPuttySessionConfig(),
+                            RunAfterConnected = () => telnet.DelKittySessionConfig()
+                        };
                         return host;
                     }
                 case ProtocolServerVNC vnc:

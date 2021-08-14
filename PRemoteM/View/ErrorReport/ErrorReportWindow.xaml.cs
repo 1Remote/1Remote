@@ -10,6 +10,7 @@ using PRM.Core.Model;
 using Shawn.Utils;
 using System.Windows;
 using System.Windows.Media.Animation;
+using PRM.Core.Service;
 using Shawn.Utils.PageHost;
 
 namespace PRM.View.ErrorReport
@@ -107,7 +108,7 @@ namespace PRM.View.ErrorReport
                 sb.AppendLine("");
                 sb.AppendLine("|     Component   |                       Version                      |");
                 sb.AppendLine("|:------------------|:--------------------------------------|");
-                sb.AppendLine($"|{SystemConfig.AppName} | `{PRMVersion.Version}`({from})|");
+                sb.AppendLine($"|{ConfigurationService.AppName} | `{PRMVersion.Version}`({from})|");
                 sb.AppendLine($"|.NET Framework | `{framework?.NamedArguments?[0].TypedValue.Value?.ToString()}`    |");
                 sb.AppendLine($"|CLR            | `{Environment.Version}`       |");
                 sb.AppendLine($"|OS             | `{platform}`                  |");
@@ -151,7 +152,7 @@ namespace PRM.View.ErrorReport
                 var dlg = new SaveFileDialog
                 {
                     Filter = $"log |*.log.md",
-                    FileName = SystemConfig.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md",
+                    FileName = ConfigurationService.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md",
                     CheckFileExists = false,
                 };
                 if (dlg.ShowDialog() != true) return;
@@ -182,7 +183,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{SystemConfig.AppName} error report.", "");
+                string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{ConfigurationService.AppName} error report.", "");
                 mailto = Uri.EscapeUriString(mailto);
                 System.Diagnostics.Process.Start(mailto);
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("mailto:veckshawn@gmail.com"));
