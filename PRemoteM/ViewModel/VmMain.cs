@@ -195,7 +195,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SystemConfigPage(this, Context, (Type)o),
+                            Page = new SystemConfigPage(this, Context, o?.ToString()),
                         };
                         Window.PopupMenu.IsOpen = false;
                     }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));

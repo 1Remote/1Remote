@@ -21,6 +21,7 @@ namespace PRM.Core.Model
         public readonly LauncherService LauncherService;
         public readonly ThemeService ThemeService;
         public readonly LocalityService LocalityService;
+        public readonly KeywordMatchService KeywordMatchService;
 
         public PrmContext(ResourceDictionary applicationResourceDictionary)
         {
@@ -30,7 +31,10 @@ namespace PRM.Core.Model
             PRM.Core.Service.LanguageService.TmpLanguageService = LanguageService;
             LauncherService = new LauncherService(LanguageService);
             ThemeService = new ThemeService(applicationResourceDictionary);
+            ThemeService.ApplyTheme(ConfigurationService.Theme);
             DataService = new DataService();
+            KeywordMatchService = new KeywordMatchService();
+            KeywordMatchService.Init(ConfigurationService.KeywordMatch.EnabledMatchers.ToArray());
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
             AppData = new GlobalData(LocalityService);
@@ -38,8 +42,6 @@ namespace PRM.Core.Model
 
         public GlobalData AppData { get; }
 
-
-        public KeywordMatchService KeywordMatchService { get; } = new KeywordMatchService();
 
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.

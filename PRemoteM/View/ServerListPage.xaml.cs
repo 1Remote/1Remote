@@ -33,6 +33,11 @@ namespace PRM.View
                 else
                     Vm.Context.AppData.SelectedTagName = "";
             };
+
+            ListBoxTags.SelectionChanged += ((sender, args) =>
+            {
+                ListBoxTags.ScrollIntoView(ListBoxTags.SelectedItem);
+            });
         }
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)

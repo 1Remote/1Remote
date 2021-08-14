@@ -5,7 +5,6 @@ using com.github.xiangyuecn.rsacsharp;
 using PRM.Core.DB;
 using PRM.Core.DB.Dapper;
 using PRM.Core.I;
-using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
@@ -116,7 +115,7 @@ namespace PRM.Core.Service
                 return pks;
 
             var rsa = new RSA(File.ReadAllText(privateKeyPath), true);
-            _db.Set_RSA_SHA1(rsa.Sign("SHA1", SystemConfig.AppName));
+            _db.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
             if (generateNewPublicKey)
                 _db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
             _db.Set_RSA_PrivateKeyPath(privateKeyPath);

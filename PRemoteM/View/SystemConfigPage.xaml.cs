@@ -30,7 +30,7 @@ namespace PRM.View
 
         private readonly PrmContext _context;
 
-        public SystemConfigPage(VmMain host, PrmContext context, Type t = null)
+        public SystemConfigPage(VmMain host, PrmContext context, string destination = null)
         {
             Host = host;
             _context = context;
@@ -38,15 +38,8 @@ namespace PRM.View
             _vm = new ConfigurationViewModel(host, context);
             DataContext = _vm;
 
-            if (t == typeof(SystemConfigGeneral)
-            || t == typeof(SystemConfigLanguage))
-                TabItemGeneral.IsSelected = true;
-            if (t == typeof(SystemConfigLauncher))
-                TabItemQuick.IsSelected = true;
-            if (t == typeof(SystemConfigDataSecurity))
+            if (destination == "Data")
                 TabItemDataBase.IsSelected = true;
-            if (t == typeof(SystemConfigTheme))
-                TabItemTheme.IsSelected = true;
         }
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -101,22 +94,22 @@ namespace PRM.View
             var resourceDictionary = MultiLangHelper.LangDictFromXamlFile(fi.FullName);
             if (resourceDictionary?.Contains("language_name") != true)
             {
-                MessageBox.Show("language resource must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show("language resource must contain field: \"language_name\"!", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
-            var en = SystemConfig.Instance.Language.GetResourceDictionaryByCode("en-us");
+            var en = _context.LanguageService.Resources["en-us"];
             Debug.Assert(en != null);
             var missingFields = MultiLangHelper.FindMissingFields(en, resourceDictionary);
             if (missingFields.Count > 0)
             {
                 var mf = string.Join(", ", missingFields);
-                MessageBox.Show($"language resource missing:\r\n {mf}", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show($"language resource missing:\r\n {mf}", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
             var code = fi.Name.ReplaceLast(fi.Extension, "");
-            SystemConfig.Instance.Language.AddXamlLanguageResources(code, fi.FullName);
+            _context.LanguageService.AddXamlLanguageResources(code, fi.FullName);
         }
     }
 

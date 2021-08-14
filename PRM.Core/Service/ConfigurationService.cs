@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using Newtonsoft.Json;
 using PRM.Core.I;
 using PRM.Core.Model;
 using Shawn.Utils;
+using VariableKeywordMatcher.Provider.DirectMatch;
 
 namespace PRM.Core.Service
 {
@@ -22,7 +24,6 @@ namespace PRM.Core.Service
 #else
         public bool AppStartMinimized  = true;
 #endif
-        public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.NameAsc;
         #endregion
     }
 
@@ -118,8 +119,25 @@ namespace PRM.Core.Service
             jsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
 #endif
             JsonPath = jsonPath;
+
+
+            AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
+            foreach (var info in AvailableMatcherProviders)
+            {
+                info.PropertyChanged += OnMatchProviderChangedHandler;
+            }
         }
 
+        private void OnMatchProviderChangedHandler(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == nameof(MatchProviderInfo.Enabled))
+            {
+                KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
+                Save();
+            }
+        }
+
+        public List<MatchProviderInfo> AvailableMatcherProviders { get; }
         private Configuration cfg = new Configuration();
 
         public GeneralConfig General => cfg.General;
@@ -132,40 +150,75 @@ namespace PRM.Core.Service
 
         public void Load()
         {
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-            var iniPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
-            if (IOPermissionHelper.IsFileCanWriteNow(iniPath) == false)
+            lock (this)
             {
-                iniPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
-            }
+                foreach (var info in AvailableMatcherProviders)
+                {
+                    info.PropertyChanged -= OnMatchProviderChangedHandler;
+                }
+
+                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+                var iniPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
+                if (IOPermissionHelper.IsFileCanWriteNow(iniPath) == false)
+                {
+                    iniPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
+                }
 #if FOR_MICROSOFT_STORE_ONLY
             iniPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
 #endif
-            if (File.Exists(iniPath))
-            {
-                try
+                if (File.Exists(iniPath))
                 {
-                    var cfg = LoadFromIni(iniPath);
-                    this.cfg = cfg;
-                    Save();
-                }
-                finally
-                {
-                    File.Delete(iniPath);
-                }
-            }
-            else if (File.Exists(JsonPath))
-            {
-                try
-                {
-                    var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(JsonPath));
-                    if (cfg != null)
+                    try
+                    {
+                        var cfg = LoadFromIni(iniPath);
                         this.cfg = cfg;
+                        Save();
+                    }
+                    finally
+                    {
+                        File.Delete(iniPath);
+                    }
                 }
-                catch
+                else if (File.Exists(JsonPath))
                 {
-                    File.Delete(JsonPath);
-                    Save();
+                    try
+                    {
+                        var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(JsonPath));
+                        if (cfg != null)
+                            this.cfg = cfg;
+                    }
+                    catch
+                    {
+                        File.Delete(JsonPath);
+                        Save();
+                    }
+                }
+
+
+                if (KeywordMatch.EnabledMatchers.Count > 0)
+                {
+                    foreach (var matcherProvider in AvailableMatcherProviders)
+                    {
+                        matcherProvider.Enabled = false;
+                    }
+
+                    foreach (var enabledName in KeywordMatch.EnabledMatchers)
+                    {
+                        var first = AvailableMatcherProviders.FirstOrDefault(x => x.Name == enabledName);
+                        if (first != null)
+                            first.Enabled = true;
+                    }
+                }
+                AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
+                AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
+                if (KeywordMatch.EnabledMatchers.Count == 0)
+                {
+                    KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
+                }
+
+                foreach (var info in AvailableMatcherProviders)
+                {
+                    info.PropertyChanged += OnMatchProviderChangedHandler;
                 }
             }
         }
@@ -190,8 +243,6 @@ namespace PRM.Core.Service
                 const string sectionName = "General";
                 cfg.General.AppStartAutomatically = ini.GetValue("AppStartAutomatically".ToLower(), sectionName, cfg.General.AppStartAutomatically);
                 cfg.General.AppStartMinimized = ini.GetValue("AppStartMinimized".ToLower(), sectionName, cfg.General.AppStartMinimized);
-                if (Enum.TryParse<EnumServerOrderBy>(ini.GetValue("ServerOrderBy".ToLower(), sectionName, cfg.General.ServerOrderBy.ToString()), out var so))
-                    cfg.General.ServerOrderBy = so;
 #if FOR_MICROSOFT_STORE_ONLY
                 Task.Factory.StartNew(async () =>
                 {
