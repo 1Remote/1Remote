@@ -191,7 +191,6 @@
     <Compile Include="ViewModel\Configuration\ConfigurationViewModel.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
-    <Compile Include="ViewModel\VmSystemConfigPage.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
     <Compile Include="ViewModel\VmServerEditorPage.cs" />
@@ -242,9 +241,6 @@
     </Compile>
     <Compile Include="View\ProtocolHosts\IntegrateHost.xaml.cs">
       <DependentUpon>IntegrateHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\ProtocolHosts\KittyHost.xaml.cs">
-      <DependentUpon>KittyHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ProtocolEditors\BaseFormWithAddressPort.xaml.cs">
       <DependentUpon>BaseFormWithAddressPort.xaml</DependentUpon>
@@ -420,10 +416,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ProtocolHosts\IntegrateHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\ProtocolHosts\KittyHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

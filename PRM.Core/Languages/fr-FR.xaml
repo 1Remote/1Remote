@@ -111,7 +111,7 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Base de données: la clé privée RSA ne correspond pas à la clé publique! Veuillez sélectionner une clé correcte.</s:String>
 
     <s:String x:Key="system_options_theme_title">Thème</s:String>
-    <s:String x:Key="system_options_theme_prm_title">Thème de couleur</s:String>
+    <s:String x:Key="system_options_theme_prm_title">Couleur</s:String>
     <s:String x:Key="system_options_theme_prm_theme">Thème</s:String>
     <s:String x:Key="system_options_theme_prm_main_color">Couleur1</s:String>
     <s:String x:Key="system_options_theme_prm_secondary_color">Couleur2</s:String>
@@ -122,7 +122,7 @@
     <s:String x:Key="system_options_theme_prm_color_foreground">Police de caractère</s:String>
     <s:String x:Key="system_options_theme_putty_title">Kitty</s:String>
     <s:String x:Key="system_options_theme_putty_font_size">Taille de la police</s:String>
-    <s:String x:Key="system_options_theme_putty_theme">Thèmes de couleurs</s:String>
+    <s:String x:Key="system_options_theme_putty_theme">Thèmes</s:String>
 
     <!-- server operate -->
     <s:String x:Key="server_card_operate_duplicate">Dupliquer</s:String>

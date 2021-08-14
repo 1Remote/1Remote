@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.View;
 using PRM.ViewModel;
@@ -19,7 +20,7 @@ namespace PRM
             InitializeComponent();
             Vm = new VmMain(context, this);
             this.DataContext = Vm;
-            Title = SystemConfig.AppName;
+            Title = ConfigurationService.AppName;
             this.Width = context.LocalityService.MainWindowWidth;
             this.Height = context.LocalityService.MainWindowHeight;
             this.SizeChanged += (sender, args) =>
@@ -139,7 +140,7 @@ namespace PRM
 
         private void ButtonToggleServerListViewUi_OnClick(object sender, RoutedEventArgs e)
         {
-            SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
+            //SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
             PopupMenu.IsOpen = false;
         }
     }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.I;
+using PRM.Core.Model;
 using PRM.Core.Properties;
 using Shawn.Utils;
 
@@ -22,7 +23,7 @@ namespace PRM.Core.Service
         private readonly ResourceDictionary _applicationResourceDictionary;
 
 
-        private readonly Dictionary<string, ResourceDictionary> _languageCode2Resources = new Dictionary<string, ResourceDictionary>();
+        public readonly Dictionary<string, ResourceDictionary> Resources = new Dictionary<string, ResourceDictionary>();
 
         /// <summary>
         /// code => language file name, all codes leave in small cases, ref https://en.wikipedia.org/wiki/Language_code
@@ -38,20 +39,20 @@ namespace PRM.Core.Service
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("de-de");
             AddStaticLanguageResources("fr-fr");
-            _defaultLanguageResourceDictionary = _languageCode2Resources["en-us"];
+            _defaultLanguageResourceDictionary = Resources["en-us"];
 
 #if DEV
             // check if any field missing in the LanguageResources.
-            var en = _languageCode2Resources["en-us"];
-            var zh_cn = _languageCode2Resources["zh-cn"];
-            var de_de = _languageCode2Resources["de-de"];
-            var fr_fr = _languageCode2Resources["fr-fr"];
+            var en = Resources["en-us"];
+            var zh_cn = Resources["zh-cn"];
+            var de_de = Resources["de-de"];
+            var fr_fr = Resources["fr-fr"];
             Debug.Assert(MultiLangHelper.FindMissingFields(en, zh_cn).Count == 0);
             Debug.Assert(MultiLangHelper.FindMissingFields(en, de_de).Count == 0);
             Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
 #endif
 
-            this.languageCode = _languageCode2Resources.ContainsKey(languageCode) ? languageCode : "en-us";
+            this.languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
             SetLanguage(languageCode);
         }
 
@@ -90,24 +91,6 @@ namespace PRM.Core.Service
             }
             return null;
         }
-        [CanBeNull]
-        private static ResourceDictionary GetResourceDictionaryByJsonFilePath(string path)
-        {
-            Debug.Assert(path.EndsWith(".json", true, CultureInfo.InstalledUICulture));
-            try
-            {
-                var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(path);
-                if (resourceDictionary != null)
-                {
-                    return resourceDictionary;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return null;
-        }
 
         [CanBeNull]
         private static ResourceDictionary GetResourceDictionaryByXamlFilePath(string path)
@@ -134,12 +117,12 @@ namespace PRM.Core.Service
             if (LanguageCode2Name.ContainsKey(code))
             {
                 LanguageCode2Name[code] = name;
-                _languageCode2Resources[code] = resourceDictionary;
+                Resources[code] = resourceDictionary;
             }
             else
             {
                 LanguageCode2Name.Add(code, name);
-                _languageCode2Resources.Add(code, resourceDictionary);
+                Resources.Add(code, resourceDictionary);
             }
         }
 
@@ -153,18 +136,9 @@ namespace PRM.Core.Service
                 return true;
 
             languageCode = code;
-            var resource = _languageCode2Resources[code];
-            foreach (var key in resource.Keys)
-            {
-                if (_applicationResourceDictionary.Contains(key))
-                {
-                    _applicationResourceDictionary[key] = resource[key];
-                }
-                else
-                {
-                    _applicationResourceDictionary.Add(key, resource[key]);
-                }
-            }
+            var resource = Resources[code];
+            _applicationResourceDictionary?.ChangeLanguage(resource);
+            GlobalEventHelper.OnLanguageChanged?.Invoke();
             return true;
         }
 
