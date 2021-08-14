@@ -111,7 +111,7 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Database: RSA private key does not match the public key! Please select the correct key.</s:String>
 
     <s:String x:Key="system_options_theme_title">Theme</s:String>
-    <s:String x:Key="system_options_theme_prm_title">Color Theme</s:String>
+    <s:String x:Key="system_options_theme_prm_title">Color</s:String>
     <s:String x:Key="system_options_theme_prm_theme">Theme</s:String>
     <s:String x:Key="system_options_theme_prm_main_color">Color1</s:String>
     <s:String x:Key="system_options_theme_prm_secondary_color">Color2</s:String>
@@ -122,7 +122,7 @@
     <s:String x:Key="system_options_theme_prm_color_foreground">Font</s:String>
     <s:String x:Key="system_options_theme_putty_title">Kitty</s:String>
     <s:String x:Key="system_options_theme_putty_font_size">Font Size</s:String>
-    <s:String x:Key="system_options_theme_putty_theme">Color Themes</s:String>
+    <s:String x:Key="system_options_theme_putty_theme">Themes</s:String>
 
     <!-- server operation -->
     <s:String x:Key="server_card_operate_duplicate">Duplicate</s:String>

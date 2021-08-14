@@ -111,7 +111,7 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_match">数据库：存储的 RSA 私钥公钥不匹配，请重新选择！</s:String>
 
     <s:String x:Key="system_options_theme_title">外观</s:String>
-    <s:String x:Key="system_options_theme_prm_title">配色主题</s:String>
+    <s:String x:Key="system_options_theme_prm_title">配色</s:String>
     <s:String x:Key="system_options_theme_prm_theme">主题</s:String>
     <s:String x:Key="system_options_theme_prm_main_color">主色</s:String>
     <s:String x:Key="system_options_theme_prm_secondary_color">副色</s:String>

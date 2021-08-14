@@ -333,9 +333,7 @@ namespace PRM.ViewModel
 
         private string IsAnyGroupNameMatched(List<string> keywords)
         {
-            if (!SystemConfig.Instance.Launcher.AllowGroupNameSearch) return string.Empty;
-
-            bool anyGroupMatched = false;
+            if (!Context.ConfigurationService.Launcher.AllowTagSearch) return string.Empty;
 
             // TODO need a better tag matching
             // if tag name search enabled, show group name as prefix
@@ -343,7 +341,6 @@ namespace PRM.ViewModel
             {
                 if (keywords.Any(keyword => tag.ToLower() == keyword.ToLower()))
                 {
-                    anyGroupMatched = true;
                     return tag;
                 }
             }

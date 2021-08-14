@@ -10,9 +10,9 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
-             Name="ThisServerListPage"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -148,7 +148,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.ProtocolAsc}">
+                                                        <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -159,7 +159,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.ProtocolDesc}">
+                                                        <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.ProtocolDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -181,7 +181,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.NameAsc}">
+                                                        <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -192,7 +192,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.NameDesc}">
+                                                        <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.NameDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -214,7 +214,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.AddressAsc}">
+                                                        <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressAsc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -225,7 +225,7 @@
                                             <Path.Style>
                                                 <Style TargetType="Path" BasedOn="{StaticResource HeaderPathStyle}">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=General.ServerOrderBy}" Value="{x:Static model:EnumServerOrderBy.AddressDesc}">
+                                                        <DataTrigger Binding="{Binding ServerOrderBy}" Value="{x:Static service:EnumServerOrderBy.AddressDesc}">
                                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -272,12 +272,22 @@
 
             <Style x:Key="ServerListStyle" TargetType="ListBox">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>
-                <Setter Property="ItemsPanel" Value="{StaticResource ItemsPanelTemplateForServerCards}"></Setter>
-                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>
+                <!--<Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>-->
+                <!--<Setter Property="ItemsPanel" Value="{StaticResource ItemsPanelTemplateForServerCards}"></Setter>-->
+                <!--<Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>-->
 
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Source={x:Static model:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="{x:Static model:EnumServerListPageUI.List}">
+                <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel Margin="0 0 0 30"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
+
+                <!--<Style.Triggers>
+                    <DataTrigger Binding="{Binding Source={x:Static service:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="{x:Static service:EnumServerListPageUI.List}">
                         <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
                         <Setter Property="ItemsPanel">
                             <Setter.Value>
@@ -288,7 +298,7 @@
                         </Setter>
                         <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
                     </DataTrigger>
-                </Style.Triggers>
+                </Style.Triggers>-->
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -593,6 +603,7 @@
                                   Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ListBox
+                                    Name="ListBoxTags"
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding Context.AppData.Tags}"
                                     SelectedValuePath="Name"

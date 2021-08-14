@@ -78,10 +78,10 @@
                 <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
                         <TextBlock Margin="2" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center">Language:</TextBlock>
-                        <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}"
+                        <ComboBox ItemsSource="{Binding ConfigurationViewModel.Languages}"
                               Foreground="{StaticResource PrimaryTextBrush}"
                               Background="{StaticResource PrimaryMidBrush}"
-                              SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
+                              SelectedValue="{Binding ConfigurationViewModel.Language}"
                               SelectedValuePath="Key"
                               HorizontalAlignment="Right"
                               VerticalAlignment="Top"
@@ -259,7 +259,7 @@
                                         Style="{StaticResource HeaderStyle}"
                                         Text="{DynamicResource system_options_general_start_when_win_login}">
                                     </TextBlock>
-                                    <ToggleButton IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
+                                    <ToggleButton IsChecked="{Binding ConfigurationViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal">
@@ -267,7 +267,7 @@
                                         Style="{StaticResource HeaderStyle}"
                                         Text="{DynamicResource system_options_general_start_minimized}">
                                     </TextBlock>
-                                    <ToggleButton IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
+                                    <ToggleButton IsChecked="{Binding ConfigurationViewModel.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>

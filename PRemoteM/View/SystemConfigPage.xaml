@@ -234,7 +234,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Grid Style="{StaticResource EditorRowGridInput}" Margin="20 0" Width="450">
                                 <Grid.Resources>
-                                    <DataTemplate x:Key="DataTemplateForMatcher" DataType="model:MatchProviderInfo">
+                                    <DataTemplate x:Key="DataTemplateForMatcher" DataType="service:MatchProviderInfo">
                                         <Grid Margin="5">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"></RowDefinition>
@@ -256,7 +256,7 @@
                                     </DataTemplate>
                                 </Grid.Resources>
                                 <ListView Height="250"
-                                          ItemsSource="{Binding SystemConfig.KeywordMatch.AvailableMatcherProviders}" ItemTemplate="{StaticResource DataTemplateForMatcher}">
+                                          ItemsSource="{Binding AvailableMatcherProviders}" ItemTemplate="{StaticResource DataTemplateForMatcher}">
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="Template">
@@ -458,20 +458,20 @@
                         </Grid>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
+                    <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource system_options_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
+                    </Grid>-->
+                    <!--<Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <TextBox Text="{Binding SystemConfig.Theme.PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
+                                <TextBox Text="{PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
                             </Grid>
                         </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
+                    </Grid>-->
+                    <!--<Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
@@ -486,7 +486,7 @@
                                 </Hyperlink>
                             </TextBlock>
                         </StackPanel>
-                    </Grid>
+                    </Grid>-->
 
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                         <StackPanel Orientation="Horizontal">
@@ -508,6 +508,22 @@
                     </Grid>
                 </StackPanel>
             </TabItem>
+
+            <TabItem Header="Txt:协议">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid >
+                        <Border BorderBrush="Black" BorderThickness="1" Width="100">
+
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
         </TabControl>
 
         <Button VerticalAlignment="Bottom"
@@ -516,7 +532,6 @@
                 Foreground="{DynamicResource PrimaryTextBrush}"
                 Background="{DynamicResource PrimaryDarkBrush}"
                 Style="{StaticResource ButtonBarAccentStyle}"
-                attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
                 attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource word_back}">

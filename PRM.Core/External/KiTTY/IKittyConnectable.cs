@@ -6,6 +6,8 @@ using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Runner.Default;
+using PRM.Core.Service;
 using Shawn.Utils;
 
 namespace PRM.Core.External.KiTTY
@@ -29,7 +31,7 @@ namespace PRM.Core.External.KiTTY
         {
             if (item is ProtocolServerBase protocolServer)
             {
-                return $"{SystemConfig.AppName}_{protocolServer.Protocol}_{protocolServer.Id}";
+                return $"{ConfigurationService.AppName}_{protocolServer.Protocol}_{protocolServer.Id}";
             }
             throw new NotSupportedException("you should not access here! something goes wrong");
         }
@@ -58,8 +60,8 @@ namespace PRM.Core.External.KiTTY
             }
 
             // set color theme
-            puttyOption.Set(EnumKittyConfigKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
-            var options = SystemConfig.Instance.Theme.SelectedPuttyTheme;
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, SshDefaultRunner.GetPuttyFontSize());
+            var options = PuttyThemes.GetThemes()[SshDefaultRunner.GetPuttyThemeName()];
             if (options != null)
                 foreach (var option in options)
                 {
@@ -79,7 +81,7 @@ namespace PRM.Core.External.KiTTY
                     }
                 }
 
-            puttyOption.Set(EnumKittyConfigKey.FontHeight, SystemConfig.Instance.Theme.PuttyFontSize);
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, SshDefaultRunner.GetPuttyFontSize());
 
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");
@@ -272,7 +274,7 @@ reload=yes
             const string kittyExeName = "kitty_portable_PRemoteM.exe";
 #endif
 
-            var kittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SystemConfig.AppName, "Kitty");
+            var kittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Kitty");
             if (!Directory.Exists(kittyExeFolderPath))
                 Directory.CreateDirectory(kittyExeFolderPath);
             var kittyExeFullName = Path.Combine(kittyExeFolderPath, kittyExeName);

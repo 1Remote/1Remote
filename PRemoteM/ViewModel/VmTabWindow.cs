@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using Dragablz;
 using PRM.Core.Model;
+using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.Model;
 using PRM.View.ProtocolHosts;
@@ -150,7 +151,7 @@ namespace PRM.ViewModel
         {
             if (SelectedItem != null)
             {
-                this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
+                this.Title = SelectedItem.Header + " - " + ConfigurationService.AppName;
             }
         }
 

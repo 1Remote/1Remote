@@ -349,16 +349,7 @@ namespace PRM.Core.Protocol.RDP
             get => _gatewayPassword;
             set => SetAndNotifyIfChanged(nameof(GatewayPassword), ref _gatewayPassword, value);
         }
-
-        //public string GetDecryptedGatewayPassword()
-        //{
-        //    if (SystemConfig.Instance.DataSecurity.Rsa != null)
-        //    {
-        //        return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_gatewayPassword) ?? "";
-        //    }
-        //    return _gatewayPassword;
-        //}
-
+        
         #endregion Gateway
 
         private LocalSetting _autoSetting = new LocalSetting();

@@ -15,6 +15,7 @@ using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Service;
 using Shawn.Utils;
+using VariableKeywordMatcher.Provider.DirectMatch;
 using HotkeyModifierKeys = PRM.Core.Service.HotkeyModifierKeys;
 
 namespace PRM.ViewModel.Configuration
@@ -67,7 +68,10 @@ namespace PRM.ViewModel.Configuration
                         MessageBox.Show(res.GetErrorInfo(_context.LanguageService), _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
-                    Host.DispPage = null;
+                    _context.KeywordMatchService.Init(_configurationService.KeywordMatch.EnabledMatchers.ToArray());
+                    _configurationService.Save();
+                    if (Host != null)
+                        Host.DispPage = null;
                 });
                 return _cmdSaveAndGoBack;
             }
@@ -155,6 +159,7 @@ namespace PRM.ViewModel.Configuration
                 if (SetAndNotifyIfChanged(ref _configurationService.Launcher.LauncherEnabled, value))
                 {
                     _configurationService.Save();
+                    GlobalEventHelper.OnLauncherHotKeyChanged?.Invoke();
                 }
             }
         }
@@ -169,6 +174,7 @@ namespace PRM.ViewModel.Configuration
                     && SetAndNotifyIfChanged(ref _configurationService.Launcher.HotKeyModifiers, value))
                 {
                     _configurationService.Save();
+                    GlobalEventHelper.OnLauncherHotKeyChanged?.Invoke();
                 }
             }
         }
@@ -183,6 +189,7 @@ namespace PRM.ViewModel.Configuration
                     && SetAndNotifyIfChanged(ref _configurationService.Launcher.HotKeyKey, value))
                 {
                     _configurationService.Save();
+                    GlobalEventHelper.OnLauncherHotKeyChanged?.Invoke();
                 }
             }
         }
@@ -200,20 +207,7 @@ namespace PRM.ViewModel.Configuration
             }
         }
 
-        // TODO 备选匹配器
-        //public List<MatchProviderInfo> AvailableMatcherProviders => Matcher
-
-        public List<string> EnabledKeywordMatchers
-        {
-            get => _configurationService.KeywordMatch.EnabledMatchers;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _configurationService.KeywordMatch.EnabledMatchers, value))
-                {
-                    _configurationService.Save();
-                }
-            }
-        }
+        public List<MatchProviderInfo> AvailableMatcherProviders => _configurationService.AvailableMatcherProviders;
 
         #region Database
 
@@ -288,7 +282,7 @@ namespace PRM.ViewModel.Configuration
                     {
                         Title = _languageService.Translate("system_options_data_security_rsa_encrypt_dialog_title"),
                         Filter = $"PRM RSA private key|*{PrivateKeyFileExt}",
-                        FileName = SystemConfig.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                        FileName = ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                         CheckFileExists = false,
                     };
                     if (dlg.ShowDialog() != true) return;
@@ -610,14 +604,14 @@ namespace PRM.ViewModel.Configuration
             {
                 try
                 {
-                    if (SetAndNotifyIfChanged(ref _configurationService.Theme.ThemeName, value))
+                    if (SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryMidColor, value))
                     {
                         var color = ColorAndBrushHelper.HexColorToMediaColor(value);
-                        PrimaryLightColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
-                        PrimaryDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
-                        SetAndNotifyIfChanged(nameof(PrimaryMidColor), ref _configurationService.Theme.PrimaryMidColor, value);
+                        _configurationService.Theme.PrimaryLightColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
+                        _configurationService.Theme.PrimaryDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
                         RaisePropertyChanged(nameof(PrimaryLightColor));
                         RaisePropertyChanged(nameof(PrimaryDarkColor));
+                        _themeService.ApplyTheme(_configurationService.Theme);
                     }
                 }
                 catch (Exception e)
@@ -629,18 +623,33 @@ namespace PRM.ViewModel.Configuration
         public string PrimaryLightColor
         {
             get => _configurationService.Theme.PrimaryLightColor;
-            set => SetAndNotifyIfChanged(nameof(PrimaryLightColor), ref _configurationService.Theme.PrimaryLightColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(PrimaryLightColor), ref _configurationService.Theme.PrimaryLightColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string PrimaryDarkColor
         {
             get => _configurationService.Theme.PrimaryDarkColor;
-            set => SetAndNotifyIfChanged(nameof(PrimaryDarkColor), ref _configurationService.Theme.PrimaryDarkColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(PrimaryDarkColor), ref _configurationService.Theme.PrimaryDarkColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string PrimaryTextColor
         {
             get => _configurationService.Theme.PrimaryTextColor;
-            set => SetAndNotifyIfChanged(nameof(PrimaryTextColor), ref _configurationService.Theme.PrimaryTextColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(PrimaryTextColor), ref _configurationService.Theme.PrimaryTextColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string AccentMidColor
         {
             get => _configurationService.Theme.AccentMidColor;
@@ -648,14 +657,14 @@ namespace PRM.ViewModel.Configuration
             {
                 try
                 {
-                    if (SetAndNotifyIfChanged(ref _configurationService.Theme.ThemeName, value))
+                    if (SetAndNotifyIfChanged(ref _configurationService.Theme.AccentMidColor, value))
                     {
                         var color = ColorAndBrushHelper.HexColorToMediaColor(value);
-                        AccentLightColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
-                        AccentDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
-                        SetAndNotifyIfChanged(nameof(AccentMidColor), ref _configurationService.Theme.AccentMidColor, value);
+                        _configurationService.Theme.AccentLightColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(Math.Min(color.R + 50, 255), Math.Min(color.G + 45, 255), Math.Min(color.B + 40, 255)));
+                        _configurationService.Theme.AccentDarkColor = System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb((int)(color.R * 0.8), (int)(color.G * 0.8), (int)(color.B * 0.8)));
                         RaisePropertyChanged(nameof(AccentLightColor));
                         RaisePropertyChanged(nameof(AccentDarkColor));
+                        _themeService.ApplyTheme(_configurationService.Theme);
                     }
                 }
                 catch (Exception e)
@@ -667,18 +676,33 @@ namespace PRM.ViewModel.Configuration
         public string AccentLightColor
         {
             get => _configurationService.Theme.AccentLightColor;
-            set => SetAndNotifyIfChanged(nameof(AccentLightColor), ref _configurationService.Theme.AccentLightColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(AccentLightColor), ref _configurationService.Theme.AccentLightColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string AccentDarkColor
         {
             get => _configurationService.Theme.AccentDarkColor;
-            set => SetAndNotifyIfChanged(nameof(AccentDarkColor), ref _configurationService.Theme.AccentDarkColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(AccentDarkColor), ref _configurationService.Theme.AccentDarkColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string AccentTextColor
         {
             get => _configurationService.Theme.AccentTextColor;
-            set => SetAndNotifyIfChanged(nameof(AccentTextColor), ref _configurationService.Theme.AccentTextColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(AccentTextColor), ref _configurationService.Theme.AccentTextColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string BackgroundColor
         {
             get => _configurationService.Theme.BackgroundColor;
@@ -687,7 +711,11 @@ namespace PRM.ViewModel.Configuration
         public string BackgroundTextColor
         {
             get => _configurationService.Theme.BackgroundTextColor;
-            set => SetAndNotifyIfChanged(nameof(BackgroundTextColor), ref _configurationService.Theme.BackgroundTextColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(nameof(BackgroundTextColor), ref _configurationService.Theme.BackgroundTextColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
 
 
@@ -703,6 +731,7 @@ namespace PRM.ViewModel.Configuration
                     {
                         SetTheme(ThemeName);
                         _configurationService.Save();
+                        _themeService.ApplyTheme(_configurationService.Theme);
                     });
                 }
                 return _cmdPrmThemeReset;
