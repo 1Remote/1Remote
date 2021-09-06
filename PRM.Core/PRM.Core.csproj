@@ -126,9 +126,10 @@
     <None Include="DB\freesql\DbServer.csexp" />
     <Compile Include="I\ILanguageService.cs" />
     <Compile Include="Protocol\Base\ExtendOption.cs" />
-    <Compile Include="Protocol\Runner\Default\SSHDefaultRunner.cs" />
+    <Compile Include="Protocol\ProtocolConfig.cs" />
+    <Compile Include="Protocol\Runner\Default\KittyDefaultRunner.cs" />
     <Compile Include="Protocol\Runner\ExternRunner.cs" />
-    <Compile Include="Protocol\Runner\Runner.cs" />
+    <Compile Include="Protocol\Runner\ProtocolRunner.cs" />
     <Compile Include="Service\DataService.cs" />
     <None Include="DB\freesql\FreeSqlDb.csexp" />
     <Compile Include="I\IDb.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="I\IIntegratable.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\LauncherService.cs" />
+    <Compile Include="Service\ProtocolConfigurationService.cs" />
     <Compile Include="Service\ThemeService.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Service\LocalityService.cs" />

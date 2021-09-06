@@ -107,9 +107,14 @@ namespace PRM.Core.Service
 #endif
         public readonly string JsonPath;
 
-        public ConfigurationService()
+        private readonly KeywordMatchService _keywordMatchService;
+
+        public ConfigurationService(KeywordMatchService keywordMatchService)
         {
+            _keywordMatchService = keywordMatchService;
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+            if (Directory.Exists(appDateFolder) == false)
+                Directory.CreateDirectory(appDateFolder);
             var jsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
             if (IOPermissionHelper.IsFileCanWriteNow(jsonPath) == false)
             {
@@ -134,17 +139,18 @@ namespace PRM.Core.Service
             {
                 KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
                 Save();
+                _keywordMatchService.Init(KeywordMatch.EnabledMatchers.ToArray());
             }
         }
 
         public List<MatchProviderInfo> AvailableMatcherProviders { get; }
-        private Configuration cfg = new Configuration();
+        private Configuration _cfg = new Configuration();
 
-        public GeneralConfig General => cfg.General;
-        public LauncherConfig Launcher => cfg.Launcher;
-        public KeywordMatchConfig KeywordMatch => cfg.KeywordMatch;
-        public DatabaseConfig Database => cfg.Database;
-        public ThemeConfig Theme => cfg.Theme;
+        public GeneralConfig General => _cfg.General;
+        public LauncherConfig Launcher => _cfg.Launcher;
+        public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
+        public DatabaseConfig Database => _cfg.Database;
+        public ThemeConfig Theme => _cfg.Theme;
 
 
 
@@ -171,7 +177,7 @@ namespace PRM.Core.Service
                     try
                     {
                         var cfg = LoadFromIni(iniPath);
-                        this.cfg = cfg;
+                        this._cfg = cfg;
                         Save();
                     }
                     finally
@@ -185,7 +191,7 @@ namespace PRM.Core.Service
                     {
                         var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(JsonPath));
                         if (cfg != null)
-                            this.cfg = cfg;
+                            this._cfg = cfg;
                     }
                     catch
                     {
@@ -228,7 +234,7 @@ namespace PRM.Core.Service
             var fi = new FileInfo(JsonPath);
             if (fi.Directory.Exists == false)
                 fi.Directory.Create();
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this.cfg, Formatting.Indented), Encoding.UTF8);
+            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
         }
 
 

@@ -40,7 +40,7 @@ namespace PRM.Core.Protocol.Runner.Default
             return string.IsNullOrEmpty(_puttyThemeName) ? PuttyThemes.GetThemes().Keys.First() : _puttyThemeName;
         }
 
-        private ObservableCollection<string> PuttyThemeNames => new ObservableCollection<string>(PuttyThemes.GetThemes().Keys);
+        public ObservableCollection<string> PuttyThemeNames => new ObservableCollection<string>(PuttyThemes.GetThemes().Keys);
 
         public void Save()
         {

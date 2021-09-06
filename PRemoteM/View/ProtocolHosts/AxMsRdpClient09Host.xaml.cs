@@ -947,8 +947,15 @@ namespace PRM.View.ProtocolHosts
         {
             if (_canAutoResize)
             {
-                _resizeEndTimer?.Stop();
-                _resizeEndTimer?.Start();
+                try
+                {
+                    _resizeEndTimer?.Stop();
+                    _resizeEndTimer?.Start();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
         }
 

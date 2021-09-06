@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PRM.Core.Protocol.Runner
 {
-    public class ExternRunner : Runner
+    public class ExternRunner : ProtocolRunner
     {
         public ExternRunner(string protocol) : base(protocol)
         {
