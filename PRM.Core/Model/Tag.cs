@@ -64,7 +64,7 @@ namespace PRM.Core.Model
                 path = Path.Combine(appDateFolder, pinnedTagsPath);
             }
 #if FOR_MICROSOFT_STORE_ONLY
-            path = Path.Combine(appDateFolder, PinnedTagsPath);
+            path = Path.Combine(appDateFolder, pinnedTagsPath);
 #endif
             return path;
         }
