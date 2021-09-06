@@ -105,7 +105,7 @@
     <s:String x:Key="system_options_data_security_info_clear_rsa">Would you like to clear RSA encryption?</s:String>
     <s:String x:Key="system_options_data_security_error_can_not_open">Database: Permission denied for reading or the file is not a database or the file is an encrypted database!</s:String>
 
-    <s:String x:Key="string_database_error_permission_denied">Database: Permission denied for reading! Please check your password of file occupation.</s:String>
+    <s:String x:Key="string_database_error_permission_denied">Database: Permission denied for reading! Please check your password of db or the file occupation.</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_format_error">Database: RSA private key is in an invalid format! Please select the correct key.</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_not_found">Database: Can't find the RSA private key! Please select the correct key.</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Database: RSA private key does not match the public key! Please select the correct key.</s:String>

@@ -379,7 +379,7 @@ namespace PRM.ViewModel
                             dispName = $"{matchedTag} - {dispName}";
                         var subTitle = vm.Server.SubTitle;
 
-                        var mrs = Context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords);
+                        var mrs = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
                         if (mrs.IsMatchAllKeywords)
                         {
                             vm.ObjectVisibility = Visibility.Visible;

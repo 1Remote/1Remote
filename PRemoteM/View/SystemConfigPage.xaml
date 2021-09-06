@@ -9,6 +9,7 @@
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:configuration="clr-namespace:PRM.ViewModel.Configuration"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
+             xmlns:protocolConfig="clr-namespace:PRM.View.ProtocolConfig"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance configuration:ConfigurationViewModel}"
              d:DesignHeight="2450" d:DesignWidth="800">
@@ -16,7 +17,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <view:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool" />
                     <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
                     <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
                 </ResourceDictionary>
@@ -513,13 +513,37 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
                     <Grid >
-                        <Border BorderBrush="Black" BorderThickness="1" Width="100">
+                        <Border BorderBrush="Black" BorderThickness="0 0 1 0" Width="150">
+                            <StackPanel>
+                                <TextBlock>TXT:协议</TextBlock>
+                                <Button Style="{StaticResource ButtonBarPrimaryStyle}">RDP</Button>
+                                <Button Style="{StaticResource ButtonBarPrimaryStyle}">SSH</Button>
+                                <Button Style="{StaticResource ButtonBarPrimaryStyle}">VNC</Button>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
 
+                    <Grid Grid.Column="1">
+                        <Border BorderBrush="Black" BorderThickness="0 0 1 0">
+                            <StackPanel>
+                                <TextBlock>TXT:配置</TextBlock>
+                                <Grid Background="{DynamicResource PrimaryMidBrush}">
+                                    <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center">KiTTY</TextBlock>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Grid Margin="5" Height="20">
+                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}">(default)</TextBlock>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+
+                                <protocolConfig:PuttyRunnerConfiger></protocolConfig:PuttyRunnerConfiger>
+
+                                <Button Style="{StaticResource ButtonPrimaryStyle}">+</Button>
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </Grid>

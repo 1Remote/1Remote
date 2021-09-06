@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PRM.Core.Protocol.Runner
 {
-    public abstract class Runner : NotifyPropertyChangedBase
+    public abstract class ProtocolRunner : NotifyPropertyChangedBase
     {
-        protected Runner(string protocol)
+        protected ProtocolRunner(string protocol)
         {
             Protocol = protocol;
         }
