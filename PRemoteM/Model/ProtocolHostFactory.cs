@@ -28,7 +28,8 @@ namespace PRM.Model
                     {
                         var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
                         {
-                            RunBeforeConnect = () => ssh.SetPuttySessionConfig(),
+                            // TODO 读取 Kitty 主题
+                            RunBeforeConnect = () => ssh.SetKittySessionConfig(14, "", ssh.PrivateKey),
                             RunAfterConnected = () => ssh.DelKittySessionConfig()
                         };
                         return host;
@@ -37,7 +38,7 @@ namespace PRM.Model
                     {
                         var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
                         {
-                            RunBeforeConnect = () => telnet.SetPuttySessionConfig(),
+                            RunBeforeConnect = () => telnet.SetKittySessionConfig(14, "", ""),
                             RunAfterConnected = () => telnet.DelKittySessionConfig()
                         };
                         return host;

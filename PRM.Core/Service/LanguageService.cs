@@ -18,8 +18,8 @@ namespace PRM.Core.Service
     {
         public static LanguageService TmpLanguageService = null;
 
+        private string _languageCode = "en-us";
         private readonly ResourceDictionary _defaultLanguageResourceDictionary;
-        private string languageCode = "en-us";
         private readonly ResourceDictionary _applicationResourceDictionary;
 
 
@@ -52,7 +52,7 @@ namespace PRM.Core.Service
             Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
 #endif
 
-            this.languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
+            this._languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
             SetLanguage(languageCode);
         }
 
@@ -132,10 +132,10 @@ namespace PRM.Core.Service
             if (!LanguageCode2Name.ContainsKey(code))
                 return false;
 
-            if (languageCode == code)
+            if (_languageCode == code)
                 return true;
 
-            languageCode = code;
+            _languageCode = code;
             var resource = Resources[code];
             _applicationResourceDictionary?.ChangeLanguage(resource);
             GlobalEventHelper.OnLanguageChanged?.Invoke();
@@ -156,7 +156,7 @@ namespace PRM.Core.Service
                 return _applicationResourceDictionary[key].ToString();
 
 #if DEBUG
-            var tw = new StreamWriter("need translation " + languageCode);
+            var tw = new StreamWriter("need translation " + _languageCode);
             tw.WriteLine(key);
             tw.Close();
 #endif

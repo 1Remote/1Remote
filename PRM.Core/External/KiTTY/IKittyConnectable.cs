@@ -36,7 +36,7 @@ namespace PRM.Core.External.KiTTY
             throw new NotSupportedException("you should not access here! something goes wrong");
         }
 
-        public static void SetPuttySessionConfig(this IKittyConnectable iKittyConnectable, string sshPrivateKeyPath = "")
+        public static void SetKittySessionConfig(this IKittyConnectable iKittyConnectable, int fontSize, string themeName, string sshPrivateKeyPath)
         {
             var kittyExeFullName = GetKittyExeFullName();
             var fi = new FileInfo(kittyExeFullName);
@@ -60,8 +60,7 @@ namespace PRM.Core.External.KiTTY
             }
 
             // set color theme
-            puttyOption.Set(EnumKittyConfigKey.FontHeight, SshDefaultRunner.GetPuttyFontSize());
-            var options = PuttyThemes.GetThemes()[SshDefaultRunner.GetPuttyThemeName()];
+            var options = PuttyThemes.GetThemes()[themeName];
             if (options != null)
                 foreach (var option in options)
                 {
@@ -81,7 +80,7 @@ namespace PRM.Core.External.KiTTY
                     }
                 }
 
-            puttyOption.Set(EnumKittyConfigKey.FontHeight, SshDefaultRunner.GetPuttyFontSize());
+            puttyOption.Set(EnumKittyConfigKey.FontHeight, fontSize);
 
             //_puttyOption.Set(PuttyRegOptionKey.Colour0, "255,255,255");
             //_puttyOption.Set(PuttyRegOptionKey.Colour1, "255,255,255");

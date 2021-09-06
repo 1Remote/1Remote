@@ -127,7 +127,6 @@ namespace PRM.View
             {
                 if (!string.IsNullOrWhiteSpace(cmd))
                 {
-                    // TODO add some params
                     CmdRunner.RunCmdAsync(cmd);
                 }
             }
