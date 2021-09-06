@@ -261,7 +261,6 @@ namespace PRM.Core.Protocol
             {
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
-                    // TODO add some params
                     CmdRunner.RunCmdAsync(CommandBeforeConnected);
                 }
             }
@@ -277,7 +276,6 @@ namespace PRM.Core.Protocol
             {
                 if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
                 {
-                    // TODO add some params
                     CmdRunner.RunCmdAsync(CommandAfterDisconnected);
                 }
             }

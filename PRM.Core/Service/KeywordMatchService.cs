@@ -126,7 +126,7 @@ namespace PRM.Core.Service
             return _matcher.Match(cache, new[] { keyword });
         }
 
-        public MatchResults Matchs(List<string> originalStrings, IEnumerable<string> keywords)
+        public MatchResults Match(List<string> originalStrings, IEnumerable<string> keywords)
         {
             CleanUp();
             var caches = originalStrings.Select(x => GetCache(x)).ToList();

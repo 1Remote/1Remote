@@ -207,6 +207,9 @@
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml.cs">
+      <DependentUpon>PuttyRunnerConfiger.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ProtocolEditors\FTPForm.xaml.cs">
       <DependentUpon>FTPForm.xaml</DependentUpon>
     </Compile>
@@ -372,6 +375,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Guidance\GuidanceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

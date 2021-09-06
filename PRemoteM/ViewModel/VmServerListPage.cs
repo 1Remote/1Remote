@@ -87,19 +87,6 @@ namespace PRM.ViewModel
 
         private string SelectedTagName => Context.AppData.SelectedTagName;
 
-        //private string _selectedTagName = "";
-        //public string SelectedTagName
-        //{
-        //    get => _selectedTagName;
-        //    set
-        //    {
-        //        if (_selectedTagName == value) return;
-        //        Context.AppData.MainWindowServerFilter = "";
-        //        SetAndNotifyIfChanged(nameof(SelectedTagName), ref _selectedTagName, value);
-        //        context.LocalityService.MainWindowTabSelected = value;
-        //        CalcVisible();
-        //    }
-        //}
 
         private bool _isSelectedAll;
         /// <summary>
@@ -253,7 +240,7 @@ namespace PRM.ViewModel
                     {
                         var dispName = server.DisplayName;
                         var subTitle = server.SubTitle;
-                        var matched = Context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
+                        var matched = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
                         if (matched)
                             card.ObjectVisibilityInList = Visibility.Visible;
                         else
@@ -280,7 +267,7 @@ namespace PRM.ViewModel
                     }
                     else
                     {
-                        var matched = Context.KeywordMatchService.Matchs(new List<string>() { tag.Name }, keyWords).IsMatchAllKeywords;
+                        var matched = Context.KeywordMatchService.Match(new List<string>() { tag.Name }, keyWords).IsMatchAllKeywords;
                         if (matched)
                             tag.ObjectVisibilityInList = Visibility.Visible;
                         else

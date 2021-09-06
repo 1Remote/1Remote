@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -68,7 +69,6 @@ namespace PRM.ViewModel.Configuration
                         MessageBox.Show(res.GetErrorInfo(_context.LanguageService), _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
-                    _context.KeywordMatchService.Init(_configurationService.KeywordMatch.EnabledMatchers.ToArray());
                     _configurationService.Save();
                     if (Host != null)
                         Host.DispPage = null;
@@ -220,15 +220,7 @@ namespace PRM.ViewModel.Configuration
         private bool ValidateDbStatusAndShowMessageBox()
         {
             // validate rsa key
-            var res = EnumDbStatus.OK;
-            if (!IOPermissionHelper.HasWritePermissionOnFile(DbPath))
-            {
-                res = EnumDbStatus.AccessDenied;
-            }
-            else
-            {
-                res = _dataService.Database_SelfCheck();
-            }
+            var res = _dataService.Database_SelfCheck();
             RaisePropertyChanged(nameof(RsaPublicKey));
             RaisePropertyChanged(nameof(RsaPrivateKeyPath));
             if (res == EnumDbStatus.OK) return true;
@@ -481,6 +473,7 @@ namespace PRM.ViewModel.Configuration
                     try
                     {
                         _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        _configurationService.Database.SqliteDatabasePath = path;
                         RaisePropertyChanged(nameof(DbPath));
                         _context.AppData.ReloadServerList();
                         _configurationService.Save();
@@ -488,7 +481,8 @@ namespace PRM.ViewModel.Configuration
                     }
                     catch (Exception ee)
                     {
-                        _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        _configurationService.Database.SqliteDatabasePath = oldDbPath;
+                        _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(oldDbPath));
                         SimpleLogHelper.Warning(ee);
                         MessageBox.Show(_languageService.Translate("system_options_data_security_error_can_not_open"), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     }
@@ -522,15 +516,14 @@ namespace PRM.ViewModel.Configuration
                     {
                         if (IOPermissionHelper.HasWritePermissionOnFile(path))
                         {
-                            this._context.DataService?.Database_CloseConnection();
-                            File.Move(oldDbPath, path);
-                            File.Delete(oldDbPath);
-                            if (this._context.DataService == null)
-                                _context.InitSqliteDb(path);
-                            this._context.DataService?.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                            this._context.DataService.Database_CloseConnection();
+                            File.Copy(oldDbPath, path);
+                            Thread.Sleep(500);
+                            this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
                             // Migrate do not need reload data
                             // this._appContext.AppData.ReloadServerList();
                             _configurationService.Database.SqliteDatabasePath = path;
+                            File.Delete(oldDbPath);
                         }
                         else
                             MessageBox.Show(_languageService.Translate("system_options_data_security_error_can_not_open"), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
@@ -538,7 +531,9 @@ namespace PRM.ViewModel.Configuration
                     catch (Exception ee)
                     {
                         SimpleLogHelper.Error(ee);
+                        File.Delete(path);
                         _configurationService.Database.SqliteDatabasePath = oldDbPath;
+                        this._context.DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(oldDbPath));
                         MessageBox.Show(_languageService.Translate("system_options_data_security_error_can_not_open"), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     }
                     RaisePropertyChanged(nameof(DbPath));

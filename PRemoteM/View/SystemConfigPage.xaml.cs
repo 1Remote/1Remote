@@ -113,19 +113,6 @@ namespace PRM.View
         }
     }
 
-    public class ObjEqualParam2Bool : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value.Equals(parameter);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((bool)value) ? parameter : Binding.DoNothing;
-        }
-    }
-
     /// <summary>
     /// key board key A -> string "A"
     /// </summary>
@@ -135,7 +122,7 @@ namespace PRM.View
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            Key k = (Key)value;
+            var k = (Key)value;
             return k.ToString();
         }
 

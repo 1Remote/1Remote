@@ -25,7 +25,8 @@ namespace PRM.Core.Model
 
         public PrmContext(ResourceDictionary applicationResourceDictionary)
         {
-            ConfigurationService = new ConfigurationService();
+            KeywordMatchService = new KeywordMatchService();
+            ConfigurationService = new ConfigurationService(KeywordMatchService);
             ConfigurationService.Load();
             LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
             PRM.Core.Service.LanguageService.TmpLanguageService = LanguageService;
@@ -33,8 +34,6 @@ namespace PRM.Core.Model
             ThemeService = new ThemeService(applicationResourceDictionary);
             ThemeService.ApplyTheme(ConfigurationService.Theme);
             DataService = new DataService();
-            KeywordMatchService = new KeywordMatchService();
-            KeywordMatchService.Init(ConfigurationService.KeywordMatch.EnabledMatchers.ToArray());
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
             AppData = new GlobalData(LocalityService);
