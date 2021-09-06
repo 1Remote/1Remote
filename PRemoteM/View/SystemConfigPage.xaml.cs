@@ -40,6 +40,8 @@ namespace PRM.View
 
             if (destination == "Data")
                 TabItemDataBase.IsSelected = true;
+
+            PuttyRunnerConfiger.Init(context);
         }
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)

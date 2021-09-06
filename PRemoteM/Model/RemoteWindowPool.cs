@@ -97,6 +97,8 @@ namespace PRM.Model
         private readonly Dictionary<string, HostBase> _protocolHosts = new Dictionary<string, HostBase>();
         private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
 
+        public int TabWindowCount => _tabWindows.Count;
+
         private bool ActivateOrReConnIfServerSessionIsOpened(VmProtocolServer vmProtocolServer)
         {
             var serverId = vmProtocolServer.Server.Id;

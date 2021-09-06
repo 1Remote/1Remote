@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PRM.Core.Model;
 
 namespace PRM.View.ProtocolConfig
 {
@@ -23,6 +24,11 @@ namespace PRM.View.ProtocolConfig
         public PuttyRunnerConfiger()
         {
             InitializeComponent();
+        }
+
+        public void Init(PrmContext prmContext)
+        {
+            DataContext = prmContext.ProtocolConfigurationService.SshDefaultRunner;
         }
     }
 }

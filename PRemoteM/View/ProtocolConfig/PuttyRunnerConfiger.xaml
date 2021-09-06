@@ -11,6 +11,16 @@
     <StackPanel>
         <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
         </Grid>
+
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:KiTTY 路径"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
+                    <TextBox Text="{Binding ExePath}" VerticalContentAlignment="Center"></TextBox>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
