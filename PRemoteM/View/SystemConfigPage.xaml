@@ -540,7 +540,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <protocolConfig:PuttyRunnerConfiger></protocolConfig:PuttyRunnerConfiger>
+                                <protocolConfig:PuttyRunnerConfiger x:Name="PuttyRunnerConfiger"></protocolConfig:PuttyRunnerConfiger>
 
                                 <Button Style="{StaticResource ButtonPrimaryStyle}">+</Button>
                             </StackPanel>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Runner;
+using PRM.Core.Protocol.Runner.Default;
 
 namespace PRM.Core.Service
 {
@@ -22,7 +23,28 @@ namespace PRM.Core.Service
             ProtocolFolderName = Path.Combine(appDateFolder, "Protocols");
             if (Directory.Exists(ProtocolFolderName) == false)
                 Directory.CreateDirectory(ProtocolFolderName);
+            if (Directory.Exists(Path.Combine(ProtocolFolderName, "SSH")) == false)
+                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "SSH"));
+            if (Directory.Exists(Path.Combine(ProtocolFolderName, "RDP")) == false)
+                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "RDP"));
+            if (Directory.Exists(Path.Combine(ProtocolFolderName, "VNC")) == false)
+                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "VNC"));
+            if (Directory.Exists(Path.Combine(ProtocolFolderName, "TELNET")) == false)
+                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "TELNET"));
+            if (Directory.Exists(Path.Combine(ProtocolFolderName, "FTP")) == false)
+                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "FTP"));
+            if (Directory.Exists(Path.Combine(ProtocolFolderName, "SFTP")) == false)
+                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "SFTP"));
+
+            if (File.Exists(Path.Combine(ProtocolFolderName, "SSH", nameof(SshDefaultRunner) + ".json")))
+            {
+                SshDefaultRunner = JsonConvert.DeserializeObject<SshDefaultRunner>(File.ReadAllText(Path.Combine(ProtocolFolderName, "SSH", nameof(SshDefaultRunner) + ".json")));
+            }
+            SshDefaultRunner ??= new SshDefaultRunner();
         }
+
+
+        public readonly SshDefaultRunner SshDefaultRunner = null;
 
         public void Load()
         {   
