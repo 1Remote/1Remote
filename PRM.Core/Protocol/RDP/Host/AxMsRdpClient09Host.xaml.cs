@@ -912,8 +912,15 @@ namespace PRM.Core.Protocol.RDP.Host
         {
             if (_canAutoResize)
             {
-                _resizeEndTimer?.Stop();
-                _resizeEndTimer?.Start();
+                try
+                {
+                    _resizeEndTimer?.Stop();
+                    _resizeEndTimer?.Start();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
         }
 
