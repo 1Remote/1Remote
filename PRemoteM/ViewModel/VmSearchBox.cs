@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Model;
 using Shawn.Utils.PageHost;
 using Shawn.Utils;
 
@@ -199,19 +200,20 @@ namespace PRM.ViewModel
 
             #region Build Actions
 
-            var actions = new ObservableCollection<ActionItem>
+            var actions = new ObservableCollection<ActionItem>();
             {
-                new ActionItem()
+                actions.Add(new ActionItem()
                 {
                     ActionName = Context.LanguageService.Translate("word_connect"),
                     Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
-                },
-                new ActionItem()
-                {
-                    ActionName = Context.LanguageService.Translate("word_connect_to_new_tab"),
-                    Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
-                },
-                new ActionItem()
+                });
+                if (RemoteWindowPool.Instance.TabWindowCount > 0)
+                    actions.Add(new ActionItem()
+                    {
+                        ActionName = Context.LanguageService.Translate("word_connect_to_new_tab"),
+                        Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
+                    });
+                actions.Add(new ActionItem()
                 {
                     ActionName = Context.LanguageService.Translate("word_edit"),
                     Run = (id) =>
@@ -219,8 +221,8 @@ namespace PRM.ViewModel
                         Debug.Assert(SelectedItem?.Server != null);
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, false, false);
                     },
-                },
-                new ActionItem()
+                });
+                actions.Add(new ActionItem()
                 {
                     ActionName = Context.LanguageService.Translate("server_card_operate_duplicate"),
                     Run = (id) =>
@@ -228,7 +230,7 @@ namespace PRM.ViewModel
                         Debug.Assert(SelectedItem?.Server != null);
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, true, false);
                     },
-                }
+                });
             };
             if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {

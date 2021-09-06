@@ -16,6 +16,7 @@ namespace PRM.Core.Model
     public class PrmContext : NotifyPropertyChangedBase
     {
         public readonly ConfigurationService ConfigurationService;
+        public readonly ProtocolConfigurationService ProtocolConfigurationService;
         public DataService DataService;
         public readonly LanguageService LanguageService;
         public readonly LauncherService LauncherService;
@@ -27,6 +28,7 @@ namespace PRM.Core.Model
         {
             KeywordMatchService = new KeywordMatchService();
             ConfigurationService = new ConfigurationService(KeywordMatchService);
+            ProtocolConfigurationService = new ProtocolConfigurationService();
             ConfigurationService.Load();
             LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
             PRM.Core.Service.LanguageService.TmpLanguageService = LanguageService;
