@@ -30,7 +30,7 @@ namespace PRM.Core.Protocol
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
             // TODO fix static resource
-            Server_editor_different_options = LanguageService.TmpLanguageService.Translate("server_editor_different_options");
+            Server_editor_different_options = LanguageService.TmpLanguageService?.Translate("server_editor_different_options") ?? "";
         }
 
         public abstract bool IsOnlyOneInstance();
