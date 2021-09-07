@@ -20,7 +20,8 @@ namespace PRM.Core.Protocol.Putty.SSH
             V2 = 2,
         }
 
-        public ProtocolServerSSH() : base("SSH", "Putty.SSH.V1", "SSH")
+        public static string ProtocolName = "SSH";
+        public ProtocolServerSSH() : base(ProtocolServerSSH.ProtocolName, $"Putty.{ProtocolServerSSH.ProtocolName}.V1", ProtocolServerSSH.ProtocolName)
         {
         }
 

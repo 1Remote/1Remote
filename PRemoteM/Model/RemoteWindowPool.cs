@@ -28,22 +28,10 @@ namespace PRM.Model
     {
         #region singleton
 
-        private static RemoteWindowPool _uniqueInstance;
+        private static RemoteWindowPool _uniqueInstance = null;
         private static readonly object InstanceLock = new object();
 
-        public static RemoteWindowPool GetInstance()
-        {
-            lock (InstanceLock)
-            {
-                if (_uniqueInstance == null)
-                {
-                    throw new NullReferenceException($"{nameof(RemoteWindowPool)} has not been inited!");
-                }
-            }
-            return _uniqueInstance;
-        }
-
-        public static RemoteWindowPool Instance => GetInstance();
+        public static RemoteWindowPool Instance => _uniqueInstance;
 
         #endregion singleton
 

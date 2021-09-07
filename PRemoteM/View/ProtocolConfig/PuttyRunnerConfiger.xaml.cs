@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.Core.Model;
+using PRM.Core.Protocol.Runner.Default;
 
 namespace PRM.View.ProtocolConfig
 {
@@ -28,7 +30,8 @@ namespace PRM.View.ProtocolConfig
 
         public void Init(PrmContext prmContext)
         {
-            DataContext = prmContext.ProtocolConfigurationService.SshDefaultRunner;
+            Debug.Assert(prmContext.ProtocolConfigurationService.ProtocolConfigs["SSH"].Runners.FirstOrDefault() is SshDefaultRunner);
+            DataContext = prmContext.ProtocolConfigurationService.ProtocolConfigs["SSH"].Runners.FirstOrDefault();
         }
     }
 }
