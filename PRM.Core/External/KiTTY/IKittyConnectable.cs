@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Collections.Generic;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.Runner.Default;
 using PRM.Core.Service;
 using Shawn.Utils;
+using PRM.Core.Protocol.Putty;
+using System.Linq;
 
 namespace PRM.Core.External.KiTTY
 {
@@ -37,6 +39,8 @@ namespace PRM.Core.External.KiTTY
             throw new NotSupportedException("you should not access here! something goes wrong");
         }
 
+        private static Dictionary<string, List<KittyConfigKeyValuePair>> themes = PuttyThemes.GetThemes();
+
         public static void SetKittySessionConfig(this IKittyConnectable iKittyConnectable, int fontSize, string themeName, string sshPrivateKeyPath)
         {
             var kittyExeFullName = GetKittyExeFullName();
@@ -61,7 +65,10 @@ namespace PRM.Core.External.KiTTY
             }
 
             // set color theme
-            var options = PuttyThemes.GetThemes()[themeName];
+            if (themes.ContainsKey(themeName) == false)
+                themeName = themes.Keys.First();
+
+            var options = themes[themeName];
             if (options != null)
                 foreach (var option in options)
                 {
