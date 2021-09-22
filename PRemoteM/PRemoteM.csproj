@@ -189,6 +189,7 @@
     <Compile Include="Resources\Theme\AttachProperty\PasswordBoxAttachProperty.cs" />
     <Compile Include="Resources\Theme\AttachProperty\VisionElement.cs" />
     <Compile Include="ViewModel\Configuration\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModel\Configuration\ProtocolConfigerViewModel.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
@@ -206,6 +207,9 @@
     </Compile>
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProtocolConfig\ProtocolConfiger.xaml.cs">
+      <DependentUpon>ProtocolConfiger.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml.cs">
       <DependentUpon>PuttyRunnerConfiger.xaml</DependentUpon>
@@ -375,6 +379,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Guidance\GuidanceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ProtocolConfig\ProtocolConfiger.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

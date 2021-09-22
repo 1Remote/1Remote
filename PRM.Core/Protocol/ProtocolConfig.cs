@@ -14,22 +14,21 @@ namespace PRM.Core.Protocol
 
         public string SelectedRunnerName { get; set; }
 
-        public List<ExternRunner> Runners;
+        public List<Runner.Runner> Runners;
 
-        public ExternRunner GetRunner()
+        public Runner.Runner GetRunner()
         {
-            if(Runners.Any(x=>x.Name == SelectedRunnerName))
+            if (Runners.Any(x => x.Name == SelectedRunnerName))
             {
                 return Runners.First(x => x.Name == SelectedRunnerName);
             }
-
             return Runners.FirstOrDefault();
         }
 
         public ProtocolConfig(string protocolName)
         {
             ProtocolName = protocolName;
-            Runners = new List<ExternRunner>();
+            Runners = new List<Runner.Runner>();
         }
     }
 }

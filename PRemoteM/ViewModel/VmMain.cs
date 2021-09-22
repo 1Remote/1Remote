@@ -83,13 +83,7 @@ namespace PRM.ViewModel
         public int ProgressBarMaximum
         {
             get => _progressBarMaximum;
-            set
-            {
-                if (value != _progressBarMaximum)
-                {
-                    SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _progressBarMaximum, value);
         }
 
         private string _progressBarInfo = "";
@@ -97,13 +91,7 @@ namespace PRM.ViewModel
         public string ProgressBarInfo
         {
             get => _progressBarInfo;
-            set
-            {
-                if (value != _progressBarInfo)
-                {
-                    SetAndNotifyIfChanged(nameof(ProgressBarInfo), ref _progressBarInfo, value);
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _progressBarInfo, value);
         }
 
         #endregion Properties
