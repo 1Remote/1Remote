@@ -217,8 +217,19 @@ namespace PRM.View.ProtocolHosts
             _timer?.Stop();
             _timer?.Dispose();
             _timer = null;
-            _process.Exited -= ProcessOnExited;
-            _process?.Kill();
+            if (_process != null)
+            {
+                try
+                {
+                    _process.Exited -= ProcessOnExited;
+                    _process.Kill();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+
             Status = ProtocolHostStatus.Disconnected;
         }
 
@@ -310,6 +321,7 @@ namespace PRM.View.ProtocolHosts
                 _process = null;
                 FormsHost.Visibility = Visibility.Collapsed;
             });
+            _process = null;
             Close();
         }
 

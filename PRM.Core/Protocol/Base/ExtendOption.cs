@@ -11,6 +11,7 @@ namespace PRM.Core.Protocol.Base
         String,
         Int,
     }
+
     public class ExtendOption : NotifyPropertyChangedBase
     {
 

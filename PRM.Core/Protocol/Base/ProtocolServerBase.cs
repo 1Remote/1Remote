@@ -6,15 +6,29 @@ using System.Reflection;
 using System.Runtime.Remoting.Contexts;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ColorPickerWPF.Code;
+using JsonKnownTypes;
 using Newtonsoft.Json;
 using PRM.Core.Model;
+using PRM.Core.Protocol.FileTransmit.FTP;
+using PRM.Core.Protocol.FileTransmit.SFTP;
+using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
+using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.VNC;
 using PRM.Core.Service;
 using Shawn.Utils;
-using Color = System.Windows.Media.Color;
 
 namespace PRM.Core.Protocol
 {
+    //[JsonConverter(typeof(JsonKnownTypesConverter<ProtocolServerBase>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
+    //[JsonKnownType(typeof(ProtocolServerWithAddrPortBase), nameof(ProtocolServerWithAddrPortBase))]
+    //[JsonKnownType(typeof(ProtocolServerWithAddrPortUserPwdBase), nameof(ProtocolServerWithAddrPortUserPwdBase))]
+    //[JsonKnownType(typeof(ProtocolServerRDP), nameof(ProtocolServerRDP))]
+    //[JsonKnownType(typeof(ProtocolServerSSH), nameof(ProtocolServerSSH))]
+    //[JsonKnownType(typeof(ProtocolServerTelnet), nameof(ProtocolServerTelnet))]
+    //[JsonKnownType(typeof(ProtocolServerVNC), nameof(ProtocolServerVNC))]
+    //[JsonKnownType(typeof(ProtocolServerFTP), nameof(ProtocolServerFTP))]
+    //[JsonKnownType(typeof(ProtocolServerSFTP), nameof(ProtocolServerSFTP))]
     public abstract class ProtocolServerBase : NotifyPropertyChangedBase
     {
         [JsonIgnore]
