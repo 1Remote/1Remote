@@ -510,43 +510,7 @@
             </TabItem>
 
             <TabItem Header="Txt:协议">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid >
-                        <Border BorderBrush="Black" BorderThickness="0 0 1 0" Width="150">
-                            <StackPanel>
-                                <TextBlock>TXT:协议</TextBlock>
-                                <Button Style="{StaticResource ButtonBarPrimaryStyle}">RDP</Button>
-                                <Button Style="{StaticResource ButtonBarPrimaryStyle}">SSH</Button>
-                                <Button Style="{StaticResource ButtonBarPrimaryStyle}">VNC</Button>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-
-                    <Grid Grid.Column="1">
-                        <Border BorderBrush="Black" BorderThickness="0 0 1 0">
-                            <StackPanel>
-                                <TextBlock>TXT:配置</TextBlock>
-                                <Grid Background="{DynamicResource PrimaryMidBrush}">
-                                    <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center">KiTTY</TextBlock>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Grid Margin="5" Height="20">
-                                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}">(default)</TextBlock>
-                                        </Grid>
-                                    </StackPanel>
-                                </Grid>
-
-                                <protocolConfig:PuttyRunnerConfiger x:Name="PuttyRunnerConfiger"></protocolConfig:PuttyRunnerConfiger>
-
-                                <Button Style="{StaticResource ButtonPrimaryStyle}">+</Button>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Grid>
+                <protocolConfig:ProtocolConfiger Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=ActualWidth}"></protocolConfig:ProtocolConfiger>
             </TabItem>
         </TabControl>
 

@@ -69,6 +69,9 @@
     <Reference Include="FluentFTP, Version=33.0.3.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentFTP.33.0.3\lib\net45\FluentFTP.dll</HintPath>
     </Reference>
+    <Reference Include="JsonKnownTypes, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JsonKnownTypes.0.5.4\lib\netstandard2.0\JsonKnownTypes.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -127,9 +130,10 @@
     <Compile Include="I\ILanguageService.cs" />
     <Compile Include="Protocol\Base\ExtendOption.cs" />
     <Compile Include="Protocol\ProtocolConfig.cs" />
-    <Compile Include="Protocol\Runner\Default\KittyDefaultRunner.cs" />
+    <Compile Include="Protocol\Runner\Default\SshDefaultRunner.cs" />
+    <Compile Include="Protocol\Runner\Default\RdpDefaultRunner.cs" />
+    <Compile Include="Protocol\Runner\Runner.cs" />
     <Compile Include="Protocol\Runner\ExternRunner.cs" />
-    <Compile Include="Protocol\Runner\ProtocolRunner.cs" />
     <Compile Include="Service\DataService.cs" />
     <None Include="DB\freesql\FreeSqlDb.csexp" />
     <Compile Include="I\IDb.cs" />
