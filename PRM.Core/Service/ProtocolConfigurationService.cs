@@ -8,6 +8,7 @@ using ColorPickerWPF.Code;
 using Newtonsoft.Json;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.Runner;
 using PRM.Core.Protocol.Runner.Default;
 
@@ -42,36 +43,21 @@ namespace PRM.Core.Service
 
 
         public void Load()
-        {   
-            //// reflect all the child class
-            //lock (this)
-            //{
-            //    if (_baseList.Count == 0)
-            //    {
-            //        var assembly = typeof(ProtocolServerBase).Assembly;
-            //        var types = assembly.GetTypes();
-            //        _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolRunner)) && !x.IsAbstract)
-            //            .Select(type => (ProtocolRunner)Activator.CreateInstance(type)).ToList();
-            //    }
-            //}
+        {
             ProtocolConfigs.Clear();
-
-
-
             var di = new DirectoryInfo(ProtocolFolderName);
-            LoadSSH();
+            LoadRdp();
+            LoadSsh();
             foreach (var directoryInfo in di.GetDirectories())
             {
                 var protocolName = directoryInfo.Name;
-                if(ProtocolConfigs.ContainsKey(protocolName))
+                if (ProtocolConfigs.ContainsKey(protocolName))
                     continue;
 
-                var cfgPath = Path.Combine(directoryInfo.FullName, $"{protocolName}.json");
-                if (File.Exists(cfgPath))
+                var c = LoadConfig(protocolName);
+                if (c != null)
                 {
-                    var c = JsonConvert.DeserializeObject<ProtocolConfig>(File.ReadAllText(cfgPath, Encoding.UTF8));
-                    if (c != null)
-                        ProtocolConfigs.Add(protocolName, c);
+                    ProtocolConfigs.Add(protocolName, c);
                 }
             }
         }
@@ -91,7 +77,22 @@ namespace PRM.Core.Service
             return null;
         }
 
-        private void LoadSSH()
+        private void LoadRdp()
+        {
+            var protocolName = ProtocolServerRDP.ProtocolName;
+            var c = LoadConfig(protocolName);
+
+            if (c == null)
+            {
+                // if there is no config file for ssh, then init the ssh with the default runner.
+                c = new ProtocolConfig(protocolName);
+                c.Runners.Add(new RdpDefaultRunner());
+            }
+
+            ProtocolConfigs.Add(protocolName, c);
+        }
+
+        private void LoadSsh()
         {
             var protocolName = ProtocolServerSSH.ProtocolName;
             var c = LoadConfig(protocolName);
@@ -101,18 +102,19 @@ namespace PRM.Core.Service
                 // if there is no config file for ssh, then init the ssh with the default runner.
                 c = new ProtocolConfig(protocolName);
                 c.Runners.Add(new SshDefaultRunner());
-                var file = Path.Combine(ProtocolFolderName, protocolName, $"{protocolName}.json");
-                File.WriteAllText(file, JsonConvert.SerializeObject(c, Formatting.Indented), Encoding.UTF8);
-            }
-
-            if (c.Runners.First() is SshDefaultRunner == false)
-            {
-                var d = c.Runners.First();
-                var dd = d as SshDefaultRunner;
-                c.Runners.Add(dd);
             }
 
             ProtocolConfigs.Add(protocolName, c);
+        }
+
+        public void Save()
+        {
+            foreach (var kv in ProtocolConfigs)
+            {
+                var config = kv.Value;
+                var file = Path.Combine(ProtocolFolderName, config.ProtocolName, $"{config.ProtocolName}.json");
+                File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ namespace PRM.ViewModel.Configuration
         private readonly PrmContext _context;
         private readonly LanguageService _languageService;
         private readonly ConfigurationService _configurationService;
+        private readonly ProtocolConfigurationService _protocolConfigurationService;
         private readonly LauncherService _launcherService;
         private readonly DataService _dataService;
         private readonly ThemeService _themeService;
@@ -37,6 +38,7 @@ namespace PRM.ViewModel.Configuration
         {
             _context = context;
             _configurationService = context.ConfigurationService;
+            _protocolConfigurationService = context.ProtocolConfigurationService;
             _languageService = context.LanguageService;
             _launcherService = context.LauncherService;
             _dataService = context.DataService;
@@ -70,6 +72,7 @@ namespace PRM.ViewModel.Configuration
                         return;
                     }
                     _configurationService.Save();
+                    _protocolConfigurationService.Save();
                     if (Host != null)
                         Host.DispPage = null;
                 });
