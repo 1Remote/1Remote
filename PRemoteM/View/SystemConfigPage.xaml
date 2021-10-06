@@ -509,8 +509,8 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="Txt:协议">
-                <protocolConfig:ProtocolConfiger Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=ActualWidth}"></protocolConfig:ProtocolConfiger>
+            <TabItem Header="{DynamicResource server_protocol}">
+                <protocolConfig:ProtocolConfiger></protocolConfig:ProtocolConfiger>
             </TabItem>
         </TabControl>
 

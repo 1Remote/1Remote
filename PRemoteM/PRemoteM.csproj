@@ -211,6 +211,9 @@
     <Compile Include="View\ProtocolConfig\ProtocolConfiger.xaml.cs">
       <DependentUpon>ProtocolConfiger.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ProtocolConfig\ExternRunnerConfiger.xaml.cs">
+      <DependentUpon>ExternRunnerConfiger.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml.cs">
       <DependentUpon>PuttyRunnerConfiger.xaml</DependentUpon>
     </Compile>
@@ -385,6 +388,10 @@
     <Page Include="View\ProtocolConfig\ProtocolConfiger.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ProtocolConfig\ExternRunnerConfiger.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml">
       <SubType>Designer</SubType>

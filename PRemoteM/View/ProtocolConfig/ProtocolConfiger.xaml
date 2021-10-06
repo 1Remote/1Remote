@@ -10,6 +10,74 @@
              d:DataContext="{d:DesignInstance configuration:ProtocolConfigerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+
+        <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Grid>
+                                        <Border x:Name="GridContainer">
+                                        </Border>
+                                        <ContentPresenter x:Name="ContentPresenter"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                            <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
+                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style x:Key="ListBoxRunners" TargetType="{x:Type ListBox}">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Grid>
+                                        <Border x:Name="GridContainer">
+                                        </Border>
+                                        <ContentPresenter x:Name="ContentPresenter"/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -18,69 +86,108 @@
 
         <Grid >
             <Border BorderBrush="Black" BorderThickness="0 0 1 0" Width="150">
-                <ListBox ItemsSource="{Binding Protocols}"
-                         SelectedItem="{Binding SelectedProtocol}"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         >
-                </ListBox>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="10">
+                        <Button HorizontalAlignment="Right">TXT:Add protocol</Button>
+                    </Grid>
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
+                             SelectedItem="{Binding SelectedProtocol}"
+                             Style="{StaticResource SearchBoxSelectionList}">
+                    </ListBox>
+                </Grid>
             </Border>
         </Grid>
 
         <Grid Grid.Column="1">
             <Grid.Resources>
                 <DataTemplate DataType="{x:Type runner:Runner}">
-                    <Grid Background="{DynamicResource PrimaryMidBrush}">
-                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Grid Margin="5" Height="20">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}">(default)</TextBlock>
-                            </Grid>
-                        </StackPanel>
+                    <Grid Background="{DynamicResource PrimaryMidBrush}" HorizontalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid Background="{DynamicResource PrimaryMidBrush}">
+                            <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type default:SshDefaultRunner}">
-                    <local:PuttyRunnerConfiger></local:PuttyRunnerConfiger>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.ColumnSpan="2" Background="{DynamicResource PrimaryMidBrush}">
+                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
+                        </Grid>
+
+
+                        <Grid Grid.Column="0" Grid.Row="1" Margin="10">
+                            <Path Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " 
+                                  Fill="Black"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Grid>
+
+                        <local:PuttyRunnerConfiger Grid.Row="1" Grid.Column="1" Runner="{Binding}"></local:PuttyRunnerConfiger>
+                    </Grid>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type runner:ExternRunner}">
-                    <Grid Background="{DynamicResource PrimaryMidBrush}">
-                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Grid Margin="5" Height="20">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}">(default)</TextBlock>
-                            </Grid>
-                        </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.ColumnSpan="2" Background="{DynamicResource PrimaryMidBrush}">
+                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
+                        </Grid>
+
+
+                        <Grid Grid.Column="0" Grid.Row="1" Margin="10">
+                            <Path Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " 
+                                  Fill="Black"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Grid>
+
+                        <local:ExternRunnerConfiger Grid.Row="1" Grid.Column="1" Runner="{Binding}"></local:ExternRunnerConfiger>
                     </Grid>
                 </DataTemplate>
-
             </Grid.Resources>
-            <Border BorderBrush="Black" BorderThickness="0 0 1 0">
-                <StackPanel>
-                    <TextBlock>TXT:配置</TextBlock>
-                    <ListBox ItemsSource="{Binding Runners}" SelectedItem="{Binding SelectedRunner}">
-                        <ListBox.Resources>
-                            <Style TargetType="ListBox">
-                                <Setter Property="Background" Value="Transparent"></Setter>
-                                <Setter Property="BorderThickness" Value="0"></Setter>
-                            </Style>
-                        </ListBox.Resources>
-                    </ListBox>
 
-                    <!--<Grid Background="{DynamicResource PrimaryMidBrush}">
-                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center">KiTTY</TextBlock>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Grid Margin="5" Height="20">
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}">(default)</TextBlock>
-                            </Grid>
-                        </StackPanel>
+            <Border BorderBrush="Black" BorderThickness="0 0 1 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="10">
+                        <Button HorizontalAlignment="Right" Command="{Binding CmdAddProtocol}">TXT:Add runner</Button>
                     </Grid>
 
-                    <local:PuttyRunnerConfiger x:Name="PuttyRunnerConfiger"></local:PuttyRunnerConfiger>
-
-                    <Button Style="{StaticResource ButtonPrimaryStyle}">+</Button>-->
-                </StackPanel>
+                    <ListBox Grid.Row="1" 
+                             Style="{StaticResource ListBoxRunners}"
+                             ItemsSource="{Binding Runners}" 
+                             SelectedItem="{Binding SelectedRunner}">
+                    </ListBox>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

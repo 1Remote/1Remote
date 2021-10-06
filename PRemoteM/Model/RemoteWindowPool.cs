@@ -400,9 +400,7 @@ namespace PRM.Model
         /// <returns></returns>
         private TabWindowBase GetTabParent(string connectionId)
         {
-            var tabs = _tabWindows.Values
-                .Where(x => x.GetViewModel().Items
-                    .Any(y => y.Content.ConnectionId == connectionId)).ToArray();
+            var tabs = _tabWindows.Values.Where(x => x.GetViewModel()?.Items != null && x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId)).ToArray();
             Debug.Assert(tabs.Length <= 1);
 
             if (tabs.Length > 0)
@@ -638,7 +636,7 @@ namespace PRM.Model
             {
                 if (!_tabWindows.ContainsKey(token)) return;
                 var tab = _tabWindows[token];
-                var items = tab.GetViewModel().Items.ToArray();
+                var items = tab.GetViewModel()?.Items?.ToArray() ?? new TabItemViewModel[0];
                 SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
                 SynchronizationContext.Current.Post(pl =>
                 {
