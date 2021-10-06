@@ -33,21 +33,23 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="system:String">
                                     <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 5">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}"></Label>
+                                        <Grid>
+                                            <Label Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}" Margin="0 0 15 0"></Label>
+
                                             <Button Width="10" Height="10" Click="ButtonDel_OnClick" Tag="{Binding}"
                                                     Style="{StaticResource ButtonBarAccentStyle}"
+                                                    HorizontalAlignment="Right"
                                                     attachProperty:VisionElement.Opacity="0.5"
                                                     attachProperty:VisionElement.OpacityAccent="0.9"
                                                     Margin="0 0 5 0">
                                                 <Grid Height="10" Width="8">
                                                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                                  StrokeThickness="2" Stretch="Uniform" />
+                                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                          StrokeThickness="2" Stretch="Uniform" />
                                                 </Grid>
                                             </Button>
-                                        </StackPanel>
+                                        </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

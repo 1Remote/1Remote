@@ -19,9 +19,10 @@ namespace PRM.Core.Protocol.Runner
     [JsonKnownType(typeof(SshDefaultRunner), nameof(SshDefaultRunner))]
     public class Runner : NotifyPropertyChangedBase, ICloneable
     {
-        public Runner(string protocol)
+        public Runner(string runnerName, string protocol)
         {
-            Protocol = protocol;
+            Name = runnerName?.Trim();
+            Protocol = protocol.Trim();
         }
 
         //protected override bool SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = null)
@@ -44,6 +45,11 @@ namespace PRM.Core.Protocol.Runner
             get => _name;
             set
             {
+                if (string.IsNullOrEmpty(value))
+                {
+                    _name = "";
+                    return;
+                }
                 var str = value;
                 string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
                 str = invalid.Aggregate(str, (current, c) => current.Replace(c.ToString(), ""));
@@ -55,5 +61,7 @@ namespace PRM.Core.Protocol.Runner
         {
             return this.MemberwiseClone();
         }
+
+        public bool IsRemovable = false;
     }
 }

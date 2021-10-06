@@ -15,7 +15,7 @@ namespace PRM.Core.Protocol.Runner
 {
     public class ExternRunner : Runner
     {
-        public ExternRunner(string protocol) : base(protocol)
+        public ExternRunner(string runnerName, string protocol) : base(runnerName, protocol)
         {
         }
 

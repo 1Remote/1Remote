@@ -84,7 +84,7 @@ namespace PRM.Core.Service
 
             if (c == null)
             {
-                // if there is no config file for ssh, then init the ssh with the default runner.
+                // if there is no config file for rdp, then init rdp with the default runner.
                 c = new ProtocolConfig(protocolName);
                 c.Runners.Add(new RdpDefaultRunner());
             }
@@ -99,7 +99,7 @@ namespace PRM.Core.Service
 
             if (c == null)
             {
-                // if there is no config file for ssh, then init the ssh with the default runner.
+                // if there is no config file for ssh, then init ssh with the default runner.
                 c = new ProtocolConfig(protocolName);
                 c.Runners.Add(new SshDefaultRunner());
             }
@@ -109,6 +109,8 @@ namespace PRM.Core.Service
 
         public void Save()
         {
+            // TODO only effect in dev mode
+#if DEV
             foreach (var kv in ProtocolConfigs)
             {
                 var config = kv.Value;
@@ -116,5 +118,7 @@ namespace PRM.Core.Service
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
         }
+
+#endif
     }
 }
