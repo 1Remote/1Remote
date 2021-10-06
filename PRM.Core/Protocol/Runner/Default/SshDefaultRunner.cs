@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol.Runner.Default
     public class SshDefaultRunner : ExternRunner
     {
         public new static string Name = "Default";
-        public SshDefaultRunner() : base(ProtocolServerSSH.ProtocolName)
+        public SshDefaultRunner() : base(Name, ProtocolServerSSH.ProtocolName)
         {
             _exePath = PuttyConnectableExtension.GetKittyExeFullName();
             base.Name = Name;

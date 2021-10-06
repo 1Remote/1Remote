@@ -27,20 +27,22 @@ namespace PRM.Controls
         public string Response { get; private set; }
 
         public Results Result { get; private set; }
+        public Func<string, string> Validater { get; private set; } = null;
 
-        public InputWindow()
+        protected InputWindow()
         {
             InitializeComponent();
         }
 
-        public static string InputBox(string prompt, string title = "", string defaultResponse = "")
+        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string> validate = null)
         {
             var inputWindow = new InputWindow
             {
                 Title = title,
                 Prompt = prompt,
                 Response = defaultResponse,
-                Result = Results.Cancel
+                Result = Results.Cancel,
+                Validater = validate
             };
 
             inputWindow.ShowDialog();
@@ -62,10 +64,33 @@ namespace PRM.Controls
             {
                 okButton_Click(sender, null);
             }
+            else
+            {
+                var msg = Validater(textBox.Text);
+                if (string.IsNullOrWhiteSpace(msg) == false)
+                {
+                    alert.Visibility = Visibility.Visible;
+                    alert.Text = msg;
+                }
+                else
+                {
+                    alert.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
+            if (Validater != null)
+            {
+                var msg = Validater(textBox.Text);
+                if (string.IsNullOrWhiteSpace(msg) == false)
+                {
+                    alert.Visibility = Visibility.Visible;
+                    alert.Text = msg;
+                    return;
+                }
+            }
             Result = Results.OK;
             Response = textBox.Text;
             Close();

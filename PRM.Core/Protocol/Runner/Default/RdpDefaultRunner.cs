@@ -9,9 +9,8 @@ namespace PRM.Core.Protocol.Runner.Default
     public class RdpDefaultRunner : Runner
     {
         public new static string Name = "Default";
-        public RdpDefaultRunner() : base("RDP")
+        public RdpDefaultRunner() : base(Name, "RDP")
         {
-            base.Name = Name;
         }
     }
 }
