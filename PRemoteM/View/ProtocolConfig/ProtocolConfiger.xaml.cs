@@ -25,7 +25,7 @@ namespace PRM.View.ProtocolConfig
         public ProtocolConfiger()
         {
             InitializeComponent();
-            var vm = new ProtocolConfigerViewModel(App.Context.ProtocolConfigurationService);
+            var vm = new ProtocolConfigerViewModel(App.Context.ProtocolConfigurationService, App.Context.LanguageService);
             this.DataContext = vm;
         }
     }

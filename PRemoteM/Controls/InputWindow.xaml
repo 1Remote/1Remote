@@ -9,6 +9,10 @@
     <StackPanel>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" FontSize="14" MaxWidth="300"
                    Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{DynamicResource BackgroundTextBrush}"/>
+        <TextBlock x:Name="alert" HorizontalAlignment="Left" FontSize="12" MaxWidth="300"
+                   Visibility="Collapsed"
+                   Margin="5 0 5 0" TextWrapping="Wrap" VerticalAlignment="Top" 
+                   Foreground="Red"/>
         <TextBox x:Name="textBox" Height="30" Margin="5"
                  Text="" TextWrapping="Wrap" Padding="5"
                  VerticalAlignment="Center" HorizontalAlignment="Stretch" KeyDown="textBox_KeyDown"/>

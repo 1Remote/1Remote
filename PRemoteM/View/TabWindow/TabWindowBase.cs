@@ -47,7 +47,7 @@ namespace PRM.View.TabWindow
             this.Loaded += (sender, args) =>
             {
                 _timer4CheckForegroundWindow.Interval = 100;
-                _timer4CheckForegroundWindow.AutoReset = true;
+                _timer4CheckForegroundWindow.AutoReset = false;
                 _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
                 _timer4CheckForegroundWindow.Start();
 
@@ -81,30 +81,37 @@ namespace PRM.View.TabWindow
 
         private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
-                return;
-
-            var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
-            if (hWnd == IntPtr.Zero) return;
-
-            var nowActivatedWindowHandle = GetForegroundWindow();
-
-            // bring Tab window to top, when the host content is Integrate.
-            if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
+            try
             {
-                SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
-                SimpleLogHelper.Debug($"TabWindowBase: nowActivatedWindowHandle = ({nowActivatedWindowHandle}), hWnd = {hWnd}");
-                SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
-                BringWindowToTop(_myWindowHandle);
-            }
+                if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
+                    return;
 
-            // focus content when tab is focused and host is Integrate and left mouse is not pressed
-            if (nowActivatedWindowHandle == _myWindowHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+                var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+                if (hWnd == IntPtr.Zero) return;
+
+                var nowActivatedWindowHandle = GetForegroundWindow();
+
+                // bring Tab window to top, when the host content is Integrate.
+                if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
+                {
+                    SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
+                    SimpleLogHelper.Debug($"TabWindowBase: nowActivatedWindowHandle = ({nowActivatedWindowHandle}), hWnd = {hWnd}");
+                    SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
+                    BringWindowToTop(_myWindowHandle);
+                }
+
+                // focus content when tab is focused and host is Integrate and left mouse is not pressed
+                if (nowActivatedWindowHandle == _myWindowHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+                {
+                    Vm?.SelectedItem?.Content?.MakeItFocus();
+                }
+
+                _lastActivatedWindowHandle = nowActivatedWindowHandle;
+            }
+            finally
             {
-                Vm?.SelectedItem?.Content?.MakeItFocus();
+                _timer4CheckForegroundWindow.Start();
             }
-
-            _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
         private void InitSizeChanged()
