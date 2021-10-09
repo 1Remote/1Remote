@@ -184,7 +184,6 @@ namespace PRM.Core.Service
         public void DecryptToRamLevel(ProtocolServerBase server)
         {
             if (_rsa == null) return;
-            Debug.Assert(_rsa.DecodeOrNull(server.DisplayName) != null);
             server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
             for (var i = 0; i < server.Tags.Count; i++)
             {

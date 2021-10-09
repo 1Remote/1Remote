@@ -1,4 +1,5 @@
 ﻿using PRM.Core.Model;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol
 {
@@ -11,6 +12,7 @@ namespace PRM.Core.Protocol
         #region Conn
 
         private string _userName = "Administrator";
+        [OtherName(Name = "PRM_USER_NAME")]
         public string UserName
         {
             get => _userName;
@@ -18,6 +20,7 @@ namespace PRM.Core.Protocol
         }
 
         private string _password = "";
+        [OtherName(Name = "PRM_PASSWORD")]
         public string Password
         {
             get => _password;

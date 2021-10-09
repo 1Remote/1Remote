@@ -110,13 +110,18 @@ namespace PRM.View.ProtocolEditors
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
-                return Enum.GetValues(typeof(ProtocolServerSSH.ESshVersion)).Cast<int>().Max();
-            return ((int)((ProtocolServerSSH.ESshVersion)value) - 1).ToString();
+                return 2;
+            return ((int)value - 1).ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (ProtocolServerSSH.ESshVersion)(int.Parse(value.ToString()));
+            var i = int.Parse(value.ToString());
+            if (i == 0)
+                return 1;
+            else if(i == 2)
+                return null;
+            return 2;
         }
         #endregion
     }
