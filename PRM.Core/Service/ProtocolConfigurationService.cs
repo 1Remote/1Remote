@@ -6,7 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using ColorPickerWPF.Code;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.FileTransmit.FTP;
+using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.Runner;
@@ -70,7 +73,29 @@ namespace PRM.Core.Service
             var file = Path.Combine(ProtocolFolderName, protocolName, $"{protocolName}.json");
             if (File.Exists(file))
             {
-                var c = JsonConvert.DeserializeObject<ProtocolConfig>(File.ReadAllText(file, Encoding.UTF8));
+                var jsonStr = File.ReadAllText(file, Encoding.UTF8);
+                var jobj = JObject.Parse(jsonStr);
+                var runners = jobj[nameof(ProtocolConfig.Runners)] as JArray;
+                jobj.Remove(nameof(ProtocolConfig.Runners));
+                var serializer = new JsonSerializer();
+                var c = (ProtocolConfig)serializer.Deserialize(new JTokenReader(jobj), typeof(ProtocolConfig));
+
+                if (runners != null)
+                    foreach (var runner in runners)
+                    {
+                        try
+                        {
+                            var r = JsonConvert.DeserializeObject<Runner>(runner.ToString());
+                            if (r != null)
+                                c.Runners.Add(r);
+
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+                    }
+
                 if (c != null)
                     return c;
             }
@@ -80,14 +105,10 @@ namespace PRM.Core.Service
         private void LoadRdp()
         {
             var protocolName = ProtocolServerRDP.ProtocolName;
-            var c = LoadConfig(protocolName);
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig(protocolName);
 
-            if (c == null)
-            {
-                // if there is no config file for rdp, then init rdp with the default runner.
-                c = new ProtocolConfig(protocolName);
+            if (c.Runners.Count == 0)
                 c.Runners.Add(new RdpDefaultRunner());
-            }
 
             ProtocolConfigs.Add(protocolName, c);
         }
@@ -95,14 +116,21 @@ namespace PRM.Core.Service
         private void LoadSsh()
         {
             var protocolName = ProtocolServerSSH.ProtocolName;
-            var c = LoadConfig(protocolName);
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig(protocolName);
 
-            if (c == null)
-            {
-                // if there is no config file for ssh, then init ssh with the default runner.
-                c = new ProtocolConfig(protocolName);
-                c.Runners.Add(new SshDefaultRunner());
-            }
+            if (c.Runners.Count == 0)
+                c.Runners.Add(new KittyRunner());
+
+            ProtocolConfigs.Add(protocolName, c);
+        }
+
+        private void LoadSftp()
+        {
+            var protocolName = ProtocolServerSFTP.ProtocolName;
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig(protocolName);
+
+            if (c.Runners.Count == 0)
+                c.Runners.Add(new KittyRunner());
 
             ProtocolConfigs.Add(protocolName, c);
         }

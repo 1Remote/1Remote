@@ -13,35 +13,34 @@ using PRM.Core.Service;
 
 namespace PRM.Core.Protocol.Runner.Default
 {
-    public class SshDefaultRunner : ExternRunner
+    public class KittyRunner : ExternRunner
     {
         public new static string Name = "Default";
-        public SshDefaultRunner() : base(Name, ProtocolServerSSH.ProtocolName)
+        public KittyRunner() : base(Name, ProtocolServerSSH.ProtocolName)
         {
-            _exePath = PuttyConnectableExtension.GetKittyExeFullName();
             base.Name = Name;
         }
 
-        private static int _puttyFontSize = 14;
+        private int _puttyFontSize = 14;
         public int PuttyFontSize
         {
             get => _puttyFontSize;
             set => SetAndNotifyIfChanged(ref _puttyFontSize, value);
         }
 
-        public static int GetPuttyFontSize()
+        public int GetPuttyFontSize()
         {
-            return _puttyFontSize;
+            return _puttyFontSize > 0 ? _puttyFontSize : 14;
         }
 
-        private static string _puttyThemeName = "";
+        private string _puttyThemeName = "";
         public string PuttyThemeName
         {
             get => string.IsNullOrEmpty(_puttyThemeName) ? PuttyThemeNames.First() : _puttyThemeName;
             set => SetAndNotifyIfChanged(ref _puttyThemeName, value);
         }
 
-        public static string GetPuttyThemeName()
+        public string GetPuttyThemeName()
         {
             return string.IsNullOrEmpty(_puttyThemeName) ? PuttyThemes.GetThemes().Keys.First() : _puttyThemeName;
         }

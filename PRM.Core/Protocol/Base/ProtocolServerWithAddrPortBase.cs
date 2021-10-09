@@ -1,5 +1,6 @@
 ﻿using System;
 using PRM.Core.Model;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol
 {
@@ -13,6 +14,7 @@ namespace PRM.Core.Protocol
 
         private string _address = "";
 
+        [OtherName(Name = "PRM_ADDRESS")]
         public string Address
         {
             get => _address;
@@ -28,6 +30,7 @@ namespace PRM.Core.Protocol
 
         private string _port = "3389";
 
+        [OtherName(Name = "PRM_PORT")]
         public string Port
         {
             get => _port;

@@ -8,36 +8,40 @@ using Newtonsoft.Json;
 using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.Runner.Default;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty.SSH
 {
     public class ProtocolServerSSH : ProtocolServerWithAddrPortUserPwdBase, IKittyConnectable
     {
-        public enum ESshVersion
-        {
-            V1 = 1,
-            V2 = 2,
-        }
+        //public enum ESshVersion
+        //{
+        //    V1 = 1,
+        //    V2 = 2,
+        //}
 
         public static string ProtocolName = "SSH";
         public ProtocolServerSSH() : base(ProtocolServerSSH.ProtocolName, $"Putty.{ProtocolServerSSH.ProtocolName}.V1", ProtocolServerSSH.ProtocolName)
         {
         }
 
+        [OtherNameAttribute(Name = "PRM_SESSION_NAME")]
         public string SessionName => this.GetSessionName();
 
         private string _privateKey = "";
 
+        [OtherNameAttribute(Name = "PRM_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
             set => SetAndNotifyIfChanged(nameof(PrivateKey), ref _privateKey, value);
         }
 
-        private ESshVersion? _sshVersion = ESshVersion.V2;
+        private int? _sshVersion = 2;
 
-        public ESshVersion? SshVersion
+        [OtherNameAttribute(Name = "PRM_SSH_VERSION")]
+        public int? SshVersion
         {
             get => _sshVersion;
             set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
@@ -45,6 +49,7 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         private string _startupAutoCommand = "";
 
+        [OtherNameAttribute(Name = "PRM_STARTUP_AUTO_COMMAND")]
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
@@ -93,25 +98,29 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         public string GetPuttyConnString(PrmContext context)
         {
+            var serverBase = this.Clone() as ProtocolServerSSH;
+            serverBase.ConnectPreprocess(context);
+
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
             //var arg = $"-ssh {Address} -P {Port} -l {UserName} -pw {Password} -{(int)SshVersion}";
-            var template = $@" -load ""%SessionName%"" %Address% -P %Port% -l %UserName% -pw %Password% -%SshVersion% -cmd ""%StartupAutoCommand%""";
-            var serverBase = this.Clone() as ProtocolServerSSH;
-            serverBase.ConnectPreprocess(context);
-            var properties = this.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            foreach (var property in properties)
-            {
-                if (property.CanRead && property.GetMethod.IsPublic)
-                {
-                    var val = property.GetValue(serverBase);
-                    var key = property.Name;
-                    template = template.Replace($"%{key}%", val?.ToString() ?? "");
-                }
-            }
+            //var template = $@" -load ""%SessionName%"" %Address% -P %Port% -l %UserName% -pw %Password% -%SshVersion% -cmd ""%StartupAutoCommand%""";
+            //var properties = this.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            //foreach (var property in properties)
+            //{
+            //    if (property.CanRead && property.GetMethod.IsPublic)
+            //    {
+            //        var val = property.GetValue(serverBase);
+            //        var key = property.Name;
+            //        template = template.Replace($"%{key}%", val?.ToString() ?? "");
+            //    }
+            //}
 
-            var arg = $@" -load ""{SessionName}"" {Address} -P {Port} -l {UserName} -pw {context.DataService.DecryptOrReturnOriginalString(Password)} -{(int)SshVersion} -cmd ""{serverBase.StartupAutoCommand}""";
-            return arg;
+            //var arg = $@" -load ""{serverBase.SessionName}"" {serverBase.Address} -P {serverBase.Port} -l {serverBase.UserName} -pw {serverBase.Password} -{(int)serverBase.SshVersion} -cmd ""{serverBase.StartupAutoCommand}""";
+
+            var template2 = $@" -load ""%PRM_SESSION_NAME%"" %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+            var arg2 = OtherNameAttributeExtensions.Replace(serverBase, template2);
+            return " " + arg2;
         }
 
         [JsonIgnore]

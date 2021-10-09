@@ -214,8 +214,8 @@
     <Compile Include="View\ProtocolConfig\ExternRunnerConfiger.xaml.cs">
       <DependentUpon>ExternRunnerConfiger.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml.cs">
-      <DependentUpon>PuttyRunnerConfiger.xaml</DependentUpon>
+    <Compile Include="View\ProtocolConfig\KittyRunnerConfiger.xaml.cs">
+      <DependentUpon>KittyRunnerConfiger.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ProtocolEditors\FTPForm.xaml.cs">
       <DependentUpon>FTPForm.xaml</DependentUpon>
@@ -393,7 +393,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ProtocolConfig\PuttyRunnerConfiger.xaml">
+    <Page Include="View\ProtocolConfig\KittyRunnerConfiger.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
