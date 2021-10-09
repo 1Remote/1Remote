@@ -9,13 +9,8 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
 {
     public class ProtocolServerSFTP : ProtocolServerWithAddrPortUserPwdBase, IProtocolFileTransmittable
     {
-        public enum ESshVersion
-        {
-            V1 = 1,
-            V2 = 2,
-        }
-
-        public ProtocolServerSFTP() : base("SFTP", "SFTP.V1", "SFTP")
+        public static string ProtocolName = "SFTP";
+        public ProtocolServerSFTP() : base(ProtocolName, $"{ProtocolName}.V1", ProtocolName)
         {
         }
 

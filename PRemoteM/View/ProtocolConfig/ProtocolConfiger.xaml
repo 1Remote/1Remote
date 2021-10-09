@@ -25,8 +25,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Grid>
-                                        <Border x:Name="GridContainer">
-                                        </Border>
+                                        <Border x:Name="GridContainer"></Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
@@ -92,9 +91,9 @@
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <Grid Margin="10">
+                    <!--<Grid Margin="10">
                         <Button HorizontalAlignment="Right">TXT:Add protocol</Button>
-                    </Grid>
+                    </Grid>-->
 
                     <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
                              SelectedItem="{Binding SelectedProtocol}"
@@ -118,55 +117,33 @@
                     </Grid>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type default:SshDefaultRunner}">
+                <DataTemplate DataType="{x:Type default:KittyRunner}">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.ColumnSpan="2" Background="{DynamicResource PrimaryMidBrush}">
+                        <Grid Background="{DynamicResource PrimaryMidBrush}">
                             <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
                         </Grid>
 
-
-                        <Grid Grid.Column="0" Grid.Row="1" Margin="10">
-                            <Path Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " 
-                                  Fill="Black"
-                                  VerticalAlignment="Center" HorizontalAlignment="Center" />
-                        </Grid>
-
-                        <local:PuttyRunnerConfiger Grid.Row="1" Grid.Column="1" Runner="{Binding}"></local:PuttyRunnerConfiger>
+                        <local:KittyRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:KittyRunnerConfiger>
                     </Grid>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type runner:ExternRunner}">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.ColumnSpan="2" Background="{DynamicResource PrimaryMidBrush}">
+                        <Grid Background="{DynamicResource PrimaryMidBrush}">
                             <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
                         </Grid>
 
-
-                        <Grid Grid.Column="0" Grid.Row="1" Margin="10">
-                            <Path Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " 
-                                  Fill="Black"
-                                  VerticalAlignment="Center" HorizontalAlignment="Center" />
-                        </Grid>
-
-                        <local:ExternRunnerConfiger Grid.Row="1" Grid.Column="1" Runner="{Binding}"></local:ExternRunnerConfiger>
+                        <local:ExternRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:ExternRunnerConfiger>
                     </Grid>
                 </DataTemplate>
             </Grid.Resources>
@@ -179,13 +156,20 @@
                     </Grid.RowDefinitions>
 
                     <Grid Margin="10">
-                        <Button HorizontalAlignment="Right" Command="{Binding CmdAddProtocol}">TXT:Add runner</Button>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox ItemsSource="{Binding RunnerNames}"
+                                  SelectedItem="{Binding SelectedRunnerName}"></ComboBox>
+
+                        <Button Grid.Column="1" HorizontalAlignment="Right" Command="{Binding CmdAddProtocol}">TXT:Add runner</Button>
                     </Grid>
 
                     <ListBox Grid.Row="1" 
                              Style="{StaticResource ListBoxRunners}"
-                             ItemsSource="{Binding Runners}" 
-                             SelectedItem="{Binding SelectedRunner}">
+                             ItemsSource="{Binding Runners}">
                     </ListBox>
                 </Grid>
             </Border>

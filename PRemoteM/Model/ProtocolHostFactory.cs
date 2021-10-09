@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Windows;
 using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -7,6 +9,7 @@ using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.Runner.Default;
 using PRM.Core.Protocol.VNC;
 using PRM.View.ProtocolHosts;
 using VncHost = PRM.View.ProtocolHosts.VncHost;
@@ -26,12 +29,35 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
+                        var p = context.ProtocolConfigurationService.ProtocolConfigs[ProtocolServerSSH.ProtocolName];
+                        var r = p.GetRunner();
+                        string exePath = "";
+                        string args = "";
                         {
-                            // TODO 读取 Kitty 主题
-                            RunBeforeConnect = () => ssh.SetKittySessionConfig(14, "", ssh.PrivateKey),
-                            RunAfterConnected = () => ssh.DelKittySessionConfig()
-                        };
+                            if (r is KittyRunner sdr)
+                            {
+                                ssh.InstallKitty();
+                                exePath = ssh.GetExeFullPath();
+                                args = ssh.GetExeArguments(context);
+                            }
+
+                            if (File.Exists(exePath) == false)
+                            {
+                                exePath = ssh.GetExeFullPath();
+                                args = ssh.GetExeArguments(context);
+                            }
+                        }
+
+                        var host = new IntegrateHost(context, ssh, exePath, args);
+
+                        {
+                            if (r is KittyRunner sdr)
+                            {
+                                // 读取 Kitty 主题
+                                host.RunBeforeConnect = () => ssh.SetKittySessionConfig(sdr.GetPuttyFontSize(), sdr.GetPuttyThemeName(), ssh.PrivateKey);
+                                host.RunAfterConnected = () => ssh.DelKittySessionConfig();
+                            }
+                        }
                         return host;
                     }
                 case ProtocolServerTelnet telnet:
