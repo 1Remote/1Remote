@@ -43,26 +43,38 @@ namespace PRM.ViewModel.Configuration
                 SetAndNotifyIfChanged(ref _selectedProtocol, value);
                 var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
                 Runners = new ObservableCollection<Runner>(c.Runners);
-                _selectedRunner = c.GetRunner();
-                _usingRunnerName = c.SelectedRunnerName;
                 RaisePropertyChanged(nameof(Runners));
+                RaisePropertyChanged(nameof(RunnerNames));
                 RaisePropertyChanged(nameof(SelectedRunner));
-                RaisePropertyChanged(nameof(UsingRunnerName));
+                RaisePropertyChanged(nameof(SelectedRunnerName));
             }
         }
 
-        private Runner _selectedRunner;
+
         public Runner SelectedRunner
         {
-            get => _selectedRunner;
-            set => SetAndNotifyIfChanged(ref _selectedRunner, value);
+            get
+            {
+                var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                return c.GetRunner();
+            }
         }
 
-        private string _usingRunnerName;
-        public string UsingRunnerName
+        public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
+        public string SelectedRunnerName
         {
-            get => _usingRunnerName;
-            set => SetAndNotifyIfChanged(ref _usingRunnerName, value);
+            get => SelectedRunner.Name;
+            set
+            {
+                var newName = value.Trim();
+                if (newName != SelectedRunnerName && Runners.Any(x => x.Name == newName))
+                {
+                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                    c.SelectedRunnerName = newName;
+                }
+                RaisePropertyChanged(nameof(SelectedRunner));
+                RaisePropertyChanged(nameof(SelectedRunnerName));
+            }
         }
 
         public ObservableCollection<Runner> Runners { get; set; }
@@ -77,14 +89,14 @@ namespace PRM.ViewModel.Configuration
                 {
                     // TODO 弹窗输入新的协议名称，并校验
                     var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    var name = InputWindow.InputBox("New protocol name:", "New protocol", validate:new Func<string, string>((str) =>
-                    {
-                        if (string.IsNullOrWhiteSpace(str))
-                            return _languageService.Translate("Can not be empty!");
-                        if(c.Runners.Any(x => x.Name == str))
-                            return _languageService.Translate("{0} is existed!", str);
-                        return "";
-                    })).Trim();
+                    var name = InputWindow.InputBox("New protocol name:", "New protocol", validate: new Func<string, string>((str) =>
+                     {
+                         if (string.IsNullOrWhiteSpace(str))
+                             return _languageService.Translate("Can not be empty!");
+                         if (c.Runners.Any(x => x.Name == str))
+                             return _languageService.Translate("{0} is existed!", str);
+                         return "";
+                     })).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
                         RaisePropertyChanged(nameof(Protocols));

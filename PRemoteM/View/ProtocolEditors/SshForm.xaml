@@ -6,6 +6,7 @@
                         xmlns:ssh2="clr-namespace:PRM.Core.Protocol.Putty.SSH;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                        xmlns:system="clr-namespace:System;assembly=mscorlib"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance ssh2:ProtocolServerSSH}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -115,8 +116,16 @@
                             <protocolEditors:ConverterESshVersion x:Key="ConverterESshVersion" />
                         </Grid.Resources>
                         <ComboBox SelectedIndex="{Binding SshVersion, Converter={StaticResource ConverterESshVersion}}">
-                            <ComboBoxItem Content="V1" />
-                            <ComboBoxItem Content="V2" />
+                            <ComboBoxItem Content="V1" >
+                                <ComboBoxItem.Tag>
+                                    <system:Int32>1</system:Int32>
+                                </ComboBoxItem.Tag>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="V2" >
+                                <ComboBoxItem.Tag>
+                                    <system:Int32>1</system:Int32>
+                                </ComboBoxItem.Tag>
+                            </ComboBoxItem>
                             <ComboBoxItem Visibility="{Binding SshVersion, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
                     </Grid>

@@ -330,7 +330,7 @@ namespace PRM.Core.Utils.mRemoteNG
                             UserName = item.Username,
                             Password = item.Password,
                             Port = item.Port,
-                            SshVersion = ProtocolServerSSH.ESshVersion.V1
+                            SshVersion = 1
                         };
                         break;
 
@@ -343,7 +343,7 @@ namespace PRM.Core.Utils.mRemoteNG
                             UserName = item.Username,
                             Password = item.Password,
                             Port = item.Port,
-                            SshVersion = ProtocolServerSSH.ESshVersion.V2
+                            SshVersion = 2
                         };
                         break;
 

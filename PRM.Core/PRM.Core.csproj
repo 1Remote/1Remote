@@ -130,7 +130,7 @@
     <Compile Include="I\ILanguageService.cs" />
     <Compile Include="Protocol\Base\ExtendOption.cs" />
     <Compile Include="Protocol\ProtocolConfig.cs" />
-    <Compile Include="Protocol\Runner\Default\SshDefaultRunner.cs" />
+    <Compile Include="Protocol\Runner\Default\KittyRunner.cs" />
     <Compile Include="Protocol\Runner\Default\RdpDefaultRunner.cs" />
     <Compile Include="Protocol\Runner\Runner.cs" />
     <Compile Include="Protocol\Runner\ExternRunner.cs" />
@@ -158,6 +158,7 @@
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
     <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
     <Compile Include="Utils\MouseMiddleClick.cs" />
+    <Compile Include="Utils\OtherNameAttribute.cs" />
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />

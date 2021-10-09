@@ -4,26 +4,26 @@ using PRM.Core.Protocol.Runner.Default;
 
 namespace PRM.View.ProtocolConfig
 {
-    public partial class PuttyRunnerConfiger : UserControl
+    public partial class KittyRunnerConfiger : UserControl
     {
         public static readonly DependencyProperty RunnerProperty =
-            DependencyProperty.Register("Runner", typeof(SshDefaultRunner), typeof(PuttyRunnerConfiger),
+            DependencyProperty.Register("Runner", typeof(KittyRunner), typeof(KittyRunnerConfiger),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (SshDefaultRunner)e.NewValue;
-            ((PuttyRunnerConfiger)d).DataContext = value;
+            var value = (KittyRunner)e.NewValue;
+            ((KittyRunnerConfiger)d).DataContext = value;
         }
 
-        public SshDefaultRunner Runner
+        public KittyRunner Runner
         {
-            get => (SshDefaultRunner)GetValue(RunnerProperty);
+            get => (KittyRunner)GetValue(RunnerProperty);
             set => SetValue(RunnerProperty, value);
         }
 
 
-        public PuttyRunnerConfiger()
+        public KittyRunnerConfiger()
         {
             InitializeComponent();
         }

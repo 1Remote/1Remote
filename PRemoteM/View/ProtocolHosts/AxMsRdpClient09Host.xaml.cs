@@ -107,7 +107,7 @@ namespace PRM.View.ProtocolHosts
 
         private void OnScreenResolutionChanged()
         {
-            if (_rdp.FullScreen == true)
+            if (_rdp?.FullScreen == true)
             {
                 _rdp.FullScreen = false;
             }
@@ -1002,6 +1002,13 @@ namespace PRM.View.ProtocolHosts
         {
             if (_rdp != null)
             {
+                try
+                {
+                    GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
+                }
+                catch
+                {
+                }
                 var tmp = _rdp;
                 var t = new Task(() =>
                 {

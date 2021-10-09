@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol.Runner
     [JsonConverter(typeof(JsonKnownTypesConverter<Runner>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
     [JsonKnownType(typeof(Runner), nameof(Runner))]
     [JsonKnownType(typeof(ExternRunner), nameof(ExternRunner))]
-    [JsonKnownType(typeof(SshDefaultRunner), nameof(SshDefaultRunner))]
+    [JsonKnownType(typeof(KittyRunner), nameof(KittyRunner))]
     public class Runner : NotifyPropertyChangedBase, ICloneable
     {
         public Runner(string runnerName, string protocol)
@@ -25,19 +25,7 @@ namespace PRM.Core.Protocol.Runner
             Protocol = protocol.Trim();
         }
 
-        //protected override bool SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = null)
-        //{
-        //    if (SetAndNotifyIfChanged(propertyName, ref oldValue, newValue))
-        //    {
-        //        Save();
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
         public string Protocol { get; }
-
-        //public string SavePath;
 
         protected string _name = "";
         public string Name
