@@ -14,15 +14,6 @@
 
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:KiTTY Path"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding ExePath}" VerticalContentAlignment="Center"></TextBox>
-                </Grid>
-            </StackPanel>
-        </Grid>
-
-        <Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Text="{Binding PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>

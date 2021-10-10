@@ -9,9 +9,11 @@ using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.Runner;
 using PRM.Core.Protocol.Runner.Default;
 using PRM.Core.Protocol.VNC;
 using PRM.View.ProtocolHosts;
+using Shawn.Utils;
 using VncHost = PRM.View.ProtocolHosts.VncHost;
 
 namespace PRM.Model
@@ -53,7 +55,7 @@ namespace PRM.Model
                         {
                             if (r is KittyRunner sdr)
                             {
-                                // 读取 Kitty 主题
+                                // load theme for Kitty
                                 host.RunBeforeConnect = () => ssh.SetKittySessionConfig(sdr.GetPuttyFontSize(), sdr.GetPuttyThemeName(), ssh.PrivateKey);
                                 host.RunAfterConnected = () => ssh.DelKittySessionConfig();
                             }
@@ -76,10 +78,37 @@ namespace PRM.Model
                     }
                 case ProtocolServerSFTP sftp:
                     {
-                        var host = new FileTransmitHost(context, sftp);
-                        return host;
-                        //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DbOperator.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
-                        //return host2;
+                        var p = context.ProtocolConfigurationService.ProtocolConfigs[ProtocolServerSFTP.ProtocolName];
+                        var r = p.GetRunner();
+                        string exePath = "";
+                        string args = "";
+                        {
+                            if (r is ExternalRunner er)
+                            {
+                                exePath = er.ExePath;
+                                args = er.Arguments;
+                                if (File.Exists(exePath))
+                                {
+                                    // using external runner.
+                                    //var template = $@"sftp://%PRM_USER_NAME:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
+                                    //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
+                                    var tmpSftp = (ProtocolServerSFTP)sftp.Clone();
+                                    tmpSftp.ConnectPreprocess(context);
+                                    var arg2 = OtherNameAttributeExtensions.Replace(tmpSftp, args);
+                                    var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", arg2);
+                                    return host2;
+                                }
+                            }
+
+                            var host = new FileTransmitHost(context, sftp);
+                            return host;
+
+                            //if (r is InternalDefaultRunner)
+                            //{
+                            //    var host = new FileTransmitHost(context, sftp);
+                            //    return host;
+                            //}
+                        }
                     }
                 case ProtocolServerFTP ftp:
                     {

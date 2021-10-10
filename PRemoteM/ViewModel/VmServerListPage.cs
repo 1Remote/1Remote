@@ -313,14 +313,14 @@ namespace PRM.ViewModel
                         if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
                             foreach (var vs in Context.AppData.VmItemList)
                             {
-                                var serverBase = (ProtocolServerBase) vs.Server.Clone();
+                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                 Context.DataService.DecryptToConnectLevel(serverBase);
                                 list.Add(serverBase);
                             }
                         else
                             foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
                             {
-                                var serverBase = (ProtocolServerBase) vs.Server.Clone();
+                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
                                 Context.DataService.DecryptToConnectLevel(serverBase);
                                 list.Add(serverBase);
                             }

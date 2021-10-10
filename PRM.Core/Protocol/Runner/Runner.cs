@@ -15,17 +15,16 @@ namespace PRM.Core.Protocol.Runner
 {
     [JsonConverter(typeof(JsonKnownTypesConverter<Runner>))] // json serialize/deserialize derived types https://stackoverflow.com/a/60296886/8629624
     [JsonKnownType(typeof(Runner), nameof(Runner))]
-    [JsonKnownType(typeof(ExternRunner), nameof(ExternRunner))]
+    [JsonKnownType(typeof(ExternalRunner), nameof(ExternalRunner))]
     [JsonKnownType(typeof(KittyRunner), nameof(KittyRunner))]
+    [JsonKnownType(typeof(InternalDefaultRunner), nameof(InternalDefaultRunner))]
+    [JsonKnownType(typeof(ExternalDefaultRunner), nameof(ExternalDefaultRunner))]
     public class Runner : NotifyPropertyChangedBase, ICloneable
     {
-        public Runner(string runnerName, string protocol)
+        public Runner(string runnerName)
         {
             Name = runnerName?.Trim();
-            Protocol = protocol.Trim();
         }
-
-        public string Protocol { get; }
 
         protected string _name = "";
         public string Name
@@ -50,6 +49,7 @@ namespace PRM.Core.Protocol.Runner
             return this.MemberwiseClone();
         }
 
-        public bool IsRemovable = false;
+        //[JsonIgnore]
+        //public bool IsRemovable = true;
     }
 }

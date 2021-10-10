@@ -51,6 +51,7 @@ namespace PRM.Core.Service
             var di = new DirectoryInfo(ProtocolFolderName);
             LoadRdp();
             LoadSsh();
+            LoadSftp();
             foreach (var directoryInfo in di.GetDirectories())
             {
                 var protocolName = directoryInfo.Name;
@@ -61,6 +62,19 @@ namespace PRM.Core.Service
                 if (c != null)
                 {
                     ProtocolConfigs.Add(protocolName, c);
+                }
+            }
+
+            // make internal un-deletable
+            foreach (var kv in ProtocolConfigs)
+            {
+                var c = kv.Value;
+                foreach (var runner in c.Runners)
+                {
+                    if (runner is InternalDefaultRunner idr)
+                    {
+                        runner.Name = new InternalDefaultRunner().Name;
+                    }
                 }
             }
         }
@@ -105,10 +119,12 @@ namespace PRM.Core.Service
         private void LoadRdp()
         {
             var protocolName = ProtocolServerRDP.ProtocolName;
-            var c = LoadConfig(protocolName) ?? new ProtocolConfig(protocolName);
-
-            if (c.Runners.Count == 0)
-                c.Runners.Add(new RdpDefaultRunner());
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
+            {
+                c.Runners.RemoveAll(x => x is InternalDefaultRunner);
+                c.Runners.Insert(0, new InternalDefaultRunner());
+            }
 
             ProtocolConfigs.Add(protocolName, c);
         }
@@ -116,22 +132,25 @@ namespace PRM.Core.Service
         private void LoadSsh()
         {
             var protocolName = ProtocolServerSSH.ProtocolName;
-            var c = LoadConfig(protocolName) ?? new ProtocolConfig(protocolName);
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig();
 
-            if (c.Runners.Count == 0)
-                c.Runners.Add(new KittyRunner());
-
+            if (c.Runners.Count == 0 || c.Runners[0] is KittyRunner == false)
+            {
+                c.Runners.RemoveAll(x => x is KittyRunner);
+                c.Runners.Insert(0, new KittyRunner());
+            }
             ProtocolConfigs.Add(protocolName, c);
         }
 
         private void LoadSftp()
         {
             var protocolName = ProtocolServerSFTP.ProtocolName;
-            var c = LoadConfig(protocolName) ?? new ProtocolConfig(protocolName);
-
-            if (c.Runners.Count == 0)
-                c.Runners.Add(new KittyRunner());
-
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
+            {
+                c.Runners.RemoveAll(x => x is InternalDefaultRunner);
+                c.Runners.Insert(0, new InternalDefaultRunner());
+            }
             ProtocolConfigs.Add(protocolName, c);
         }
 
@@ -141,8 +160,9 @@ namespace PRM.Core.Service
 #if DEV
             foreach (var kv in ProtocolConfigs)
             {
+                var protocolName = kv.Key;
                 var config = kv.Value;
-                var file = Path.Combine(ProtocolFolderName, config.ProtocolName, $"{config.ProtocolName}.json");
+                var file = Path.Combine(ProtocolFolderName, protocolName, $"{protocolName}.json");
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
         }

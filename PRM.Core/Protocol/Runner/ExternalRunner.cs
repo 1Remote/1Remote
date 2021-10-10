@@ -13,9 +13,9 @@ using PRM.Core.Service;
 
 namespace PRM.Core.Protocol.Runner
 {
-    public class ExternRunner : Runner
+    public class ExternalRunner : Runner
     {
-        public ExternRunner(string runnerName, string protocol) : base(runnerName, protocol)
+        public ExternalRunner(string runnerName) : base(runnerName)
         {
         }
 
