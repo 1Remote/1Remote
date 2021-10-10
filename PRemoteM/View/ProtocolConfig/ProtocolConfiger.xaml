@@ -105,7 +105,7 @@
 
         <Grid Grid.Column="1">
             <Grid.Resources>
-                <DataTemplate DataType="{x:Type runner:Runner}">
+                <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
                     <Grid Background="{DynamicResource PrimaryMidBrush}" HorizontalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
@@ -132,7 +132,7 @@
                     </Grid>
                 </DataTemplate>
 
-                <DataTemplate DataType="{x:Type runner:ExternRunner}">
+                <DataTemplate DataType="{x:Type runner:ExternalRunner}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
@@ -141,9 +141,12 @@
 
                         <Grid Background="{DynamicResource PrimaryMidBrush}">
                             <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
+                            <Button HorizontalAlignment="Right" Command="{Binding DataContext.CmdDelRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}">
+                                TXT:Del
+                            </Button>
                         </Grid>
 
-                        <local:ExternRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:ExternRunnerConfiger>
+                        <local:ExternalRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:ExternalRunnerConfiger>
                     </Grid>
                 </DataTemplate>
             </Grid.Resources>
@@ -151,6 +154,7 @@
             <Border BorderBrush="Black" BorderThickness="0 0 1 0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
@@ -162,15 +166,17 @@
                         </Grid.ColumnDefinitions>
 
                         <ComboBox ItemsSource="{Binding RunnerNames}"
-                                  SelectedItem="{Binding SelectedRunnerName}"></ComboBox>
+                                  SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
 
-                        <Button Grid.Column="1" HorizontalAlignment="Right" Command="{Binding CmdAddProtocol}">TXT:Add runner</Button>
+                        <Button Grid.Column="1" HorizontalAlignment="Right" Command="{Binding CmdAddRunner}">TXT:Add runner</Button>
                     </Grid>
-
-                    <ListBox Grid.Row="1" 
+                    <ListBox Grid.Row="2" 
                              Style="{StaticResource ListBoxRunners}"
                              ItemsSource="{Binding Runners}">
                     </ListBox>
+                    <Grid  Grid.Row="1" >
+                        <TextBlock Foreground="Blue" Text="{Binding SelectedRunnerName}"></TextBlock>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

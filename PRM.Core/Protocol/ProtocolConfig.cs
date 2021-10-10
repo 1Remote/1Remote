@@ -10,8 +10,6 @@ namespace PRM.Core.Protocol
 {
     public class ProtocolConfig
     {
-        public string ProtocolName { get; }
-
         public string SelectedRunnerName { get; set; }
 
         public List<Runner.Runner> Runners;
@@ -25,9 +23,8 @@ namespace PRM.Core.Protocol
             return Runners.FirstOrDefault();
         }
 
-        public ProtocolConfig(string protocolName)
+        public ProtocolConfig()
         {
-            ProtocolName = protocolName;
             Runners = new List<Runner.Runner>();
         }
     }

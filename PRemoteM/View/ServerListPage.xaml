@@ -25,7 +25,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
                             <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
-                                <Grid.Style>
+                                <!--<Grid.Style>
                                     <Style TargetType="Grid">
                                         <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList, UpdateSourceTrigger=PropertyChanged}"></Setter>
                                         <Style.Triggers>
@@ -34,7 +34,7 @@
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </Grid.Style>
+                                </Grid.Style>-->
 
                                 <Border x:Name="GridContainer"></Border>
                                 <ContentPresenter
