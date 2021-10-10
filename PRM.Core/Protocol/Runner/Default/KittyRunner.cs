@@ -13,10 +13,10 @@ using PRM.Core.Service;
 
 namespace PRM.Core.Protocol.Runner.Default
 {
-    public class KittyRunner : ExternRunner
+    public class KittyRunner : InternalDefaultRunner
     {
-        public new static string Name = "Default";
-        public KittyRunner() : base(Name, ProtocolServerSSH.ProtocolName)
+        public new static string Name = "Internal KiTTY";
+        public KittyRunner() : base()
         {
             base.Name = Name;
         }

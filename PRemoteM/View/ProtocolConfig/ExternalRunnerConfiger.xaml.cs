@@ -19,25 +19,25 @@ using PRM.Core.Protocol.Runner.Default;
 
 namespace PRM.View.ProtocolConfig
 {
-    public partial class ExternRunnerConfiger : UserControl
+    public partial class ExternalRunnerConfiger : UserControl
     {
         public static readonly DependencyProperty RunnerProperty =
-            DependencyProperty.Register("Runner", typeof(ExternRunner), typeof(ExternRunnerConfiger),
+            DependencyProperty.Register("Runner", typeof(ExternalRunner), typeof(ExternalRunnerConfiger),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (ExternRunner)e.NewValue;
-            ((ExternRunnerConfiger)d).DataContext = value;
+            var value = (ExternalRunner)e.NewValue;
+            ((ExternalRunnerConfiger)d).DataContext = value;
         }
 
-        public ExternRunner Runner
+        public ExternalRunner Runner
         {
-            get => (ExternRunner)GetValue(RunnerProperty);
+            get => (ExternalRunner)GetValue(RunnerProperty);
             set => SetValue(RunnerProperty, value);
         }
 
-        public ExternRunnerConfiger()
+        public ExternalRunnerConfiger()
         {
             InitializeComponent();
         }
