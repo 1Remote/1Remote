@@ -211,8 +211,8 @@
     <Compile Include="View\ProtocolConfig\ProtocolConfiger.xaml.cs">
       <DependentUpon>ProtocolConfiger.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolConfig\ExternRunnerConfiger.xaml.cs">
-      <DependentUpon>ExternRunnerConfiger.xaml</DependentUpon>
+    <Compile Include="View\ProtocolConfig\ExternalRunnerConfiger.xaml.cs">
+      <DependentUpon>ExternalRunnerConfiger.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ProtocolConfig\KittyRunnerConfiger.xaml.cs">
       <DependentUpon>KittyRunnerConfiger.xaml</DependentUpon>
@@ -389,7 +389,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ProtocolConfig\ExternRunnerConfiger.xaml">
+    <Page Include="View\ProtocolConfig\ExternalRunnerConfiger.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

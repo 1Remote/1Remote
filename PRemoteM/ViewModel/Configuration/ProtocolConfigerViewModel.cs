@@ -28,10 +28,7 @@ namespace PRM.ViewModel.Configuration
             SelectedProtocol = ProtocolServerRDP.ProtocolName;
         }
 
-        public List<string> Protocols
-        {
-            get => _protocolConfigurationService.ProtocolConfigs.Keys.ToList();
-        }
+        public List<string> Protocols => _protocolConfigurationService.ProtocolConfigs.Keys.ToList();
 
 
         private string _selectedProtocol = "";
@@ -45,49 +42,36 @@ namespace PRM.ViewModel.Configuration
                 Runners = new ObservableCollection<Runner>(c.Runners);
                 RaisePropertyChanged(nameof(Runners));
                 RaisePropertyChanged(nameof(RunnerNames));
-                RaisePropertyChanged(nameof(SelectedRunner));
-                RaisePropertyChanged(nameof(SelectedRunnerName));
+                SelectedRunnerName = c.GetRunner().Name;
             }
         }
 
 
-        public Runner SelectedRunner
-        {
-            get
-            {
-                var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                return c.GetRunner();
-            }
-        }
-
-        public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
+        private string _selectedRunnerName;
         public string SelectedRunnerName
         {
-            get => SelectedRunner.Name;
+            get => _selectedRunnerName;
             set
             {
-                var newName = value.Trim();
-                if (newName != SelectedRunnerName && Runners.Any(x => x.Name == newName))
+                SetAndNotifyIfChanged(ref _selectedRunnerName, value);
+                var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                if (_selectedRunnerName != c.SelectedRunnerName && Runners.Any(x => x.Name == _selectedRunnerName))
                 {
-                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    c.SelectedRunnerName = newName;
+                    c.SelectedRunnerName = _selectedRunnerName;
                 }
-                RaisePropertyChanged(nameof(SelectedRunner));
-                RaisePropertyChanged(nameof(SelectedRunnerName));
             }
         }
+        public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
 
         public ObservableCollection<Runner> Runners { get; set; }
 
-        private RelayCommand _cmdAddProtocol;
-
-        public RelayCommand CmdAddProtocol
+        private RelayCommand _cmdAddRunner;
+        public RelayCommand CmdAddRunner
         {
             get
             {
-                return _cmdAddProtocol ??= new RelayCommand((o) =>
+                return _cmdAddRunner ??= new RelayCommand((o) =>
                 {
-                    // TODO 弹窗输入新的协议名称，并校验
                     var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
                     var name = InputWindow.InputBox("New protocol name:", "New protocol", validate: new Func<string, string>((str) =>
                      {
@@ -99,13 +83,36 @@ namespace PRM.ViewModel.Configuration
                      })).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
-                        RaisePropertyChanged(nameof(Protocols));
-                        var newRunner = new ExternRunner(name, c.ProtocolName);
+                        var newRunner = new ExternalRunner(name);
                         c.Runners.Add(newRunner);
                         Runners.Add(newRunner);
+                        RaisePropertyChanged(nameof(RunnerNames));
                     }
                 });
             }
         }
+
+        private RelayCommand _cmdDelRunner;
+        public RelayCommand CmdDelRunner
+        {
+            get
+            {
+                return _cmdDelRunner ??= new RelayCommand((o) =>
+                {
+                    var pn = o.ToString();
+                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                    if (string.IsNullOrEmpty(pn) == false && c.Runners.Any(x => x.Name == pn))
+                    {
+                        c.Runners.RemoveAll(x => x.Name == pn);
+                    }
+                    Runners = new ObservableCollection<Runner>(c.Runners);
+                    RaisePropertyChanged(nameof(Runners));
+                    RaisePropertyChanged(nameof(RunnerNames));
+                    SelectedRunnerName = c.GetRunner().Name;
+                    _protocolConfigurationService.Save();
+                });
+            }
+        }
+
     }
 }
