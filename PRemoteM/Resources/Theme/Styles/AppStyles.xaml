@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="EditorRowGrid" TargetType="Grid">
-        <Setter Property="Height" Value="30"></Setter>
+        <Setter Property="Height" Value="Auto"></Setter>
+        <Setter Property="MinHeight" Value="30"></Setter>
         <Setter Property="Margin">
             <Setter.Value>
                 <Thickness Bottom="15"></Thickness>
@@ -11,7 +12,7 @@
     </Style>
     <Style x:Key="EditorRowGridTitle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-        <Setter Property="Width" Value="100"></Setter>
+        <Setter Property="MinWidth" Value="100"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
         <Setter Property="HorizontalAlignment" Value="Center"></Setter>
         <Setter Property="TextAlignment" Value="Right"></Setter>
@@ -23,7 +24,7 @@
     </Style>
 
     <Style x:Key="EditorRowGridInput" TargetType="Grid">
-        <Setter Property="Width" Value="350"></Setter>
+        <Setter Property="Width" Value="300"></Setter>
     </Style>
 
     <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock">

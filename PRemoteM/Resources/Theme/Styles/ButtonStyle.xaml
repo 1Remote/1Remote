@@ -178,4 +178,15 @@
         <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource AccentMidBrush}"/>
     </Style>
 
+    <Style x:Key="ButtonBarAccentBackgroundStyle" BasedOn="{StaticResource ButtonBarPrimaryStyle}" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource BackgroundTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="attachProperty:VisionElement.ForegroundOnMouseDown" Value="{DynamicResource BackgroundTextBrush}"/>
+        <Setter Property="attachProperty:VisionElement.BackgroundOnMouseDown" Value="{DynamicResource BackgroundBrush}"/>
+        <Setter Property="attachProperty:VisionElement.Opacity" Value="0.5"/>
+        <Setter Property="attachProperty:VisionElement.OpacityAccent" Value="0.9"/>
+    </Style>
+
 </ResourceDictionary>
