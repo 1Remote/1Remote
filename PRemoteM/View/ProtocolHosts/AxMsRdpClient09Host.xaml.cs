@@ -107,9 +107,12 @@ namespace PRM.View.ProtocolHosts
 
         private void OnScreenResolutionChanged()
         {
-            if (_rdp?.FullScreen == true)
+            lock (this)
             {
-                _rdp.FullScreen = false;
+                if (_rdp?.FullScreen == true)
+                {
+                    _rdp.FullScreen = false;
+                }
             }
         }
 
@@ -178,7 +181,10 @@ namespace PRM.View.ProtocolHosts
 
         private void CreatRdp()
         {
-            _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+            lock (this)
+            {
+                _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+            }
 
             SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
 
@@ -713,11 +719,15 @@ namespace PRM.View.ProtocolHosts
             RdpHost.Visibility = Visibility.Visible;
             GridLoading.Visibility = Visibility.Collapsed;
             GridMessageBox.Visibility = Visibility.Collapsed;
-
             ResizeEndStartFireDelegate();
-            if (this._onResizeEnd == null)
+            try
+            {
+                this._onResizeEnd -= ReSizeRdp;
+            }
+            finally
+            {
                 this._onResizeEnd += ReSizeRdp;
-
+            }
             ReSizeRdp();
         }
 
@@ -735,7 +745,7 @@ namespace PRM.View.ProtocolHosts
         /// </summary>
         private void ReSizeRdp()
         {
-            if (_rdp.FullScreen == false
+            if (_rdp?.FullScreen == false
                 && _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
                 var nw = (uint)_rdp.Width;
@@ -882,65 +892,56 @@ namespace PRM.View.ProtocolHosts
 
         #region WindowOnResizeEnd
 
-        public delegate void ResizeEndDelegage();
+        private delegate void ResizeEndDelegage();
 
         private ResizeEndDelegage _onResizeEnd;
         private readonly System.Timers.Timer _resizeEndTimer = new System.Timers.Timer(500) { Enabled = false };
         private readonly object _resizeEndLocker = new object();
-        private bool _resizeEndStartFire = false;
-
         private void ResizeEndStartFireDelegate()
         {
-            if (_resizeEndStartFire == false)
-                lock (_resizeEndLocker)
+            lock (_resizeEndLocker)
+            {
+                try
                 {
-                    if (_resizeEndStartFire == false)
-                    {
-                        _resizeEndStartFire = true;
-                        try
-                        {
-                            _resizeEndTimer.Elapsed += _InvokeResizeEndEnd;
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        try
-                        {
-                            base.SizeChanged += _ResizeEnd_WindowSizeChanged;
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
+                    _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                 }
+                finally
+                {
+                    _resizeEndTimer.Elapsed += _InvokeResizeEndEnd;
+                }
+
+                try
+                {
+                    base.SizeChanged -= _ResizeEnd_WindowSizeChanged;
+                }
+                finally
+                {
+                    base.SizeChanged += _ResizeEnd_WindowSizeChanged;
+                }
+            }
         }
 
         private void ResizeEndStopFireDelegate()
         {
-            if (_resizeEndStartFire == true)
-                lock (_resizeEndLocker)
+            lock (_resizeEndLocker)
+            {
+                try
                 {
-                    if (_resizeEndStartFire == true)
-                    {
-                        _resizeEndStartFire = false;
-                        try
-                        {
-                            _resizeEndTimer?.Stop();
-                            _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
-                        }
-                        catch
-                        {
-                        }
-
-                        try
-                        {
-                            base.SizeChanged -= _ResizeEnd_WindowSizeChanged;
-                        }
-                        catch
-                        {
-                        }
-                    }
+                    _resizeEndTimer?.Stop();
+                    _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                 }
+                catch
+                {
+                }
+
+                try
+                {
+                    base.SizeChanged -= _ResizeEnd_WindowSizeChanged;
+                }
+                catch
+                {
+                }
+            }
         }
 
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
@@ -1024,7 +1025,10 @@ namespace PRM.View.ProtocolHosts
                     }
                 });
                 t.Start();
-                _rdp = null;
+                lock (this)
+                {
+                    _rdp = null;
+                }
             }
             SimpleLogHelper.Debug("RDP Host: _rdp.Dispose()");
         }

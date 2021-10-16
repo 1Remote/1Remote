@@ -18,7 +18,6 @@ namespace PRM.Core.Protocol.Runner
     [JsonKnownType(typeof(ExternalRunner), nameof(ExternalRunner))]
     [JsonKnownType(typeof(KittyRunner), nameof(KittyRunner))]
     [JsonKnownType(typeof(InternalDefaultRunner), nameof(InternalDefaultRunner))]
-    [JsonKnownType(typeof(ExternalDefaultRunner), nameof(ExternalDefaultRunner))]
     public class Runner : NotifyPropertyChangedBase, ICloneable
     {
         public Runner(string runnerName)

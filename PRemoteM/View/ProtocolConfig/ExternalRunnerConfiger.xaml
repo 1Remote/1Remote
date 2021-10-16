@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
-             xmlns:default="clr-namespace:PRM.Core.Protocol.Runner.Default;assembly=PRM.Core"
+             xmlns:runner="clr-namespace:PRM.Core.Protocol.Runner;assembly=PRM.Core"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance default:KittyRunner}"
+             d:DataContext="{d:DesignInstance runner:ExternalRunner}"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
         <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
@@ -15,8 +14,11 @@
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Exe Path"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                    <TextBox Text="{Binding ExePath}" VerticalContentAlignment="Center"></TextBox>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding ExePath}" 
+                             ToolTip="{Binding ExePath}"
+                             TextWrapping="Wrap"
+                             VerticalContentAlignment="Center"></TextBox>
                 </Grid>
             </StackPanel>
         </Grid>
@@ -24,10 +26,34 @@
         <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Exe cmd"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                    <TextBox Text="{Binding Arguments}" VerticalContentAlignment="Center"></TextBox>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding Arguments}" 
+                             ToolTip="{Binding Arguments}"
+                             TextWrapping="Wrap"
+                             VerticalContentAlignment="Center"></TextBox>
                 </Grid>
             </StackPanel>
+        </Grid>
+
+        <!--<Grid Style="{StaticResource EditorRowGrid}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Exe cmd"></TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding Arguments}" 
+                     ToolTip="{Binding Arguments}"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Center"></TextBox>
+        </Grid>-->
+
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Exe cmd"></TextBlock>
+            <CheckBox Grid.Column="1" IsChecked="{Binding RunWithEmbedded}"></CheckBox>
         </Grid>
     </StackPanel>
 </UserControl>

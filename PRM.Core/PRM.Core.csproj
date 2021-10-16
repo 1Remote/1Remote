@@ -130,7 +130,6 @@
     <Compile Include="I\ILanguageService.cs" />
     <Compile Include="Protocol\Base\ExtendOption.cs" />
     <Compile Include="Protocol\ProtocolConfig.cs" />
-    <Compile Include="Protocol\Runner\Default\ExternRunnerDefaultRunner.cs" />
     <Compile Include="Protocol\Runner\Default\KittyRunner.cs" />
     <Compile Include="Protocol\Runner\Default\InternalDefaultRunner.cs" />
     <Compile Include="Protocol\Runner\Runner.cs" />

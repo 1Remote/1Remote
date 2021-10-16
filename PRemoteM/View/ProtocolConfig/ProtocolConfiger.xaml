@@ -7,13 +7,14 @@
              xmlns:configuration="clr-namespace:PRM.ViewModel.Configuration"
              xmlns:default="clr-namespace:PRM.Core.Protocol.Runner.Default;assembly=PRM.Core"
              xmlns:runner="clr-namespace:PRM.Core.Protocol.Runner;assembly=PRM.Core"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              d:DataContext="{d:DesignInstance configuration:ProtocolConfigerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
 
 
-        <Style x:Key="SearchBoxSelectionList" TargetType="{x:Type ListBox}">
+        <Style x:Key="ListBoxForProtocols" TargetType="{x:Type ListBox}">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
@@ -21,11 +22,17 @@
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Grid>
-                                        <Border x:Name="GridContainer"></Border>
+                                    <Grid Margin="10 3" Cursor="Hand">
+                                        <Border x:Name="GridContainer" CornerRadius="5" 
+                                                BorderBrush="{DynamicResource PrimaryMidBrush}" BorderThickness="1">
+                                            <Border.Effect>
+                                                <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                                            </Border.Effect>
+                                        </Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
@@ -38,6 +45,7 @@
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
                                             <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
                                             <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                            <Setter Property="BorderThickness" Value="0" TargetName="GridContainer" />
                                             <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
                                             <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -47,6 +55,15 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Grid Margin="10">
+                            <TextBlock Text="{Binding}"></TextBlock>
+                        </Grid>
+                    </DataTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -64,8 +81,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Grid>
-                                        <Border x:Name="GridContainer">
-                                        </Border>
+                                        <Border x:Name="GridContainer"></Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
                                 </ControlTemplate>
@@ -83,8 +99,7 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Grid >
-            <Border BorderBrush="Black" BorderThickness="0 0 1 0" Width="150">
+        <Grid MinWidth="150">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"></RowDefinition>
@@ -97,52 +112,108 @@
 
                     <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
                              SelectedItem="{Binding SelectedProtocol}"
-                             Style="{StaticResource SearchBoxSelectionList}">
+                             Style="{StaticResource ListBoxForProtocols}">
                     </ListBox>
                 </Grid>
-            </Border>
         </Grid>
 
         <Grid Grid.Column="1">
             <Grid.Resources>
                 <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
-                    <Grid Background="{DynamicResource PrimaryMidBrush}" HorizontalAlignment="Stretch">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid Background="{DynamicResource PrimaryMidBrush}">
-                            <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center" Text="{Binding Name}"></TextBlock>
-                        </Grid>
-                    </Grid>
-                </DataTemplate>
-
-                <DataTemplate DataType="{x:Type default:KittyRunner}">
-                    <Grid>
+                    <Grid Margin="10">
+                        <Grid.Effect>
+                            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                        </Grid.Effect>
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=Border1}" />
+                        </Grid.OpacityMask>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
+                        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                                BorderBrush="{DynamicResource PrimaryMidBrush}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="10" BorderThickness="2">
+                        </Border>
+                        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
+                                       Text="{Binding Name}" Margin="5"></TextBlock>
+                        </Grid>
+                        <Grid Grid.Row="1" MinHeight="50">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Nothing special</TextBlock>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
 
-                        <Grid Background="{DynamicResource PrimaryMidBrush}">
-                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
+
+
+
+
+
+
+                <DataTemplate DataType="{x:Type default:KittyRunner}">
+                    <Grid Margin="10">
+                        <Grid.Effect>
+                            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                        </Grid.Effect>
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=Border1}" />
+                        </Grid.OpacityMask>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                                BorderBrush="{DynamicResource PrimaryMidBrush}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="10" BorderThickness="2">
+                        </Border>
+                        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
+                                       Text="{Binding Name}" Margin="5"></TextBlock>
                         </Grid>
 
                         <local:KittyRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:KittyRunnerConfiger>
                     </Grid>
                 </DataTemplate>
 
+
+
+
+
                 <DataTemplate DataType="{x:Type runner:ExternalRunner}">
-                    <Grid>
+                    <Grid Margin="10">
+                        <Grid.Effect>
+                            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                        </Grid.Effect>
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=Border1}" />
+                        </Grid.OpacityMask>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
-
-                        <Grid Background="{DynamicResource PrimaryMidBrush}">
+                        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                                BorderBrush="{DynamicResource PrimaryMidBrush}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="10" BorderThickness="2">
+                        </Border>
+                        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
                             <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
-                            <Button HorizontalAlignment="Right" Command="{Binding DataContext.CmdDelRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}">
-                                TXT:Del
+                            <Button Width="10" Height="10" Tag="{Binding}"
+                                    Style="{StaticResource ButtonBarPrimaryStyle}"
+                                    HorizontalAlignment="Right"
+                                    attachProperty:VisionElement.Opacity="0.5"
+                                    attachProperty:VisionElement.OpacityAccent="0.9"
+                                    Command="{Binding DataContext.CmdDelRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}"
+                                    Margin="0 0 10 0">
+                                <Grid Height="10" Width="8">
+                                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          StrokeThickness="2" Stretch="Uniform" />
+                                </Grid>
                             </Button>
                         </Grid>
 
@@ -151,34 +222,50 @@
                 </DataTemplate>
             </Grid.Resources>
 
-            <Border BorderBrush="Black" BorderThickness="0 0 1 0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
 
-                    <Grid Margin="10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
 
-                        <ComboBox ItemsSource="{Binding RunnerNames}"
+
+
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid Margin="10 3" Height="35">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox Grid.Column="0" ItemsSource="{Binding RunnerNames}"
                                   SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
 
-                        <Button Grid.Column="1" HorizontalAlignment="Right" Command="{Binding CmdAddRunner}">TXT:Add runner</Button>
-                    </Grid>
-                    <ListBox Grid.Row="2" 
+
+                    <Button Grid.Column="1" Width="30" Height="30" 
+                            Margin="10 0 0 0"
+                            Style="{StaticResource ButtonBarAccentBackgroundStyle}"
+                            HorizontalAlignment="Right"
+                            Command="{Binding CmdAddRunner}"
+                            >
+                        <Grid Height="20" Width="20">
+                            <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                  StrokeThickness="2" Stretch="Uniform" />
+                        </Grid>
+                    </Button>
+                </Grid>
+                <ListBox Grid.Row="2" HorizontalContentAlignment="Stretch"
                              Style="{StaticResource ListBoxRunners}"
                              ItemsSource="{Binding Runners}">
-                    </ListBox>
-                    <Grid  Grid.Row="1" >
+                </ListBox>
+                <!--<Grid  Grid.Row="1" >
                         <TextBlock Foreground="Blue" Text="{Binding SelectedRunnerName}"></TextBlock>
-                    </Grid>
-                </Grid>
-            </Border>
+                    </Grid>-->
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
