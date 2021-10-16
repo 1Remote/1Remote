@@ -33,5 +33,13 @@ namespace PRM.Core.Protocol.Runner
             get => _arguments;
             set => SetAndNotifyIfChanged(ref _arguments, value);
         }
+
+
+        protected bool _runWithEmbedded = true;
+        public bool RunWithEmbedded
+        {
+            get => _runWithEmbedded;
+            set => SetAndNotifyIfChanged(ref _runWithEmbedded, value);
+        }
     }
 }

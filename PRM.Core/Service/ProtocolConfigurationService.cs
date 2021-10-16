@@ -22,6 +22,7 @@ namespace PRM.Core.Service
         public Dictionary<string, ProtocolConfig> ProtocolConfigs { get; set; } = new Dictionary<string, ProtocolConfig>();
 
         public readonly string ProtocolFolderName;
+
         public ProtocolConfigurationService()
         {
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
@@ -64,19 +65,6 @@ namespace PRM.Core.Service
                     ProtocolConfigs.Add(protocolName, c);
                 }
             }
-
-            // make internal un-deletable
-            foreach (var kv in ProtocolConfigs)
-            {
-                var c = kv.Value;
-                foreach (var runner in c.Runners)
-                {
-                    if (runner is InternalDefaultRunner idr)
-                    {
-                        runner.Name = new InternalDefaultRunner().Name;
-                    }
-                }
-            }
         }
 
         public ProtocolConfig LoadConfig(string protocolName)
@@ -113,6 +101,7 @@ namespace PRM.Core.Service
                 if (c != null)
                     return c;
             }
+
             return null;
         }
 
@@ -126,6 +115,7 @@ namespace PRM.Core.Service
                 c.Runners.Insert(0, new InternalDefaultRunner());
             }
 
+            c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
         }
 
@@ -139,6 +129,8 @@ namespace PRM.Core.Service
                 c.Runners.RemoveAll(x => x is KittyRunner);
                 c.Runners.Insert(0, new KittyRunner());
             }
+
+            c.Runners.First(x => x is KittyRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
         }
 
@@ -151,13 +143,15 @@ namespace PRM.Core.Service
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
                 c.Runners.Insert(0, new InternalDefaultRunner());
             }
+
+            c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
         }
 
         public void Save()
         {
-            // TODO only effect in dev mode
 #if DEV
+            // TODO only effect in dev mode
             foreach (var kv in ProtocolConfigs)
             {
                 var protocolName = kv.Key;
@@ -165,8 +159,7 @@ namespace PRM.Core.Service
                 var file = Path.Combine(ProtocolFolderName, protocolName, $"{protocolName}.json");
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
-        }
-
 #endif
+        }
     }
 }

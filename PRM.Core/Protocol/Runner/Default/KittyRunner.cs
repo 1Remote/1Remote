@@ -16,6 +16,8 @@ namespace PRM.Core.Protocol.Runner.Default
     public class KittyRunner : InternalDefaultRunner
     {
         public new static string Name = "Internal KiTTY";
+
+        [JsonConstructor]
         public KittyRunner() : base()
         {
             base.Name = Name;
