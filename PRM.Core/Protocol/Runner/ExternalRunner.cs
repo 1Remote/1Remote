@@ -6,10 +6,14 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using JsonKnownTypes;
+using Microsoft.Win32;
 using Newtonsoft.Json;
+using PRM.Core.I;
 using PRM.Core.Protocol.Runner.Default;
 using PRM.Core.Service;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Runner
 {
@@ -35,11 +39,53 @@ namespace PRM.Core.Protocol.Runner
         }
 
 
-        protected bool _runWithEmbedded = true;
-        public bool RunWithEmbedded
+        protected bool _runWithHosting = true;
+        public bool RunWithHosting
         {
-            get => _runWithEmbedded;
-            set => SetAndNotifyIfChanged(ref _runWithEmbedded, value);
+            get => _runWithHosting;
+            set => SetAndNotifyIfChanged(ref _runWithHosting, value);
+        }
+
+
+
+        private RelayCommand _cmdSelectDbPath;
+        [JsonIgnore]
+        public RelayCommand CmdSelectDbPath
+        {
+            get
+            {
+                return _cmdSelectDbPath ??= new RelayCommand((o) =>
+                {
+                    string initPath;
+                    try
+                    {
+                        initPath = new FileInfo(ExePath).DirectoryName;
+                    }
+                    catch (Exception)
+                    {
+                        initPath = Environment.CurrentDirectory;
+                    }
+
+
+                    var dlg = new OpenFileDialog
+                    {
+                        Filter = "Exe|*.exe",
+                        CheckFileExists = true,
+                        InitialDirectory = initPath,
+                    };
+                    if (dlg.ShowDialog() != true) return;
+                    ExePath = dlg.FileName;
+
+                    if (string.IsNullOrEmpty(Arguments))
+                    {
+                        var name = new FileInfo(dlg.FileName).Name.ToLower();
+                        if (name == "winscp.exe".ToLower())
+                            Arguments = "sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
+                        else if (name.IndexOf("kitty", StringComparison.Ordinal) >= 0 || name.IndexOf("putty", StringComparison.Ordinal) >= 0)
+                            Arguments = @"-ssh %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+                    }
+                });
+            }
         }
     }
 }

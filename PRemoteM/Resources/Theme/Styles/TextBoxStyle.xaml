@@ -116,6 +116,7 @@
         <Setter Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type PasswordBox}">

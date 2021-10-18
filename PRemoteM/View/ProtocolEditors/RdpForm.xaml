@@ -272,8 +272,7 @@
 
             <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Margin="0">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="" />
-                    <Grid Style="{StaticResource EditorRowGridInput}">
+                    <Grid Margin="50 10 0 0">
                         <StackPanel>
                             <StackPanel Margin="20 0 0 0">
                                 <StackPanel.Style>
