@@ -14,65 +14,82 @@ using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.Runner;
 using PRM.Core.Protocol.Runner.Default;
+using PRM.Core.Protocol.VNC;
+using Shawn.Utils;
 
 namespace PRM.Core.Service
 {
     public class ProtocolConfigurationService
     {
         public Dictionary<string, ProtocolConfig> ProtocolConfigs { get; set; } = new Dictionary<string, ProtocolConfig>();
+        public Dictionary<string, string> ProtocolPropertyDescriptions { get; set; } = new Dictionary<string, string>();
+        public string[] CustomProtocolBlackList => new string[] { "SSH", "RDP", "VNC", "TELNET", "FTP", "SFTP", "RemoteApp", "APP" };
 
-        public readonly string ProtocolFolderName;
+    public readonly string ProtocolFolderName;
 
         public ProtocolConfigurationService()
         {
+            // TODO 绿色版和安装版使用不同的路径，日志系统也需如此修改
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             ProtocolFolderName = Path.Combine(appDateFolder, "Protocols");
             if (Directory.Exists(ProtocolFolderName) == false)
                 Directory.CreateDirectory(ProtocolFolderName);
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, "SSH")) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "SSH"));
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, "RDP")) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "RDP"));
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, "VNC")) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "VNC"));
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, "TELNET")) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "TELNET"));
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, "FTP")) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "FTP"));
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, "SFTP")) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, "SFTP"));
-
             Load();
         }
 
 
-        public void Load()
+        private void Load()
         {
             ProtocolConfigs.Clear();
+            ProtocolPropertyDescriptions.Clear();
             var di = new DirectoryInfo(ProtocolFolderName);
-            LoadRdp();
+
+            // build-in protocol
+            //LoadRdp();
+            LoadVnc();
             LoadSsh();
             LoadSftp();
-            foreach (var directoryInfo in di.GetDirectories())
-            {
-                var protocolName = directoryInfo.Name;
-                if (ProtocolConfigs.ContainsKey(protocolName))
-                    continue;
+            LoadFtp();
 
-                var c = LoadConfig(protocolName);
-                if (c != null)
+
+            // custom protocol
+            {
+                var customs = new Dictionary<string, ProtocolConfig>();
+                foreach (var directoryInfo in di.GetDirectories())
                 {
-                    ProtocolConfigs.Add(protocolName, c);
+                    var protocolName = directoryInfo.Name;
+                    if (ProtocolConfigs.ContainsKey(protocolName))
+                        continue;
+
+                    var c = LoadConfig(protocolName);
+                    if (c != null)
+                    {
+                        customs.Add(protocolName, c);
+                    }
+                }
+
+                // remove special protocol
+                foreach (var name in CustomProtocolBlackList)
+                {
+                    if (customs.Any(kv => String.Equals(kv.Key, name, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        customs.Remove(name);
+                    }
+                }
+
+                foreach (var custom in customs)
+                {
+                    ProtocolConfigs.Add(custom.Key, custom.Value);
                 }
             }
+
         }
+
 
         public ProtocolConfig LoadConfig(string protocolName)
         {
             protocolName = protocolName.ToUpper();
-            if (Directory.Exists(Path.Combine(ProtocolFolderName, protocolName)) == false)
-                Directory.CreateDirectory(Path.Combine(ProtocolFolderName, protocolName));
-            var file = Path.Combine(ProtocolFolderName, protocolName, $"{protocolName}.json");
+            var file = Path.Combine(ProtocolFolderName, $"{protocolName}.json");
             if (File.Exists(file))
             {
                 var jsonStr = File.ReadAllText(file, Encoding.UTF8);
@@ -92,9 +109,9 @@ namespace PRM.Core.Service
                                 c.Runners.Add(r);
 
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            // ignored
+                            Console.Write(e);
                         }
                     }
 
@@ -105,10 +122,26 @@ namespace PRM.Core.Service
             return null;
         }
 
-        private void LoadRdp()
+        //private void LoadRdp()
+        //{
+        //    var protocolName = ProtocolServerRDP.ProtocolName;
+        //    var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+        //    c.Runners ??= new List<Runner>();
+        //    if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
+        //    {
+        //        c.Runners.RemoveAll(x => x is InternalDefaultRunner);
+        //        c.Runners.Insert(0, new InternalDefaultRunner());
+        //    }
+        //    c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
+        //    ProtocolConfigs.Add(protocolName, c);
+        //    ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerRDP)));
+        //}
+
+        private void LoadVnc()
         {
-            var protocolName = ProtocolServerRDP.ProtocolName;
+            var protocolName = ProtocolServerVNC.ProtocolName;
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
             {
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
@@ -117,13 +150,13 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
+            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerVNC)));
         }
-
         private void LoadSsh()
         {
             var protocolName = ProtocolServerSSH.ProtocolName;
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
-
+            c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is KittyRunner == false)
             {
                 c.Runners.RemoveAll(x => x is KittyRunner);
@@ -132,12 +165,14 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is KittyRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
+            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerSSH)));
         }
 
         private void LoadSftp()
         {
             var protocolName = ProtocolServerSFTP.ProtocolName;
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
             {
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
@@ -146,6 +181,23 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
+            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerSFTP)));
+        }
+
+        private void LoadFtp()
+        {
+            var protocolName = ProtocolServerFTP.ProtocolName;
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Runners ??= new List<Runner>();
+            if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
+            {
+                c.Runners.RemoveAll(x => x is InternalDefaultRunner);
+                c.Runners.Insert(0, new InternalDefaultRunner());
+            }
+
+            c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
+            ProtocolConfigs.Add(protocolName, c);
+            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerFTP)));
         }
 
         public void Save()

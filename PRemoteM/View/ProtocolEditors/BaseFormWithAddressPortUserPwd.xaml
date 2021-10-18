@@ -40,7 +40,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Name="GridPwd">
+        <Grid Style="{StaticResource EditorRowGrid}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_connection_password}"></TextBlock>
                 <Grid Style="{StaticResource EditorRowGridInput}">

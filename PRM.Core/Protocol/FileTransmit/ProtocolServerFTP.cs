@@ -8,11 +8,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
 {
     public class ProtocolServerFTP : ProtocolServerWithAddrPortUserPwdBase, IProtocolFileTransmittable
     {
-        public enum ESshVersion
-        {
-            V1 = 1,
-            V2 = 2,
-        }
+        public static string ProtocolName = "FTP";
         public ProtocolServerFTP() : base("FTP", "FTP.V1", "FTP")
         {
         }
@@ -46,9 +42,6 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
         {
             return 4;
         }
-
-        [JsonIgnore]
-        public ProtocolServerBase ProtocolServerBase => this;
 
         public ITransmitter GeTransmitter(PrmContext context)
         {

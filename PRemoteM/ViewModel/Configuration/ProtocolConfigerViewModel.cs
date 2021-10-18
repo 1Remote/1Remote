@@ -25,7 +25,7 @@ namespace PRM.ViewModel.Configuration
         {
             _protocolConfigurationService = protocolConfigurationService;
             _languageService = languageService;
-            SelectedProtocol = ProtocolServerRDP.ProtocolName;
+            SelectedProtocol = protocolConfigurationService.ProtocolConfigs.First().Key;
         }
 
         public List<string> Protocols => _protocolConfigurationService.ProtocolConfigs.Keys.ToList();
@@ -100,19 +100,38 @@ namespace PRM.ViewModel.Configuration
                 return _cmdDelRunner ??= new RelayCommand((o) =>
                 {
                     var pn = o.ToString();
-                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    if (string.IsNullOrEmpty(pn) == false && c.Runners.Any(x => x.Name == pn))
+                    if (MessageBox.Show(
+                        _languageService.Translate("confirm_to_delete"),
+                        _languageService.Translate("messagebox_title_warning"),
+                        MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
                     {
-                        c.Runners.RemoveAll(x => x.Name == pn);
+                        var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                        if (string.IsNullOrEmpty(pn) == false && c.Runners.Any(x => x.Name == pn))
+                        {
+                            c.Runners.RemoveAll(x => x.Name == pn);
+                        }
+
+                        Runners = new ObservableCollection<Runner>(c.Runners);
+                        RaisePropertyChanged(nameof(Runners));
+                        RaisePropertyChanged(nameof(RunnerNames));
+                        SelectedRunnerName = c.GetRunner().Name;
+                        _protocolConfigurationService.Save();
                     }
-                    Runners = new ObservableCollection<Runner>(c.Runners);
-                    RaisePropertyChanged(nameof(Runners));
-                    RaisePropertyChanged(nameof(RunnerNames));
-                    SelectedRunnerName = c.GetRunner().Name;
-                    _protocolConfigurationService.Save();
                 });
             }
         }
 
+
+        private RelayCommand _cmdShowProtocolHelp;
+        public RelayCommand CmdShowProtocolHelp
+        {
+            get
+            {
+                return _cmdShowProtocolHelp ??= new RelayCommand((o) =>
+                {
+                    MessageBox.Show(_protocolConfigurationService.ProtocolPropertyDescriptions[_selectedProtocol]);
+                });
+            }
+        }
     }
 }

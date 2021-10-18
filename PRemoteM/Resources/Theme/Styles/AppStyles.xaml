@@ -14,12 +14,18 @@
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
         <Setter Property="MinWidth" Value="100"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Right"></Setter>
         <Setter Property="TextAlignment" Value="Right"></Setter>
         <Setter Property="Margin">
             <Setter.Value>
                 <Thickness Right="30"></Thickness>
             </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="EditorRowGridTitle2" TargetType="TextBlock" BasedOn="{StaticResource EditorRowGridTitle}">
+        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+        <Setter Property="TextAlignment" Value="Left"></Setter>
+        <Setter Property="Margin" Value="0 0 0 0">
         </Setter>
     </Style>
 
