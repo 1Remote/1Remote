@@ -90,12 +90,12 @@ namespace PRM.Model
                                 if (File.Exists(exePath))
                                 {
                                     // using external runner.
-                                    //var template = $@"sftp://%PRM_USER_NAME:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
+                                    //var template = $@"sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
                                     //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
                                     var tmpSftp = (ProtocolServerSFTP)sftp.Clone();
                                     tmpSftp.ConnectPreprocess(context);
-                                    var arg2 = OtherNameAttributeExtensions.Replace(tmpSftp, args);
-                                    var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", arg2);
+                                    var exeArguments = OtherNameAttributeExtensions.Replace(tmpSftp, args);
+                                    var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", exeArguments);
                                     return host2;
                                 }
                             }
