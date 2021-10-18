@@ -100,21 +100,21 @@
         </Grid.ColumnDefinitions>
 
         <Grid MinWidth="150">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
 
-                    <!--<Grid Margin="10">
+                <!--<Grid Margin="10">
                         <Button HorizontalAlignment="Right">TXT:Add protocol</Button>
                     </Grid>-->
 
-                    <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
+                <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
                              SelectedItem="{Binding SelectedProtocol}"
                              Style="{StaticResource ListBoxForProtocols}">
-                    </ListBox>
-                </Grid>
+                </ListBox>
+            </Grid>
         </Grid>
 
         <Grid Grid.Column="1">
@@ -236,16 +236,20 @@
 
                 <Grid Margin="10 3" Height="35">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <ComboBox Grid.Column="0" ItemsSource="{Binding RunnerNames}"
+                    <TextBlock Text="TXT:DEFAULT" VerticalAlignment="Center" FontWeight="Bold" Margin="5"></TextBlock>
+
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding RunnerNames}"
                                   SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
 
 
-                    <Button Grid.Column="1" Width="30" Height="30" 
+                    <Button Grid.Column="2" Width="30" Height="30" 
                             Margin="10 0 0 0"
+                            ToolTip="TXT:Add new protocol runner."
                             Style="{StaticResource ButtonBarAccentBackgroundStyle}"
                             HorizontalAlignment="Right"
                             Command="{Binding CmdAddRunner}"
@@ -258,13 +262,11 @@
                         </Grid>
                     </Button>
                 </Grid>
-                <ListBox Grid.Row="2" HorizontalContentAlignment="Stretch"
+
+                <ListBox Grid.Row="2" Opacity="0.75"
                              Style="{StaticResource ListBoxRunners}"
                              ItemsSource="{Binding Runners}">
                 </ListBox>
-                <!--<Grid  Grid.Row="1" >
-                        <TextBlock Foreground="Blue" Text="{Binding SelectedRunnerName}"></TextBlock>
-                    </Grid>-->
             </Grid>
         </Grid>
     </Grid>

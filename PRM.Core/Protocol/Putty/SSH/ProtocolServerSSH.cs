@@ -15,12 +15,6 @@ namespace PRM.Core.Protocol.Putty.SSH
 {
     public class ProtocolServerSSH : ProtocolServerWithAddrPortUserPwdBase, IKittyConnectable
     {
-        //public enum ESshVersion
-        //{
-        //    V1 = 1,
-        //    V2 = 2,
-        //}
-
         public static string ProtocolName = "SSH";
         public ProtocolServerSSH() : base(ProtocolServerSSH.ProtocolName, $"Putty.{ProtocolServerSSH.ProtocolName}.V1", ProtocolServerSSH.ProtocolName)
         {

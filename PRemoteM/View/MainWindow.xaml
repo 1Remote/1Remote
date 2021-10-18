@@ -12,7 +12,7 @@
                   BorderBrush="Transparent"
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance viewModel:VmMain}"
-                  Title="PRemoteM" Height="560" Width="850" MinWidth="850" MinHeight="560">
+                  Title="PRemoteM" Height="560" Width="900" MinWidth="900" MinHeight="560">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
