@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using JsonKnownTypes;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using PRM.Core.I;
-using PRM.Core.Protocol.Runner.Default;
-using PRM.Core.Service;
+using PRM.Core.Protocol.Base;
+using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
 
-namespace PRM.Core.Protocol.Runner
+namespace PRM.Core.Protocol.Extend
 {
-    public class ExternalRunner : Runner
+    public class ProtocolServerApp : ProtocolServerBase
     {
-        public ExternalRunner(string runnerName) : base(runnerName)
+        public ProtocolServerApp() : base("APP", "APP.V1", "APP")
         {
+        }
+
+        public override bool IsOnlyOneInstance()
+        {
+            return false;
         }
 
         protected string _exePath = "";
@@ -39,14 +39,36 @@ namespace PRM.Core.Protocol.Runner
         }
 
 
-        protected bool _runWithHosting = false;
+        protected bool _runWithHosting = true;
         public bool RunWithHosting
         {
             get => _runWithHosting;
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
         }
 
+        public override ProtocolServerBase CreateFromJsonString(string jsonString)
+        {
+            try
+            {
+                var app = JsonConvert.DeserializeObject<ProtocolServerApp>(jsonString);
+                return app;
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Debug(e);
+                return null;
+            }
+        }
 
+        protected override string GetSubTitle()
+        {
+            return base.DisplayName;
+        }
+
+        public override double GetListOrder()
+        {
+            return 7;
+        }
 
         private RelayCommand _cmdSelectDbPath;
         [JsonIgnore]
@@ -75,21 +97,6 @@ namespace PRM.Core.Protocol.Runner
                     };
                     if (dlg.ShowDialog() != true) return;
                     ExePath = dlg.FileName;
-
-                    if (string.IsNullOrEmpty(Arguments))
-                    {
-                        var name = new FileInfo(dlg.FileName).Name.ToLower();
-                        if (name == "winscp.exe".ToLower())
-                        {
-                            Arguments = "sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
-                            RunWithHosting = true;
-                        }
-                        else if (name.IndexOf("kitty", StringComparison.Ordinal) >= 0 || name.IndexOf("putty", StringComparison.Ordinal) >= 0)
-                        {
-                            Arguments = @"-ssh %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
-                            RunWithHosting = true;
-                        }
-                    }
                 });
             }
         }

@@ -8,6 +8,7 @@ using PRM.Controls;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.Extend;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
@@ -331,19 +332,9 @@ namespace PRM.ViewModel
         {
             Debug.Assert(protocolType?.FullName != null);
 
-            var formName = protocolType.Name + "Form";
             var protocolServerBaseAssembly = typeof(ProtocolServerBase).Assembly;
 
-            ProtocolServerBase server = (ProtocolServerBase)Server.Clone();
-
-            if (_orgServers != null)
-            {
-                if (protocolType == typeof(ProtocolServerBase))
-                {
-                    formName = string.Empty;
-                }
-            }
-            else
+            var server = (ProtocolServerBase)Server.Clone();
             {
                 try
                 {
@@ -380,71 +371,76 @@ namespace PRM.ViewModel
                 }
             }
 
-            if (!string.IsNullOrEmpty(formName))
-                try
+            try
+            {
+                if (protocolType == typeof(ProtocolServerRDP))
                 {
-                    if (protocolType == typeof(ProtocolServerRDP))
-                    {
-                        ProtocolEditControl = new RdpForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerRemoteApp))
-                    {
-                        ProtocolEditControl = new RdpAppForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerSSH))
-                    {
-                        ProtocolEditControl = new SshForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerTelnet))
-                    {
-                        ProtocolEditControl = new TelnetForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerFTP))
-                    {
-                        ProtocolEditControl = new FTPForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerSFTP))
-                    {
-                        ProtocolEditControl = new SftpForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerVNC))
-                    {
-                        ProtocolEditControl = new VncForm(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerWithAddrPortUserPwdBase))
-                    {
-                        ProtocolEditControl = new BaseFormWithAddressPortUserPwd(server);
-                        Server = server;
-                        return;
-                    }
-                    else if (protocolType == typeof(ProtocolServerWithAddrPortBase))
-                    {
-                        ProtocolEditControl = new BaseFormWithAddressPort(server);
-                        Server = server;
-                        return;
-                    }
+                    ProtocolEditControl = new RdpForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerRemoteApp))
+                {
+                    ProtocolEditControl = new RdpAppForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerSSH))
+                {
+                    ProtocolEditControl = new SshForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerTelnet))
+                {
+                    ProtocolEditControl = new TelnetForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerFTP))
+                {
+                    ProtocolEditControl = new FTPForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerSFTP))
+                {
+                    ProtocolEditControl = new SftpForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerVNC))
+                {
+                    ProtocolEditControl = new VncForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerWithAddrPortUserPwdBase))
+                {
+                    ProtocolEditControl = new BaseFormWithAddressPortUserPwd(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerWithAddrPortBase))
+                {
+                    ProtocolEditControl = new BaseFormWithAddressPort(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerApp))
+                {
+                    ProtocolEditControl = new AppForm(server);
+                    Server = server;
+                    return;
+                }
 
-                    throw new NotImplementedException($"can not find class '{formName}' in {nameof(VmServerEditorPage)}");
-                }
-                catch (Exception e)
-                {
-                    SimpleLogHelper.Error(e);
-                    throw;
-                }
+                throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(VmServerEditorPage)}");
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                throw;
+            }
         }
     }
 }

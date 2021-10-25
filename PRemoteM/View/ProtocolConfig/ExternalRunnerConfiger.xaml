@@ -24,7 +24,7 @@
             <Button Grid.Column="2" Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
                     Content="{DynamicResource word_select}" 
-                    Command="{Binding CmdSelectDbPath}"></Button>
+                    Command="{Binding CmdSelectExePath}"></Button>
         </Grid>
 
         <Grid Style="{StaticResource EditorRowGrid}">
@@ -44,27 +44,9 @@
                     Content="?" 
                     Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}"
                     ></Button>
-
-            <!--<TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="5 0">
-                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
-                    (?)
-                </Hyperlink>
-            </TextBlock>-->
         </Grid>
 
-        <!--<Grid Style="{StaticResource EditorRowGrid}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Exe cmd"></TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding Arguments}" 
-                     ToolTip="{Binding Arguments}"
-                     TextWrapping="Wrap"
-                     VerticalContentAlignment="Center"></TextBox>
-        </Grid>-->
-
-        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="TXT:Hosting the external exe in PRemoteM?">
+        <!--<Grid Style="{StaticResource EditorRowGrid}" ToolTip="TXT:Hosting the external exe in PRemoteM?">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
                 <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
@@ -72,6 +54,6 @@
             </Grid.ColumnDefinitions>
             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Hosting?"></TextBlock>
             <CheckBox Grid.Column="1" IsChecked="{Binding RunWithHosting}"></CheckBox>
-        </Grid>
+        </Grid>-->
     </StackPanel>
 </UserControl>

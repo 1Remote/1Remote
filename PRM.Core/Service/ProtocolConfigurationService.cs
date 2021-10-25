@@ -11,6 +11,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.Runner;
 using PRM.Core.Protocol.Runner.Default;
@@ -25,7 +26,7 @@ namespace PRM.Core.Service
         public Dictionary<string, string> ProtocolPropertyDescriptions { get; set; } = new Dictionary<string, string>();
         public string[] CustomProtocolBlackList => new string[] { "SSH", "RDP", "VNC", "TELNET", "FTP", "SFTP", "RemoteApp", "APP" };
 
-    public readonly string ProtocolFolderName;
+        public readonly string ProtocolFolderName;
 
         public ProtocolConfigurationService()
         {
@@ -48,6 +49,7 @@ namespace PRM.Core.Service
             //LoadRdp();
             LoadVnc();
             LoadSsh();
+            LoadTelnet();
             LoadSftp();
             LoadFtp();
 
@@ -163,9 +165,24 @@ namespace PRM.Core.Service
                 c.Runners.Insert(0, new KittyRunner());
             }
 
-            c.Runners.First(x => x is KittyRunner).Name = $"Internal {protocolName}";
+            c.Runners.First(x => x is KittyRunner).Name = $"Internal KiTTY";
             ProtocolConfigs.Add(protocolName, c);
             ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerSSH)));
+        }
+        private void LoadTelnet()
+        {
+            var protocolName = ProtocolServerTelnet.ProtocolName;
+            var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Runners ??= new List<Runner>();
+            if (c.Runners.Count == 0 || c.Runners[0] is KittyRunner == false)
+            {
+                c.Runners.RemoveAll(x => x is KittyRunner);
+                c.Runners.Insert(0, new KittyRunner());
+            }
+
+            c.Runners.First(x => x is KittyRunner).Name = $"Internal KiTTY";
+            ProtocolConfigs.Add(protocolName, c);
+            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerTelnet)));
         }
 
         private void LoadSftp()
@@ -208,7 +225,7 @@ namespace PRM.Core.Service
             {
                 var protocolName = kv.Key;
                 var config = kv.Value;
-                var file = Path.Combine(ProtocolFolderName, protocolName, $"{protocolName}.json");
+                var file = Path.Combine(ProtocolFolderName, $"{protocolName}.json");
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
 #endif
