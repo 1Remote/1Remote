@@ -204,7 +204,7 @@ namespace PRM.ViewModel
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
-        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.NameAsc;
+        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
         public EnumServerOrderBy ServerOrderBy
         {
             get => _serverOrderBy;
@@ -476,32 +476,28 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdReOrder == null)
+                return _cmdReOrder ??= new RelayCommand((o) =>
                 {
-                    _cmdReOrder = new RelayCommand((o) =>
+                    if (int.TryParse(o.ToString(), out int ot))
                     {
-                        if (int.TryParse(o.ToString(), out int ot))
+                        if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
                         {
-                            if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
+                            // cancel order
+                            if (ServerOrderBy == (EnumServerOrderBy) (ot + 1))
                             {
-                                // cancel order
-                                if (ServerOrderBy == (EnumServerOrderBy)(ot + 1))
-                                {
-                                    ot = -1;
-                                }
-                                else if (ServerOrderBy == (EnumServerOrderBy)ot)
-                                {
-                                    ++ot;
-                                }
-
-                                ServerOrderBy = (EnumServerOrderBy)ot;
-                                OrderServerList();
-                                _lastCmdReOrder = DateTime.Now;
+                                ot = -1;
                             }
+                            else if (ServerOrderBy == (EnumServerOrderBy) ot)
+                            {
+                                ++ot;
+                            }
+
+                            ServerOrderBy = (EnumServerOrderBy) ot;
+                            OrderServerList();
+                            _lastCmdReOrder = DateTime.Now;
                         }
-                    });
-                }
-                return _cmdReOrder;
+                    }
+                });
             }
         }
 

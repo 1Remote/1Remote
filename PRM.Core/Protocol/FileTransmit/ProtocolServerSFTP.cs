@@ -16,6 +16,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
 
         private string _privateKey = "";
 
+        [OtherName(Name = "PRM_SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
@@ -23,7 +24,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
         }
 
         private string _startupPath = "/";
-
+        [OtherName(Name = "PRM_STARTUP_PATH")]
         public string StartupPath
         {
             get => _startupPath;

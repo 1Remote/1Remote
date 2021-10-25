@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.Extend;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
@@ -20,6 +22,48 @@ namespace PRM.Model
 {
     public static class ProtocolHostFactory
     {
+        private static Runner GetRunner(PrmContext context, string protocolName)
+        {
+            if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
+                return null;
+
+            var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
+            var r = p.GetRunner();
+            return r;
+        }
+        private static HostBase TryGetCustomRunner(PrmContext context, string protocolName, ProtocolServerBase psb, out bool isOk)
+        {
+            isOk = true;
+            var r = GetRunner(context, protocolName);
+            if (r is ExternalRunner er)
+            {
+                var exePath = er.ExePath;
+                var args = er.Arguments;
+                if (File.Exists(exePath))
+                {
+                    // using external runner.
+                    //var template = $@"sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
+                    //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
+                    var tmpSftp = psb.Clone();
+                    tmpSftp.ConnectPreprocess(context);
+                    var exeArguments = OtherNameAttributeExtensions.Replace(tmpSftp, args);
+                    if (er.RunWithHosting)
+                    {
+                        var host2 = new IntegrateHost(context, psb, exePath, exeArguments);
+                        return host2;
+                    }
+                    else
+                    {
+                        Process.Start(exePath, exeArguments);
+                        return null;
+                    }
+                }
+            }
+
+            isOk = false;
+            return null;
+        }
+
         public static HostBase Get(PrmContext context, ProtocolServerBase server, double width = 0, double height = 0)
         {
             switch (server)
@@ -31,89 +75,78 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var p = context.ProtocolConfigurationService.ProtocolConfigs[ProtocolServerSSH.ProtocolName];
-                        var r = p.GetRunner();
-                        string exePath = "";
-                        string args = "";
+                        var host1 = TryGetCustomRunner(context, ProtocolServerSSH.ProtocolName, ssh, out var isOk);
+                        if (isOk)
+                            return host1;
+
+                        var r = GetRunner(context, ProtocolServerSSH.ProtocolName);
+                        // KittyRunner
+                        ssh.InstallKitty();
+                        var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context));
+                        // load theme for Kitty
+                        if (r is KittyRunner sdr)
                         {
-                            if (r is KittyRunner sdr)
-                            {
-                                ssh.InstallKitty();
-                                exePath = ssh.GetExeFullPath();
-                                args = ssh.GetExeArguments(context);
-                            }
-
-                            if (File.Exists(exePath) == false)
-                            {
-                                exePath = ssh.GetExeFullPath();
-                                args = ssh.GetExeArguments(context);
-                            }
-                        }
-
-                        var host = new IntegrateHost(context, ssh, exePath, args);
-
-                        {
-                            if (r is KittyRunner sdr)
-                            {
-                                // load theme for Kitty
-                                host.RunBeforeConnect = () => ssh.SetKittySessionConfig(sdr.GetPuttyFontSize(), sdr.GetPuttyThemeName(), ssh.PrivateKey);
-                                host.RunAfterConnected = () => ssh.DelKittySessionConfig();
-                            }
+                            host.RunBeforeConnect = () => ssh.SetKittySessionConfig(sdr.GetPuttyFontSize(), sdr.GetPuttyThemeName(), ssh.PrivateKey);
+                            host.RunAfterConnected = () => ssh.DelKittySessionConfig();
                         }
                         return host;
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
+                        var host1 = TryGetCustomRunner(context, ProtocolServerTelnet.ProtocolName, telnet, out var isOk);
+                        if (isOk)
+                            return host1;
+
+                        var r = GetRunner(context, ProtocolServerSSH.ProtocolName);
+                        // KittyRunner
+                        telnet.InstallKitty();
+                        var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context));
+                        // load theme for Kitty
+                        if (r is KittyRunner sdr)
                         {
-                            RunBeforeConnect = () => telnet.SetKittySessionConfig(14, "", ""),
-                            RunAfterConnected = () => telnet.DelKittySessionConfig()
-                        };
+                            host.RunBeforeConnect = () => telnet.SetKittySessionConfig(14, "", "");
+                            host.RunAfterConnected = () => telnet.DelKittySessionConfig();
+                        }
                         return host;
                     }
                 case ProtocolServerVNC vnc:
                     {
+                        var host1 = TryGetCustomRunner(context, ProtocolServerVNC.ProtocolName, vnc, out var isOk);
+                        if (isOk)
+                            return host1;
+
                         var host = new VncHost(context, vnc);
                         return host;
                     }
                 case ProtocolServerSFTP sftp:
                     {
-                        var p = context.ProtocolConfigurationService.ProtocolConfigs[ProtocolServerSFTP.ProtocolName];
-                        var r = p.GetRunner();
-                        string exePath = "";
-                        string args = "";
-                        {
-                            if (r is ExternalRunner er)
-                            {
-                                exePath = er.ExePath;
-                                args = er.Arguments;
-                                if (File.Exists(exePath))
-                                {
-                                    // using external runner.
-                                    //var template = $@"sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
-                                    //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
-                                    var tmpSftp = (ProtocolServerSFTP)sftp.Clone();
-                                    tmpSftp.ConnectPreprocess(context);
-                                    var exeArguments = OtherNameAttributeExtensions.Replace(tmpSftp, args);
-                                    var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", exeArguments);
-                                    return host2;
-                                }
-                            }
+                        var host1 = TryGetCustomRunner(context, ProtocolServerSFTP.ProtocolName, sftp, out var isOk);
+                        if (isOk)
+                            return host1;
 
-                            var host = new FileTransmitHost(context, sftp);
-                            return host;
-
-                            //if (r is InternalDefaultRunner)
-                            //{
-                            //    var host = new FileTransmitHost(context, sftp);
-                            //    return host;
-                            //}
-                        }
+                        var host = new FileTransmitHost(context, sftp);
+                        return host;
                     }
                 case ProtocolServerFTP ftp:
                     {
+                        var host1 = TryGetCustomRunner(context, ProtocolServerFTP.ProtocolName, ftp, out var isOk);
+                        if (isOk)
+                            return host1;
+
                         var host = new FileTransmitHost(context, ftp);
                         return host;
+                    }
+                case ProtocolServerApp app:
+                    {
+                        if (File.Exists(app.ExePath) == false)
+                        {
+                            // TODO alert exe is not existed.
+                            //MessageBox.Show("")
+                            return null;
+                        }
+
+                        Process.Start(app.ExePath, app.Arguments);
+                        return null;
                     }
                 default:
                     throw new NotImplementedException($"Host of {server.GetType()} is not implemented");

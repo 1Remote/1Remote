@@ -53,7 +53,7 @@ namespace PRM
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
             // init log file placement
-            var logFilePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.log.md");
+            var logFilePath = Path.Combine(appDateFolder, "Logs", $"{ConfigurationService.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
@@ -137,9 +137,6 @@ namespace PRM
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
-
-            //string[] pargs = Environment.GetCommandLineArgs();
-
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;

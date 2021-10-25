@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using JsonKnownTypes;
 using Newtonsoft.Json;
 using PRM.Core.Model;
+using PRM.Core.Protocol.Base;
 using PRM.Core.Protocol.FileTransmit.FTP;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
@@ -178,6 +179,7 @@ namespace PRM.Core.Protocol
             get => _commandAfterDisconnected;
             set => SetAndNotifyIfChanged(nameof(CommandAfterDisconnected), ref _commandAfterDisconnected, value);
         }
+
 
         /// <summary>
         /// copy all value type fields

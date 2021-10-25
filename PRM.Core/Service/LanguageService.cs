@@ -137,6 +137,21 @@ namespace PRM.Core.Service
 
             _languageCode = code;
             var resource = Resources[code];
+
+            var en = Resources["en-us"];
+            var missingFields = MultiLangHelper.FindMissingFields(en, resource);
+            if (missingFields.Count > 0)
+            {
+                foreach (var field in missingFields)
+                {
+                    resource.Add(field, en[field]);
+                }
+#if DEV
+                var mf = string.Join(", ", missingFields);
+                MessageBox.Show($"language resource missing:\r\n {mf}", Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+#endif
+            }
+
             _applicationResourceDictionary?.ChangeLanguage(resource);
             GlobalEventHelper.OnLanguageChanged?.Invoke();
             return true;
