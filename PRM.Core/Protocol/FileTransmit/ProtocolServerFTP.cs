@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using PRM.Core.Model;
 using PRM.Core.Protocol.FileTransmit.Transmitters;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.FTP
 {
@@ -14,6 +15,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
         }
 
         private string _startupPath = "/";
+        [OtherName(Name = "PRM_STARTUP_PATH")]
         public string StartupPath
         {
             get => _startupPath;

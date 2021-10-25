@@ -25,7 +25,7 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         private string _privateKey = "";
 
-        [OtherNameAttribute(Name = "PRM_PRIVATE_KEY_PATH")]
+        [OtherName(Name = "PRM_SSH_PRIVATE_KEY_PATH")]
         public string PrivateKey
         {
             get => _privateKey;
