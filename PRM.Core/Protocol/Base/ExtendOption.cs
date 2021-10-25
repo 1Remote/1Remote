@@ -12,7 +12,7 @@ namespace PRM.Core.Protocol.Base
         Int,
     }
 
-    public class ExtendOption : NotifyPropertyChangedBase
+    public class ExtendOption : NotifyPropertyChangedBase, ICloneable
     {
 
         private string _fieldName = "";
@@ -28,6 +28,18 @@ namespace PRM.Core.Protocol.Base
         {
             get => _type;
             set => SetAndNotifyIfChanged(nameof(Type), ref _type, value);
+        }
+
+        private string _fieldValue = "";
+        public string FieldValue
+        {
+            get => _fieldValue;
+            set => SetAndNotifyIfChanged(nameof(FieldValue), ref _fieldValue, value);
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

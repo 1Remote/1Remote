@@ -258,18 +258,25 @@ namespace PRM.View.ProtocolHosts
             Task.Factory.StartNew(() =>
             {
                 const int waitSecond = 4;
-                const int sleepMs = 10;
+                const int sleepMs = 100;
                 for (int i = 0; i < waitSecond * 1000 / sleepMs; i++)
                 {
-                    Thread.Sleep(sleepMs);
-                    _process.Refresh();
-                    if (_process.MainWindowHandle == IntPtr.Zero)
+                    try
                     {
-                        continue;
+                        Thread.Sleep(sleepMs);
+                        _process.Refresh();
+                        if (_process.MainWindowHandle == IntPtr.Zero)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            _exeHandles.Add(_process.MainWindowHandle);
+                            break;
+                        }
                     }
-                    else
+                    catch (Exception)
                     {
-                        _exeHandles.Add(_process.MainWindowHandle);
                         break;
                     }
                 }

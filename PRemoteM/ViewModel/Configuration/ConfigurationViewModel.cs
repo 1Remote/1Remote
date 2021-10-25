@@ -210,6 +210,8 @@ namespace PRM.ViewModel.Configuration
             }
         }
 
+        public string LogFolderName => new FileInfo(SimpleLogHelper.LogFileName).DirectoryName;
+
         public List<MatchProviderInfo> AvailableMatcherProviders => _configurationService.AvailableMatcherProviders;
 
         #region Database
@@ -576,6 +578,8 @@ namespace PRM.ViewModel.Configuration
             RaisePropertyChanged(nameof(AccentTextColor));
             RaisePropertyChanged(nameof(BackgroundColor));
             RaisePropertyChanged(nameof(BackgroundTextColor));
+
+            _themeService.ApplyTheme(_configurationService.Theme);
         }
 
         public string ThemeName

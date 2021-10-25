@@ -213,6 +213,8 @@ namespace PRM.Model
 
             // fullscreen normally
             var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server);
+            if(host == null)
+                return;
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             _protocolHosts.Add(host.ConnectionId, host);
             host.OnClosed += OnProtocolClose;
@@ -247,6 +249,9 @@ namespace PRM.Model
             // get display area size for host
             var size = tab.GetTabContentSize();
             var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server, size.Width, size.Height);
+            if (host == null)
+                return;
+
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += OnFullScreen2Window;
@@ -309,7 +314,7 @@ namespace PRM.Model
                 ConnectWithFullScreen(vmProtocolServer);
             else
                 ConnectWithTab(vmProtocolServer, assignTabToken);
-
+            CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
         }
 

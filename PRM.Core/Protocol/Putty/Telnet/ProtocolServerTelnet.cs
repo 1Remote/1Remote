@@ -13,6 +13,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
 {
     public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IKittyConnectable
     {
+        public static string ProtocolName = "Telnet";
         public ProtocolServerTelnet() : base("Telnet", "Putty.Telnet.V1", "Telnet")
         {
         }

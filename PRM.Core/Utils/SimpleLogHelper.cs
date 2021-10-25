@@ -267,15 +267,19 @@ namespace Shawn.Utils
             if (LogFileMaxHistoryDays <= 0) return;
             var di = fi.Directory;
             var withOutExtension = fi.Name.Substring(0, fi.Name.LastIndexOf(".", StringComparison.Ordinal));
-            var fis = di.GetFiles($"{withOutExtension}*{fi.Extension}");
+            var fis = di.GetFiles($"*{fi.Extension}");
             foreach (var fileInfo in fis)
             {
                 try
                 {
                     var dateStr = fileInfo.Name.Replace(fileInfo.Extension, "");
                     dateStr = dateStr.Substring(dateStr.LastIndexOf("_") + 1);
-                    if (DateTime.TryParseExact(dateStr, "yyyyMMdd", null, DateTimeStyles.None, out var date)
-                        && date < DateTime.Now.AddDays(-1 * LogFileMaxHistoryDays))
+                    if((DateTime.Now - fileInfo.LastWriteTime).Days > LogFileMaxHistoryDays)
+                    {
+                        fileInfo.Delete();
+                    }
+                    else if (DateTime.TryParseExact(dateStr, "yyyyMMdd", null, DateTimeStyles.None, out var date)
+                             && date < DateTime.Now.AddDays(-1 * LogFileMaxHistoryDays))
                     {
                         fileInfo.Delete();
                     }
