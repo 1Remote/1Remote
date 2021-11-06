@@ -13,7 +13,7 @@
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:Exe Path"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding ExePath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
@@ -25,10 +25,19 @@
             </Grid>
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT:command parameter"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Arguments,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+                    <CheckBox IsChecked="{Binding RunWithHosting}">
+                        <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+                    </CheckBox>
                 </StackPanel>
             </Grid>
         </StackPanel>

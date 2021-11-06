@@ -14,7 +14,7 @@ using Shawn.Utils;
 
 namespace PRM.Core.Service
 {
-    public class LanguageService: ILanguageService
+    public class LanguageService : ILanguageService
     {
         public static LanguageService TmpLanguageService = null;
 
@@ -41,16 +41,16 @@ namespace PRM.Core.Service
             AddStaticLanguageResources("fr-fr");
             _defaultLanguageResourceDictionary = Resources["en-us"];
 
-#if DEV
-            // check if any field missing in the LanguageResources.
-            var en = Resources["en-us"];
-            var zh_cn = Resources["zh-cn"];
-            var de_de = Resources["de-de"];
-            var fr_fr = Resources["fr-fr"];
-            Debug.Assert(MultiLangHelper.FindMissingFields(en, zh_cn).Count == 0);
-            Debug.Assert(MultiLangHelper.FindMissingFields(en, de_de).Count == 0);
-            Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
-#endif
+//#if DEV
+//            // check if any field missing in the LanguageResources.
+//            var en = Resources["en-us"];
+//            var zh_cn = Resources["zh-cn"];
+//            var de_de = Resources["de-de"];
+//            var fr_fr = Resources["fr-fr"];
+//            Debug.Assert(MultiLangHelper.FindMissingFields(en, zh_cn).Count == 0);
+//            Debug.Assert(MultiLangHelper.FindMissingFields(en, de_de).Count == 0);
+//            Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
+//#endif
 
             this._languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
             SetLanguage(languageCode);
@@ -149,6 +149,7 @@ namespace PRM.Core.Service
 #if DEV
                 var mf = string.Join(", ", missingFields);
                 MessageBox.Show($"language resource missing:\r\n {mf}", Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                File.WriteAllText("LANGUAGE_ERROR.txt", mf);
 #endif
             }
 

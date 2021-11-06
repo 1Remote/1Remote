@@ -27,5 +27,24 @@
         <ResourceDictionary Source="Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/SliderStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"></ResourceDictionary>
+
+        <ResourceDictionary>
+            <Style TargetType="{x:Type Hyperlink}">
+                <Setter Property="Foreground" Value="#297ccf"></Setter>
+                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
+                        <Setter Property="TextBlock.TextDecorations">
+                            <Setter.Value>
+                                <TextDecorationCollection>
+                                    <TextDecoration Location="Underline" />
+                                </TextDecorationCollection>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

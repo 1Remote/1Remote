@@ -241,7 +241,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="TXT:DEFAULT" VerticalAlignment="Center" FontWeight="Bold" Margin="5"></TextBlock>
+                    <TextBlock Text="{DynamicResource Default}" VerticalAlignment="Center" FontWeight="Bold" Margin="5"></TextBlock>
 
                     <ComboBox Grid.Column="1" ItemsSource="{Binding RunnerNames}"
                                   SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
@@ -249,7 +249,7 @@
 
                     <Button Grid.Column="2" Width="30" Height="30" 
                             Margin="10 0 0 0"
-                            ToolTip="TXT:Add new protocol runner."
+                            ToolTip="{DynamicResource 'New runner'}"
                             Style="{StaticResource ButtonBarAccentBackgroundStyle}"
                             HorizontalAlignment="Right"
                             Command="{Binding CmdAddRunner}"
@@ -263,7 +263,7 @@
                     </Button>
                 </Grid>
 
-                <ListBox Grid.Row="2" Opacity="0.75"
+                <ListBox Grid.Row="2" Opacity="0.9"
                              Style="{StaticResource ListBoxRunners}"
                              ItemsSource="{Binding Runners}">
                 </ListBox>
