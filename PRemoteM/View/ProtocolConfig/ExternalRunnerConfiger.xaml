@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="PRM.View.ProtocolConfig.ExternalRunnerConfiger"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:runner="clr-namespace:PRM.Core.Protocol.Runner;assembly=PRM.Core"
+             xmlns:local="clr-namespace:PRM.View.ProtocolConfig"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance runner:ExternalRunner}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Grid.IsSharedSizeScope="True">
+        <Grid Height="20"></Grid>
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="300" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding ExePath}" 
+                     ToolTip="{Binding ExePath}"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Center"></TextBox>
+            <Button Grid.Column="2" Style="{StaticResource ButtonPrimaryStyle}" 
+                    Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                    Content="{DynamicResource word_select}" 
+                    Command="{Binding CmdSelectExePath}"></Button>
+        </Grid>
+
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding Arguments}" 
+                         ToolTip="{Binding Arguments}"
+                         TextWrapping="Wrap"
+                         VerticalContentAlignment="Center"></TextBox>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                        Margin="5 0 0 0" HorizontalAlignment="Left"
+                        Foreground="#297ccf"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                        attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentMidBrush}"
+                        attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource AccentMidBrush}"
+                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                        ToolTip="{DynamicResource 'Show environment variables'}"
+                        Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}"
+                >
+                    <Path Stretch="Uniform" Width="12"
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Data="F1 M 17.998047 10.019531 C 17.998047 12.226562 17.216797 14.109701 15.654297 15.668945 C 14.091797 17.228189 12.207031 18.007812 10 18.007812 C 7.792969 18.007812 5.908203 17.228189 4.345703 15.668945 C 2.783203 14.109701 2.001953 12.226562 2.001953 10.019531 C 2.001953 7.8125 2.783203 5.927734 4.345703 4.365234 C 5.908203 2.802735 7.792969 2.021485 10 2.021484 C 12.207031 2.021485 14.091797 2.802735 15.654297 4.365234 C 17.216797 5.927734 17.998047 7.8125 17.998047 10.019531 Z M 16.689453 10.019531 C 16.689453 8.170573 16.036783 6.591797 14.731445 5.283203 C 13.426105 3.974609 11.848957 3.320312 10 3.320312 C 8.151041 3.320312 6.572266 3.974609 5.263672 5.283203 C 3.955078 6.591797 3.300781 8.170573 3.300781 10.019531 C 3.300781 11.86849 3.955078 13.445639 5.263672 14.750977 C 6.572266 16.056314 8.151041 16.708984 10 16.708984 C 11.848957 16.708984 13.426105 16.056314 14.731445 14.750977 C 16.036783 13.445639 16.689453 11.86849 16.689453 10.019531 Z M 11.640625 5.898438 C 11.640625 6.321615 11.479492 6.682943 11.157227 6.982422 C 10.834961 7.281901 10.449219 7.431641 10 7.431641 C 9.544271 7.431641 9.1569 7.281901 8.837891 6.982422 C 8.51888 6.682943 8.359375 6.321615 8.359375 5.898438 C 8.359375 5.475261 8.51888 5.113933 8.837891 4.814453 C 9.1569 4.514975 9.544271 4.365234 10 4.365234 C 10.449219 4.365234 10.834961 4.514975 11.157227 4.814453 C 11.479492 5.113933 11.640625 5.475261 11.640625 5.898438 Z M 11.337891 15.996094 L 8.652344 15.996094 L 8.652344 8.378906 L 11.337891 8.378906 Z "></Path>
+                </Button>
+                <TextBlock VerticalAlignment="Center" Margin="2 0">
+                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" 
+                               utils:HyperlinkHelper.IsOpenExternal="True">
+                        (?)
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+            <CheckBox Grid.Column="1" IsChecked="{Binding RunWithHosting}">
+                <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+            </CheckBox>
+        </Grid>
+    </StackPanel>
+</UserControl>

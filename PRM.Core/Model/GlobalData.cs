@@ -5,17 +5,19 @@ using System.Diagnostics;
 using System.Linq;
 using PRM.Core.DB;
 using PRM.Core.Protocol;
+using PRM.Core.Service;
 using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        private DbOperator _dbOperator;
+        private DataService _dataService;
+        private LocalityService _localityService;
 
-        public void SetDbOperator(DbOperator dbOperator)
+        public void SetDbOperator(DataService dataService)
         {
-            _dbOperator = dbOperator;
+            _dataService = dataService;
         }
 
         public Action<string> OnMainWindowServerFilterChanged;
@@ -38,17 +40,19 @@ namespace PRM.Core.Model
         #region Server Data
 
         public Action VmItemListDataChanged;
-        private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
 
-        public ObservableCollection<VmProtocolServer> VmItemList
-        {
-            get => _vmItemList;
-            set
-            {
-                SetAndNotifyIfChanged(ref _vmItemList, value);
-                VmItemListDataChanged?.Invoke();
-            }
-        }
+        //private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
+        //public ObservableCollection<VmProtocolServer> VmItemList
+        //{
+        //    get => _vmItemList;
+        //    set
+        //    {
+        //        SetAndNotifyIfChanged(ref _vmItemList, value);
+        //        VmItemListDataChanged?.Invoke();
+        //    }
+        //}
+
+        public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
 
         private ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();
         public ObservableCollection<Tag> Tags
@@ -58,6 +62,12 @@ namespace PRM.Core.Model
         }
 
         private string _selectedTagName = "";
+
+        public GlobalData(LocalityService localityService)
+        {
+            _localityService = localityService;
+        }
+
         public string SelectedTagName
         {
             get => _selectedTagName;
@@ -66,7 +76,7 @@ namespace PRM.Core.Model
                 if (_selectedTagName == value) return;
                 MainWindowServerFilter = "";
                 SetAndNotifyIfChanged(nameof(SelectedTagName), ref _selectedTagName, value);
-                SystemConfig.Instance.Locality.MainWindowTabSelected = value;
+                _localityService.MainWindowTabSelected = value;
             }
         }
 
@@ -82,7 +92,7 @@ namespace PRM.Core.Model
             var tags = new List<Tag>();
             foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
             {
-                if(tagNames == null)
+                if (tagNames == null)
                     continue;
                 foreach (var tagName in tagNames)
                 {
@@ -98,58 +108,32 @@ namespace PRM.Core.Model
             SelectedTagName = t;
         }
 
-        public void ServerListUpdate(ProtocolServerBase protocolServer = null, bool doInvoke = true)
+        public void ReloadServerList()
         {
-            if (_dbOperator == null)
+            if (_dataService == null)
             {
                 return;
             }
             // read from db
-            if (protocolServer == null)
+            var tmp = new ObservableCollection<VmProtocolServer>();
+            foreach (var serverAbstract in _dataService.Database_GetServers())
             {
-                var tmp = new ObservableCollection<VmProtocolServer>();
-                foreach (var serverAbstract in _dbOperator.GetServers())
+                try
                 {
-                    try
-                    {
-                        _dbOperator.DecryptInfo(serverAbstract);
-                        tmp.Add(new VmProtocolServer(serverAbstract));
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Info(e);
-                    }
+                    _dataService.DecryptToRamLevel(serverAbstract);
+                    tmp.Add(new VmProtocolServer(serverAbstract));
                 }
-                VmItemList = tmp;
-            }
-            // edit
-            else if (protocolServer.Id > 0 && VmItemList.First(x => x.Server.Id == protocolServer.Id) != null)
-            {
-                ServerListClearSelect();
-                _dbOperator.DbUpdateServer(protocolServer);
-                int i = VmItemList.Count;
-                if (VmItemList.Any(x => x.Server.Id == protocolServer.Id))
+                catch (Exception e)
                 {
-                    var old = VmItemList.First(x => x.Server.Id == protocolServer.Id);
-                    i = VmItemList.IndexOf(old);
-                    VmItemList.Remove(old);
+                    SimpleLogHelper.Info(e);
                 }
-
-                VmItemList.Insert(i, new VmProtocolServer(protocolServer));
-                if (doInvoke)
-                    VmItemListDataChanged?.Invoke();
             }
-            // add
-            else
-            {
-                _dbOperator.DbAddServer(protocolServer);
-                ServerListUpdate(null, doInvoke);
-            }
-
+            VmItemList = tmp;
+            VmItemListDataChanged?.Invoke();
             UpdateTags();
         }
 
-        public void ServerListClearSelect()
+        public void UnselectAllServers()
         {
             foreach (var item in VmItemList)
             {
@@ -157,16 +141,61 @@ namespace PRM.Core.Model
             }
         }
 
-        public void ServerListRemove(int id)
+        public void AddServer(ProtocolServerBase protocolServer, bool doInvoke = true)
         {
-            if (_dbOperator == null)
+            _dataService.Database_InsertServer(protocolServer);
+            if (doInvoke)
+            {
+                ReloadServerList();
+                VmItemListDataChanged?.Invoke();
+            }
+        }
+
+        public void UpdateServer(ProtocolServerBase protocolServer, bool doInvoke = true)
+        {
+            Debug.Assert(protocolServer.Id > 0);
+            UnselectAllServers();
+            _dataService.Database_UpdateServer(protocolServer);
+            int i = VmItemList.Count;
+            if (VmItemList.Any(x => x.Server.Id == protocolServer.Id))
+            {
+                var old = VmItemList.First(x => x.Server.Id == protocolServer.Id);
+                if (old.Server != protocolServer)
+                {
+                    i = VmItemList.IndexOf(old);
+                    VmItemList.Remove(old);
+                    VmItemList.Insert(i, new VmProtocolServer(protocolServer));
+                }
+            }
+
+            if (doInvoke)
+                VmItemListDataChanged?.Invoke();
+        }
+
+        public void DeleteServer(int id)
+        {
+            if (_dataService == null)
             {
                 return;
             }
             Debug.Assert(id > 0);
-            if (_dbOperator.DbDeleteServer(id))
+            if (_dataService.Database_DeleteServer(id))
             {
-                ServerListUpdate();
+                ReloadServerList();
+            }
+        }
+
+        private void OrderServerByConnectTime()
+        {
+            for (var i = 1; i < VmItemList.Count; i++)
+            {
+                var s0 = VmItemList[i - 1];
+                var s1 = VmItemList[i];
+                if (s0.Server.LastConnTime < s1.Server.LastConnTime)
+                {
+                    VmItemList = new ObservableCollection<VmProtocolServer>(VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+                    break;
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace PRM.Core.Protocol
+namespace PRM.Core.I
 {
     public interface ITab
     {
