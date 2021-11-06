@@ -83,13 +83,7 @@ namespace PRM.ViewModel
         public int ProgressBarMaximum
         {
             get => _progressBarMaximum;
-            set
-            {
-                if (value != _progressBarMaximum)
-                {
-                    SetAndNotifyIfChanged(nameof(ProgressBarMaximum), ref _progressBarMaximum, value);
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _progressBarMaximum, value);
         }
 
         private string _progressBarInfo = "";
@@ -97,13 +91,7 @@ namespace PRM.ViewModel
         public string ProgressBarInfo
         {
             get => _progressBarInfo;
-            set
-            {
-                if (value != _progressBarInfo)
-                {
-                    SetAndNotifyIfChanged(nameof(ProgressBarInfo), ref _progressBarInfo, value);
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _progressBarInfo, value);
         }
 
         #endregion Properties
@@ -131,7 +119,7 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server, isDuplicate)),
+                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server, isDuplicate)),
                 };
 
                 Window.ActivateMe();
@@ -141,13 +129,13 @@ namespace PRM.ViewModel
             {
                 var server = new ProtocolServerRDP();
                 if (string.IsNullOrWhiteSpace(tagName) == false)
-                    server.Tags = new List<string>() {tagName};
+                    server.Tags = new List<string>() { tagName };
 
                 DispPage = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(Context, server)),
+                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server)),
                 };
             });
 
@@ -157,7 +145,7 @@ namespace PRM.ViewModel
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(new VmServerEditorPage(Context, servers)),
+                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, servers)),
                 };
             };
 
@@ -195,7 +183,7 @@ namespace PRM.ViewModel
                         {
                             InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                             OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SystemConfigPage(this, Context, (Type)o),
+                            Page = new SystemConfigPage(this, Context, o?.ToString()),
                         };
                         Window.PopupMenu.IsOpen = false;
                     }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));

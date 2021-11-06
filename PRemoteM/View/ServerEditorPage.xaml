@@ -4,34 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
-             xmlns:utils="clr-namespace:Shawn.Utils"
              xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
-             xmlns:controls2="clr-namespace:PRM.Controls"
+             xmlns:controls="clr-namespace:PRM.Controls"
+             xmlns:icons="clr-namespace:PRM.Resources.Icons"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              d:DesignHeight="1000" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}" ClipToBounds="True">
+    <Grid Background="{DynamicResource BackgroundBrush}" ClipToBounds="True">
         <Grid.Resources>
             <system:Double x:Key="TopHeight">20</system:Double>
-            <system:Double x:Key="BottomHeight">30</system:Double>
+            <system:Double x:Key="BottomHeight">40</system:Double>
         </Grid.Resources>
 
         <StackPanel Width="400" HorizontalAlignment="Right" VerticalAlignment="Top" 
                     ToolTip="{Binding Title}"
                     RenderTransformOrigin="0.5,0.5" 
-                    Margin="0,35,-130,0" Background="{DynamicResource MainColor2Brush}">
+                    Margin="0,35,-130,0" Background="{DynamicResource AccentMidBrush}">
             <StackPanel.Style>
                 <Style TargetType="StackPanel">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -62,7 +54,7 @@
                        Margin="0 5"
                        Width="100"
                        TextAlignment="Center"
-                       Foreground="{DynamicResource MainColor2ForegroundBrush}"
+                       Foreground="{DynamicResource AccentTextBrush}"
                        HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock.FontSize>
                     <MultiBinding Converter="{StaticResource ConverterTextWidthAndContent2PresentationSize}" ConverterParameter="FontSize">
@@ -86,8 +78,7 @@
                 x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
                 HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Auto"
-                Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                VerticalScrollBarVisibility="Auto">
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
@@ -96,8 +87,8 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <utils:AutoCompleteComboBox x:Name="DispName"
-                                                                    Text="{Binding Server.DispName, UpdateSourceTrigger=PropertyChanged}"
+                                        <controls:AutoCompleteComboBox x:Name="DisplayName"
+                                                                    Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
                                         />
                                     </Grid>
@@ -108,9 +99,9 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_tag}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls2:TagsEditor x:Name="TagsEditor"
+                                        <controls:TagsEditor x:Name="TagsEditor"
                                                               Tags="{Binding Server.Tags, Mode=TwoWay}"
-                                                              TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls2:TagsEditor>
+                                                              TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls:TagsEditor>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -126,13 +117,15 @@
                                                   Background="Transparent"
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
-                                                    <Border BorderThickness="1" BorderBrush="Black"></Border>
-                                                    <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                    <Border BorderThickness="1" BorderBrush="Black" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+                                                        <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                    </Border>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
                                                     HexColor="{Binding Server.MarkColorHex}"
-                                                    Foreground="{DynamicResource MainBgColorForegroundBrush}" Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                    Foreground="{DynamicResource BackgroundTextBrush}" 
+                                                    Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
@@ -143,47 +136,46 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                        <Border BorderBrush="{DynamicResource MainColor2Brush}" BorderThickness="1" Background="{DynamicResource MainBgColorBrush}">
+                                        <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1">
                                             <Grid Width="510">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                                                     <ColumnDefinition></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
-                                                <StackPanel Background="{DynamicResource MainBgColorBrush}">
-                                                    <controls2:LogoSelector x:Name="LogoSelector"></controls2:LogoSelector>
+                                                <StackPanel >
+                                                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
-                                                        <controls:ButtonEx Style="{StaticResource MainColor2Button}" Padding="0" Content="{DynamicResource word_done}" Name="ButtonLogoSave" Click="ButtonLogoSave_OnClick">
-                                                        </controls:ButtonEx>
+                                                        <Button Style="{StaticResource ButtonBarAccentStyle}" 
+                                                                Content="{DynamicResource word_done}" 
+                                                                Click="ButtonLogoSave_OnClick">
+                                                        </Button>
 
-                                                        <controls:ButtonEx Style="{StaticResource MainColor1Button}" Padding="0" Content="{DynamicResource word_reset}" Name="ButtonLogoCancel" Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
-                                                        </controls:ButtonEx>
+                                                        <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
+                                                                Content="{DynamicResource word_reset}" 
+                                                                Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
+                                                        </Button>
                                                     </Grid>
                                                 </StackPanel>
                                                 <Grid Grid.Column="1">
-                                                    <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
+                                                    <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
                                                     <ListView BorderThickness="0"
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
-                                                              ItemsSource="{Binding Source={x:Static protocol:ServerIcons.Instance}, Path=Icons}"
-                                                              Background="Transparent"
-                                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                                                        <ListView.Resources>
-                                                            <Style TargetType="ScrollViewer">
-                                                                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-                                                            </Style>
-                                                        </ListView.Resources>
+                                                              ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
+                                                              Background="Transparent">
                                                         <ListView.ItemsPanel>
                                                             <ItemsPanelTemplate>
-                                                                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth}" />
+                                                                <WrapPanel Orientation="Horizontal" 
+                                                                           Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleAdd_2}}" />
                                                             </ItemsPanelTemplate>
                                                         </ListView.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Grid Margin="5">
+                                                                <Grid Margin="2">
                                                                     <Image Source="{Binding}" Height="30"></Image>
                                                                 </Grid>
                                                             </DataTemplate>
@@ -201,11 +193,12 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
-                                                 ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
+                                                                                                  ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
                                     </Grid>
-                                    <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                    <Button Margin="5 0 0 0" 
+                                            VerticalAlignment="Stretch"
+                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_test}"></Button>
                                 </StackPanel>
                             </Grid>
 
@@ -214,11 +207,12 @@
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <TextBox Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
-                                                 Style="{StaticResource TextBoxWithPlaceHolder}"
-                                                 ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
+                                                                                                  ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
                                                  Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
                                     </Grid>
-                                    <controls:ButtonEx Margin="5 0 0 0" Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_test}"></controls:ButtonEx>
+                                    <Button Margin="5 0 0 0" 
+                                            VerticalAlignment="Stretch"
+                                            Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_test}"></Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -229,15 +223,15 @@
         </Grid>
 
         <Grid VerticalAlignment="Top">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource TopHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource TopHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="270"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
+            <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource TopHeight}">
-                    <TextBlock Foreground="{DynamicResource MainColor1ForegroundBrush}" 
+                    <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" 
                                Margin="50 0" TextTrimming="CharacterEllipsis"
                                Text="{Binding Title}"
                                ToolTip="{Binding Title}"
@@ -245,13 +239,16 @@
 
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                  Style="{StaticResource MinHorizontalScrollViewerStyle}">
+                                  utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                  attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
+                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
+                                  Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
                             <ListBox Name="ListBoxProtocols"
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding ProtocolList}"
                                     SelectedValue="{Binding ProtocolSelected}"
-                                    Background="{StaticResource MainColor1Brush}"
+                                    Background="{StaticResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -291,7 +288,7 @@
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="Selector.IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
-                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                         </Trigger>
                                                         <MultiTrigger>
                                                             <MultiTrigger.Conditions>
@@ -299,7 +296,7 @@
                                                                 <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
                                                             </MultiTrigger.Conditions>
                                                             <MultiTrigger.Setters>
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentLightBrush}"></Setter>
                                                             </MultiTrigger.Setters>
                                                         </MultiTrigger>
                                                     </ControlTemplate.Triggers>
@@ -307,10 +304,10 @@
                                             </Setter.Value>
                                         </Setter>
 
-                                        <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
+                                                <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -339,31 +336,30 @@
         </Grid>
 
         <Grid VerticalAlignment="Bottom">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource BottomHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource BottomHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="90"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
 
                     <Grid Width="300">
-                        <controls:ButtonEx Name="ButtonSave"
-                                Padding="0 1 0 0" Width="80" Height="20"
+                        <Button Name="ButtonSave"
+                                Padding="0 1 0 0" Width="80" Height="25"
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
-                                Style="{StaticResource MainColor2ButtonRadius3}"
-                                BorderThickness="0" Content="{DynamicResource word_save}">
-                        </controls:ButtonEx>
+                                Style="{StaticResource ButtonAccentStyle}"
+                                Content="{DynamicResource word_save}">
+                        </Button>
 
-                        <controls:ButtonEx Padding="0 1 0 0" Width="80" Height="20"
+                        <Button Padding="0 1 0 0" Width="80" Height="25"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
-                                Style="{StaticResource MainColor1ButtonRadius3}"
-                                BorderThickness="1"
+                                Style="{StaticResource ButtonPrimaryStyle}"
                                 Content="{DynamicResource word_cancel}">
-                        </controls:ButtonEx>
+                        </Button>
                     </Grid>
                 </Grid>
             </Border>

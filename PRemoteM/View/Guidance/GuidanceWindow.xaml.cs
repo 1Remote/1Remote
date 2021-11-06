@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media.Animation;
 using PRM.Core.Model;
+using PRM.ViewModel.Configuration;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
 
@@ -13,13 +14,11 @@ namespace PRM.View.Guidance
     /// </summary>
     public partial class GuidanceWindow : WindowChromeBase
     {
-        public GuidanceWindow(SystemConfig config)
+        public GuidanceWindow(PrmContext context)
         {
             InitializeComponent();
 
             // stop auto saving configs.
-            SystemConfig = config;
-            SystemConfig.StopAutoSaveConfig = true;
 
             _step = 0;
             Grid1.Visibility = Visibility.Visible;
@@ -49,18 +48,18 @@ namespace PRM.View.Guidance
             Console.WriteLine("* 2-letter ISO Name: {0}", ci.TwoLetterISOLanguageName);
             Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
             Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
-            string code = ci.Name.ToLower();
-            SystemConfig.Instance.Language.CurrentLanguageCode = code;
+
+            ConfigurationViewModel = new ConfigurationViewModel(null, context);
+            ConfigurationViewModel.Language = ci.Name.ToLower();
 
             // saving config when this window close
             Closed += (sender, args) =>
             {
-                SystemConfig.StopAutoSaveConfig = false;
-                SystemConfig.Save();
+                ConfigurationViewModel.CmdSaveAndGoBack.Execute();
             };
         }
 
-        public SystemConfig SystemConfig { get; set; }
+        public ConfigurationViewModel ConfigurationViewModel { get; set; }
 
         private int _step = 0;
 

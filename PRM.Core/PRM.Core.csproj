@@ -63,20 +63,14 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AxMSTSCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll</HintPath>
-    </Reference>
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.78\lib\net461\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="FluentFTP, Version=33.0.3.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentFTP.33.0.3\lib\net45\FluentFTP.dll</HintPath>
     </Reference>
-    <Reference Include="MSTSCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>Protocol\RDP\Host\RDPv9\MSTSCLib.dll</HintPath>
+    <Reference Include="JsonKnownTypes, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JsonKnownTypes.0.5.4\lib\netstandard2.0\JsonKnownTypes.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -105,8 +99,20 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="ToolGood.Words.FirstPinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToolGood.Words.FirstPinyin.3.0.1.4\lib\net40\ToolGood.Words.FirstPinyin.dll</HintPath>
+    </Reference>
+    <Reference Include="ToolGood.Words.Pinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToolGood.Words.Pinyin.3.0.1.4\lib\net40\ToolGood.Words.Pinyin.dll</HintPath>
+    </Reference>
     <Reference Include="VariableKeywordMatcher, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VariableKeywordMatcher.1.0.5\lib\net48\VariableKeywordMatcher.dll</HintPath>
+    </Reference>
+    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYin, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.1.0.5\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYin.dll</HintPath>
+    </Reference>
+    <Reference Include="VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.1.0.5\lib\net48\VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials.dll</HintPath>
     </Reference>
     <Reference Include="VncSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=61974755c7bfea7c, processorArchitecture=MSIL">
       <HintPath>..\packages\VncSharp.1.0.7.0\lib\VncSharp.dll</HintPath>
@@ -115,67 +121,51 @@
       <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DB\Dapper\DapperDb.cs" />
     <Compile Include="DB\EnumDbStatus.cs" />
     <None Include="DB\freesql\DbConfig.csexp" />
     <None Include="DB\freesql\DbServer.csexp" />
-    <Compile Include="Model\DbOperator.cs" />
-    <Compile Include="DB\DbExtensions.cs" />
+    <Compile Include="I\ILanguageService.cs" />
+    <Compile Include="Protocol\Base\ExtendOption.cs" />
+    <Compile Include="Protocol\Extend\ProtocolServerApp.cs" />
+    <Compile Include="Protocol\ProtocolConfig.cs" />
+    <Compile Include="Protocol\Runner\Default\KittyRunner.cs" />
+    <Compile Include="Protocol\Runner\Default\InternalDefaultRunner.cs" />
+    <Compile Include="Protocol\Runner\Runner.cs" />
+    <Compile Include="Protocol\Runner\ExternalRunner.cs" />
+    <Compile Include="Service\DataService.cs" />
     <None Include="DB\freesql\FreeSqlDb.csexp" />
     <Compile Include="I\IDb.cs" />
-    <Compile Include="I\IDbServer.cs" />
+    <Compile Include="I\IDbServerModel.cs" />
     <Compile Include="DB\Dapper\Config.cs" />
-    <Compile Include="DB\Dapper\Server.cs" />
-    <Compile Include="Model\KeywordMatchProviderInfo.cs" />
-    <Compile Include="Model\KeywordMatchService.cs" />
+    <Compile Include="DB\Dapper\ServerModel.cs" />
+    <Compile Include="Service\KeywordMatchService.cs" />
+    <Compile Include="Service\ConfigurationService.cs" />
     <Compile Include="Model\PrmContext.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
-    <Compile Include="Model\SystemConfig.KeywordMatch.cs" />
     <Compile Include="Model\Tag.cs" />
-    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml.cs">
-      <DependentUpon>ProtocolServerWithAddrPortBaseForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml.cs">
-      <DependentUpon>ProtocolServerWithAddrPortUserPwdBaseForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\Putty\KittyPortableSessionConfigReader.cs" />
+    <Compile Include="I\IIntegratable.cs" />
+    <Compile Include="Service\LanguageService.cs" />
+    <Compile Include="Service\LauncherService.cs" />
+    <Compile Include="Service\ProtocolConfigurationService.cs" />
+    <Compile Include="Service\ThemeService.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
-    <Compile Include="Model\SystemConfig.cs" />
-    <Compile Include="Model\SystemConfig.DataSecurity.cs" />
-    <Compile Include="Model\SystemConfig.General.cs" />
-    <Compile Include="Model\SystemConfig.Language.cs" />
-    <Compile Include="Model\SystemConfig.Locality.cs" />
-    <Compile Include="Model\SystemConfig.Theme.cs" />
-    <Compile Include="Model\SystemConfig.Launcher.cs" />
-    <Compile Include="Model\SystemConfigBase.cs" />
-    <Compile Include="Protocol\Putty\PuttyOptionItem.cs" />
-    <Compile Include="Protocol\Putty\EnumKittyOptionKey.cs" />
+    <Compile Include="Service\LocalityService.cs" />
+    <Compile Include="External\KiTTY\KittyConfigKeyValuePair.cs" />
+    <Compile Include="External\KiTTY\EnumKittyConfigKey.cs" />
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
     <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
     <Compile Include="Utils\MouseMiddleClick.cs" />
+    <Compile Include="Utils\OtherNameAttribute.cs" />
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Protocol\FileTransmit\FTP\ProtocolServerFTP.cs" />
-    <Compile Include="Protocol\FileTransmit\FTP\ProtocolServerFTPForm.xaml.cs">
-      <DependentUpon>ProtocolServerFTPForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml.cs">
-      <DependentUpon>FileTransmitHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Properties.cs" />
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Commands.cs" />
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.Tasks.cs" />
-    <Compile Include="Protocol\FileTransmit\Host\VmFileTransmitHost.cs" />
+    <Compile Include="Protocol\FileTransmit\ProtocolServerFTP.cs" />
     <Compile Include="Protocol\FileTransmit\IProtocolFileTransmittable.cs" />
-    <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml.cs">
-      <DependentUpon>ProtocolServerSFTPForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTP.cs" />
+    <Compile Include="Protocol\FileTransmit\ProtocolServerSFTP.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\ITransmitter.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\RemoteItem.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\ETransmissionType.cs" />
@@ -184,56 +174,20 @@
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
     <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
     <Compile Include="I\ITab.cs" />
-    <Compile Include="Protocol\ProtocolHostFactory.cs" />
-    <Compile Include="Protocol\ProtocolHostBase.cs" />
-    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortBase.cs" />
-    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerWithAddrPortUserPwdBase.cs" />
-    <Compile Include="Protocol\BaseClassForm\ProtocolServerFormBase.cs" />
-    <Compile Include="Protocol\Putty\Host\KittyHost.xaml.cs">
-      <DependentUpon>KittyHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\Putty\PuttyColorThemes.cs" />
-    <Compile Include="Protocol\Putty\IPuttyConnectable.cs" />
-    <Compile Include="Protocol\Putty\ProtocolPuttyForm.xaml.cs">
-      <DependentUpon>ProtocolPuttyForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\Putty\PuttyOptions.cs" />
+    <Compile Include="Protocol\Base\ProtocolServerWithAddrPortBase.cs" />
+    <Compile Include="Protocol\Base\ProtocolServerWithAddrPortUserPwdBase.cs" />
+    <Compile Include="External\KiTTY\PuttyThemes.cs" />
+    <Compile Include="External\KiTTY\IKittyConnectable.cs" />
+    <Compile Include="External\KiTTY\KittyConfig.cs" />
     <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
-    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSHForm.cs" />
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
-    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnetForm.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml.cs">
-      <DependentUpon>ProtocolServerRemoteAppForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\ServerIcons.cs" />
-    <Compile Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml.cs">
-      <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Protocol\RDP\Host\AxMsRdpClient09NotSafeForScriptingEx.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRDPForm.xaml.cs">
-      <DependentUpon>ProtocolServerRDPForm.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\VmProtocolServer.cs" />
-    <Compile Include="Protocol\VNC\Host\VncHost.xaml.cs">
-      <DependentUpon>VncHost.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Protocol\VNC\ProtocolServerVNC.cs" />
-    <Compile Include="Protocol\VNC\ProtocolServerVNCForm.xaml.cs">
-      <DependentUpon>ProtocolServerVNCForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Controls\ButtonEx.cs" />
-    <Compile Include="Resources\Theme\PrmColorThemes.cs" />
     <Compile Include="Utils\ColorAndBrushHelper.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\ColorPalette.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\ColorPickerDialogOptions.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\ColorSwatchItem.cs" />
     <Compile Include="Utils\ColorPickerWPF\Code\Util.cs" />
     <Compile Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml.cs">
       <DependentUpon>ColorPickerControl4Popup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\ColorPickerWPF\ColorPickerSwatch.xaml.cs">
-      <DependentUpon>ColorPickerSwatch.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ColorPickerWPF\ColorPickRowPopup.xaml.cs">
       <DependentUpon>ColorPickRowPopup.xaml</DependentUpon>
@@ -242,9 +196,6 @@
       <DependentUpon>SliderRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\ConsoleManager.cs" />
-    <Compile Include="Utils\EditableTextBlock\EditableTextBlock.xaml.cs">
-      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\CmdRunner.cs" />
@@ -256,17 +207,15 @@
     <Compile Include="Utils\MultiLangHelper.cs" />
     <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="Protocol\ItemCreateHelper.cs" />
+    <Compile Include="Helper\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\BaseClassProtocol\ProtocolServerBase.cs" />
-    <Compile Include="Resources\Converter\Converter.cs" />
+    <Compile Include="Protocol\Base\ProtocolServerBase.cs" />
     <Compile Include="Utils\NetImageProcessHelper.cs" />
     <Compile Include="Utils\PageHost\AnimationPage.cs" />
     <Compile Include="Utils\PageHost\PageHost.xaml.cs">
       <DependentUpon>PageHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\PageHost\StoryboardHelpers.cs" />
-    <Compile Include="Utils\PasswordEx\PasswordBoxEx.xaml.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
@@ -282,134 +231,14 @@
     <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_001.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_002.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_003.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_004.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_005.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_006.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_007.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_008.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_009.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_010.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_011.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_012.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_013.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_014.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_015.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_016.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_017.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_018.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_019.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_020.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_021.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_022.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_023.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_024.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_025.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_026.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_027.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_028.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_029.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_030.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_031.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_032.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_033.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_034.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_035.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_036.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_037.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_038.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_039.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_040.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_041.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_042.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_043.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_044.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_045.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_046.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_047.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_048.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_049.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_050.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_051.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_052.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_053.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_054.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_055.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_056.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_057.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_058.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_059.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_060.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_061.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_062.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_063.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_064.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_065.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_066.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_067.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_068.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_069.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_070.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_071.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_072.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_073.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_074.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_075.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_076.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_077.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_078.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_079.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_080.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_081.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_082.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_083.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_084.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_085.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_086.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_087.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_088.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_089.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_090.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_091.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_092.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_093.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_094.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_095.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_096.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_097.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_098.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_099.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_100.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_101.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_102.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_103.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_104.png" />
-    <Resource Include="Resources\Icons\20210106\20210106_105.png" />
-    <Resource Include="kitty_portable.exe" />
-    <Resource Include="Resources\Logo\author_avatar.jpg" />
+    <Resource Include="External\KiTTY\kitty_portable.exe" />
     <Resource Include="FodyWeavers.xml" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
-    <Resource Include="Resources\Logo\logo256.png" />
-    <Resource Include="Resources\Logo\logo64.png" />
     <Resource Include="Utils\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Theme\puttyThems.json" />
-    <Resource Include="Languages\en-us.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Languages\zh-cn.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Languages\de-de.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Languages\fr-FR.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="External\KiTTY\PuttyThemes.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -425,79 +254,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Page Include="Languages\fr-FR.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortBaseForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\BaseClassForm\ProtocolServerWithAddrPortUserPwdBaseForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\FileTransmit\FTP\ProtocolServerFTPForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\FileTransmit\Host\FileTransmitHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\FileTransmit\SFTP\ProtocolServerSFTPForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\Putty\Host\KittyHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\Putty\ProtocolPuttyForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\RDP\Host\AxMsRdpClient09Host.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\RDP\ProtocolServerRemoteAppForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\RDP\ProtocolServerRDPForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Protocol\VNC\Host\VncHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Protocol\VNC\ProtocolServerVNCForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Converter\Converter.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Theme\Color.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Theme\Default.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Style\GlobalStyle.xaml">
+    <Page Include="Languages\fr-fr.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\ColorPickerWPF\ColorPickerSwatch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -509,31 +270,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Utils\EditableTextBlock\EditableTextBlock.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Utils\PageHost\PageHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\PasswordEx\PasswordBoxEx.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="IWshRuntimeLibrary">
-      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
+    <Folder Include="External\WinSCP\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />
   <PropertyGroup>

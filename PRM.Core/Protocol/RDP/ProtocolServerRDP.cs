@@ -87,6 +87,7 @@ namespace PRM.Core.Protocol.RDP
             }
         }
 
+        public static string ProtocolName = "RDP";
         public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
         {
             base.Port = "3389";
@@ -349,16 +350,7 @@ namespace PRM.Core.Protocol.RDP
             get => _gatewayPassword;
             set => SetAndNotifyIfChanged(nameof(GatewayPassword), ref _gatewayPassword, value);
         }
-
-        //public string GetDecryptedGatewayPassword()
-        //{
-        //    if (SystemConfig.Instance.DataSecurity.Rsa != null)
-        //    {
-        //        return SystemConfig.Instance.DataSecurity.Rsa.DecodeOrNull(_gatewayPassword) ?? "";
-        //    }
-        //    return _gatewayPassword;
-        //}
-
+        
         #endregion Gateway
 
         private LocalSetting _autoSetting = new LocalSetting();
@@ -398,7 +390,7 @@ namespace PRM.Core.Protocol.RDP
         /// <returns></returns>
         public RdpConfig ToRdpConfig(PrmContext context)
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DbOperator.DecryptOrReturnOriginalString(Password));
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password));
             rdpConfig.Domain = this.Domain;
             rdpConfig.LoadBalanceInfo = this.LoadBalanceInfo;
             rdpConfig.AuthenticationLevel = 0;

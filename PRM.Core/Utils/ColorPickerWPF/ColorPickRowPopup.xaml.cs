@@ -18,8 +18,7 @@ namespace ColorPickerWPF
     public partial class ColorPickRowPopup : UserControl
     {
         #region Color
-        public static readonly DependencyProperty ColorProperty =
-            DependencyProperty.Register("Color", typeof(Color?), typeof(ColorPickRowPopup),
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Color?), typeof(ColorPickRowPopup),
                     new FrameworkPropertyMetadata(Colors.White, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnColorPropertyChanged));
 
         private static void OnColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -65,8 +64,7 @@ namespace ColorPickerWPF
 
 
         #region HexColor
-        public static readonly DependencyProperty HexColorProperty =
-            DependencyProperty.Register("HexColor", typeof(string), typeof(ColorPickRowPopup),
+        public static readonly DependencyProperty HexColorProperty = DependencyProperty.Register("HexColor", typeof(string), typeof(ColorPickRowPopup),
                 new FrameworkPropertyMetadata("#FFFFFFFF", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnHexColorPropertyChanged));
         private static void OnHexColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -114,8 +112,7 @@ namespace ColorPickerWPF
 
 
         #region HexVisible
-        public static readonly DependencyProperty HexVisibleProperty = DependencyProperty.Register("HexVisible", typeof(Visibility), typeof(ColorPickRowPopup),
-            new PropertyMetadata(System.Windows.Visibility.Visible, null));
+        public static readonly DependencyProperty HexVisibleProperty = DependencyProperty.Register("HexVisible", typeof(Visibility), typeof(ColorPickRowPopup), new PropertyMetadata(System.Windows.Visibility.Visible, null));
         public Visibility HexVisible
         {
             get => (Visibility)GetValue(HexVisibleProperty);

@@ -7,7 +7,8 @@
              mc:Ignorable="d" 
              Name="control"
              d:DesignHeight="28" d:DesignWidth="188"
-             Height="28" VerticalContentAlignment="Center">
+             Height="28" VerticalContentAlignment="Center"
+             d:DataContext="{d:DesignInstance colorPickerWpf:ColorPickRowPopup}">
     <Grid>
         <Grid Name="GridPickerRow" Cursor="Hand" MouseLeftButtonUp="PickColorButton_OnClick">
             <Grid.ColumnDefinitions>
@@ -15,11 +16,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid>
-                <Border BorderBrush="Black" BorderThickness="1" Background="White" Height="16">
-                    <Grid x:Name="ColorDisplayGrid"/>
-                </Border>
-            </Grid>
+            <Border x:Name="ColorDisplayGrid" BorderBrush="Black" BorderThickness="1" Background="White" Height="16" CornerRadius="4">
+            </Border>
+
             <TextBlock x:Name="HexLabel" Visibility="{Binding HexVisible, ElementName=control}"
                        Grid.Column="1" 
                        Text="{Binding HexColor, ElementName=control}" 
@@ -30,10 +29,10 @@
         <Popup Name="PopupPicker" 
                StaysOpen="False" 
                PlacementTarget="{Binding ElementName=GridPickerRow}">
-            <Grid Background="White">
-                <Border BorderBrush="Black" BorderThickness="1">
+            <Grid Background="{DynamicResource BackgroundBrush}">
+                <Border BorderBrush="Black" Background="White" BorderThickness="1" CornerRadius="4" ClipToBounds="True">
+                    <colorPickerWpf:ColorPickerControl4Popup x:Name="ColorPicker"  DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch"/>
                 </Border>
-                <colorPickerWpf:ColorPickerControl4Popup x:Name="ColorPicker"  DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch"/>
             </Grid>
         </Popup>
     </Grid>
