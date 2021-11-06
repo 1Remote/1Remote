@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Putty.Telnet
 {
-    public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IPuttyConnectable
+    public class ProtocolServerTelnet : ProtocolServerWithAddrPortBase, IKittyConnectable
     {
+        public static string ProtocolName = "Telnet";
         public ProtocolServerTelnet() : base("Telnet", "Putty.Telnet.V1", "Telnet")
         {
         }
@@ -45,6 +47,14 @@ namespace PRM.Core.Protocol.Putty.Telnet
             return $@" -load ""{this.GetSessionName()}"" -telnet {Address} -P {Port}";
         }
 
+        private string _startupAutoCommand = "";
+
+        public string StartupAutoCommand
+        {
+            get => _startupAutoCommand;
+            set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
+        }
+
         [JsonIgnore]
         public ProtocolServerBase ProtocolServerBase => this;
 
@@ -54,6 +64,16 @@ namespace PRM.Core.Protocol.Putty.Telnet
         {
             get => _externalKittySessionConfigPath;
             set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
+        }
+
+        public string GetExeFullPath()
+        {
+            return this.GetKittyExeFullName();
+        }
+
+        public string GetExeArguments(PrmContext context)
+        {
+            return GetPuttyConnString(context);
         }
     }
 }

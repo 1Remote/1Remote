@@ -26,7 +26,7 @@ namespace PRM.Core.Protocol
         public object OrgDispNameControl =>
             new TextBlock()
             {
-                Text = Server.DispName,
+                Text = Server.DisplayName,
             };
 
         public object OrgSubTitleControl =>
@@ -86,12 +86,10 @@ namespace PRM.Core.Protocol
         {
             get
             {
-                if (_cmdConnServer == null)
-                    _cmdConnServer = new RelayCommand((o) =>
-                    {
-                        GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id);
-                    });
-                return _cmdConnServer;
+                return _cmdConnServer ??= new RelayCommand(o =>
+                {
+                    GlobalEventHelper.OnRequestServerConnect?.Invoke(Server.Id);
+                });
             }
         }
 
@@ -118,44 +116,6 @@ namespace PRM.Core.Protocol
                 {
                     GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(Server.Id, true, true);
                 });
-            }
-        }
-
-        private RelayCommand _cmdDeleteServer;
-
-        public RelayCommand CmdDeleteServer
-        {
-            get
-            {
-                return _cmdDeleteServer ??= new RelayCommand((o) =>
-                {
-                    if (MessageBoxResult.Yes == MessageBox.Show(
-                            SystemConfig.Instance.Language.GetText("confirm_to_delete"),
-                            SystemConfig.Instance.Language.GetText("messagebox_title_warning"),
-                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None)
-                        )
-                    {
-                        GlobalEventHelper.OnRequestDeleteServer?.Invoke(Server.Id);
-                    }
-                });
-            }
-        }
-
-        private RelayCommand _cmdSave;
-
-        public RelayCommand CmdSave
-        {
-            get
-            {
-                if (_cmdSave != null) return _cmdSave;
-
-                _cmdSave = new RelayCommand((o) =>
-                {
-                    if (string.IsNullOrWhiteSpace(this.Server.DispName)) return;
-
-                    GlobalEventHelper.OnRequestUpdateServer?.Invoke(Server);
-                }, o => (this.Server.DispName.Trim() != ""));
-                return _cmdSave;
             }
         }
 

@@ -25,24 +25,29 @@ namespace PRM.View
                 GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
             };
 
-            var tagName = SystemConfig.Instance.Locality.MainWindowTabSelected;
+            var tagName = context.LocalityService.MainWindowTabSelected;
             Loaded += (sender, args) =>
             {
-                if (Vm.PrmContext.AppData.Tags.Any(x => x.Name == tagName))
-                    Vm.PrmContext.AppData.SelectedTagName = tagName;
+                if (Vm.Context.AppData.Tags.Any(x => x.Name == tagName))
+                    Vm.Context.AppData.SelectedTagName = tagName;
                 else
-                    Vm.PrmContext.AppData.SelectedTagName = "";
+                    Vm.Context.AppData.SelectedTagName = "";
             };
+
+            ListBoxTags.SelectionChanged += ((sender, args) =>
+            {
+                ListBoxTags.ScrollIntoView(ListBoxTags.SelectedItem);
+            });
         }
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            Vm.PrmContext.AppData.SelectedTagName = "";
+            Vm.Context.AppData.SelectedTagName = "";
         }
 
         private void BtnTagsListView_Click(object sender, RoutedEventArgs e)
         {
-            Vm.PrmContext.AppData.SelectedTagName = VmServerListPage.TagsListViewMark;
+            Vm.Context.AppData.SelectedTagName = VmServerListPage.TagsListViewMark;
         }
 
         private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)

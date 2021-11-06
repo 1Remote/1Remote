@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -6,12 +9,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using MSTSCLib;
 using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
-
-using Shawn.Utils;
-
+using PRM.ViewModel.Configuration;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -23,24 +25,21 @@ namespace PRM.View
     public partial class SystemConfigPage : UserControl
     {
         public VmMain Host;
-        public VmSystemConfigPage VmSystemConfigPage;
 
-        public SystemConfigPage(VmMain host, PrmContext context, Type t = null)
+        private readonly ConfigurationViewModel _vm;
+
+        private readonly PrmContext _context;
+
+        public SystemConfigPage(VmMain host, PrmContext context, string destination = null)
         {
             Host = host;
-            VmSystemConfigPage = new VmSystemConfigPage(host, context);
+            _context = context;
             InitializeComponent();
-            DataContext = VmSystemConfigPage;
+            _vm = new ConfigurationViewModel(host, context);
+            DataContext = _vm;
 
-            if (t == typeof(SystemConfigGeneral)
-            || t == typeof(SystemConfigLanguage))
-                TabItemGeneral.IsSelected = true;
-            if (t == typeof(SystemConfigLauncher))
-                TabItemQuick.IsSelected = true;
-            if (t == typeof(SystemConfigDataSecurity))
+            if (destination == "Data")
                 TabItemDataBase.IsSelected = true;
-            if (t == typeof(SystemConfigTheme))
-                TabItemTheme.IsSelected = true;
         }
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -56,112 +55,61 @@ namespace PRM.View
                 _ => key
             };
 
-            var specialKeys = new[] { Key.Tab ,
-                                      Key.CapsLock ,
-                                      Key.PrintScreen ,
-                                      Key.Scroll ,
-                                      Key.Sleep ,
-                                      Key.Pause ,
-                                      Key.LeftCtrl ,
-                                      Key.RightCtrl ,
-                                      Key.LeftAlt ,
-                                      Key.RightAlt ,
-                                      Key.LeftShift ,
-                                      Key.RightShift ,
-                                      Key.LWin ,
-                                      Key.RWin ,
-                                      Key.Clear ,
-                                      Key.OemClear ,
-                                      Key.Escape ,
+            var specialKeys = new[] { Key.Tab,
+                                      Key.CapsLock,
+                                      Key.PrintScreen,
+                                      Key.Scroll,
+                                      Key.Sleep,
+                                      Key.Pause,
+                                      Key.LeftCtrl,
+                                      Key.RightCtrl,
+                                      Key.LeftAlt,
+                                      Key.RightAlt,
+                                      Key.LeftShift,
+                                      Key.RightShift,
+                                      Key.LWin,
+                                      Key.RWin,
+                                      Key.Clear,
+                                      Key.OemClear,
+                                      Key.Escape,
                                       Key.Apps };
 
             if (!specialKeys.Contains(key)
             && this.IsLoaded)
             {
-                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, key);
+                _vm.LauncherHotKeyKey = key;
             }
-        }
-
-        private void Modifiers_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (this.IsLoaded)
-            {
-                SetHotkeyIsRegistered(VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers, VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey);
-            }
-        }
-
-        private bool SetHotkeyIsRegistered(HotkeyModifierKeys modifier, Key key)
-        {
-            if (modifier == SystemConfig.Instance.Launcher.HotKeyModifiers
-                && key == SystemConfig.Instance.Launcher.HotKeyKey)
-            {
-                VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
-                VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
-                return false;
-            }
-
-            // check if HOTKEY_ALREADY_REGISTERED
-            var r = GlobalHotkeyHooker.Instance.Register(null, (uint)modifier, key, () => { });
-            switch (r.Item1)
-            {
-                case GlobalHotkeyHooker.RetCode.Success:
-                    GlobalHotkeyHooker.Instance.Unregist(r.Item3);
-                    VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = modifier;
-                    VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = key;
-                    return true;
-
-                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_registered_fail") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                    break;
-
-                case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(SystemConfig.Instance.Language.GetText("hotkey_already_registered") + ": " + r.Item2, SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(r.Item1.ToString());
-            }
-
-            // HotKey will be auto registered in SearchBox.xaml.cs
-            VmSystemConfigPage.SystemConfig.Launcher.HotKeyModifiers = SystemConfig.Instance.Launcher.HotKeyModifiers;
-            VmSystemConfigPage.SystemConfig.Launcher.HotKeyKey = SystemConfig.Instance.Launcher.HotKeyKey;
-
-            return false;
         }
 
         private void ContentElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var dlg = new OpenFileDialog();
-            dlg.Filter = "json|*.json";
-            dlg.Title = "Select a language json file for translation test.";
+            dlg.Filter = "xaml|*.xaml";
+            dlg.Title = "Select a language resource file for translation test.";
             dlg.CheckFileExists = false;
             if (dlg.ShowDialog() != true) return;
 
             var path = dlg.FileName;
             var fi = new FileInfo(path);
-            var resourceDictionary = MultiLangHelper.LangDictFromJsonFile(fi.FullName);
-            if (resourceDictionary?.Contains("language_name") == true)
+            var resourceDictionary = MultiLangHelper.LangDictFromXamlFile(fi.FullName);
+            if (resourceDictionary?.Contains("language_name") != true)
             {
-                var code = fi.Name.ReplaceLast(fi.Extension, "");
-                SystemConfig.Instance.Language.AddJsonLanguageResources(code, fi.FullName);
+                MessageBox.Show("language resource must contain field: \"language_name\"!", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                return;
             }
-            else
+
+            var en = _context.LanguageService.Resources["en-us"];
+            Debug.Assert(en != null);
+            var missingFields = MultiLangHelper.FindMissingFields(en, resourceDictionary);
+            if (missingFields.Count > 0)
             {
-                MessageBox.Show("json must contain field: \"language_name\"!", SystemConfig.Instance.Language.GetText("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                var mf = string.Join(", ", missingFields);
+                MessageBox.Show($"language resource missing:\r\n {mf}", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                return;
             }
-        }
-    }
 
-    public class ObjEqualParam2Bool : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value.Equals(parameter);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((bool)value) ? parameter : Binding.DoNothing;
+            var code = fi.Name.ReplaceLast(fi.Extension, "");
+            _context.LanguageService.AddXamlLanguageResources(code, fi.FullName);
         }
     }
 
@@ -174,7 +122,7 @@ namespace PRM.View
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            Key k = (Key)value;
+            var k = (Key)value;
             return k.ToString();
         }
 

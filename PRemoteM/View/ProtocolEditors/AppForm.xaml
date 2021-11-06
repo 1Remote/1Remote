@@ -1,0 +1,45 @@
+﻿<protocolEditors:ProtocolServerFormBase x:Class="PRM.View.ProtocolEditors.AppForm"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
+                        xmlns:extend="clr-namespace:PRM.Core.Protocol.Extend;assembly=PRM.Core"
+                        mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance extend:ProtocolServerApp}"
+                        d:DesignHeight="1450" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding ExePath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                            Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Content="{DynamicResource word_select}" 
+                            Command="{Binding CmdSelectExePath}"></Button>
+                </StackPanel>
+            </Grid>
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+                    <CheckBox IsChecked="{Binding RunWithHosting}">
+                        <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+                    </CheckBox>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </StackPanel>
+</protocolEditors:ProtocolServerFormBase>

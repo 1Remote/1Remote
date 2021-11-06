@@ -3,8 +3,8 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                  xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                   mc:Ignorable="d"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
@@ -17,7 +17,7 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border Padding="40" Background="Transparent">
-                <Border CornerRadius="16" Background="{StaticResource MainColor1Brush}">
+                <Border CornerRadius="16" Background="{StaticResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" />
                     </Border.Effect>
@@ -27,25 +27,19 @@
         </ControlTemplate>
     </Window.Template>
 
-    <Grid Margin="12" Background="{StaticResource MainColor1Brush}">
-        <Grid.Resources>
-            <Style TargetType="ScrollBar" BasedOn="{StaticResource PRM_ScrollBarStyle}"></Style>
-            <Style TargetType="ScrollViewer">
-                <Setter Property="Template" Value="{StaticResource PRM_ScrollViewerControlTemplate}"></Setter>
-            </Style>
-        </Grid.Resources>
+    <Grid Margin="12" Background="{StaticResource PrimaryMidBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0" Name="WinGrid" Background="{StaticResource MainColor1Brush}">
+        <Grid Grid.Row="0" Margin="0" Name="WinGrid" Background="{StaticResource PrimaryMidBrush}">
             <StackPanel HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Grid HorizontalAlignment="Center" Margin="5">
-                        <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="30" HorizontalAlignment="Left"></Image>
+                        <Image Source="/Resources/Image/Logo/logo64.png" Width="30" HorizontalAlignment="Left"></Image>
                     </Grid>
-                    <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{StaticResource MainColor1ForegroundBrush}"
+                    <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{StaticResource PrimaryTextBrush}"
                                Text="{DynamicResource word_oops}"
                                VerticalAlignment="Center" />
                 </StackPanel>
@@ -64,8 +58,6 @@
 
             <Grid Margin="0 5 0 0">
                 <TextBox Name="TbErrorInfo"
-                             Background="{DynamicResource MainBgColorBrush}"
-                             Foreground="{DynamicResource MainBgColorForegroundBrush}"
                              AcceptsReturn="True" AcceptsTab="True"
                              HorizontalScrollBarVisibility="Hidden"
                              VerticalScrollBarVisibility="Auto"
@@ -78,53 +70,42 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
 
-                <controls:ButtonEx Margin="0 5 5 5" MinWidth="100" Height="20"
-                                   Padding="0"
-                                   HorizontalAlignment="Center"
-                                   BorderThickness="1"
+                <Button Margin="0 5 5 5" 
+                                    MinWidth="100" Height="20"
+                                    Padding="0"
                                    Click="ButtonSaveAs_OnClick">
-                    <controls:ButtonEx.Style>
-                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                             <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Step}" Value="1">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
                         </Style>
-                    </controls:ButtonEx.Style>
+                    </Button.Style>
                     <Grid>
                         <Path Name="IconSaveDone" Margin="3" Width="12" Height="12"
                               HorizontalAlignment="Left"
                               Data="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z"
                               Fill="Green" StrokeThickness="1" Stretch="Uniform" />
-                        <TextBlock Text="{DynamicResource word_save_as}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16 0"></TextBlock>
+                        <TextBlock Text="{DynamicResource word_save_as}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
+                                   Margin="16 0"></TextBlock>
                     </Grid>
-                </controls:ButtonEx>
-                <controls:ButtonEx MinWidth="100" Height="20"
-                                   Margin="0 5"
+                </Button>
+                <Button MinWidth="100" Height="20" Margin="0 5"
                                    Padding="0"
-                                   HorizontalAlignment="Center"
-                                   BorderThickness="1"
                                    Click="ButtonCopyToClipboard_OnClick">
-                    <controls:ButtonEx.Style>
-                        <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                             <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Step}" Value="1">
-                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
                         </Style>
-                    </controls:ButtonEx.Style>
+                    </Button.Style>
                     <Grid>
                         <Path Name="IconCopyDone" Margin="3" Width="12" Height="12"
                               HorizontalAlignment="Left"
                               Data="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z"
                               Fill="Green" StrokeThickness="1" Stretch="Uniform" />
-                        <TextBlock Text="{DynamicResource error_report_to_clipboard}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16 0"></TextBlock>
+                        <TextBlock Text="{DynamicResource error_report_to_clipboard}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16 0"></TextBlock>
                     </Grid>
-                </controls:ButtonEx>
+                </Button>
             </StackPanel>
 
             <Grid Grid.Row="2">
@@ -133,76 +114,62 @@
                     <TextBlock Margin="0 0 0 10" FontSize="16" Foreground="{StaticResource Primary400}" VerticalAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource error_report_how_help_us_improve}" />
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <controls:ButtonEx Margin="10 5" Padding="0" Width="150" Height="40"
+                        <Button Margin="10 5" Padding="0" Width="150" Height="40"
                                                    HorizontalAlignment="Center" HorizontalContentAlignment="Left"
                                                    Click="ButtonSendByEmail_OnClick"
                                                    ToolTip="veckshawn@gmail.com"
                                                    BorderThickness="1">
-                            <controls:ButtonEx.Style>
-                                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                     <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Step}" Value="1">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
                                 </Style>
-                            </controls:ButtonEx.Style>
+                            </Button.Style>
                             <StackPanel Orientation="Horizontal">
                                 <Path Margin="5 0" Width="16" Height="16" Data="M512 0C229.239467 0 0 229.239467 0 512c0 282.760533 229.239467 512 512 512 282.760533 0 512-229.239467 512-512 0-282.760533-229.239467-512-512-512z m0 179.848533l303.0016 188.928H209.032533L512 179.848533z m306.7904 490.632534h-0.068267c0 30.3104-24.541867 54.852267-54.852266 54.852266H260.130133c-30.276267 0-54.852267-24.576-54.852266-54.852266v-289.6896c0-3.208533 0.341333-6.314667 0.853333-9.386667l289.4848 150.5312 1.092267 0.546133 1.160533 0.648534c2.048 1.024 4.164267 1.877333 6.314667 2.423466l0.648533 0.170667c2.389333 0.546133 4.778667 0.887467 7.168 0.887467h0.034133c2.389333 0 4.778667-0.341333 7.168-0.887467l0.648534-0.170667a31.675733 31.675733 0 0 0 6.314666-2.423466l1.160534-0.648534 1.092266-0.546133 289.4848-150.5312c0.546133 3.072 0.887467 6.178133 0.887467 9.386667v289.6896z"
-                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                 <StackPanel>
                                     <TextBlock FontSize="14" Text="{DynamicResource error_report_send_by_email}"></TextBlock>
                                     <TextBlock FontSize="10" Foreground="{StaticResource Primary400}" Text="veckshawn@gmail.com"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
-                        </controls:ButtonEx>
-                        <controls:ButtonEx Margin="10 5" Padding="0" Width="150" Height="40"
+                        </Button>
+                        <Button Margin="10 5" Padding="0" Width="150" Height="40"
                                                    HorizontalAlignment="Center" HorizontalContentAlignment="Left"
                                                    Click="ButtonSendByGithub_OnClick"
                                                    ToolTip="https://github.com/VShawn/PRemoteM/issues"
                                                    BorderThickness="1">
-                            <controls:ButtonEx.Style>
-                                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                     <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Step}" Value="1">
-                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
                                 </Style>
-                            </controls:ButtonEx.Style>
+                            </Button.Style>
                             <StackPanel Orientation="Horizontal">
                                 <Path Margin="5 0" Width="16" Height="16" Data="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z"
-                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
+                                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                 <StackPanel>
                                     <TextBlock FontSize="14" Text="{DynamicResource error_report_send_by_github}"></TextBlock>
                                     <TextBlock FontSize="10" Foreground="{StaticResource Primary400}" Text="github.com/vshawn"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
-                        </controls:ButtonEx>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Grid>
 
         <Grid Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right">
-            <controls:ButtonEx Name="BtnClose"
-                               Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
-                <controls:ButtonEx.Style>
-                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                        <Setter Property="BackgroundOnMouseOver" Value="Red" />
-                        <Setter Property="BackgroundOnPressed" Value="Red" />
-                        <Setter Property="ForegroundOnMouseOver" Value="White" />
-                        <Setter Property="ForegroundOnPressed" Value="White" />
-                    </Style>
-                </controls:ButtonEx.Style>
+            <Button Name="BtnClose" Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0"
+                    Style="{StaticResource ButtonBarPrimaryStyle}"
+                    attachProperty:VisionElement.ForegroundAccent="White"
+                    attachProperty:VisionElement.BackgroundAccent="Red"
+                    attachProperty:VisionElement.ForegroundOnMouseDown="White"
+                    attachProperty:VisionElement.BackgroundOnMouseDown="Red">
                 <Grid Height="15" Width="15">
                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406
                           L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:ButtonEx}}}" StrokeThickness="1" Stretch="Uniform" />
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                 </Grid>
-            </controls:ButtonEx>
+            </Button>
         </Grid>
     </Grid>
 </utils:WindowChromeBase>
