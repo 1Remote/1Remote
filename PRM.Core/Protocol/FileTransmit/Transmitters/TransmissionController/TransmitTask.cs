@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.Model;
+using PRM.Core.Service;
 using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
@@ -40,7 +41,9 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public string TransmitItemSrcDirectoryPath { get; private set; }
         public string TransmitItemDstDirectoryPath { get; private set; }
 
-        public TransmitTask(ITransmitter trans, string destinationDirectoryPath, FileInfo[] fis, DirectoryInfo[] dis = null)
+        private readonly LanguageService _languageService;
+
+        public TransmitTask(LanguageService languageService, ITransmitter trans, string destinationDirectoryPath, FileInfo[] fis, DirectoryInfo[] dis = null)
         {
             Debug.Assert(fis != null || dis != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
@@ -50,6 +53,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             _destinationDirectoryPath = destinationDirectoryPath.TrimEnd('/', '\\');
 
             _fis = fis;
+            _languageService = languageService;
             _dis = dis;
 
             TransmitItemDstDirectoryPath = destinationDirectoryPath;
@@ -75,7 +79,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             RaisePropertyChanged(nameof(TransmitItemNames));
         }
 
-        public TransmitTask(ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
+        public TransmitTask(LanguageService languageService, ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
         {
             Debug.Assert(ris != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
@@ -84,6 +88,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             _destinationDirectoryPath = destinationDirectoryPath.TrimEnd('/', '\\');
 
             _ris = ris;
+            _languageService = languageService;
 
             TransmitItemDstDirectoryPath = destinationDirectoryPath;
             var ri = ris.First();
@@ -516,8 +521,8 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             }
 
             if (existedFiles > 0
-            && MessageBox.Show(SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names").Replace("{0}", existedFiles.ToString()),
-                                    SystemConfig.Instance.Language.GetText("file_transmit_host_warning_same_names_title"),
+            && MessageBox.Show(_languageService.Translate("file_transmit_host_warning_same_names").Replace("{0}", existedFiles.ToString()),
+                _languageService.Translate("file_transmit_host_warning_same_names_title"),
                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.Yes)
             {
                 return false;

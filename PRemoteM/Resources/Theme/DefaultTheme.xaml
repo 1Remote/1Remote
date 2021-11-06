@@ -1,0 +1,50 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:Double x:Key="DefaultControlHeight">30</system:Double>
+    <Thickness x:Key="DefaultControlPadding">10,6</Thickness>
+    <CornerRadius x:Key="DefaultCornerRadius">4</CornerRadius>
+    <SolidColorBrush x:Key="Primary300" Color="#CBCCC6" />
+    <SolidColorBrush x:Key="Primary400" Color="#707A8C" />
+    <SolidColorBrush x:Key="Primary600" Color="#373D4D" />
+    <SolidColorBrush x:Key="Gray600" Color="#718096" />
+
+    <Geometry x:Key="DownGeometry">M512 801.6896L5.12 282.0096l58.1632-59.5968L512 682.3936l448.7168-460.0832 58.1632 59.5968-506.88 519.7824z</Geometry>
+    <Geometry x:Key="UpGeometry">M50.000001,0 L100,51.262779 94.262627,57.141584 50.000001,11.767713 5.7373757,57.151686 0,51.27288 z</Geometry>
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Basic/Font.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Basic/Effects.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Basic/ColorsAndBrushes/Default.xaml"></ResourceDictionary>
+
+        <ResourceDictionary Source="Styles/AppStyles.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/BaseStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/ButtonStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/TextBoxStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/ScrollViewer.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/SliderStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"></ResourceDictionary>
+
+        <ResourceDictionary>
+            <Style TargetType="{x:Type Hyperlink}">
+                <Setter Property="Foreground" Value="#297ccf"></Setter>
+                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
+                        <Setter Property="TextBlock.TextDecorations">
+                            <Setter.Value>
+                                <TextDecorationCollection>
+                                    <TextDecoration Location="Underline" />
+                                </TextDecorationCollection>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

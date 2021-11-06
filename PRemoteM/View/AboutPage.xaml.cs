@@ -22,7 +22,7 @@ namespace PRM.View
             TbVersion.Text = PRMVersion.Version;
 
 #if FOR_MICROSOFT_STORE_ONLY
-            TbAppName.Text = SystemConfig.AppName + "(Store)";
+            TbAppName.Text = ConfigurationService.AppName + "(Store)";
 #endif
         }
 

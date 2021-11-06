@@ -213,5 +213,68 @@ namespace com.github.xiangyuecn.rsacsharp {
 		public RSA(RSA_PEM pem) {
 			rsa = pem.GetRSA();
 		}
+
+		public enum EnumRsaStatus
+        {
+			CannotReadPrivateKeyFile,
+			PrivateKeyFormatError,
+			PublicKeyFormatError,
+            PrivateAndPublicMismatch,
+            NoError,
+        }
+
+        public static EnumRsaStatus KeyCheck(string key, bool isPrivateKey)
+        {
+            try
+            {
+                var ppk = new RSA(key, true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                if (isPrivateKey)
+                    return EnumRsaStatus.PrivateKeyFormatError;
+                else
+                    return EnumRsaStatus.PublicKeyFormatError;
+            }
+            return EnumRsaStatus.NoError;
+        }
+        public static EnumRsaStatus KeyFileCheck(string keyPath, bool isPrivateKey)
+        {
+            if (File.Exists(keyPath) == false)
+                return EnumRsaStatus.CannotReadPrivateKeyFile;
+            return KeyCheck(File.ReadAllText(keyPath, Encoding.UTF8), isPrivateKey);
+        }
+
+        public static EnumRsaStatus CheckPrivatePublicKeyMatch(string privateKeyPath, string publicKey)
+        {
+            if (File.Exists(privateKeyPath) == false)
+                return EnumRsaStatus.CannotReadPrivateKeyFile;
+
+
+            var pks = KeyFileCheck(privateKeyPath, true);
+            if (pks != EnumRsaStatus.NoError)
+                return pks;
+            pks = KeyCheck(publicKey, false);
+            if (pks != EnumRsaStatus.NoError)
+                return pks;
+
+			// check if RSA private key is matched public key
+            var ppk = new RSA(File.ReadAllText(privateKeyPath), true);
+            var pk = new RSA(publicKey, true);
+            try
+            {
+                var sha1Tmp = ppk.Sign("SHA1", "Test");
+                if (pk?.Verify("SHA1", sha1Tmp, "SHA1") != true)
+                {
+                    return EnumRsaStatus.NoError;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+			return EnumRsaStatus.PrivateAndPublicMismatch;
+        }
 	}
 }

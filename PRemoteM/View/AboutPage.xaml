@@ -5,17 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+             xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-    </UserControl.Resources>
-    <Grid Background="{DynamicResource MainColor1Brush}">
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid.Resources>
             <system:Double x:Key="BottomHeight">40</system:Double>
-            <Style x:Key="EditorRowGrid" TargetType="Grid">
+            <Style x:Key="RowGrid" TargetType="Grid">
                 <Setter Property="Height" Value="20"></Setter>
                 <Setter Property="Margin">
                     <Setter.Value>
@@ -24,7 +21,7 @@
                 </Setter>
             </Style>
             <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="Opacity" Value="0.9"></Setter>
                 <Setter Property="Margin" Value="0 0 20 0"></Setter>
@@ -32,18 +29,18 @@
             <Style x:Key="EditorGroupTextBlockTitle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                 <Setter Property="FontSize" Value="16"></Setter>
                 <Setter Property="FontWeight" Value="Bold"></Setter>
-                <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                 <Setter Property="TextAlignment" Value="Left"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="Margin" Value="0 10 0 10"></Setter>
             </Style>
 
             <Style TargetType="{x:Type Hyperlink}">
-                <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                         <Setter Property="TextBlock.TextDecorations">
                             <Setter.Value>
                                 <TextDecorationCollection>
@@ -64,8 +61,7 @@
                 x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
                 HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Auto"
-                Template="{DynamicResource PRM_ScrollViewerControlTemplate}">
+                VerticalScrollBarVisibility="Auto">
 
                 <Grid Margin="20 0">
                     <Grid.ColumnDefinitions>
@@ -73,26 +69,24 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
+                        <Image Source="/Resources/Image/Logo/logo256.png" Width="160" HorizontalAlignment="Left"></Image>
                         <StackPanel Orientation="Vertical">
-                            <StackPanel>
-                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static model:SystemConfig.AppName}" Margin="0 10 0 0"></TextBlock>
-                                <Grid Style="{StaticResource EditorRowGrid}">
+                            <StackPanel Grid.IsSharedSizeScope="True">
+                                <TextBlock Name="TbAppName" Style="{StaticResource EditorGroupTextBlockTitle}" Text="{x:Static service:ConfigurationService.AppName}" Margin="0 10 0 0"></TextBlock>
+                                <Grid Style="{StaticResource RowGrid}">
                                     <TextBlock Text="Your personal remote manager!"></TextBlock>
                                 </Grid>
-                                <Grid Style="{StaticResource EditorRowGrid}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Grid>
-                                            <TextBlock Text="Version"></TextBlock>
-                                        </Grid>
-                                        <Grid>
-                                            <TextBlock Name="TbVersion" Text="0.0.0.0" Margin="0"></TextBlock>
-                                        </Grid>
-                                    </StackPanel>
+                                <Grid Style="{StaticResource RowGrid}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Version"></TextBlock>
+                                    <TextBlock Grid.Column="1"  Name="TbVersion" Text="0.0.0.0" Margin="0"></TextBlock>
                                 </Grid>
                                 <Grid>
                                     <Grid.Style>
-                                        <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
+                                        <Style TargetType="Grid" BasedOn="{StaticResource RowGrid}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ElementName=TbNewVersion,Path=Text}" Value="">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -100,26 +94,26 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
-                                    <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}"></Border>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock>
-                                            <Hyperlink NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
-                                                <Grid>
-                                                <TextBlock Text="Update" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}" />
-                                                </Grid>
-                                                <Grid>
-                                                    <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
-                                                          Fill="Red"
-                                                          Stretch="Uniform"
-                                                          Width="6"
-                                                          Margin="0 0 -3 0"
-                                                          VerticalAlignment="Top" HorizontalAlignment="Right">
-                                                    </Path>
-                                                    <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding NewVersion}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}" />
-                                                </Grid>
-                                            </Hyperlink>
-                                        </TextBlock>
-                                    </StackPanel>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="A"></ColumnDefinition>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="B"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Update" Margin="0"/>
+                                    <TextBlock Grid.Column="1" Margin="0">
+                                        <Hyperlink NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                            <Grid>
+                                                <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding NewVersion}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}" />
+                                                <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
+                                                      Fill="Red"
+                                                      Stretch="Uniform"
+                                                      Width="6"
+                                                      Margin="0 0 -3 0"
+                                                      VerticalAlignment="Top" HorizontalAlignment="Right">
+                                                </Path>
+                                            </Grid>
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </Grid>
                             </StackPanel>
                         </StackPanel>
@@ -127,7 +121,7 @@
                             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Author"></TextBlock>
                             <StackPanel Orientation="Horizontal">
                                 <Grid Width="32" Height="32">
-                                    <Image Source="pack://application:,,,/PRM.Core;component/Resources/Logo/author_avatar.jpg" Width="32"></Image>
+                                    <Image Source="pack://application:,,,/Resources/Image/Logo/author_avatar.jpg" Width="32"></Image>
                                 </Grid>
                                 <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
                                     <TextBlock>
@@ -136,8 +130,8 @@
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="mailto::singlex@foxmail.com?subject=PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
-                                            (singlex@foxmail.com)
+                                        <Hyperlink NavigateUri="mailto::veckshawn@gmail.com?subject=PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                            (veckshawn@gmail.com)
                                         </Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
@@ -149,7 +143,7 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support" MouseRightButtonDown="SupportText_OnMouseRightButtonDown"></TextBlock>
                                 <StackPanel>
-                                    <Grid Style="{StaticResource EditorRowGrid}">
+                                    <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
                                                 <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
@@ -163,7 +157,7 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Make contributions"></TextBlock>
                                 <StackPanel>
-                                    <Grid Style="{StaticResource EditorRowGrid}">
+                                    <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
                                                 <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
@@ -236,21 +230,19 @@
         </Grid>
 
         <Grid VerticalAlignment="Bottom">
-            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1ForegroundBrush}" Height="{StaticResource BottomHeight}">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryTextBrush}" Height="{StaticResource BottomHeight}">
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="3" Direction="90"  Opacity="0.6" Color="Black"></DropShadowEffect>
                 </Border.Effect>
             </Border>
 
-            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource MainColor2Brush}" Background="{DynamicResource MainColor1Brush}">
+            <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource BottomHeight}">
                     <Grid Width="300">
-                        <controls:ButtonEx Style="{StaticResource MainColor2ButtonRadius3}"
-                                Padding="0 1 0 0" Width="80" Height="30"
-                                HorizontalAlignment="Center"
-                                Click="ButtonBack_OnClick"
-                                BorderThickness="0" Content="Back">
-                        </controls:ButtonEx>
+                        <Button Padding="0 1 0 0" Width="80" Height="30"
+                                Click="ButtonBack_OnClick" 
+                                Content="Back">
+                        </Button>
                     </Grid>
                 </Grid>
             </Border>

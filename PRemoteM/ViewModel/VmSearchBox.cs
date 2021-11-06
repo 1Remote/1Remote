@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Model;
 using Shawn.Utils.PageHost;
 using Shawn.Utils;
 
@@ -37,21 +38,18 @@ namespace PRM.ViewModel
         private readonly double _oneItemHeight;
         private readonly double _oneActionHeight;
         private readonly double _cornerRadius;
-        private readonly FrameworkElement _listSelections;
-        private readonly FrameworkElement _listActions;
+        private readonly FrameworkElement _gridMenuActions;
 
         public PrmContext Context { get; }
 
-        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement listSelections, FrameworkElement listActions)
+        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
         {
             Context = context;
             _gridMainWidth = gridMainWidth;
             _oneItemHeight = oneItemHeight;
             _oneActionHeight = oneActionHeight;
-            this._listSelections = listSelections;
-            this._listActions = listActions;
+            this._gridMenuActions = gridMenuActions;
             _cornerRadius = cornerRadius;
-            GridKeywordHeight = 46;
             ReCalcWindowHeight(false);
         }
 
@@ -136,7 +134,6 @@ namespace PRM.ViewModel
         }
 
         private double _gridMainHeight;
-
         public double GridMainHeight
         {
             get => _gridMainHeight;
@@ -148,17 +145,15 @@ namespace PRM.ViewModel
         }
 
         private RectangleGeometry _gridMainClip = null;
-
         public RectangleGeometry GridMainClip
         {
             get => _gridMainClip;
             set => SetAndNotifyIfChanged(nameof(GridMainClip), ref _gridMainClip, value);
         }
 
-        public double GridKeywordHeight { get; }
+        public double GridKeywordHeight { get; } = 46;
 
         private double _gridSelectionsHeight;
-
         public double GridSelectionsHeight
         {
             get => _gridSelectionsHeight;
@@ -166,7 +161,6 @@ namespace PRM.ViewModel
         }
 
         private double _gridActionsHeight;
-
         public double GridActionsHeight
         {
             get => _gridActionsHeight;
@@ -197,8 +191,8 @@ namespace PRM.ViewModel
 
         public void ShowActionsList()
         {
-            if (Context.AppData.VmItemList.All(x => x.ObjectVisibility != Visibility.Visible) 
-                || SelectedIndex < 0 
+            if (Context.AppData.VmItemList.All(x => x.ObjectVisibility != Visibility.Visible)
+                || SelectedIndex < 0
                 || SelectedIndex >= Context.AppData.VmItemList.Count)
             {
                 return;
@@ -206,37 +200,43 @@ namespace PRM.ViewModel
 
             #region Build Actions
 
-            var actions = new ObservableCollection<ActionItem>
+            var actions = new ObservableCollection<ActionItem>();
             {
-                new ActionItem()
+                actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("word_connect"),
+                    ActionName = Context.LanguageService.Translate("word_connect"),
                     Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
-                },
-                new ActionItem()
+                });
+                if (RemoteWindowPool.Instance.TabWindowCount > 0)
+                    actions.Add(new ActionItem()
+                    {
+                        ActionName = Context.LanguageService.Translate("word_connect_to_new_tab"),
+                        Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
+                    });
+                actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("word_edit"),
+                    ActionName = Context.LanguageService.Translate("word_edit"),
                     Run = (id) =>
                     {
                         Debug.Assert(SelectedItem?.Server != null);
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, false, false);
                     },
-                },
-                new ActionItem()
+                });
+                actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_duplicate"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_duplicate"),
                     Run = (id) =>
                     {
                         Debug.Assert(SelectedItem?.Server != null);
                         GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, true, false);
                     },
-                }
+                });
             };
             if (SelectedItem.Server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
                 actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_address"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_copy_address"),
                     Run = (id) =>
                     {
                         var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
@@ -256,7 +256,7 @@ namespace PRM.ViewModel
             {
                 actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_username"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_copy_username"),
                     Run = (id) =>
                     {
                         var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
@@ -276,14 +276,14 @@ namespace PRM.ViewModel
             {
                 actions.Add(new ActionItem()
                 {
-                    ActionName = SystemConfig.Instance.Language.GetText("server_card_operate_copy_password"),
+                    ActionName = Context.LanguageService.Translate("server_card_operate_copy_password"),
                     Run = (id) =>
                     {
                         var pb = Context.AppData.VmItemList.First(x => x.Server.Id == id);
                         if (pb.Server is ProtocolServerWithAddrPortUserPwdBase server)
                             try
                             {
-                                Clipboard.SetText(Context.DbOperator.DecryptOrReturnOriginalString(server.Password));
+                                Clipboard.SetText(Context.DataService.DecryptOrReturnOriginalString(server.Password));
                             }
                             catch (Exception)
                             {
@@ -300,11 +300,11 @@ namespace PRM.ViewModel
 
             ReCalcWindowHeight(true);
 
-            _listActions.Visibility = Visibility.Visible;
+            _gridMenuActions.Visibility = Visibility.Visible;
 
             var sb = new Storyboard();
             sb.AddSlideFromLeft(0.3, _gridMainWidth);
-            sb.Begin(_listActions);
+            sb.Begin(_gridMenuActions);
         }
 
         public void HideActionsList()
@@ -313,10 +313,10 @@ namespace PRM.ViewModel
             sb.AddSlideToLeft(0.3, _gridMainWidth);
             sb.Completed += (o, args) =>
             {
-                _listActions.Visibility = Visibility.Hidden;
+                _gridMenuActions.Visibility = Visibility.Hidden;
                 ReCalcWindowHeight(false);
             };
-            sb.Begin(_listActions);
+            sb.Begin(_gridMenuActions);
         }
 
         private void ShowAllItems()
@@ -335,9 +335,7 @@ namespace PRM.ViewModel
 
         private string IsAnyGroupNameMatched(List<string> keywords)
         {
-            if (!SystemConfig.Instance.Launcher.AllowGroupNameSearch) return string.Empty;
-
-            bool anyGroupMatched = false;
+            if (!Context.ConfigurationService.Launcher.AllowTagSearch) return string.Empty;
 
             // TODO need a better tag matching
             // if tag name search enabled, show group name as prefix
@@ -345,7 +343,6 @@ namespace PRM.ViewModel
             {
                 if (keywords.Any(keyword => tag.ToLower() == keyword.ToLower()))
                 {
-                    anyGroupMatched = true;
                     return tag;
                 }
             }
@@ -378,13 +375,13 @@ namespace PRM.ViewModel
                         if (string.IsNullOrEmpty(matchedTag) == false && vm.Server.Tags.Contains(matchedTag) == false)
                             continue;
 
-                        var dispName = vm.Server.DispName;
+                        var dispName = vm.Server.DisplayName;
                         // if tag name search enabled, and keyword match the tag name, show tag name as prefix
                         if (string.IsNullOrEmpty(matchedTag) == false)
                             dispName = $"{matchedTag} - {dispName}";
                         var subTitle = vm.Server.SubTitle;
 
-                        var mrs = Context.KeywordMatchService.Matchs(new List<string>() { dispName, subTitle }, keyWords);
+                        var mrs = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
                         if (mrs.IsMatchAllKeywords)
                         {
                             vm.ObjectVisibility = Visibility.Visible;
@@ -455,6 +452,19 @@ namespace PRM.ViewModel
                 // reorder
                 OrderItemByLastConnTime();
 
+
+                // index the list to first item
+                for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
+                {
+                    var vm = Context.AppData.VmItemList[i];
+                    if (vm.ObjectVisibility == Visibility.Visible)
+                    {
+                        SelectedIndex = i;
+                        SelectedItem = vm;
+                        break;
+                    }
+                }
+
                 ReCalcWindowHeight(false);
             });
         }
@@ -468,18 +478,6 @@ namespace PRM.ViewModel
                 if (s0.Server.LastConnTime < s1.Server.LastConnTime)
                 {
                     Context.AppData.VmItemList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
-                    break;
-                }
-            }
-
-            // index the list to first item
-            for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
-            {
-                var vm = Context.AppData.VmItemList[i];
-                if (vm.ObjectVisibility == Visibility.Visible)
-                {
-                    SelectedIndex = i;
-                    SelectedItem = vm;
                     break;
                 }
             }

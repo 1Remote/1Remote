@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using Dragablz;
 using PRM.Core.Model;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.RDP.Host;
+using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.Model;
+using PRM.View.ProtocolHosts;
 using PRM.View.TabWindow;
 
-using Shawn.Utils;
 
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -46,17 +46,17 @@ namespace PRM.ViewModel
             Items.Clear();
         }
 
-        private string _tag = "";
+        private ObservableCollection<string> _tags = new ObservableCollection<string>();
 
         /// <summary>
         /// tag of the Tab, e.g. tag = Group1 then the servers in Group1 will be shown on this Tab.
         /// </summary>
-        public string Tag
+        public ObservableCollection<string> Tags
         {
-            get => _tag;
+            get => _tags;
             set
             {
-                SetAndNotifyIfChanged(nameof(Tag), ref _tag, value);
+                SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
                 SetTitle();
             }
         }
@@ -75,7 +75,7 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_isLocked 
+                if (_isLocked
                     || SelectedItem?.Content == null
                     || (SelectedItem?.Content is AxMsRdpClient09Host && SelectedItem?.CanResizeNow == false))
                     return ResizeMode.NoResize;
@@ -151,16 +151,7 @@ namespace PRM.ViewModel
         {
             if (SelectedItem != null)
             {
-                if (!string.IsNullOrEmpty(Tag))
-                    this.Title = Tag + " - " + SelectedItem.Header;
-                else
-                    this.Title = SelectedItem.Header + " - " + SystemConfig.AppName;
-#if DEV
-                if (!string.IsNullOrEmpty(Tag))
-                    this.Title = Tag + " - " + SelectedItem.Header;
-                else
-                    this.Title = SelectedItem.Header + " - PRemoteM";
-#endif
+                this.Title = SelectedItem.Header + " - " + ConfigurationService.AppName;
             }
         }
 
@@ -176,7 +167,7 @@ namespace PRM.ViewModel
                 {
                     _cmdHostGoFullScreen = new RelayCommand((o) =>
                     {
-                        if(IsLocked) return;
+                        if (IsLocked) return;
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
                             RemoteWindowPool.Instance.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
@@ -225,20 +216,16 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdShowTabByIndex == null)
+                return _cmdShowTabByIndex ??= new RelayCommand((o) =>
                 {
-                    _cmdShowTabByIndex = new RelayCommand((o) =>
+                    if (int.TryParse(o.ToString(), out int i))
                     {
-                        if (int.TryParse(o.ToString(), out int i))
+                        if (i > 0 && i <= Items.Count)
                         {
-                            if (i > 0 && i <= Items.Count)
-                            {
-                                SelectedItem = Items[i - 1];
-                            }
+                            SelectedItem = Items[i - 1];
                         }
-                    }, o => this.SelectedItem != null);
-                }
-                return _cmdShowTabByIndex;
+                    }
+                }, o => this.SelectedItem != null);
             }
         }
 
@@ -248,18 +235,14 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdGoMinimize == null)
+                return _cmdGoMinimize ??= new RelayCommand((o) =>
                 {
-                    _cmdGoMinimize = new RelayCommand((o) =>
+                    if (o is Window window)
                     {
-                        if (o is Window window)
-                        {
-                            window.WindowState = WindowState.Minimized;
-                            SelectedItem.Content.ToggleAutoResize(false);
-                        }
-                    });
-                }
-                return _cmdGoMinimize;
+                        window.WindowState = WindowState.Minimized;
+                        SelectedItem.Content.ToggleAutoResize(false);
+                    }
+                });
             }
         }
 
@@ -269,15 +252,11 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdGoMaximize == null)
+                return _cmdGoMaximize ??= new RelayCommand((o) =>
                 {
-                    _cmdGoMaximize = new RelayCommand((o) =>
-                    {
-                        if (o is Window window)
-                            window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
-                    });
-                }
-                return _cmdGoMaximize;
+                    if (o is Window window)
+                        window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
+                });
             }
         }
 
@@ -287,15 +266,11 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdCloseAll == null)
+                return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
-                    _cmdCloseAll = new RelayCommand((o) =>
-                    {
-                        if (IsLocked) return;
-                        RemoteWindowPool.Instance.DelTabWindow(Token);
-                    });
-                }
-                return _cmdCloseAll;
+                    if (IsLocked) return;
+                    RemoteWindowPool.Instance.DelTabWindow(Token);
+                });
             }
         }
 
@@ -305,22 +280,18 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdClose == null)
+                return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    _cmdClose = new RelayCommand((o) =>
+                    if (IsLocked) return;
+                    if (SelectedItem != null)
                     {
-                        if (IsLocked) return;
-                        if (SelectedItem != null)
-                        {
-                            RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
-                        }
-                        else
-                        {
-                            CmdCloseAll.Execute();
-                        }
-                    }, o => this.SelectedItem != null);
-                }
-                return _cmdClose;
+                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
+                    }
+                    else
+                    {
+                        CmdCloseAll.Execute();
+                    }
+                }, o => this.SelectedItem != null);
             }
         }
 
@@ -332,18 +303,9 @@ namespace PRM.ViewModel
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
-            if (SystemConfig.Instance.Theme.TabUI == EnumTabUI.ChromeLike)
-            {
-                var v = new TabWindowChrome(token);
-                RemoteWindowPool.Instance.AddTab(v);
-                return new NewTabHost<Window>(v, v.TabablzControl);
-            }
-            else
-            {
-                var v = new TabWindowClassical(token);
-                RemoteWindowPool.Instance.AddTab(v);
-                return new NewTabHost<Window>(v, v.TabablzControl);
-            }
+            var v = new TabWindowChrome(token, App.Context.LocalityService);
+            RemoteWindowPool.Instance.AddTab(v);
+            return new NewTabHost<Window>(v, v.TabablzControl);
         }
 
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)

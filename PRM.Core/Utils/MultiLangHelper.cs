@@ -33,9 +33,10 @@ namespace Shawn.Utils
                 rd[key] = value;
         }
 
-        public static ResourceDictionary LangDictFromJsonFile(string jsonPath)
+        public static ResourceDictionary LangDictFromJsonFile(string path)
         {
-            var fi = new FileInfo(jsonPath);
+            Debug.Assert(path.ToLower().EndsWith(".json"));
+            var fi = new FileInfo(path);
             if (!fi.Exists) return null;
             var rd = LangDictFromJsonString(File.ReadAllText(fi.FullName));
             SetKey(rd, LangFilePathKey, fi.FullName);
@@ -62,6 +63,19 @@ namespace Shawn.Utils
                 SimpleLogHelper.Error(e);
                 return new ResourceDictionary();
             }
+        }
+
+
+        public static ResourceDictionary LangDictFromXamlFile(string path)
+        {
+            Debug.Assert(path.ToLower().EndsWith(".xaml"));
+            var fi = new FileInfo(path);
+            if (!fi.Exists) return null;
+            using var fs = new FileStream(fi.FullName, FileMode.Open);
+            var rd = XamlReader.Load(fs) as ResourceDictionary;
+            SetKey(rd, LangFilePathKey, fi.FullName);
+            SetKey(rd, ResourceTypeKey, ResourceTypeValue);
+            return rd;
         }
 
         public static ResourceDictionary LangDictFromXamlUri(Uri uri)
@@ -123,6 +137,21 @@ namespace Shawn.Utils
                 resources.MergedDictionaries.Remove(r);
             }
             resources.MergedDictionaries.Add(lang);
+        }
+
+        public static List<string> FindMissingFields(ResourceDictionary baseResourceDictionary, ResourceDictionary resource)
+        {
+            Debug.Assert(baseResourceDictionary != null);
+            Debug.Assert(resource != null);
+            var missingFields = new List<string>();
+            foreach (DictionaryEntry entry in baseResourceDictionary)
+            {
+                if (resource.Contains(entry.Key) == false)
+                {
+                    missingFields.Add(entry.Key as string);
+                }
+            }
+            return missingFields;
         }
     }
 }

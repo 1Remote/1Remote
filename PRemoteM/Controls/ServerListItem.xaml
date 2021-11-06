@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PRM.Controls"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
@@ -19,7 +18,7 @@
 
         <Grid>
             <Grid.Margin>
-                <Thickness Left="10" Right="{StaticResource ScrollBarWidth}"></Thickness>
+                <Thickness Left="10" Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
             </Grid.Margin>
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -33,40 +32,10 @@
 
                 <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
                                       Name="CbIsSelected"
-                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                      Background="{DynamicResource MainColor2Brush}">
+                                      IsChecked="{Binding IsSelected, Mode=TwoWay}">
                     <CheckBox.Style>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                             <Setter Property="Visibility" Value="Hidden"></Setter>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="CheckBox">
-                                        <Border Background="{TemplateBinding Control.Background}" 
-                                                            BorderThickness="0" 
-                                                            CornerRadius="5" Name="PART_Background">
-                                            <Grid>
-                                                <Border Name="PATH_UNCHECK" CornerRadius="3" Background="{DynamicResource MainColor2ForegroundBrush}" Margin="4"></Border>
-                                                <Path Name="PATH_CHECK" Fill="{DynamicResource MainColor2ForegroundBrush}" Stretch="Fill" Margin="4" Data="F1 M 17.939453 5.439453 L 7.5 15.888672 L 2.060547 10.439453 L 2.939453 9.560547 L 7.5 14.111328 L 17.060547 4.560547 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Visible"></Setter>
-                                            </Trigger>
-                                            <Trigger Property="IsChecked" Value="False">
-                                                <Setter TargetName="PATH_UNCHECK" Property="Visibility" Value="Visible"></Setter>
-                                                <Setter TargetName="PATH_CHECK" Property="Visibility" Value="Collapsed"></Setter>
-                                            </Trigger>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="PART_Background" Property="Opacity" Value="0.8"></Setter>
-                                                <Setter TargetName="PATH_UNCHECK" Property="Margin" Value="3"></Setter>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
@@ -84,12 +53,12 @@
                                                    FontSize="14" FontWeight="Bold"
                                                    HorizontalAlignment="Left"
                                                    Opacity="0.4"
-                                                   Foreground="{DynamicResource MainColor1Brush}"
+                                                   Foreground="{DynamicResource PrimaryMidBrush}"
                                                    VerticalAlignment="Center"></TextBlock>
                 <TextBlock Grid.Column="1" Margin="5 0"
                                                    Text="{Binding Server.ProtocolDisplayName}"
                                                    FontSize="14" FontWeight="Bold"
-                                                   Foreground="{DynamicResource MainColor1ForegroundBrush}"
+                                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                                    Opacity="0.2"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center">
@@ -101,7 +70,7 @@
 
                 <TextBlock Grid.Column="3" Margin="5 0"
                                                                  FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.DispName}">
+                                                                 Text="{Binding Server.DisplayName}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
@@ -124,7 +93,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="system:String">
                             <Grid Margin="3">
-                                <controls:ButtonEx Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding }" Style="{DynamicResource MainColor2ButtonRadius5}" HorizontalAlignment="Left"></controls:ButtonEx>
+                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding }" HorizontalAlignment="Left"></Button>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -147,80 +116,48 @@
 
 
                 <!-- setting menu button -->
-                <controls:ButtonEx Grid.Column="5" 
+                <Button Grid.Column="5" 
                                    x:Name="BtnSettingMenu"
                                    Margin="10 0"
-                                   Width="20" Height="20" HorizontalAlignment="Right" BorderThickness="0"
+                                   Width="20" Height="20" HorizontalAlignment="Right"
                                    Click="BtnSettingMenu_OnClick">
-                    <controls:ButtonEx.Style>
-                        <Style TargetType="controls:ButtonEx" BasedOn="{StaticResource MainColor2Button}">
-                            <Setter Property="Background" Value="{StaticResource MainColor2Brush}"></Setter>
-                            <Setter Property="Foreground" Value="{StaticResource MainColor2ForegroundBrush}"></Setter>
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Setter Property="Padding" Value="5"></Setter>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border Background="{TemplateBinding Background}" 
-                                                                BorderThickness="0" 
-                                                                CornerRadius="5"
-                                                                Name="PART_Background">
-                                            <Path   Name="Symbol" Margin="{TemplateBinding Padding}"
-                                                                Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
-                                                                Fill="{TemplateBinding Foreground}"
-                                                                Stretch="Fill" />
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
                             <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Padding" Value="4"></Setter>
-                                </Trigger>
                                 <DataTrigger Binding="{Binding ElementName=Grid,Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu, Path=IsOpen}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
-                                    <Setter Property="Background" Value="{StaticResource MainColor1Brush}"></Setter>
-                                    <Setter Property="Foreground" Value="{StaticResource MainColor1ForegroundBrush}"></Setter>
+                                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
                                     <Setter Property="Padding" Value="4"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </controls:ButtonEx.Style>
-                </controls:ButtonEx>
+                    </Button.Style>
+
+                    <Path Name="Symbol" Margin="2"
+                          Data="F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z "
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                          Stretch="Uniform" />
+                </Button>
             </Grid>
         </Grid>
 
 
-        <Popup 
-                                    AllowsTransparency="True"
-                                    Name="PopupCardSettingMenu"
-                                    PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
-            <Popup.Resources>
-                <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource ButtonExStyleBase}">
-                    <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
-                    <Setter Property="Background" Value="{DynamicResource MainColor1DarkerBrush}"></Setter>
-                    <Setter Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}"></Setter>
-                    <Setter Property="OpacityOnMouseOver" Value="1"></Setter>
-                    <Setter Property="BackgroundOnMouseOver" Value="{DynamicResource MainColor2Brush}"/>
-                    <Setter Property="ForegroundOnMouseOver" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                    <Setter Property="BackgroundOnPressed" Value="{DynamicResource MainColor2LighterBrush}"/>
-                    <Setter Property="ForegroundOnPressed" Value="{DynamicResource MainColor2ForegroundBrush}"/>
-                    <Setter Property="BackgroundOnDisabled" Value="{DynamicResource MainColor1DarkerBrush}"/>
-                    <Setter Property="ForegroundOnDisabled" Value="Gray"/>
-                    <Setter Property="OpacityOnPressed" Value="1"></Setter>
-                </Style>
-            </Popup.Resources>
+        <Popup Name="PopupCardSettingMenu"
+               AllowsTransparency="True"
+               PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
             <Border Padding="0 0 4 4">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
                 </Border.Effect>
-                <Grid MinWidth="80" Background="{DynamicResource MainColor1DarkerBrush}">
+                <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                     <StackPanel>
-                        <controls:ButtonEx Click="ButtonEditServer_OnClick" Content="{DynamicResource word_edit}"></controls:ButtonEx>
-                        <controls:ButtonEx Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></controls:ButtonEx>
+                        <Button Padding="5" Click="ButtonEditServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource word_edit}"></Button>
+                        <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                     </StackPanel>
                 </Grid>
             </Border>

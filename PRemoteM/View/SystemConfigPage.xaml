@@ -3,21 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
-             xmlns:controls="clr-namespace:PRM.Core.Resources.Controls;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:configuration="clr-namespace:PRM.ViewModel.Configuration"
+             xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
+             xmlns:protocolConfig="clr-namespace:PRM.View.ProtocolConfig"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance model:SystemConfig}"
+             d:DataContext="{d:DesignInstance configuration:ConfigurationViewModel}"
              d:DesignHeight="2450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Styles/PRM_ScrollViewerControlTemplate.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="../Styles/MinHorizontalScrollViewerStyle.xaml"></ResourceDictionary>
                 <ResourceDictionary>
-                    <view:ObjEqualParam2Bool x:Key="ObjEqualParam2Bool" />
                     <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
                     <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
                 </ResourceDictionary>
@@ -27,7 +26,7 @@
                 <Setter Property="Padding" Value="2" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="Background" Value="{DynamicResource MainColor1LighterBrush}" />
+                <Setter Property="Background" Value="{DynamicResource PrimaryLightBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
                 <Setter Property="Template">
@@ -41,7 +40,7 @@
 
                                 <Border SnapsToDevicePixels="True">
                                     <TabPanel x:Name="headerPanel"
-                                          Background="{DynamicResource MainColor1Brush}" IsItemsHost="true"
+                                          Background="{DynamicResource PrimaryMidBrush}" IsItemsHost="true"
                                           Margin="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" />
                                 </Border>
                                 <Border x:Name="contentPanel" SnapsToDevicePixels="True"
@@ -56,11 +55,11 @@
             </Style>
 
             <Style TargetType="TabItem">
-                <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TabItem">
-                            <Border Name="Border" Padding="0 2" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MainColor2Brush}">
+                            <Border Name="Border" Padding="0 2" SnapsToDevicePixels="True" BorderBrush="{DynamicResource AccentMidBrush}">
                                 <TextBlock x:Name="TabItemContent"
                                            HorizontalAlignment="Center"
                                            Margin="10"
@@ -68,13 +67,13 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainBgColorBrush}" />
-                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}" />
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrush}" />
+                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
                                     <Setter TargetName="Border" Property="BorderThickness" Value="0 0 0 1"></Setter>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="False">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor1Brush}" />
-                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainColor1ForegroundBrush}" />
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                    <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -82,8 +81,8 @@
                                         <Condition Property="IsMouseOver" Value="True"></Condition>
                                     </MultiTrigger.Conditions>
                                     <MultiTrigger.Setters>
-                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainColor2Brush}" />
-                                        <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource MainColor2ForegroundBrush}" />
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentMidBrush}" />
+                                        <Setter TargetName="TabItemContent" Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </MultiTrigger.Setters>
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
@@ -92,7 +91,7 @@
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="False">
-                        <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}">
+                        <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}">
                         </Setter>
                     </Trigger>
                 </Style.Triggers>
@@ -100,9 +99,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource MainBgColorBrush}">
+    <Grid Background="{DynamicResource BackgroundBrush}">
 
-        <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource MainBgColorBrush}">
+        <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource BackgroundBrush}">
             <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
                 <StackPanel Margin="0 20 0 0">
 
@@ -110,8 +109,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_language}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <ComboBox ItemsSource="{Binding SystemConfig.Language.LanguageCode2Name}"
-                                          SelectedValue="{Binding SystemConfig.Language.CurrentLanguageCode}"
+                                <ComboBox ItemsSource="{Binding Languages}"
+                                          SelectedValue="{Binding Language}"
                                           SelectedValuePath="Key"
                                           DisplayMemberPath="Value" />
                             </Grid>
@@ -126,11 +125,11 @@
                                            NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
                                     <Hyperlink.Style>
                                         <Style TargetType="{x:Type Hyperlink}">
-                                            <Setter Property="Foreground" Value="{DynamicResource MainColor2Brush}"></Setter>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
                                             <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource MainColor2LighterBrush}"></Setter>
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
                                                     <Setter Property="TextBlock.TextDecorations">
                                                         <Setter.Value>
                                                             <TextDecorationCollection>
@@ -153,7 +152,7 @@
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_start}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <StackPanel VerticalAlignment="Center">
-                                    <CheckBox IsChecked="{Binding SystemConfig.General.AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                                    <CheckBox IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -163,37 +162,25 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.General.AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
+                                <CheckBox IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
 
-                    <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+                    <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{x:Static utils:SimpleLogHelper.LogFileName}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}"></TextBlock>
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Log"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.General.IconFolderPath, Mode=OneTime}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                                <TextBox Text="{x:Static utils:SimpleLogHelper.LogFileName}" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_explore_to}" Command="{Binding CmdOpenPath}" CommandParameter="{Binding SystemConfig.General.IconFolderPath, Mode=OneWay}"></controls:ButtonEx>
+                            <!--<Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding CmdSelectDbPath}"></Button>-->
                         </StackPanel>
                     </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}" Visibility="Hidden"></TextBlock>
-                            <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_general_icons_folder_path_description}" TextWrapping="WrapWithOverflow"></TextBlock>
-                        </StackPanel>
-                    </Grid>-->
                 </StackPanel>
             </TabItem>
 
             <TabItem Name="TabItemQuick" Header="{DynamicResource system_options_quick_title}">
                 <StackPanel Margin="0 20 0 0">
-
-                    <!--<Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="20 0 0 0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="450" Text="{DynamicResource system_options_quick_description}" TextWrapping="WrapWithOverflow"></TextBlock>
-                        </StackPanel>
-                    </Grid>-->
 
                     <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
@@ -205,7 +192,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.Enable, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
+                                <CheckBox IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -214,7 +201,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding SystemConfig.Launcher.AllowGroupNameSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_allow_group_name_search}"></CheckBox>
+                                <CheckBox IsChecked="{Binding LauncherAllowTagSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_allow_group_name_search}"></CheckBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -225,16 +212,15 @@
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ComboBox Width="100" SelectedValuePath="Tag"
-                                              SelectedValue="{Binding SystemConfig.Launcher.HotKeyModifiers}"
-                                              SelectionChanged="Modifiers_OnSelectionChanged">
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static model:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
+                                              SelectedValue="{Binding LauncherHotKeyModifiers}">
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
+                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
                                     </ComboBox>
                                     <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
                                     <TextBox Width="100"
@@ -242,7 +228,7 @@
                                              IsReadOnlyCaretVisible="False"
                                              IsUndoEnabled="False"
                                              PreviewKeyDown="TextBoxKey_OnPreviewKeyDown"
-                                             Text="{Binding SystemConfig.Launcher.HotKeyKey,Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
+                                             Text="{Binding LauncherHotKeyKey, Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -258,7 +244,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Grid Style="{StaticResource EditorRowGridInput}" Margin="20 0" Width="450">
                                 <Grid.Resources>
-                                    <DataTemplate x:Key="DataTemplateForMatcher" DataType="model:MatchProviderInfo">
+                                    <DataTemplate x:Key="DataTemplateForMatcher" DataType="service:MatchProviderInfo">
                                         <Grid Margin="5">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"></RowDefinition>
@@ -280,7 +266,7 @@
                                     </DataTemplate>
                                 </Grid.Resources>
                                 <ListView Height="250"
-                                          ItemsSource="{Binding SystemConfig.KeywordMatch.AvailableMatcherProviders}" ItemTemplate="{StaticResource DataTemplateForMatcher}">
+                                          ItemsSource="{Binding AvailableMatcherProviders}" ItemTemplate="{StaticResource DataTemplateForMatcher}">
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="Template">
@@ -309,9 +295,6 @@
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
-                                        <Style TargetType="ScrollViewer">
-                                            <Setter Property="Template" Value="{DynamicResource PRM_ScrollViewerControlTemplate}"></Setter>
-                                        </Style>
                                     </ListView.Resources>
                                 </ListView>
                             </Grid>
@@ -327,10 +310,10 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding SystemConfig.DataSecurity.DbPath, Mode=OneWay}"></TextBox>
+                                <TextBox Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectDbPath}"></controls:ButtonEx>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding SystemConfig.DataSecurity.CmdDbMigrate}"></controls:ButtonEx>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding CmdSelectDbPath}"></Button>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -339,31 +322,31 @@
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <controls:ButtonEx Margin="0" Command="{Binding SystemConfig.DataSecurity.CmdGenRsaKey}"
+                                    <Button Margin="0" Command="{Binding CmdGenRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_encrypt}">
-                                        <controls:ButtonEx.Style>
-                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2ButtonRadius3}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                    <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                         <Setter Property="IsEnabled" Value="True"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </controls:ButtonEx.Style>
-                                    </controls:ButtonEx>
-                                    <controls:ButtonEx Margin="10 0 0 0" Command="{Binding SystemConfig.DataSecurity.CmdClearRsaKey}"
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Margin="10 0 0 0" Command="{Binding CmdClearRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_decrypt}">
-                                        <controls:ButtonEx.Style>
-                                            <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor2ButtonRadius3}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                    <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                         <Setter Property="IsEnabled" Value="False"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </controls:ButtonEx.Style>
-                                    </controls:ButtonEx>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -373,7 +356,11 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Name="TbPublicKey" Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPublicKey, Mode=OneWay}" VerticalContentAlignment="Center" TextWrapping="Wrap" Height="200" IsEnabled="False" VerticalScrollBarVisibility="Auto"></TextBox>
+                                <TextBox Text="{Binding RsaPublicKey, Mode=OneWay}" 
+                                         VerticalContentAlignment="Center" 
+                                         TextWrapping="Wrap" Height="200" 
+                                         Focusable="False"
+                                         IsReadOnly="True"></TextBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -382,19 +369,19 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding SystemConfig.DataSecurity.RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                                <TextBox Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
                             </Grid>
-                            <controls:ButtonEx Content="{DynamicResource word_select}" Command="{Binding SystemConfig.DataSecurity.CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
-                                <controls:ButtonEx.Style>
-                                    <Style TargetType="{x:Type controls:ButtonEx}" BasedOn="{StaticResource MainColor1ButtonRadius3}">
+                            <Button Content="{DynamicResource word_select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SystemConfig.DataSecurity.RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                            <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </controls:ButtonEx.Style>
-                            </controls:ButtonEx>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
@@ -418,15 +405,15 @@
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_prm_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
                                 <ComboBox
-                                          ItemsSource="{Binding SystemConfig.Theme.PrmColorThemeNames}"
-                                          SelectedItem="{Binding SystemConfig.Theme.PrmColorThemeName}">
+                                          ItemsSource="{Binding ThemeList}"
+                                          SelectedItem="{Binding ThemeName}">
                                 </ComboBox>
                             </Grid>
 
                             <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
                                 (?)
                             </TextBlock>
-                            <controls:ButtonEx Style="{StaticResource MainColor1ButtonRadius3}" Content="{DynamicResource word_reset}" Command="{Binding SystemConfig.Theme.CmdPrmThemeReset}"></controls:ButtonEx>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_reset}" Command="{Binding CmdResetTheme}"></Button>
                         </StackPanel>
                     </Grid>
 
@@ -464,37 +451,37 @@
                             <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource system_options_theme_prm_color_foreground}"></TextBlock>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_main_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor1}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor1Lighter}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor1Darker}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor1Foreground}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding PrimaryMidColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding PrimaryLightColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding PrimaryDarkColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding PrimaryTextColor}" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_secondary_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainColor2}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding SystemConfig.Theme.MainColor2Lighter}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding SystemConfig.Theme.MainColor2Darker}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainColor2Foreground}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding AccentMidColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding AccentLightColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding AccentDarkColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding AccentTextColor}" />
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_background_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding SystemConfig.Theme.MainBgColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding SystemConfig.Theme.MainBgColorForeground}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding BackgroundColor}" />
+                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding BackgroundTextColor}" />
                         </Grid>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
+                    <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource system_options_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
+                    </Grid>-->
+                    <!--<Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <TextBox Text="{Binding SystemConfig.Theme.PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
+                                <TextBox Text="{PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
                             </Grid>
                         </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
+                    </Grid>-->
+                    <!--<Grid Style="{StaticResource EditorRowGrid}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_theme}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
@@ -509,19 +496,14 @@
                                 </Hyperlink>
                             </TextBlock>
                         </StackPanel>
-                    </Grid>
+                    </Grid>-->
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Tab" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                        </StackPanel>
-                    </Grid>
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                         <StackPanel Orientation="Horizontal">
                             <StackPanel.Resources>
                                 <Style TargetType="RadioButton">
                                     <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource MainBgColorForegroundBrush}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
                                 </Style>
                             </StackPanel.Resources>
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_tab_ui}"></TextBlock>
@@ -531,30 +513,26 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <RadioButton Margin="0 2" Grid.Row="0"  IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.Classical}}" Content="{DynamicResource system_options_theme_tab_ui_classical}" />
-                                <RadioButton Margin="0 2" Grid.Row="1" IsChecked="{Binding Path= SystemConfig.Theme.TabUI, Converter={StaticResource ObjEqualParam2Bool}, ConverterParameter={x:Static model:EnumTabUI.ChromeLike}}" Content="{DynamicResource system_options_theme_tab_ui_chrome}" />
                             </Grid>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </TabItem>
+
+            <TabItem Header="{DynamicResource server_protocol}">
+                <protocolConfig:ProtocolConfiger />
+            </TabItem>
         </TabControl>
 
-        <controls:ButtonEx VerticalAlignment="Bottom"
+        <Button VerticalAlignment="Bottom"
                 Width="200" Height="40"
-                HorizontalContentAlignment="Center"
                 HorizontalAlignment="Left"
-                BorderThickness="0"
-                Foreground="{DynamicResource MainColor1ForegroundBrush}"
-                Background="{DynamicResource MainColor1DarkerBrush}"
-                BackgroundOnMouseOver="{DynamicResource MainColor2Brush}"
-                ForegroundOnMouseOver="{DynamicResource MainColor2ForegroundBrush}"
-                OpacityOnMouseOver="1"
-                BackgroundOnPressed="{DynamicResource MainColor2Brush}"
-                ForegroundOnPressed="{DynamicResource MainColor2ForegroundBrush}"
-                OpacityOnPressed="0.5"
+                Foreground="{DynamicResource PrimaryTextBrush}"
+                Background="{DynamicResource PrimaryDarkBrush}"
+                Style="{StaticResource ButtonBarAccentStyle}"
+                attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
                 Command="{Binding CmdSaveAndGoBack}"
                 Content="{DynamicResource word_back}">
-        </controls:ButtonEx>
+        </Button>
     </Grid>
 </UserControl>

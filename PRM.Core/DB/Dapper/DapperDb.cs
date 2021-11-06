@@ -5,7 +5,7 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
 using Dapper;
-using PRM.Core.DB.IDB;
+using PRM.Core.I;
 using PRM.Core.Protocol;
 
 namespace PRM.Core.DB.Dapper

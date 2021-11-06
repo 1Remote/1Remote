@@ -8,9 +8,14 @@ using PRM.Controls;
 using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
-using PRM.Core.Protocol.BaseClassForm;
-using Shawn.Utils;
-
+using PRM.Core.Protocol.Extend;
+using PRM.Core.Protocol.FileTransmit.FTP;
+using PRM.Core.Protocol.FileTransmit.SFTP;
+using PRM.Core.Protocol.Putty.SSH;
+using PRM.Core.Protocol.Putty.Telnet;
+using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.VNC;
+using PRM.View.ProtocolEditors;
 using Shawn.Utils;
 
 namespace PRM.ViewModel
@@ -44,10 +49,10 @@ namespace PRM.ViewModel
         {
             IsAddMode = false;
 
-            Title = SystemConfig.Instance.Language.GetText("server_editor_bulk_editing_title");
+            Title = context.LanguageService.Translate("server_editor_bulk_editing_title");
             foreach (var serverBase in servers)
             {
-                Title += serverBase.DispName;
+                Title += serverBase.DisplayName;
                 if (servers.Last() != serverBase)
                     Title += ", ";
             }
@@ -108,7 +113,7 @@ namespace PRM.ViewModel
                         var x = protocolServerBases.Select(x => property.GetValue(x)).ToArray();
                         if (x.Distinct().Count() > 1)
                         {
-                            if(property.PropertyType == typeof(string))
+                            if (property.PropertyType == typeof(string))
                                 property.SetValue(Server, Server.Server_editor_different_options);
                             else
                                 property.SetValue(Server, null);
@@ -158,9 +163,7 @@ namespace PRM.ViewModel
                 var assembly = typeof(ProtocolServerBase).Assembly;
                 var types = assembly.GetTypes();
                 // reflect remote protocols
-                {
-                    ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract).Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
-                }
+                ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract).Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
 
                 // set selected protocol
                 try
@@ -174,10 +177,10 @@ namespace PRM.ViewModel
             }
 
             // decrypt pwd
-            _context.DbOperator.DecryptPwdIfItIsEncrypted(Server);
+            _context.DataService.DecryptToConnectLevel(Server);
 
-            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DispName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-            TagSelections = _context.AppData.Tags.Select(x=>x.Name).Distinct().OrderBy(x => x).ToList();
+            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
+            TagSelections = _context.AppData.Tags.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();
         }
 
         public string Title { get; set; }
@@ -238,19 +241,20 @@ namespace PRM.ViewModel
                 if (_cmdSave != null) return _cmdSave;
                 _cmdSave = new RelayCommand((o) =>
                 {
+                    // bulk edit
                     if (_orgServers != null)
                     {
                         // copy the same value properties
                         var properties = _orgServersCommonType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                         foreach (var property in properties)
                         {
-                            if (property.SetMethod?.IsPublic == true 
+                            if (property.SetMethod?.IsPublic == true
                                 && property.SetMethod.IsAbstract == false
                                 && property.Name != nameof(ProtocolServerBase.Id)
                                 && property.Name != nameof(ProtocolServerBase.Tags))
                             {
                                 var obj = property.GetValue(Server);
-                                if(obj == null)
+                                if (obj == null)
                                     continue;
                                 else if (obj.ToString() == Server.Server_editor_different_options)
                                     continue;
@@ -287,18 +291,24 @@ namespace PRM.ViewModel
 
                         foreach (var server in _orgServers.ToList())
                         {
-                            _context.AppData.ServerListUpdate(server, false);
+                            _context.AppData.UpdateServer(server, false);
                         }
 
                         _context.AppData.VmItemListDataChanged?.Invoke();
                         App.Window.Vm.DispPage = null;
                     }
+                    // edit
+                    else if (Server.Id > 0)
+                    {
+                        _context.AppData.UpdateServer(Server);
+                    }
+                    // add
                     else
                     {
-                        _context.AppData.ServerListUpdate(Server);
-                        App.Window.Vm.DispPage = null;
+                        _context.AppData.AddServer(Server);
                     }
-                }, o => (this.Server.DispName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
+                    App.Window.Vm.DispPage = null;
+                }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
         }
@@ -322,24 +332,14 @@ namespace PRM.ViewModel
         {
             Debug.Assert(protocolType?.FullName != null);
 
-            var formName = protocolType.Name + "Form";
             var protocolServerBaseAssembly = typeof(ProtocolServerBase).Assembly;
 
-            ProtocolServerBase server = (ProtocolServerBase)Server.Clone();
-
-            if (_orgServers != null)
-            {
-                if (protocolType == typeof(ProtocolServerBase))
-                {
-                    formName = string.Empty;
-                }
-            }
-            else
+            var server = (ProtocolServerBase)Server.Clone();
             {
                 try
                 {
                     // change protocol
-                    server = (ProtocolServerBase) protocolServerBaseAssembly.CreateInstance(protocolType.FullName);
+                    server = (ProtocolServerBase)protocolServerBaseAssembly.CreateInstance(protocolType.FullName);
 
                     // restore original server base info
                     if (_orgServer.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase))
@@ -371,32 +371,76 @@ namespace PRM.ViewModel
                 }
             }
 
-            if (!string.IsNullOrEmpty(formName))
-                try
+            try
+            {
+                if (protocolType == typeof(ProtocolServerRDP))
                 {
-                    var types = protocolServerBaseAssembly.GetTypes();
-                    var forms = types.Where(x => x.Name == formName).ToList();
-                    if (forms.Count == 1)
-                    {
-                        var t = forms[0];
-                        var parameters = new object[1];
-                        parameters[0] = server;
-                        ProtocolEditControl = (ProtocolServerFormBase)protocolServerBaseAssembly.CreateInstance(t.FullName, true, System.Reflection.BindingFlags.Default, null, parameters, null, null);
-                        Server = server;
-                    }
-                    else
-                    {
-                        if (forms.Count == 0)
-                            throw new NotImplementedException($"can not find class '{formName}' in {nameof(VmServerEditorPage)}");
-                        else
-                            throw new Exception($"error on reflecting class '{formName}' in {nameof(VmServerEditorPage)}");
-                    }
+                    ProtocolEditControl = new RdpForm(server);
+                    Server = server;
+                    return;
                 }
-                catch (Exception e)
+                else if (protocolType == typeof(ProtocolServerRemoteApp))
                 {
-                    Console.WriteLine(e);
-                    throw;
+                    ProtocolEditControl = new RdpAppForm(server);
+                    Server = server;
+                    return;
                 }
+                else if (protocolType == typeof(ProtocolServerSSH))
+                {
+                    ProtocolEditControl = new SshForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerTelnet))
+                {
+                    ProtocolEditControl = new TelnetForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerFTP))
+                {
+                    ProtocolEditControl = new FTPForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerSFTP))
+                {
+                    ProtocolEditControl = new SftpForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerVNC))
+                {
+                    ProtocolEditControl = new VncForm(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerWithAddrPortUserPwdBase))
+                {
+                    ProtocolEditControl = new BaseFormWithAddressPortUserPwd(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerWithAddrPortBase))
+                {
+                    ProtocolEditControl = new BaseFormWithAddressPort(server);
+                    Server = server;
+                    return;
+                }
+                else if (protocolType == typeof(ProtocolServerApp))
+                {
+                    ProtocolEditControl = new AppForm(server);
+                    Server = server;
+                    return;
+                }
+
+                throw new NotImplementedException($"can not find from for '{protocolType.Name}' in {nameof(VmServerEditorPage)}");
+            }
+            catch (Exception e)
+            {
+                SimpleLogHelper.Error(e);
+                throw;
+            }
         }
     }
 }

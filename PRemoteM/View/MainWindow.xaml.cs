@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using PRM.Core.Model;
+using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.View;
 using PRM.ViewModel;
@@ -19,15 +20,15 @@ namespace PRM
             InitializeComponent();
             Vm = new VmMain(context, this);
             this.DataContext = Vm;
-            Title = SystemConfig.AppName;
-            this.Width = SystemConfig.Instance.Locality.MainWindowWidth;
-            this.Height = SystemConfig.Instance.Locality.MainWindowHeight;
+            Title = ConfigurationService.AppName;
+            this.Width = context.LocalityService.MainWindowWidth;
+            this.Height = context.LocalityService.MainWindowHeight;
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.Instance.Locality.MainWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.MainWindowWidth = this.Width;
+                    context.LocalityService.MainWindowHeight = this.Height;
+                    context.LocalityService.MainWindowWidth = this.Width;
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };
@@ -68,7 +69,7 @@ namespace PRM
             if (App.Window?.WindowState == WindowState.Minimized)
                 App.Window.WindowState = WindowState.Normal;
             if (isForceActivate)
-                HideMe(false);
+                HideMe();
             Dispatcher?.Invoke(() =>
             {
                 this.Visibility = Visibility.Visible;
@@ -85,8 +86,6 @@ namespace PRM
             {
                 this.ShowInTaskbar = false;
                 this.Visibility = Visibility.Hidden;
-                if (isShowTip && !string.IsNullOrEmpty(App.TaskTrayIcon?.BalloonTipText))
-                    App.TaskTrayIcon?.ShowBalloonTip(1000);
             });
         }
 
@@ -141,7 +140,7 @@ namespace PRM
 
         private void ButtonToggleServerListViewUi_OnClick(object sender, RoutedEventArgs e)
         {
-            SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
+            //SystemConfig.Instance.Theme.CmdToggleServerListPageUI?.Execute();
             PopupMenu.IsOpen = false;
         }
     }

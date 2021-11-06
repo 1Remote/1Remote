@@ -12,11 +12,11 @@ namespace PRM.View
     public partial class SearchBoxWindow : WindowChromeBase
     {
         private readonly VmSearchBox _vm;
-        private readonly PrmContext _context;
+        public readonly PrmContext Context;
 
         public SearchBoxWindow(PrmContext context)
         {
-            _context = context;
+            Context = context;
             InitializeComponent();
 
             ShowActivated = true;
@@ -26,7 +26,7 @@ namespace PRM.View
             double oneItemHeight = (double)FindResource("OneItemHeight");
             double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
             double cornerRadius = (double)FindResource("CornerRadius");
-            _vm = new VmSearchBox(context, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridSelections, GridMenuActions);
+            _vm = new VmSearchBox(context, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridMenuActions);
 
             DataContext = _vm;
             Loaded += (sender, args) =>
@@ -40,14 +40,7 @@ namespace PRM.View
             };
             Show();
 
-            SystemConfig.Instance.Launcher.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(SystemConfigLauncher.HotKeyKey) ||
-                    args.PropertyName == nameof(SystemConfigLauncher.HotKeyModifiers))
-                {
-                    SetHotKey();
-                }
-            };
+            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
 
             _vm.PropertyChanged += (sender, args) =>
             {
@@ -89,7 +82,7 @@ namespace PRM.View
             SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
-            if (!SystemConfig.Instance.Launcher.Enable) return;
+            if (!Context.ConfigurationService.Launcher.LauncherEnabled) return;
             if (_isHidden != true) return;
 
             lock (_hideToggleLocker)
@@ -214,7 +207,7 @@ namespace PRM.View
                             {
                                 if (tb.CaretIndex == tb.Text.Length)
                                 {
-                                        _vm.ShowActionsList();
+                                    _vm.ShowActionsList();
                                     return;
                                 }
                             }
@@ -247,8 +240,10 @@ namespace PRM.View
         public void SetHotKey()
         {
             GlobalHotkeyHooker.Instance.Unregist(this);
-            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)SystemConfig.Instance.Launcher.HotKeyModifiers, SystemConfig.Instance.Launcher.HotKeyKey, this.ShowMe);
-            var title = SystemConfig.Instance.Language.GetText("messagebox_title_warning");
+            if (Context.ConfigurationService.Launcher.LauncherEnabled == false)
+                return;
+            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)Context.ConfigurationService.Launcher.HotKeyModifiers, Context.ConfigurationService.Launcher.HotKeyKey, this.ShowMe);
+            var title = Context.LanguageService.Translate("messagebox_title_warning");
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
@@ -256,14 +251,14 @@ namespace PRM.View
 
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
                     {
-                        var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_registered_fail")}: {r.Item2}";
+                        var msg = $"{Context.LanguageService.Translate("hotkey_registered_fail")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
                         MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;
                     }
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                     {
-                        var msg = $"{SystemConfig.Instance.Language.GetText("hotkey_already_registered")}: {r.Item2}";
+                        var msg = $"{Context.LanguageService.Translate("hotkey_already_registered")}: {r.Item2}";
                         SimpleLogHelper.Warning(msg);
                         MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
                         break;

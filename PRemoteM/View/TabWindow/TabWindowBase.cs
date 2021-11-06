@@ -9,13 +9,16 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
+using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.RDP.Host;
+using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.Model;
+using PRM.View.ProtocolHosts;
 using PRM.ViewModel;
+using ProtocolHostType = PRM.View.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
 
 namespace PRM.View.TabWindow
@@ -30,9 +33,11 @@ namespace PRM.View.TabWindow
         private IntPtr _myWindowHandle;
         private readonly Timer _timer4CheckForegroundWindow;
         private WindowState _lastWindowState;
+        private readonly LocalityService _localityService;
 
-        protected TabWindowBase(string token)
+        protected TabWindowBase(string token, LocalityService localityService)
         {
+            _localityService = localityService;
             Vm = new VmTabWindow(token);
             DataContext = Vm;
             _timer4CheckForegroundWindow = new Timer();
@@ -41,14 +46,13 @@ namespace PRM.View.TabWindow
 
             this.Loaded += (sender, args) =>
             {
-                var wih = new WindowInteropHelper(this);
-                _myWindowHandle = wih.Handle;
                 _timer4CheckForegroundWindow.Interval = 100;
-                _timer4CheckForegroundWindow.AutoReset = true;
+                _timer4CheckForegroundWindow.AutoReset = false;
                 _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
                 _timer4CheckForegroundWindow.Start();
 
-                var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+                _myWindowHandle = new WindowInteropHelper(this).Handle;
+                var source = HwndSource.FromHwnd(_myWindowHandle);
                 source.AddHook(new HwndSourceHook(WndProc));
             };
 
@@ -59,6 +63,10 @@ namespace PRM.View.TabWindow
             };
         }
 
+        /// <summary>
+        /// Redirect USB Device, TODO move to main window.
+        /// </summary>
+        /// <returns></returns>
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_DEVICECHANGE = 0x0219;
@@ -73,27 +81,37 @@ namespace PRM.View.TabWindow
 
         private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)
         {
-            // bring Tab window to top, when the host content is Integrate
-            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
-                return;
-
-            var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
-            if (hWnd == IntPtr.Zero) return;
-
-            var nowActivatedWindowHandle = GetForegroundWindow();
-            if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
+            try
             {
-                SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
-                SimpleLogHelper.Debug($"TabWindowBase: nowActivatedWindowHandle = ({nowActivatedWindowHandle}), hWnd = {hWnd}");
-                SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
-                BringWindowToTop(_myWindowHandle);
+                if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
+                    return;
+
+                var hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
+                if (hWnd == IntPtr.Zero) return;
+
+                var nowActivatedWindowHandle = GetForegroundWindow();
+
+                // bring Tab window to top, when the host content is Integrate.
+                if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
+                {
+                    SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
+                    SimpleLogHelper.Debug($"TabWindowBase: nowActivatedWindowHandle = ({nowActivatedWindowHandle}), hWnd = {hWnd}");
+                    SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
+                    BringWindowToTop(_myWindowHandle);
+                }
+
+                // focus content when tab is focused and host is Integrate and left mouse is not pressed
+                if (nowActivatedWindowHandle == _myWindowHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+                {
+                    Vm?.SelectedItem?.Content?.MakeItFocus();
+                }
+
+                _lastActivatedWindowHandle = nowActivatedWindowHandle;
             }
-            else if (nowActivatedWindowHandle == _myWindowHandle &&
-                     System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+            finally
             {
-                Vm?.SelectedItem?.Content?.MakeItFocus();
+                _timer4CheckForegroundWindow.Start();
             }
-            _lastActivatedWindowHandle = nowActivatedWindowHandle;
         }
 
         private void InitSizeChanged()
@@ -103,9 +121,9 @@ namespace PRM.View.TabWindow
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                    _localityService.TabWindowHeight = this.Height;
+                    _localityService.TabWindowWidth = this.Width;
+                    _localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -129,9 +147,9 @@ namespace PRM.View.TabWindow
                 if (this.WindowState != WindowState.Minimized)
                 {
                     Vm?.SelectedItem?.Content?.ToggleAutoResize(true);
-                    SystemConfig.Instance.Locality.TabWindowHeight = this.Height;
-                    SystemConfig.Instance.Locality.TabWindowWidth = this.Width;
-                    SystemConfig.Instance.Locality.TabWindowState = this.WindowState;
+                    _localityService.TabWindowHeight = this.Height;
+                    _localityService.TabWindowWidth = this.Width;
+                    _localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -154,10 +172,23 @@ namespace PRM.View.TabWindow
         {
             Closed += (sender, args) =>
             {
-                DataContext = null;
-                _timer4CheckForegroundWindow?.Dispose();
-                Vm?.CmdCloseAll.Execute();
-                Vm?.Dispose();
+                try
+                {
+                    _timer4CheckForegroundWindow?.Dispose();
+                }
+                finally
+                {
+                }
+                try
+                {
+                    Vm?.CmdCloseAll.Execute();
+                    Vm?.Dispose();
+                }
+                finally
+                {
+                    Vm = null;
+                    DataContext = null;
+                }
             };
         }
 
@@ -170,11 +201,11 @@ namespace PRM.View.TabWindow
             };
 
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Width = SystemConfig.Instance.Locality.TabWindowWidth;
-            this.Height = SystemConfig.Instance.Locality.TabWindowHeight;
+            this.Width = _localityService.TabWindowWidth;
+            this.Height = _localityService.TabWindowHeight;
             this.MinWidth = this.MinHeight = 300;
-            if (SystemConfig.Instance.Locality.TabWindowState != WindowState.Minimized)
-                this.WindowState = SystemConfig.Instance.Locality.TabWindowState;
+            if (_localityService.TabWindowState != WindowState.Minimized)
+                this.WindowState = _localityService.TabWindowState;
 
             InitSizeChanged();
             InitStateChanged();
@@ -224,9 +255,6 @@ namespace PRM.View.TabWindow
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        private static extern int SetForegroundWindow(IntPtr hWnd);
 
 
 
