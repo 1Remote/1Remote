@@ -241,4 +241,16 @@
 
     <!-- other -->
     <s:String x:Key="logo_selector_open_file_dialog_title">sélectionner une image</s:String>
+
+
+    <s:String x:Key="Default">Défaut</s:String>
+    <s:String x:Key="Exe path">Exe path</s:String>
+    <s:String x:Key="Cmd parameter">CMD paramètre</s:String>
+    <s:String x:Key="New runner">New runner</s:String>
+    <s:String x:Key="New runner name">New runner name</s:String>
+    <s:String x:Key="Hosting">Hosting</s:String>
+    <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hosting this exe in PRemoteM tab view?</s:String>
+    <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Caution: some exe can not be hosted by PRemoteM, please test by your self.</s:String>
+    <s:String x:Key="Show environment variables">Show environment variables</s:String>
+
 </ResourceDictionary>

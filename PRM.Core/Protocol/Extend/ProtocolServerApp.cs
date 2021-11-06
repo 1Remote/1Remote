@@ -39,7 +39,7 @@ namespace PRM.Core.Protocol.Extend
         }
 
 
-        protected bool _runWithHosting = true;
+        protected bool _runWithHosting = false;
         public bool RunWithHosting
         {
             get => _runWithHosting;

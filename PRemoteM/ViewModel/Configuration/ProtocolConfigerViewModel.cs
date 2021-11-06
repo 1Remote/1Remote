@@ -73,7 +73,7 @@ namespace PRM.ViewModel.Configuration
                 return _cmdAddRunner ??= new RelayCommand((o) =>
                 {
                     var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    var name = InputWindow.InputBox("New protocol name:", "New protocol", validate: new Func<string, string>((str) =>
+                    var name = InputWindow.InputBox(_languageService.Translate("New runner name"), _languageService.Translate("New runner"), validate: new Func<string, string>((str) =>
                      {
                          if (string.IsNullOrWhiteSpace(str))
                              return _languageService.Translate("Can not be empty!");
