@@ -5,8 +5,8 @@ namespace PRM.Core
     public static class PRMVersion
     {
         public const int Major = 0;
-        public const int Minor = 5;
-        public const int Patch = 12;
+        public const int Minor = 6;
+        public const int Patch = 0;
         public const int Build = 0;
         public const string PreRelease = "alpha"; // e.g. "alpha" "beta.2"
         public static string Version
