@@ -203,6 +203,13 @@ namespace PRM.View.TabWindow
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.Width = _localityService.TabWindowWidth;
             this.Height = _localityService.TabWindowHeight;
+            // check the current screen size
+            var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
+            if (this.Width >= screenEx.VirtualWorkingArea.Width)
+                this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
+            if (this.Height >= screenEx.VirtualWorkingArea.Height)
+                this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
+
             this.MinWidth = this.MinHeight = 300;
             if (_localityService.TabWindowState != WindowState.Minimized)
                 this.WindowState = _localityService.TabWindowState;
