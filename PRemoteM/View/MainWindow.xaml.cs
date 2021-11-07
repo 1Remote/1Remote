@@ -21,8 +21,16 @@ namespace PRM
             Vm = new VmMain(context, this);
             this.DataContext = Vm;
             Title = ConfigurationService.AppName;
+            // restore the window size from 
             this.Width = context.LocalityService.MainWindowWidth;
             this.Height = context.LocalityService.MainWindowHeight;
+            // check the current screen size
+            var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
+            if (this.Width > screenEx.VirtualWorkingArea.Width)
+                this.Width = Math.Min(screenEx.VirtualWorkingArea.Width * 0.8, this.Width * 0.8);
+            if (this.Height > screenEx.VirtualWorkingArea.Height)
+                this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
+
             this.SizeChanged += (sender, args) =>
             {
                 if (this.WindowState == WindowState.Normal)
