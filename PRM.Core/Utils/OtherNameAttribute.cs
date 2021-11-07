@@ -24,7 +24,7 @@ namespace Shawn.Utils
 
         public static string Replace<T>(T obj, string template)
         {
-            var t = typeof(T);
+            var t = obj.GetType();
             var properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var p in properties)
             {

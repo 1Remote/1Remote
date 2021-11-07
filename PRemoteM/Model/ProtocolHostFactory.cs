@@ -31,7 +31,7 @@ namespace PRM.Model
             var r = p.GetRunner();
             return r;
         }
-        private static HostBase TryGetCustomRunner(PrmContext context, string protocolName, ProtocolServerBase psb, out bool isOk)
+        private static HostBase TryGetCustomRunner<T>(PrmContext context, string protocolName, T psb, out bool isOk) where T: ProtocolServerBase
         {
             isOk = true;
             var r = GetRunner(context, protocolName);

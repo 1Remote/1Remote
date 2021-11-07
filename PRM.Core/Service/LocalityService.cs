@@ -107,20 +107,24 @@ namespace PRM.Core.Service
         #region Interface
 
         private const string SectionName = "Locality";
-
+        private bool _saveEnabled = true;
         private void Save()
         {
-            _ini.WriteValue(nameof(MainWindowWidth).ToLower(), SectionName, MainWindowWidth.ToString());
-            _ini.WriteValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight.ToString());
-            _ini.WriteValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth.ToString());
-            _ini.WriteValue(nameof(TabWindowHeight).ToLower(), SectionName, TabWindowHeight.ToString());
-            _ini.WriteValue(nameof(MainWindowTabSelected).ToLower(), SectionName, MainWindowTabSelected);
-            _ini.WriteValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString());
-            _ini.Save();
+            if (_saveEnabled)
+            {
+                _ini.WriteValue(nameof(MainWindowWidth).ToLower(), SectionName, MainWindowWidth.ToString());
+                _ini.WriteValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight.ToString());
+                _ini.WriteValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth.ToString());
+                _ini.WriteValue(nameof(TabWindowHeight).ToLower(), SectionName, TabWindowHeight.ToString());
+                _ini.WriteValue(nameof(MainWindowTabSelected).ToLower(), SectionName, MainWindowTabSelected);
+                _ini.WriteValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString());
+                _ini.Save();
+            }
         }
 
         private void Load()
         {
+            _saveEnabled = false;
             MainWindowWidth = _ini.GetValue(nameof(MainWindowWidth).ToLower(), SectionName, MainWindowWidth);
             MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight);
             TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth);
@@ -128,6 +132,7 @@ namespace PRM.Core.Service
             MainWindowTabSelected = _ini.GetValue(nameof(MainWindowTabSelected).ToLower(), SectionName, MainWindowTabSelected);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString()), out var so))
                 ServerOrderBy = so;
+            _saveEnabled = true;
         }
 
         #endregion Interface
