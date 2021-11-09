@@ -242,6 +242,7 @@
     <!-- other -->
     <s:String x:Key="logo_selector_open_file_dialog_title">选择图片</s:String>
 
+
     <s:String x:Key="Default">默认</s:String>
     <s:String x:Key="Exe path">Exe 路径</s:String>
     <s:String x:Key="Cmd parameter">命令行参数</s:String>
@@ -251,5 +252,14 @@
     <s:String x:Key="Hosting this exe in PRemoteM tab view?">将该 exe 集成到 PRemoteM 的 tab 视图中?</s:String>
     <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">警告: 某些应用程序无法被集成到 PRemoteM 中，请自行测试。</s:String>
     <s:String x:Key="Show environment variables">显示环境变量</s:String>
+    <s:String x:Key="How to select the specified monitors">如何选择指定的显示器</s:String>
+    <s:String x:Key="mstsc.exe mode">mstsc.exe 模式</s:String>
+    <s:String x:Key="Enabled">启用</s:String>
+    <s:String x:Key="In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters">在模式下 RDP 将以 CMD 执行 mstsc.exe xxxx.rdp 的方式启动会话，可提供更多的定制参数</s:String>
+    <s:String x:Key="Note: This mode will be automatically enabled in full screen mode and there are currently a different display of multiple scaling.">注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用</s:String>
+    <s:String x:Key="Additional settings">额外指令</s:String>
+    <s:String x:Key="Helper">助手</s:String>
+    <s:String x:Key="Preview rdp file">预览RDP文件</s:String>
+    <s:String x:Key="Check monitor number">查看显示器编号</s:String>
 
 </ResourceDictionary>

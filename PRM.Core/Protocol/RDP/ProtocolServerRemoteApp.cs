@@ -83,7 +83,6 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.RemoteApplicationName = RemoteApplicationName;
             rdpConfig.RemoteApplicationProgram = RemoteApplicationProgram;
 
-            rdpConfig.SpanMonitors = 1;
             rdpConfig.UseMultimon = 1;
 
             return rdpConfig;
