@@ -95,7 +95,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private bool? _isAdministrativePurposes = false;
-
         public bool? IsAdministrativePurposes
         {
             get => _isAdministrativePurposes;
@@ -301,6 +300,25 @@ namespace PRM.Core.Protocol.RDP
 
         #endregion resource switch
 
+        #region MSTSC model
+
+        private bool _mstscModelEnabled = false;
+        public bool MstscModelEnabled
+        {
+            get => _mstscModelEnabled;
+            set => SetAndNotifyIfChanged(ref _mstscModelEnabled, value);
+        }
+
+
+        private string _rdpFileAdditionalSettings = "";
+        public string RdpFileAdditionalSettings
+        {
+            get => _rdpFileAdditionalSettings;
+            set => SetAndNotifyIfChanged(ref _rdpFileAdditionalSettings, value);
+        }
+
+        #endregion
+
         #region Gateway
 
         private EGatewayMode? _gatewayMode = EGatewayMode.DoNotUseGateway;
@@ -390,11 +408,13 @@ namespace PRM.Core.Protocol.RDP
         /// <returns></returns>
         public RdpConfig ToRdpConfig(PrmContext context)
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password));
-            rdpConfig.Domain = this.Domain;
-            rdpConfig.LoadBalanceInfo = this.LoadBalanceInfo;
-            rdpConfig.AuthenticationLevel = 0;
-            rdpConfig.DisplayConnectionBar = this.IsFullScreenWithConnectionBar == true ? 1 : 0;
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context?.DataService?.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
+            {
+                Domain = this.Domain,
+                LoadBalanceInfo = this.LoadBalanceInfo,
+                AuthenticationLevel = 0,
+                DisplayConnectionBar = this.IsFullScreenWithConnectionBar == true ? 1 : 0
+            };
 
             switch (this.RdpFullScreenFlag)
             {
@@ -410,8 +430,10 @@ namespace PRM.Core.Protocol.RDP
                     break;
 
                 case ERdpFullScreenFlag.EnableFullScreen:
-                default:
                     rdpConfig.ScreenModeId = 2;
+                    break;
+
+                default:
                     break;
             }
 

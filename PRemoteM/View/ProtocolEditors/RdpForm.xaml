@@ -3,13 +3,15 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:rdp1="clr-namespace:PRM.Core.Protocol.RDP;assembly=PRM.Core"
+                        xmlns:rdp="clr-namespace:PRM.Core.Protocol.RDP;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                        xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance rdp1:ProtocolServerRDP}"
+                        d:DataContext="{d:DesignInstance rdp:ProtocolServerRDP}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
+
         <StackPanel>
 
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_connection}"></TextBlock>
@@ -75,10 +77,10 @@
                 <Grid.Style>
                     <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp1:ERdpFullScreenFlag.EnableFullScreen}">
+                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullScreen}">
                                 <Setter Property="Margin" Value="0"></Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp1:ERdpFullScreenFlag.EnableFullAllScreens}">
+                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
                                 <Setter Property="Margin" Value="0"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -90,12 +92,24 @@
                         <Grid.Resources>
                             <protocolEditors:ConverterERdpFullScreenFlag x:Key="ConverterERdpFullScreenFlag" />
                         </Grid.Resources>
-                        <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
-                            <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
-                        </ComboBox>
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
+                                <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
+                                <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
+                                <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
+                                <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
+                            </ComboBox>
+
+                            <TextBlock VerticalAlignment="Center" Margin="2 0"
+                                       Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}}"
+                                       ToolTip="{DynamicResource 'How to select the specified monitors'}"
+                                       >
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RDP-in-%22mstsc.exe-model%22#additional-settings" TextDecorations="{x:Null}" 
+                                           utils:HyperlinkHelper.IsOpenExternal="True">
+                                            (?)
+                                        </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -104,7 +118,7 @@
                     <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp1:ERdpFullScreenFlag.Disable}">
+                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.Disable}">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -120,7 +134,7 @@
                                         <CheckBox.Style>
                                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp1:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                         <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
                                                         <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
                                                     </DataTrigger>
@@ -159,10 +173,10 @@
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static rdp1:ERdpWindowResizeMode.Stretch}">
+                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static rdp:ERdpWindowResizeMode.Stretch}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static rdp1:ERdpWindowResizeMode.Fixed}">
+                                    <DataTrigger Binding="{Binding RdpWindowResizeMode}" Value="{x:Static rdp:ERdpWindowResizeMode.Fixed}">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -229,7 +243,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_resources}"></TextBlock>
 
@@ -242,6 +256,86 @@
                         <CheckBox Content="{DynamicResource server_editor_advantage_printers}" IsChecked="{Binding EnablePrinters}"></CheckBox>
                         <CheckBox Content="{DynamicResource server_editor_advantage_smart_cards}" IsChecked="{Binding EnableSmartCardsAndWinHello}"></CheckBox>
                     </UniformGrid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'mstsc.exe mode'}"></TextBlock>
+
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" VerticalAlignment="Top" Text=""></TextBlock>
+                    <StackPanel>
+                        <CheckBox Margin="0 2"
+                                  IsChecked="{Binding MstscModelEnabled}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock TextWrapping="Wrap" Margin="0 0 5 0">
+                                    <Run Text="{DynamicResource Enabled}"></Run>
+                                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RDP-in-%22mstsc.exe-model%22" TextDecorations="{x:Null}" 
+                                               utils:HyperlinkHelper.IsOpenExternal="True">
+                                        (?)
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </CheckBox>
+                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
+                            <Run Text="{DynamicResource 'In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters'}"></Run>
+                            <LineBreak/>
+                            <Run Text="注意：在全屏模式且当前有多个缩放率不同的显示器时，该模式将被自动启用"></Run>
+                            
+                            <!--<LineBreak/>-->
+                        <!--<Run Foreground="Red" Text="TXT警告：在该模式下 Gateway 的某些设置将无法被使用"></Run>-->
+                        </TextBlock>
+
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MstscModelEnabled}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel>
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top"></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <TextBox 
+                                    Height="100"
+                                    VerticalContentAlignment="Top"
+                                    TextWrapping="Wrap"
+                                    AcceptsReturn="True"
+                                    Text="{Binding RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
+                                    Tag="e.g. selectedmonitors:s:0,2"></TextBox>
+                            </Grid>
+
+                            <TextBlock VerticalAlignment="Top" Margin="2 0">
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RDP-in-%22mstsc.exe-model%22#additional-settings" TextDecorations="{x:Null}" 
+                                           utils:HyperlinkHelper.IsOpenExternal="True">
+                                    (?)
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Helper'}"></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Click="ButtonPreviewRdpFile_OnClick" Margin="0 0 5 0" Content="{DynamicResource 'Preview rdp file'}"></Button>
+                                    <Button Click="ButtonShowMonitorsNum_OnClick" ToolTip="mstsc.exe /l" Content="{DynamicResource 'Check monitor number'}"></Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -270,7 +364,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Margin="0">
+            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
                 <StackPanel Orientation="Horizontal">
                     <Grid Margin="50 10 0 0">
                         <StackPanel>
@@ -278,7 +372,10 @@
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding GatewayMode}" Value="{x:Static rdp1:EGatewayMode.DoNotUseGateway}">
+                                            <DataTrigger Binding="{Binding GatewayMode}" Value="{x:Static rdp:EGatewayMode.DoNotUseGateway}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding MstscModelEnabled}" Value="True">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -307,7 +404,7 @@
                                             <Setter Property="Margin" Value="0 6 0 0"></Setter>
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static rdp1:EGatewayLogonMethod.SmartCard}">
+                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static rdp:EGatewayLogonMethod.SmartCard}">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -325,7 +422,7 @@
                                             <Setter Property="Margin" Value="0 6 0 0"></Setter>
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static rdp1:EGatewayLogonMethod.SmartCard}">
+                                                <DataTrigger Binding="{Binding GatewayLogonMethod}" Value="{x:Static rdp:EGatewayLogonMethod.SmartCard}">
                                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -341,14 +438,10 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-
-            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                    </Grid>
-                </StackPanel>
-            </Grid>
         </StackPanel>
+
+
+        <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+        </Grid>
     </StackPanel>
 </protocolEditors:ProtocolServerFormBase>

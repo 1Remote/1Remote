@@ -3,9 +3,11 @@
 // https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/rdp-files
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Shawn.Utils.RdpFile
 {
@@ -16,9 +18,6 @@ namespace Shawn.Utils.RdpFile
     /// </summary>
     public sealed class RdpConfig
     {
-        [RdpConfName("span monitors:i:")]
-        public int SpanMonitors { get; set; } = 1;
-
         [RdpConfName("screen mode id:i:")]
         public int ScreenModeId { get; set; } = 2;
 
@@ -40,8 +39,17 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("session bpp:i:")]
         public int SessionBpp { get; set; } = 32;
 
+        /// <summary>
+        /// winposstr:s:0,m,l,t,r,b
+        /// m = mode ( 1 = use coords for window position, 3 = open as a maximized window )
+        /// l = left
+        /// t = top
+        /// r = right  (ie Window width)
+        /// b = bottom (ie Window height)
+        /// winposstr:s:0,1,100,100,800,600  ---- Opens up a 800x600 window 100 pixels in from the left edge of your leftmost monitor and 100 pixels down from the upper edge.
+        /// </summary>
         [RdpConfName("winposstr:s:")]
-        public string Winposstr { get; set; } = "0,3,0,0,800,600";
+        public string Winposstr { get; set; } = "";
 
         [RdpConfName("compression:i:")]
         public int Compression { get; set; } = 1;
@@ -61,14 +69,15 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("networkautodetect:i:")]
         public int NetworkAutodetect { get; set; } = 1;
 
+        /// <summary>
+        /// - 0: Disable automatic network type detection
+        /// - 1: Enable automatic network type detection
+        /// </summary>
         [RdpConfName("bandwidthautodetect:i:")]
         public int BandwidthAutodetect { get; set; } = 1;
 
         [RdpConfName("displayconnectionbar:i:")]
         public int DisplayConnectionBar { get; set; } = 1;
-
-        [RdpConfName("enableworkspacereconnect:i:")]
-        public int EnableWorkspaceReconnect { get; set; } = 0;
 
         [RdpConfName("disable wallpaper:i:")]
         public int DisableWallpaper { get; set; } = 1;
@@ -91,6 +100,9 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("disable cursor setting:i:")]
         public int DisableCursorSetting { get; set; } = 0;
 
+        /// <summary>
+        /// This setting determines whether bitmaps are cached on the local computer. This setting corresponds to the selection in the Bitmap caching check box on the Experience tab of Remote Desktop Connection Options.
+        /// </summary>
         [RdpConfName("bitmapcachepersistenable:i:")]
         public int BitmapCachePersistenable { get; set; } = 1;
 
@@ -142,6 +154,7 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("negotiate security layer:i:")]
         public int NegotiateSecurityLayer { get; set; } = 1;
 
+        #region RemoteApp
         [RdpConfName("remoteapplicationmode:i:")]
         public int RemoteApplicationMode { get; set; } = 0;
 
@@ -171,6 +184,9 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("shell working directory:s:")]
         public string ShellWorkingDirectory { get; set; } = "";
 
+        #endregion
+
+        #region Gateway
         [RdpConfName("gatewayhostname:s:")]
         public string GatewayHostname { get; set; } = "";
 
@@ -204,7 +220,8 @@ namespace Shawn.Utils.RdpFile
         /// - 1: Use explicit settings, as specified by the user
         /// </summary>
         [RdpConfName("gatewayprofileusagemethod:i:")]
-        public int GatewayProfileUsageMethod { get; set; } = 0;
+        public int GatewayProfileUsageMethod { get; set; } = 0; 
+        #endregion
 
         [RdpConfName("promptcredentialonce:i:")]
         public int PromptCredentialOnce { get; set; } = 0;
@@ -260,9 +277,11 @@ namespace Shawn.Utils.RdpFile
         /// The user password in a binary hash value. Will be overruled by RDP+.
         /// </summary>
         [RdpConfName("password 51:b:")]
-        private string Password { get; set; }
+        private string Password { get; }
 
-        public RdpConfig(string address, string username, string password)
+        private string _additionalSettings;
+
+        public RdpConfig(string address, string username, string password, string additionalSettings = "")
         {
             if (string.IsNullOrEmpty(address))
             {
@@ -271,46 +290,89 @@ namespace Shawn.Utils.RdpFile
 
             FullAddress = address;
             Username = username;
+            _additionalSettings = additionalSettings;
 
             if ((password ?? "") != "")
             {
+                // encryption for rdp file
                 Password = BitConverter.ToString(DataProtection.ProtectData(Encoding.Unicode.GetBytes(password), "")).Replace("-", "");
             }
         }
 
         public override string ToString()
         {
-            StringBuilder str = new StringBuilder();
+            var settings = new Dictionary<string, string>();
 
+            // 反射出所有 public 设置
             foreach (var prop in typeof(RdpConfig).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.Name != nameof(this.Password)))
             {
                 foreach (RdpConfNameAttribute attr in prop.GetCustomAttributes(typeof(RdpConfNameAttribute), false))
                 {
-                    str.AppendLine(attr.Name + prop.GetValue(this));
+                    settings.Add(attr.Name, prop.GetValue(this).ToString());
                 }
             }
 
+            // 添加密码
             if ((this.Password ?? "") != "")
             {
                 var attr = typeof(RdpConfig)
                     .GetProperty(nameof(this.Password), BindingFlags.NonPublic | BindingFlags.Instance)
-                    .GetCustomAttributes(typeof(RdpConfNameAttribute), false)
+                    ?.GetCustomAttributes(typeof(RdpConfNameAttribute), false)
                     .First() as RdpConfNameAttribute;
-                str.AppendLine(attr.Name + this.Password);
+                settings.Add(attr.Name, this.Password); 
+            }
+
+
+            // 添加 additional settings
+            if (string.IsNullOrWhiteSpace(_additionalSettings) == false)
+            {
+                foreach (var s in _additionalSettings.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    for (char i = 'a'; i <= 'z'; i++)
+                    {
+                        if (Regex.IsMatch(s, @$":\s*{i}\s*:") == false) continue;
+                        var ss = Regex.Split(s, $@":\s*{i}\s*:");
+                        if (ss.Length == 2)
+                        {
+                            var key = $"{ss[0].Trim()}:{i}:";
+                            var val = ss[1].Trim();
+                            if (settings.ContainsKey(key))
+                                settings[key] = val;
+                            else
+                                settings.Add(key, val);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // 强制打开多显示器模式
+            if (settings.ContainsKey("selectedmonitors:i:") && settings["selectedmonitors:i:"].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Length > 1)
+            {
+                if (settings.ContainsKey("screen mode id:i:"))
+                    settings["screen mode id:i:"] = "2";
+                if (settings.ContainsKey("use multimon:i:"))
+                    settings["use multimon:i:"] = "1";
+            }
+
+            var str = new StringBuilder();
+            foreach (var kv in settings)
+            {
+                str.AppendLine($"{kv.Key}{kv.Value}");
             }
 
             return str.ToString();
         }
-    }
 
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class RdpConfNameAttribute : Attribute
-    {
-        public string Name { get; private set; }
-
-        public RdpConfNameAttribute(string name)
+        [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+        private class RdpConfNameAttribute : Attribute
         {
-            this.Name = name;
+            public string Name { get; private set; }
+
+            public RdpConfNameAttribute(string name)
+            {
+                this.Name = name;
+            }
         }
     }
 }

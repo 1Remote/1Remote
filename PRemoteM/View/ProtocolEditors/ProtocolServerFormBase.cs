@@ -7,6 +7,10 @@ namespace PRM.View.ProtocolEditors
     {
         private readonly ProtocolServerBase _vm = null;
 
+        protected ProtocolServerFormBase()
+        {
+        }
+
         protected ProtocolServerFormBase(ProtocolServerBase protocol)
         {
             _vm = protocol;
