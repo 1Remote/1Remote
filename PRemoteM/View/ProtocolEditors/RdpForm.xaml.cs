@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
+using Shawn.Utils;
 
 namespace PRM.View.ProtocolEditors
 {
@@ -14,6 +18,54 @@ namespace PRM.View.ProtocolEditors
             InitializeComponent();
             Vm = (ProtocolServerRDP)vm;
             DataContext = vm;
+        }
+
+        private void ButtonShowMonitorsNum_OnClick(object sender, RoutedEventArgs e)
+        {
+            var p = new Process
+            {
+                StartInfo =
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+            p.Start();
+            p.StandardInput.WriteLine($"mstsc /l");
+            p.StandardInput.WriteLine("exit");
+        }
+
+        private void ButtonPreviewRdpFile_OnClick(object sender, RoutedEventArgs e)
+        {
+            var rdp = Vm;
+            var tmp = Path.GetTempPath();
+            var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
+            var invalid = new string(Path.GetInvalidFileNameChars()) +
+                          new string(Path.GetInvalidPathChars());
+            rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
+            var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
+
+            // write a .rdp file for mstsc.exe
+            File.WriteAllText(rdpFile, rdp.ToRdpConfig(null).ToString());
+            var p = new Process
+            {
+                StartInfo =
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                }
+            };
+            p.Start();
+            p.StandardInput.WriteLine($"notepad " + rdpFile);
+            p.StandardInput.WriteLine("exit");
         }
     }
 

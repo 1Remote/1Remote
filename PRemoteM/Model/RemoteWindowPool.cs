@@ -201,11 +201,13 @@ namespace PRM.Model
             int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
 
             // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
-            if (Screen.AllScreens.Length > 1
-                && vmProtocolServer.Server is ProtocolServerRDP rdp
+            if (vmProtocolServer.Server is ProtocolServerRDP rdp
+                &&
+                (rdp.MstscModelEnabled == true || (Screen.AllScreens.Length > 1
                 && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
                 && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100))
-                    .Any(factor2 => factor != factor2))
+                    .Any(factor2 => factor != factor2)))
+                )
             {
                 ConnectRdpWithFullScreenByMstsc(rdp);
                 return;
@@ -213,7 +215,7 @@ namespace PRM.Model
 
             // fullscreen normally
             var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server);
-            if(host == null)
+            if (host == null)
                 return;
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             _protocolHosts.Add(host.ConnectionId, host);

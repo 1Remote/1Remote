@@ -252,5 +252,14 @@
     <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hosting this exe in PRemoteM tab view?</s:String>
     <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Caution: some exe can not be hosted by PRemoteM, please test by your self.</s:String>
     <s:String x:Key="Show environment variables">Show environment variables</s:String>
+    <s:String x:Key="How to select the specified monitors">How to select the specified monitors</s:String>
+    <s:String x:Key="mstsc.exe mode">mstsc.exe mode</s:String>
+    <s:String x:Key="Enabled">Activer</s:String>
+    <s:String x:Key="In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters">In this mode RDP will start the session in the way 'mstsc.exe xxxx.rdp' in CMD, it can offer more custom parameters</s:String>
+    <s:String x:Key="Note: This mode will be automatically enabled in full screen mode and there are currently a different display of multiple scaling.">Note: This mode will be automatically enabled in full screen mode and there are currently a different display of multiple scaling.</s:String>
+    <s:String x:Key="Additional settings">Additional settings</s:String>
+    <s:String x:Key="Helper">Helper</s:String>
+    <s:String x:Key="Preview rdp file">Preview rdp file</s:String>
+    <s:String x:Key="Check monitor number">Check monitor number</s:String>
 
 </ResourceDictionary>
