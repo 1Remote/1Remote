@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Documents;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using PRM.Core.I;
@@ -59,11 +61,7 @@ namespace PRM.Core.Service
         {
             get
             {
-                if (!string.IsNullOrEmpty(_sqliteDatabasePath)) return _sqliteDatabasePath;
-                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-                if (!Directory.Exists(appDateFolder))
-                    Directory.CreateDirectory(appDateFolder);
-                _sqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
+                Debug.Assert(string.IsNullOrEmpty(_sqliteDatabasePath) == false);
                 return _sqliteDatabasePath;
             }
             set => _sqliteDatabasePath = value.Replace(Environment.CurrentDirectory, ".");
@@ -94,6 +92,8 @@ namespace PRM.Core.Service
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
         public DatabaseConfig Database { get; set; } = new DatabaseConfig();
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
+
+        public List<string> PinnedTags { get; set; } = new List<string>();
     }
 
     public class ConfigurationService
@@ -109,27 +109,30 @@ namespace PRM.Core.Service
 
         private readonly KeywordMatchService _keywordMatchService;
 
-        public ConfigurationService(KeywordMatchService keywordMatchService)
+        public readonly bool Portable;
+
+        protected ConfigurationService(KeywordMatchService keywordMatchService)
         {
             _keywordMatchService = keywordMatchService;
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-            if (Directory.Exists(appDateFolder) == false)
-                Directory.CreateDirectory(appDateFolder);
-            var jsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
-            if (IOPermissionHelper.IsFileCanWriteNow(jsonPath) == false)
-            {
-                jsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
-            }
-#if FOR_MICROSOFT_STORE_ONLY
-            jsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
-#endif
-            JsonPath = jsonPath;
-
-
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
-            foreach (var info in AvailableMatcherProviders)
+
+            // check if it is portable
+#if FOR_MICROSOFT_STORE_ONLY
+            Portable = true;
+#else
+            Portable = IOPermissionHelper.HasWritePermissionOnDir(Environment.CurrentDirectory);
+#endif
+
+            if (Portable)
             {
-                info.PropertyChanged += OnMatchProviderChangedHandler;
+                JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
+            }
+            else
+            {
+                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+                if (Directory.Exists(appDateFolder) == false)
+                    Directory.CreateDirectory(appDateFolder);
+                JsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
             }
         }
 
@@ -151,82 +154,102 @@ namespace PRM.Core.Service
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
         public DatabaseConfig Database => _cfg.Database;
         public ThemeConfig Theme => _cfg.Theme;
-
-
-
-        public void Load()
+        public List<string> PinnedTags
         {
-            lock (this)
+            set => _cfg.PinnedTags = value;
+            get => _cfg.PinnedTags;
+        }
+
+        public static ConfigurationService Init(KeywordMatchService keywordMatchService)
+        {
+            var cs = new ConfigurationService(keywordMatchService);
+            string oldIniFilePath;
+            if (cs.Portable)
             {
-                foreach (var info in AvailableMatcherProviders)
-                {
-                    info.PropertyChanged -= OnMatchProviderChangedHandler;
-                }
-
+                oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
+            }
+            else
+            {
                 var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-                var iniPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
-                if (IOPermissionHelper.IsFileCanWriteNow(iniPath) == false)
-                {
-                    iniPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
-                }
-#if FOR_MICROSOFT_STORE_ONLY
-            iniPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
-#endif
-                if (File.Exists(iniPath))
-                {
-                    try
-                    {
-                        var cfg = LoadFromIni(iniPath);
-                        this._cfg = cfg;
-                        Save();
-                    }
-                    finally
-                    {
-                        File.Delete(iniPath);
-                    }
-                }
-                else if (File.Exists(JsonPath))
-                {
-                    try
-                    {
-                        var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(JsonPath));
-                        if (cfg != null)
-                            this._cfg = cfg;
-                    }
-                    catch
-                    {
-                        File.Delete(JsonPath);
-                        Save();
-                    }
-                }
+                if (Directory.Exists(appDateFolder) == false)
+                    Directory.CreateDirectory(appDateFolder);
+                oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
+            }
 
-
-                if (KeywordMatch.EnabledMatchers.Count > 0)
+            // old user convert the 0.5 ini file to 0.6 json file
+            if (File.Exists(oldIniFilePath))
+            {
+                try
                 {
-                    foreach (var matcherProvider in AvailableMatcherProviders)
-                    {
-                        matcherProvider.Enabled = false;
-                    }
-
-                    foreach (var enabledName in KeywordMatch.EnabledMatchers)
-                    {
-                        var first = AvailableMatcherProviders.FirstOrDefault(x => x.Name == enabledName);
-                        if (first != null)
-                            first.Enabled = true;
-                    }
+                    var cfg = LoadFromIni(oldIniFilePath);
+                    cs._cfg = cfg;
+                    cs.Save();
                 }
-                AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
-                AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
-                if (KeywordMatch.EnabledMatchers.Count == 0)
+                finally
                 {
-                    KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
-                }
-
-                foreach (var info in AvailableMatcherProviders)
-                {
-                    info.PropertyChanged += OnMatchProviderChangedHandler;
+                    File.Delete(oldIniFilePath);
                 }
             }
+            // load form json file
+            else if (File.Exists(cs.JsonPath))
+            {
+                try
+                {
+                    var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(cs.JsonPath));
+                    if (cfg != null)
+                        cs._cfg = cfg;
+                }
+                catch
+                {
+                    File.Delete(cs.JsonPath);
+                    cs.Save();
+                }
+            }
+            // new user init
+            else
+            {
+                // db path
+                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+                if (!Directory.Exists(appDateFolder))
+                    Directory.CreateDirectory(appDateFolder);
+                cs.Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
+
+                // TODO 根据 Portable 初始化各文件路径
+                if (cs.Portable)
+                {
+                }
+                else
+                {
+                }
+            }
+
+            if (cs.KeywordMatch.EnabledMatchers.Count > 0)
+            {
+                foreach (var matcherProvider in cs.AvailableMatcherProviders)
+                {
+                    matcherProvider.Enabled = false;
+                }
+
+                foreach (var enabledName in cs.KeywordMatch.EnabledMatchers)
+                {
+                    var first = cs.AvailableMatcherProviders.FirstOrDefault(x => x.Name == enabledName);
+                    if (first != null)
+                        first.Enabled = true;
+                }
+            }
+            cs.AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
+            cs.AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
+            if (cs.KeywordMatch.EnabledMatchers.Count == 0)
+            {
+                cs.KeywordMatch.EnabledMatchers = cs.AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
+            }
+
+            // register matcher change event
+            foreach (var info in cs.AvailableMatcherProviders)
+            {
+                info.PropertyChanged += cs.OnMatchProviderChangedHandler;
+            }
+            return cs;
         }
 
         public void Save()
@@ -240,7 +263,7 @@ namespace PRM.Core.Service
 
 
         // TODO remove after 2022.01.01
-        private Configuration LoadFromIni(string iniPath)
+        private static Configuration LoadFromIni(string iniPath)
         {
             var cfg = new Configuration();
             var ini = new Ini(iniPath);

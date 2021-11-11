@@ -171,28 +171,7 @@
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource system_menu_options_title}"></Button>
-                            <Button Click="ButtonToggleServerListViewUi_OnClick" Content="{DynamicResource system_menu_toggle_server_list}"
-                                    Padding="25 8 0 8" HorizontalContentAlignment="Left" >
-                                <Button.Style>
-                                    <Style TargetType="Button"  BasedOn="{StaticResource ButtonBarPrimaryStyle}">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding BottomPage}" Value="{x:Null}"></Condition>
-                                                    <Condition Binding="{Binding DispPage}" Value="{x:Null}"></Condition>
-                                                    <Condition Binding="{Binding TopPage}" Value="{x:Null}"></Condition>
-                                                </MultiDataTrigger.Conditions>
-                                                <MultiDataTrigger.Setters>
-                                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                                </MultiDataTrigger.Setters>
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
                             <Button Command="{Binding CmdGoAboutPage}"
-                                    Foreground="{DynamicResource PrimaryTextBrush}"
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="0 8 0 8">
                                 <Grid>

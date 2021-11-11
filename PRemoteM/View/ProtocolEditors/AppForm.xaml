@@ -18,7 +18,7 @@
                         <TextBox Text="{Binding ExePath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                            Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Margin="5 0 0 0"
                             Content="{DynamicResource word_select}" 
                             Command="{Binding CmdSelectExePath}"></Button>
                 </StackPanel>
@@ -29,6 +29,19 @@
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
+
+                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                            Margin="5 0 0 0"
+                            Content="{DynamicResource word_select}" 
+                            Command="{Binding CmdSelectFilePath}"></Button>
+                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                            Margin="5 0 0 0"
+                            Content="{DynamicResource 'Preview'}" 
+                            Command="{Binding CmdPreview}"></Button>
+                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                            Margin="5 0 0 0"
+                            Content="{DynamicResource 'word_test'}" 
+                            Command="{Binding CmdTest}"></Button>
                 </StackPanel>
             </Grid>
 

@@ -12,10 +12,12 @@ namespace PRM.Core.Model
 {
     public class Tag : NotifyPropertyChangedBase
     {
-        public Tag(string name, bool isPinned)
+        private readonly Action _saveOnPinnedChanged;
+        public Tag(string name, bool isPinned, Action saveOnPinnedChanged)
         {
             _name = name;
             _isPinned = isPinned;
+            this._saveOnPinnedChanged = saveOnPinnedChanged;
         }
 
         private string _name = "";
@@ -41,7 +43,7 @@ namespace PRM.Core.Model
             set
             {
                 SetAndNotifyIfChanged(ref _isPinned, value);
-                UpdateTagsCache(this);
+                _saveOnPinnedChanged.Invoke();
             }
         }
 
@@ -53,6 +55,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(nameof(ObjectVisibilityInList), ref _objectVisibilityInList, value);
         }
 
+        #region The old code // TODO del after 2022.05.31
 
         private static string GetJsonPath()
         {
@@ -77,6 +80,7 @@ namespace PRM.Core.Model
                 if (File.Exists(path))
                 {
                     var json = File.ReadAllText(path, Encoding.UTF8);
+                    File.Delete(path);
                     return JsonConvert.DeserializeObject<Dictionary<string, bool>>(json);
                 }
             }
@@ -87,36 +91,6 @@ namespace PRM.Core.Model
 
             return new Dictionary<string, bool>();
         }
-
-        public static void UpdateTagsCache(Tag changedTag)
-        {
-            var path = GetJsonPath();
-            Debug.Assert(changedTag != null);
-            var tags = GetPinnedTags();
-            tags.TryGetValue(changedTag.Name, out var isPinned);
-            if (changedTag.IsPinned == true && isPinned == false)
-            {
-                tags.Remove(changedTag.Name);
-                tags.Add(changedTag.Name, true);
-                File.WriteAllText(path, JsonConvert.SerializeObject(tags), Encoding.UTF8);
-            }
-            if (changedTag.IsPinned == false && isPinned == true)
-            {
-                tags.Remove(changedTag.Name);
-                tags.Add(changedTag.Name, false);
-                File.WriteAllText(path, JsonConvert.SerializeObject(tags), Encoding.UTF8);
-            }
-        }
-
-        public static void UpdateTagsCache(IEnumerable<Tag> tags)
-        {
-            var path = GetJsonPath();
-            var dict = new Dictionary<string, bool>();
-            foreach (var tag in tags)
-            {
-                dict.Add(tag.Name, tag.IsPinned);
-            }
-            File.WriteAllText(path, JsonConvert.SerializeObject(dict), Encoding.UTF8);
-        }
+        #endregion
     }
 }
