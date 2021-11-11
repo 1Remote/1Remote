@@ -55,7 +55,7 @@ namespace PRM.View.Guidance
             // saving config when this window close
             Closed += (sender, args) =>
             {
-                ConfigurationViewModel.CmdSaveAndGoBack.Execute();
+                context.ConfigurationService.Save();
             };
         }
 

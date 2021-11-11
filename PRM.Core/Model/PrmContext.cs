@@ -27,18 +27,19 @@ namespace PRM.Core.Model
         public PrmContext(ResourceDictionary applicationResourceDictionary)
         {
             KeywordMatchService = new KeywordMatchService();
-            ConfigurationService = new ConfigurationService(KeywordMatchService);
+            ConfigurationService = ConfigurationService.Init(KeywordMatchService);
             ProtocolConfigurationService = new ProtocolConfigurationService();
-            ConfigurationService.Load();
+
+            // init service
             LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
-            PRM.Core.Service.LanguageService.TmpLanguageService = LanguageService;
+            LanguageService.TmpLanguageService = LanguageService;
             LauncherService = new LauncherService(LanguageService);
             ThemeService = new ThemeService(applicationResourceDictionary);
             ThemeService.ApplyTheme(ConfigurationService.Theme);
             DataService = new DataService();
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
-            AppData = new GlobalData(LocalityService);
+            AppData = new GlobalData(LocalityService, ConfigurationService);
         }
 
         public GlobalData AppData { get; }

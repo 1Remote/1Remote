@@ -75,7 +75,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
             <CheckBox Grid.Column="1" IsChecked="{Binding RunWithHosting}">
-                <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+                <TextBlock Foreground="{DynamicResource AccentMidBrush}" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
             </CheckBox>
         </Grid>
     </StackPanel>

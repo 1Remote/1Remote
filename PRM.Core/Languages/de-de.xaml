@@ -72,7 +72,6 @@
     <!-- sys menu -->
     <s:String x:Key="system_menu_options_title">Optionen</s:String>
     <s:String x:Key="system_menu_about_title">Über</s:String>
-    <s:String x:Key="system_menu_toggle_server_list">Karten/Liste umschalten</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Allgemein</s:String>
@@ -248,6 +247,7 @@
     <s:String x:Key="Cmd parameter">CMD parameter</s:String>
     <s:String x:Key="New runner">New runner</s:String>
     <s:String x:Key="New runner name">New runner name</s:String>
+    <s:String x:Key="Can not be empty!">Can not be empty!</s:String>
     <s:String x:Key="Hosting">Hosting</s:String>
     <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hosting this exe in PRemoteM tab view?</s:String>
     <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Vorsicht: some exe can not be hosted by PRemoteM, please test by your self.</s:String>
@@ -259,6 +259,7 @@
     <s:String x:Key="Note: This mode will be automatically enabled in full screen mode and there are currently a different display of multiple scaling.">Hinweis: Dieser Modus wird automatisch im Vollbildmodus aktiviert, und es gibt derzeit eine andere Anzeige mehrerer Skalierung.</s:String>
     <s:String x:Key="Additional settings">Additional settings</s:String>
     <s:String x:Key="Helper">Helper</s:String>
+    <s:String x:Key="Preview">Preview</s:String>
     <s:String x:Key="Preview rdp file">Preview rdp file</s:String>
     <s:String x:Key="Check monitor number">Check monitor number</s:String>
 
