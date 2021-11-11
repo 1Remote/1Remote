@@ -41,19 +41,19 @@ namespace PRM.Core.Service
             AddStaticLanguageResources("fr-fr");
             _defaultLanguageResourceDictionary = Resources["en-us"];
 
-//#if DEV
-//            // check if any field missing in the LanguageResources.
-//            var en = Resources["en-us"];
-//            var zh_cn = Resources["zh-cn"];
-//            var de_de = Resources["de-de"];
-//            var fr_fr = Resources["fr-fr"];
-//            Debug.Assert(MultiLangHelper.FindMissingFields(en, zh_cn).Count == 0);
-//            Debug.Assert(MultiLangHelper.FindMissingFields(en, de_de).Count == 0);
-//            Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
-//#endif
+            //#if DEV
+            //            // check if any field missing in the LanguageResources.
+            //            var en = Resources["en-us"];
+            //            var zh_cn = Resources["zh-cn"];
+            //            var de_de = Resources["de-de"];
+            //            var fr_fr = Resources["fr-fr"];
+            //            Debug.Assert(MultiLangHelper.FindMissingFields(en, zh_cn).Count == 0);
+            //            Debug.Assert(MultiLangHelper.FindMissingFields(en, de_de).Count == 0);
+            //            Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
+            //#endif
 
-            this._languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
             SetLanguage(languageCode);
+            this._languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
         }
 
         public void AddXamlLanguageResources(string code, string fullName)
@@ -132,9 +132,6 @@ namespace PRM.Core.Service
             if (!LanguageCode2Name.ContainsKey(code))
                 return false;
 
-            if (_languageCode == code)
-                return true;
-
             _languageCode = code;
             var resource = Resources[code];
 
@@ -172,7 +169,7 @@ namespace PRM.Core.Service
                 return _applicationResourceDictionary[key].ToString();
 
 #if DEBUG
-            var tw = new StreamWriter("need translation " + _languageCode);
+            var tw = new StreamWriter("need translation " + _languageCode, true);
             tw.WriteLine(key);
             tw.Close();
 #endif

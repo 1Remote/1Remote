@@ -81,14 +81,15 @@ namespace PRM.Core.Protocol.Runner
                         var name = new FileInfo(dlg.FileName).Name.ToLower();
                         if (name == "winscp.exe".ToLower())
                         {
-                            Arguments = "sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
+                            _arguments = "sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
                             RunWithHosting = true;
                         }
                         else if (name.IndexOf("kitty", StringComparison.Ordinal) >= 0 || name.IndexOf("putty", StringComparison.Ordinal) >= 0)
                         {
-                            Arguments = @"-ssh %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+                            _arguments = @"-ssh %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
                             RunWithHosting = true;
                         }
+                        RaisePropertyChanged(nameof(Arguments));
                     }
                 });
             }
