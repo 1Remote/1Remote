@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Core.Protocol.Base;
@@ -70,13 +72,34 @@ namespace PRM.Core.Protocol.Extend
             return 7;
         }
 
-        private RelayCommand _cmdSelectDbPath;
+        public string GetCmd()
+        {
+            return $"{this.ExePath} \"" + this.Arguments + "\"";
+        }
+
+
+        private string SelectFile(string filter, string initPath = null)
+        {
+            if(string.IsNullOrWhiteSpace(initPath) || Directory.Exists(initPath) == false)
+                initPath = Environment.CurrentDirectory;
+
+            var dlg = new OpenFileDialog
+            {
+                Filter = filter,
+                CheckFileExists = true,
+                InitialDirectory = initPath,
+            };
+            if (dlg.ShowDialog() != true) return null;
+            return dlg.FileName;
+        }
+
+        private RelayCommand _cmdSelectExePath;
         [JsonIgnore]
         public RelayCommand CmdSelectExePath
         {
             get
             {
-                return _cmdSelectDbPath ??= new RelayCommand((o) =>
+                return _cmdSelectExePath ??= new RelayCommand((o) =>
                 {
                     string initPath;
                     try
@@ -87,16 +110,59 @@ namespace PRM.Core.Protocol.Extend
                     {
                         initPath = Environment.CurrentDirectory;
                     }
+                    var path = SelectFile("Exe|*.exe", initPath);
+                    if (string.IsNullOrEmpty(path) == false)
+                        ExePath = path;
+                });
+            }
+        }
 
-
-                    var dlg = new OpenFileDialog
+        private RelayCommand _cmdSelectFilePath;
+        [JsonIgnore]
+        public RelayCommand CmdSelectFilePath
+        {
+            get
+            {
+                return _cmdSelectFilePath ??= new RelayCommand((o) =>
+                {
+                    string initPath;
+                    try
                     {
-                        Filter = "Exe|*.exe",
-                        CheckFileExists = true,
-                        InitialDirectory = initPath,
-                    };
-                    if (dlg.ShowDialog() != true) return;
-                    ExePath = dlg.FileName;
+                        initPath = new FileInfo(Arguments).DirectoryName;
+                    }
+                    catch (Exception)
+                    {
+                        initPath = Environment.CurrentDirectory;
+                    }
+                    var path = SelectFile("*|*.*", initPath);
+                    if (string.IsNullOrEmpty(path) == false)
+                        Arguments = path;
+                });
+            }
+        }
+
+        private RelayCommand _cmdPreview;
+        [JsonIgnore]
+        public RelayCommand CmdPreview
+        {
+            get
+            {
+                return _cmdPreview ??= new RelayCommand((o) =>
+                {
+                    MessageBox.Show(GetCmd());
+                });
+            }
+        }
+
+        private RelayCommand _cmdTest;
+        [JsonIgnore]
+        public RelayCommand CmdTest
+        {
+            get
+            {
+                return _cmdTest ??= new RelayCommand((o) =>
+                {
+                    Process.Start(ExePath, Arguments);
                 });
             }
         }

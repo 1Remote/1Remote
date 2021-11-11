@@ -12,8 +12,15 @@ namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
+        public GlobalData(LocalityService localityService, ConfigurationService configurationService)
+        {
+            _localityService = localityService;
+            _configurationService = configurationService;
+        }
+
         private DataService _dataService;
-        private LocalityService _localityService;
+        private readonly LocalityService _localityService;
+        private readonly ConfigurationService _configurationService;
 
         public void SetDbOperator(DataService dataService)
         {
@@ -62,12 +69,6 @@ namespace PRM.Core.Model
         }
 
         private string _selectedTagName = "";
-
-        public GlobalData(LocalityService localityService)
-        {
-            _localityService = localityService;
-        }
-
         public string SelectedTagName
         {
             get => _selectedTagName;
@@ -84,9 +85,15 @@ namespace PRM.Core.Model
         {
             var t = SelectedTagName;
 
+            var pinnedTags = _configurationService.PinnedTags;
             // set pinned
-            var allExistedTags = Tag.GetPinnedTags();
-            var pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
+            // TODO del after 2022.05.31
+            if (pinnedTags.Count == 0)
+            {
+                var allExistedTags = Tag.GetPinnedTags();
+                pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
+            }
+
 
             // get distinct tag from servers
             var tags = new List<Tag>();
@@ -97,15 +104,20 @@ namespace PRM.Core.Model
                 foreach (var tagName in tagNames)
                 {
                     if (tags.All(x => x.Name != tagName))
-                        tags.Add(new Tag(tagName, allExistedTags.ContainsKey(tagName) == false || pinnedTags.Contains(tagName) ? true : false) { ItemsCount = 1 });
+                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), this.SaveOnPinnedTagsChanged) { ItemsCount = 1 });
                     else
                         tags.First(x => x.Name == tagName).ItemsCount++;
                 }
             }
 
             Tags = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
-            Tag.UpdateTagsCache(tags);
             SelectedTagName = t;
+        }
+
+        private void SaveOnPinnedTagsChanged()
+        {
+            _configurationService.PinnedTags = Tags.Where(x => x.IsPinned).Select(x => x.Name).ToList();
+            _configurationService.Save();
         }
 
         public void ReloadServerList()
