@@ -13,7 +13,7 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 
 ## Features
 
-- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/RemoteApp-program)
+- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp), [NoMachine and other app](https://github.com/VShawn/PRemoteM/wiki/Protocol:-APP%5Beg-NoMachine%5D)
 - Quick and convenient remote session launcher
 - Multi-screen and HiDPI RDP connections
 - Detailed connection configuration: groups, icons, colors, connection scripts etc.

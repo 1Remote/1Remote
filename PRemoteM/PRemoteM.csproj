@@ -945,7 +945,9 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\20210106\20210106_105.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Icons\20210106\NoMachine.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
