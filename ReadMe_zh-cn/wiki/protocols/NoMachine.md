@@ -1,11 +1,11 @@
-# 配置 NoMachine
+## 配置 NoMachine
 ![NoMachine](https://www.nomachine.com/sites/all/themes/frontend/images/logo_footer.png)
 
 [Getting started with NoMachine](https://www.nomachine.com/getting-started-with-nomachine)
 
 此处假设你已经配置好了 NoMachine 并且可以使用 NoMachine 自己的程序开启远程控制。如果你没有配置好 NoMachine，请参考上方的官方文档进行操作。
 
-# 使用 PRemoteM 启动
+## 使用 PRemoteM 启动
 
 由于 NoMachine 的最新版本不再提供命令行传递账号密码的会话启动方式，因此在 0.6.0 以上版本的 PRemoteM 中，我们定义了 App 协议来间接实现 NoMachine 会话的启动。
 
