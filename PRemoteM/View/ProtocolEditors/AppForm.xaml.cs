@@ -1,4 +1,5 @@
-﻿using PRM.Core.Protocol;
+﻿using System.IO;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.Extend;
 
 namespace PRM.View.ProtocolEditors
@@ -16,7 +17,7 @@ namespace PRM.View.ProtocolEditors
         {
             if (Vm is ProtocolServerApp app)
             {
-                if (string.IsNullOrEmpty(app.ExePath) == false)
+                if (string.IsNullOrEmpty(app.ExePath) == false && File.Exists(app.ExePath))
                 {
                     return true;
                 }

@@ -32,6 +32,11 @@
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" TargetName="Background" Value="Gray" />
+                            <Setter Property="Opacity" TargetName="Background" Value="0.5" />
+                            <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="LightGray" />
+                        </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="False" />
@@ -125,6 +130,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+
+
     <ControlTemplate x:Key="ComboBoxTemplate" TargetType="ComboBox">
         <Grid>
             <Border Name="BorderForBackground" 
