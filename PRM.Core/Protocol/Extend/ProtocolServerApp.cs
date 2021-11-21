@@ -74,13 +74,16 @@ namespace PRM.Core.Protocol.Extend
 
         public string GetCmd()
         {
-            return $"{this.ExePath} \"" + this.Arguments + "\"";
+            // 若参数中有空格，则需要使用引号包裹命令参数
+            if (ExePath.Trim().IndexOf(" ", StringComparison.Ordinal) > 0)
+                return $"\"{this.ExePath}\" " + this.Arguments;
+            return $"{this.ExePath}" + this.Arguments;
         }
 
 
         private string SelectFile(string filter, string initPath = null)
         {
-            if(string.IsNullOrWhiteSpace(initPath) || Directory.Exists(initPath) == false)
+            if (string.IsNullOrWhiteSpace(initPath) || Directory.Exists(initPath) == false)
                 initPath = Environment.CurrentDirectory;
 
             var dlg = new OpenFileDialog
@@ -162,7 +165,31 @@ namespace PRM.Core.Protocol.Extend
             {
                 return _cmdTest ??= new RelayCommand((o) =>
                 {
-                    Process.Start(ExePath, Arguments);
+                    try
+                    {
+                        Process.Start(ExePath, Arguments);
+
+                        //var p = new Process
+                        //{
+                        //    StartInfo =
+                        //{
+                        //    FileName = "cmd.exe",
+                        //    UseShellExecute = false,
+                        //    RedirectStandardInput = true,
+                        //    RedirectStandardOutput = true,
+                        //    RedirectStandardError = true,
+                        //    CreateNoWindow = true
+                        //}
+                        //};
+                        //p.Start();
+                        //p.StandardInput.WriteLine(GetCmd());
+                        //p.StandardInput.WriteLine("exit");
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("Error: " + e.Message);
+                        throw;
+                    }
                 });
             }
         }

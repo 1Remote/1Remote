@@ -15,7 +15,8 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding ExePath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Tag="Full path of a exe."
+                            Text="{Binding ExePath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </Grid>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
