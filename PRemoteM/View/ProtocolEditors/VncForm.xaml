@@ -6,6 +6,7 @@
                         xmlns:vnc="clr-namespace:PRM.Core.Protocol.VNC;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                        xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance vnc:ProtocolServerVNC}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -54,6 +55,22 @@
                             <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}" />
                             <ComboBoxItem Visibility="{Binding VncWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{DynamicResource server_editor_different_options}" />
                         </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <StackPanel>
+                            <TextBlock TextWrapping="WrapWithOverflow" Foreground="{DynamicResource AccentMidBrush}">
+                                <Run>Caution: RFB protocol over 3.8 are proprietary. If you would like using RFB 3.8+, you have to try your own VNC runner:</Run>
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                    protocol runner
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
             </Grid>

@@ -1,6 +1,6 @@
 # PRemoteM
 
-English | [中文](https://github.com/VShawn/PRemoteM/blob/Doc/ReadMe_zh-cn/readme.md)
+English | [中文](https://github.com/VShawn/PRemoteM/wiki/Intro-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
 
 [![version](https://img.shields.io/github/v/release/vshawn/premotem?color=Green&include_prereleases)](https://github.com/VShawn/PRemoteM/releases)
 [![codebeat badge](https://codebeat.co/badges/c3e71ab7-bf2c-455b-9886-d5956723eed5)](https://codebeat.co/projects/github-com-vshawn-premotem-dev)
@@ -13,10 +13,10 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 
 ## Features
 
-- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp), [NoMachine and other app](https://github.com/VShawn/PRemoteM/wiki/Protocol:-APP%5Beg-NoMachine%5D)
-- Quick and convenient remote session launcher
-- Multi-screen and HiDPI RDP connections
-- Detailed connection configuration: groups, icons, colors, connection scripts etc.
+- Supports RDP, SSH, VNC, Telnet, (S)FTP, [RemoteApp](https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp), [NoMachine and other app](https://github.com/VShawn/PRemoteM/wiki/Protocol:-APP:-NoMachine)
+- Quick and convenient remote session launcher (Alt + M)
+- Multi-screen and HiDPI RDP connection (Test on **Win10 + 4k monitor *2** RDP TO **Win2016**)
+- Detailed connection configuration: tags, icons, colors, connection scripts etc.
 - Multiple languages, themes and tabbed interface
 - [Import connections from mRemoteNG](https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/Migrate.jpg)
 - [Password encryption via RSA](https://github.com/VShawn/PRemoteM/wiki/Security)
@@ -37,27 +37,48 @@ Use one of the following methods to install the application:
 - [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 
-## Screenshots
+### [Quick start](https://github.com/VShawn/PRemoteM/wiki/Quick-start)
 
-### Main
+## Overview
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/maindemo.png"/>
 
-### Launcher(Alt + M) open RDP connection & resizing
+<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/maindemo.png" width="800" />
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/quickstart.gif" width="400"/>
+### Others
 
-### Tab detach & SSH auto command after connected
+<p align="center">
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/quickstart.gif" width="400"/>
+</p>
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/tab.gif" width="500" />
+<p align="center">
+    ↑ Launcher(Alt + M) open RDP connection & resizing
+</p>
 
-### RDP with Multi-monitors
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/multi-screen.jpg" width="500" />
+<p align="center">
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/tab.gif" width="500" />
+/p>
 
-### RemoteApp via RDP
+<p align="center">
+    ↑ Tab detach & SSH auto command after connected
+</p>
 
-<img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/RemoteApp/demo.jpg" width="800" />
+<p align="center">
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/multi-screen.jpg" width="500"/>
+</p>
+
+
+<p align="center">
+    ↑ RDP with Multi-monitors
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/RemoteApp/demo.jpg" width="800"/>
+</p>
+
+<p align="center">
+    ↑ RemoteApp via RDP
+</p>
 
 ## Make PRemoteM Stronger
 

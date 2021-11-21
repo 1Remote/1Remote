@@ -104,7 +104,7 @@
                                        Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}}"
                                        ToolTip="{DynamicResource 'How to select the specified monitors'}"
                                        >
-                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RDP-in-%22mstsc.exe-model%22#additional-settings" TextDecorations="{x:Null}" 
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RDP-in-mstsc.exe-mode#additional-settings" TextDecorations="{x:Null}" 
                                            utils:HyperlinkHelper.IsOpenExternal="True">
                                             (?)
                                         </Hyperlink>
@@ -213,6 +213,85 @@
             </Grid>
         </StackPanel>
 
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'mstsc.exe mode'}"></TextBlock>
+
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" VerticalAlignment="Top" Text=""></TextBlock>
+                    <StackPanel>
+                        <CheckBox Margin="0 2"
+                                  IsChecked="{Binding MstscModeEnabled}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock TextWrapping="Wrap" Margin="0 0 5 0">
+                                    <Run Text="{DynamicResource Enabled}"></Run>
+                                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RDP-in-mstsc.exe-mode" TextDecorations="{x:Null}" 
+                                               utils:HyperlinkHelper.IsOpenExternal="True">
+                                        (?)
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </CheckBox>
+                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
+                            <Run Text="{DynamicResource 'In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.'}"></Run>
+                        </TextBlock>
+                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.7">
+                            <Run Text="{DynamicResource 'Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.'}"></Run>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel>
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top"></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <TextBox 
+                                    Height="100"
+                                    VerticalContentAlignment="Top"
+                                    TextWrapping="Wrap"
+                                    AcceptsReturn="True"
+                                    Text="{Binding RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
+                                    Tag="e.g. selectedmonitors:s:0,2"></TextBox>
+                            </Grid>
+
+                            <TextBlock VerticalAlignment="Top" Margin="2 0">
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RDP-in-mstsc.exe-mode#additional-settings" TextDecorations="{x:Null}" 
+                                           utils:HyperlinkHelper.IsOpenExternal="True">
+                                    (?)
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource EditorRowGrid}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Helper'}"></TextBlock>
+                            <Grid Style="{StaticResource EditorRowGridInput}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Click="ButtonPreviewRdpFile_OnClick" Margin="0 0 5 0" Content="{DynamicResource 'Preview rdp file'}"></Button>
+                                    <Button Click="ButtonShowMonitorsNum_OnClick" ToolTip="mstsc.exe /l" Content="{DynamicResource 'Check monitor number'}"></Button>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+
         <StackPanel>
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
 
@@ -261,83 +340,6 @@
         </StackPanel>
 
         <StackPanel>
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource 'mstsc.exe mode'}"></TextBlock>
-
-
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" VerticalAlignment="Top" Text=""></TextBlock>
-                    <StackPanel>
-                        <CheckBox Margin="0 2"
-                                  IsChecked="{Binding MstscModelEnabled}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock TextWrapping="Wrap" Margin="0 0 5 0">
-                                    <Run Text="{DynamicResource Enabled}"></Run>
-                                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RDP-in-%22mstsc.exe-model%22" TextDecorations="{x:Null}" 
-                                               utils:HyperlinkHelper.IsOpenExternal="True">
-                                        (?)
-                                    </Hyperlink>
-                                </TextBlock>
-                            </StackPanel>
-                        </CheckBox>
-                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0">
-                            <Run Text="{DynamicResource 'In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters'}"></Run>
-                        </TextBlock>
-                        <TextBlock Width="500" TextWrapping="Wrap" Margin="0 5 0 0" Opacity="0.8">
-                            <Run Text="{DynamicResource 'Note: This mode will be automatically enabled in full screen mode and there are currently a different display of multiple scaling.'}"></Run>
-                        </TextBlock>
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding MstscModelEnabled}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <StackPanel>
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox 
-                                    Height="100"
-                                    VerticalContentAlignment="Top"
-                                    TextWrapping="Wrap"
-                                    AcceptsReturn="True"
-                                    Text="{Binding RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
-                                    Tag="e.g. selectedmonitors:s:0,2"></TextBox>
-                            </Grid>
-
-                            <TextBlock VerticalAlignment="Top" Margin="2 0">
-                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/RDP-in-%22mstsc.exe-model%22#additional-settings" TextDecorations="{x:Null}" 
-                                           utils:HyperlinkHelper.IsOpenExternal="True">
-                                    (?)
-                                </Hyperlink>
-                            </TextBlock>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Helper'}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Click="ButtonPreviewRdpFile_OnClick" Margin="0 0 5 0" Content="{DynamicResource 'Preview rdp file'}"></Button>
-                                    <Button Click="ButtonShowMonitorsNum_OnClick" ToolTip="mstsc.exe /l" Content="{DynamicResource 'Check monitor number'}"></Button>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
-
-        <StackPanel>
             <StackPanel.Resources>
                 <protocolEditors:ConverterEGatewayLogonMethod x:Key="ConverterEGatewayLogonMethod" />
             </StackPanel.Resources>
@@ -372,7 +374,7 @@
                                             <DataTrigger Binding="{Binding GatewayMode}" Value="{x:Static rdp:EGatewayMode.DoNotUseGateway}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding MstscModelEnabled}" Value="True">
+                                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="True">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
