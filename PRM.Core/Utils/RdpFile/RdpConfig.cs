@@ -30,9 +30,19 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("desktopheight:i:")]
         public int DesktopHeight { get; set; } = 900;
 
+        /// <summary>
+        /// Determines whether or not the local computer scales the content of the remote session to fit the window size.
+        /// 0 The local window content won't scale when resized
+        /// 1 The local window content will scale when resized
+        /// </summary>
         [RdpConfName("smart sizing:i:")]
         public int SmartSizing { get; set; } = 0;
 
+        /// <summary>
+        /// Determines whether the resolution of the remote session is automatically updated when the local window is resized.
+        /// 0 Session resolution remains static for the duration of the session
+        /// 1 Session resolution updates as the local window resizes
+        /// </summary>
         [RdpConfName("dynamic resolution:i:")]
         public int DynamicResolution { get; set; } = 1;
 
@@ -51,21 +61,54 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("winposstr:s:")]
         public string Winposstr { get; set; } = "";
 
+        /// <summary>
+        /// Determines whether bulk compression is enabled when it is transmitted by RDP to the local computer.
+        /// </summary>
         [RdpConfName("compression:i:")]
         public int Compression { get; set; } = 1;
 
+        /// <summary>
+        /// Determines when Windows key combinations (WIN key, ALT+TAB) are applied to the remote session for desktop connections.
+        /// 0 Windows key combinations are applied on the local computer
+        /// 1 Windows key combinations are applied on the remote computer when in focus
+        /// 2 Windows key combinations are applied on the remote computer in full screen mode only
+        /// </summary>
         [RdpConfName("keyboardhook:i:")]
         public int KeyboardHook { get; set; } = 2;
 
+        /// <summary>
+        /// Microphone redirection:Indicates whether audio input redirection is enabled.
+        /// - 0: Disable audio capture from the local device
+        /// - 1: Enable audio capture from the local device and redirection to an audio application in the remote session
+        /// </summary>
         [RdpConfName("audiocapturemode:i:")]
         public int AudioCaptureMode { get; set; } = 0;
 
+        /// <summary>
+        /// Determines if the connection will use RDP-efficient multimedia streaming for video playback.
+        /// - 0: Don't use RDP efficient multimedia streaming for video playback
+        /// - 1: Use RDP-efficient multimedia streaming for video playback when possible
+        /// </summary>
         [RdpConfName("videoplaybackmode:i:")]
         public int VideoPlaybackMode { get; set; } = 1;
 
+        /// <summary>
+        /// in old version, newer is networkautodetect
+        /// The "connection tye" Remote Desktop option specifies which type of internet connection the remote connection is using, in terms of available bandwidth. Depending on the option you select, the Remote Desktop connection will change performance-related settings, including font smoothing, animations, Windows Aero, themes, desktop backgrounds, and so on.
+        /// 1 Modem (56Kbps)
+        /// 2 Low-speed broadband (256Kbps---2Mbps)
+        /// 3 Satellite (2Mbps---16Mbps with high latency)
+        /// 4 High-speed broadband (2Mbps---10Mbps)
+        /// 5 WAN (10Mbps or higher with high latency)
+        /// 6 LAN (10Mbps or higher)
+        /// 7 Automatic bandwidth detection
+        /// </summary>
         [RdpConfName("connection type:i:")]
-        public int ConnectionType { get; set; } = 2;
+        public int ConnectionType { get; set; } = 7;
 
+        /// <summary>
+        /// Determines whether automatic network type detection is enabled
+        /// </summary>
         [RdpConfName("networkautodetect:i:")]
         public int NetworkAutodetect { get; set; } = 1;
 
@@ -123,6 +166,10 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("redirectdirectx:i:")]
         public int RedirectDirectX { get; set; } = 1;
 
+
+        /// <summary>
+        /// [2021-11-23 not work see #125]Determines whether local disk drives on the client computer will be redirected and available in the remote session.
+        /// </summary>
         [RdpConfName("redirectdrives:i:")]
         public int RedirectDrives { get; set; } = 1;
 
@@ -236,7 +283,7 @@ namespace Shawn.Utils.RdpFile
         public string KdcProxyName { get; set; } = "";
 
         /// <summary>
-        /// 	Determines which supported Plug and Play devices on the client computer will be redirected and available in the remote session.
+        /// Determines which supported Plug and Play devices on the client computer will be redirected and available in the remote session.
         /// No value specified - Do not redirect any supported Plug and Play devices.
         /// * - Redirect all supported Plug and Play devices, including ones that are connected later.
         /// DynamicDevices - Redirect any supported Plug and Play devices that are connected later.
@@ -256,19 +303,29 @@ namespace Shawn.Utils.RdpFile
         public string DriveStoreDirect { get; set; } = "*";
 
         /// <summary>
+        /// Configures which cameras to redirect.
+        /// This setting uses a semicolon-delimited list of KSCATEGORY_VIDEO_CAMERA interfaces of cameras enabled for redirection.
         /// "*" or ""
         /// </summary>
         [RdpConfName("camerastoredirect:s:")]
-        public string CameraStoreDirect { get; set; } = "";
+        public string CameraStoreDirect { get; set; } = "*";
 
-        [RdpConfName("full address:s:")]
-        private string FullAddress { get; set; } = "";
-
+        /// <summary>
+        /// Specifies the name of the domain in which the user account that will be used to sign in to the remote computer is located.
+        /// </summary>
         [RdpConfName("domain:s:")]
         public string Domain { get; set; } = "";
 
+        /// <summary>
+        /// loadbalanceinfo:s:tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses
+        /// https://social.technet.microsoft.com/wiki/contents/articles/10392.rd-connection-broker-ha-and-the-rdp-properties-on-the-client.aspx
+        /// </summary>
         [RdpConfName("loadbalanceinfo:s:")]
         public string LoadBalanceInfo { get; set; } = "";
+
+
+        [RdpConfName("full address:s:")]
+        private string FullAddress { get; set; } = "";
 
         [RdpConfName("username:s:")]
         private string Username { get; set; } = "";
@@ -303,7 +360,7 @@ namespace Shawn.Utils.RdpFile
         {
             var settings = new Dictionary<string, string>();
 
-            // 反射出所有 public 设置
+            // set all public properties by reflection
             foreach (var prop in typeof(RdpConfig).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.Name != nameof(this.Password)))
             {
                 foreach (RdpConfNameAttribute attr in prop.GetCustomAttributes(typeof(RdpConfNameAttribute), false))
@@ -312,7 +369,7 @@ namespace Shawn.Utils.RdpFile
                 }
             }
 
-            // 添加密码
+            // set password
             if ((this.Password ?? "") != "")
             {
                 var attr = typeof(RdpConfig)
@@ -323,12 +380,12 @@ namespace Shawn.Utils.RdpFile
             }
 
 
-            // 添加 additional settings
+            // set additional settings, if existed then replace
             if (string.IsNullOrWhiteSpace(_additionalSettings) == false)
             {
                 foreach (var s in _additionalSettings.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    for (char i = 'a'; i <= 'z'; i++)
+                    for (var i = 'a'; i <= 'z'; i++)
                     {
                         if (Regex.IsMatch(s, @$":\s*{i}\s*:") == false) continue;
                         var ss = Regex.Split(s, $@":\s*{i}\s*:");
@@ -336,8 +393,10 @@ namespace Shawn.Utils.RdpFile
                         {
                             var key = $"{ss[0].Trim()}:{i}:";
                             var val = ss[1].Trim();
+                            // if existed then replace
                             if (settings.ContainsKey(key))
                                 settings[key] = val;
+                            // or add
                             else
                                 settings.Add(key, val);
                         }
@@ -346,13 +405,16 @@ namespace Shawn.Utils.RdpFile
                 }
             }
 
-            // 强制打开多显示器模式
+            // if `selectedmonitors` is set, then force set the `screen mode id` to 2 and `use multimon:i:` to 1
+            // 若设置了 `selectedmonitors`，则强制打开多显示器模式和全屏模式
             if (settings.ContainsKey("selectedmonitors:i:") && settings["selectedmonitors:i:"].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Length > 1)
             {
-                if (settings.ContainsKey("screen mode id:i:"))
-                    settings["screen mode id:i:"] = "2";
-                if (settings.ContainsKey("use multimon:i:"))
-                    settings["use multimon:i:"] = "1";
+                if (settings.ContainsKey("screen mode id:i:") == false)
+                    settings.Add("screen mode id:i:", "2");
+                if (settings.ContainsKey("use multimon:i:") == false)
+                    settings.Add("use multimon:i:", "1");
+                settings["screen mode id:i:"] = "2";
+                settings["use multimon:i:"] = "1";
             }
 
             var str = new StringBuilder();
