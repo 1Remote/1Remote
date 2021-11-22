@@ -302,11 +302,11 @@ namespace PRM.Core.Protocol.RDP
 
         #region MSTSC model
 
-        private bool _mstscModelEnabled = false;
-        public bool MstscModelEnabled
+        private bool _mstscModeEnabled = false;
+        public bool MstscModeEnabled
         {
-            get => _mstscModelEnabled;
-            set => SetAndNotifyIfChanged(ref _mstscModelEnabled, value);
+            get => _mstscModeEnabled;
+            set => SetAndNotifyIfChanged(ref _mstscModeEnabled, value);
         }
 
 
@@ -420,8 +420,8 @@ namespace PRM.Core.Protocol.RDP
             {
                 case ERdpFullScreenFlag.Disable:
                     rdpConfig.ScreenModeId = 1;
-                    rdpConfig.DesktopWidth = this.RdpWidth ?? 800;
-                    rdpConfig.DesktopHeight = this.RdpHeight ?? 600;
+                    rdpConfig.DesktopWidth = this.RdpWidth > 0 ? this.RdpWidth ?? 800 : 800;
+                    rdpConfig.DesktopHeight = this.RdpHeight > 0 ? this.RdpHeight ?? 600 : 600;
                     break;
 
                 case ERdpFullScreenFlag.EnableFullAllScreens:
@@ -446,6 +446,11 @@ namespace PRM.Core.Protocol.RDP
                     break;
 
                 case ERdpWindowResizeMode.Fixed:
+                    rdpConfig.SmartSizing = 0;
+                    rdpConfig.DynamicResolution = 0;
+                    rdpConfig.DesktopWidth = this.RdpWidth > 0 ? this.RdpWidth ?? 800 : 800;
+                    rdpConfig.DesktopHeight = this.RdpHeight > 0 ? this.RdpHeight ?? 600 : 600;
+                    break;
                 case ERdpWindowResizeMode.FixedFullScreen:
                     rdpConfig.SmartSizing = 0;
                     rdpConfig.DynamicResolution = 0;
@@ -487,7 +492,7 @@ namespace PRM.Core.Protocol.RDP
 
                 case EDisplayPerformance.High:
                     rdpConfig.SessionBpp = 32;
-                    rdpConfig.ConnectionType = 6;
+                    rdpConfig.ConnectionType = 7;
                     rdpConfig.AllowDesktopComposition = 1;
                     rdpConfig.AllowFontSmoothing = 1;
                     rdpConfig.DisableFullWindowDrag = 0;
@@ -503,22 +508,34 @@ namespace PRM.Core.Protocol.RDP
                     break;
             }
 
-            rdpConfig.KeyboardHook = 0;
-            rdpConfig.AudioMode = 2;
-            rdpConfig.AudioCaptureMode = 0;
 
             if (this.EnableDiskDrives == true)
+            {
+                rdpConfig.DriveStoreDirect = "*";
                 rdpConfig.RedirectDrives = 1;
+            }
+            else
+            {
+                rdpConfig.DriveStoreDirect = "";
+                rdpConfig.RedirectDrives = 0;
+            }
+
             if (this.EnableClipboard == true)
                 rdpConfig.RedirectClipboard = 1;
             if (this.EnablePrinters == true)
                 rdpConfig.RedirectPrinters = 1;
             if (this.EnablePorts == true)
                 rdpConfig.RedirectComPorts = 1;
+            else
+                rdpConfig.RedirectComPorts = 0;
+
             if (this.EnableSmartCardsAndWinHello == true)
                 rdpConfig.RedirectSmartCards = 1;
             if (this.EnableKeyCombinations == true)
                 rdpConfig.KeyboardHook = 2;
+            else
+                rdpConfig.KeyboardHook = 0;
+
             if (this.AudioRedirectionMode == EAudioRedirectionMode.RedirectToLocal)
                 rdpConfig.AudioMode = 0;
             else if (this.AudioRedirectionMode == EAudioRedirectionMode.LeaveOnRemote)

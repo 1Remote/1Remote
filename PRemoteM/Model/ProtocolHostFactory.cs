@@ -31,7 +31,7 @@ namespace PRM.Model
             var r = p.GetRunner();
             return r;
         }
-        private static HostBase TryGetCustomRunner<T>(PrmContext context, string protocolName, T psb, out bool isOk) where T: ProtocolServerBase
+        private static HostBase TryGetCustomRunner<T>(PrmContext context, string protocolName, T psb, out bool isOk) where T : ProtocolServerBase
         {
             isOk = true;
             var r = GetRunner(context, protocolName);
@@ -145,7 +145,15 @@ namespace PRM.Model
                             return null;
                         }
 
-                        Process.Start(app.ExePath, app.Arguments);
+                        if (app.RunWithHosting)
+                        {
+                            var host = new IntegrateHost(context, app, app.ExePath, app.Arguments);
+                            return host;
+                        }
+                        else
+                        {
+                            Process.Start(app.ExePath, app.Arguments);
+                        }
                         return null;
                     }
                 default:

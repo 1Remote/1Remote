@@ -107,7 +107,7 @@ namespace PRM.Model
             return false;
         }
 
-        private void ConnectRdpWithFullScreenByMstsc(ProtocolServerRDP rdp)
+        private void ConnectRdpByMstsc(ProtocolServerRDP rdp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
@@ -197,22 +197,6 @@ namespace PRM.Model
 
         private void ConnectWithFullScreen(VmProtocolServer vmProtocolServer)
         {
-            // check if screens are in different scale factors
-            int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
-
-            // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
-            if (vmProtocolServer.Server is ProtocolServerRDP rdp
-                &&
-                (rdp.MstscModelEnabled == true || (Screen.AllScreens.Length > 1
-                && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100))
-                    .Any(factor2 => factor != factor2)))
-                )
-            {
-                ConnectRdpWithFullScreenByMstsc(rdp);
-                return;
-            }
-
             // fullscreen normally
             var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server);
             if (host == null)
@@ -310,6 +294,27 @@ namespace PRM.Model
                 ConnectRemoteApp(remoteApp);
                 return;
             }
+
+
+
+
+            // check if screens are in different scale factors
+            int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+
+            // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+            if (vmProtocolServer.Server is ProtocolServerRDP rdp
+                &&
+                (rdp.MstscModeEnabled == true || (vmProtocolServer.Server.IsConnWithFullScreen()
+                                                    && Screen.AllScreens.Length > 1
+                                                    && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                                                    && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2)))
+            )
+            {
+                ConnectRdpByMstsc(rdp);
+                return;
+            }
+
+
 
             // connect with host
             if (vmProtocolServer.Server.IsConnWithFullScreen())
