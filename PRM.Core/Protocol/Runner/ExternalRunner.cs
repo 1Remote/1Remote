@@ -95,23 +95,5 @@ namespace PRM.Core.Protocol.Runner
                 });
             }
         }
-
-        public Process GetProcess()
-        {
-            if (File.Exists(ExePath))
-            {
-				// TODO: 设置环境变量
-                var startInfo = new ProcessStartInfo();
-                startInfo.EnvironmentVariables["RAYPATH"] = "test";
-
-                startInfo.UseShellExecute = false;
-
-                startInfo.FileName = ExePath;
-
-                var p = new Process() { StartInfo = startInfo };
-                return p;
-            }
-            return null;
-        }
     }
 }

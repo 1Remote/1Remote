@@ -213,14 +213,6 @@ namespace PRM.Core.Service
                 if (!Directory.Exists(appDateFolder))
                     Directory.CreateDirectory(appDateFolder);
                 cs.Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
-
-                // TODO 根据 Portable 初始化各文件路径
-                if (cs.Portable)
-                {
-                }
-                else
-                {
-                }
             }
 
             if (cs.KeywordMatch.EnabledMatchers.Count > 0)
@@ -249,6 +241,14 @@ namespace PRM.Core.Service
             {
                 info.PropertyChanged += cs.OnMatchProviderChangedHandler;
             }
+
+#if FOR_MICROSOFT_STORE_ONLY
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({cs.General.AppStartAutomatically}, \"{AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(cs.General.AppStartAutomatically, AppName);
+#else
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({cs.General.AppStartAutomatically}, \"{AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(cs.General.AppStartAutomatically, AppName);
+#endif
             return cs;
         }
 
@@ -258,11 +258,19 @@ namespace PRM.Core.Service
             if (fi.Directory.Exists == false)
                 fi.Directory.Create();
             File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+
+#if FOR_MICROSOFT_STORE_ONLY
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"{AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppName);
+#else
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
+#endif
         }
 
 
 
-        // TODO remove after 2022.01.01
+        // TODO remove after 2022.03.01
         private static Configuration LoadFromIni(string iniPath)
         {
             var cfg = new Configuration();
@@ -275,7 +283,7 @@ namespace PRM.Core.Service
 #if FOR_MICROSOFT_STORE_ONLY
                 Task.Factory.StartNew(async () =>
                 {
-                    AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask(ConfigurationService.AppName);
+                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask(ConfigurationService.AppName);
                 });
 #endif
             }

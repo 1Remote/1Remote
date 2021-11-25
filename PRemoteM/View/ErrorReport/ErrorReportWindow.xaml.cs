@@ -97,7 +97,6 @@ namespace PRM.View.ErrorReport
                 var framework = attributes.FirstOrDefault(a => a.AttributeType == typeof(TargetFrameworkAttribute));
                 var from = "";
 
-                // TODO: identify Chocolatey release
 #if FOR_MICROSOFT_STORE_ONLY
                 from = "Microsoft store";
 #else

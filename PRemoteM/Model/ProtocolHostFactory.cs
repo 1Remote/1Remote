@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -44,9 +45,20 @@ namespace PRM.Model
                     // using external runner.
                     //var template = $@"sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
                     //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
-                    var tmpSftp = psb.Clone();
-                    tmpSftp.ConnectPreprocess(context);
-                    var exeArguments = OtherNameAttributeExtensions.Replace(tmpSftp, args);
+
+                    var protocolServerBase = psb.Clone();
+                    protocolServerBase.ConnectPreprocess(context);
+                    var exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
+
+                    // make environment variables
+                    var environmentVariables = new Dictionary<string, string>();
+                    if (er.EnvironmentVariables != null)
+                        foreach (var kv in er.EnvironmentVariables)
+                        {
+                            environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
+                        }
+
+                    // start process
                     if (er.RunWithHosting)
                     {
                         var host2 = new IntegrateHost(context, psb, exePath, exeArguments);
@@ -54,7 +66,20 @@ namespace PRM.Model
                     }
                     else
                     {
-                        Process.Start(exePath, exeArguments);
+                        // Set environment variables
+                        var startInfo = new ProcessStartInfo();
+                        if (environmentVariables?.Count > 0)
+                            foreach (var kv in environmentVariables)
+                            {
+                                if (startInfo.EnvironmentVariables.ContainsKey(kv.Key) == false)
+                                    startInfo.EnvironmentVariables.Add(kv.Key, kv.Value);
+                                startInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                            }
+                        startInfo.UseShellExecute = false;
+                        startInfo.FileName = exePath;
+                        startInfo.Arguments = exeArguments;
+                        var process = new Process() { StartInfo = startInfo };
+                        process.Start();
                         return null;
                     }
                 }
