@@ -219,8 +219,6 @@ namespace PRM.Core.Service
 
         public void Save()
         {
-#if DEV
-            // TODO only effect in dev mode
             foreach (var kv in ProtocolConfigs)
             {
                 var protocolName = kv.Key;
@@ -228,7 +226,6 @@ namespace PRM.Core.Service
                 var file = Path.Combine(ProtocolFolderName, $"{protocolName}.json");
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
-#endif
         }
     }
 }

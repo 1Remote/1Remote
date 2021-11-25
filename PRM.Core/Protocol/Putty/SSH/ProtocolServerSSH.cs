@@ -92,8 +92,8 @@ namespace PRM.Core.Protocol.Putty.SSH
 
         public string GetPuttyConnString(PrmContext context)
         {
-            var serverBase = this.Clone() as ProtocolServerSSH;
-            serverBase.ConnectPreprocess(context);
+            var ssh = this.Clone() as ProtocolServerSSH;
+            ssh.ConnectPreprocess(context);
 
             // var arg = $"-ssh {port} {user} {pw} {server}";
             // var arg = $@" -load ""{PuttyOption.SessionName}"" {IP} -P {PORT} -l {user} -pw {pdw} -{ssh version}";
@@ -112,9 +112,9 @@ namespace PRM.Core.Protocol.Putty.SSH
 
             //var arg = $@" -load ""{serverBase.SessionName}"" {serverBase.Address} -P {serverBase.Port} -l {serverBase.UserName} -pw {serverBase.Password} -{(int)serverBase.SshVersion} -cmd ""{serverBase.StartupAutoCommand}""";
 
-            var template2 = $@" -load ""%PRM_SESSION_NAME%"" %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
-            var arg2 = OtherNameAttributeExtensions.Replace(serverBase, template2);
-            return " " + arg2;
+            var template = $@" -load ""%PRM_SESSION_NAME%"" %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+            var arg = OtherNameAttributeExtensions.Replace(ssh, template);
+            return " " + arg;
         }
 
         [JsonIgnore]

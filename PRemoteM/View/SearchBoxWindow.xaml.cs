@@ -318,5 +318,25 @@ namespace PRM.View
                 _vm.Actions[si]?.Run(id);
             }
         }
+
+        protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.Space)
+            {
+                e.Handled = true;
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4)
+            {
+                e.Handled = true;
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                e.Handled = true;
+            }
+            else
+            {
+                base.OnKeyDown(e);
+            }
+        }
     }
 }
