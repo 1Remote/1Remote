@@ -111,11 +111,13 @@ namespace PRM.View.ProtocolHosts
         private Timer _timer = null;
         public readonly string ExeFullName;
         public readonly string ExeArguments;
+        public readonly Dictionary<string, string> _environmentVariables;
 
-        public IntegrateHost(PrmContext context, ProtocolServerBase protocolServer, string exeFullName, string exeArguments) : base(context, protocolServer, false)
+        public IntegrateHost(PrmContext context, ProtocolServerBase protocolServer, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(context, protocolServer, false)
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
+            _environmentVariables = environmentVariables;
             InitializeComponent();
 
             _panel = new System.Windows.Forms.Panel
@@ -238,7 +240,7 @@ namespace PRM.View.ProtocolHosts
             RunBeforeConnect?.Invoke();
             var exeFullName = ExeFullName;
             Debug.Assert(File.Exists(exeFullName));
-            var ps = new ProcessStartInfo
+            var startInfo = new ProcessStartInfo
             {
                 FileName = exeFullName,
                 WorkingDirectory = new FileInfo(exeFullName).DirectoryName,
@@ -246,14 +248,27 @@ namespace PRM.View.ProtocolHosts
                 WindowStyle = ProcessWindowStyle.Minimized
             };
 
+            // Set environment variables
+            if (this._environmentVariables?.Count > 0)
+            {
+                startInfo.UseShellExecute = true;
+                foreach (var kv in this._environmentVariables)
+                {
+                    if (startInfo.EnvironmentVariables.ContainsKey(kv.Key) == false)
+                        startInfo.EnvironmentVariables.Add(kv.Key, kv.Value);
+                    startInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                }
+            }
+
             _process = new Process
             {
-                StartInfo = ps,
+                StartInfo = startInfo,
                 EnableRaisingEvents = true
             };
             _process.Exited += ProcessOnExited;
             _process.Start();
-            Console.WriteLine($"Start process {exeFullName}");
+
+            SimpleLogHelper.Debug($"{nameof(IntegrateHost)}: Start process {exeFullName}");
 
             Task.Factory.StartNew(() =>
             {
