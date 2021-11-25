@@ -44,7 +44,6 @@ namespace PRM.Core.Protocol
                 ProtocolDisplayNameInShort = ProtocolDisplayName;
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
-            // TODO fix static resource
             Server_editor_different_options = LanguageService.TmpLanguageService?.Translate("server_editor_different_options") ?? "";
         }
 
@@ -265,7 +264,6 @@ namespace PRM.Core.Protocol
         public ProtocolServerBase Clone()
         {
             var clone = this.MemberwiseClone() as ProtocolServerBase;
-            // TODO fix static resource
             clone.Server_editor_different_options = LanguageService.TmpLanguageService.Translate("server_editor_different_options");
             clone.Tags = new List<string>(this.Tags);
             return clone;
