@@ -125,7 +125,7 @@
 
     <!-- server operate -->
     <s:String x:Key="server_card_operate_duplicate">Dupliquer</s:String>
-    <s:String x:Key="server_card_operate_copy_address">Copier l'adresse dans le presse-papiers</s:String>
+    <s:String x:Key="server_card_operate_copy_address">Copier nom d'hôte dans le presse-papiers</s:String>
     <s:String x:Key="server_card_operate_copy_username">Copier le nom d'utilisateur dans le presse-papiers</s:String>
     <s:String x:Key="server_card_operate_copy_password">Copier le mot de passe dans le presse-papiers</s:String>
     <s:String x:Key="confirm_to_delete">Valider la suppression ?</s:String>
@@ -156,7 +156,7 @@
     <s:String x:Key="server_editor_cmd_after_disconnected">Après le lancement de cmd</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected_tag">Exécuté après avoir été déconnecté par cmd.exe (exemple : 'C:\\closeVpn.bat', exécuter 'cmd.exe C:\\closeVpn.bat')</s:String>
     <!-- server editor - connection group items -->
-    <s:String x:Key="server_editor_connection_address">Adresse</s:String>
+    <s:String x:Key="server_editor_connection_address">Hostname</s:String>
     <s:String x:Key="server_editor_connection_port">Port</s:String>
     <s:String x:Key="server_editor_connection_username">Utilisateur</s:String>
     <s:String x:Key="server_editor_connection_password">Mot de passe</s:String>

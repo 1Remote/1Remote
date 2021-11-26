@@ -34,7 +34,7 @@ namespace PRM.Controls
             InitializeComponent();
         }
 
-        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string> validate = null)
+        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string> validate = null, Window owner =null)
         {
             var inputWindow = new InputWindow
             {
@@ -42,9 +42,14 @@ namespace PRM.Controls
                 Prompt = prompt,
                 Response = defaultResponse,
                 Result = Results.Cancel,
-                Validater = validate
+                Validater = validate,
+                ShowInTaskbar = false,
             };
-
+            if (owner != null)
+            {
+                inputWindow.Owner = owner;
+                inputWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
             inputWindow.ShowDialog();
 
             return inputWindow.Result == Results.OK ? inputWindow.Response : string.Empty;

@@ -87,7 +87,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls:AutoCompleteComboBox x:Name="DisplayName"
+                                        <controls:AutoCompleteComboBox
                                                                     Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
                                                                     Selections="{Binding NameSelections}"
                                         />
