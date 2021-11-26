@@ -12,7 +12,7 @@ namespace PRM.Core.Protocol
         #region Conn
 
         private string _userName = "Administrator";
-        [OtherName(Name = "PRM_USER_NAME")]
+        [OtherName(Name = "PRM_USERNAME")]
         public string UserName
         {
             get => _userName;

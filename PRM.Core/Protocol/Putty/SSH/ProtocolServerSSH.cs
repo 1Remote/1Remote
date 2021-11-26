@@ -112,7 +112,7 @@ namespace PRM.Core.Protocol.Putty.SSH
 
             //var arg = $@" -load ""{serverBase.SessionName}"" {serverBase.Address} -P {serverBase.Port} -l {serverBase.UserName} -pw {serverBase.Password} -{(int)serverBase.SshVersion} -cmd ""{serverBase.StartupAutoCommand}""";
 
-            var template = $@" -load ""%PRM_SESSION_NAME%"" %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
+            var template = $@" -load ""%PRM_SESSION_NAME%"" %PRM_HOSTNAME% -P %PRM_PORT% -l %PRM_USERNAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
             var arg = OtherNameAttributeExtensions.Replace(ssh, template);
             return " " + arg;
         }

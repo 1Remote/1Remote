@@ -23,7 +23,6 @@ namespace PRM.Core.Service
     public class ProtocolConfigurationService
     {
         public Dictionary<string, ProtocolConfig> ProtocolConfigs { get; set; } = new Dictionary<string, ProtocolConfig>();
-        public Dictionary<string, string> ProtocolPropertyDescriptions { get; set; } = new Dictionary<string, string>();
         public string[] CustomProtocolBlackList => new string[] { "SSH", "RDP", "VNC", "TELNET", "FTP", "SFTP", "RemoteApp", "APP" };
 
         public readonly string ProtocolFolderName;
@@ -42,7 +41,6 @@ namespace PRM.Core.Service
         private void Load()
         {
             ProtocolConfigs.Clear();
-            ProtocolPropertyDescriptions.Clear();
             var di = new DirectoryInfo(ProtocolFolderName);
 
             // build-in protocol
@@ -85,6 +83,19 @@ namespace PRM.Core.Service
                 }
             }
 
+
+            // ExternalRunner + macros
+            foreach (var config in ProtocolConfigs)
+            {
+                foreach (var runner in config.Value.Runners)
+                {
+                    if (runner is ExternalRunner er)
+                    {
+                        er.MarcoNames = config.Value.MarcoNames;
+                        er.ProtocolType = config.Value.ProtocolType;
+                    }
+                }
+            }
         }
 
 
@@ -124,25 +135,13 @@ namespace PRM.Core.Service
             return null;
         }
 
-        //private void LoadRdp()
-        //{
-        //    var protocolName = ProtocolServerRDP.ProtocolName;
-        //    var c = LoadConfig(protocolName) ?? new ProtocolConfig();
-        //    c.Runners ??= new List<Runner>();
-        //    if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
-        //    {
-        //        c.Runners.RemoveAll(x => x is InternalDefaultRunner);
-        //        c.Runners.Insert(0, new InternalDefaultRunner());
-        //    }
-        //    c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
-        //    ProtocolConfigs.Add(protocolName, c);
-        //    ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerRDP)));
-        //}
-
         private void LoadVnc()
         {
+            var t = typeof(ProtocolServerVNC);
             var protocolName = ProtocolServerVNC.ProtocolName;
+            var macros = OtherNameAttributeExtensions.GetOtherNames(t);
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
             {
@@ -152,12 +151,14 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
-            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerVNC)));
         }
         private void LoadSsh()
         {
+            var t = typeof(ProtocolServerSSH);
             var protocolName = ProtocolServerSSH.ProtocolName;
+            var macros = OtherNameAttributeExtensions.GetOtherNames(t);
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is KittyRunner == false)
             {
@@ -167,12 +168,14 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is KittyRunner).Name = $"Internal KiTTY";
             ProtocolConfigs.Add(protocolName, c);
-            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerSSH)));
         }
         private void LoadTelnet()
         {
+            var t = typeof(ProtocolServerTelnet);
             var protocolName = ProtocolServerTelnet.ProtocolName;
+            var macros = OtherNameAttributeExtensions.GetOtherNames(t);
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is KittyRunner == false)
             {
@@ -182,13 +185,15 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is KittyRunner).Name = $"Internal KiTTY";
             ProtocolConfigs.Add(protocolName, c);
-            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerTelnet)));
         }
 
         private void LoadSftp()
         {
+            var t = typeof(ProtocolServerSFTP);
             var protocolName = ProtocolServerSFTP.ProtocolName;
+            var macros = OtherNameAttributeExtensions.GetOtherNames(t);
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
             {
@@ -198,13 +203,15 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
-            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerSFTP)));
         }
 
         private void LoadFtp()
         {
+            var t = typeof(ProtocolServerFTP);
             var protocolName = ProtocolServerFTP.ProtocolName;
+            var macros = OtherNameAttributeExtensions.GetOtherNames(t);
             var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             c.Runners ??= new List<Runner>();
             if (c.Runners.Count == 0 || c.Runners[0] is InternalDefaultRunner == false)
             {
@@ -214,7 +221,11 @@ namespace PRM.Core.Service
 
             c.Runners.First(x => x is InternalDefaultRunner).Name = $"Internal {protocolName}";
             ProtocolConfigs.Add(protocolName, c);
-            ProtocolPropertyDescriptions.Add(protocolName, OtherNameAttributeExtensions.GetOtherNamesDescription(typeof(ProtocolServerFTP)));
+        }
+
+        public bool Check()
+        {
+            return true;
         }
 
         public void Save()
@@ -223,6 +234,17 @@ namespace PRM.Core.Service
             {
                 var protocolName = kv.Key;
                 var config = kv.Value;
+                foreach (var runner in config.Runners)
+                {
+                    if (runner is ExternalRunner er)
+                    {
+                        foreach (var ev in er.EnvironmentVariables.ToArray())
+                        {
+                            if (ev.Key == "")
+                                er.EnvironmentVariables.Remove(ev);
+                        }
+                    }
+                }
                 var file = Path.Combine(ProtocolFolderName, $"{protocolName}.json");
                 File.WriteAllText(file, JsonConvert.SerializeObject(config, Formatting.Indented), Encoding.UTF8);
             }
