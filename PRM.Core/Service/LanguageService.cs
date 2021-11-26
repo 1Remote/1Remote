@@ -169,7 +169,7 @@ namespace PRM.Core.Service
                 return _applicationResourceDictionary[key].ToString();
 
 #if DEBUG
-            var tw = new StreamWriter("need translation " + _languageCode, true);
+            var tw = new StreamWriter("need translation " + _languageCode + ".txt", true);
             tw.WriteLine(key);
             tw.Close();
 #endif

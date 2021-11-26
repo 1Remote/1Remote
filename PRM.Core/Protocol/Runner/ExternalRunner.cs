@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,30 @@ namespace PRM.Core.Protocol.Runner
 {
     public class ExternalRunner : Runner
     {
+        public class ObservableKvp<K, V> : NotifyPropertyChangedBase
+        {
+            private K _key;
+            public K Key
+            {
+                get => _key;
+                set => SetAndNotifyIfChanged(ref _key, value);
+            }
+
+            private V _value;
+
+            public V Value
+            {
+                get => _value;
+                set => SetAndNotifyIfChanged(ref _value, value);
+            }
+
+            public ObservableKvp(K key, V value)
+            {
+                Key = key;
+                Value = value;
+            }
+        }
+
         public ExternalRunner(string runnerName) : base(runnerName)
         {
         }
@@ -46,54 +71,19 @@ namespace PRM.Core.Protocol.Runner
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
         }
 
-        public Dictionary<string, string> EnvironmentVariables { get; set; }
-
-
-        private RelayCommand _cmdSelectDbPath;
-        [JsonIgnore]
-        public RelayCommand CmdSelectExePath
+        private ObservableCollection<ObservableKvp<string, string>> _environmentVariables = new ObservableCollection<ObservableKvp<string, string>>();
+        public ObservableCollection<ObservableKvp<string, string>> EnvironmentVariables
         {
-            get
-            {
-                return _cmdSelectDbPath ??= new RelayCommand((o) =>
-                {
-                    string initPath;
-                    try
-                    {
-                        initPath = new FileInfo(ExePath).DirectoryName;
-                    }
-                    catch (Exception)
-                    {
-                        initPath = Environment.CurrentDirectory;
-                    }
-
-
-                    var dlg = new OpenFileDialog
-                    {
-                        Filter = "Exe|*.exe",
-                        CheckFileExists = true,
-                        InitialDirectory = initPath,
-                    };
-                    if (dlg.ShowDialog() != true) return;
-                    ExePath = dlg.FileName;
-
-                    if (string.IsNullOrEmpty(Arguments))
-                    {
-                        var name = new FileInfo(dlg.FileName).Name.ToLower();
-                        if (name == "winscp.exe".ToLower())
-                        {
-                            _arguments = "sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
-                            RunWithHosting = true;
-                        }
-                        else if (name.IndexOf("kitty", StringComparison.Ordinal) >= 0 || name.IndexOf("putty", StringComparison.Ordinal) >= 0)
-                        {
-                            _arguments = @"-ssh %PRM_ADDRESS% -P %PRM_PORT% -l %PRM_USER_NAME% -pw %PRM_PASSWORD% -%PRM_SSH_VERSION% -cmd ""%PRM_STARTUP_AUTO_COMMAND%""";
-                            RunWithHosting = true;
-                        }
-                        RaisePropertyChanged(nameof(Arguments));
-                    }
-                });
-            }
+            get => _environmentVariables ??= new ObservableCollection<ObservableKvp<string, string>>();
+            set => _environmentVariables = value;
         }
+
+        /// <summary>
+        /// Marco names for auto complete use
+        /// </summary>
+        [JsonIgnore]
+        public List<string> MarcoNames { get; set; }
+        [JsonIgnore]
+        public Type ProtocolType { get; set; }
     }
 }
