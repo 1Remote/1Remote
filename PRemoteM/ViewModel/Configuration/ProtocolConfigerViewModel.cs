@@ -40,6 +40,7 @@ namespace PRM.ViewModel.Configuration
                 SetAndNotifyIfChanged(ref _selectedProtocol, value);
                 var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
                 Runners = new ObservableCollection<Runner>(c.Runners);
+                Macros = c.MarcoNames;
                 RaisePropertyChanged(nameof(Runners));
                 RaisePropertyChanged(nameof(RunnerNames));
                 SelectedRunnerName = c.GetRunner().Name;
@@ -64,6 +65,7 @@ namespace PRM.ViewModel.Configuration
         public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
 
         public ObservableCollection<Runner> Runners { get; set; }
+        public List<string> Macros { get; set; } = new List<string>();
 
         private RelayCommand _cmdAddRunner;
         public RelayCommand CmdAddRunner
@@ -80,10 +82,10 @@ namespace PRM.ViewModel.Configuration
                          if (c.Runners.Any(x => x.Name == str))
                              return _languageService.Translate("{0} is existed!", str);
                          return "";
-                     })).Trim();
+                     }), owner: App.Window).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
-                        var newRunner = new ExternalRunner(name);
+                        var newRunner = new ExternalRunner(name) {MarcoNames = c.MarcoNames, ProtocolType = c.ProtocolType};
                         c.Runners.Add(newRunner);
                         Runners.Add(newRunner);
                         RaisePropertyChanged(nameof(RunnerNames));
@@ -93,7 +95,7 @@ namespace PRM.ViewModel.Configuration
         }
 
         private RelayCommand _cmdDelRunner;
-        public RelayCommand CmdDelRunner
+        public RelayCommand CmdDeleteRunner
         {
             get
             {
@@ -129,7 +131,8 @@ namespace PRM.ViewModel.Configuration
             {
                 return _cmdShowProtocolHelp ??= new RelayCommand((o) =>
                 {
-                    MessageBox.Show(_protocolConfigurationService.ProtocolPropertyDescriptions[_selectedProtocol]);
+                    var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                    MessageBox.Show(c.GetAllDescriptions);
                 });
             }
         }

@@ -71,6 +71,8 @@ namespace PRM.ViewModel.Configuration
                         MessageBox.Show(res.GetErrorInfo(_context.LanguageService), _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
+
+
                     _configurationService.Save();
                     _protocolConfigurationService.Save();
                     if (Host != null)

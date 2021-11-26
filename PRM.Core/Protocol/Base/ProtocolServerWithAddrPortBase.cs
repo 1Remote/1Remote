@@ -14,7 +14,7 @@ namespace PRM.Core.Protocol
 
         private string _address = "";
 
-        [OtherName(Name = "PRM_ADDRESS")]
+        [OtherName(Name = "PRM_HOSTNAME")]
         public string Address
         {
             get => _address;

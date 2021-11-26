@@ -43,7 +43,7 @@ namespace PRM.Model
                 if (File.Exists(exePath))
                 {
                     // using external runner.
-                    //var template = $@"sftp://%PRM_USER_NAME%:%PRM_PASSWORD%@%PRM_ADDRESS%:%PRM_PORT%";
+                    //var template = $@"sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%";
                     //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
 
                     var protocolServerBase = psb.Clone();

@@ -31,6 +31,7 @@ namespace Shawn.Utils
                 var a = p.GetCustomAttributes(typeof(OtherNameAttribute), false).FirstOrDefault();
                 if (a is OtherNameAttribute on)
                 {
+                    Debug.Assert(on.Name.StartsWith("%") == false && on.Name.EndsWith("%") == false);
                     template = template.Replace($"%{on.Name}%", p.GetValue(obj)?.ToString() ?? "");
                 }
             }
@@ -51,22 +52,10 @@ namespace Shawn.Utils
                 var a = p.GetCustomAttributes(typeof(OtherNameAttribute), false).FirstOrDefault();
                 if (a is OtherNameAttribute on)
                 {
-                    ret.Add(p.Name, on.Name);
+                    ret.Add(p.Name, $"%{on.Name}%");
                 }
             }
             return ret;
-        }
-
-        public static string GetOtherNamesDescription(Type t)
-        {
-            var sb = new StringBuilder();
-            var dict = GetOtherNames(t);
-            Debug.Assert(dict.Count > 0);
-            foreach (var kv in dict)
-            {
-                sb.AppendLine($@"%{kv.Value}%      ->      {kv.Key}");
-            }
-            return sb.ToString();
         }
     }
 }

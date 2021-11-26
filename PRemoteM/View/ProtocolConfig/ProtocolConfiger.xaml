@@ -13,7 +13,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
 
-
         <Style x:Key="ListBoxForProtocols" TargetType="{x:Type ListBox}">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -68,7 +67,6 @@
             </Setter>
         </Style>
 
-
         <Style x:Key="ListBoxRunners" TargetType="{x:Type ListBox}">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -80,7 +78,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Grid>
+                                    <Grid Margin="0 0 5 0">
                                         <Border x:Name="GridContainer"></Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
@@ -91,6 +89,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
     </UserControl.Resources>
 
     <Grid>
@@ -206,7 +205,7 @@
                                     HorizontalAlignment="Right"
                                     attachProperty:VisionElement.Opacity="0.5"
                                     attachProperty:VisionElement.OpacityAccent="0.9"
-                                    Command="{Binding DataContext.CmdDelRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}"
+                                    Command="{Binding DataContext.CmdDeleteRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}"
                                     Margin="0 0 10 0">
                                 <Grid Height="10" Width="8">
                                     <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
