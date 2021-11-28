@@ -181,6 +181,7 @@
 
 
 
+                <local:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></local:ExternalRunner2Vm>
                 <DataTemplate DataType="{x:Type runner:ExternalRunner}">
                     <Grid Margin="10">
                         <Grid.Effect>
@@ -216,7 +217,7 @@
                             </Button>
                         </Grid>
 
-                        <local:ExternalRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:ExternalRunnerConfiger>
+                        <local:ExternalRunnerConfiger Grid.Row="1" DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></local:ExternalRunnerConfiger>
                     </Grid>
                 </DataTemplate>
             </Grid.Resources>
