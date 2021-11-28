@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PRM.Core.Properties;
 using PRM.Core.Protocol.Runner;
 
 namespace PRM.Core.Protocol
@@ -47,15 +48,7 @@ namespace PRM.Core.Protocol
                 return sb.ToString();
             }
         }
-
-        public Runner.Runner GetRunner()
-        {
-            if (Runners.Any(x => x.Name == SelectedRunnerName))
-            {
-                return Runners.First(x => x.Name == SelectedRunnerName);
-            }
-            return Runners.FirstOrDefault();
-        }
+        
 
         public ProtocolConfig()
         {
