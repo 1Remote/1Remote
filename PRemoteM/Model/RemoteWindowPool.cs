@@ -213,7 +213,7 @@ namespace PRM.Model
 
         private void ConnectWithTab(VmProtocolServer vmProtocolServer, string assignTabToken)
         {
-            // open SFTP when connected.
+            // open SFTP when SSH is connected.
             if (vmProtocolServer.Server is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
             {
                 var sftp = new ProtocolServerSFTP
@@ -253,18 +253,20 @@ namespace PRM.Model
             SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
         }
 
-        public void ShowRemoteHost(long serverId, string assignTabToken)
+        public void ShowRemoteHost(long serverId, string assignTabToken, string assignRunnerName)
         {
+            #region START MULTIPLE SESSION
+            // if serverId <= 0, then start multiple sessions
             if (serverId <= 0)
             {
-                // START MULTIPLE SESSION
                 var list = _context.AppData.VmItemList.Where(x => x.IsSelected).ToArray();
                 foreach (var server in list)
                 {
-                    ShowRemoteHost(server.Id, assignTabToken);
+                    ShowRemoteHost(server.Id, assignTabToken, assignRunnerName);
                 }
                 return;
-            }
+            } 
+            #endregion
 
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
 
