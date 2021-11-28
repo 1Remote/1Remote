@@ -162,27 +162,9 @@ namespace PRM.View.ProtocolConfig
     }
     public partial class ExternalRunnerConfiger : UserControl
     {
-        public static readonly DependencyProperty RunnerProperty =
-            DependencyProperty.Register("Runner", typeof(ExternalRunner), typeof(ExternalRunnerConfiger),
-                new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
-
-        private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var value = (ExternalRunner)e.NewValue;
-            if (value != null)
-                ((ExternalRunnerConfiger)d).DataContext = new ExternalRunnerConfigerVM(value, LanguageService.TmpLanguageService);
-        }
-
-        public ExternalRunner Runner
-        {
-            get => (ExternalRunner)GetValue(RunnerProperty);
-            set => SetValue(RunnerProperty, value);
-        }
-
         public ExternalRunnerConfiger()
         {
             InitializeComponent();
-            DataContext = new ExternalRunnerConfigerVM(LanguageService.TmpLanguageService);
         }
     }
 }
