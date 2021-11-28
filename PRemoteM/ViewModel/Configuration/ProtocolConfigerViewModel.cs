@@ -43,7 +43,11 @@ namespace PRM.ViewModel.Configuration
                 Macros = c.MarcoNames;
                 RaisePropertyChanged(nameof(Runners));
                 RaisePropertyChanged(nameof(RunnerNames));
-                SelectedRunnerName = c.GetRunner().Name;
+                SelectedRunnerName = c.SelectedRunnerName;
+                if (Runners.All(x => x.Name != SelectedRunnerName))
+                {
+                    SelectedRunnerName = c.Runners.FirstOrDefault()?.Name;
+                }
             }
         }
 
@@ -116,7 +120,11 @@ namespace PRM.ViewModel.Configuration
                         Runners = new ObservableCollection<Runner>(c.Runners);
                         RaisePropertyChanged(nameof(Runners));
                         RaisePropertyChanged(nameof(RunnerNames));
-                        SelectedRunnerName = c.GetRunner().Name;
+
+                        if (Runners.All(x => x.Name != SelectedRunnerName))
+                        {
+                            SelectedRunnerName = c.Runners.FirstOrDefault()?.Name;
+                        }
                         _protocolConfigurationService.Save();
                     }
                 });

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
@@ -23,29 +24,67 @@ namespace PRM.Model
 {
     public static class ProtocolHostFactory
     {
-        private static Runner GetRunner(PrmContext context, string protocolName)
+        /// <summary>
+        /// get first internal runner or first or null.
+        /// </summary>
+        /// <returns></returns>
+        private static Runner GetDefaultRunner(PrmContext context, string protocolName)
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
                 return null;
+            var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
+            if (p.Runners.Count == 0)
+            {
+                SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
+                return null;
+            }
+            foreach (var runner in p.Runners)
+            {
+                if (runner is InternalDefaultRunner)
+                    return runner;
+            }
+            SimpleLogHelper.Warning($"{protocolName} does not have a internal runner!");
+            return p.Runners.First();
+        }
+
+        /// <summary>
+        /// get a selected runner, or default runner.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="protocolName"></param>
+        /// <param name="psb"></param>
+        /// <param name="isExternalRunner"></param>
+        /// <returns></returns>
+        private static HostBase GetRunnerAndHost<T>(PrmContext context, string protocolName, T psb, out bool isExternalRunner) where T : ProtocolServerBase
+        {
+            isExternalRunner = false;
+            if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
+            {
+                return null;
+            }
 
             var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
-            var r = p.GetRunner();
-            return r;
-        }
-        private static HostBase TryGetCustomRunner<T>(PrmContext context, string protocolName, T psb, out bool isOk) where T : ProtocolServerBase
-        {
-            isOk = true;
-            var r = GetRunner(context, protocolName);
-            if (r is ExternalRunner er)
+            if (p.Runners.Count == 0)
             {
+                SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
+                return null;
+            }
+
+
+            var r = p.Runners.FirstOrDefault(x => x.Name == p.SelectedRunnerName);
+            if (r == null)
+            {
+                SimpleLogHelper.Warning($"{protocolName} does not have a runner name == the selection '{p.SelectedRunnerName}'!");
+            }
+            else if (r is ExternalRunner er)
+            {
+                isExternalRunner = true;
                 var exePath = er.ExePath;
                 var args = er.Arguments;
                 if (File.Exists(exePath))
                 {
-                    // using external runner.
-                    //var template = $@"sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%";
-                    //var host2 = new IntegrateHost(context, sftp, @"C:\Program Files (x86)\WinSCP\WinSCP.exe", $@"sftp://{sftp.UserName}:{context.DataService.DecryptOrReturnOriginalString(sftp.Password)}@{sftp.Address}:{sftp.GetPort()}");
-
+                    // decrypt
                     var protocolServerBase = psb.Clone();
                     protocolServerBase.ConnectPreprocess(context);
                     var exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
@@ -61,12 +100,11 @@ namespace PRM.Model
                     // start process
                     if (er.RunWithHosting)
                     {
-                        var host2 = new IntegrateHost(context, psb, exePath, exeArguments);
-                        return host2;
+                        var integrateHost = new IntegrateHost(context, psb, exePath, exeArguments, environmentVariables);
+                        return integrateHost;
                     }
                     else
                     {
-                        // Set environment variables
                         var startInfo = new ProcessStartInfo();
                         if (environmentVariables?.Count > 0)
                             foreach (var kv in environmentVariables)
@@ -84,12 +122,16 @@ namespace PRM.Model
                     }
                 }
             }
+            else if(r is InternalDefaultRunner)
+            {
+                isExternalRunner = false;
 
-            isOk = false;
+            }
+            isExternalRunner = false;
             return null;
         }
 
-        public static HostBase Get(PrmContext context, ProtocolServerBase server, double width = 0, double height = 0)
+        public static HostBase Get(PrmContext context, ProtocolServerBase server, double width = 0, double height = 0, string assignRunnerName = null)
         {
             switch (server)
             {
@@ -100,11 +142,11 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var host1 = TryGetCustomRunner(context, ProtocolServerSSH.ProtocolName, ssh, out var isOk);
+                        var host1 = GetRunnerAndHost(context, ProtocolServerSSH.ProtocolName, ssh, out var isOk);
                         if (isOk)
                             return host1;
 
-                        var r = GetRunner(context, ProtocolServerSSH.ProtocolName);
+                        var r = GetDefaultRunner(context, ProtocolServerSSH.ProtocolName);
                         // KittyRunner
                         ssh.InstallKitty();
                         var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context));
@@ -118,25 +160,20 @@ namespace PRM.Model
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var host1 = TryGetCustomRunner(context, ProtocolServerTelnet.ProtocolName, telnet, out var isOk);
+                        var host1 = GetRunnerAndHost(context, ProtocolServerTelnet.ProtocolName, telnet, out var isOk);
                         if (isOk)
                             return host1;
 
-                        var r = GetRunner(context, ProtocolServerSSH.ProtocolName);
                         // KittyRunner
                         telnet.InstallKitty();
                         var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context));
-                        // load theme for Kitty
-                        if (r is KittyRunner sdr)
-                        {
-                            host.RunBeforeConnect = () => telnet.SetKittySessionConfig(14, "", "");
-                            host.RunAfterConnected = () => telnet.DelKittySessionConfig();
-                        }
+                        host.RunBeforeConnect = () => telnet.SetKittySessionConfig(14, "", "");
+                        host.RunAfterConnected = () => telnet.DelKittySessionConfig();
                         return host;
                     }
                 case ProtocolServerVNC vnc:
                     {
-                        var host1 = TryGetCustomRunner(context, ProtocolServerVNC.ProtocolName, vnc, out var isOk);
+                        var host1 = GetRunnerAndHost(context, ProtocolServerVNC.ProtocolName, vnc, out var isOk);
                         if (isOk)
                             return host1;
 
@@ -145,7 +182,7 @@ namespace PRM.Model
                     }
                 case ProtocolServerSFTP sftp:
                     {
-                        var host1 = TryGetCustomRunner(context, ProtocolServerSFTP.ProtocolName, sftp, out var isOk);
+                        var host1 = GetRunnerAndHost(context, ProtocolServerSFTP.ProtocolName, sftp, out var isOk);
                         if (isOk)
                             return host1;
 
@@ -154,7 +191,7 @@ namespace PRM.Model
                     }
                 case ProtocolServerFTP ftp:
                     {
-                        var host1 = TryGetCustomRunner(context, ProtocolServerFTP.ProtocolName, ftp, out var isOk);
+                        var host1 = GetRunnerAndHost(context, ProtocolServerFTP.ProtocolName, ftp, out var isOk);
                         if (isOk)
                             return host1;
 
