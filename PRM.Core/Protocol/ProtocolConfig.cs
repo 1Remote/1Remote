@@ -34,7 +34,8 @@ namespace PRM.Core.Protocol
         /// What A is -> %MarcoName1%
         /// What B is -> %MarcoName2%
         /// </summary>
-        public string GetAllDescriptions 
+        [JsonIgnore]
+        public string GetAllDescriptions
         {
             get
             {
