@@ -88,7 +88,7 @@ namespace PRM.Core.Protocol.RDP
         }
 
         public static string ProtocolName = "RDP";
-        public ProtocolServerRDP() : base("RDP", "RDP.V1", "RDP")
+        public ProtocolServerRDP() : base(ProtocolName, "RDP.V1", "RDP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";

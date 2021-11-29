@@ -17,7 +17,7 @@ namespace PRM.Core.Protocol.VNC
         }
 
         public static string ProtocolName = "VNC";
-        public ProtocolServerVNC() : base("VNC", "VNC.V1", "VNC")
+        public ProtocolServerVNC() : base(ProtocolName, "VNC.V1", "VNC")
         {
             base.Port = "5900";
             base.UserName = "";

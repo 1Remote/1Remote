@@ -213,7 +213,8 @@ namespace PRM.ViewModel
 
                 // external runners
 
-                if (Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners.Count > 0)
+                if (Context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolServer.Protocol)
+                && Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners.Count > 0)
                 {
                     actions.Add(new ActionItem()
                     {
