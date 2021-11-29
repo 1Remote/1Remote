@@ -211,7 +211,7 @@ namespace PRM.Model
             SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private void ConnectWithTab(VmProtocolServer vmProtocolServer, string assignTabToken)
+        private void ConnectWithTab(VmProtocolServer vmProtocolServer, string assignTabToken, string assignRunnerName)
         {
             // open SFTP when SSH is connected.
             if (vmProtocolServer.Server is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
@@ -228,13 +228,13 @@ namespace PRM.Model
                     PrivateKey = ssh.PrivateKey
                 };
                 var vm = new VmProtocolServer(sftp);
-                ConnectWithTab(vm, assignTabToken);
+                ConnectWithTab(vm, assignTabToken, assignRunnerName);
             }
 
             var tab = GetOrCreateTabWindow(assignTabToken);
             // get display area size for host
             var size = tab.GetTabContentSize();
-            var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server, size.Width, size.Height);
+            var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server, size.Width, size.Height, assignRunnerName);
             if (host == null)
                 return;
 
@@ -322,7 +322,7 @@ namespace PRM.Model
             if (vmProtocolServer.Server.IsConnWithFullScreen())
                 ConnectWithFullScreen(vmProtocolServer);
             else
-                ConnectWithTab(vmProtocolServer, assignTabToken);
+                ConnectWithTab(vmProtocolServer, assignTabToken, assignRunnerName);
             CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
         }
