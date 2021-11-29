@@ -9,16 +9,20 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using PRM.Core.DB;
+using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Protocol.Runner;
+using PRM.Core.Protocol.Runner.Default;
 using Shawn.Utils;
 using PRM.View;
 using PRM.View.ProtocolHosts;
 using PRM.View.TabWindow;
 using PRM.ViewModel;
+using MessageBox = System.Windows.MessageBox;
 using ProtocolHostStatus = PRM.View.ProtocolHosts.ProtocolHostStatus;
 
 
@@ -195,10 +199,10 @@ namespace PRM.Model
             t.Start();
         }
 
-        private void ConnectWithFullScreen(VmProtocolServer vmProtocolServer)
+        private void ConnectWithFullScreen(VmProtocolServer vmProtocolServer, Runner runner)
         {
             // fullscreen normally
-            var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server);
+            var host = ProtocolHostFactory.GetHostForInternalRunner(_context, vmProtocolServer.Server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
@@ -211,11 +215,12 @@ namespace PRM.Model
             SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private void ConnectWithTab(VmProtocolServer vmProtocolServer, string assignTabToken, string assignRunnerName)
+        private void ConnectWithTab(ProtocolServerBase protocolServer, Runner runner, string assignTabToken)
         {
             // open SFTP when SSH is connected.
-            if (vmProtocolServer.Server is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
+            if (protocolServer is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
             {
+                var sshRunner = ProtocolHostFactory.GetRunner(_context, ProtocolServerSSH.ProtocolName);
                 var sftp = new ProtocolServerSFTP
                 {
                     MarkColorHex = ssh.MarkColorHex,
@@ -227,30 +232,44 @@ namespace PRM.Model
                     Password = ssh.Password,
                     PrivateKey = ssh.PrivateKey
                 };
-                var vm = new VmProtocolServer(sftp);
-                ConnectWithTab(vm, assignTabToken, assignRunnerName);
+                ConnectWithTab(sftp, sshRunner, assignTabToken);
             }
 
-            var tab = GetOrCreateTabWindow(assignTabToken);
-            // get display area size for host
-            var size = tab.GetTabContentSize();
-            var host = ProtocolHostFactory.Get(_context, vmProtocolServer.Server, size.Width, size.Height, assignRunnerName);
+            Size size = new Size(0, 0);
+            TabWindowBase tab = null;
+            if (protocolServer is ProtocolServerRDP)
+            {
+                tab = GetOrCreateTabWindow(assignTabToken);
+                size = tab.GetTabContentSize();
+            }
+
+            HostBase host;
+            if (runner is ExternalRunner)
+            {
+                host = ProtocolHostFactory.GetHostOrRunDirectlyForExternalRunner(_context, protocolServer, runner);
+            }
+            else
+            {
+                host = ProtocolHostFactory.GetHostForInternalRunner(_context, protocolServer, runner, size.Width, size.Height);
+            }
             if (host == null)
                 return;
 
+            tab ??= GetOrCreateTabWindow(assignTabToken);
+
+            // get display area size for host
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += OnFullScreen2Window;
             tab.AddItem(new TabItemViewModel()
             {
                 Content = host,
-                Header = vmProtocolServer.Server.DisplayName,
+                Header = protocolServer.DisplayName,
             });
             host.ParentWindow = tab;
             _protocolHosts.Add(host.ConnectionId, host);
             host.Conn();
             tab.Activate();
-            SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with Tab({tab.GetHashCode()})");
         }
 
         public void ShowRemoteHost(long serverId, string assignTabToken, string assignRunnerName)
@@ -265,7 +284,7 @@ namespace PRM.Model
                     ShowRemoteHost(server.Id, assignTabToken, assignRunnerName);
                 }
                 return;
-            } 
+            }
             #endregion
 
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
@@ -300,29 +319,35 @@ namespace PRM.Model
 
 
 
-            // check if screens are in different scale factors
-            int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+            var runner = ProtocolHostFactory.GetRunner(_context, vmProtocolServer.Server.Protocol, assignRunnerName);
 
-            // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
-            if (vmProtocolServer.Server is ProtocolServerRDP rdp
-                &&
-                (rdp.MstscModeEnabled == true || (vmProtocolServer.Server.IsConnWithFullScreen()
-                                                    && Screen.AllScreens.Length > 1
-                                                    && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                                                    && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2)))
-            )
+
+            if (vmProtocolServer.Server is ProtocolServerRDP rdp)
             {
-                ConnectRdpByMstsc(rdp);
-                return;
+                // check if screens are in different scale factors
+                int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
+                // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
+                if (rdp.MstscModeEnabled == true
+                    || (vmProtocolServer.Server.IsConnWithFullScreen()
+                        && Screen.AllScreens.Length > 1
+                        && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
+                        && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2))
+                )
+                {
+                    ConnectRdpByMstsc(rdp);
+                    return;
+                }
+
+                // rdp full screen
+                if (rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens || rdp.IsConnWithFullScreen == true || rdp.AutoSetting?.FullScreenLastSessionIsFullScreen == true)
+                {
+                    ConnectWithFullScreen(vmProtocolServer, runner);
+                    return;
+                }
             }
 
+            ConnectWithTab(vmProtocolServer.Server, runner, assignTabToken);
 
-
-            // connect with host
-            if (vmProtocolServer.Server.IsConnWithFullScreen())
-                ConnectWithFullScreen(vmProtocolServer);
-            else
-                ConnectWithTab(vmProtocolServer, assignTabToken, assignRunnerName);
             CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
         }

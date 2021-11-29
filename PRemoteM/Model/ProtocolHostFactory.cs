@@ -55,7 +55,7 @@ namespace PRM.Model
         /// <param name="psb"></param>
         /// <param name="runner"></param>
         /// <returns></returns>
-        private static HostBase GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T psb, Runner runner) where T : ProtocolServerBase
+        public static HostBase GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T psb, Runner runner) where T : ProtocolServerBase
         {
             if (!(runner is ExternalRunner er)) return null;
 
@@ -108,14 +108,14 @@ namespace PRM.Model
         }
 
         /// <summary>
-        /// get a selected runner, or default runner.
+        /// get a selected runner, or default runner. some protocol i.e. 'APP' will return null.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <param name="protocolName"></param>
         /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        private static Runner GetRunner(PrmContext context, string protocolName, string assignRunnerName = null)
+        public static Runner GetRunner(PrmContext context, string protocolName, string assignRunnerName = null)
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
@@ -149,12 +149,13 @@ namespace PRM.Model
         /// </summary>
         /// <param name="context"></param>
         /// <param name="server"></param>
+        /// <param name="runner"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        public static HostBase Get(PrmContext context, ProtocolServerBase server, double width = 0, double height = 0, string assignRunnerName = null)
+        public static HostBase GetHostForInternalRunner(PrmContext context, ProtocolServerBase server, Runner runner, double width = 0, double height = 0)
         {
+            Debug.Assert(runner is InternalDefaultRunner || runner == null);
             switch (server)
             {
                 case ProtocolServerRDP _:
@@ -164,55 +165,39 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var runner = GetRunner(context, ProtocolServerSSH.ProtocolName, assignRunnerName);
-                        if (runner is KittyRunner kitty)
+                        Debug.Assert(runner is KittyRunner);
+                        var kitty = (KittyRunner)runner;
+                        ssh.InstallKitty();
+                        var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
                         {
-                            ssh.InstallKitty();
-                            var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
-                            {
-                                RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey), 
-                                RunAfterConnected = () => ssh.DelKittySessionConfig()
-                            };
-                            return host;
-                        }
-                        return GetHostOrRunDirectlyForExternalRunner(context, ssh, runner);
+                            RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey),
+                            RunAfterConnected = () => ssh.DelKittySessionConfig()
+                        };
+                        return host;
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var runner = GetRunner(context, ProtocolServerTelnet.ProtocolName, assignRunnerName);
-                        if (runner is KittyRunner kitty)
+                        Debug.Assert(runner is KittyRunner);
+                        var kitty = (KittyRunner)runner;
+                        telnet.InstallKitty();
+                        var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
                         {
-                            telnet.InstallKitty();
-                            var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
-                            {
-                                RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""), 
-                                RunAfterConnected = () => telnet.DelKittySessionConfig()
-                            };
-                            return host;
-                        }
-
-                        return GetHostOrRunDirectlyForExternalRunner(context, telnet, runner);
+                            RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""),
+                            RunAfterConnected = () => telnet.DelKittySessionConfig()
+                        };
+                        return host;
                     }
                 case ProtocolServerVNC vnc:
                     {
-                        var runner = GetRunner(context, ProtocolServerVNC.ProtocolName, assignRunnerName);
-                        if (runner is InternalDefaultRunner)
-                            return new VncHost(context, vnc);
-                        return GetHostOrRunDirectlyForExternalRunner(context, vnc, runner);
+                        return new VncHost(context, vnc);
                     }
                 case ProtocolServerSFTP sftp:
                     {
-                        var runner = GetRunner(context, ProtocolServerSFTP.ProtocolName, assignRunnerName);
-                        if (runner is InternalDefaultRunner)
-                            return new FileTransmitHost(context, sftp);
-                        return GetHostOrRunDirectlyForExternalRunner(context, sftp, runner);
+                        return new FileTransmitHost(context, sftp);
                     }
                 case ProtocolServerFTP ftp:
                     {
-                        var runner = GetRunner(context, ProtocolServerFTP.ProtocolName, assignRunnerName);
-                        if (runner is InternalDefaultRunner)
-                            return new FileTransmitHost(context, ftp);
-                        return GetHostOrRunDirectlyForExternalRunner(context, ftp, runner);
+                        return new FileTransmitHost(context, ftp);
                     }
                 case ProtocolServerApp app:
                     {

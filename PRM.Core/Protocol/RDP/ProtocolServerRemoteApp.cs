@@ -9,7 +9,8 @@ namespace PRM.Core.Protocol.RDP
 {
     public sealed class ProtocolServerRemoteApp : ProtocolServerWithAddrPortUserPwdBase
     {
-        public ProtocolServerRemoteApp() : base("RemoteApp", "RemoteApp.V1", "RemoteApp", "APP")
+        public static string ProtocolName = "RemoteApp";
+        public ProtocolServerRemoteApp() : base(ProtocolName, "RemoteApp.V1", "RemoteApp", "APP")
         {
             base.Port = "3389";
             base.UserName = "Administrator";

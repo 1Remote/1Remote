@@ -125,9 +125,71 @@ namespace PRM.View
 
         private readonly object _keyDownLocker = new object();
 
+        private void MenuActions(Key key)
+        {
+            switch (key)
+            {
+                case Key.Enter:
+                    if (_vm.Actions.Count > 0
+                        && _vm.SelectedActionIndex >= 0
+                        && _vm.SelectedActionIndex < _vm.Actions.Count)
+                    {
+                        if (_vm?.SelectedItem?.Server?.Id == null)
+                            return;
+                        var id = _vm.SelectedItem.Server.Id;
+                        var si = _vm.SelectedActionIndex;
+                        HideMe();
+                        _vm.Actions[si]?.Run(id);
+                    }
+                    break;
+
+                case Key.Down:
+                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
+                    {
+                        ++_vm.SelectedActionIndex;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.Up:
+                    if (_vm.SelectedActionIndex > 0)
+                    {
+                        --_vm.SelectedActionIndex;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.PageUp:
+                    if (_vm.SelectedActionIndex > 0)
+                    {
+                        _vm.SelectedActionIndex =
+                            _vm.SelectedActionIndex - 5 < 0 ? 0 : _vm.SelectedActionIndex - 5;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.PageDown:
+                    if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
+                    {
+                        _vm.SelectedActionIndex =
+                            _vm.SelectedActionIndex + 5 > _vm.Actions.Count - 1
+                                ? _vm.Actions.Count - 1
+                                : _vm.SelectedActionIndex + 5;
+                        ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
+                    }
+                    break;
+
+                case Key.Left:
+                    _vm.HideActionsList();
+                    break;
+            }
+        }
+
         private void TbKeyWord_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (_isHidden) return;
+
+            e.Handled = true;
             lock (_keyDownLocker)
             {
                 var key = e.Key;
@@ -137,69 +199,13 @@ namespace PRM.View
                     HideMe();
                     return;
                 }
-                else if (GridMenuActions.Visibility == Visibility.Visible)
+                
+                if (GridMenuActions.Visibility == Visibility.Visible)
                 {
-                    e.Handled = true;
-                    switch (key)
-                    {
-                        case Key.Enter:
-                            if (_vm.Actions.Count > 0
-                                && _vm.SelectedActionIndex >= 0
-                                && _vm.SelectedActionIndex < _vm.Actions.Count)
-                            {
-                                if (_vm?.SelectedItem?.Server?.Id == null)
-                                    return;
-                                var id = _vm.SelectedItem.Server.Id;
-                                var si = _vm.SelectedActionIndex;
-                                HideMe();
-                                _vm.Actions[si]?.Run(id);
-                            }
-                            break;
-
-                        case Key.Down:
-                            if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
-                            {
-                                ++_vm.SelectedActionIndex;
-                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                            }
-                            break;
-
-                        case Key.Up:
-                            if (_vm.SelectedActionIndex > 0)
-                            {
-                                --_vm.SelectedActionIndex;
-                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                            }
-                            break;
-
-                        case Key.PageUp:
-                            if (_vm.SelectedActionIndex > 0)
-                            {
-                                _vm.SelectedActionIndex =
-                                    _vm.SelectedActionIndex - 5 < 0 ? 0 : _vm.SelectedActionIndex - 5;
-                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                            }
-                            break;
-
-                        case Key.PageDown:
-                            if (_vm.SelectedActionIndex < _vm.Actions.Count - 1)
-                            {
-                                _vm.SelectedActionIndex =
-                                    _vm.SelectedActionIndex + 5 > _vm.Actions.Count - 1
-                                        ? _vm.Actions.Count - 1
-                                        : _vm.SelectedActionIndex + 5;
-                                ListBoxActions.ScrollIntoView(ListBoxActions.SelectedItem);
-                            }
-                            break;
-
-                        case Key.Left:
-                            _vm.HideActionsList();
-                            break;
-                    }
+                    MenuActions(key);
                 }
                 else
                 {
-                    e.Handled = true;
                     switch (key)
                     {
                         case Key.Right:
