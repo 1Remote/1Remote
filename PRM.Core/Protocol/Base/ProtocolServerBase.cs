@@ -299,6 +299,10 @@ namespace PRM.Core.Protocol
             }
         }
 
+        /// <summary>
+        /// run before connect, decrypt all fields
+        /// </summary>
+        /// <param name="context"></param>
         public virtual void ConnectPreprocess(PrmContext context)
         {
             context.DataService.DecryptToRamLevel(this);

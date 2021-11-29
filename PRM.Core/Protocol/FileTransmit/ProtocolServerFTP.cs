@@ -10,7 +10,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
     public class ProtocolServerFTP : ProtocolServerWithAddrPortUserPwdBase, IProtocolFileTransmittable
     {
         public static string ProtocolName = "FTP";
-        public ProtocolServerFTP() : base("FTP", "FTP.V1", "FTP")
+        public ProtocolServerFTP() : base(ProtocolName, "FTP.V1", "FTP")
         {
         }
 
