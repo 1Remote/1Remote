@@ -251,7 +251,7 @@ namespace PRM.View.ProtocolHosts
             // Set environment variables
             if (this._environmentVariables?.Count > 0)
             {
-                startInfo.UseShellExecute = true;
+                startInfo.UseShellExecute = false;
                 foreach (var kv in this._environmentVariables)
                 {
                     if (startInfo.EnvironmentVariables.ContainsKey(kv.Key) == false)

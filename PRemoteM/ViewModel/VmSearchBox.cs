@@ -215,6 +215,11 @@ namespace PRM.ViewModel
 
                 if (Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners.Count > 0)
                 {
+                    actions.Add(new ActionItem()
+                    {
+                        ActionName = Context.LanguageService.Translate("word_connect") + $" (Internal)",
+                        Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, assignRunnerName: Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners.First().Name); },
+                    });
                     foreach (var runner in Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
