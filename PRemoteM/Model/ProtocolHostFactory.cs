@@ -48,19 +48,78 @@ namespace PRM.Model
         }
 
         /// <summary>
+        /// get a host for the runner if RunWithHosting == true, or start the runner if RunWithHosting == false.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="psb"></param>
+        /// <param name="runner"></param>
+        /// <returns></returns>
+        private static HostBase GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T psb, Runner runner) where T : ProtocolServerBase
+        {
+            if (!(runner is ExternalRunner er)) return null;
+
+            var exePath = er.ExePath;
+            var args = er.Arguments;
+            if (!File.Exists(exePath))
+            {
+                MessageBox.Show($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
+                return null;
+            }
+
+
+            // decrypt
+            var protocolServerBase = psb.Clone();
+            protocolServerBase.ConnectPreprocess(context);
+            var exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
+
+            // make environment variables
+            var environmentVariables = new Dictionary<string, string>();
+            if (er.EnvironmentVariables != null)
+                foreach (var kv in er.EnvironmentVariables)
+                {
+                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
+                }
+
+            // start process
+            if (er.RunWithHosting)
+            {
+                var integrateHost = new IntegrateHost(context, psb, exePath, exeArguments, environmentVariables);
+                return integrateHost;
+            }
+            else
+            {
+                var startInfo = new ProcessStartInfo();
+                if (environmentVariables?.Count > 0)
+                    foreach (var kv in environmentVariables)
+                    {
+                        if (startInfo.EnvironmentVariables.ContainsKey(kv.Key) == false)
+                            startInfo.EnvironmentVariables.Add(kv.Key, kv.Value);
+                        startInfo.EnvironmentVariables[kv.Key] = kv.Value;
+                    }
+                startInfo.UseShellExecute = false;
+                startInfo.FileName = exePath;
+                startInfo.Arguments = exeArguments;
+                var process = new Process() { StartInfo = startInfo };
+                process.Start();
+                return null;
+            }
+
+        }
+
+        /// <summary>
         /// get a selected runner, or default runner.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <param name="protocolName"></param>
-        /// <param name="psb"></param>
-        /// <param name="isExternalRunner"></param>
+        /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        private static HostBase GetRunnerAndHost<T>(PrmContext context, string protocolName, T psb, out bool isExternalRunner) where T : ProtocolServerBase
+        private static Runner GetRunner(PrmContext context, string protocolName, string assignRunnerName = null)
         {
-            isExternalRunner = false;
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
+                SimpleLogHelper.Error($"we don't have a protocol named: {protocolName}!");
                 return null;
             }
 
@@ -68,69 +127,32 @@ namespace PRM.Model
             if (p.Runners.Count == 0)
             {
                 SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
+                MessageBox.Show($"{protocolName} does not have any runner!");
                 return null;
             }
 
-
-            var r = p.Runners.FirstOrDefault(x => x.Name == p.SelectedRunnerName);
+            var runnerName = assignRunnerName;
+            if (string.IsNullOrEmpty(runnerName))
+                runnerName = p.SelectedRunnerName;
+            var r = p.Runners.FirstOrDefault(x => x.Name == runnerName);
             if (r == null)
             {
                 SimpleLogHelper.Warning($"{protocolName} does not have a runner name == the selection '{p.SelectedRunnerName}'!");
+                r = p.Runners.FirstOrDefault();
             }
-            else if (r is ExternalRunner er)
-            {
-                isExternalRunner = true;
-                var exePath = er.ExePath;
-                var args = er.Arguments;
-                if (File.Exists(exePath))
-                {
-                    // decrypt
-                    var protocolServerBase = psb.Clone();
-                    protocolServerBase.ConnectPreprocess(context);
-                    var exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
 
-                    // make environment variables
-                    var environmentVariables = new Dictionary<string, string>();
-                    if (er.EnvironmentVariables != null)
-                        foreach (var kv in er.EnvironmentVariables)
-                        {
-                            environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
-                        }
-
-                    // start process
-                    if (er.RunWithHosting)
-                    {
-                        var integrateHost = new IntegrateHost(context, psb, exePath, exeArguments, environmentVariables);
-                        return integrateHost;
-                    }
-                    else
-                    {
-                        var startInfo = new ProcessStartInfo();
-                        if (environmentVariables?.Count > 0)
-                            foreach (var kv in environmentVariables)
-                            {
-                                if (startInfo.EnvironmentVariables.ContainsKey(kv.Key) == false)
-                                    startInfo.EnvironmentVariables.Add(kv.Key, kv.Value);
-                                startInfo.EnvironmentVariables[kv.Key] = kv.Value;
-                            }
-                        startInfo.UseShellExecute = false;
-                        startInfo.FileName = exePath;
-                        startInfo.Arguments = exeArguments;
-                        var process = new Process() { StartInfo = startInfo };
-                        process.Start();
-                        return null;
-                    }
-                }
-            }
-            else if(r is InternalDefaultRunner)
-            {
-                isExternalRunner = false;
-
-            }
-            isExternalRunner = false;
-            return null;
+            return r;
         }
 
+        /// <summary>
+        /// get host for a ProtocolServerBase, can return null
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="server"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="assignRunnerName"></param>
+        /// <returns></returns>
         public static HostBase Get(PrmContext context, ProtocolServerBase server, double width = 0, double height = 0, string assignRunnerName = null)
         {
             switch (server)
@@ -142,68 +164,61 @@ namespace PRM.Model
                     }
                 case ProtocolServerSSH ssh:
                     {
-                        var host1 = GetRunnerAndHost(context, ProtocolServerSSH.ProtocolName, ssh, out var isOk);
-                        if (isOk)
-                            return host1;
-
-                        var r = GetDefaultRunner(context, ProtocolServerSSH.ProtocolName);
-                        // KittyRunner
-                        ssh.InstallKitty();
-                        var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context));
-                        // load theme for Kitty
-                        if (r is KittyRunner sdr)
+                        var runner = GetRunner(context, ProtocolServerSSH.ProtocolName, assignRunnerName);
+                        if (runner is KittyRunner kitty)
                         {
-                            host.RunBeforeConnect = () => ssh.SetKittySessionConfig(sdr.GetPuttyFontSize(), sdr.GetPuttyThemeName(), ssh.PrivateKey);
-                            host.RunAfterConnected = () => ssh.DelKittySessionConfig();
+                            ssh.InstallKitty();
+                            var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
+                            {
+                                RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey), 
+                                RunAfterConnected = () => ssh.DelKittySessionConfig()
+                            };
+                            return host;
                         }
-                        return host;
+                        return GetHostOrRunDirectlyForExternalRunner(context, ssh, runner);
                     }
                 case ProtocolServerTelnet telnet:
                     {
-                        var host1 = GetRunnerAndHost(context, ProtocolServerTelnet.ProtocolName, telnet, out var isOk);
-                        if (isOk)
-                            return host1;
+                        var runner = GetRunner(context, ProtocolServerTelnet.ProtocolName, assignRunnerName);
+                        if (runner is KittyRunner kitty)
+                        {
+                            telnet.InstallKitty();
+                            var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
+                            {
+                                RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""), 
+                                RunAfterConnected = () => telnet.DelKittySessionConfig()
+                            };
+                            return host;
+                        }
 
-                        // KittyRunner
-                        telnet.InstallKitty();
-                        var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context));
-                        host.RunBeforeConnect = () => telnet.SetKittySessionConfig(14, "", "");
-                        host.RunAfterConnected = () => telnet.DelKittySessionConfig();
-                        return host;
+                        return GetHostOrRunDirectlyForExternalRunner(context, telnet, runner);
                     }
                 case ProtocolServerVNC vnc:
                     {
-                        var host1 = GetRunnerAndHost(context, ProtocolServerVNC.ProtocolName, vnc, out var isOk);
-                        if (isOk)
-                            return host1;
-
-                        var host = new VncHost(context, vnc);
-                        return host;
+                        var runner = GetRunner(context, ProtocolServerVNC.ProtocolName, assignRunnerName);
+                        if (runner is InternalDefaultRunner)
+                            return new VncHost(context, vnc);
+                        return GetHostOrRunDirectlyForExternalRunner(context, vnc, runner);
                     }
                 case ProtocolServerSFTP sftp:
                     {
-                        var host1 = GetRunnerAndHost(context, ProtocolServerSFTP.ProtocolName, sftp, out var isOk);
-                        if (isOk)
-                            return host1;
-
-                        var host = new FileTransmitHost(context, sftp);
-                        return host;
+                        var runner = GetRunner(context, ProtocolServerSFTP.ProtocolName, assignRunnerName);
+                        if (runner is InternalDefaultRunner)
+                            return new FileTransmitHost(context, sftp);
+                        return GetHostOrRunDirectlyForExternalRunner(context, sftp, runner);
                     }
                 case ProtocolServerFTP ftp:
                     {
-                        var host1 = GetRunnerAndHost(context, ProtocolServerFTP.ProtocolName, ftp, out var isOk);
-                        if (isOk)
-                            return host1;
-
-                        var host = new FileTransmitHost(context, ftp);
-                        return host;
+                        var runner = GetRunner(context, ProtocolServerFTP.ProtocolName, assignRunnerName);
+                        if (runner is InternalDefaultRunner)
+                            return new FileTransmitHost(context, ftp);
+                        return GetHostOrRunDirectlyForExternalRunner(context, ftp, runner);
                     }
                 case ProtocolServerApp app:
                     {
                         if (File.Exists(app.ExePath) == false)
                         {
-                            // TODO alert exe is not existed.
-                            //MessageBox.Show("")
+                            MessageBox.Show($"the path '{app.ExePath}' does not existed!");
                             return null;
                         }
 
