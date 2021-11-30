@@ -17,10 +17,11 @@
         <Setter Property="AllowDrop" Value="true" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource BackgroundTextBrush}" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
         <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource PrimaryMidBrush}"/>
         <Setter Property="attachProperty:VisionElement.BorderCornerRadius" Value="{DynamicResource DefaultCornerRadius}"/>
         <Setter Property="Padding" Value="{StaticResource DefaultInputPadding}" />
