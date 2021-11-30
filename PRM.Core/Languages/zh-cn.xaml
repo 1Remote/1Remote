@@ -262,5 +262,7 @@
     <s:String x:Key="Preview">预览</s:String>
     <s:String x:Key="Preview rdp file">预览RDP文件</s:String>
     <s:String x:Key="Check monitor number">查看显示器编号</s:String>
+    <s:String x:Key="Environment variables">环境变量</s:String>
+    <s:String x:Key="Add environment variables">添加环境变量</s:String>
 
 </ResourceDictionary>

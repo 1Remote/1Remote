@@ -171,9 +171,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Log"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{x:Static utils:SimpleLogHelper.LogFileName}" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
+                                <TextBox Text="{x:Static utils:SimpleLogHelper.LogFileName}" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
                             </Grid>
-                            <!--<Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding CmdSelectDbPath}"></Button>-->
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -467,36 +466,6 @@
                             <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding BackgroundTextColor}" />
                         </Grid>
                     </Grid>
-
-                    <!--<Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource system_options_theme_putty_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                        </StackPanel>
-                    </Grid>-->
-                    <!--<Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <TextBox Text="{PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>-->
-                    <!--<Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_theme}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <ComboBox
-                                          ItemsSource="{Binding SystemConfig.Theme.PuttyThemeNames}"
-                                          SelectedItem="{Binding SystemConfig.Theme.PuttyThemeName}">
-                                </ComboBox>
-                            </Grid>
-                            <TextBlock VerticalAlignment="Center" Margin="2 0">
-                                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
-                                    (?)
-                                </Hyperlink>
-                            </TextBlock>
-                        </StackPanel>
-                    </Grid>-->
 
                     <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                         <StackPanel Orientation="Horizontal">
