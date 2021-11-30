@@ -262,5 +262,7 @@
     <s:String x:Key="Preview">Preview</s:String>
     <s:String x:Key="Preview rdp file">Preview rdp file</s:String>
     <s:String x:Key="Check monitor number">Check monitor number</s:String>
+    <s:String x:Key="Environment variables">Environment variables</s:String>
+    <s:String x:Key="Add environment variables">Add environment variables</s:String>
 
 </ResourceDictionary>
