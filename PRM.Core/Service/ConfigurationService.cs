@@ -167,6 +167,8 @@ namespace PRM.Core.Service
             if (cs.Portable)
             {
                 oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
+                // default value of db path
+                cs.Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
             }
             else
             {
@@ -174,6 +176,8 @@ namespace PRM.Core.Service
                 if (Directory.Exists(appDateFolder) == false)
                     Directory.CreateDirectory(appDateFolder);
                 oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
+                // default value of db path
+                cs.Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
             }
 
             // old user convert the 0.5 ini file to 0.6 json file
@@ -181,7 +185,7 @@ namespace PRM.Core.Service
             {
                 try
                 {
-                    var cfg = LoadFromIni(oldIniFilePath);
+                    var cfg = LoadFromIni(oldIniFilePath, cs.Database.SqliteDatabasePath);
                     cs._cfg = cfg;
                     cs.Save();
                 }
@@ -205,14 +209,9 @@ namespace PRM.Core.Service
                     cs.Save();
                 }
             }
-            // new user init
             else
             {
-                // db path
-                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-                if (!Directory.Exists(appDateFolder))
-                    Directory.CreateDirectory(appDateFolder);
-                cs.Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
+                // new user
             }
 
             if (cs.KeywordMatch.EnabledMatchers.Count > 0)
@@ -271,7 +270,7 @@ namespace PRM.Core.Service
 
 
         // TODO remove after 2022.03.01
-        private static Configuration LoadFromIni(string iniPath)
+        private static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
         {
             var cfg = new Configuration();
             var ini = new Ini(iniPath);
@@ -307,13 +306,8 @@ namespace PRM.Core.Service
                 }
             }
 
-            {
-                cfg.KeywordMatch.EnabledMatchers = ini.GetValue("EnableProviders".ToLower(), "KeywordMatch", "").Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            }
-
-            {
-                cfg.Database.SqliteDatabasePath = ini.GetValue("DbPath".ToLower(), "DataSecurity", cfg.Database.SqliteDatabasePath);
-            }
+            cfg.KeywordMatch.EnabledMatchers = ini.GetValue("EnableProviders".ToLower(), "KeywordMatch", "").Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            cfg.Database.SqliteDatabasePath = ini.GetValue("DbPath".ToLower(), "DataSecurity", dbDefaultPath);
 
             {
                 const string sectionName = "Theme";

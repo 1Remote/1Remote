@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Dragablz;
@@ -117,26 +118,41 @@ namespace PRM.ViewModel
 
         public Visibility TitleTagEditorVisibility => IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
 
-        private TabItemViewModel _selectedItem = new TabItemViewModel();
+        private TabItemViewModel _selectedItem = null;
 
         public TabItemViewModel SelectedItem
         {
             get => _selectedItem;
             set
             {
-                SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
-                RaisePropertyChanged(nameof(WindowResizeMode));
                 if (_selectedItem != null)
-                {
-                    SetTitle();
-                    _selectedItem.PropertyChanged += (sender, args) =>
+                    try
                     {
-                        if (args.PropertyName == nameof(TabItemViewModel.CanResizeNow))
-                        {
-                            RaisePropertyChanged(nameof(WindowResizeMode));
-                        }
-                    };
+                        _selectedItem.PropertyChanged -= SelectedItemOnPropertyChanged;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Write(e);
+                    }
+
+                if (SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value))
+                {
+                    RaisePropertyChanged(nameof(WindowResizeMode));
+
+                    if (_selectedItem != null)
+                    {
+                        SetTitle();
+                        _selectedItem.PropertyChanged += SelectedItemOnPropertyChanged;
+                    }
                 }
+            }
+        }
+
+        private void SelectedItemOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(TabItemViewModel.CanResizeNow))
+            {
+                RaisePropertyChanged(nameof(WindowResizeMode));
             }
         }
 

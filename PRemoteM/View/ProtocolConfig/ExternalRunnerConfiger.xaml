@@ -37,29 +37,19 @@
             </Grid.ColumnDefinitions>
             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
             <TextBox Grid.Column="1" 
-                        Text="{Binding ExternalRunner.Arguments}" 
-                         ToolTip="{Binding ExternalRunner.Arguments}"
-                         TextWrapping="Wrap"
-                         Tag="e.g. sftp://username:password@example.com:22/"
-                         VerticalContentAlignment="Center"></TextBox>
+                        Text="{Binding ExternalRunner.Arguments}"
+                        ToolTip="{Binding ExternalRunner.Arguments}"
+                        TextWrapping="Wrap"
+                        Tag="e.g. sftp://username:password@example.com:22/"
+                        VerticalContentAlignment="Center"></TextBox>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <Button Style="{StaticResource ButtonPrimaryStyle}" 
-                        Margin="5 0 0 0" HorizontalAlignment="Left"
-                        Foreground="#297ccf"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        attachProperty:VisionElement.BackgroundAccent="Transparent"
-                        attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentMidBrush}"
-                        attachProperty:VisionElement.ForegroundOnMouseDown="{DynamicResource AccentMidBrush}"
-                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                        ToolTip="{DynamicResource 'Show environment variables'}"
-                        Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}"
-                >
-                    <Path Stretch="Uniform" Width="12"
-                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                          Data="F1 M 17.998047 10.019531 C 17.998047 12.226562 17.216797 14.109701 15.654297 15.668945 C 14.091797 17.228189 12.207031 18.007812 10 18.007812 C 7.792969 18.007812 5.908203 17.228189 4.345703 15.668945 C 2.783203 14.109701 2.001953 12.226562 2.001953 10.019531 C 2.001953 7.8125 2.783203 5.927734 4.345703 4.365234 C 5.908203 2.802735 7.792969 2.021485 10 2.021484 C 12.207031 2.021485 14.091797 2.802735 15.654297 4.365234 C 17.216797 5.927734 17.998047 7.8125 17.998047 10.019531 Z M 16.689453 10.019531 C 16.689453 8.170573 16.036783 6.591797 14.731445 5.283203 C 13.426105 3.974609 11.848957 3.320312 10 3.320312 C 8.151041 3.320312 6.572266 3.974609 5.263672 5.283203 C 3.955078 6.591797 3.300781 8.170573 3.300781 10.019531 C 3.300781 11.86849 3.955078 13.445639 5.263672 14.750977 C 6.572266 16.056314 8.151041 16.708984 10 16.708984 C 11.848957 16.708984 13.426105 16.056314 14.731445 14.750977 C 16.036783 13.445639 16.689453 11.86849 16.689453 10.019531 Z M 11.640625 5.898438 C 11.640625 6.321615 11.479492 6.682943 11.157227 6.982422 C 10.834961 7.281901 10.449219 7.431641 10 7.431641 C 9.544271 7.431641 9.1569 7.281901 8.837891 6.982422 C 8.51888 6.682943 8.359375 6.321615 8.359375 5.898438 C 8.359375 5.475261 8.51888 5.113933 8.837891 4.814453 C 9.1569 4.514975 9.544271 4.365234 10 4.365234 C 10.449219 4.365234 10.834961 4.514975 11.157227 4.814453 C 11.479492 5.113933 11.640625 5.475261 11.640625 5.898438 Z M 11.337891 15.996094 L 8.652344 15.996094 L 8.652344 8.378906 L 11.337891 8.378906 Z "></Path>
-                </Button>
+                <TextBlock VerticalAlignment="Center" Margin="5 0">
+                    <Hyperlink Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" 
+                               TextDecorations="{x:Null}" >
+                        (i)
+                    </Hyperlink>
+                </TextBlock>
                 <TextBlock VerticalAlignment="Center" Margin="2 0">
                     <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" 
                                utils:HyperlinkHelper.IsOpenExternal="True">
@@ -76,7 +66,7 @@
                 <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="TXT: Environment variables"></TextBlock>
+            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Environment variables'}"></TextBlock>
 
             <StackPanel Grid.Column="1">
                 <ListBox
@@ -127,17 +117,18 @@
                                                                ToolTip="Value e.g. %PRM_USERNAME%"/>
 
                                 <Button Grid.Column="2" Width="10" Height="10"
-                                    Style="{StaticResource ButtonBarPrimaryStyle}"
-                                    Background="Transparent"
-                                    Foreground="{DynamicResource PrimaryMidBrush}"
-                                    attachProperty:VisionElement.BackgroundAccent="Transparent"
-                                    attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
-                                    HorizontalAlignment="Right"
-                                    attachProperty:VisionElement.Opacity="0.5"
-                                    attachProperty:VisionElement.OpacityAccent="0.9"
-                                    Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ExternalRunnerConfiger}}}" 
-                                    CommandParameter="{Binding }"
-                                    Margin="0 0 10 0">
+                                        ToolTip="{DynamicResource 'word_delete'}"
+                                        Style="{StaticResource ButtonBarPrimaryStyle}"
+                                        Background="Transparent"
+                                        Foreground="{DynamicResource PrimaryMidBrush}"
+                                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                        HorizontalAlignment="Right"
+                                        attachProperty:VisionElement.Opacity="0.5"
+                                        attachProperty:VisionElement.OpacityAccent="0.9"
+                                        Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ExternalRunnerConfiger}}}" 
+                                        CommandParameter="{Binding }"
+                                        Margin="0 0 10 0">
                                     <Grid Height="10" Width="8">
                                         <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -152,11 +143,13 @@
 
                 <Button Width="20" Height="20" 
                         Margin="0 0 20 0"
-                        ToolTip="TXT: Add environment variable"
+                        ToolTip="{DynamicResource 'Add environment variables'}"
                         Style="{StaticResource ButtonBarAccentBackgroundStyle}"
+                        Background="Transparent"
+                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
                         HorizontalAlignment="Center"
-                        Command="{Binding CmdAddEnvironmentVariable}"
-                >
+                        Command="{Binding CmdAddEnvironmentVariable}">
                     <Grid Height="15" Width="15">
                         <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
                               Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
