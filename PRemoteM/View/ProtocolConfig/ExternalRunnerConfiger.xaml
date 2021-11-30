@@ -7,6 +7,7 @@
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:controls="clr-namespace:PRM.Controls"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ExternalRunnerConfigerVM}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -36,12 +37,39 @@
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
-            <TextBox Grid.Column="1" 
+            <!--<TextBox Grid.Column="1" 
                         Text="{Binding ExternalRunner.Arguments}"
                         ToolTip="{Binding ExternalRunner.Arguments}"
                         TextWrapping="Wrap"
                         Tag="e.g. sftp://username:password@example.com:22/"
-                        VerticalContentAlignment="Center"></TextBox>
+                        VerticalContentAlignment="Center"></TextBox>-->
+            <Border Grid.Column="1">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="CornerRadius" Value="5" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                        <Setter Property="Padding" Value="5 1" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=TextEditor, Path=IsMouseOver}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentLightBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=TextEditor, Path=IsFocused}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <local:BindableAvalonEditor
+                                  x:Name="TextEditor"
+                                  WordWrap="False"
+                                  Background="Transparent"
+                                  Text="{Binding ExternalRunner.Arguments}"
+                                  ToolTip="{Binding ExternalRunner.Arguments}"
+                                  SyntaxHighlighting="PowerShell"
+                                  FontSize="10pt">
+                </local:BindableAvalonEditor>
+            </Border>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal">
                 <TextBlock VerticalAlignment="Center" Margin="5 0">
