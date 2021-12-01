@@ -11,15 +11,38 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:ExternalRunnerConfigerVM}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+        <Style x:Key="GridOneRow" TargetType="Grid">
+            <Setter Property="Height" Value="Auto"></Setter>
+            <Setter Property="MinWidth" Value="300"></Setter>
+            <Setter Property="MinHeight" Value="30"></Setter>
+            <Setter Property="Margin">
+                <Setter.Value>
+                    <Thickness Bottom="15"></Thickness>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+            <Setter Property="TextAlignment" Value="Right"></Setter>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+            <Setter Property="Margin" Value="20 0 10 0"></Setter>
+        </Style>
+    </UserControl.Resources>
+
     <StackPanel Grid.IsSharedSizeScope="True">
         <Grid Height="20"></Grid>
-        <Grid Style="{StaticResource EditorRowGrid}">
+        <Grid Style="{StaticResource GridOneRow}">
             <Grid.ColumnDefinitions>  
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Exe path'}"></TextBlock>
             <TextBox Grid.Column="1" Text="{Binding ExternalRunner.ExePath}" 
                      ToolTip="{Binding ExternalRunner.ExePath}"
                      TextWrapping="Wrap"
@@ -30,13 +53,14 @@
                     Command="{Binding CmdSelectExePath}"></Button>
         </Grid>
 
-        <Grid Style="{StaticResource EditorRowGrid}">
+
+        <Grid Style="{StaticResource GridOneRow}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
             <!--<TextBox Grid.Column="1" 
                         Text="{Binding ExternalRunner.Arguments}"
                         ToolTip="{Binding ExternalRunner.Arguments}"
@@ -60,7 +84,7 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <local:BindableAvalonEditor
+                <controls:BindableAvalonEditor
                                   x:Name="TextEditor"
                                   WordWrap="False"
                                   Background="Transparent"
@@ -68,7 +92,7 @@
                                   ToolTip="{Binding ExternalRunner.Arguments}"
                                   SyntaxHighlighting="PowerShell"
                                   FontSize="10pt">
-                </local:BindableAvalonEditor>
+                </controls:BindableAvalonEditor>
             </Border>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -88,13 +112,13 @@
         </Grid>
 
 
-        <Grid Style="{StaticResource EditorRowGrid}">
+        <Grid Style="{StaticResource GridOneRow}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Environment variables'}"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Environment variables'}"></TextBlock>
 
             <StackPanel Grid.Column="1">
                 <ListBox
@@ -188,13 +212,14 @@
             </StackPanel>
         </Grid>
 
-        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+
+        <Grid Style="{StaticResource GridOneRow}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
-                <ColumnDefinition Width="*" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Hosting'}"></TextBlock>
             <CheckBox Grid.Column="1" IsChecked="{Binding ExternalRunner.RunWithHosting}">
                 <TextBlock Foreground="{DynamicResource AccentMidBrush}" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
             </CheckBox>

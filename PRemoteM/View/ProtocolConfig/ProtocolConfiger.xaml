@@ -8,6 +8,7 @@
              xmlns:default="clr-namespace:PRM.Core.Protocol.Runner.Default;assembly=PRM.Core"
              xmlns:runner="clr-namespace:PRM.Core.Protocol.Runner;assembly=PRM.Core"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:converter="clr-namespace:PRM.Resources.Converter"
              d:DataContext="{d:DesignInstance configuration:ProtocolConfigerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -90,6 +91,108 @@
             </Setter>
         </Style>
 
+        <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
+            <Grid Margin="10">
+                <Grid.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                </Grid.Effect>
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=Border1}" />
+                </Grid.OpacityMask>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                                BorderBrush="{DynamicResource PrimaryMidBrush}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="10" BorderThickness="2">
+                </Border>
+                <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+                    <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
+                                       Text="{Binding Name}" Margin="5"></TextBlock>
+                </Grid>
+                <Grid Grid.Row="1" MinHeight="50">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Nothing special</TextBlock>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+
+
+
+
+
+
+        <DataTemplate DataType="{x:Type default:KittyRunner}">
+            <Grid Margin="10">
+                <Grid.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                </Grid.Effect>
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=Border1}" />
+                </Grid.OpacityMask>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                                BorderBrush="{DynamicResource PrimaryMidBrush}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="10" BorderThickness="2">
+                </Border>
+                <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+                    <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
+                                       Text="{Binding Name}" Margin="5"></TextBlock>
+                </Grid>
+
+                <local:KittyRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:KittyRunnerConfiger>
+            </Grid>
+        </DataTemplate>
+
+
+
+
+
+        <local:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></local:ExternalRunner2Vm>
+        <DataTemplate DataType="{x:Type runner:ExternalRunner}">
+            <Grid Margin="10">
+                <Grid.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
+                </Grid.Effect>
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=Border1}" />
+                </Grid.OpacityMask>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
+                                BorderBrush="{DynamicResource PrimaryMidBrush}"
+                                Background="{DynamicResource BackgroundBrush}"
+                                CornerRadius="10" BorderThickness="2">
+                </Border>
+                <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
+                    <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
+                    <Button Width="10" Height="10" Tag="{Binding}"
+                                    Style="{StaticResource ButtonBarPrimaryStyle}"
+                                    HorizontalAlignment="Right"
+                                    attachProperty:VisionElement.Opacity="0.5"
+                                    attachProperty:VisionElement.OpacityAccent="0.9"
+                                    Command="{Binding DataContext.CmdDeleteRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}"
+                                    Margin="0 0 10 0">
+                        <Grid Height="10" Width="8">
+                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          StrokeThickness="2" Stretch="Uniform" />
+                        </Grid>
+                    </Button>
+                </Grid>
+
+                <local:ExternalRunnerConfiger Grid.Row="1" DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></local:ExternalRunnerConfiger>
+            </Grid>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid>
@@ -105,9 +208,12 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
+                <TextBlock Text="{DynamicResource 'server_protocol'}" VerticalAlignment="Center" FontWeight="Bold" 
+                           FontSize="14pt"
+                           Margin="5"></TextBlock>
                 <!--<Grid Margin="10">
-                        <Button HorizontalAlignment="Right">TXT:Add protocol</Button>
-                    </Grid>-->
+                    <Button HorizontalAlignment="Right">TXT:Add protocol</Button>
+                </Grid>-->
 
                 <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
                              SelectedItem="{Binding SelectedProtocol}"
@@ -117,124 +223,18 @@
         </Grid>
 
         <Grid Grid.Column="1">
-            <Grid.Resources>
-                <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
-                    <Grid Margin="10">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                        </Grid.Effect>
-                        <Grid.OpacityMask>
-                            <VisualBrush Visual="{Binding ElementName=Border1}" />
-                        </Grid.OpacityMask>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                                BorderBrush="{DynamicResource PrimaryMidBrush}"
-                                Background="{DynamicResource BackgroundBrush}"
-                                CornerRadius="10" BorderThickness="2">
-                        </Border>
-                        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
-                                       Text="{Binding Name}" Margin="5"></TextBlock>
-                        </Grid>
-                        <Grid Grid.Row="1" MinHeight="50">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Nothing special</TextBlock>
-                        </Grid>
-                    </Grid>
-                </DataTemplate>
-
-
-
-
-
-
-
-                <DataTemplate DataType="{x:Type default:KittyRunner}">
-                    <Grid Margin="10">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                        </Grid.Effect>
-                        <Grid.OpacityMask>
-                            <VisualBrush Visual="{Binding ElementName=Border1}" />
-                        </Grid.OpacityMask>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                                BorderBrush="{DynamicResource PrimaryMidBrush}"
-                                Background="{DynamicResource BackgroundBrush}"
-                                CornerRadius="10" BorderThickness="2">
-                        </Border>
-                        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
-                                       Text="{Binding Name}" Margin="5"></TextBlock>
-                        </Grid>
-
-                        <local:KittyRunnerConfiger Grid.Row="1" Runner="{Binding}"></local:KittyRunnerConfiger>
-                    </Grid>
-                </DataTemplate>
-
-
-
-
-
-                <local:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></local:ExternalRunner2Vm>
-                <DataTemplate DataType="{x:Type runner:ExternalRunner}">
-                    <Grid Margin="10">
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                        </Grid.Effect>
-                        <Grid.OpacityMask>
-                            <VisualBrush Visual="{Binding ElementName=Border1}" />
-                        </Grid.OpacityMask>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                                BorderBrush="{DynamicResource PrimaryMidBrush}"
-                                Background="{DynamicResource BackgroundBrush}"
-                                CornerRadius="10" BorderThickness="2">
-                        </Border>
-                        <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                            <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
-                            <Button Width="10" Height="10" Tag="{Binding}"
-                                    Style="{StaticResource ButtonBarPrimaryStyle}"
-                                    HorizontalAlignment="Right"
-                                    attachProperty:VisionElement.Opacity="0.5"
-                                    attachProperty:VisionElement.OpacityAccent="0.9"
-                                    Command="{Binding DataContext.CmdDeleteRunner, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProtocolConfiger}}}" CommandParameter="{Binding Name}"
-                                    Margin="0 0 10 0">
-                                <Grid Height="10" Width="8">
-                                    <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
-                                          StrokeThickness="2" Stretch="Uniform" />
-                                </Grid>
-                            </Button>
-                        </Grid>
-
-                        <local:ExternalRunnerConfiger Grid.Row="1" DataContext="{Binding Path=., Converter={StaticResource ExternalRunner2Vm}}"></local:ExternalRunnerConfiger>
-                    </Grid>
-                </DataTemplate>
-            </Grid.Resources>
-
-
-
-
-
-
-            <Grid>
+            <Grid Name="GridRunner">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Grid Margin="10 3" Height="35">
+                <Grid Row="0">
+                    <TextBlock Text="Runner" VerticalAlignment="Center" FontWeight="Bold" Margin="5" FontSize="14pt"></TextBlock>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="10 3" Height="35">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -243,13 +243,17 @@
 
                     <TextBlock Text="{DynamicResource Default}" VerticalAlignment="Center" FontWeight="Bold" Margin="5"></TextBlock>
 
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding RunnerNames}"
-                                  SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
+                    <ComboBox Grid.Column="1" 
+                              ItemsSource="{Binding RunnerNames}"
+                              SelectedItem="{Binding SelectedRunnerName, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
 
 
                     <Button Grid.Column="2" Width="30" Height="30" 
                             Margin="10 0 0 0"
                             ToolTip="{DynamicResource 'New runner'}"
+                            Background="Transparent"
+                            attachProperty:VisionElement.BackgroundAccent="Transparent"
+                            attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
                             Style="{StaticResource ButtonBarAccentBackgroundStyle}"
                             HorizontalAlignment="Right"
                             Command="{Binding CmdAddRunner}"
@@ -263,9 +267,9 @@
                     </Button>
                 </Grid>
 
-                <ListBox Grid.Row="2" Opacity="0.9"
-                             Style="{StaticResource ListBoxRunners}"
-                             ItemsSource="{Binding Runners}">
+                <ListBox Grid.Row="2" Opacity="0.9" ScrollViewer.CanContentScroll="False"
+                        Style="{StaticResource ListBoxRunners}"
+                        ItemsSource="{Binding Runners}">
                 </ListBox>
             </Grid>
         </Grid>
