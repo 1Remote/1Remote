@@ -28,10 +28,17 @@
                                 Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true"/>
                         <Border CornerRadius="{Binding Path=(attachProperty:VisionElement.BorderCornerRadius),RelativeSource={RelativeSource TemplatedParent}}"
                                 Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                            <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                            <ContentPresenter x:Name="ContentPresenter" 
+                                              TextElement.Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}, Path=Foreground}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="{Binding Foreground,RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background" TargetName="Background" Value="Gray" />
                             <Setter Property="Opacity" TargetName="Background" Value="0.5" />

@@ -24,19 +24,16 @@ namespace PRM.Core.Model
         public readonly LocalityService LocalityService;
         public readonly KeywordMatchService KeywordMatchService;
 
-        public PrmContext(ResourceDictionary applicationResourceDictionary)
+        public PrmContext(bool isPortable, ResourceDictionary applicationResourceDictionary)
         {
-            KeywordMatchService = new KeywordMatchService();
-            ConfigurationService = ConfigurationService.Init(KeywordMatchService);
-            ProtocolConfigurationService = new ProtocolConfigurationService();
-
             // init service
+            KeywordMatchService = new KeywordMatchService();
+            ConfigurationService = new ConfigurationService(isPortable, KeywordMatchService);
+            ProtocolConfigurationService = new ProtocolConfigurationService(isPortable);
             LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
             LanguageService.TmpLanguageService = LanguageService;
             LauncherService = new LauncherService(LanguageService);
-            ThemeService = new ThemeService(applicationResourceDictionary);
-            ThemeService.ApplyTheme(ConfigurationService.Theme);
-            DataService = new DataService();
+            ThemeService = new ThemeService(applicationResourceDictionary, ConfigurationService.Theme);
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
             AppData = new GlobalData(LocalityService, ConfigurationService);

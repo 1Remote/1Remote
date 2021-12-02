@@ -34,7 +34,8 @@ namespace PRM.ViewModel.Configuration
 
         public ConfigurationViewModel(
             VmMain host,
-            PrmContext context)
+            PrmContext context,
+            string languageCode = "")
         {
             _context = context;
             _configurationService = context.ConfigurationService;
@@ -44,6 +45,12 @@ namespace PRM.ViewModel.Configuration
             _dataService = context.DataService;
             _themeService = context.ThemeService;
             Host = host;
+            if (string.IsNullOrEmpty(languageCode) == false 
+                && _languageService.LanguageCode2Name.ContainsKey(languageCode)
+                && _languageService.SetLanguage(languageCode))
+            {
+                _configurationService.General.CurrentLanguageCode = languageCode;
+            }
         }
 
 
@@ -114,7 +121,6 @@ namespace PRM.ViewModel.Configuration
 
 
         public Dictionary<string, string> Languages => _languageService.LanguageCode2Name;
-
         public string Language
         {
             get => _configurationService.General.CurrentLanguageCode;
