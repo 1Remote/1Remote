@@ -31,10 +31,9 @@ namespace PRM
         public static MainWindow Window { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static PrmContext Context { get; private set; }
-
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
-
         private DesktopResolutionWatcher _desktopResolutionWatcher;
+        public static bool IsPortable { get; private set; }
 
         private static void OnUnhandledException(Exception e)
         {
@@ -136,20 +135,25 @@ namespace PRM
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
+#if FOR_MICROSOFT_STORE_ONLY
+            IsPortable = true;
+#else
+            IsPortable = IOPermissionHelper.HasWritePermissionOnDir(Environment.CurrentDirectory);
+#endif
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
             ConsoleManager.Show();
 #endif
+            KillPutty();
+
             // BASE MODULES
-            InitLog(appDateFolder);
+            InitLog(IsPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
             InitExceptionHandle();
             OnlyOneAppInstanceCheck();
-            KillPutty();
             InitEvent();
 
-            Context = new PrmContext(this.Resources);
+            Context = new PrmContext(IsPortable, this.Resources);
             RemoteWindowPool.Init(Context);
 
             // UI
@@ -166,7 +170,7 @@ namespace PRM
             InitLauncher();
             InitTaskTray();
 
-            // INIT Database
+            // init Database here, to show alert if db connection goes wrong.
             var connStatus = Context.InitSqliteDb(Context.ConfigurationService.Database.SqliteDatabasePath);
             if (connStatus != EnumDbStatus.OK)
             {

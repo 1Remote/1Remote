@@ -28,8 +28,15 @@ namespace PRM.Core.Service
 
         public readonly string ProtocolFolderName;
 
-        public ProtocolConfigurationService()
+        /// <summary>
+        /// true -> Portable mode(for exe) setting files saved in Environment.CurrentDirectory;
+        /// false -> ApplicationData mode(for Microsoft store.)  setting files saved in Environment.CurrentDirectory 
+        /// </summary>
+        public readonly bool IsPortable;
+
+        public ProtocolConfigurationService(bool isPortable)
         {
+            IsPortable = isPortable;
             // TODO 绿色版和安装版使用不同的路径，日志系统也需如此修改
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             ProtocolFolderName = Path.Combine(appDateFolder, "Protocols");

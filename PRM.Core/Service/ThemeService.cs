@@ -28,7 +28,7 @@ namespace PRM.Core.Service
     {
         private readonly ResourceDictionary _appResourceDictionary;
         public Dictionary<string, Theme> Themes { get; } = new Dictionary<string, Theme>();
-        public ThemeService(ResourceDictionary appResourceDictionary)
+        public ThemeService(ResourceDictionary appResourceDictionary, ThemeConfig defaultTheme)
         {
             _appResourceDictionary = appResourceDictionary;
             Themes.Add("Default", new Theme()
@@ -122,6 +122,8 @@ namespace PRM.Core.Service
                 BackgroundColor = "#FFCFC3B5",
                 BackgroundTextColor = "#FF080000",
             });
+
+            ApplyTheme(defaultTheme);
         }
 
         public void ApplyTheme(ThemeConfig theme)
