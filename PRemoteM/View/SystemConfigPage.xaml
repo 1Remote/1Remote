@@ -368,7 +368,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsEnabled="False"></TextBox>
+                                <TextBox Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
                             </Grid>
                             <Button Content="{DynamicResource word_select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
                                 <Button.Style>
