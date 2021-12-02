@@ -109,23 +109,53 @@ namespace PRM.Core.Service
 
         private readonly KeywordMatchService _keywordMatchService;
 
-        public readonly bool Portable;
+        /// <summary>
+        /// true -> Portable mode(for exe) setting files saved in Environment.CurrentDirectory;
+        /// false -> ApplicationData mode(for Microsoft store.)  setting files saved in Environment.CurrentDirectory 
+        /// </summary>
+        public readonly bool IsPortable;
 
-        protected ConfigurationService(KeywordMatchService keywordMatchService)
+        public List<MatchProviderInfo> AvailableMatcherProviders { get; }
+        private readonly Configuration _cfg = new Configuration();
+
+        public GeneralConfig General => _cfg.General;
+        public LauncherConfig Launcher => _cfg.Launcher;
+        public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
+        public DatabaseConfig Database => _cfg.Database;
+        public ThemeConfig Theme => _cfg.Theme;
+
+        /// <summary>
+        /// Tags that show on the tab bar of the main window
+        /// </summary>
+        public List<string> PinnedTags
+        {
+            set => _cfg.PinnedTags = value;
+            get => _cfg.PinnedTags;
+        }
+
+        public ConfigurationService(bool isPortable, KeywordMatchService keywordMatchService)
         {
             _keywordMatchService = keywordMatchService;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
+            IsPortable = isPortable;
 
-            // check if it is portable
-#if FOR_MICROSOFT_STORE_ONLY
-            Portable = true;
-#else
-            Portable = IOPermissionHelper.HasWritePermissionOnDir(Environment.CurrentDirectory);
-#endif
+//            // TODO check if it is portable
+//#if FOR_MICROSOFT_STORE_ONLY
+//            IsPortable = true;
+//#else
+//            IsPortable = IOPermissionHelper.HasWritePermissionOnDir(Environment.CurrentDirectory);
+//#endif
 
-            if (Portable)
+            // init path by `IsPortable`
+            // default path of db
+            // default value of ini
+            // default value of json
+            string oldIniFilePath;
+            if (IsPortable)
             {
                 JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
+                oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
+                Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
             }
             else
             {
@@ -133,7 +163,78 @@ namespace PRM.Core.Service
                 if (Directory.Exists(appDateFolder) == false)
                     Directory.CreateDirectory(appDateFolder);
                 JsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
+                oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
+                Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
             }
+
+            // old user convert the 0.5 ini file to 0.6 json file
+            if (File.Exists(oldIniFilePath))
+            {
+                try
+                {
+                    var cfg = LoadFromIni(oldIniFilePath, Database.SqliteDatabasePath);
+                    _cfg = cfg;
+                    Save();
+                }
+                finally
+                {
+                    File.Delete(oldIniFilePath);
+                }
+            }
+            // load form json file
+            else if (File.Exists(JsonPath))
+            {
+                try
+                {
+                    var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(JsonPath));
+                    if (cfg != null)
+                        _cfg = cfg;
+                }
+                catch
+                {
+                    File.Delete(JsonPath);
+                    Save();
+                }
+            }
+            else
+            {
+                // new user
+            }
+
+            // init matcher
+            if (KeywordMatch.EnabledMatchers.Count > 0)
+            {
+                foreach (var matcherProvider in AvailableMatcherProviders)
+                {
+                    matcherProvider.Enabled = false;
+                }
+
+                foreach (var enabledName in KeywordMatch.EnabledMatchers)
+                {
+                    var first = AvailableMatcherProviders.FirstOrDefault(x => x.Name == enabledName);
+                    if (first != null)
+                        first.Enabled = true;
+                }
+            }
+            AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
+            AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
+            if (KeywordMatch.EnabledMatchers.Count == 0)
+            {
+                KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
+            }
+            // register matcher change event
+            foreach (var info in AvailableMatcherProviders)
+            {
+                info.PropertyChanged += OnMatchProviderChangedHandler;
+            }
+
+#if FOR_MICROSOFT_STORE_ONLY
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"{AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppName);
+#else
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
+            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
+#endif
         }
 
         private void OnMatchProviderChangedHandler(object sender, PropertyChangedEventArgs args)
@@ -145,112 +246,7 @@ namespace PRM.Core.Service
                 _keywordMatchService.Init(KeywordMatch.EnabledMatchers.ToArray());
             }
         }
-
-        public List<MatchProviderInfo> AvailableMatcherProviders { get; }
-        private Configuration _cfg = new Configuration();
-
-        public GeneralConfig General => _cfg.General;
-        public LauncherConfig Launcher => _cfg.Launcher;
-        public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
-        public DatabaseConfig Database => _cfg.Database;
-        public ThemeConfig Theme => _cfg.Theme;
-        public List<string> PinnedTags
-        {
-            set => _cfg.PinnedTags = value;
-            get => _cfg.PinnedTags;
-        }
-
-        public static ConfigurationService Init(KeywordMatchService keywordMatchService)
-        {
-            var cs = new ConfigurationService(keywordMatchService);
-            string oldIniFilePath;
-            if (cs.Portable)
-            {
-                oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
-                // default value of db path
-                cs.Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
-            }
-            else
-            {
-                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-                if (Directory.Exists(appDateFolder) == false)
-                    Directory.CreateDirectory(appDateFolder);
-                oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
-                // default value of db path
-                cs.Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
-            }
-
-            // old user convert the 0.5 ini file to 0.6 json file
-            if (File.Exists(oldIniFilePath))
-            {
-                try
-                {
-                    var cfg = LoadFromIni(oldIniFilePath, cs.Database.SqliteDatabasePath);
-                    cs._cfg = cfg;
-                    cs.Save();
-                }
-                finally
-                {
-                    File.Delete(oldIniFilePath);
-                }
-            }
-            // load form json file
-            else if (File.Exists(cs.JsonPath))
-            {
-                try
-                {
-                    var cfg = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(cs.JsonPath));
-                    if (cfg != null)
-                        cs._cfg = cfg;
-                }
-                catch
-                {
-                    File.Delete(cs.JsonPath);
-                    cs.Save();
-                }
-            }
-            else
-            {
-                // new user
-            }
-
-            if (cs.KeywordMatch.EnabledMatchers.Count > 0)
-            {
-                foreach (var matcherProvider in cs.AvailableMatcherProviders)
-                {
-                    matcherProvider.Enabled = false;
-                }
-
-                foreach (var enabledName in cs.KeywordMatch.EnabledMatchers)
-                {
-                    var first = cs.AvailableMatcherProviders.FirstOrDefault(x => x.Name == enabledName);
-                    if (first != null)
-                        first.Enabled = true;
-                }
-            }
-            cs.AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
-            cs.AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
-            if (cs.KeywordMatch.EnabledMatchers.Count == 0)
-            {
-                cs.KeywordMatch.EnabledMatchers = cs.AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
-            }
-
-            // register matcher change event
-            foreach (var info in cs.AvailableMatcherProviders)
-            {
-                info.PropertyChanged += cs.OnMatchProviderChangedHandler;
-            }
-
-#if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({cs.General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(cs.General.AppStartAutomatically, AppName);
-#else
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({cs.General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(cs.General.AppStartAutomatically, AppName);
-#endif
-            return cs;
-        }
-
+        
         public void Save()
         {
             var fi = new FileInfo(JsonPath);

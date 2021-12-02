@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 using PRM.Core.Model;
 using PRM.ViewModel.Configuration;
@@ -49,8 +51,7 @@ namespace PRM.View.Guidance
             Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
             Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
 
-            ConfigurationViewModel = new ConfigurationViewModel(null, context);
-            ConfigurationViewModel.Language = ci.Name.ToLower();
+            ConfigurationViewModel = new ConfigurationViewModel(null, context, ci.Name.ToLower());
 
             // saving config when this window close
             Closed += (sender, args) =>
@@ -102,6 +103,36 @@ namespace PRM.View.Guidance
             System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
 #endif
             this.Close();
+        }
+
+
+        protected override void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _isDragging = false;
+            _isLeftMouseDown = false;
+
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+
+            if (e.ClickCount == 2)
+            {
+            }
+            else
+            {
+                _isLeftMouseDown = true;
+                var th = new Thread(() =>
+                {
+                    Thread.Sleep(50);
+                    if (_isLeftMouseDown)
+                    {
+                        _isDragging = true;
+                    }
+                    _isLeftMouseDown = false;
+                });
+                th.Start();
+            }
         }
     }
 }
