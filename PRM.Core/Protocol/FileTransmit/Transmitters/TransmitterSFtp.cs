@@ -234,7 +234,6 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                         if (cancellationToken.IsCancellationRequested)
                         {
                             SimpleLogHelper.Debug("SFTP Upload: cancel by CancellationToken");
-                            // TODO not a perfect solution
                             fileStream.Close();
                             fileStream.Dispose();
                         }

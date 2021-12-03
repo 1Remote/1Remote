@@ -35,6 +35,7 @@ namespace PRM.Core.Helper
                     var jsonString = iServerModel.GetJson();
                     var ret = serverBase.CreateFromJsonString(jsonString);
                     if (ret == null) continue;
+                    // set id.
                     ret.Id = iServerModel.GetId();
                     return ret;
                 }

@@ -28,24 +28,12 @@ namespace PRM
     {
         private OnlyOneAppInstanceHelper _onlyOneAppInstanceHelper;
 
-        public static MainWindow Window { get; private set; } = null;
+        public static MainWindow MainUi { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static PrmContext Context { get; private set; }
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
         private DesktopResolutionWatcher _desktopResolutionWatcher;
         public static bool IsPortable { get; private set; }
-
-        private static void OnUnhandledException(Exception e)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                SimpleLogHelper.Fatal(e);
-                CloseAllWindow();
-                var errorReport = new ErrorReportWindow(e);
-                errorReport.ShowDialog();
-                App.Close();
-            });
-        }
 
         private void InitLog(string appDateFolder)
         {
@@ -57,6 +45,18 @@ namespace PRM
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
             SimpleLogHelper.LogFileName = logFilePath;
+        }
+
+        private static void OnUnhandledException(Exception e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                SimpleLogHelper.Fatal(e);
+                CloseAllWindow();
+                var errorReport = new ErrorReportWindow(e);
+                errorReport.ShowDialog();
+                App.Close();
+            });
         }
 
         private void InitExceptionHandle()
@@ -99,7 +99,7 @@ namespace PRM
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        App.Window?.ActivateMe();
+                        App.MainUi?.ActivateMe();
                     });
                 }
             };
@@ -126,11 +126,11 @@ namespace PRM
             }
         }
 
-        private void InitMainWindow(bool isNewUser)
+        private void InitMainWindow()
         {
-            Window = new MainWindow(Context);
+            MainUi = new MainWindow(Context);
+            MainWindow = MainUi;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
-            MainWindow = Window;
         }
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
@@ -161,12 +161,10 @@ namespace PRM
             bool isNewUser = !File.Exists(Context.ConfigurationService.JsonPath);
             if (isNewUser)
             {
-                ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 var gw = new GuidanceWindow(Context);
                 gw.ShowDialog();
             }
-
-            InitMainWindow(isNewUser);
+            InitMainWindow();
             InitLauncher();
             InitTaskTray();
 
@@ -176,7 +174,7 @@ namespace PRM
             {
                 string error = connStatus.GetErrorInfo(Context.LanguageService);
                 MessageBox.Show(error, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                Window.Vm.CmdGoSysOptionsPage.Execute("Data");
+                MainUi.Vm.CmdGoSysOptionsPage.Execute("Data");
             }
             else
             {
@@ -186,17 +184,8 @@ namespace PRM
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {
-                ActivateWindow();
+                MainUi.ActivateMe();
             }
-
-
-            //var errorReport = new ErrorReportWindow(new Exception("123"));
-            //errorReport.ShowDialog();
-        }
-
-        private static void ActivateWindow()
-        {
-            Window.ActivateMe();
         }
 
         private static void InitTaskTray()
@@ -216,7 +205,7 @@ namespace PRM
             {
                 if (e.Button == System.Windows.Forms.MouseButtons.Left)
                 {
-                    ActivateWindow();
+                    MainUi.ActivateMe();
                 }
             };
         }
@@ -258,9 +247,9 @@ namespace PRM
         {
             try
             {
-                App.Window?.Hide();
-                App.Window?.Close();
-                App.Window = null;
+                App.MainUi?.Hide();
+                App.MainUi?.Close();
+                App.MainUi = null;
                 App.SearchBoxWindow?.Hide();
                 App.SearchBoxWindow?.Close();
                 App.SearchBoxWindow = null;
