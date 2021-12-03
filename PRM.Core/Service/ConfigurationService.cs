@@ -139,13 +139,6 @@ namespace PRM.Core.Service
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
             IsPortable = isPortable;
 
-//            // TODO check if it is portable
-//#if FOR_MICROSOFT_STORE_ONLY
-//            IsPortable = true;
-//#else
-//            IsPortable = IOPermissionHelper.HasWritePermissionOnDir(Environment.CurrentDirectory);
-//#endif
-
             // init path by `IsPortable`
             // default path of db
             // default value of ini
@@ -154,8 +147,12 @@ namespace PRM.Core.Service
             if (IsPortable)
             {
                 JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
-                oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
                 Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
+                oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
+                if (File.Exists(oldIniFilePath) == false && File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, ConfigurationService.AppName + ".ini")))
+                {
+                    oldIniFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, ConfigurationService.AppName + ".ini");
+                }
             }
             else
             {
@@ -262,7 +259,7 @@ namespace PRM.Core.Service
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
         }
-
+        
 
 
         // TODO remove after 2022.03.01
