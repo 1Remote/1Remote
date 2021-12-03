@@ -23,8 +23,26 @@ namespace PRM.Core.Service
 {
     public class ProtocolConfigurationService
     {
-        public Dictionary<string, ProtocolConfig> ProtocolConfigs { get; set; } = new Dictionary<string, ProtocolConfig>();
-        public string[] CustomProtocolBlackList => new string[] { "SSH", "RDP", "VNC", "TELNET", "FTP", "SFTP", "RemoteApp", "APP" };
+        public Dictionary<string, ProtocolConfig> ProtocolConfigs { get; } = new Dictionary<string, ProtocolConfig>();
+
+
+        private static string[] _customProtocolBlackList = null;
+        /// <summary>
+        /// Protocol name in this list can not be custom
+        /// </summary>
+        public static string[] CustomProtocolBlackList
+        {
+            get
+            {
+                if (_customProtocolBlackList == null)
+                {
+                    var protocolList = ProtocolServerBase.GetAllSubInstance();
+                    var names = protocolList.Select(x => x.Protocol);
+                    _customProtocolBlackList = names.ToArray();
+                }
+                return _customProtocolBlackList;
+            }
+        }
 
         public readonly string ProtocolFolderName;
 
@@ -37,63 +55,93 @@ namespace PRM.Core.Service
         public ProtocolConfigurationService(bool isPortable)
         {
             IsPortable = isPortable;
-            // TODO 绿色版和安装版使用不同的路径，日志系统也需如此修改
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-            ProtocolFolderName = Path.Combine(appDateFolder, "Protocols");
-            if (Directory.Exists(ProtocolFolderName) == false)
-                Directory.CreateDirectory(ProtocolFolderName);
-            Load();
+            string protocolFolder2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Protocols");
+
+            if (IsPortable)
+            {
+                string protocolFolder1 = Path.Combine(Environment.CurrentDirectory, "Protocols");
+                ProtocolFolderName = protocolFolder1;
+                // read the protocolFolder1 first
+                if (LoadCheck(protocolFolder1))
+                {
+                    ProtocolConfigs = Load(protocolFolder1);
+                }
+                // if ProtocolConfigs is empty, try to read protocolFolder2
+                else if (LoadCheck(protocolFolder2))
+                {
+                    ProtocolConfigs = Load(protocolFolder2);
+                    ProtocolFolderName = protocolFolder2;
+                }
+                // protocolFolder1, protocolFolder2 are empty, init ProtocolFolderName
+                else
+                {
+                    if (Directory.Exists(ProtocolFolderName) == false)
+                        Directory.CreateDirectory(ProtocolFolderName);
+                    ProtocolConfigs = Load(ProtocolFolderName);
+                }
+            }
+            else
+            {
+                ProtocolFolderName = protocolFolder2;
+                if (Directory.Exists(ProtocolFolderName) == false)
+                    Directory.CreateDirectory(ProtocolFolderName);
+                ProtocolConfigs = Load(ProtocolFolderName);
+            }
         }
 
-
-        private void Load()
+        private static bool LoadCheck(string protocolFolderName)
         {
-            ProtocolConfigs.Clear();
-            var di = new DirectoryInfo(ProtocolFolderName);
+            if (Directory.Exists(protocolFolderName) == false)
+                return false;
+            var di = new DirectoryInfo(protocolFolderName);
+            var fis = di.GetFiles("*.json");
+            if (fis.Length == 0)
+                return false;
+
+            return true;
+        }
+
+        private static Dictionary<string, ProtocolConfig> Load(string protocolFolderName)
+        {
+            var protocolConfigs = new Dictionary<string, ProtocolConfig>();
 
             // build-in protocol
-
-            InitProtocol(new ProtocolServerVNC(), new InternalDefaultRunner(), $"Internal VNC");
-            InitProtocol(new ProtocolServerSSH(), new KittyRunner(), $"Internal KiTTY");
-            InitProtocol(new ProtocolServerTelnet(), new KittyRunner(), $"Internal KiTTY");
-            InitProtocol(new ProtocolServerSFTP(), new InternalDefaultRunner(), $"Internal SFTP");
-            InitProtocol(new ProtocolServerFTP(), new InternalDefaultRunner(), $"Internal FTP");
+            protocolConfigs.Add(ProtocolServerVNC.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerVNC(), new InternalDefaultRunner(), $"Internal VNC"));
+            protocolConfigs.Add(ProtocolServerSSH.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerSSH(), new KittyRunner(), $"Internal KiTTY"));
+            protocolConfigs.Add(ProtocolServerTelnet.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerTelnet(), new KittyRunner(), $"Internal KiTTY"));
+            protocolConfigs.Add(ProtocolServerSFTP.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerSFTP(), new InternalDefaultRunner(), $"Internal SFTP"));
+            protocolConfigs.Add(ProtocolServerFTP.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerFTP(), new InternalDefaultRunner(), $"Internal FTP"));
 
 
             // custom protocol
+            var di = new DirectoryInfo(protocolFolderName);
             {
                 var customs = new Dictionary<string, ProtocolConfig>();
-                foreach (var directoryInfo in di.GetDirectories())
+                foreach (var fi in di.GetFiles("*.json"))
                 {
-                    var protocolName = directoryInfo.Name;
-                    if (ProtocolConfigs.ContainsKey(protocolName))
+                    var protocolName = fi.Name.Replace(fi.Extension, "");
+                    // remove existed protocol
+                    if (protocolConfigs.Any(x=>string.Equals(protocolName, x.Key, StringComparison.CurrentCultureIgnoreCase)))
                         continue;
-
-                    var c = LoadConfig(protocolName);
+                    // remove special protocol
+                    if (CustomProtocolBlackList.Any(x => string.Equals(protocolName, x, StringComparison.CurrentCultureIgnoreCase)))
+                        continue;
+                    var c = LoadConfig(protocolFolderName, protocolName);
                     if (c != null)
                     {
                         customs.Add(protocolName, c);
                     }
                 }
 
-                // remove special protocol
-                foreach (var name in CustomProtocolBlackList)
-                {
-                    if (customs.Any(kv => String.Equals(kv.Key, name, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        customs.Remove(name);
-                    }
-                }
-
                 foreach (var custom in customs)
                 {
-                    ProtocolConfigs.Add(custom.Key, custom.Value);
+                    protocolConfigs.Add(custom.Key, custom.Value);
                 }
             }
 
 
-            // ExternalRunner + macros
-            foreach (var config in ProtocolConfigs)
+            // add macros to ExternalRunner
+            foreach (var config in protocolConfigs)
             {
                 foreach (var runner in config.Value.Runners)
                 {
@@ -104,13 +152,15 @@ namespace PRM.Core.Service
                     }
                 }
             }
+
+            return protocolConfigs;
         }
 
 
-        public ProtocolConfig LoadConfig(string protocolName)
+        public static ProtocolConfig LoadConfig(string protocolFolderName, string protocolName)
         {
             protocolName = protocolName.ToUpper();
-            var file = Path.Combine(ProtocolFolderName, $"{protocolName}.json");
+            var file = Path.Combine(protocolFolderName, $"{protocolName}.json");
             if (File.Exists(file))
             {
                 var jsonStr = File.ReadAllText(file, Encoding.UTF8);
@@ -144,12 +194,12 @@ namespace PRM.Core.Service
         }
 
 
-        private void InitProtocol<T, T2>(T protocolBase, T2 defaultRunner, string defaultRunnerName) where T : ProtocolServerBase where T2 : Runner
+        private static ProtocolConfig InitProtocol<T, T2>(string protocolFolderName, T protocolBase, T2 defaultRunner, string defaultRunnerName) where T : ProtocolServerBase where T2 : Runner
         {
             var t = protocolBase.GetType();
             var protocolName = protocolBase.Protocol;
             var macros = OtherNameAttributeExtensions.GetOtherNames(t);
-            var c = LoadConfig(protocolName) ?? new ProtocolConfig();
+            var c = LoadConfig(protocolFolderName, protocolName) ?? new ProtocolConfig();
             c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             c.Runners ??= new List<Runner>();
             var runnerType = defaultRunner.GetType();
@@ -159,7 +209,7 @@ namespace PRM.Core.Service
                 c.Runners.Insert(0, defaultRunner);
             }
             c.Runners.First(x => x is InternalDefaultRunner).Name = defaultRunnerName;
-            ProtocolConfigs.Add(protocolName, c);
+            return c;
         }
 
         public bool Check()

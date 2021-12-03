@@ -74,8 +74,8 @@ namespace PRM
 
         public void ActivateMe(bool isForceActivate = false)
         {
-            if (App.Window?.WindowState == WindowState.Minimized)
-                App.Window.WindowState = WindowState.Normal;
+            if (App.MainUi?.WindowState == WindowState.Minimized)
+                App.MainUi.WindowState = WindowState.Normal;
             if (isForceActivate)
                 HideMe();
             Dispatcher?.Invoke(() =>

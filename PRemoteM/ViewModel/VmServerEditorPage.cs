@@ -60,7 +60,7 @@ namespace PRM.ViewModel
             var protocolServerBases = servers as ProtocolServerBase[] ?? servers.ToArray();
             if (protocolServerBases?.Any() == false)
             {
-                App.Window.Vm.DispPage = null;
+                App.MainUi.Vm.DispPage = null;
                 return;
             }
 
@@ -160,11 +160,8 @@ namespace PRM.ViewModel
             // init protocol list for single add / edit mode
             if (_orgServers?.Any() != true)
             {
-                var assembly = typeof(ProtocolServerBase).Assembly;
-                var types = assembly.GetTypes();
                 // reflect remote protocols
-                ProtocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract).Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
-
+                ProtocolList = ProtocolServerBase.GetAllSubInstance();
                 // set selected protocol
                 try
                 {
@@ -295,7 +292,7 @@ namespace PRM.ViewModel
                         }
 
                         _context.AppData.VmItemListDataChanged?.Invoke();
-                        App.Window.Vm.DispPage = null;
+                        App.MainUi.Vm.DispPage = null;
                     }
                     // edit
                     else if (Server.Id > 0)
@@ -307,7 +304,7 @@ namespace PRM.ViewModel
                     {
                         _context.AppData.AddServer(Server);
                     }
-                    App.Window.Vm.DispPage = null;
+                    App.MainUi.Vm.DispPage = null;
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -322,7 +319,7 @@ namespace PRM.ViewModel
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    App.Window.Vm.DispPage = null;
+                    App.MainUi.Vm.DispPage = null;
                 });
                 return _cmdCancel;
             }
