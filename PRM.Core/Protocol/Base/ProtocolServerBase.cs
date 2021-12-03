@@ -58,6 +58,9 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(nameof(Id), ref _id, value);
         }
 
+        /// <summary>
+        /// protocol name
+        /// </summary>
         public string Protocol { get; }
 
         public string ClassVersion { get; }
@@ -309,6 +312,13 @@ namespace PRM.Core.Protocol
             context.DataService.DecryptToConnectLevel(this);
         }
 
-
+        public static List<ProtocolServerBase> GetAllSubInstance()
+        {
+            var assembly = typeof(ProtocolServerBase).Assembly;
+            var types = assembly.GetTypes();
+            // reflect remote protocols
+            var protocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract).Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
+            return protocolList;
+        }
     }
 }

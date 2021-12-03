@@ -418,7 +418,7 @@ namespace PRM.Model
                      && rdp.AutoSetting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)
                 screenEx = ScreenInfoEx.GetCurrentScreen(rdp.AutoSetting.FullScreenLastSessionScreenIndex);
             else
-                screenEx = ScreenInfoEx.GetCurrentScreen(App.Window);
+                screenEx = ScreenInfoEx.GetCurrentScreen(App.MainUi);
 
             full.WindowStartupLocation = WindowStartupLocation.Manual;
             full.Top = screenEx.VirtualWorkingAreaCenter.Y - full.Height / 2;
