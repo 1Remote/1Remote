@@ -171,7 +171,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Log"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{x:Static utils:SimpleLogHelper.LogFileName}" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
+                                <TextBox Text="{x:Static utils:SimpleLogHelper.LogFileName}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -309,7 +309,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsEnabled="False" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
+                                <TextBox Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
                             </Grid>
                             <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding CmdSelectDbPath}"></Button>
                             <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>

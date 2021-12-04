@@ -98,7 +98,7 @@ namespace PRM.Core.Protocol.Extend
                         initPath = Environment.CurrentDirectory;
                     }
 
-                    var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath);
+                    var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                     if (path == null) return;
                     ExePath = path;
                 });
