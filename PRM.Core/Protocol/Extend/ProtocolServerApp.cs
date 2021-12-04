@@ -80,22 +80,6 @@ namespace PRM.Core.Protocol.Extend
             return $"{this.ExePath}" + this.Arguments;
         }
 
-
-        private string SelectFile(string filter, string initPath = null)
-        {
-            if (string.IsNullOrWhiteSpace(initPath) || Directory.Exists(initPath) == false)
-                initPath = Environment.CurrentDirectory;
-
-            var dlg = new OpenFileDialog
-            {
-                Filter = filter,
-                CheckFileExists = true,
-                InitialDirectory = initPath,
-            };
-            if (dlg.ShowDialog() != true) return null;
-            return dlg.FileName;
-        }
-
         private RelayCommand _cmdSelectExePath;
         [JsonIgnore]
         public RelayCommand CmdSelectExePath
@@ -113,20 +97,21 @@ namespace PRM.Core.Protocol.Extend
                     {
                         initPath = Environment.CurrentDirectory;
                     }
-                    var path = SelectFile("Exe|*.exe", initPath);
-                    if (string.IsNullOrEmpty(path) == false)
-                        ExePath = path;
+
+                    var path = SelectFileHelper.OpenFile(filter: "Exe|*.exe", initialDirectory: initPath);
+                    if (path == null) return;
+                    ExePath = path;
                 });
             }
         }
 
-        private RelayCommand _cmdSelectFilePath;
+        private RelayCommand _cmdSelectArgumentFile;
         [JsonIgnore]
-        public RelayCommand CmdSelectFilePath
+        public RelayCommand CmdSelectArgumentFile
         {
             get
             {
-                return _cmdSelectFilePath ??= new RelayCommand((o) =>
+                return _cmdSelectArgumentFile ??= new RelayCommand((o) =>
                 {
                     string initPath;
                     try
@@ -137,9 +122,9 @@ namespace PRM.Core.Protocol.Extend
                     {
                         initPath = Environment.CurrentDirectory;
                     }
-                    var path = SelectFile("*|*.*", initPath);
-                    if (string.IsNullOrEmpty(path) == false)
-                        Arguments = path;
+                    var path = SelectFileHelper.OpenFile(initialDirectory: initPath, currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                    if (path == null) return;
+                    Arguments = path;
                 });
             }
         }

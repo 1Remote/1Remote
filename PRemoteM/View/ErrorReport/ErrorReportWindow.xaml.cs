@@ -148,14 +148,11 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                var dlg = new SaveFileDialog
-                {
-                    Filter = $"log |*.log.md",
-                    FileName = ConfigurationService.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md",
-                    CheckFileExists = false,
-                };
-                if (dlg.ShowDialog() != true) return;
-                File.WriteAllText(dlg.FileName, TbErrorInfo.Text.Replace("\n", "\n\n"), Encoding.UTF8);
+                var path = SelectFileHelper.SaveFile(
+                    filter: "log |*.log.md",
+                    selectedFileName: ConfigurationService.AppName + "_ErrorReport_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".md");
+                if (path == null) return;
+                File.WriteAllText(path, TbErrorInfo.Text.Replace("\n", "\n\n"), Encoding.UTF8);
                 var sb = new Storyboard();
                 sb.AddFadeOut(1);
                 sb.Begin(IconSaveDone);

@@ -367,41 +367,11 @@ namespace PRM.Controls
             return ret;
         }
 
-        public bool? Show(Microsoft.Win32.FileDialog fileDialog)
-        {
-            Window win = new Window
-            {
-                ResizeMode = System.Windows.ResizeMode.NoResize,
-                WindowStyle = System.Windows.WindowStyle.None,
-                Topmost = true,
-                Visibility = System.Windows.Visibility.Hidden,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Content = fileDialog
-            };
-            bool? result = false;
-            win.Loaded += (s, e) =>
-            {
-                result = fileDialog.ShowDialog();
-            };
-            win.ShowDialog();
-            win.Close();
-            return result;
-        }
-
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog
-            {
-                Title = App.Context.LanguageService.Translate("logo_selector_open_file_dialog_title"),
-                Filter = "image|*.jpg;*.png;*.bmp|all files|*.*",
-                RestoreDirectory = true
-            };
-            //ofd.InitialDirectory = Application.StartupPath;
-            //ofd.FilterIndex = 2;
-            if (Show(ofd) == true)
-            {
-                SetImg(NetImageProcessHelper.ReadImgFile(ofd.FileName).ToBitmapSource());
-            }
+            var path = SelectFileHelper.OpenFile(title: App.Context.LanguageService.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp|all files|*.*");
+            if (path != null)
+                SetImg(NetImageProcessHelper.ReadImgFile(path).ToBitmapSource());
         }
 
         private void BtnZoomIn_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

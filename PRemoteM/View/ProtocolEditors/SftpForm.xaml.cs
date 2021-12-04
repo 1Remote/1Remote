@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Microsoft.Win32;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.SFTP;
+using Shawn.Utils;
 
 namespace PRM.View.ProtocolEditors
 {
@@ -32,12 +34,9 @@ namespace PRM.View.ProtocolEditors
         {
             if (Vm.GetType() == typeof(ProtocolServerSFTP))
             {
-                var dlg = new OpenFileDialog();
-                dlg.Filter = "ppk|*.*";
-                if (dlg.ShowDialog() == true)
-                {
-                    ((ProtocolServerSFTP)Vm).PrivateKey = dlg.FileName;
-                }
+                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                if (path == null) return;
+                ((ProtocolServerSFTP)Vm).PrivateKey = path;
             }
         }
 
