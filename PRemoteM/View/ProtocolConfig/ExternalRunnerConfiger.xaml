@@ -75,25 +75,29 @@
                         <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
                         <Setter Property="Padding" Value="5 1" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=TextEditor, Path=IsMouseOver}" Value="True">
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentLightBrush}" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=TextEditor, Path=IsFocused}" Value="True">
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ElementName=TextEditor, Path=IsMouseOver}" Value="True"></Condition>
+                                    <Condition Binding="{Binding ElementName=TextEditor, Path=TextArea.IsFocused}" Value="False"></Condition>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                <Setter Property="Opacity" Value="0.6" />
+                            </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=TextEditor, Path=TextArea.IsFocused}" Value="True">
                                 <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <controls:BindableAvalonEditor
-                                  x:Name="TextEditor"
-                                  WordWrap="False"
-                                  Background="Transparent"
-                                  Text="{Binding ExternalRunner.Arguments}"
-                                  ToolTip="{Binding ExternalRunner.Arguments}"
-                                  SyntaxHighlighting="PowerShell"
-                                  FontSize="10pt">
-                </controls:BindableAvalonEditor>
             </Border>
+            <controls:BindableAvalonEditor Grid.Column="1" Margin="8 4 4 0"
+                                           x:Name="TextEditor"
+                                           WordWrap="False"
+                                           Background="Transparent"
+                                           Text="{Binding ExternalRunner.Arguments}"
+                                           SyntaxHighlighting="PowerShell"
+                                           FontSize="{DynamicResource TextFontSize}">
+            </controls:BindableAvalonEditor>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal">
                 <TextBlock VerticalAlignment="Center" Margin="5 0">

@@ -64,17 +64,26 @@
                     <ControlTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
+                                <Condition Property="IsReadOnly" Value="False"></Condition>
                                 <Condition Property="IsFocused" Value="False"></Condition>
                                 <Condition Property="IsMouseOver" Value="True"></Condition>
                             </MultiTrigger.Conditions>
                             <Setter Property="Opacity" TargetName="Border" Value="0.6" />
                         </MultiTrigger>
-                        <Trigger Property="IsMouseOver" Value="True">
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"></Condition>
+                                <Condition Property="IsReadOnly" Value="False"></Condition>
+                            </MultiTrigger.Conditions>
                             <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="True"></Condition>
+                                <Condition Property="IsReadOnly" Value="False"></Condition>
+                            </MultiTrigger.Conditions>
                             <Setter Property="BorderBrush" TargetName="Border" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
-                        </Trigger>
+                        </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" TargetName="Border" Value="0.4" />
                         </Trigger>

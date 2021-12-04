@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
+using PRM.View.ProtocolConfig;
 using Shawn.Utils;
 
 namespace PRM.View.ProtocolEditors
@@ -18,7 +25,65 @@ namespace PRM.View.ProtocolEditors
             InitializeComponent();
             Vm = (ProtocolServerRDP)vm;
             DataContext = vm;
+            TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
+            TextEditor.GotFocus += (sender, args) =>
+            {
+                if (TextEditor.Text == "")
+                {
+                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
+                }
+            };
+            TextEditor.TextChanged += (sender, args) =>
+            {
+                if (TextEditor.Text == "")
+                {
+                    ShowCompletionWindow(RdpFileSettingCompletionData.Settings);
+                }
+            };
         }
+
+
+        private CompletionWindow _completionWindow;
+        private void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
+        {
+            int offset = TextEditor.CaretOffset - 1;
+            char newChar = TextEditor.Document.GetCharAt(offset);
+            var line = TextEditor.Document.GetLineByOffset(TextEditor.CaretOffset);
+            var thisLineToNewChar = TextEditor.Document.GetText(line.Offset, offset - line.Offset + 1);
+            SimpleLogHelper.Warning(thisLineToNewChar);
+
+            var completions = new List<string>();
+            foreach (var str in RdpFileSettingCompletionData.Settings)
+            {
+                if (str.StartsWith(thisLineToNewChar))
+                    completions.Add(str);
+            }
+            ShowCompletionWindow(completions);
+        }
+
+        private void ShowCompletionWindow(IEnumerable<string> completions)
+        {
+            _completionWindow?.Close();
+            if (completions?.Any() == true)
+            {
+                // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
+                _completionWindow = new CompletionWindow(TextEditor.TextArea);
+                var completionData = _completionWindow.CompletionList.CompletionData;
+                foreach (var str in completions)
+                {
+                    completionData.Add(new RdpFileSettingCompletionData(str));
+                }
+                _completionWindow.Show();
+                if (completions.Count() == 1)
+                    _completionWindow.CompletionList.SelectItem(completions.First());
+                _completionWindow.Closed += (o, args) => _completionWindow = null;
+            }
+        }
+
+
+
+
+
 
         private void ButtonShowMonitorsNum_OnClick(object sender, RoutedEventArgs e)
         {
@@ -38,7 +103,6 @@ namespace PRM.View.ProtocolEditors
             p.StandardInput.WriteLine($"mstsc /l");
             p.StandardInput.WriteLine("exit");
         }
-
         private void ButtonPreviewRdpFile_OnClick(object sender, RoutedEventArgs e)
         {
             var rdp = Vm;
@@ -69,6 +133,84 @@ namespace PRM.View.ProtocolEditors
         }
     }
 
+
+    public class RdpFileSettingCompletionData : ICompletionData
+    {
+        public RdpFileSettingCompletionData(string text)
+        {
+            Text = text;
+        }
+
+        public ImageSource Image => null;
+
+        public string Text { get; }
+
+        public object Content => Text;
+
+        public object Description => this.Text;
+
+        /// <inheritdoc />
+        public double Priority { get; }
+
+        public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
+        {
+            textArea.Document.Replace(completionSegment, Text);
+        }
+
+        public static readonly string[] Settings =
+        {
+            "full address:s:",
+            "alternate full address:s:",
+            "username:s:",
+            "domain:s:",
+            "gatewayhostname:s:",
+            "gatewaycredentialssource:i:",
+            "gatewayprofileusagemethod:i:",
+            "gatewayusagemethod:i:",
+            "promptcredentialonce:i:",
+            "authentication level:i:",
+            "enablecredsspsupport:i:",
+            "disableconnectionsharing:i:",
+            "alternate shell:s:",
+            "autoreconnection enabled:i:",
+            "bandwidthautodetect:i:",
+            "networkautodetect:i:",
+            "compression:i:",
+            "videoplaybackmode:i:",
+            "audiocapturemode:i:",
+            "encode redirected video capture:i:",
+            "redirected video capture encoding quality:i:",
+            "audiomode:i:",
+            "camerastoredirect:s:",
+            "devicestoredirect:s:",
+            "drivestoredirect:s:",
+            "keyboardhook:i:",
+            "redirectclipboard:i:",
+            "redirectcomports:i:",
+            "redirectprinters:i:",
+            "redirectsmartcards:i:",
+            "usbdevicestoredirect:s:",
+            "use multimon:i:",
+            "selectedmonitors:s:",
+            "maximizetocurrentdisplays:i:",
+            "singlemoninwindowedmode:i:",
+            "screen mode id:i:",
+            "smart sizing:i:",
+            "dynamic resolution:i:",
+            "desktop size id:i:",
+            "desktopheight:i:",
+            "desktopwidth:i:",
+            "desktopscalefactor:i:",
+            "remoteapplicationcmdline:s:",
+            "remoteapplicationexpandcmdline:i:",
+            "remoteapplicationexpandworkingdir:i:",
+            "remoteapplicationfile:s:",
+            "remoteapplicationicon:s:",
+            "remoteapplicationmode:i:",
+            "remoteapplicationname:s:",
+            "remoteapplicationprogram:s:"
+        };
+    }
 
 
     public class ConverterERdpFullScreenFlag : IValueConverter
