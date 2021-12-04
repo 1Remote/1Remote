@@ -221,6 +221,11 @@
                                             https://github.com/sshnet/SSH.NET
                                         </Hyperlink>
                                     </TextBlock>
+                                    <TextBlock>
+                                        <Hyperlink NavigateUri="https://github.com/icsharpcode/AvalonEdit" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                            https://github.com/icsharpcode/AvalonEdit
+                                        </Hyperlink>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

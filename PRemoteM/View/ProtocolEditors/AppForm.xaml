@@ -34,7 +34,7 @@
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource word_select}" 
-                            Command="{Binding CmdSelectArgumentsFilePath}"></Button>
+                            Command="{Binding CmdSelectArgumentFile}"></Button>
                     <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource 'Preview'}" 
