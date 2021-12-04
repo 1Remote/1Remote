@@ -301,32 +301,27 @@ namespace PRM.ViewModel
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand((isExportAll) =>
                 {
-                    var dlg = new SaveFileDialog
-                    {
-                        Filter = "PRM json array|*.prma",
-                        Title = Context.LanguageService.Translate("system_options_data_security_export_dialog_title"),
-                        FileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma"
-                    };
-                    if (dlg.ShowDialog() == true)
-                    {
-                        var list = new List<ProtocolServerBase>();
-                        if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
-                            foreach (var vs in Context.AppData.VmItemList)
-                            {
-                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                Context.DataService.DecryptToConnectLevel(serverBase);
-                                list.Add(serverBase);
-                            }
-                        else
-                            foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
-                            {
-                                var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                                Context.DataService.DecryptToConnectLevel(serverBase);
-                                list.Add(serverBase);
-                            }
+                    var path = SelectFileHelper.SaveFile(title: Context.LanguageService.Translate("system_options_data_security_export_dialog_title"),
+                        filter: "PRM json array|*.prma",
+                        selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
+                    if (path == null) return;
+                    var list = new List<ProtocolServerBase>();
+                    if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
+                        foreach (var vs in Context.AppData.VmItemList)
+                        {
+                            var serverBase = (ProtocolServerBase)vs.Server.Clone();
+                            Context.DataService.DecryptToConnectLevel(serverBase);
+                            list.Add(serverBase);
+                        }
+                    else
+                        foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
+                        {
+                            var serverBase = (ProtocolServerBase)vs.Server.Clone();
+                            Context.DataService.DecryptToConnectLevel(serverBase);
+                            list.Add(serverBase);
+                        }
 
-                        File.WriteAllText(dlg.FileName, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                    }
+                    File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
                 });
             }
         }
@@ -339,38 +334,32 @@ namespace PRM.ViewModel
             {
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
-                    var dlg = new OpenFileDialog()
+                    var path = SelectFileHelper.OpenFile(title: Context.LanguageService.Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
+                    if (path == null) return;
+                    try
                     {
-                        Filter = "PRM json array|*.prma",
-                        Title = Context.LanguageService.Translate("import_server_dialog_title"),
-                    };
-                    if (dlg.ShowDialog() == true)
-                    {
-                        try
+                        var list = new List<ProtocolServerBase>();
+                        var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8));
+                        foreach (var json in jobj)
                         {
-                            var list = new List<ProtocolServerBase>();
-                            var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(dlg.FileName, Encoding.UTF8));
-                            foreach (var json in jobj)
+                            var server = ItemCreateHelper.CreateFromJsonString(json.ToString());
+                            if (server != null)
                             {
-                                var server = ItemCreateHelper.CreateFromJsonString(json.ToString());
-                                if (server != null)
-                                {
-                                    server.Id = 0;
-                                    list.Add(server);
-                                    Context.DataService.Database_InsertServer(server);
-                                }
+                                server.Id = 0;
+                                list.Add(server);
+                                Context.DataService.Database_InsertServer(server);
                             }
+                        }
 
-                            Context.AppData.ReloadServerList();
-                            MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
-                                MessageBoxImage.None, MessageBoxResult.None);
-                        }
-                        catch (Exception e)
-                        {
-                            SimpleLogHelper.Debug(e);
-                            MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
-                                MessageBoxResult.None);
-                        }
+                        Context.AppData.ReloadServerList();
+                        MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
+                            MessageBoxImage.None, MessageBoxResult.None);
+                    }
+                    catch (Exception e)
+                    {
+                        SimpleLogHelper.Debug(e);
+                        MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
+                            MessageBoxResult.None);
                     }
                 });
             }
@@ -384,15 +373,11 @@ namespace PRM.ViewModel
             {
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
-                    var dlg = new OpenFileDialog()
-                    {
-                        Filter = "csv|*.csv",
-                        Title = Context.LanguageService.Translate("import_server_dialog_title"),
-                    };
-                    if (dlg.ShowDialog() != true) return;
+                    var path = SelectFileHelper.OpenFile(title: Context.LanguageService.Translate("import_server_dialog_title"), filter: "csv|*.csv");
+                    if (path == null) return;
                     try
                     {
-                        var list = MRemoteNgImporter.FromCsv(dlg.FileName, ServerIcons.Instance.Icons);
+                        var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
                         if (list?.Count > 0)
                         {
                             foreach (var serverBase in list)

@@ -58,29 +58,23 @@ namespace PRM.View.ProtocolConfig
             {
                 return _cmdSelectDbPath ??= new RelayCommand((o) =>
                 {
-                    string initPath;
+                    string initPath = null;
                     try
                     {
                         initPath = new FileInfo(ExternalRunner.ExePath).DirectoryName;
                     }
-                    catch (Exception)
+                    catch
                     {
-                        initPath = Environment.CurrentDirectory;
+                        // ignored
                     }
 
 
-                    var dlg = new OpenFileDialog
-                    {
-                        Filter = "Exe|*.exe",
-                        CheckFileExists = true,
-                        InitialDirectory = initPath,
-                    };
-                    if (dlg.ShowDialog() != true) return;
-                    ExternalRunner.ExePath = dlg.FileName;
-
+                    var path = SelectFileHelper.OpenFile(filter: "exe|*.exe", checkFileExists:true,initialDirectory: initPath);
+                    if (path == null) return;
+                    ExternalRunner.ExePath = path;
                     if (string.IsNullOrEmpty(ExternalRunner.Arguments))
                     {
-                        var name = new FileInfo(dlg.FileName).Name.ToLower();
+                        var name = new FileInfo(path).Name.ToLower();
                         if (name == "winscp.exe".ToLower())
                         {
                             if (ExternalRunner.ProtocolType == typeof(ProtocolServerSFTP))
@@ -93,7 +87,7 @@ namespace PRM.View.ProtocolConfig
                             }
                             ExternalRunner.RunWithHosting = true;
                         }
-                        else if (name == "filezilla.exe".ToLower() || dlg.FileName.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
+                        else if (name == "filezilla.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
                         {
                             if (ExternalRunner.ProtocolType == typeof(ProtocolServerSFTP))
                             {
@@ -121,7 +115,7 @@ namespace PRM.View.ProtocolConfig
                             ExternalRunner.Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto";
                             ExternalRunner.RunWithHosting = true;
                         }
-                        else if (name == "vncviewer.exe".ToLower() || dlg.FileName.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
+                        else if (name == "vncviewer.exe".ToLower() || path.ToLower().IndexOf("uvnc", StringComparison.Ordinal) > 0)
                         {
                             ExternalRunner.Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto";
                             ExternalRunner.RunWithHosting = false;

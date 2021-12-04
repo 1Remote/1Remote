@@ -778,21 +778,15 @@ namespace PRM.ViewModel
                             return;
                         }
 
-                        var dlg = new System.Windows.Forms.SaveFileDialog
+                        var path = SelectFileHelper.SaveFile(title: Context.LanguageService.Translate("file_transmit_host_message_files_download_to"), selectedFileName: Context.LanguageService.Translate("file_transmit_host_message_files_download_to_dir"));
+                        if (path == null) return;
                         {
-                            Title = Context.LanguageService.Translate("file_transmit_host_message_files_download_to"),
-                            CheckFileExists = false,
-                            ValidateNames = false,
-                            FileName = Context.LanguageService.Translate("file_transmit_host_message_files_download_to_dir"),
-                        };
-                        if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                        {
-                            var destinationDirectoryPath = new FileInfo(dlg.FileName).DirectoryName;
+                            var destinationDirectoryPath = new FileInfo(path).DirectoryName;
 
-                            if (!IOPermissionHelper.HasWritePermissionOnFile(dlg.FileName)
+                            if (!IOPermissionHelper.HasWritePermissionOnFile(path)
                             || !IOPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
                             {
-                                IoMessage = Context.LanguageService.Translate("string_permission_denied") + $": {dlg.FileName}";
+                                IoMessage = Context.LanguageService.Translate("string_permission_denied") + $": {path}";
                                 IoMessageLevel = 2;
                                 return;
                             }
@@ -822,19 +816,13 @@ namespace PRM.ViewModel
                         {
                             if (Trans?.IsConnected() != true)
                                 return;
-                            List<string> fl = new List<string>();
-                            var dlg = new System.Windows.Forms.OpenFileDialog();
-                            dlg.Title = Context.LanguageService.Translate(
-                                "file_transmit_host_message_select_files_to_upload");
-                            dlg.CheckFileExists = true;
-                            dlg.Multiselect = true;
-                            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+
+                            var paths = SelectFileHelper.OpenFiles(title: Context.LanguageService.Translate("file_transmit_host_message_select_files_to_upload"));
+                            if (paths == null) return;
+
+                            if (paths?.Length > 0)
                             {
-                                fl = dlg.FileNames?.ToList();
-                                if (fl?.Count > 0)
-                                {
-                                    DoUpload(fl);
-                                }
+                                DoUpload(paths.ToList());
                             }
                         }
                         else if (o is int n)
@@ -842,7 +830,7 @@ namespace PRM.ViewModel
                             // upload select folder
                             if (Trans?.IsConnected() != true)
                                 return;
-                            List<string> fl = new List<string>();
+
                             var fbd = new FolderBrowserDialog();
                             fbd.Description = Context.LanguageService.Translate("file_transmit_host_message_select_files_to_upload");
                             fbd.ShowNewFolderButton = false;

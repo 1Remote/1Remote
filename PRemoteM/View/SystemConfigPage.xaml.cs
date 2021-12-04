@@ -17,7 +17,6 @@ using PRM.ViewModel.Configuration;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace PRM.View
@@ -83,13 +82,9 @@ namespace PRM.View
 
         private void ContentElement_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "xaml|*.xaml";
-            dlg.Title = "Select a language resource file for translation test.";
-            dlg.CheckFileExists = false;
-            if (dlg.ShowDialog() != true) return;
-
-            var path = dlg.FileName;
+            var path = SelectFileHelper.OpenFile(title: "Select a language resource file for translation test.",
+                filter: "xaml|*.xaml");
+            if (path == null) return;
             var fi = new FileInfo(path);
             var resourceDictionary = MultiLangHelper.LangDictFromXamlFile(fi.FullName);
             if (resourceDictionary?.Contains("language_name") != true)

@@ -9,6 +9,7 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
+using Shawn.Utils;
 
 namespace PRM.View.ProtocolEditors
 {
@@ -59,12 +60,9 @@ namespace PRM.View.ProtocolEditors
         {
             if (Vm.GetType() == typeof(ProtocolServerSSH))
             {
-                var dlg = new OpenFileDialog();
-                dlg.Filter = "ppk|*.*";
-                if (dlg.ShowDialog() == true)
-                {
-                    ((ProtocolServerSSH)Vm).PrivateKey = dlg.FileName;
-                }
+                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                if (path == null) return;
+                ((ProtocolServerSSH)Vm).PrivateKey = path;
             }
         }
 
@@ -81,14 +79,8 @@ namespace PRM.View.ProtocolEditors
         {
             if (Vm is IKittyConnectable pc)
             {
-                var dlg = new OpenFileDialog
-                {
-                    Filter = "KiTTY Session|*.*",
-                    CheckFileExists = true,
-                };
-                if (dlg.ShowDialog() != true) return;
-
-                var path = dlg.FileName;
+                var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
+                if (path == null) return;
                 if (File.Exists(path)
                 && KittyConfig.Read(path)?.Count > 0)
                 {
