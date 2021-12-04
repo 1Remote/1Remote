@@ -283,14 +283,12 @@ namespace PRM.ViewModel.Configuration
                 lock (this)
                 {
                     if (_dataService.Database_IsEncrypted()) return;
-                    var dlg = new OpenFileDialog
-                    {
-                        Title = _languageService.Translate("system_options_data_security_rsa_encrypt_dialog_title"),
-                        Filter = $"PRM RSA private key|*{PrivateKeyFileExt}",
-                        FileName = ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
-                        CheckFileExists = false,
-                    };
-                    if (dlg.ShowDialog() != true) return;
+
+                    var path = SelectFileHelper.OpenFile(
+                        selectedFileName: ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                        checkFileExists:false,
+                        filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
+                    if (path == null) return;
 
                     int max = this._context.AppData.VmItemList.Count() * 3 + 2;
                     int val = 0;
@@ -300,17 +298,17 @@ namespace PRM.ViewModel.Configuration
                     File.Copy(DbPath, DbPath + ".back", true);
                     OnRsaProgress(++val, max);
 
-                    if (!File.Exists(dlg.FileName))
+                    if (!File.Exists(path))
                     {
                         // gen rsa
                         var rsa = new RSA(2048);
                         // save key file
-                        File.WriteAllText(dlg.FileName, rsa.ToPEM_PKCS1());
+                        File.WriteAllText(path, rsa.ToPEM_PKCS1());
                     }
 
                     OnRsaProgress(++val, max);
 
-                    if (_dataService.Database_SetEncryptionKey(dlg.FileName) < 0)
+                    if (_dataService.Database_SetEncryptionKey(path) < 0)
                     {
                         MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(0, 0);
@@ -431,16 +429,14 @@ namespace PRM.ViewModel.Configuration
                             {
                                 return;
                             }
-                            var dlg = new OpenFileDialog
-                            {
-                                Filter = $"private key|*{PrivateKeyFileExt}",
-                                InitialDirectory = new FileInfo(RsaPrivateKeyPath).DirectoryName,
-                            };
-                            if (dlg.ShowDialog() != true) return;
-                            var pks = RSA.CheckPrivatePublicKeyMatch(dlg.FileName, _context.DataService.Database_GetPublicKey());
+                            var path = SelectFileHelper.OpenFile(
+                                initialDirectory: new FileInfo(RsaPrivateKeyPath).DirectoryName,
+                                filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
+                            if (path == null) return;
+                            var pks = RSA.CheckPrivatePublicKeyMatch(path, _context.DataService.Database_GetPublicKey());
                             if (pks == RSA.EnumRsaStatus.NoError)
                             {
-                                _dataService.Database_SetEncryptionKey(dlg.FileName, false);
+                                _dataService.Database_SetEncryptionKey(path, false);
                                 RaisePropertyChanged(nameof(RsaPublicKey));
                                 RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                             }
@@ -464,15 +460,10 @@ namespace PRM.ViewModel.Configuration
             {
                 return _cmdSelectDbPath ??= new RelayCommand((o) =>
                 {
-                    var dlg = new OpenFileDialog
-                    {
-                        Filter = "Sqlite Database|*.db",
-                        CheckFileExists = false,
-                        InitialDirectory = new FileInfo(DbPath).DirectoryName
-                    };
-                    if (dlg.ShowDialog() != true) return;
-
-                    var path = dlg.FileName;
+                    var path = SelectFileHelper.OpenFile(
+                        initialDirectory: new FileInfo(DbPath).DirectoryName,
+                        filter: "Sqlite Database|*.db");
+                    if (path == null) return;
                     var oldDbPath = DbPath;
                     if (string.Equals(path, oldDbPath, StringComparison.CurrentCultureIgnoreCase))
                         return;
@@ -513,15 +504,8 @@ namespace PRM.ViewModel.Configuration
             {
                 return _cmdDbMigrate ??= new RelayCommand((o) =>
                 {
-                    var dlg = new SaveFileDialog
-                    {
-                        Filter = "Sqlite Database|*.db",
-                        CheckFileExists = false,
-                        InitialDirectory = new FileInfo(DbPath).DirectoryName,
-                        FileName = new FileInfo(DbPath).Name
-                    };
-                    if (dlg.ShowDialog() != true) return;
-                    var path = dlg.FileName;
+                    var path = SelectFileHelper.SaveFile(filter: "Sqlite Database|*.db", initialDirectory: new FileInfo(DbPath).DirectoryName, selectedFileName: new FileInfo(DbPath).Name);
+                    if (path == null) return;
                     var oldDbPath = DbPath;
                     if (oldDbPath == path)
                         return;
