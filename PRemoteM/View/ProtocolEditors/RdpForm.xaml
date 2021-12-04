@@ -7,6 +7,7 @@
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                        xmlns:controls="clr-namespace:PRM.Controls"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance rdp:ProtocolServerRDP}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -65,7 +66,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="LoadBalanceInfo"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding LoadBalanceInfo,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox Text="{Binding LoadBalanceInfo,UpdateSourceTrigger=PropertyChanged}" Tag="tsv://MS Terminal Services Plugin.1.Wortell_sLab_Ses"></TextBox>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -259,13 +260,49 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Additional settings'}" VerticalAlignment="Top"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox 
+
+
+                                <Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderThickness" Value="1" />
+                                            <Setter Property="CornerRadius" Value="5" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                            <Setter Property="Padding" Value="5 1" />
+                                            <Setter Property="Opacity" Value="1" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=TextEditor, Path=IsMouseOver}" Value="True"></Condition>
+                                                        <Condition Binding="{Binding ElementName=TextEditor, Path=TextArea.IsFocused}" Value="False"></Condition>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                                    <Setter Property="Opacity" Value="0.6" />
+                                                </MultiDataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=TextEditor, Path=TextArea.IsFocused}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                                <controls:BindableAvalonEditor
+                                    Margin="8 4 4 0"
+                                    x:Name="TextEditor"
+                                    WordWrap="False"
+                                    Background="Transparent"
+                                    ShowLineNumbers="True"
+                                    Text="{Binding RdpFileAdditionalSettings}"
+                                    SyntaxHighlighting="PowerShell"
+                                    FontSize="{DynamicResource TextFontSize}">
+                                </controls:BindableAvalonEditor>
+                                <!--<TextBox 
                                     Height="100"
                                     VerticalContentAlignment="Top"
                                     TextWrapping="Wrap"
                                     AcceptsReturn="True"
                                     Text="{Binding RdpFileAdditionalSettings, UpdateSourceTrigger=PropertyChanged}"
-                                    Tag="e.g. selectedmonitors:s:0,2"></TextBox>
+                                    Tag="e.g. selectedmonitors:s:0,2"></TextBox>-->
                             </Grid>
 
                             <TextBlock VerticalAlignment="Top" Margin="2 0">
