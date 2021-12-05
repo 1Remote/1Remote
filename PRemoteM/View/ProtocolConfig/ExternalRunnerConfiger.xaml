@@ -90,7 +90,9 @@
                     </Style>
                 </Border.Style>
             </Border>
-            <controls:BindableAvalonEditor Grid.Column="1" Margin="8 4 4 0"
+            <controls:BindableAvalonEditor Grid.Column="1" 
+                                           Margin="8 0 4 0"
+                                           Padding="0 5 0 5"
                                            x:Name="TextEditor"
                                            WordWrap="False"
                                            Background="Transparent"

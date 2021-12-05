@@ -79,7 +79,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Grid Margin="0 0 5 0">
+                                    <Grid Margin="0 0 5 0" Width="430">
                                         <Border x:Name="GridContainer"></Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
@@ -92,7 +92,7 @@
         </Style>
 
         <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
-            <Grid Margin="10">
+            <Grid Margin="0 10 ">
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
                 </Grid.Effect>
@@ -125,7 +125,7 @@
 
 
         <DataTemplate DataType="{x:Type default:KittyRunner}">
-            <Grid Margin="10">
+            <Grid Margin="0 10 ">
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
                 </Grid.Effect>
@@ -156,7 +156,7 @@
 
         <local:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></local:ExternalRunner2Vm>
         <DataTemplate DataType="{x:Type runner:ExternalRunner}">
-            <Grid Margin="10">
+            <Grid Margin="0 10 ">
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
                 </Grid.Effect>
@@ -201,7 +201,12 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Grid MinWidth="150">
+        <Grid MinWidth="150" Background="{DynamicResource BackgroundBrush}">
+            <Border BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
+                <Border.Effect>
+                    <DropShadowEffect Direction="0" Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                </Border.Effect>
+            </Border>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -222,13 +227,24 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" ClipToBounds="True">
             <Grid Name="GridRunner">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
+
+                <ListBox Grid.Row="2" Opacity="0.9" ScrollViewer.CanContentScroll="False"
+                         Style="{StaticResource ListBoxRunners}"
+                         ItemsSource="{Binding Runners}">
+                </ListBox>
+
+                <Border Grid.Row="0" Grid.RowSpan="2" BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
+                    <Border.Effect>
+                        <DropShadowEffect Direction="270" Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                    </Border.Effect>
+                </Border>
 
                 <Grid Row="0">
                     <TextBlock Text="Runner" VerticalAlignment="Center" FontWeight="Bold" Margin="5" FontSize="14pt"></TextBlock>
@@ -266,11 +282,6 @@
                         </Grid>
                     </Button>
                 </Grid>
-
-                <ListBox Grid.Row="2" Opacity="0.9" ScrollViewer.CanContentScroll="False"
-                        Style="{StaticResource ListBoxRunners}"
-                        ItemsSource="{Binding Runners}">
-                </ListBox>
             </Grid>
         </Grid>
     </Grid>
