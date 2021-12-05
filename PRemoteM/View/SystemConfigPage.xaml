@@ -15,12 +15,31 @@
              d:DesignHeight="2450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary>
-                    <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
-                    <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
-                </ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
+            <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
+
+
+            <Style x:Key="EditorRowGrid" TargetType="Grid">
+                <Setter Property="Height" Value="Auto"></Setter>
+                <Setter Property="MinHeight" Value="30"></Setter>
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <Thickness Bottom="15"></Thickness>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="EditorRowGridTitle" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                <Setter Property="Width" Value="150"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <Thickness Right="30"></Thickness>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Padding" Value="2" />
@@ -206,6 +225,9 @@
                     </Grid>
 
                     <Grid Style="{StaticResource EditorRowGrid}">
+                        <Grid.Resources>
+                            <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
+                        </Grid.Resources>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
                             <Grid Style="{StaticResource EditorRowGridInput}">
