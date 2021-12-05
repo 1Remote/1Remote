@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -47,15 +48,13 @@ namespace PRM.View.ProtocolEditors
         private void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
         {
             int offset = TextEditor.CaretOffset - 1;
-            char newChar = TextEditor.Document.GetCharAt(offset);
-            var line = TextEditor.Document.GetLineByOffset(TextEditor.CaretOffset);
-            var thisLineToNewChar = TextEditor.Document.GetText(line.Offset, offset - line.Offset + 1);
-            SimpleLogHelper.Warning(thisLineToNewChar);
-
+            char newChar = TextEditor.Document.GetCharAt(offset); // current key down.
+            var currentLine = TextEditor.Document.GetLineByOffset(TextEditor.CaretOffset);
+            var currentLine0ToCaret = TextEditor.Document.GetText(currentLine.Offset, offset - currentLine.Offset + 1); // currentLine[0: offset]
             var completions = new List<string>();
             foreach (var str in RdpFileSettingCompletionData.Settings)
             {
-                if (str.StartsWith(thisLineToNewChar))
+                if (str.StartsWith(currentLine0ToCaret) && str != currentLine0ToCaret)
                     completions.Add(str);
             }
             ShowCompletionWindow(completions);
@@ -64,18 +63,19 @@ namespace PRM.View.ProtocolEditors
         private void ShowCompletionWindow(IEnumerable<string> completions)
         {
             _completionWindow?.Close();
-            if (completions?.Any() == true)
+            var enumerable = completions as string[] ?? completions.ToArray();
+            if (enumerable?.Any() == true)
             {
                 // ref: http://avalonedit.net/documentation/html/47c58b63-f30c-4290-a2f2-881d21227446.htm
                 _completionWindow = new CompletionWindow(TextEditor.TextArea);
                 var completionData = _completionWindow.CompletionList.CompletionData;
-                foreach (var str in completions)
+                foreach (var str in enumerable)
                 {
                     completionData.Add(new RdpFileSettingCompletionData(str));
                 }
                 _completionWindow.Show();
-                if (completions.Count() == 1)
-                    _completionWindow.CompletionList.SelectItem(completions.First());
+                if (enumerable.Count() == 1)
+                    _completionWindow.CompletionList.SelectItem(enumerable.First());
                 _completionWindow.Closed += (o, args) => _completionWindow = null;
             }
         }
@@ -154,7 +154,9 @@ namespace PRM.View.ProtocolEditors
 
         public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
         {
-            textArea.Document.Replace(completionSegment, Text);
+            int offset = textArea.Caret.Offset;
+            var currentLine = textArea.Document.GetLineByOffset(offset);
+            textArea.Document.Replace(completionSegment, Text.Substring(offset - currentLine.Offset));
         }
 
         public static readonly string[] Settings =
