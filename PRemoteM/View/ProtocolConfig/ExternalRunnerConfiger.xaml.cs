@@ -162,6 +162,12 @@ namespace PRM.View.ProtocolConfig
         public ExternalRunnerConfiger()
         {
             InitializeComponent();
+            TextEditor.TextArea.TextEntering += (sender, args) =>
+            {
+                if(args.Text.IndexOf("\n", StringComparison.Ordinal) >= 0 
+                   || args.Text.IndexOf("\r", StringComparison.Ordinal) >= 0)
+                    args.Handled = true;
+            };
             TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
         }
 
