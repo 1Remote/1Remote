@@ -75,16 +75,15 @@
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">常规</s:String>
-    <s:String x:Key="system_options_general_language">语言</s:String>
-    <s:String x:Key="system_options_general_start">启动</s:String>
+    <s:String x:Key="Language">语言</s:String>
+    <s:String x:Key="Startup">启动</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">开机自启动</s:String>
     <s:String x:Key="system_options_general_start_minimized">启动时最小化到托盘</s:String>
     <s:String x:Key="system_options_general_log_file_path">日志文件</s:String>
 
-    <s:String x:Key="system_options_quick_title">快速连接</s:String>
     <s:String x:Key="system_options_quick_description">快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。</s:String>
     <s:String x:Key="system_options_quick_match_providers">关键词匹配器</s:String>
-    <s:String x:Key="system_options_quick_launcher">启动器</s:String>
+    <s:String x:Key="Launcher">启动器</s:String>
     <s:String x:Key="system_options_quick_launcher_enable">启用</s:String>
     <s:String x:Key="system_options_quick_launcher_hotkey">快捷键</s:String>
     <s:String x:Key="system_options_quick_launcher_allow_group_name_search">允许搜索标签</s:String>
@@ -109,19 +108,17 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_found">数据库：无法找到数据库中存储的 RSA 私钥文件路径！</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_not_match">数据库：存储的 RSA 私钥公钥不匹配，请重新选择！</s:String>
 
-    <s:String x:Key="system_options_theme_title">外观</s:String>
-    <s:String x:Key="system_options_theme_prm_title">配色</s:String>
-    <s:String x:Key="system_options_theme_prm_theme">主题</s:String>
-    <s:String x:Key="system_options_theme_prm_main_color">主色</s:String>
-    <s:String x:Key="system_options_theme_prm_secondary_color">副色</s:String>
-    <s:String x:Key="system_options_theme_prm_background_color">背景色</s:String>
-    <s:String x:Key="system_options_theme_prm_color_normal">常规</s:String>
-    <s:String x:Key="system_options_theme_prm_color_lighter">亮色</s:String>
-    <s:String x:Key="system_options_theme_prm_color_darker">暗色</s:String>
-    <s:String x:Key="system_options_theme_prm_color_foreground">字体</s:String>
-    <s:String x:Key="system_options_theme_putty_title">Kitty</s:String>
-    <s:String x:Key="system_options_theme_putty_font_size">字体大小</s:String>
-    <s:String x:Key="system_options_theme_putty_theme">主题</s:String>
+    <s:String x:Key="Theme">主题</s:String>
+    <s:String x:Key="Color">配色</s:String>
+    <s:String x:Key="Color1">主色</s:String>
+    <s:String x:Key="Color2">副色</s:String>
+    <s:String x:Key="Background">背景色</s:String>
+    <s:String x:Key="Normal">常规</s:String>
+    <s:String x:Key="Lighter">亮色</s:String>
+    <s:String x:Key="Darker">暗色</s:String>
+    <s:String x:Key="Font">字体</s:String>
+    <s:String x:Key="Font size">字体大小</s:String>
+    <s:String x:Key="Themes">主题</s:String>
 
     <!-- server operate -->
     <s:String x:Key="server_card_operate_duplicate">创建副本</s:String>
@@ -265,5 +262,6 @@
     <s:String x:Key="Environment variables">环境变量</s:String>
     <s:String x:Key="Add environment variables">添加环境变量</s:String>
     <s:String x:Key="Selected">选中</s:String>
+    <s:String x:Key="Custom">Custom</s:String>
 
 </ResourceDictionary>

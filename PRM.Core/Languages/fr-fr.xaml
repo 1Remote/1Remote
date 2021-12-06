@@ -75,16 +75,15 @@
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Général</s:String>
-    <s:String x:Key="system_options_general_language">Langue</s:String>
-    <s:String x:Key="system_options_general_start">Commencez</s:String>
+    <s:String x:Key="Language">Langue</s:String>
+    <s:String x:Key="Startup">Commencez</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">Exécuter automatiquement au démarrage du système d'exploitation</s:String>
     <s:String x:Key="system_options_general_start_minimized">Démarrer minimisé</s:String>
     <s:String x:Key="system_options_general_log_file_path">Fichier journal</s:String>
 
-    <s:String x:Key="system_options_quick_title">Connexion rapide</s:String>
     <s:String x:Key="system_options_quick_description">La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée</s:String>
     <s:String x:Key="system_options_quick_match_providers">Mots clés correspondants</s:String>
-    <s:String x:Key="system_options_quick_launcher">Lanceur</s:String>
+    <s:String x:Key="Launcher">Lanceur</s:String>
     <s:String x:Key="system_options_quick_launcher_enable">Activer</s:String>
     <s:String x:Key="system_options_quick_launcher_hotkey">Raccourci clavier</s:String>
     <s:String x:Key="system_options_quick_launcher_allow_group_name_search">Autoriser le nom du étiqueter de recherche</s:String>
@@ -109,19 +108,17 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_found">Base de données : impossible de trouver la clé privée RSA! Veuillez sélectionner une clé correcte.</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Base de données: la clé privée RSA ne correspond pas à la clé publique! Veuillez sélectionner une clé correcte.</s:String>
 
-    <s:String x:Key="system_options_theme_title">Thème</s:String>
-    <s:String x:Key="system_options_theme_prm_title">Couleur</s:String>
-    <s:String x:Key="system_options_theme_prm_theme">Thème</s:String>
-    <s:String x:Key="system_options_theme_prm_main_color">Couleur1</s:String>
-    <s:String x:Key="system_options_theme_prm_secondary_color">Couleur2</s:String>
-    <s:String x:Key="system_options_theme_prm_background_color">Arrière-plan</s:String>
-    <s:String x:Key="system_options_theme_prm_color_normal">Normal</s:String>
-    <s:String x:Key="system_options_theme_prm_color_lighter">Clair</s:String>
-    <s:String x:Key="system_options_theme_prm_color_darker">Sombre</s:String>
-    <s:String x:Key="system_options_theme_prm_color_foreground">Police de caractère</s:String>
-    <s:String x:Key="system_options_theme_putty_title">Kitty</s:String>
-    <s:String x:Key="system_options_theme_putty_font_size">Taille de la police</s:String>
-    <s:String x:Key="system_options_theme_putty_theme">Thèmes</s:String>
+    <s:String x:Key="Theme">Thème</s:String>
+    <s:String x:Key="Color">Couleur</s:String>
+    <s:String x:Key="Color1">Couleur1</s:String>
+    <s:String x:Key="Color2">Couleur2</s:String>
+    <s:String x:Key="Background">Arrière-plan</s:String>
+    <s:String x:Key="Normal">Normal</s:String>
+    <s:String x:Key="Lighter">Clair</s:String>
+    <s:String x:Key="Darker">Sombre</s:String>
+    <s:String x:Key="Font">Police de caractère</s:String>
+    <s:String x:Key="Font size">Taille de la police</s:String>
+    <s:String x:Key="Themes">Thèmes</s:String>
 
     <!-- server operate -->
     <s:String x:Key="server_card_operate_duplicate">Dupliquer</s:String>
@@ -265,5 +262,6 @@
     <s:String x:Key="Environment variables">Environment variables</s:String>
     <s:String x:Key="Add environment variables">Add environment variables</s:String>
     <s:String x:Key="Selected">Selected</s:String>
+    <s:String x:Key="Custom">Coutume</s:String>
 
 </ResourceDictionary>
