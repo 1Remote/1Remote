@@ -8,34 +8,63 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance default:KittyRunner}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+        <Style x:Key="GridOneRow" TargetType="Grid">
+            <Setter Property="Height" Value="Auto"></Setter>
+            <Setter Property="MinWidth" Value="300"></Setter>
+            <Setter Property="MinHeight" Value="30"></Setter>
+            <Setter Property="Margin">
+                <Setter.Value>
+                    <Thickness Bottom="15"></Thickness>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+            <Setter Property="TextAlignment" Value="Right"></Setter>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+            <Setter Property="Margin" Value="20 0 10 0"></Setter>
+        </Style>
+    </UserControl.Resources>
     <StackPanel>
         <Grid Margin="10">
             <!--<TextBlock Foreground="{DynamicResource BackgroundTextBrush}" 
                            HorizontalAlignment="Center"
                            FontSize="{StaticResource HeadFontSize}" Text="KiTTY"></TextBlock>-->
         </Grid>
-        <Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_font_size}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <TextBox Text="{Binding PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
-                </Grid>
-            </StackPanel>
+        <Grid Style="{StaticResource GridOneRow}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Font size'}"></TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding PuttyFontSize}" VerticalContentAlignment="Center"></TextBox>
         </Grid>
-        <Grid Style="{StaticResource EditorRowGrid}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_putty_theme}"></TextBlock>
-                <Grid Style="{StaticResource EditorRowGridInput}">
-                    <ComboBox ItemsSource="{Binding PuttyThemeNames}"
-                              SelectedItem="{Binding PuttyThemeName}">
-                    </ComboBox>
-                </Grid>
-                <TextBlock VerticalAlignment="Center" Margin="2 0">
-                                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
-                                    (?)
-                                </Hyperlink>
-                </TextBlock>
-            </StackPanel>
+
+        <Grid Style="{StaticResource GridOneRow}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Themes}"></TextBlock>
+
+            <ComboBox Grid.Column="1" ItemsSource="{Binding PuttyThemeNames}"
+                      SelectedItem="{Binding PuttyThemeName}">
+            </ComboBox>
+
+            <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="2 0">
+                <Hyperlink NavigateUri="https://web.archive.org/web/20151122030926/http://putty.org.ru:80/themes/index.html" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                    (?)
+                </Hyperlink>
+            </TextBlock>
         </Grid>
     </StackPanel>
 </UserControl>
