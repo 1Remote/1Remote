@@ -10,16 +10,17 @@
              xmlns:configuration="clr-namespace:PRM.ViewModel.Configuration"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              xmlns:protocolConfig="clr-namespace:PRM.View.ProtocolConfig"
+             xmlns:converter="clr-namespace:PRM.Resources.Converter"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance configuration:ConfigurationViewModel}"
-             d:DesignHeight="2450" d:DesignWidth="800">
+             d:DesignHeight="2450" d:DesignWidth="1000">
     <UserControl.Resources>
         <ResourceDictionary>
             <view:StringIsEmpty2BoolConverter x:Key="StringIsEmpty2BoolConverter"></view:StringIsEmpty2BoolConverter>
 
-
-            <Style x:Key="EditorRowGrid" TargetType="Grid">
+            <Style x:Key="GridOneRow" TargetType="Grid">
                 <Setter Property="Height" Value="Auto"></Setter>
+                <Setter Property="MinWidth" Value="300"></Setter>
                 <Setter Property="MinHeight" Value="30"></Setter>
                 <Setter Property="Margin">
                     <Setter.Value>
@@ -27,20 +28,17 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Style x:Key="EditorRowGridTitle" TargetType="TextBlock">
+
+            <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-                <Setter Property="Width" Value="150"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="HorizontalAlignment" Value="Right"></Setter>
                 <Setter Property="TextAlignment" Value="Right"></Setter>
                 <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
-                <Setter Property="Margin">
-                    <Setter.Value>
-                        <Thickness Right="30"></Thickness>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Margin" Value="20 0 10 0"></Setter>
             </Style>
 
+            <converter:DoubleAdd x:Key="DoubleAdd_15" AddValue="-15"></converter:DoubleAdd>
             <Style x:Key="TabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Padding" Value="2" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -71,6 +69,12 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=ActualWidth}"></Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                        <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=ActualWidth, Converter={StaticResource DoubleAdd_15}}"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
 
             <Style TargetType="TabItem">
@@ -118,191 +122,234 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{DynamicResource BackgroundBrush}">
+    <Grid Background="{DynamicResource BackgroundBrush}" Grid.IsSharedSizeScope="True">
 
         <TabControl TabStripPlacement="Left" Style="{StaticResource TabControlStyle}" Background="{DynamicResource BackgroundBrush}">
+
             <TabItem Name="TabItemGeneral" Header="{DynamicResource system_options_general_title}">
-                <StackPanel Margin="0 20 0 0">
+                <StackPanel Margin="0 20 20 0" >
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_language}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <ComboBox ItemsSource="{Binding Languages}"
-                                          SelectedValue="{Binding Language}"
-                                          SelectedValuePath="Key"
-                                          DisplayMemberPath="Value" />
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                            <TextBlock Margin="0 0 0 0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="450" TextWrapping="WrapWithOverflow">
-                                <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True"
-                                           MouseRightButtonDown="ContentElement_OnMouseRightButtonDown"
-                                           NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
-                                    <Hyperlink.Style>
-                                        <Style TargetType="{x:Type Hyperlink}">
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                            <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
-                                                    <Setter Property="TextBlock.TextDecorations">
-                                                        <Setter.Value>
-                                                            <TextDecorationCollection>
-                                                                <TextDecoration Location="Underline" />
-                                                            </TextDecorationCollection>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Hyperlink.Style>
-                                    Can't find your language?
-                                </Hyperlink>
-                            </TextBlock>
-                        </StackPanel>
-                    </Grid>
+                    <TextBlock Text="{DynamicResource system_options_general_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_start}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <StackPanel VerticalAlignment="Center">
-                                    <CheckBox IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" MaxWidth="500" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Language}"></TextBlock>
+
+                        <Grid Grid.Column="1">
+                            <ComboBox MinWidth="200" HorizontalAlignment="Left"
+                                      ItemsSource="{Binding Languages}"
+                                      SelectedValue="{Binding Language}"
+                                      SelectedValuePath="Key"
+                                      DisplayMemberPath="Value" />
+                        </Grid>
+                    </Grid>
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1" Margin="0 0 0 0" TextAlignment="Left" TextWrapping="WrapWithOverflow">
+                            <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True"
+                                       MouseRightButtonDown="ContentElement_OnMouseRightButtonDown"
+                                       NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
+                                <Hyperlink.Style>
+                                    <Style TargetType="{x:Type Hyperlink}">
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                        <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"></Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentLightBrush}"></Setter>
+                                                <Setter Property="TextBlock.TextDecorations">
+                                                    <Setter.Value>
+                                                        <TextDecorationCollection>
+                                                            <TextDecoration Location="Underline" />
+                                                        </TextDecorationCollection>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Hyperlink.Style>
+                                Can't find your language?
+                            </Hyperlink>
+                        </TextBlock>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{x:Static utils:SimpleLogHelper.LogFileName}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="Log"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{x:Static utils:SimpleLogHelper.LogFileName}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
-                            </Grid>
-                        </StackPanel>
+
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Startup}"></TextBlock>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                    </Grid>
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
+                    </Grid>
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{x:Static utils:SimpleLogHelper.LogFileName}"
+                                 ToolTip="{x:Static utils:SimpleLogHelper.LogFileName}"
+                                 VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
                     </Grid>
                 </StackPanel>
             </TabItem>
 
-            <TabItem Name="TabItemQuick" Header="{DynamicResource system_options_quick_title}">
-                <StackPanel Margin="0 20 0 0">
+            <TabItem Name="TabItemQuick" Header="{DynamicResource Launcher}">
+                <StackPanel Margin="0 20 20 0" >
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource system_options_quick_launcher}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                        </StackPanel>
+
+                    <TextBlock Text="{DynamicResource Launcher}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+
+
+
+
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
-                            </Grid>
-                        </StackPanel>
+
+
+
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <CheckBox IsChecked="{Binding LauncherAllowTagSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_allow_group_name_search}"></CheckBox>
-                            </Grid>
-                        </StackPanel>
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding LauncherAllowTagSearch, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_allow_group_name_search}"></CheckBox>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}">
+
+                    <Grid Style="{StaticResource GridOneRow}">
                         <Grid.Resources>
                             <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
                         </Grid.Resources>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <ComboBox Width="100" SelectedValuePath="Tag"
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_quick_launcher_hotkey}"></TextBlock>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <ComboBox Width="100" SelectedValuePath="Tag"
                                               SelectedValue="{Binding LauncherHotKeyModifiers}">
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
-                                        <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
-                                    </ComboBox>
-                                    <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
-                                    <TextBox Width="100"
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Control}">Ctrl</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Alt}">Alt</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Windows}">Win</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.Shift}">Shift</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftAlt}">Shift + Alt</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftWindows}">Shift + Win</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ShiftControl}">Shift + Ctrl</ComboBoxItem>
+                                <ComboBoxItem Tag="{x:Static service:HotkeyModifierKeys.ControlAlt}">Ctrl + Alt</ComboBoxItem>
+                            </ComboBox>
+                            <TextBlock Text="+" VerticalAlignment="Center" Margin="15 0"></TextBlock>
+                            <TextBox Width="100"
                                              IsReadOnly="True"
                                              IsReadOnlyCaretVisible="False"
                                              IsUndoEnabled="False"
                                              PreviewKeyDown="TextBoxKey_OnPreviewKeyDown"
                                              Text="{Binding LauncherHotKeyKey, Mode=OneWay,Converter={StaticResource Key2KeyStringConverter}}"></TextBox>
-                                </StackPanel>
-                            </Grid>
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
+                    <Grid Margin="15 0" Height="30">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource system_options_quick_match_providers}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
                         </StackPanel>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <Grid Style="{StaticResource EditorRowGridInput}" Margin="20 0" Width="450">
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.Resources>
+                            <view:Key2KeyStringConverter x:Key="Key2KeyStringConverter"></view:Key2KeyStringConverter>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" >
+                            <Grid MinWidth="650">
                                 <Grid.Resources>
                                     <DataTemplate x:Key="DataTemplateForMatcher" DataType="service:MatchProviderInfo">
-                                        <Grid Margin="5">
+                                        <Grid Margin=" 0 0 5 15">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"></RowDefinition>
                                                 <RowDefinition Height="Auto"></RowDefinition>
                                                 <RowDefinition Height="Auto"></RowDefinition>
                                             </Grid.RowDefinitions>
 
-                                            <CheckBox Grid.Row="0" Cursor="Hand" Margin="1"
+                                            <CheckBox Grid.Row="0" Cursor="Hand" Margin="0 0 1 0"
                                                       IsChecked="{Binding Enabled}"
                                                       IsEnabled="{Binding IsEditable}"
                                                       Content="{Binding Title1}"
                                                       ToolTip="{Binding Title1}"
                                                       ></CheckBox>
-                                            <TextBlock Grid.Row="2" Margin="1"
+                                            <TextBlock Grid.Row="2"
                                                        Text="{Binding Title2}"
                                                        ToolTip="{Binding Title2}"
                                                        FontSize="10" Opacity="0.6"></TextBlock>
                                         </Grid>
                                     </DataTemplate>
                                 </Grid.Resources>
-                                <ListView Height="250"
-                                          ItemsSource="{Binding AvailableMatcherProviders}" ItemTemplate="{StaticResource DataTemplateForMatcher}">
+                                <ListView Background="Transparent" BorderThickness="1"
+                                          ItemsSource="{Binding AvailableMatcherProviders}" 
+                                          ItemTemplate="{StaticResource DataTemplateForMatcher}">
+                                    <ListView.Style>
+                                        <Style TargetType="ListView">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListView}">
+                                                        <ScrollViewer x:Name="ScrollViewer" BorderThickness="0">
+                                                            <ItemsPresenter/>
+                                                        </ScrollViewer>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ListView.Style>
                                     <ListView.Resources>
                                         <Style TargetType="{x:Type ListViewItem}">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                                        <Border Name="Bd"
-                                                            Background="{TemplateBinding Background}"
-                                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                                            Padding="{TemplateBinding Padding}"
-                                                            SnapsToDevicePixels="true">
-                                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                                        </Border>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -326,75 +373,49 @@
 
             <TabItem Name="TabItemDataBase" Header="{DynamicResource system_options_data_security_title}">
 
-                <StackPanel Margin="0 20 0 0">
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
-                            </Grid>
-                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Command="{Binding CmdSelectDbPath}"></Button>
-                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>
-                        </StackPanel>
+                <StackPanel Margin="0 20 20 0" >
+
+                    <TextBlock Text="{DynamicResource system_options_data_security_title}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Margin="0" Command="{Binding CmdGenRsaKey}"
+
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_rsa_title}"></TextBlock>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Margin="0" Command="{Binding CmdGenRsaKey}"
                                             Content="{DynamicResource system_options_data_security_rsa_encrypt}">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
-                                                <Setter Property="IsEnabled" Value="False"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
-                                                        <Setter Property="IsEnabled" Value="True"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                    <Button Margin="10 0 0 0" Command="{Binding CmdClearRsaKey}"
-                                            Content="{DynamicResource system_options_data_security_rsa_decrypt}">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
-                                                        <Setter Property="IsEnabled" Value="False"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Name="TbPublicKey" Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding RsaPublicKey, Mode=OneWay}" 
-                                         VerticalContentAlignment="Center" 
-                                         TextWrapping="Wrap" Height="200" 
-                                         Focusable="False"
-                                         IsReadOnly="True"></TextBox>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}">
-                                <TextBox Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
-                            </Grid>
-                            <Button Content="{DynamicResource word_select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
+                                        <Setter Property="IsEnabled" Value="False"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                                <Setter Property="IsEnabled" Value="True"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Margin="10 0 0 0" Command="{Binding CmdClearRsaKey}"
+                                            Content="{DynamicResource system_options_data_security_rsa_decrypt}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
@@ -405,114 +426,141 @@
                             </Button>
                         </StackPanel>
                     </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto" Opacity="0.3">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_general_icons_folder_path}" Visibility="Hidden"></TextBlock>
-                            <TextBlock Margin="0" Style="{StaticResource EditorRowGridTitle}" TextAlignment="Left" Width="360" Text="{DynamicResource system_options_data_security_info_encrypt_private_key_warning}" TextWrapping="WrapWithOverflow"></TextBlock>
-                        </StackPanel>
+
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Name="TbPublicKey" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding RsaPublicKey, Mode=OneWay}" 
+                                     VerticalContentAlignment="Center" 
+                                     TextWrapping="Wrap" Height="200" MaxWidth="500"
+                                     Focusable="False"
+                                     IsReadOnly="True"></TextBox>
+                    </Grid>
+
+
+
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
+                        <TextBox Grid.Column="1" Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
+                        <Button Grid.Column="2" Content="{DynamicResource word_select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                            <Setter Property="IsEnabled" Value="False"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="DataColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Opacity="0.3" Text="{DynamicResource system_options_data_security_info_encrypt_private_key_warning}" TextWrapping="WrapWithOverflow"></TextBlock>
                     </Grid>
                 </StackPanel>
             </TabItem>
 
-            <TabItem Name="TabItemTheme" Header="{DynamicResource system_options_theme_title}">
-                <StackPanel Margin="0 20 0 0">
-                    <Grid Style="{StaticResource EditorRowGrid}" Margin="15 0" Height="30">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource system_options_theme_prm_title}" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Style="{StaticResource EditorRowGrid}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_prm_theme}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}" Width="200">
-                                <ComboBox
-                                          ItemsSource="{Binding ThemeList}"
-                                          SelectedItem="{Binding ThemeName}">
-                                </ComboBox>
-                            </Grid>
+            <TabItem Name="TabItemTheme" Header="{DynamicResource Theme}">
+                <StackPanel Margin="0 20 20 0">
 
-                            <TextBlock VerticalAlignment="Center" Margin="2 0" Visibility="Hidden">
-                                (?)
-                            </TextBlock>
-                            <Button Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_reset}" Command="{Binding CmdResetTheme}"></Button>
-                        </StackPanel>
+                    <TextBlock Text="{DynamicResource Theme}" Margin="15" FontSize="20" Height="30" HorizontalAlignment="Left"></TextBlock>
+
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="ThemeColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Theme}"></TextBlock>
+
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding ThemeList}"
+                                      SelectedItem="{Binding ThemeName}">
+                        </ComboBox>
+
+                        <Button Grid.Column="2"  Margin="5 0 0 0" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_reset}" Command="{Binding CmdResetTheme}"></Button>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <Grid Width="500" HorizontalAlignment="Left">
-                            <Grid.RowDefinitions>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="130"></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Grid.Resources>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="TextAlignment" Value="Center"></Setter>
-                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                </Style>
-                                <Style TargetType="{x:Type colorPickerWpf:ColorPickRowPopup}">
-                                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                    <Setter Property="HexVisible" Value="Collapsed"></Setter>
-                                </Style>
-                            </Grid.Resources>
-
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource system_options_theme_prm_color_normal}"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource system_options_theme_prm_color_lighter}"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="{DynamicResource system_options_theme_prm_color_darker}"></TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource system_options_theme_prm_color_foreground}"></TextBlock>
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_main_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="1" HexColor="{Binding PrimaryMidColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding PrimaryLightColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding PrimaryDarkColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding PrimaryTextColor}" />
-
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_secondary_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="1" HexColor="{Binding AccentMidColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding AccentLightColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding AccentDarkColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding AccentTextColor}" />
-
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource system_options_theme_prm_background_color}" Width="100" TextAlignment="Right"></TextBlock>
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="1" HexColor="{Binding BackgroundColor}" />
-                            <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="4" HexColor="{Binding BackgroundTextColor}" />
-                        </Grid>
+                    <Grid Style="{StaticResource GridOneRow}" Margin="0 20 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="ThemeColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource Custom}"></TextBlock>
                     </Grid>
 
-                    <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel.Resources>
-                                <Style TargetType="RadioButton">
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
-                                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
-                                </Style>
-                            </StackPanel.Resources>
-                            <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource system_options_theme_tab_ui}"></TextBlock>
-                            <Grid Style="{StaticResource EditorRowGridInput}" VerticalAlignment="Center">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                            </Grid>
-                        </StackPanel>
+                    <Grid Width="450" HorizontalAlignment="Left" Margin="0 0 0 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                            <RowDefinition Height="40"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition Width="50"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
+                                <Setter Property="TextAlignment" Value="Center"></Setter>
+                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                            </Style>
+                            <Style TargetType="{x:Type colorPickerWpf:ColorPickRowPopup}">
+                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                <Setter Property="HexVisible" Value="Collapsed"></Setter>
+                            </Style>
+                        </Grid.Resources>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource Normal}"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="{DynamicResource Lighter}"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="4" Text="{DynamicResource Darker}"></TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="5" Text="{DynamicResource Font}"></TextBlock>
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="1" Grid.Column="0" Text="{DynamicResource Color1}"></TextBlock>
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="2" HexColor="{Binding PrimaryMidColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="3" HexColor="{Binding PrimaryLightColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="4" HexColor="{Binding PrimaryDarkColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="1" Grid.Column="5" HexColor="{Binding PrimaryTextColor}" />
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="2" Grid.Column="0" Text="{DynamicResource Color2}"></TextBlock>
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="2" HexColor="{Binding AccentMidColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="3" HexColor="{Binding AccentLightColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="4" HexColor="{Binding AccentDarkColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="2" Grid.Column="5" HexColor="{Binding AccentTextColor}" />
+
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Grid.Row="3" Grid.Column="0" Text="{DynamicResource Background}"></TextBlock>
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="2" HexColor="{Binding BackgroundColor}" />
+                        <colorPickerWpf:ColorPickRowPopup Grid.Row="3" Grid.Column="5" HexColor="{Binding BackgroundTextColor}" />
                     </Grid>
                 </StackPanel>
             </TabItem>
 
             <TabItem Header="{DynamicResource server_protocol}">
-                <protocolConfig:ProtocolConfiger />
+                <protocolConfig:ProtocolConfiger Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=TabItem}, Path=Width}" />
             </TabItem>
+
         </TabControl>
 
         <Button VerticalAlignment="Bottom"

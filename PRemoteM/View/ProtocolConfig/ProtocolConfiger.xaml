@@ -79,7 +79,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Grid Margin="0 0 5 0" Width="430">
+                                    <Grid Margin="0 0 5 0">
                                         <Border x:Name="GridContainer"></Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
@@ -92,7 +92,7 @@
         </Style>
 
         <DataTemplate DataType="{x:Type default:InternalDefaultRunner}">
-            <Grid Margin="0 10 ">
+            <Grid Margin="25 10 20 10">
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
                 </Grid.Effect>
@@ -104,13 +104,14 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                                BorderBrush="{DynamicResource PrimaryMidBrush}"
-                                Background="{DynamicResource BackgroundBrush}"
-                                CornerRadius="10" BorderThickness="2">
+                        Background="{DynamicResource BackgroundBrush}"
+                        CornerRadius="10" BorderThickness="0">
                 </Border>
                 <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
-                    <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
-                                       Text="{Binding Name}" Margin="5"></TextBlock>
+                    <TextBlock HorizontalAlignment="Center"  VerticalAlignment="Center"
+                               Foreground="{DynamicResource PrimaryTextBrush}" 
+                               FontSize="{DynamicResource HeadFontSize}" 
+                               Text="{Binding Name}" Margin="5"></TextBlock>
                 </Grid>
                 <Grid Grid.Row="1" MinHeight="50">
                     <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Nothing special</TextBlock>
@@ -125,7 +126,7 @@
 
 
         <DataTemplate DataType="{x:Type default:KittyRunner}">
-            <Grid Margin="0 10 ">
+            <Grid Margin="25 10 20 10">
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
                 </Grid.Effect>
@@ -137,9 +138,8 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                                BorderBrush="{DynamicResource PrimaryMidBrush}"
-                                Background="{DynamicResource BackgroundBrush}"
-                                CornerRadius="10" BorderThickness="2">
+                        Background="{DynamicResource BackgroundBrush}"
+                        CornerRadius="10" BorderThickness="0">
                 </Border>
                 <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
                     <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" 
@@ -156,7 +156,7 @@
 
         <local:ExternalRunner2Vm x:Key="ExternalRunner2Vm"></local:ExternalRunner2Vm>
         <DataTemplate DataType="{x:Type runner:ExternalRunner}">
-            <Grid Margin="0 10 ">
+            <Grid Margin="25 10 20 10">
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
                 </Grid.Effect>
@@ -168,9 +168,8 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Border Name="Border1" Grid.Row="0" Grid.RowSpan="2" 
-                                BorderBrush="{DynamicResource PrimaryMidBrush}"
-                                Background="{DynamicResource BackgroundBrush}"
-                                CornerRadius="10" BorderThickness="2">
+                        Background="{DynamicResource BackgroundBrush}"
+                        CornerRadius="10" BorderThickness="0">
                 </Border>
                 <Grid Grid.Row="0" Background="{DynamicResource PrimaryMidBrush}">
                     <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" FontSize="{DynamicResource HeadFontSize}" Text="{Binding Name}" Margin="5"></TextBlock>
@@ -201,7 +200,7 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Grid MinWidth="150" Background="{DynamicResource BackgroundBrush}">
+        <Grid MinWidth="130" Background="{DynamicResource BackgroundBrush}">
             <Border BorderThickness="0" Background="{DynamicResource BackgroundBrush}">
                 <Border.Effect>
                     <DropShadowEffect Direction="0" Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
@@ -236,7 +235,7 @@
                 </Grid.RowDefinitions>
 
                 <ListBox Grid.Row="2" Opacity="0.9" ScrollViewer.CanContentScroll="False"
-                         Style="{StaticResource ListBoxRunners}"
+                         Style="{StaticResource ListBoxRunners}" Grid.IsSharedSizeScope="True"
                          ItemsSource="{Binding Runners}">
                 </ListBox>
 
@@ -246,9 +245,6 @@
                     </Border.Effect>
                 </Border>
 
-                <Grid Row="0">
-                    <TextBlock Text="Runner" VerticalAlignment="Center" FontWeight="Bold" Margin="5" FontSize="14pt"></TextBlock>
-                </Grid>
 
                 <Grid Grid.Row="1" Margin="10 3" Height="35">
                     <Grid.ColumnDefinitions>
@@ -257,7 +253,11 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{DynamicResource Default}" VerticalAlignment="Center" FontWeight="Bold" Margin="5"></TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Text="{Binding SelectedProtocol}" Margin="3" VerticalAlignment="Center" FontWeight="Bold"></TextBlock>
+                        <TextBlock Text="{DynamicResource Default}" VerticalAlignment="Center" FontWeight="Bold"></TextBlock>
+                        <TextBlock Text="Runner" VerticalAlignment="Center" FontWeight="Bold"></TextBlock>
+                    </StackPanel>
 
                     <ComboBox Grid.Column="1" 
                               ItemsSource="{Binding RunnerNames}"
