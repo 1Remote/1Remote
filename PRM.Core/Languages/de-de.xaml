@@ -75,16 +75,15 @@
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Allgemein</s:String>
-    <s:String x:Key="system_options_general_language">Sprache</s:String>
-    <s:String x:Key="system_options_general_start">Start</s:String>
+    <s:String x:Key="Language">Sprache</s:String>
+    <s:String x:Key="Startup">Start</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">Mit dem Betriebssystem starten</s:String>
     <s:String x:Key="system_options_general_start_minimized">Minimiert starten</s:String>
     <s:String x:Key="system_options_general_log_file_path">Logdatei</s:String>
 
-    <s:String x:Key="system_options_quick_title">Schnelle Verbindung</s:String>
     <s:String x:Key="system_options_quick_description">Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.</s:String>
     <s:String x:Key="system_options_quick_match_providers">Keyword-Matchers</s:String>
-    <s:String x:Key="system_options_quick_launcher">Startprogramm</s:String>
+    <s:String x:Key="Launcher">Startprogramm</s:String>
     <s:String x:Key="system_options_quick_launcher_enable">Aktiv</s:String>
     <s:String x:Key="system_options_quick_launcher_hotkey">Hotkey</s:String>
     <s:String x:Key="system_options_quick_launcher_allow_group_name_search">Allow search tags</s:String>
@@ -109,19 +108,17 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_found">Datenbank: kann den privaten RSA-Schlüssel nicht finden! Bitte wählen Sie einen korrekten Schlüssel aus.</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Datenbank: der private RSA-schlüssel stimmt nicht mit dem öffentlichen Schlüssel überein! Bitte wählen Sie einen korrekten Schlüssel aus.</s:String>
 
-    <s:String x:Key="system_options_theme_title">Design</s:String>
-    <s:String x:Key="system_options_theme_prm_title">Farbthema</s:String>
-    <s:String x:Key="system_options_theme_prm_theme">Thema</s:String>
-    <s:String x:Key="system_options_theme_prm_main_color">Farbe1</s:String>
-    <s:String x:Key="system_options_theme_prm_secondary_color">Farbe2</s:String>
-    <s:String x:Key="system_options_theme_prm_background_color">Hintergrund</s:String>
-    <s:String x:Key="system_options_theme_prm_color_normal">Normal</s:String>
-    <s:String x:Key="system_options_theme_prm_color_lighter">Heller</s:String>
-    <s:String x:Key="system_options_theme_prm_color_darker">Dunkler</s:String>
-    <s:String x:Key="system_options_theme_prm_color_foreground">Schriftart</s:String>
-    <s:String x:Key="system_options_theme_putty_title">Kitty</s:String>
-    <s:String x:Key="system_options_theme_putty_font_size">Schriftgröße</s:String>
-    <s:String x:Key="system_options_theme_putty_theme">Farbthema</s:String>
+    <s:String x:Key="Theme">Thema</s:String>
+    <s:String x:Key="Color">Farbthema</s:String>
+    <s:String x:Key="Color1">Farbe1</s:String>
+    <s:String x:Key="Color2">Farbe2</s:String>
+    <s:String x:Key="Background">Hintergrund</s:String>
+    <s:String x:Key="Normal">Normal</s:String>
+    <s:String x:Key="Lighter">Heller</s:String>
+    <s:String x:Key="Darker">Dunkler</s:String>
+    <s:String x:Key="Font">Schriftart</s:String>
+    <s:String x:Key="Font size">Schriftgröße</s:String>
+    <s:String x:Key="Themes">Farbthema</s:String>
 
     <!-- server operate -->
     <s:String x:Key="server_card_operate_duplicate">Duplizieren</s:String>
@@ -262,8 +259,9 @@
     <s:String x:Key="Preview">Preview</s:String>
     <s:String x:Key="Preview rdp file">Preview rdp file</s:String>
     <s:String x:Key="Check monitor number">Check monitor number</s:String>
-    <s:String x:Key="Environment variables">Environment variables</s:String>
-    <s:String x:Key="Add environment variables">Add environment variables</s:String>
-    <s:String x:Key="Selected">Selected</s:String>
+    <s:String x:Key="Environment variables">Umgebungsvariablen</s:String>
+    <s:String x:Key="Add environment variables">Fügen Sie Umgebungsvariablen hinzu</s:String>
+    <s:String x:Key="Selected">Ausgewählt</s:String>
+    <s:String x:Key="Custom">Benutzerdefiniert</s:String>
 
 </ResourceDictionary>

@@ -75,16 +75,15 @@
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">General</s:String>
-    <s:String x:Key="system_options_general_language">Language</s:String>
-    <s:String x:Key="system_options_general_start">Startup</s:String>
+    <s:String x:Key="Language">Language</s:String>
+    <s:String x:Key="Startup">Startup</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">Run automatically at OS startup</s:String>
     <s:String x:Key="system_options_general_start_minimized">Start minimized</s:String>
     <s:String x:Key="system_options_general_log_file_path">Log file</s:String>
 
-    <s:String x:Key="system_options_quick_title">Quick connect</s:String>
     <s:String x:Key="system_options_quick_description">Quick connect allows you to open up a quick connection bar via a hot key, then you can type the keyword and start connection by pressing the Enter key</s:String>
     <s:String x:Key="system_options_quick_match_providers">Keyword-Matchers</s:String>
-    <s:String x:Key="system_options_quick_launcher">Launcher</s:String>
+    <s:String x:Key="Launcher">Launcher</s:String>
     <s:String x:Key="system_options_quick_launcher_enable">Enable the launcher</s:String>
     <s:String x:Key="system_options_quick_launcher_hotkey">Hot key</s:String>
     <s:String x:Key="system_options_quick_launcher_allow_group_name_search">Include tags within search</s:String>
@@ -109,19 +108,17 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_found">Database: Can't find the RSA private key! Please select the correct key.</s:String>
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Database: RSA private key does not match the public key! Please select the correct key.</s:String>
 
-    <s:String x:Key="system_options_theme_title">Theme</s:String>
-    <s:String x:Key="system_options_theme_prm_title">Color</s:String>
-    <s:String x:Key="system_options_theme_prm_theme">Theme</s:String>
-    <s:String x:Key="system_options_theme_prm_main_color">Color1</s:String>
-    <s:String x:Key="system_options_theme_prm_secondary_color">Color2</s:String>
-    <s:String x:Key="system_options_theme_prm_background_color">Background</s:String>
-    <s:String x:Key="system_options_theme_prm_color_normal">Normal</s:String>
-    <s:String x:Key="system_options_theme_prm_color_lighter">Lighter</s:String>
-    <s:String x:Key="system_options_theme_prm_color_darker">Darker</s:String>
-    <s:String x:Key="system_options_theme_prm_color_foreground">Font</s:String>
-    <s:String x:Key="system_options_theme_putty_title">Kitty</s:String>
-    <s:String x:Key="system_options_theme_putty_font_size">Font Size</s:String>
-    <s:String x:Key="system_options_theme_putty_theme">Themes</s:String>
+    <s:String x:Key="Theme">Theme</s:String>
+    <s:String x:Key="Color">Color</s:String>
+    <s:String x:Key="Color1">Color1</s:String>
+    <s:String x:Key="Color2">Color2</s:String>
+    <s:String x:Key="Background">Background</s:String>
+    <s:String x:Key="Normal">Normal</s:String>
+    <s:String x:Key="Lighter">Lighter</s:String>
+    <s:String x:Key="Darker">Darker</s:String>
+    <s:String x:Key="Font">Font</s:String>
+    <s:String x:Key="Font size">Font size</s:String>
+    <s:String x:Key="Themes">Themes</s:String>
 
     <!-- server operation -->
     <s:String x:Key="server_card_operate_duplicate">Duplicate</s:String>
@@ -265,5 +262,6 @@
     <s:String x:Key="Environment variables">Environment variables</s:String>
     <s:String x:Key="Add environment variables">Add environment variables</s:String>
     <s:String x:Key="Selected">Selected</s:String>
+    <s:String x:Key="Custom">Custom</s:String>
 
 </ResourceDictionary>

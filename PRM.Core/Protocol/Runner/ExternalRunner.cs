@@ -48,7 +48,7 @@ namespace PRM.Core.Protocol.Runner
         {
         }
 
-        protected string _exePath = "";
+        protected string _exePath;
         public string ExePath
         {
             get => _exePath;

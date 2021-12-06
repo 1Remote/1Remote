@@ -34,16 +34,16 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel Grid.IsSharedSizeScope="True">
+    <StackPanel>
         <Grid Height="20"></Grid>
         <Grid Style="{StaticResource GridOneRow}">
-            <Grid.ColumnDefinitions>  
+            <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
                 <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Exe path'}"></TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding ExternalRunner.ExePath}" 
+            <TextBox Grid.Column="1" Text="{Binding ExternalRunner.ExePath, UpdateSourceTrigger=PropertyChanged}" 
                      ToolTip="{Binding ExternalRunner.ExePath}"
                      TextWrapping="Wrap"
                      VerticalContentAlignment="Center"></TextBox>
