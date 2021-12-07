@@ -23,7 +23,7 @@ namespace PRM.ViewModel
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
         private readonly PrmContext _context;
-        public bool IsAddMode => _orgServer?.Id == 0;
+        public bool IsAddMode => _orgServer == null || _orgServer.Id == 0;
 
 
         #region single edit
