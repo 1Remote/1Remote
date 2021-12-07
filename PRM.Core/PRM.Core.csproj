@@ -152,6 +152,7 @@
     <Compile Include="Service\LauncherService.cs" />
     <Compile Include="Service\ProtocolConfigurationService.cs" />
     <Compile Include="Service\ThemeService.cs" />
+    <Compile Include="Utils\AssemblyHelper.cs" />
     <Compile Include="Utils\DesktopResolutionWatcher.cs" />
     <Compile Include="Service\LocalityService.cs" />
     <Compile Include="External\KiTTY\KittyConfigKeyValuePair.cs" />

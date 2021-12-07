@@ -12,6 +12,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
         public static string ProtocolName = "FTP";
         public ProtocolServerFTP() : base(ProtocolName, "FTP.V1", "FTP")
         {
+            base.Port = "20";
         }
 
         private string _startupPath = "/";
