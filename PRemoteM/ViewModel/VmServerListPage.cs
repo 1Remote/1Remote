@@ -438,7 +438,7 @@ namespace PRM.ViewModel
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
+                    }, o => App.MainUi.Vm.DispPage == null && ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
             }
         }
 
@@ -468,16 +468,16 @@ namespace PRM.ViewModel
                         if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
                         {
                             // cancel order
-                            if (ServerOrderBy == (EnumServerOrderBy) (ot + 1))
+                            if (ServerOrderBy == (EnumServerOrderBy)(ot + 1))
                             {
                                 ot = -1;
                             }
-                            else if (ServerOrderBy == (EnumServerOrderBy) ot)
+                            else if (ServerOrderBy == (EnumServerOrderBy)ot)
                             {
                                 ++ot;
                             }
 
-                            ServerOrderBy = (EnumServerOrderBy) ot;
+                            ServerOrderBy = (EnumServerOrderBy)ot;
                             OrderServerList();
                             _lastCmdReOrder = DateTime.Now;
                         }
