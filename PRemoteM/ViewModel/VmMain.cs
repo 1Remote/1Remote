@@ -141,12 +141,17 @@ namespace PRM.ViewModel
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                DispPage = new AnimationPage()
+                var page = new AnimationPage()
                 {
                     InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                     OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, servers)),
                 };
+                var serverBases = servers as ProtocolServerBase[] ?? servers.ToArray();
+                if (serverBases.Count() > 1)
+                    page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases));
+                else
+                    page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases.First()));
+                DispPage = page;
             };
 
             ServersShownPage = new AnimationPage()
