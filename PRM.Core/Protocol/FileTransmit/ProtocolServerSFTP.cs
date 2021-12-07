@@ -12,6 +12,8 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
         public static string ProtocolName = "SFTP";
         public ProtocolServerSFTP() : base(ProtocolName, $"{ProtocolName}.V1", ProtocolName)
         {
+            base.UserName = "root";
+            base.Port = "22";
         }
 
         private string _privateKey = "";
