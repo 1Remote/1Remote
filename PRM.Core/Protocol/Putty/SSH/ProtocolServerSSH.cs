@@ -18,6 +18,8 @@ namespace PRM.Core.Protocol.Putty.SSH
         public static string ProtocolName = "SSH";
         public ProtocolServerSSH() : base(ProtocolServerSSH.ProtocolName, $"Putty.{ProtocolServerSSH.ProtocolName}.V1", ProtocolServerSSH.ProtocolName)
         {
+            base.UserName = "root";
+            base.Port = "22";
         }
 
         [OtherNameAttribute(Name = "PRM_SESSION_NAME")]

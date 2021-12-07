@@ -125,7 +125,9 @@
                                                 <colorPickerWpf1:ColorPickRowPopup
                                                     HexColor="{Binding Server.MarkColorHex}"
                                                     Foreground="{DynamicResource BackgroundTextBrush}" 
+                                                    HexVisible="Collapsed"
                                                     Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="Auto" HorizontalAlignment="Left" Text="{Binding Server.MarkColorHex}"></TextBlock>
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
@@ -247,7 +249,7 @@
                             <ListBox Name="ListBoxProtocols"
                                     IsSynchronizedWithCurrentItem="True"
                                     ItemsSource="{Binding ProtocolList}"
-                                    SelectedValue="{Binding ProtocolSelected}"
+                                    SelectedValue="{Binding SelectedProtocol}"
                                     Background="{StaticResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"

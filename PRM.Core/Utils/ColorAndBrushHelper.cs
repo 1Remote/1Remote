@@ -13,13 +13,17 @@ namespace Shawn.Utils
         /// <returns></returns>
         public static Tuple<byte, byte, byte, byte> HexColorToArgb(string hexColor)
         {
-            //remove the # at the front
-            var hex = hexColor.Replace("#", "");
+            hexColor = hexColor?.Trim();
 
             byte a = 255;
-            byte r = 255;
-            byte g = 255;
-            byte b = 255;
+            byte r = 160;
+            byte g = 160;
+            byte b = 160;
+
+            if (string.IsNullOrEmpty(hexColor))
+                return new Tuple<byte, byte, byte, byte>(a, r, g, b);
+            //remove the # at the front
+            var hex = hexColor.Replace("#", "");
 
             int start = 0;
 

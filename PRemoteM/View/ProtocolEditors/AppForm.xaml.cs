@@ -17,7 +17,7 @@ namespace PRM.View.ProtocolEditors
         {
             if (Vm is ProtocolServerApp app)
             {
-                if (string.IsNullOrEmpty(app.ExePath) == false && File.Exists(app.ExePath))
+                if (string.IsNullOrEmpty(app.ExePath) == false)
                 {
                     return true;
                 }
