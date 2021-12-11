@@ -6,6 +6,7 @@
                   xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:viewModel="clr-namespace:PRM.ViewModel"
+                  xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -285,7 +286,7 @@
             </Setter>
         </Style>
 
-        <DataTemplate x:Key="SearchBoxActionItemDataTemplate" DataType="viewModel:ActionItem">
+        <DataTemplate x:Key="SearchBoxActionItemDataTemplate" DataType="model:ActionForServer">
             <Grid Height="{StaticResource OneActionItemHeight}">
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>

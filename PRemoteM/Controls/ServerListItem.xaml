@@ -7,6 +7,7 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
+             xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -155,10 +156,60 @@
                     <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
                 </Border.Effect>
                 <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
-                    <StackPanel>
+                    <ListBox ItemsSource="{Binding Actions}" BorderThickness="0">
+                        <ListBox.Style>
+                            <Style TargetType="{x:Type ListBox}">
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                <Setter Property="ItemContainerStyle">
+                                    <Setter.Value>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListBoxItem">
+                                                        <Grid>
+                                                            <Border x:Name="GridContainer">
+                                                            </Border>
+                                                            <ContentPresenter x:Name="ContentPresenter"/>
+                                                        </Grid>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
+                                                                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
+                                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+                                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
+                                                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="ItemTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate DataType="model:ActionForServer">
+                                            <Grid>
+                                                <TextBlock Grid.Row="0" Text="{Binding ActionName}" 
+                                                               Margin="10 5"
+                                                               Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"
+                                                               FontSize="14" VerticalAlignment="Center">
+                                                </TextBlock>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.Style>
+                    </ListBox>
+                    <!--<StackPanel>
                         <Button Padding="5" Click="ButtonEditServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource Edit}"></Button>
                         <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
-                    </StackPanel>
+                    </StackPanel>-->
                 </Grid>
             </Border>
         </Popup>

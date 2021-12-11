@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using PRM.Core.Model;
 using Shawn.Utils;
@@ -119,6 +120,7 @@ namespace PRM.Core.Protocol
             }
         }
 
+        public List<ActionForServer> Actions { get; set; }
         #endregion CMD
     }
 }
