@@ -5,34 +5,34 @@
     <s:String x:Key="messagebox_title_error">PRemoteM Erreur</s:String>
     <s:String x:Key="messagebox_title_info">PRemoteM Information</s:String>
 
-    <s:String x:Key="word_exit">Sortir</s:String>
-    <s:String x:Key="word_close">Fermer</s:String>
-    <s:String x:Key="word_add">Ajouter</s:String>
-    <s:String x:Key="word_edit">Edition</s:String>
-    <s:String x:Key="word_save">Sauvegarder</s:String>
-    <s:String x:Key="word_save_as">Sauvegarder sour...</s:String>
-    <s:String x:Key="word_back">Retour</s:String>
-    <s:String x:Key="word_delete">Effacer</s:String>
-    <s:String x:Key="word_cancel">Annuler</s:String>
-    <s:String x:Key="word_select">Selectionner</s:String>
-    <s:String x:Key="word_explore_to">Explorer...</s:String>
-    <s:String x:Key="word_previous">Précédent</s:String>
-    <s:String x:Key="word_next">Suivant</s:String>
-    <s:String x:Key="word_done">Effectuée</s:String>
-    <s:String x:Key="word_reset">Réinitialiser</s:String>
-    <s:String x:Key="word_import">Importer</s:String>
-    <s:String x:Key="word_export">Exporter</s:String>
-    <s:String x:Key="word_name">Nom</s:String>
-    <s:String x:Key="word_filename">Nom de fichier</s:String>
-    <s:String x:Key="word_test">Test</s:String>
-    <s:String x:Key="word_reconnect">Reconnecter</s:String>
-    <s:String x:Key="word_dismiss">Rejeter</s:String>
-    <s:String x:Key="word_lock">Verrouiller</s:String>
-    <s:String x:Key="word_topmost">Garder au premier plan</s:String>
-    <s:String x:Key="word_close_all">Tout fermer</s:String>
-    <s:String x:Key="word_rename">Renommer</s:String>
-    <s:String x:Key="word_connect">Connexion</s:String>
-    <s:String x:Key="word_connect_to_new_tab">Connexion (Nouvelle fenetre)</s:String>
+    <s:String x:Key="Exit">Sortir</s:String>
+    <s:String x:Key="Close">Fermer</s:String>
+    <s:String x:Key="Add">Ajouter</s:String>
+    <s:String x:Key="Edit">Edition</s:String>
+    <s:String x:Key="Save">Sauvegarder</s:String>
+    <s:String x:Key="Save as...">Sauvegarder sour...</s:String>
+    <s:String x:Key="Back">Retour</s:String>
+    <s:String x:Key="Delete">Effacer</s:String>
+    <s:String x:Key="Cancel">Annuler</s:String>
+    <s:String x:Key="Select">Selectionner</s:String>
+    <s:String x:Key="Explore to...">Explorer...</s:String>
+    <s:String x:Key="Previous">Précédent</s:String>
+    <s:String x:Key="Next">Suivant</s:String>
+    <s:String x:Key="Done">Effectuée</s:String>
+    <s:String x:Key="Reset">Réinitialiser</s:String>
+    <s:String x:Key="Import">Importer</s:String>
+    <s:String x:Key="Export">Exporter</s:String>
+    <s:String x:Key="Name">Nom</s:String>
+    <s:String x:Key="File Name">Nom de fichier</s:String>
+    <s:String x:Key="Test">Test</s:String>
+    <s:String x:Key="Reconnect">Reconnecter</s:String>
+    <s:String x:Key="Dismiss">Rejeter</s:String>
+    <s:String x:Key="Lock">Verrouiller</s:String>
+    <s:String x:Key="Always on top">Garder au premier plan</s:String>
+    <s:String x:Key="Close all">Tout fermer</s:String>
+    <s:String x:Key="Rename">Renommer</s:String>
+    <s:String x:Key="Connect">Connexion</s:String>
+    <s:String x:Key="Connect (New window)">Connexion (Nouvelle fenetre)</s:String>
 
     <s:String x:Key="filter_mainwindow">Saisissez vos mots clés</s:String>
     <s:String x:Key="filter_searchbox">Rechercher (Ctrl+F)</s:String>
@@ -43,11 +43,10 @@
     <s:String x:Key="string_permission_denied">Permission refusée</s:String>
 
     <!-- tab -->
-    <s:String x:Key="tab_all">Tous</s:String>
-    <s:String x:Key="tab_window_set_tag">Tag temporaire</s:String>
+    <s:String x:Key="All">Tous</s:String>
 
     <!-- server protocol relate -->
-    <s:String x:Key="server_protocol">Protocol</s:String>
+    <s:String x:Key="Protocol">Protocol</s:String>
 
     <!-- file transmit host -->
     <s:String x:Key="file_transmit_host_list_header_last_update">Dernière mise à jour</s:String>
@@ -70,8 +69,8 @@
     <s:String x:Key="host_reconecting_info">Reconnexion ...</s:String>
 
     <!-- sys menu -->
-    <s:String x:Key="system_menu_options_title">Options</s:String>
-    <s:String x:Key="system_menu_about_title">À propos</s:String>
+    <s:String x:Key="Options">Options</s:String>
+    <s:String x:Key="About">À propos</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Général</s:String>

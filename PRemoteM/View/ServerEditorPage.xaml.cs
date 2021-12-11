@@ -31,7 +31,7 @@ namespace PRM.View
             // add mode
             if (vm.IsAddMode)
             {
-                ButtonSave.Content = Context.LanguageService.Translate("word_add");
+                ButtonSave.Content = Context.LanguageService.Translate("Add");
                 ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
 
                 if (vm.Server.IconImg == null

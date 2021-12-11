@@ -156,7 +156,7 @@
                 </Border.Effect>
                 <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                     <StackPanel>
-                        <Button Padding="5" Click="ButtonEditServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource word_edit}"></Button>
+                        <Button Padding="5" Click="ButtonEditServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource Edit}"></Button>
                         <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                     </StackPanel>
                 </Grid>

@@ -127,7 +127,7 @@
                 </Grid>
             </Grid>
 
-            <Button Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource word_select}" Style="{StaticResource ButtonBarPrimaryStyle}" />
+            <Button Grid.Row="2" Padding="0" Click="BtnOpenImg_OnClick" Content="{DynamicResource Select}" Style="{StaticResource ButtonBarPrimaryStyle}" />
         </Grid>
     </Grid>
 </UserControl>

@@ -205,20 +205,20 @@ namespace PRM.ViewModel
 
             var actions = new ObservableCollection<ActionItem>();
             {
-                actions.Add(new ActionItem()
-                {
-                    ActionName = Context.LanguageService.Translate("word_connect"),
-                    Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
-                });
+                if (RemoteWindowPool.Instance.TabWindowCount > 0)
+                    actions.Add(new ActionItem()
+                    {
+                        ActionName = Context.LanguageService.Translate("Connect (New window)"),
+                        Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
+                    });
 
                 // external runners
-
                 if (Context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolServer.Protocol)
                 && Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners.Count > 1)
                 {
                     actions.Add(new ActionItem()
                     {
-                        ActionName = Context.LanguageService.Translate("word_connect") + $" (Internal)",
+                        ActionName = Context.LanguageService.Translate("Connect") + $" (Internal)",
                         Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, assignRunnerName: Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners.First().Name); },
                     });
                     foreach (var runner in Context.ProtocolConfigurationService.ProtocolConfigs[protocolServer.Protocol].Runners)
@@ -226,21 +226,23 @@ namespace PRM.ViewModel
                         if (runner is InternalDefaultRunner) continue;
                         actions.Add(new ActionItem()
                         {
-                            ActionName = Context.LanguageService.Translate("word_connect") + $" ({runner.Name})",
+                            ActionName = Context.LanguageService.Translate("Connect") + $" ({runner.Name})",
                             Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, assignRunnerName: runner.Name); },
                         });
                     }
                 }
-
-                if (RemoteWindowPool.Instance.TabWindowCount > 0)
+                else
+                {
                     actions.Add(new ActionItem()
                     {
-                        ActionName = Context.LanguageService.Translate("word_connect_to_new_tab"),
-                        Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
+                        ActionName = Context.LanguageService.Translate("Connect"),
+                        Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); },
                     });
+                }
+
                 actions.Add(new ActionItem()
                 {
-                    ActionName = Context.LanguageService.Translate("word_edit"),
+                    ActionName = Context.LanguageService.Translate("Edit"),
                     Run = (id) => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, false, false); },
                 });
                 actions.Add(new ActionItem()

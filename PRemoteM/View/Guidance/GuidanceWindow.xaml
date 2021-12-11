@@ -308,7 +308,7 @@
             <Button Padding="0 1 0 0" Width="80" Height="20"
                                BorderThickness="1"
                                Click="ButtonPrevious_OnClick"
-                               Content="{DynamicResource word_previous}">
+                               Content="{DynamicResource Previous}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                         <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
@@ -326,7 +326,7 @@
                                HorizontalAlignment="Right"
                                BorderThickness="1"
                                Click="ButtonNext_OnClick"
-                               Content="{DynamicResource word_next}">
+                               Content="{DynamicResource Next}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                         <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
@@ -343,7 +343,7 @@
                                HorizontalAlignment="Right"
                                BorderThickness="1"
                                Click="ButtonExit_OnClick"
-                               Content="{DynamicResource word_done}">
+                               Content="{DynamicResource Done}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                         <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>

@@ -5,34 +5,34 @@
     <s:String x:Key="messagebox_title_error">PRemoteM 错误</s:String>
     <s:String x:Key="messagebox_title_info">PRemoteM 提示</s:String>
 
-    <s:String x:Key="word_exit">退出</s:String>
-    <s:String x:Key="word_close">关闭</s:String>
-    <s:String x:Key="word_add">添加</s:String>
-    <s:String x:Key="word_edit">编辑</s:String>
-    <s:String x:Key="word_save">保存</s:String>
-    <s:String x:Key="word_save_as">保存到...</s:String>
-    <s:String x:Key="word_back">返回</s:String>
-    <s:String x:Key="word_delete">删除</s:String>
-    <s:String x:Key="word_cancel">取消</s:String>
-    <s:String x:Key="word_select">选择</s:String>
-    <s:String x:Key="word_explore_to">定位到...</s:String>
-    <s:String x:Key="word_previous">上一页</s:String>
-    <s:String x:Key="word_next">下一页</s:String>
-    <s:String x:Key="word_done">完成</s:String>
-    <s:String x:Key="word_reset">重置</s:String>
-    <s:String x:Key="word_import">导入</s:String>
-    <s:String x:Key="word_export">导出</s:String>
-    <s:String x:Key="word_name">名称</s:String>
-    <s:String x:Key="word_filename">文件名</s:String>
-    <s:String x:Key="word_test">测试</s:String>
-    <s:String x:Key="word_reconnect">重新连接</s:String>
-    <s:String x:Key="word_dismiss">关闭</s:String>
-    <s:String x:Key="word_lock">锁定</s:String>
-    <s:String x:Key="word_topmost">置顶</s:String>
-    <s:String x:Key="word_close_all">全部关闭</s:String>
-    <s:String x:Key="word_rename">重命名</s:String>
-    <s:String x:Key="word_connect">连接</s:String>
-    <s:String x:Key="word_connect_to_new_tab">连接 (新窗口)</s:String>
+    <s:String x:Key="Exit">退出</s:String>
+    <s:String x:Key="Close">关闭</s:String>
+    <s:String x:Key="Add">添加</s:String>
+    <s:String x:Key="Edit">编辑</s:String>
+    <s:String x:Key="Save">保存</s:String>
+    <s:String x:Key="Save as...">保存到...</s:String>
+    <s:String x:Key="Back">返回</s:String>
+    <s:String x:Key="Delete">删除</s:String>
+    <s:String x:Key="Cancel">取消</s:String>
+    <s:String x:Key="Select">选择</s:String>
+    <s:String x:Key="Explore to...">定位到...</s:String>
+    <s:String x:Key="Previous">上一页</s:String>
+    <s:String x:Key="Next">下一页</s:String>
+    <s:String x:Key="Done">完成</s:String>
+    <s:String x:Key="Reset">重置</s:String>
+    <s:String x:Key="Import">导入</s:String>
+    <s:String x:Key="Export">导出</s:String>
+    <s:String x:Key="Name">名称</s:String>
+    <s:String x:Key="File Name">文件名</s:String>
+    <s:String x:Key="Test">测试</s:String>
+    <s:String x:Key="Reconnect">重新连接</s:String>
+    <s:String x:Key="Dismiss">关闭</s:String>
+    <s:String x:Key="Lock">锁定</s:String>
+    <s:String x:Key="Always on top">置顶</s:String>
+    <s:String x:Key="Close all">全部关闭</s:String>
+    <s:String x:Key="Rename">重命名</s:String>
+    <s:String x:Key="Connect">连接</s:String>
+    <s:String x:Key="Connect (New window)">连接 (新窗口)</s:String>
 
     <s:String x:Key="filter_mainwindow">在此输入关键词</s:String>
     <s:String x:Key="filter_searchbox">搜索 (Ctrl+F)</s:String>
@@ -43,11 +43,10 @@
     <s:String x:Key="string_permission_denied">无操作权限</s:String>
 
     <!-- tab -->
-    <s:String x:Key="tab_all">全部</s:String>
-    <s:String x:Key="tab_window_set_tag">临时标签</s:String>
+    <s:String x:Key="All">全部</s:String>
 
     <!-- server protocol relate -->
-    <s:String x:Key="server_protocol">协议</s:String>
+    <s:String x:Key="Protocol">协议</s:String>
 
     <!-- file transmit host -->
     <s:String x:Key="file_transmit_host_list_header_last_update">修改时间</s:String>
@@ -70,8 +69,8 @@
     <s:String x:Key="host_reconecting_info">正尝试重新连接...</s:String>
 
     <!-- sys menu -->
-    <s:String x:Key="system_menu_options_title">设置</s:String>
-    <s:String x:Key="system_menu_about_title">关于</s:String>
+    <s:String x:Key="Options">设置</s:String>
+    <s:String x:Key="About">关于</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">常规</s:String>

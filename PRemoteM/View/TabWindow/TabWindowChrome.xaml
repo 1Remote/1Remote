@@ -339,7 +339,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>-->
 
-                                <CheckBox Name="CbLock" ToolTip="{DynamicResource word_lock}" IsChecked="{Binding IsLocked}">
+                                <CheckBox Name="CbLock" ToolTip="{DynamicResource Lock}" IsChecked="{Binding IsLocked}">
                                     <CheckBox.Style>
                                         <Style TargetType="CheckBox" BasedOn="{StaticResource WinTitleBarCbStyle}">
                                             <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
@@ -375,7 +375,7 @@
                                 </CheckBox>
 
                                 <CheckBox Name="CbPin" 
-                                          ToolTip="{DynamicResource word_topmost}"
+                                          ToolTip="{DynamicResource 'Always on top'}"
                                           IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=Topmost}">
                                     <CheckBox.Style>
                                         <Style TargetType="CheckBox" BasedOn="{StaticResource WinTitleBarCbStyle}">
@@ -476,7 +476,7 @@
                                     </Grid>
                                 </Button>
 
-                                <Button Name="BtnCloseAll" ToolTip="{DynamicResource word_close_all}" 
+                                <Button Name="BtnCloseAll" ToolTip="{DynamicResource 'Close all'}" 
                                         Command="{Binding CmdCloseAll}" 
                                         IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
                                         Style="{StaticResource WinTitleBarBtnStyle}"
@@ -492,7 +492,7 @@
                                 </Button>
 
                                 <Button Name="BtnClose" 
-                                                   ToolTip="{DynamicResource word_close}" 
+                                                   ToolTip="{DynamicResource Close}" 
                                                    Command="{Binding CmdClose}" 
                                                    IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
                                                    Style="{StaticResource WinTitleBarBtnStyle}"

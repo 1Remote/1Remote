@@ -85,7 +85,7 @@
                         <StackPanel>
                             <Grid Style="{StaticResource EditorRowGrid}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource word_name}"></TextBlock>
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Name}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <controls:AutoCompleteComboBox
                                                                     Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
@@ -152,12 +152,12 @@
                                                             <ColumnDefinition Width="*"></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
                                                         <Button Style="{StaticResource ButtonBarAccentStyle}" 
-                                                                Content="{DynamicResource word_done}" 
+                                                                Content="{DynamicResource Done}" 
                                                                 Click="ButtonLogoSave_OnClick">
                                                         </Button>
 
                                                         <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
-                                                                Content="{DynamicResource word_reset}" 
+                                                                Content="{DynamicResource Reset}" 
                                                                 Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
                                                         </Button>
                                                     </Grid>
@@ -200,7 +200,7 @@
                                     </Grid>
                                     <Button Margin="5 0 0 0" 
                                             VerticalAlignment="Stretch"
-                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_test}"></Button>
+                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
                                 </StackPanel>
                             </Grid>
 
@@ -214,7 +214,7 @@
                                     </Grid>
                                     <Button Margin="5 0 0 0" 
                                             VerticalAlignment="Stretch"
-                                            Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource word_test}"></Button>
+                                            Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -353,14 +353,14 @@
                                 HorizontalAlignment="Left"
                                 Command="{Binding CmdSave}"
                                 Style="{StaticResource ButtonAccentStyle}"
-                                Content="{DynamicResource word_save}">
+                                Content="{DynamicResource Save}">
                         </Button>
 
                         <Button Padding="0 1 0 0" Width="80" Height="25"
                                 HorizontalAlignment="Right"
                                 Command="{Binding CmdCancel}"
                                 Style="{StaticResource ButtonPrimaryStyle}"
-                                Content="{DynamicResource word_cancel}">
+                                Content="{DynamicResource Cancel}">
                         </Button>
                     </Grid>
                 </Grid>
