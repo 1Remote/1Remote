@@ -54,9 +54,9 @@ namespace PRM.Core.Service
 
     public class DatabaseConfig
     {
-        private string _sqliteDatabasePath = "";
         public const DatabaseType DatabaseType = I.DatabaseType.Sqlite;
 
+        private string _sqliteDatabasePath = "./" + ConfigurationService.AppName + ".db";
         public string SqliteDatabasePath
         {
             get
@@ -163,6 +163,9 @@ namespace PRM.Core.Service
                 oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
                 Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
             }
+
+            if(_keywordMatchService == null)
+                return;
 
             // old user convert the 0.5 ini file to 0.6 json file
             if (File.Exists(oldIniFilePath))

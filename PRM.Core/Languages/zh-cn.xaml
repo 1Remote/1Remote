@@ -263,5 +263,6 @@
     <s:String x:Key="Add environment variables">添加环境变量</s:String>
     <s:String x:Key="Selected">选中</s:String>
     <s:String x:Key="Custom">Custom</s:String>
+    <s:String x:Key="write permissions alert" xml:space="preserve">我们没有路径 `{0}` 的写入权限！&#13;&#10;请尝试用以下方法修复问题：&#13;&#10;1. 使用管理员权限运行程序&#13;&#10;2. 修改路径的权限设置 &#13;&#10;3. 将 PRemoteM 移动到其他目录</s:String>
 
 </ResourceDictionary>
