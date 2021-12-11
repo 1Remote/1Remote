@@ -151,15 +151,15 @@ namespace PRM.Core.Service
 
         public static List<MatchProviderInfo> GetMatchProviderInfos()
         {
-            var providerNames = VariableKeywordMatcher.Builder.GetAvailableProviderNames();
+            var providerNames = VariableKeywordMatcherIn1.Builder.GetAvailableProviderNames();
             var matchProviderInfos = new List<MatchProviderInfo>(providerNames.Count());
             foreach (var enumProviderType in providerNames)
             {
                 matchProviderInfos.Add(new MatchProviderInfo()
                 {
                     Name = enumProviderType,
-                    Title1 = VariableKeywordMatcher.Builder.GetProviderDescription(enumProviderType),
-                    Title2 = VariableKeywordMatcher.Builder.GetProviderDescriptionEn(enumProviderType),
+                    Title1 = VariableKeywordMatcherIn1.Builder.GetProviderDescription(enumProviderType),
+                    Title2 = VariableKeywordMatcherIn1.Builder.GetProviderDescriptionEn(enumProviderType),
                     Enabled = false,
                 });
             }
@@ -170,22 +170,25 @@ namespace PRM.Core.Service
             {
                 matchProviderInfo.Enabled = false;
             }
-            // ReSharper disable once PossibleNullReferenceException
-            matchProviderInfos.FirstOrDefault(x => x.Name == InitialsMatchProvider.GetName()).Enabled = true;
-            // ReSharper disable once PossibleNullReferenceException
-            matchProviderInfos.FirstOrDefault(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
+
+            var setEnabled = new Action<string, bool, bool>((name, isEnabled, isEditable) =>
+            {
+                if (matchProviderInfos.Any(x => x.Name == name))
+                {
+                    matchProviderInfos.First(x => x.Name == name).Enabled = isEnabled;
+                    matchProviderInfos.First(x => x.Name == name).IsEditable = isEditable;
+                }
+            });
+
+            setEnabled(DirectMatchProvider.GetName(), true, false);
+            setEnabled(InitialsMatchProvider.GetName(), true, true);
+            setEnabled(DiscreteMatchProvider.GetName(), true, true);
 
             if (code.StartsWith("zh"))
             {
-                // ReSharper disable once PossibleNullReferenceException
-                matchProviderInfos.FirstOrDefault(x => x.Name == ChineseZhCnPinYinMatchProvider.GetName()).Enabled = true;
-                // ReSharper disable once PossibleNullReferenceException
-                matchProviderInfos.FirstOrDefault(x => x.Name == ChineseZhCnPinYinInitialsMatchProvider.GetName()).Enabled = true;
+                setEnabled(ChineseZhCnPinYinMatchProvider.GetName(), true, true);
+                setEnabled(ChineseZhCnPinYinInitialsMatchProvider.GetName(), true, true);
             }
-            // ReSharper disable once PossibleNullReferenceException
-            matchProviderInfos.FirstOrDefault(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
-            // ReSharper disable once PossibleNullReferenceException
-            matchProviderInfos.FirstOrDefault(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
             return matchProviderInfos;
         }
     }

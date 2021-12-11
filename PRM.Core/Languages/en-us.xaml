@@ -263,5 +263,6 @@
     <s:String x:Key="Add environment variables">Add environment variables</s:String>
     <s:String x:Key="Selected">Selected</s:String>
     <s:String x:Key="Custom">Custom</s:String>
+    <s:String x:Key="write permissions alert" xml:space="preserve">We don't have write permissions for the `{0}` directory!&#13;&#10;Please try:&#13;&#10;1. `run as administrator`&#13;&#10;2. change directory/file permissions &#13;&#10;3. move PRemoteM to another folder</s:String>
 
 </ResourceDictionary>

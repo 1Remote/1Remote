@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.DB;
@@ -33,7 +34,7 @@ namespace PRM
         public static PrmContext Context { get; private set; }
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
         private DesktopResolutionWatcher _desktopResolutionWatcher;
-        public static bool IsPortable { get; private set; }
+        public static bool CanPortable { get; private set; }
 
         private void InitLog(string appDateFolder)
         {
@@ -135,12 +136,37 @@ namespace PRM
 
         private void App_OnStartup(object sender, StartupEventArgs startupEvent)
         {
-#if FOR_MICROSOFT_STORE_ONLY
-            IsPortable = true;
-#else
-            IsPortable = IOPermissionHelper.HasWritePermissionOnDir(Environment.CurrentDirectory);
-#endif
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
+
+
+            #region Check permissions
+#if FOR_MICROSOFT_STORE_ONLY
+            CanPortable = false;
+#else
+            CanPortable = true;
+#endif
+
+            var tmp = new ConfigurationService(true, null);
+            var languageService = new LanguageService(this.Resources, CultureInfo.CurrentCulture.Name.ToLower());
+            var dbDir = new FileInfo(tmp.Database.SqliteDatabasePath).Directory;
+            if (IOPermissionHelper.HasWritePermissionOnDir(dbDir.FullName) == false)
+            {
+                MessageBox.Show(languageService.Translate("write permissions alert", dbDir.FullName), languageService.Translate("messagebox_title_warning"), MessageBoxButton.OK);
+                Environment.Exit(1);
+            }
+            if (IOPermissionHelper.HasWritePermissionOnFile(tmp.JsonPath) == false)
+            {
+                MessageBox.Show($"We don't have write permissions for the `{tmp.JsonPath}` file!\r\nPlease try:\r\n1. `run as administrator`\r\n2. change file permissions \r\n3. move PRemoteM to another folder.", languageService.Translate("messagebox_title_warning"), MessageBoxButton.OK);
+                Environment.Exit(1);
+            }
+
+
+            #endregion
+
+
+
+
+
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
             ConsoleManager.Show();
@@ -148,12 +174,12 @@ namespace PRM
             KillPutty();
 
             // BASE MODULES
-            InitLog(IsPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
+            InitLog(CanPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
             InitExceptionHandle();
             OnlyOneAppInstanceCheck();
             InitEvent();
 
-            Context = new PrmContext(IsPortable, this.Resources);
+            Context = new PrmContext(CanPortable, this.Resources);
             RemoteWindowPool.Init(Context);
 
             // UI

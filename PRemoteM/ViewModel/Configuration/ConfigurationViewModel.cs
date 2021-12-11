@@ -16,7 +16,6 @@ using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Service;
 using Shawn.Utils;
-using VariableKeywordMatcher.Provider.DirectMatch;
 using HotkeyModifierKeys = PRM.Core.Service.HotkeyModifierKeys;
 
 namespace PRM.ViewModel.Configuration

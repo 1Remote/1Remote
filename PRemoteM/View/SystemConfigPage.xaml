@@ -229,18 +229,6 @@
                             <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
-                    </Grid>
-
-
-
-
-                    <Grid Style="{StaticResource GridOneRow}" Margin="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
-                            <ColumnDefinition MinWidth="280" SharedSizeGroup="LauncherColumn2"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="1" IsChecked="{Binding LauncherEnabled, Mode=TwoWay}" VerticalAlignment="Center" Content="{DynamicResource system_options_quick_launcher_enable}"></CheckBox>
                     </Grid>
 
