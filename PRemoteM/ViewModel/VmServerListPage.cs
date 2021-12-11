@@ -18,6 +18,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Service;
 using PRM.Core.Utils.mRemoteNG;
+using PRM.Model;
 using PRM.Resources.Icons;
 using Shawn.Utils;
 
@@ -118,6 +119,7 @@ namespace PRM.ViewModel
             _serverListItems.Clear();
             foreach (var vs in Context.AppData.VmItemList)
             {
+                vs.Actions = vs.Server.GetActions(Context, RemoteWindowPool.Instance.TabWindowCount);
                 ServerListItems.Add(vs);
                 try
                 {
