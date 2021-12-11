@@ -549,7 +549,7 @@ namespace PRM.ViewModel
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
                     var obj = o as Tag;
-                    if (obj == null)
+                    if (obj == null || MessageBox.Show(Context.LanguageService.Translate("confirm_to_delete"), Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
                         return;
                     foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {

@@ -170,7 +170,7 @@
                             <Button Command="{Binding CmdGoSysOptionsPage}" 
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
-                                    Content="{DynamicResource system_menu_options_title}"></Button>
+                                    Content="{DynamicResource Options}"></Button>
                             <Button Command="{Binding CmdGoAboutPage}"
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="0 8 0 8">
@@ -192,7 +192,7 @@
                                         </Path>
                                     </Grid>
                                     <StackPanel Orientation="Horizontal" Margin="25 0 0 0">
-                                        <TextBlock Text="{DynamicResource system_menu_about_title}" VerticalAlignment="Center"
+                                        <TextBlock Text="{DynamicResource About}" VerticalAlignment="Center"
                                                    Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
                                         </TextBlock>
                                         <Image Source="/Resources/Image/Logo/logo64.png" Width="20" Margin="10 0 0 0"></Image>
@@ -202,7 +202,7 @@
                             <Button Click="ButtonExit_OnClick"
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
-                                    Content="{DynamicResource word_exit}"></Button>
+                                    Content="{DynamicResource Exit}"></Button>
                         </StackPanel>
                     </Grid>
                 </Border>

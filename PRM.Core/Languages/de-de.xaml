@@ -5,34 +5,34 @@
     <s:String x:Key="messagebox_title_error">PRemoteM Fehler</s:String>
     <s:String x:Key="messagebox_title_info">PRemoteM Info</s:String>
 
-    <s:String x:Key="word_exit">Beenden</s:String>
-    <s:String x:Key="word_close">Schließen</s:String>
-    <s:String x:Key="word_add">Hinzufügen</s:String>
-    <s:String x:Key="word_edit">Bearbeiten</s:String>
-    <s:String x:Key="word_save">Speichern</s:String>
-    <s:String x:Key="word_save_as">Speichern als...</s:String>
-    <s:String x:Key="word_back">Zurück</s:String>
-    <s:String x:Key="word_delete">Löschen</s:String>
-    <s:String x:Key="word_cancel">Abbrechen</s:String>
-    <s:String x:Key="word_select">Auswählen</s:String>
-    <s:String x:Key="word_explore_to">Explore to...</s:String>
-    <s:String x:Key="word_previous">Zurück</s:String>
-    <s:String x:Key="word_next">Weiter</s:String>
-    <s:String x:Key="word_done">Fertig</s:String>
-    <s:String x:Key="word_reset">Zurücksetzen</s:String>
-    <s:String x:Key="word_import">Import</s:String>
-    <s:String x:Key="word_export">Export</s:String>
-    <s:String x:Key="word_name">Name</s:String>
-    <s:String x:Key="word_filename">Dateiname</s:String>
-    <s:String x:Key="word_test">Test</s:String>
-    <s:String x:Key="word_reconnect">Neu verbinden</s:String>
-    <s:String x:Key="word_dismiss">Schließen</s:String>
-    <s:String x:Key="word_lock">Sperren</s:String>
-    <s:String x:Key="word_topmost">Always on top</s:String>
-    <s:String x:Key="word_close_all">Alle schließen</s:String>
-    <s:String x:Key="word_rename">Umbenennen</s:String>
-    <s:String x:Key="word_connect">Verbinden</s:String>
-    <s:String x:Key="word_connect_to_new_tab">Verbinden (Neues Fenster)</s:String>
+    <s:String x:Key="Exit">Beenden</s:String>
+    <s:String x:Key="Close">Schließen</s:String>
+    <s:String x:Key="Add">Hinzufügen</s:String>
+    <s:String x:Key="Edit">Bearbeiten</s:String>
+    <s:String x:Key="Save">Speichern</s:String>
+    <s:String x:Key="Save as...">Speichern als...</s:String>
+    <s:String x:Key="Back">Zurück</s:String>
+    <s:String x:Key="Delete">Löschen</s:String>
+    <s:String x:Key="Cancel">Abbrechen</s:String>
+    <s:String x:Key="Select">Auswählen</s:String>
+    <s:String x:Key="Explore to...">Explore to...</s:String>
+    <s:String x:Key="Previous">Zurück</s:String>
+    <s:String x:Key="Next">Weiter</s:String>
+    <s:String x:Key="Done">Fertig</s:String>
+    <s:String x:Key="Reset">Zurücksetzen</s:String>
+    <s:String x:Key="Import">Import</s:String>
+    <s:String x:Key="Export">Export</s:String>
+    <s:String x:Key="Name">Name</s:String>
+    <s:String x:Key="File Name">Dateiname</s:String>
+    <s:String x:Key="Test">Test</s:String>
+    <s:String x:Key="Reconnect">Neu verbinden</s:String>
+    <s:String x:Key="Dismiss">Schließen</s:String>
+    <s:String x:Key="Lock">Sperren</s:String>
+    <s:String x:Key="Always on top">Always on top</s:String>
+    <s:String x:Key="Close all">Alle schließen</s:String>
+    <s:String x:Key="Rename">Umbenennen</s:String>
+    <s:String x:Key="Connect">Verbinden</s:String>
+    <s:String x:Key="Connect (New window)">Verbinden (Neues Fenster)</s:String>
 
     <s:String x:Key="filter_mainwindow">Suchbegriffe eingeben</s:String>
     <s:String x:Key="filter_searchbox">Suche (STRG + F)</s:String>
@@ -43,11 +43,10 @@
     <s:String x:Key="string_permission_denied">Zugriff verweigert</s:String>
 
     <!-- tab -->
-    <s:String x:Key="tab_all">Alle</s:String>
-    <s:String x:Key="tab_window_set_tag">Temporärer Tag</s:String>
+    <s:String x:Key="All">Alle</s:String>
 
     <!-- server protocol relate -->
-    <s:String x:Key="server_protocol">Protokoll</s:String>
+    <s:String x:Key="Protocol">Protokoll</s:String>
 
     <!-- file transmit host -->
     <s:String x:Key="file_transmit_host_list_header_last_update">Letztes Update</s:String>
@@ -70,8 +69,8 @@
     <s:String x:Key="host_reconecting_info">Wiederverbinden...</s:String>
 
     <!-- sys menu -->
-    <s:String x:Key="system_menu_options_title">Optionen</s:String>
-    <s:String x:Key="system_menu_about_title">Über</s:String>
+    <s:String x:Key="Options">Optionen</s:String>
+    <s:String x:Key="About">Über</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Allgemein</s:String>

@@ -94,7 +94,7 @@
                 <Grid Style="{StaticResource EditorRowGridInput}">
                     <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
                 </Grid>
-                <Button Content="{DynamicResource word_select}" 
+                <Button Content="{DynamicResource Select}" 
                         Margin="5 0 0 0"
                         Click="ButtonOpenPrivateKey_OnClick" 
                         Style="{StaticResource ButtonPrimaryStyle}"

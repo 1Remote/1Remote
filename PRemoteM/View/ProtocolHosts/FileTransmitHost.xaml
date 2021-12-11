@@ -220,7 +220,7 @@
                     <ListView.View>
                         <GridView ColumnHeaderTemplate="{StaticResource HeaderTemplateDefault}">
                             <GridViewColumn Width="Auto">
-                                <GridViewColumnHeader Content="{DynamicResource word_filename}" HorizontalContentAlignment="Left">
+                                <GridViewColumnHeader Content="{DynamicResource 'File Name'}" HorizontalContentAlignment="Left">
                                     <GridViewColumnHeader.Style>
                                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource GridViewColumnHeaderBaseStyle}">
                                             <Setter Property="CommandParameter" Value="0"/>
@@ -420,7 +420,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <Button
                                                 Background="Transparent"
-                                                ToolTip="{DynamicResource word_explore_to}"
+                                                ToolTip="{DynamicResource 'Explore to...'}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdShowTransmitDstPath}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ButtonBarPrimaryStyle}"
@@ -432,7 +432,7 @@
                                             </Button>
                                             <Button
                                                 Background="Transparent"
-                                                ToolTip="{DynamicResource word_delete}"
+                                                ToolTip="{DynamicResource Delete}"
                                                 Command="{Binding ElementName=ListViewTransmitTasks, Path=DataContext.CmdDeleteTransmitTask}"
                                                 CommandParameter="{Binding}"
                                                 Style="{StaticResource ButtonBarPrimaryStyle}"

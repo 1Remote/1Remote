@@ -96,7 +96,7 @@
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <TextBox Name="TbPrivateKey" Text="{Binding PrivateKey}"></TextBox>
                     </Grid>
-                    <Button Content="{DynamicResource word_select}" 
+                    <Button Content="{DynamicResource Select}" 
                             Margin="5 0 0 0"
                             Click="ButtonOpenPrivateKey_OnClick" 
                             Style="{StaticResource ButtonPrimaryStyle}"
@@ -149,7 +149,7 @@
                                  Tag="{DynamicResource server_editor_advantage_ssh_startup_auto_kitty_session_tip}"
                                  ></TextBox>
                     </Grid>
-                    <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource word_select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
+                    <Button VerticalAlignment="Stretch" Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Click="ButtonSelectSessionConfigFile_OnClick"></Button>
                 </StackPanel>
             </Grid>
 

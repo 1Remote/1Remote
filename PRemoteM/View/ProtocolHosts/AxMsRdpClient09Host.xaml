@@ -138,8 +138,8 @@
                 <TextBlock Name="TbMessageTitle" FontSize="20" HorizontalAlignment="Center" Text="Title" Foreground="White" Margin="10"></TextBlock>
                 <TextBlock Name="TbMessage" FontSize="14" HorizontalAlignment="Center" Text="Say something:blablablablablablablablablablablablablablablablablabla" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow"></TextBlock>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 0">
-                    <Button x:Name="BtnReconn" Click="BtnReconn_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource word_reconnect}"></Button>
-                    <Button x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource word_dismiss}"></Button>
+                    <Button x:Name="BtnReconn" Click="BtnReconn_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource Reconnect}"></Button>
+                    <Button x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource Dismiss}"></Button>
                 </StackPanel>
             </StackPanel>
         </Grid>

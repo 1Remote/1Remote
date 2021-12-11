@@ -49,7 +49,7 @@
                      VerticalContentAlignment="Center"></TextBox>
             <Button Grid.Column="2" Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
-                    Content="{DynamicResource word_select}" 
+                    Content="{DynamicResource Select}" 
                     Command="{Binding CmdSelectExePath}"></Button>
         </Grid>
 
@@ -175,7 +175,7 @@
                                                                ToolTip="Value e.g. %PRM_USERNAME%"/>
 
                                 <Button Grid.Column="2" Width="10" Height="10"
-                                        ToolTip="{DynamicResource 'word_delete'}"
+                                        ToolTip="{DynamicResource 'Delete'}"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"
                                         Background="Transparent"
                                         Foreground="{DynamicResource PrimaryMidBrush}"

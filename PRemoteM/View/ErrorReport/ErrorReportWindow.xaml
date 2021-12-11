@@ -84,7 +84,7 @@
                               HorizontalAlignment="Left"
                               Data="M512 0C230.4 0 0 230.4 0 512s230.4 512 512 512 512-230.4 512-512S793.6 0 512 0zM409.6 761.6l-236.8-217.6L230.4 480 409.6 640 793.6 256l64 64L409.6 761.6z"
                               Fill="Green" StrokeThickness="1" Stretch="Uniform" />
-                        <TextBlock Text="{DynamicResource word_save_as}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                        <TextBlock Text="{DynamicResource 'Save as...'}" HorizontalAlignment="Center" VerticalAlignment="Center" 
                                    Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                                    Margin="16 0"></TextBlock>
                     </Grid>

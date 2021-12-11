@@ -280,7 +280,7 @@
                                         </Border.Effect>
                                         <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                                             <StackPanel>
-                                                <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonEditServer_OnClick" Content="{DynamicResource word_edit}"></Button>
+                                                <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonEditServer_OnClick" Content="{DynamicResource Edit}"></Button>
                                                 <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                                             </StackPanel>
                                         </Grid>

@@ -79,7 +79,7 @@ namespace PRM.View.ProtocolHosts
             // Add right click menu
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "word_reconnect");
+                tb.SetResourceReference(TextBlock.TextProperty, "Reconnect");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,
@@ -88,7 +88,7 @@ namespace PRM.View.ProtocolHosts
             }
             {
                 var tb = new TextBlock();
-                tb.SetResourceReference(TextBlock.TextProperty, "word_close");
+                tb.SetResourceReference(TextBlock.TextProperty, "Close");
                 MenuItems.Add(new System.Windows.Controls.MenuItem()
                 {
                     Header = tb,

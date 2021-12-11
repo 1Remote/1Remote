@@ -212,7 +212,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="{DynamicResource 'server_protocol'}" VerticalAlignment="Center" FontWeight="Bold" 
+                <TextBlock Text="{DynamicResource 'Protocol'}" VerticalAlignment="Center" FontWeight="Bold" 
                            FontSize="14pt"
                            Margin="5"></TextBlock>
                 <!--<Grid Margin="10">

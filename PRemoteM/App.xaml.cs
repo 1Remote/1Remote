@@ -257,7 +257,7 @@ namespace PRM
             {
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
             };
-            var exit = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("word_exit"));
+            var exit = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("Exit"));
             exit.Click += (sender, args) => App.Close();
             var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
             TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);

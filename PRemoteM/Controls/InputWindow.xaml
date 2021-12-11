@@ -18,8 +18,8 @@
                  VerticalAlignment="Center" HorizontalAlignment="Stretch" KeyDown="textBox_KeyDown"/>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="okButton" Content="{DynamicResource word_done}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="okButton_Click"/>
-            <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="cancelButton" Content="{DynamicResource word_cancel}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="cancelButton_Click"/>
+            <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="okButton" Content="{DynamicResource Done}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="okButton_Click"/>
+            <Button Margin="5" MinWidth="50" Style="{StaticResource ButtonPrimaryStyle}" x:Name="cancelButton" Content="{DynamicResource Cancel}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="cancelButton_Click"/>
         </StackPanel>
     </StackPanel>
 </Window>
