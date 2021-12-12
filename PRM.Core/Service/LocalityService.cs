@@ -91,7 +91,7 @@ namespace PRM.Core.Service
             get => _serverOrderBy;
             set
             {
-                SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value);
+                SetAndNotifyIfChanged(ref _serverOrderBy, value);
                 Save();
             }
         }

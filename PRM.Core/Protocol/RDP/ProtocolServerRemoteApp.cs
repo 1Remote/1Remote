@@ -21,7 +21,7 @@ namespace PRM.Core.Protocol.RDP
         public string RemoteApplicationName
         {
             get => _remoteApplicationName;
-            set => SetAndNotifyIfChanged(nameof(RemoteApplicationName), ref _remoteApplicationName, value);
+            set => SetAndNotifyIfChanged(ref _remoteApplicationName, value);
         }
 
         private string _remoteApplicationProgram = "";
@@ -29,7 +29,7 @@ namespace PRM.Core.Protocol.RDP
         public string RemoteApplicationProgram
         {
             get => _remoteApplicationProgram;
-            set => SetAndNotifyIfChanged(nameof(RemoteApplicationProgram), ref _remoteApplicationProgram, value);
+            set => SetAndNotifyIfChanged(ref _remoteApplicationProgram, value);
         }
 
         public override bool IsOnlyOneInstance()

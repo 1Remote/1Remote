@@ -52,7 +52,7 @@ namespace PRM.Core.Model
         public Visibility ObjectVisibilityInList
         {
             get => _objectVisibilityInList;
-            set => SetAndNotifyIfChanged(nameof(ObjectVisibilityInList), ref _objectVisibilityInList, value);
+            set => SetAndNotifyIfChanged(ref _objectVisibilityInList, value);
         }
 
         #region The old code // TODO del after 2022.05.31

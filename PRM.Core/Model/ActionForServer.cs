@@ -18,7 +18,7 @@ namespace PRM.Core.Model
         public string ActionName
         {
             get => _actionName;
-            set => SetAndNotifyIfChanged(nameof(ActionName), ref _actionName, value);
+            set => SetAndNotifyIfChanged(ref _actionName, value);
         }
 
         public Action<int> Run;
@@ -35,7 +35,7 @@ namespace PRM.Core.Model
                 if (tabWindowCount > 0)
                     actions.Add(new ActionForServer()
                     {
-                        ActionName =  context.LanguageService.Translate("Connect (New window)"),
+                        ActionName = context.LanguageService.Translate("Connect (New window)"),
                         Run = (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); },
                     });
 

@@ -20,7 +20,7 @@ namespace PRM.Core.Service
         public string Name
         {
             get => _name;
-            set => SetAndNotifyIfChanged(nameof(Name), ref _name, value);
+            set => SetAndNotifyIfChanged(ref _name, value);
         }
 
 
@@ -28,7 +28,7 @@ namespace PRM.Core.Service
         public string Title1
         {
             get => _title1;
-            set => SetAndNotifyIfChanged(nameof(Title1), ref _title1, value);
+            set => SetAndNotifyIfChanged(ref _title1, value);
         }
 
 
@@ -37,7 +37,7 @@ namespace PRM.Core.Service
         public string Title2
         {
             get => _title2;
-            set => SetAndNotifyIfChanged(nameof(Title2), ref _title2, value);
+            set => SetAndNotifyIfChanged(ref _title2, value);
         }
 
 
@@ -45,14 +45,14 @@ namespace PRM.Core.Service
         public bool Enabled
         {
             get => _enabled;
-            set => SetAndNotifyIfChanged(nameof(Enabled), ref _enabled, value);
+            set => SetAndNotifyIfChanged(ref _enabled, value);
         }
 
         private bool _isEditable = true;
         public bool IsEditable
         {
             get => _isEditable;
-            set => SetAndNotifyIfChanged(nameof(IsEditable), ref _isEditable, value);
+            set => SetAndNotifyIfChanged(ref _isEditable, value);
         }
     }
 

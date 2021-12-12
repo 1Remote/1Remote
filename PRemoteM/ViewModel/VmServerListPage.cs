@@ -57,7 +57,7 @@ namespace PRM.ViewModel
         public VmProtocolServer SelectedServerListItem
         {
             get => _selectedServerListItem;
-            set => SetAndNotifyIfChanged(nameof(SelectedServerListItem), ref _selectedServerListItem, value);
+            set => SetAndNotifyIfChanged(ref _selectedServerListItem, value);
         }
 
         private ObservableCollection<VmProtocolServer> _serverListItems = new ObservableCollection<VmProtocolServer>();
@@ -70,7 +70,7 @@ namespace PRM.ViewModel
             get => _serverListItems;
             set
             {
-                SetAndNotifyIfChanged(nameof(ServerListItems), ref _serverListItems, value);
+                SetAndNotifyIfChanged(ref _serverListItems, value);
                 OrderServerList();
                 ServerListItems.CollectionChanged += (sender, args) => { OrderServerList(); };
             }
@@ -83,7 +83,7 @@ namespace PRM.ViewModel
         public ObservableCollection<string> ServerTagList
         {
             get => _serverTagList;
-            set => SetAndNotifyIfChanged(nameof(ServerTagList), ref _serverTagList, value);
+            set => SetAndNotifyIfChanged(ref _serverTagList, value);
         }
 
         private string SelectedTagName => Context.AppData.SelectedTagName;
@@ -98,7 +98,7 @@ namespace PRM.ViewModel
             get => _isSelectedAll;
             set
             {
-                SetAndNotifyIfChanged(nameof(IsSelectedAll), ref _isSelectedAll, value);
+                SetAndNotifyIfChanged(ref _isSelectedAll, value);
                 foreach (var vmServerCard in ServerListItems)
                 {
                     if (vmServerCard.ObjectVisibilityInList == Visibility.Visible)
@@ -119,7 +119,6 @@ namespace PRM.ViewModel
             _serverListItems.Clear();
             foreach (var vs in Context.AppData.VmItemList)
             {
-                vs.Actions = vs.Server.GetActions(Context, RemoteWindowPool.Instance.TabWindowCount);
                 ServerListItems.Add(vs);
                 try
                 {
@@ -212,7 +211,7 @@ namespace PRM.ViewModel
             get => _serverOrderBy;
             set
             {
-                if (SetAndNotifyIfChanged(nameof(ServerOrderBy), ref _serverOrderBy, value))
+                if (SetAndNotifyIfChanged(ref _serverOrderBy, value))
                 {
                     Context.LocalityService.ServerOrderBy = value;
                 }

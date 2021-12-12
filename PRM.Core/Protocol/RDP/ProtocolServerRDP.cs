@@ -75,7 +75,7 @@ namespace PRM.Core.Protocol.RDP
             public bool? FullScreenLastSessionIsFullScreen
             {
                 get => _fullScreenLastSessionIsFullScreen;
-                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionIsFullScreen), ref _fullScreenLastSessionIsFullScreen, value);
+                set => SetAndNotifyIfChanged(ref _fullScreenLastSessionIsFullScreen, value);
             }
 
             private int _fullScreenLastSessionScreenIndex = -1;
@@ -83,7 +83,7 @@ namespace PRM.Core.Protocol.RDP
             public int FullScreenLastSessionScreenIndex
             {
                 get => _fullScreenLastSessionScreenIndex;
-                set => SetAndNotifyIfChanged(nameof(FullScreenLastSessionScreenIndex), ref _fullScreenLastSessionScreenIndex, value);
+                set => SetAndNotifyIfChanged(ref _fullScreenLastSessionScreenIndex, value);
             }
         }
 
@@ -98,21 +98,21 @@ namespace PRM.Core.Protocol.RDP
         public bool? IsAdministrativePurposes
         {
             get => _isAdministrativePurposes;
-            set => SetAndNotifyIfChanged(nameof(IsAdministrativePurposes), ref _isAdministrativePurposes, value);
+            set => SetAndNotifyIfChanged(ref _isAdministrativePurposes, value);
         }
 
         private string _domain = "";
         public string Domain
         {
             get => _domain;
-            set => SetAndNotifyIfChanged(nameof(Domain), ref _domain, value);
+            set => SetAndNotifyIfChanged(ref _domain, value);
         }
 
         private string _loadBalanceInfo = "";
         public string LoadBalanceInfo
         {
             get => _loadBalanceInfo;
-            set => SetAndNotifyIfChanged(nameof(LoadBalanceInfo), ref _loadBalanceInfo, value);
+            set => SetAndNotifyIfChanged(ref _loadBalanceInfo, value);
         }
 
         #region Display
@@ -124,7 +124,7 @@ namespace PRM.Core.Protocol.RDP
             get => _rdpFullScreenFlag;
             set
             {
-                SetAndNotifyIfChanged(nameof(RdpFullScreenFlag), ref _rdpFullScreenFlag, value);
+                SetAndNotifyIfChanged(ref _rdpFullScreenFlag, value);
                 switch (value)
                 {
                     case ERdpFullScreenFlag.EnableFullAllScreens:
@@ -151,7 +151,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? IsConnWithFullScreen
         {
             get => _isConnWithFullScreen;
-            set => SetAndNotifyIfChanged(nameof(IsConnWithFullScreen), ref _isConnWithFullScreen, value);
+            set => SetAndNotifyIfChanged(ref _isConnWithFullScreen, value);
         }
 
         private bool? _isFullScreenWithConnectionBar = true;
@@ -159,7 +159,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? IsFullScreenWithConnectionBar
         {
             get => _isFullScreenWithConnectionBar;
-            set => SetAndNotifyIfChanged(nameof(IsFullScreenWithConnectionBar), ref _isFullScreenWithConnectionBar, value);
+            set => SetAndNotifyIfChanged(ref _isFullScreenWithConnectionBar, value);
         }
 
         private ERdpWindowResizeMode? _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
@@ -187,7 +187,7 @@ namespace PRM.Core.Protocol.RDP
         public int? RdpWidth
         {
             get => _rdpWidth;
-            set => SetAndNotifyIfChanged(nameof(RdpWidth), ref _rdpWidth, value);
+            set => SetAndNotifyIfChanged(ref _rdpWidth, value);
         }
 
         private int? _rdpHeight = 600;
@@ -195,7 +195,7 @@ namespace PRM.Core.Protocol.RDP
         public int? RdpHeight
         {
             get => _rdpHeight;
-            set => SetAndNotifyIfChanged(nameof(RdpHeight), ref _rdpHeight, value);
+            set => SetAndNotifyIfChanged(ref _rdpHeight, value);
         }
 
         private EDisplayPerformance? _displayPerformance = EDisplayPerformance.Auto;
@@ -203,7 +203,7 @@ namespace PRM.Core.Protocol.RDP
         public EDisplayPerformance? DisplayPerformance
         {
             get => _displayPerformance;
-            set => SetAndNotifyIfChanged(nameof(DisplayPerformance), ref _displayPerformance, value);
+            set => SetAndNotifyIfChanged(ref _displayPerformance, value);
         }
 
         #endregion Display
@@ -215,7 +215,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnableClipboard
         {
             get => _enableClipboard;
-            set => SetAndNotifyIfChanged(nameof(EnableClipboard), ref _enableClipboard, value);
+            set => SetAndNotifyIfChanged(ref _enableClipboard, value);
         }
 
         private bool? _enableDiskDrives = true;
@@ -223,7 +223,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
-            set => SetAndNotifyIfChanged(nameof(EnableDiskDrives), ref _enableDiskDrives, value);
+            set => SetAndNotifyIfChanged(ref _enableDiskDrives, value);
         }
 
         private bool? _enableKeyCombinations = true;
@@ -231,7 +231,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnableKeyCombinations
         {
             get => _enableKeyCombinations;
-            set => SetAndNotifyIfChanged(nameof(EnableKeyCombinations), ref _enableKeyCombinations, value);
+            set => SetAndNotifyIfChanged(ref _enableKeyCombinations, value);
         }
 
 
@@ -244,7 +244,7 @@ namespace PRM.Core.Protocol.RDP
             set
             {
                 _enableSounds = null;
-                SetAndNotifyIfChanged(nameof(AudioRedirectionMode), ref _audioRedirectionMode, value);
+                SetAndNotifyIfChanged(ref _audioRedirectionMode, value);
             }
         }
 
@@ -257,13 +257,13 @@ namespace PRM.Core.Protocol.RDP
             get => _enableSounds;
             set
             {
-                SetAndNotifyIfChanged(nameof(EnableSounds), ref _enableSounds, value);
+                SetAndNotifyIfChanged(ref _enableSounds, value);
                 if (value == true)
                     AudioRedirectionMode = EAudioRedirectionMode.RedirectToLocal;
                 else if (value == false)
                     AudioRedirectionMode = EAudioRedirectionMode.LeaveOnRemote;
             }
-        } 
+        }
         #endregion
 
         private bool? _enableAudioCapture = false;
@@ -271,7 +271,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnableAudioCapture
         {
             get => _enableAudioCapture;
-            set => SetAndNotifyIfChanged(nameof(EnableAudioCapture), ref _enableAudioCapture, value);
+            set => SetAndNotifyIfChanged(ref _enableAudioCapture, value);
         }
 
         private bool? _enablePorts = false;
@@ -279,7 +279,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnablePorts
         {
             get => _enablePorts;
-            set => SetAndNotifyIfChanged(nameof(EnablePorts), ref _enablePorts, value);
+            set => SetAndNotifyIfChanged(ref _enablePorts, value);
         }
 
         private bool? _enablePrinters = false;
@@ -287,7 +287,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnablePrinters
         {
             get => _enablePrinters;
-            set => SetAndNotifyIfChanged(nameof(EnablePrinters), ref _enablePrinters, value);
+            set => SetAndNotifyIfChanged(ref _enablePrinters, value);
         }
 
         private bool? _enableSmartCardsAndWinHello = false;
@@ -295,7 +295,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? EnableSmartCardsAndWinHello
         {
             get => _enableSmartCardsAndWinHello;
-            set => SetAndNotifyIfChanged(nameof(EnableSmartCardsAndWinHello), ref _enableSmartCardsAndWinHello, value);
+            set => SetAndNotifyIfChanged(ref _enableSmartCardsAndWinHello, value);
         }
 
         #endregion resource switch
@@ -326,7 +326,7 @@ namespace PRM.Core.Protocol.RDP
         public EGatewayMode? GatewayMode
         {
             get => _gatewayMode;
-            set => SetAndNotifyIfChanged(nameof(GatewayMode), ref _gatewayMode, value);
+            set => SetAndNotifyIfChanged(ref _gatewayMode, value);
         }
 
         private bool? _gatewayBypassForLocalAddress = true;
@@ -334,7 +334,7 @@ namespace PRM.Core.Protocol.RDP
         public bool? GatewayBypassForLocalAddress
         {
             get => _gatewayBypassForLocalAddress;
-            set => SetAndNotifyIfChanged(nameof(GatewayBypassForLocalAddress), ref _gatewayBypassForLocalAddress, value);
+            set => SetAndNotifyIfChanged(ref _gatewayBypassForLocalAddress, value);
         }
 
         private string _gatewayHostName = "";
@@ -342,7 +342,7 @@ namespace PRM.Core.Protocol.RDP
         public string GatewayHostName
         {
             get => _gatewayHostName;
-            set => SetAndNotifyIfChanged(nameof(GatewayHostName), ref _gatewayHostName, value);
+            set => SetAndNotifyIfChanged(ref _gatewayHostName, value);
         }
 
         private EGatewayLogonMethod? _gatewayLogonMethod = EGatewayLogonMethod.Password;
@@ -350,7 +350,7 @@ namespace PRM.Core.Protocol.RDP
         public EGatewayLogonMethod? GatewayLogonMethod
         {
             get => _gatewayLogonMethod;
-            set => SetAndNotifyIfChanged(nameof(GatewayLogonMethod), ref _gatewayLogonMethod, value);
+            set => SetAndNotifyIfChanged(ref _gatewayLogonMethod, value);
         }
 
         private string _gatewayUserName = "";
@@ -358,7 +358,7 @@ namespace PRM.Core.Protocol.RDP
         public string GatewayUserName
         {
             get => _gatewayUserName;
-            set => SetAndNotifyIfChanged(nameof(GatewayUserName), ref _gatewayUserName, value);
+            set => SetAndNotifyIfChanged(ref _gatewayUserName, value);
         }
 
         private string _gatewayPassword = "";
@@ -366,9 +366,9 @@ namespace PRM.Core.Protocol.RDP
         public string GatewayPassword
         {
             get => _gatewayPassword;
-            set => SetAndNotifyIfChanged(nameof(GatewayPassword), ref _gatewayPassword, value);
+            set => SetAndNotifyIfChanged(ref _gatewayPassword, value);
         }
-        
+
         #endregion Gateway
 
         private LocalSetting _autoSetting = new LocalSetting();
@@ -376,7 +376,7 @@ namespace PRM.Core.Protocol.RDP
         public LocalSetting AutoSetting
         {
             get => _autoSetting;
-            set => SetAndNotifyIfChanged(nameof(AutoSetting), ref _autoSetting, value);
+            set => SetAndNotifyIfChanged(ref _autoSetting, value);
         }
 
         public override bool IsOnlyOneInstance()

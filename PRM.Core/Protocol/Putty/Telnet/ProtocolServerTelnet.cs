@@ -52,7 +52,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
-            set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
+            set => SetAndNotifyIfChanged(ref _startupAutoCommand, value);
         }
 
         [JsonIgnore]
@@ -63,7 +63,7 @@ namespace PRM.Core.Protocol.Putty.Telnet
         public string ExternalKittySessionConfigPath
         {
             get => _externalKittySessionConfigPath;
-            set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
+            set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
         public string GetExeFullPath()

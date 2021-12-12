@@ -15,7 +15,7 @@ namespace PRM.Core.Protocol
         public ProtocolServerBase Server
         {
             get => _server;
-            set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
+            set => SetAndNotifyIfChanged(ref _server, value);
         }
 
         public VmProtocolServer(ProtocolServerBase psb)
@@ -41,7 +41,7 @@ namespace PRM.Core.Protocol
         public object DispNameControl
         {
             get => _dispNameControl;
-            set => SetAndNotifyIfChanged(nameof(DispNameControl), ref _dispNameControl, value);
+            set => SetAndNotifyIfChanged(ref _dispNameControl, value);
         }
 
         private object _subTitleControl = null;
@@ -49,7 +49,7 @@ namespace PRM.Core.Protocol
         public object SubTitleControl
         {
             get => _subTitleControl;
-            set => SetAndNotifyIfChanged(nameof(SubTitleControl), ref _subTitleControl, value);
+            set => SetAndNotifyIfChanged(ref _subTitleControl, value);
         }
 
         private Visibility _objectVisibility = Visibility.Visible;
@@ -57,7 +57,7 @@ namespace PRM.Core.Protocol
         public Visibility ObjectVisibility
         {
             get => _objectVisibility;
-            set => SetAndNotifyIfChanged(nameof(ObjectVisibility), ref _objectVisibility, value);
+            set => SetAndNotifyIfChanged(ref _objectVisibility, value);
         }
 
         private Visibility _objectVisibilityInList = Visibility.Visible;
@@ -65,7 +65,7 @@ namespace PRM.Core.Protocol
         public Visibility ObjectVisibilityInList
         {
             get => _objectVisibilityInList;
-            set => SetAndNotifyIfChanged(nameof(ObjectVisibilityInList), ref _objectVisibilityInList, value);
+            set => SetAndNotifyIfChanged(ref _objectVisibilityInList, value);
         }
 
         private bool _isSelected;
@@ -76,7 +76,7 @@ namespace PRM.Core.Protocol
         public bool IsSelected
         {
             get => _isSelected;
-            set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
+            set => SetAndNotifyIfChanged(ref _isSelected, value);
         }
 
         #region CMD
@@ -120,7 +120,13 @@ namespace PRM.Core.Protocol
             }
         }
 
-        public List<ActionForServer> Actions { get; set; }
+        private List<ActionForServer> _actions;
+        public List<ActionForServer> Actions
+        {
+            get => _actions;
+            set => SetAndNotifyIfChanged(ref _actions, value);
+        }
+
         #endregion CMD
     }
 }

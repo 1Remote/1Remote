@@ -20,7 +20,7 @@ namespace PRM.Core.Protocol.FileTransmit.FTP
         public string StartupPath
         {
             get => _startupPath;
-            set => SetAndNotifyIfChanged(nameof(StartupPath), ref _startupPath, value);
+            set => SetAndNotifyIfChanged(ref _startupPath, value);
         }
 
         public override bool IsOnlyOneInstance()

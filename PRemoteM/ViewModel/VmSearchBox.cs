@@ -57,7 +57,7 @@ namespace PRM.ViewModel
                     }
                 return _selectedItem;
             }
-            private set => SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value);
+            private set => SetAndNotifyIfChanged(ref _selectedItem, value);
         }
 
         private int _selectedIndex;
@@ -67,7 +67,7 @@ namespace PRM.ViewModel
             get => _selectedIndex;
             set
             {
-                SetAndNotifyIfChanged(nameof(SelectedIndex), ref _selectedIndex, value);
+                SetAndNotifyIfChanged(ref _selectedIndex, value);
                 if (Context.AppData.VmItemList.Count > 0
                     && _selectedIndex >= 0
                     && _selectedIndex < Context.AppData.VmItemList.Count)
@@ -86,7 +86,7 @@ namespace PRM.ViewModel
         public ObservableCollection<ActionForServer> Actions
         {
             get => _actions;
-            set => SetAndNotifyIfChanged(nameof(Actions), ref _actions, value);
+            set => SetAndNotifyIfChanged(ref _actions, value);
         }
 
         private int _selectedActionIndex;
@@ -94,7 +94,7 @@ namespace PRM.ViewModel
         public int SelectedActionIndex
         {
             get => _selectedActionIndex;
-            set => SetAndNotifyIfChanged(nameof(SelectedActionIndex), ref _selectedActionIndex, value);
+            set => SetAndNotifyIfChanged(ref _selectedActionIndex, value);
         }
 
         private string _filter = "";
@@ -106,7 +106,7 @@ namespace PRM.ViewModel
             {
                 if (_filter != value)
                 {
-                    SetAndNotifyIfChanged(nameof(Filter), ref _filter, value);
+                    SetAndNotifyIfChanged(ref _filter, value);
                 }
 
 
@@ -128,7 +128,7 @@ namespace PRM.ViewModel
             get => _gridMainHeight;
             set
             {
-                SetAndNotifyIfChanged(nameof(GridMainHeight), ref _gridMainHeight, value);
+                SetAndNotifyIfChanged(ref _gridMainHeight, value);
                 GridMainClip = new RectangleGeometry(new Rect(new Size(_gridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
             }
         }
@@ -137,7 +137,7 @@ namespace PRM.ViewModel
         public RectangleGeometry GridMainClip
         {
             get => _gridMainClip;
-            set => SetAndNotifyIfChanged(nameof(GridMainClip), ref _gridMainClip, value);
+            set => SetAndNotifyIfChanged(ref _gridMainClip, value);
         }
 
         public double GridKeywordHeight { get; } = 46;
@@ -146,14 +146,14 @@ namespace PRM.ViewModel
         public double GridSelectionsHeight
         {
             get => _gridSelectionsHeight;
-            set => SetAndNotifyIfChanged(nameof(GridSelectionsHeight), ref _gridSelectionsHeight, value);
+            set => SetAndNotifyIfChanged(ref _gridSelectionsHeight, value);
         }
 
         private double _gridActionsHeight;
         public double GridActionsHeight
         {
             get => _gridActionsHeight;
-            set => SetAndNotifyIfChanged(nameof(GridActionsHeight), ref _gridActionsHeight, value);
+            set => SetAndNotifyIfChanged(ref _gridActionsHeight, value);
         }
 
         public void ReCalcWindowHeight(bool showGridAction)

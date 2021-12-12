@@ -151,7 +151,7 @@ namespace PRM.ViewModel
             {
                 if (_remoteItemsOrderBy != value)
                 {
-                    SetAndNotifyIfChanged(nameof(RemoteItemsOrderBy), ref _remoteItemsOrderBy, value);
+                    SetAndNotifyIfChanged(ref _remoteItemsOrderBy, value);
                     MakeRemoteItemsOrderBy();
                 }
             }
@@ -990,7 +990,7 @@ namespace PRM.ViewModel
             get => _gridLoadingVisibility;
             set
             {
-                SetAndNotifyIfChanged(nameof(GridLoadingVisibility), ref _gridLoadingVisibility, value);
+                SetAndNotifyIfChanged(ref _gridLoadingVisibility, value);
                 if (GridLoadingBgOpacity > 0.99 && value != Visibility.Visible)
                 {
                     GridLoadingBgOpacity = 0.1;
@@ -1016,7 +1016,7 @@ namespace PRM.ViewModel
             {
                 if (!stopUpdateIoMessage)
                 {
-                    SetAndNotifyIfChanged(nameof(IoMessage), ref _ioMessage, value);
+                    SetAndNotifyIfChanged(ref _ioMessage, value);
                     RaisePropertyChanged(nameof(IoMessageLevel));
                 }
             }
@@ -1037,7 +1037,7 @@ namespace PRM.ViewModel
         public string CurrentPathEdit
         {
             get => _currentPathEdit;
-            set => SetAndNotifyIfChanged(nameof(CurrentPathEdit), ref _currentPathEdit, value);
+            set => SetAndNotifyIfChanged(ref _currentPathEdit, value);
         }
 
         private string _currentPath = "";
@@ -1049,7 +1049,7 @@ namespace PRM.ViewModel
             get => _currentPath;
             set
             {
-                SetAndNotifyIfChanged(nameof(CurrentPath), ref _currentPath, value);
+                SetAndNotifyIfChanged(ref _currentPath, value);
                 CurrentPathEdit = value;
             }
         }
@@ -1059,7 +1059,7 @@ namespace PRM.ViewModel
         public bool CmdGoToPathPreviousEnable
         {
             get => _cmdGoToPathPreviousEnable;
-            set => SetAndNotifyIfChanged(nameof(CmdGoToPathPreviousEnable), ref _cmdGoToPathPreviousEnable, value);
+            set => SetAndNotifyIfChanged(ref _cmdGoToPathPreviousEnable, value);
         }
 
 
@@ -1068,7 +1068,7 @@ namespace PRM.ViewModel
         public bool CmdGoToPathFollowingEnable
         {
             get => _cmdGoToPathFollowingEnable;
-            set => SetAndNotifyIfChanged(nameof(CmdGoToPathFollowingEnable), ref _cmdGoToPathFollowingEnable, value);
+            set => SetAndNotifyIfChanged(ref _cmdGoToPathFollowingEnable, value);
         }
 
 
@@ -1078,7 +1078,7 @@ namespace PRM.ViewModel
         public bool CmdGoToPathParentEnable
         {
             get => _cmdGoToPathParentEnable;
-            set => SetAndNotifyIfChanged(nameof(CmdGoToPathParentEnable), ref _cmdGoToPathParentEnable, value);
+            set => SetAndNotifyIfChanged(ref _cmdGoToPathParentEnable, value);
         }
         #endregion
 
@@ -1091,14 +1091,14 @@ namespace PRM.ViewModel
         public RemoteItem SelectedRemoteItem
         {
             get => _selectedRemoteItem;
-            set => SetAndNotifyIfChanged(nameof(SelectedRemoteItem), ref _selectedRemoteItem, value);
+            set => SetAndNotifyIfChanged(ref _selectedRemoteItem, value);
         }
 
         private ObservableCollection<RemoteItem> _remoteItems = new ObservableCollection<RemoteItem>();
         public ObservableCollection<RemoteItem> RemoteItems
         {
             get => _remoteItems;
-            set => SetAndNotifyIfChanged(nameof(RemoteItems), ref _remoteItems, value);
+            set => SetAndNotifyIfChanged(ref _remoteItems, value);
         }
         #endregion
 
@@ -1109,7 +1109,7 @@ namespace PRM.ViewModel
         public ObservableCollection<TransmitTask> TransmitTasks
         {
             get => _transmitTasks;
-            set => SetAndNotifyIfChanged(nameof(TransmitTasks), ref _transmitTasks, value);
+            set => SetAndNotifyIfChanged(ref _transmitTasks, value);
         }
         #endregion
     }

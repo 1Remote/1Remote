@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -24,13 +25,19 @@ namespace Shawn.Utils
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected virtual void SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
+        protected virtual bool SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
         {
-            if (oldValue == null && newValue == null) return;
-            if (oldValue != null && oldValue.Equals(newValue)) return;
-            if (newValue != null && newValue.Equals(oldValue)) return;
+            if (oldValue == null && newValue == null) return false;
+            if (oldValue != null && oldValue.Equals(newValue)) return false;
+            if (newValue != null && newValue.Equals(oldValue)) return false;
             oldValue = newValue;
             RaisePropertyChanged(propertyName);
+            return true;
+        }
+
+        protected virtual bool SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = null)
+        {
+            return SetAndNotifyIfChanged(propertyName, ref oldValue, newValue);
         }
 
         #endregion INotifyPropertyChanged

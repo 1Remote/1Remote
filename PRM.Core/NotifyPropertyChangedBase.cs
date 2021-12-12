@@ -23,7 +23,7 @@ namespace PRM.Core
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected virtual bool SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
+        private bool SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
         {
             if (oldValue == null && newValue == null) return false;
             if (oldValue != null && oldValue.Equals(newValue)) return false;

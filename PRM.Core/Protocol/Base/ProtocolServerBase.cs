@@ -55,7 +55,7 @@ namespace PRM.Core.Protocol
         public int Id
         {
             get => _id;
-            set => SetAndNotifyIfChanged(nameof(Id), ref _id, value);
+            set => SetAndNotifyIfChanged(ref _id, value);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace PRM.Core.Protocol
         public string DisplayName
         {
             get => _displayName;
-            set => SetAndNotifyIfChanged(nameof(DisplayName), ref _displayName, value);
+            set => SetAndNotifyIfChanged(ref _displayName, value);
         }
 
         [JsonIgnore]
@@ -94,7 +94,7 @@ namespace PRM.Core.Protocol
         public string GroupName
         {
             get => _groupName;
-            set => SetAndNotifyIfChanged(nameof(GroupName), ref _groupName, value);
+            set => SetAndNotifyIfChanged(ref _groupName, value);
         }
 
 
@@ -112,7 +112,7 @@ namespace PRM.Core.Protocol
                 _tags = _tags?.Distinct()?.OrderBy(x => x).ToList();
                 return _tags;
             }
-            set => SetAndNotifyIfChanged(nameof(Tags), ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
+            set => SetAndNotifyIfChanged(ref _tags, value?.Distinct()?.OrderBy(x => x)?.ToList());
         }
 
         private string _iconBase64 = "";
@@ -123,7 +123,7 @@ namespace PRM.Core.Protocol
             set
             {
                 _iconCache = null;
-                SetAndNotifyIfChanged(nameof(IconBase64), ref _iconBase64, value);
+                SetAndNotifyIfChanged(ref _iconBase64, value);
                 RaisePropertyChanged(nameof(IconImg));
             }
         }
@@ -155,7 +155,7 @@ namespace PRM.Core.Protocol
         public string MarkColorHex
         {
             get => _markColorHex;
-            set => SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value);
+            set => SetAndNotifyIfChanged(ref _markColorHex, value);
         }
 
         private DateTime _lastConnTime = DateTime.MinValue;
@@ -163,7 +163,7 @@ namespace PRM.Core.Protocol
         public DateTime LastConnTime
         {
             get => _lastConnTime;
-            set => SetAndNotifyIfChanged(nameof(LastConnTime), ref _lastConnTime, value);
+            set => SetAndNotifyIfChanged(ref _lastConnTime, value);
         }
 
         private string _commandBeforeConnected = "";
@@ -171,7 +171,7 @@ namespace PRM.Core.Protocol
         public string CommandBeforeConnected
         {
             get => _commandBeforeConnected;
-            set => SetAndNotifyIfChanged(nameof(CommandBeforeConnected), ref _commandBeforeConnected, value);
+            set => SetAndNotifyIfChanged(ref _commandBeforeConnected, value);
         }
 
         private string _commandAfterDisconnected = "";
@@ -179,7 +179,7 @@ namespace PRM.Core.Protocol
         public string CommandAfterDisconnected
         {
             get => _commandAfterDisconnected;
-            set => SetAndNotifyIfChanged(nameof(CommandAfterDisconnected), ref _commandAfterDisconnected, value);
+            set => SetAndNotifyIfChanged(ref _commandAfterDisconnected, value);
         }
 
 

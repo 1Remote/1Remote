@@ -132,7 +132,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             get => _transmitTaskStatus;
             set
             {
-                SetAndNotifyIfChanged(nameof(TransmitTaskStatus), ref _transmitTaskStatus, value);
+                SetAndNotifyIfChanged(ref _transmitTaskStatus, value);
                 if (_transmitTaskStatus == ETransmitTaskStatus.Transmitted)
                     TransmittedByteLength = TotalByteLength;
                 RaisePropertyChanged(nameof(TransmitSpeed));
@@ -176,7 +176,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public ulong TotalByteLength
         {
             get => _totalByteLength;
-            set => SetAndNotifyIfChanged(nameof(TotalByteLength), ref _totalByteLength, value);
+            set => SetAndNotifyIfChanged(ref _totalByteLength, value);
         }
 
         private ulong _transmittedByteLength = 0;
@@ -189,7 +189,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             get => _transmittedByteLength;
             set
             {
-                SetAndNotifyIfChanged(nameof(TransmittedByteLength), ref _transmittedByteLength, value);
+                SetAndNotifyIfChanged(ref _transmittedByteLength, value);
                 RaisePropertyChanged(nameof(TransmittedPercentage));
             }
         }

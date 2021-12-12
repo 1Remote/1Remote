@@ -44,7 +44,7 @@ namespace PRM.ViewModel
         public string NewVersion
         {
             get => _newVersion;
-            set => SetAndNotifyIfChanged(nameof(NewVersion), ref _newVersion, value);
+            set => SetAndNotifyIfChanged(ref _newVersion, value);
         }
 
         private string _newVersionUrl = "";
@@ -52,7 +52,7 @@ namespace PRM.ViewModel
         public string NewVersionUrl
         {
             get => _newVersionUrl;
-            set => SetAndNotifyIfChanged(nameof(NewVersionUrl), ref _newVersionUrl, value);
+            set => SetAndNotifyIfChanged(ref _newVersionUrl, value);
         }
 
         private void OnNewVersionRelease(string version, string url)

@@ -18,7 +18,7 @@ namespace PRM.Core.Protocol
         public string Address
         {
             get => _address;
-            set => SetAndNotifyIfChanged(nameof(Address), ref _address, value);
+            set => SetAndNotifyIfChanged(ref _address, value);
         }
 
         public int GetPort()
