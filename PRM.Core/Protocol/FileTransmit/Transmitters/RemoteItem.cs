@@ -9,35 +9,35 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         public bool IsSelected
         {
             get => _isSelected;
-            set => SetAndNotifyIfChanged(nameof(IsSelected), ref _isSelected, value);
+            set => SetAndNotifyIfChanged(ref _isSelected, value);
         }
 
         private bool _isRenaming = false;
         public bool IsRenaming
         {
             get => _isRenaming;
-            set => SetAndNotifyIfChanged(nameof(IsRenaming), ref _isRenaming, value);
+            set => SetAndNotifyIfChanged(ref _isRenaming, value);
         }
 
         private BitmapSource _icon;
         public BitmapSource Icon
         {
             get => _icon;
-            set => SetAndNotifyIfChanged(nameof(Icon), ref _icon, value);
+            set => SetAndNotifyIfChanged(ref _icon, value);
         }
 
         private string _name;
         public string Name
         {
             get => _name;
-            set => SetAndNotifyIfChanged(nameof(Name), ref _name, value);
+            set => SetAndNotifyIfChanged(ref _name, value);
         }
 
         private string _fullName;
         public string FullName
         {
             get => _fullName;
-            set => SetAndNotifyIfChanged(nameof(FullName), ref _fullName, value);
+            set => SetAndNotifyIfChanged(ref _fullName, value);
         }
 
         private string _fileType;
@@ -57,14 +57,14 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
                 }
                 return _fileType;
             }
-            set => SetAndNotifyIfChanged(nameof(FileType), ref _fileType, value);
+            set => SetAndNotifyIfChanged(ref _fileType, value);
         }
 
         private ulong _byteSize = 0;
         public ulong ByteSize
         {
             get => _byteSize;
-            set => SetAndNotifyIfChanged(nameof(ByteSize), ref _byteSize, value);
+            set => SetAndNotifyIfChanged(ref _byteSize, value);
         }
 
 
@@ -72,21 +72,21 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters
         public bool IsDirectory
         {
             get => _isDirectory;
-            set => SetAndNotifyIfChanged(nameof(IsDirectory), ref _isDirectory, value);
+            set => SetAndNotifyIfChanged(ref _isDirectory, value);
         }
 
         private bool _isSymlink = false;
         public bool IsSymlink
         {
             get => _isSymlink;
-            set => SetAndNotifyIfChanged(nameof(IsSymlink), ref _isSymlink, value);
+            set => SetAndNotifyIfChanged(ref _isSymlink, value);
         }
 
         private DateTime _lastUpdate;
         public DateTime LastUpdate
         {
             get => _lastUpdate;
-            set => SetAndNotifyIfChanged(nameof(LastUpdate), ref _lastUpdate, value);
+            set => SetAndNotifyIfChanged(ref _lastUpdate, value);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace PRM.ViewModel.Configuration
             _dataService = context.DataService;
             _themeService = context.ThemeService;
             Host = host;
-            if (string.IsNullOrEmpty(languageCode) == false 
+            if (string.IsNullOrEmpty(languageCode) == false
                 && _languageService.LanguageCode2Name.ContainsKey(languageCode)
                 && _languageService.SetLanguage(languageCode))
             {
@@ -57,7 +57,7 @@ namespace PRM.ViewModel.Configuration
         public Visibility ProgressBarVisibility
         {
             get => _progressBarVisibility;
-            private set => SetAndNotifyIfChanged(nameof(ProgressBarVisibility), ref _progressBarVisibility, value);
+            private set => SetAndNotifyIfChanged(ref _progressBarVisibility, value);
         }
 
 
@@ -285,7 +285,7 @@ namespace PRM.ViewModel.Configuration
 
                     var path = SelectFileHelper.OpenFile(
                         selectedFileName: ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
-                        checkFileExists:false,
+                        checkFileExists: false,
                         filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                     if (path == null) return;
 
@@ -618,7 +618,7 @@ namespace PRM.ViewModel.Configuration
             get => _configurationService.Theme.PrimaryLightColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(PrimaryLightColor), ref _configurationService.Theme.PrimaryLightColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryLightColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
@@ -628,7 +628,7 @@ namespace PRM.ViewModel.Configuration
             get => _configurationService.Theme.PrimaryDarkColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(PrimaryDarkColor), ref _configurationService.Theme.PrimaryDarkColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryDarkColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
@@ -638,7 +638,7 @@ namespace PRM.ViewModel.Configuration
             get => _configurationService.Theme.PrimaryTextColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(PrimaryTextColor), ref _configurationService.Theme.PrimaryTextColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.PrimaryTextColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
@@ -671,7 +671,7 @@ namespace PRM.ViewModel.Configuration
             get => _configurationService.Theme.AccentLightColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(AccentLightColor), ref _configurationService.Theme.AccentLightColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.AccentLightColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
@@ -681,7 +681,7 @@ namespace PRM.ViewModel.Configuration
             get => _configurationService.Theme.AccentDarkColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(AccentDarkColor), ref _configurationService.Theme.AccentDarkColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.AccentDarkColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
@@ -691,7 +691,7 @@ namespace PRM.ViewModel.Configuration
             get => _configurationService.Theme.AccentTextColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(AccentTextColor), ref _configurationService.Theme.AccentTextColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.AccentTextColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }
@@ -699,14 +699,14 @@ namespace PRM.ViewModel.Configuration
         public string BackgroundColor
         {
             get => _configurationService.Theme.BackgroundColor;
-            set => SetAndNotifyIfChanged(nameof(BackgroundColor), ref _configurationService.Theme.BackgroundColor, value);
+            set => SetAndNotifyIfChanged(ref _configurationService.Theme.BackgroundColor, value);
         }
         public string BackgroundTextColor
         {
             get => _configurationService.Theme.BackgroundTextColor;
             set
             {
-                SetAndNotifyIfChanged(nameof(BackgroundTextColor), ref _configurationService.Theme.BackgroundTextColor, value);
+                SetAndNotifyIfChanged(ref _configurationService.Theme.BackgroundTextColor, value);
                 _themeService.ApplyTheme(_configurationService.Theme);
             }
         }

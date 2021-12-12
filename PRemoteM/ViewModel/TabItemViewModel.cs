@@ -17,7 +17,7 @@ namespace PRM.ViewModel
         public object Header
         {
             get => _header;
-            set => SetAndNotifyIfChanged(nameof(Header), ref _header, value);
+            set => SetAndNotifyIfChanged(ref _header, value);
         }
 
         private HostBase _content;
@@ -27,7 +27,7 @@ namespace PRM.ViewModel
             get => _content;
             set
             {
-                SetAndNotifyIfChanged(nameof(Content), ref _content, value);
+                SetAndNotifyIfChanged(ref _content, value);
                 MarkColorHex = Content.ProtocolServer.MarkColorHex;
                 IconImg = Content.ProtocolServer.IconImg;
                 CanResizeNow = _content.CanResizeNow();
@@ -40,7 +40,7 @@ namespace PRM.ViewModel
         public bool CanResizeNow
         {
             get => _canResizeNow;
-            set => SetAndNotifyIfChanged(nameof(CanResizeNow), ref _canResizeNow, value);
+            set => SetAndNotifyIfChanged(ref _canResizeNow, value);
         }
 
         private string _markColorHex;
@@ -55,7 +55,7 @@ namespace PRM.ViewModel
             {
                 try
                 {
-                    SetAndNotifyIfChanged(nameof(MarkColorHex), ref _markColorHex, value);
+                    SetAndNotifyIfChanged(ref _markColorHex, value);
                 }
                 catch (Exception)
                 {
@@ -69,7 +69,7 @@ namespace PRM.ViewModel
         public System.Windows.Media.Imaging.BitmapSource IconImg
         {
             get => _iconImg;
-            private set => SetAndNotifyIfChanged(nameof(IconImg), ref _iconImg, value);
+            private set => SetAndNotifyIfChanged(ref _iconImg, value);
         }
     }
 }

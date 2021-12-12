@@ -57,7 +57,7 @@ namespace PRM.ViewModel
             get => _tags;
             set
             {
-                SetAndNotifyIfChanged(nameof(Tags), ref _tags, value);
+                SetAndNotifyIfChanged(ref _tags, value);
                 SetTitle();
             }
         }
@@ -67,7 +67,7 @@ namespace PRM.ViewModel
         public string Title
         {
             get => _title;
-            set => SetAndNotifyIfChanged(nameof(Title), ref _title, value);
+            set => SetAndNotifyIfChanged(ref _title, value);
         }
 
 
@@ -91,7 +91,7 @@ namespace PRM.ViewModel
             get => _isLocked;
             set
             {
-                SetAndNotifyIfChanged(nameof(IsLocked), ref _isLocked, value);
+                SetAndNotifyIfChanged(ref _isLocked, value);
                 RaisePropertyChanged(nameof(WindowResizeMode));
             }
         }
@@ -108,7 +108,7 @@ namespace PRM.ViewModel
             get => _isTagEditing;
             set
             {
-                SetAndNotifyIfChanged(nameof(IsTagEditing), ref _isTagEditing, value);
+                SetAndNotifyIfChanged(ref _isTagEditing, value);
                 RaisePropertyChanged(nameof(TitleTextVisibility));
                 RaisePropertyChanged(nameof(TitleTagEditorVisibility));
             }
@@ -135,7 +135,7 @@ namespace PRM.ViewModel
                         Console.Write(e);
                     }
 
-                if (SetAndNotifyIfChanged(nameof(SelectedItem), ref _selectedItem, value))
+                if (SetAndNotifyIfChanged(ref _selectedItem, value))
                 {
                     RaisePropertyChanged(nameof(WindowResizeMode));
 

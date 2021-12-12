@@ -76,7 +76,7 @@ namespace PRM.Core.Model
             {
                 if (_selectedTagName == value) return;
                 MainWindowServerFilter = "";
-                SetAndNotifyIfChanged(nameof(SelectedTagName), ref _selectedTagName, value);
+                SetAndNotifyIfChanged(ref _selectedTagName, value);
                 _localityService.MainWindowTabSelected = value;
             }
         }

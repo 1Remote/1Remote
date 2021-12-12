@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Model;
 
 namespace PRM.Controls
 {
@@ -44,6 +46,7 @@ namespace PRM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
+            VmProtocolServer.Actions = VmProtocolServer.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
             PopupCardSettingMenu.IsOpen = true;
         }
 

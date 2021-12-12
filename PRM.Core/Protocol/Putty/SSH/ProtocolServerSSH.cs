@@ -31,7 +31,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string PrivateKey
         {
             get => _privateKey;
-            set => SetAndNotifyIfChanged(nameof(PrivateKey), ref _privateKey, value);
+            set => SetAndNotifyIfChanged(ref _privateKey, value);
         }
 
         private int? _sshVersion = 2;
@@ -40,7 +40,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public int? SshVersion
         {
             get => _sshVersion;
-            set => SetAndNotifyIfChanged(nameof(SshVersion), ref _sshVersion, value);
+            set => SetAndNotifyIfChanged(ref _sshVersion, value);
         }
 
         private string _startupAutoCommand = "";
@@ -49,7 +49,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string StartupAutoCommand
         {
             get => _startupAutoCommand;
-            set => SetAndNotifyIfChanged(nameof(StartupAutoCommand), ref _startupAutoCommand, value);
+            set => SetAndNotifyIfChanged(ref _startupAutoCommand, value);
         }
 
         private string _externalKittySessionConfigPath;
@@ -57,7 +57,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public string ExternalKittySessionConfigPath
         {
             get => _externalKittySessionConfigPath;
-            set => SetAndNotifyIfChanged(nameof(ExternalKittySessionConfigPath), ref _externalKittySessionConfigPath, value);
+            set => SetAndNotifyIfChanged(ref _externalKittySessionConfigPath, value);
         }
 
 
@@ -65,7 +65,7 @@ namespace PRM.Core.Protocol.Putty.SSH
         public bool OpenSftpOnConnected
         {
             get => _openSftpOnConnected;
-            set => SetAndNotifyIfChanged(nameof(OpenSftpOnConnected), ref _openSftpOnConnected, value);
+            set => SetAndNotifyIfChanged(ref _openSftpOnConnected, value);
         }
 
         public override bool IsOnlyOneInstance()

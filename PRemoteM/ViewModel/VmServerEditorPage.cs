@@ -166,7 +166,7 @@ namespace PRM.ViewModel
         public ProtocolServerBase Server
         {
             get => _server;
-            set => SetAndNotifyIfChanged(nameof(Server), ref _server, value);
+            set => SetAndNotifyIfChanged(ref _server, value);
         }
 
         private ProtocolServerBase _selectedProtocol = null;
@@ -182,7 +182,7 @@ namespace PRM.ViewModel
                 }
                 if (value == _selectedProtocol) return;
 
-                SetAndNotifyIfChanged(nameof(SelectedProtocol), ref _selectedProtocol, value);
+                SetAndNotifyIfChanged(ref _selectedProtocol, value);
                 if (_orgServer.GetType() == Server.GetType())
                     _orgServer.Update(Server);
                 UpdateServerWhenProtocolChanged(SelectedProtocol.GetType());
@@ -197,7 +197,7 @@ namespace PRM.ViewModel
         public ProtocolServerFormBase ProtocolEditControl
         {
             get => _protocolEditControl;
-            set => SetAndNotifyIfChanged(nameof(ProtocolEditControl), ref _protocolEditControl, value);
+            set => SetAndNotifyIfChanged(ref _protocolEditControl, value);
         }
 
         public List<string> NameSelections { get; set; }
@@ -358,7 +358,7 @@ namespace PRM.ViewModel
                     var newDefault = (ProtocolServerWithAddrPortUserPwdBase)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName);
                     newUserName.UserName = newDefault.UserName;
                 }
-            } 
+            }
             #endregion
 
             Server = server;

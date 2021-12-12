@@ -19,7 +19,7 @@ namespace PRM.Core.Protocol.Base
         public string FieldName
         {
             get => _fieldName;
-            set => SetAndNotifyIfChanged(nameof(FieldName), ref _fieldName, value);
+            set => SetAndNotifyIfChanged(ref _fieldName, value);
         }
 
 
@@ -27,14 +27,14 @@ namespace PRM.Core.Protocol.Base
         public FieldType Type
         {
             get => _type;
-            set => SetAndNotifyIfChanged(nameof(Type), ref _type, value);
+            set => SetAndNotifyIfChanged(ref _type, value);
         }
 
         private string _fieldValue = "";
         public string FieldValue
         {
             get => _fieldValue;
-            set => SetAndNotifyIfChanged(nameof(FieldValue), ref _fieldValue, value);
+            set => SetAndNotifyIfChanged(ref _fieldValue, value);
         }
 
         public object Clone()

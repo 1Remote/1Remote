@@ -22,7 +22,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
         public string PrivateKey
         {
             get => _privateKey;
-            set => SetAndNotifyIfChanged(nameof(PrivateKey), ref _privateKey, value);
+            set => SetAndNotifyIfChanged(ref _privateKey, value);
         }
 
         private string _startupPath = "/";
@@ -30,7 +30,7 @@ namespace PRM.Core.Protocol.FileTransmit.SFTP
         public string StartupPath
         {
             get => _startupPath;
-            set => SetAndNotifyIfChanged(nameof(StartupPath), ref _startupPath, value);
+            set => SetAndNotifyIfChanged(ref _startupPath, value);
         }
 
         public override bool IsOnlyOneInstance()

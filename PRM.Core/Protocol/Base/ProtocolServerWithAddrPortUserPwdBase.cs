@@ -16,7 +16,7 @@ namespace PRM.Core.Protocol
         public string UserName
         {
             get => _userName;
-            set => SetAndNotifyIfChanged(nameof(UserName), ref _userName, value);
+            set => SetAndNotifyIfChanged(ref _userName, value);
         }
 
         private string _password = "";
@@ -24,7 +24,7 @@ namespace PRM.Core.Protocol
         public string Password
         {
             get => _password;
-            set => SetAndNotifyIfChanged(nameof(Password), ref _password, value);
+            set => SetAndNotifyIfChanged(ref _password, value);
         }
 
         protected override string GetSubTitle()

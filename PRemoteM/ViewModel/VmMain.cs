@@ -27,7 +27,7 @@ namespace PRM.ViewModel
         public Visibility TbFilterVisible
         {
             get => _tbFilterVisible;
-            set => SetAndNotifyIfChanged(nameof(TbFilterVisible), ref _tbFilterVisible, value);
+            set => SetAndNotifyIfChanged(ref _tbFilterVisible, value);
         }
 
         private readonly AboutPage _aboutPage;
@@ -41,7 +41,7 @@ namespace PRM.ViewModel
             get => _bottomPage;
             set
             {
-                SetAndNotifyIfChanged(nameof(BottomPage), ref _bottomPage, value);
+                SetAndNotifyIfChanged(ref _bottomPage, value);
                 CalcTbFilterVisible();
             }
         }
@@ -53,7 +53,7 @@ namespace PRM.ViewModel
             get => _dispPage;
             set
             {
-                SetAndNotifyIfChanged(nameof(DispPage), ref _dispPage, value);
+                SetAndNotifyIfChanged(ref _dispPage, value);
                 CalcTbFilterVisible();
             }
         }
@@ -65,7 +65,7 @@ namespace PRM.ViewModel
             get => _topPage;
             set
             {
-                SetAndNotifyIfChanged(nameof(TopPage), ref _topPage, value);
+                SetAndNotifyIfChanged(ref _topPage, value);
                 CalcTbFilterVisible();
             }
         }
@@ -75,7 +75,7 @@ namespace PRM.ViewModel
         public int ProgressBarValue
         {
             get => _progressBarValue;
-            set => SetAndNotifyIfChanged(nameof(ProgressBarValue), ref _progressBarValue, value);
+            set => SetAndNotifyIfChanged(ref _progressBarValue, value);
         }
 
         private int _progressBarMaximum = 0;

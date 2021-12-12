@@ -28,7 +28,7 @@ namespace PRM.Core.Protocol.VNC
         public EVncWindowResizeMode? VncWindowResizeMode
         {
             get => _vncWindowResizeMode;
-            set => SetAndNotifyIfChanged(nameof(VncWindowResizeMode), ref _vncWindowResizeMode, value);
+            set => SetAndNotifyIfChanged(ref _vncWindowResizeMode, value);
         }
 
         public override bool IsOnlyOneInstance()

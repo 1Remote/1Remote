@@ -67,7 +67,7 @@ namespace PRM.View.Guidance
         public int Step
         {
             get => _step;
-            set => SetAndNotifyIfChanged(nameof(Step), ref _step, value);
+            set => SetAndNotifyIfChanged(ref _step, value);
         }
 
         private void ButtonNext_OnClick(object sender, RoutedEventArgs e)

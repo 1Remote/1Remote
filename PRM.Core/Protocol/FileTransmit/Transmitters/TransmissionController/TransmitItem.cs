@@ -21,7 +21,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
             IsDirectory = remoteItem.IsDirectory;
             ByteSize = remoteItem.ByteSize;
             DstPath = dstPath;
-            if(IsDirectory)
+            if (IsDirectory)
                 DstDirectoryPath = new DirectoryInfo(dstPath)?.Parent?.FullName ?? "";
             else
                 DstDirectoryPath = new FileInfo(dstPath)?.Directory?.FullName ?? "";
@@ -59,16 +59,16 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public ETransmissionType TransmissionType
         {
             get => _transmissionType;
-            protected set => SetAndNotifyIfChanged(nameof(TransmissionType), ref _transmissionType, value);
+            protected set => SetAndNotifyIfChanged(ref _transmissionType, value);
         }
 
-        public string ItemName { get;private set; }
+        public string ItemName { get; private set; }
 
         private string _srcPath;
         public string SrcPath
         {
             get => _srcPath;
-            protected set => SetAndNotifyIfChanged(nameof(SrcPath), ref _srcPath, value);
+            protected set => SetAndNotifyIfChanged(ref _srcPath, value);
         }
 
 
@@ -76,7 +76,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public string SrcDirectoryPath
         {
             get => _srcDirectoryPath;
-            protected set => SetAndNotifyIfChanged(nameof(SrcDirectoryPath), ref _srcDirectoryPath, value);
+            protected set => SetAndNotifyIfChanged(ref _srcDirectoryPath, value);
         }
 
 
@@ -84,7 +84,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public string DstPath
         {
             get => _dstPath;
-            protected set => SetAndNotifyIfChanged(nameof(DstPath), ref _dstPath, value);
+            protected set => SetAndNotifyIfChanged(ref _dstPath, value);
         }
 
 
@@ -92,7 +92,7 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public string DstDirectoryPath
         {
             get => _dstDirectoryPath;
-            protected set => SetAndNotifyIfChanged(nameof(DstPath), ref _dstDirectoryPath, value);
+            protected set => SetAndNotifyIfChanged(ref _dstDirectoryPath, value);
         }
 
 
@@ -101,14 +101,14 @@ namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
         public bool IsDirectory
         {
             get => _isDirectory;
-            set => SetAndNotifyIfChanged(nameof(IsDirectory), ref _isDirectory, value);
+            set => SetAndNotifyIfChanged(ref _isDirectory, value);
         }
 
         private ulong _byteSize = 0;
         public ulong ByteSize
         {
             get => _byteSize;
-            set => SetAndNotifyIfChanged(nameof(ByteSize), ref _byteSize, value);
+            set => SetAndNotifyIfChanged(ref _byteSize, value);
         }
 
         public ulong TransmittedSize { get; set; } = 0;
