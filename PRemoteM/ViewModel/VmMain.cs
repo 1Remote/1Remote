@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
@@ -106,23 +107,28 @@ namespace PRM.ViewModel
             this.VmAboutPage = new VmAboutPage();
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
-                ProgressBarValue = arg1;
-                ProgressBarMaximum = arg2;
-                ProgressBarInfo = arg2 > 0 ? arg3 : "";
+                Window.Dispatcher.Invoke(() =>
+                {
+                    ProgressBarValue = arg1;
+                    ProgressBarMaximum = arg2;
+                    ProgressBarInfo = arg2 > 0 ? arg3 : "";
+                });
             };
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
                 if (id <= 0) return;
                 Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
-                DispPage = new AnimationPage()
+                Window.Dispatcher.Invoke(() =>
                 {
-                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
-                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server, isDuplicate)),
-                };
-
-                Window.ActivateMe();
+                    DispPage = new AnimationPage()
+                    {
+                        InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server, isDuplicate)),
+                    };
+                    Window.ActivateMe();
+                });
             });
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagName, isInAnimationShow) =>
@@ -131,27 +137,35 @@ namespace PRM.ViewModel
                 if (string.IsNullOrWhiteSpace(tagName) == false)
                     server.Tags = new List<string>() { tagName };
 
-                DispPage = new AnimationPage()
+                Window.Dispatcher.Invoke(() =>
                 {
-                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
-                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server)),
-                };
+                    DispPage = new AnimationPage()
+                    {
+                        InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server)),
+                    };
+                    Window.ActivateMe();
+                });
             });
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                var page = new AnimationPage()
+                Window.Dispatcher.Invoke(() =>
                 {
-                    InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
-                    OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                };
-                var serverBases = servers as ProtocolServerBase[] ?? servers.ToArray();
-                if (serverBases.Count() > 1)
-                    page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases));
-                else
-                    page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases.First()));
-                DispPage = page;
+                    var page = new AnimationPage()
+                    {
+                        InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
+                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                    };
+                    var serverBases = servers as ProtocolServerBase[] ?? servers.ToArray();
+                    if (serverBases.Count() > 1)
+                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases));
+                    else
+                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases.First()));
+                    DispPage = page;
+                    Window.ActivateMe();
+                });
             };
 
             ServersShownPage = new AnimationPage()

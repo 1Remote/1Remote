@@ -53,9 +53,9 @@ namespace PRM.Controls
         private void ButtonEditServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmProtocolServer != null && VmProtocolServer.CmdEditServer.CanExecute())
+            if (sender is Button { CommandParameter: ActionForServer afs })
             {
-                VmProtocolServer.CmdEditServer.Execute();
+                afs.Run();
             }
         }
 
