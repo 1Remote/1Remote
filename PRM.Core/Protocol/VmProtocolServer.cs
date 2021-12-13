@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using PRM.Core.Model;
 using Shawn.Utils;
 
@@ -108,7 +109,6 @@ namespace PRM.Core.Protocol
         }
 
         private RelayCommand _cmdDuplicateServer;
-
         public RelayCommand CmdDuplicateServer
         {
             get
