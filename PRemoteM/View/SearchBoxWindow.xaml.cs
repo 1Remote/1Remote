@@ -136,10 +136,9 @@ namespace PRM.View
                     {
                         if (_vm?.SelectedItem?.Server?.Id == null)
                             return;
-                        var id = _vm.SelectedItem.Server.Id;
                         var si = _vm.SelectedActionIndex;
                         HideMe();
-                        _vm.Actions[si]?.Run(id);
+                        _vm.Actions[si]?.Run();
                     }
                     break;
 
@@ -314,14 +313,13 @@ namespace PRM.View
         {
             if (_vm?.SelectedItem?.Server?.Id == null)
                 return;
-            var id = _vm.SelectedItem.Server.Id;
             var si = _vm.SelectedActionIndex;
             HideMe();
             if (_vm.Actions.Count > 0
                 && si >= 0
                 && si < _vm.Actions.Count)
             {
-                _vm.Actions[si]?.Run(id);
+                _vm.Actions[si]?.Run();
             }
         }
 

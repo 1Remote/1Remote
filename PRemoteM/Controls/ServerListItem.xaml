@@ -161,7 +161,6 @@
                             <Style TargetType="{x:Type ListBox}">
                                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                 <Setter Property="Cursor" Value="Hand" />
-                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                                 <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
                                 <Setter Property="ItemContainerStyle">
                                     <Setter.Value>
@@ -174,16 +173,6 @@
                                                             </Border>
                                                             <ContentPresenter x:Name="ContentPresenter"/>
                                                         </Grid>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                                                                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
-                                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
-                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
-                                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
-                                                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -193,13 +182,12 @@
                                 <Setter Property="ItemTemplate">
                                     <Setter.Value>
                                         <DataTemplate DataType="model:ActionForServer">
-                                            <Grid>
-                                                <TextBlock Grid.Row="0" Text="{Binding ActionName}" 
-                                                               Margin="10 5"
-                                                               Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"
-                                                               FontSize="14" VerticalAlignment="Center">
-                                                </TextBlock>
-                                            </Grid>
+                                            <Button Padding="10" Style="{StaticResource ButtonBarPrimaryStyle}" 
+                                                            Click="ButtonEditServer_OnClick"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalContentAlignment="Left"
+                                                            Content="{Binding ActionName}">
+                                            </Button>
                                         </DataTemplate>
                                     </Setter.Value>
                                 </Setter>
