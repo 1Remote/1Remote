@@ -164,7 +164,7 @@ namespace PRM.Core.Service
                 Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
             }
 
-            if(_keywordMatchService == null)
+            if (_keywordMatchService == null)
                 return;
 
             // old user convert the 0.5 ini file to 0.6 json file
@@ -218,10 +218,8 @@ namespace PRM.Core.Service
             }
             AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).Enabled = true;
             AvailableMatcherProviders.First(x => x.Name == DirectMatchProvider.GetName()).IsEditable = false;
-            if (KeywordMatch.EnabledMatchers.Count == 0)
-            {
-                KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
-            }
+            KeywordMatch.EnabledMatchers = AvailableMatcherProviders.Where(x => x.Enabled).Select(x => x.Name).ToList();
+            _keywordMatchService.Init(KeywordMatch.EnabledMatchers.ToArray());
             // register matcher change event
             foreach (var info in AvailableMatcherProviders)
             {
@@ -246,7 +244,7 @@ namespace PRM.Core.Service
                 _keywordMatchService.Init(KeywordMatch.EnabledMatchers.ToArray());
             }
         }
-        
+
         public void Save()
         {
             var fi = new FileInfo(JsonPath);
@@ -262,7 +260,7 @@ namespace PRM.Core.Service
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
         }
-        
+
 
 
         // TODO remove after 2022.03.01
