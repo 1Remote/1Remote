@@ -233,7 +233,7 @@ namespace PRM.Model
                             return true;
                         if (rdp.IsConnWithFullScreen == true)
                             return true;
-                        return rdp.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false;
+                        return rdp.AutoSetting.FullScreenLastSessionIsFullScreen ?? false;
                     }
                 default:
                     return false;

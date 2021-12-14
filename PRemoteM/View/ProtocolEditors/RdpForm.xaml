@@ -94,25 +94,29 @@
                         <Grid.Resources>
                             <protocolEditors:ConverterERdpFullScreenFlag x:Key="ConverterERdpFullScreenFlag" />
                         </Grid.Resources>
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
-                                <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
-                                <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
-                                <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
-                                <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
-                            </ComboBox>
-
-                            <TextBlock VerticalAlignment="Center" Margin="2 0"
-                                       Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}}"
-                                       ToolTip="{DynamicResource 'How to select the specified monitors'}"
-                                       >
-                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RDP-in-mstsc.exe-mode#additional-settings" TextDecorations="{x:Null}" 
-                                           utils:HyperlinkHelper.IsOpenExternal="True">
-                                            (?)
-                                        </Hyperlink>
-                            </TextBlock>
-                        </StackPanel>
+                        <ComboBox SelectedIndex="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterERdpFullScreenFlag}}">
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_window}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_full_screen}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_full_screen_flag_all_screens}" />
+                            <ComboBoxItem Visibility="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
+                        </ComboBox>
                     </Grid>
+
+                    <TextBlock VerticalAlignment="Center" Margin="2 0" ToolTip="{DynamicResource 'How to select the specified monitors'}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.Disable}">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RDP-in-mstsc.exe-mode#additional-settings" TextDecorations="{x:Null}" 
+                                   utils:HyperlinkHelper.IsOpenExternal="True">
+                            (?)
+                        </Hyperlink>
+                    </TextBlock>
                 </StackPanel>
             </Grid>
             <Grid>
@@ -161,11 +165,51 @@
                             <protocolEditors:ConverterTrueWhenERdpFullScreen x:Key="ConverterTrueWhenERdpFullScreen" />
                         </Grid.Resources>
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_auto}" />
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}" />
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}" />
-                            <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}" />
-                            <ComboBoxItem IsEnabled="{Binding RdpFullScreenFlag, Converter={StaticResource ConverterTrueWhenERdpFullScreen},UpdateSourceTrigger=PropertyChanged}" Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}" />
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_auto}"></ComboBoxItem>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}">
+                                <ComboBoxItem.Style>
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBoxItem.Style>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}">
+                                <ComboBoxItem.Style>
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBoxItem.Style>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}">
+                                <ComboBoxItem.Style>
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.Disable}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBoxItem.Style>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}">
+                                <ComboBoxItem.Style>
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.Disable}">
+                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBoxItem.Style>
+                            </ComboBoxItem>
                             <ComboBoxItem Visibility="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding Server_editor_different_options}" />
                         </ComboBox>
                     </Grid>

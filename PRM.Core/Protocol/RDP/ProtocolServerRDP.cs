@@ -129,6 +129,10 @@ namespace PRM.Core.Protocol.RDP
                 {
                     case ERdpFullScreenFlag.EnableFullAllScreens:
                         IsConnWithFullScreen = true;
+                        if (RdpWindowResizeMode == ERdpWindowResizeMode.Fixed)
+                            RdpWindowResizeMode = ERdpWindowResizeMode.FixedFullScreen;
+                        if (RdpWindowResizeMode == ERdpWindowResizeMode.Stretch)
+                            RdpWindowResizeMode = ERdpWindowResizeMode.StretchFullScreen;
                         break;
 
                     case ERdpFullScreenFlag.Disable:
@@ -376,7 +380,7 @@ namespace PRM.Core.Protocol.RDP
         public LocalSetting AutoSetting
         {
             get => _autoSetting;
-            set => SetAndNotifyIfChanged(ref _autoSetting, value);
+            private set => SetAndNotifyIfChanged(ref _autoSetting, value);
         }
 
         public override bool IsOnlyOneInstance()
@@ -440,7 +444,6 @@ namespace PRM.Core.Protocol.RDP
             switch (this.RdpWindowResizeMode)
             {
                 case ERdpWindowResizeMode.Stretch:
-                case ERdpWindowResizeMode.StretchFullScreen:
                     rdpConfig.SmartSizing = 1;
                     rdpConfig.DynamicResolution = 0;
                     break;
@@ -450,10 +453,6 @@ namespace PRM.Core.Protocol.RDP
                     rdpConfig.DynamicResolution = 0;
                     rdpConfig.DesktopWidth = this.RdpWidth > 0 ? this.RdpWidth ?? 800 : 800;
                     rdpConfig.DesktopHeight = this.RdpHeight > 0 ? this.RdpHeight ?? 600 : 600;
-                    break;
-                case ERdpWindowResizeMode.FixedFullScreen:
-                    rdpConfig.SmartSizing = 0;
-                    rdpConfig.DynamicResolution = 0;
                     break;
 
                 case ERdpWindowResizeMode.AutoResize:

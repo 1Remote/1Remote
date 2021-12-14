@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -52,11 +54,13 @@ namespace PRM.View.ProtocolHosts
     {
         private AxMsRdpClient9NotSafeForScriptingEx _rdp = null;
         private readonly ProtocolServerRDP _rdpServer = null;
+        /// <summary>
+        /// system scale factor, 100 = 100%, 200 = 200%
+        /// </summary>
         private uint _primaryScaleFactor = 100;
 
         private bool _flagHasConnected = false;
         private bool _flagHasLogin = false;
-        private bool _isLastTimeFullScreen = false;
 
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
@@ -71,9 +75,7 @@ namespace PRM.View.ProtocolHosts
             if (protocolServer is ProtocolServerRDP rdp)
             {
                 _rdpServer = rdp;
-                _isLastTimeFullScreen = _rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
-                                        || _rdpServer.IsConnWithFullScreen == true
-                                        || (_rdpServer.AutoSetting?.FullScreenLastSessionIsFullScreen ?? false);
+                _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen ??= false;
                 InitRdp(width, height);
                 GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
             }
@@ -89,6 +91,7 @@ namespace PRM.View.ProtocolHosts
 
         public void Dispose()
         {
+            Console.WriteLine($"Dispose {this.GetType().Name}({this.GetHashCode()})");
             try
             {
                 GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
@@ -97,12 +100,8 @@ namespace PRM.View.ProtocolHosts
             {
             }
 
-            if (RdpHost != null)
-                RdpHost.Child = null;
             RdpDispose();
             _resizeEndTimer?.Dispose();
-            RdpHost?.Dispose();
-            RdpHost = null;
         }
 
         private void OnScreenResolutionChanged()
@@ -179,7 +178,7 @@ namespace PRM.View.ProtocolHosts
             _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes == true;
         }
 
-        private void CreatRdp()
+        private void CreateRdp()
         {
             lock (this)
             {
@@ -302,50 +301,49 @@ namespace PRM.View.ProtocolHosts
 
             #region Display
 
-            ReadScaleFactor();
+            _primaryScaleFactor = ReadScaleFactor();
             SimpleLogHelper.Debug($"RDP Host: init Display with ScaleFactor = {_primaryScaleFactor}, W = {width}, H = {height}");
             _rdp.SetExtendedProperty("DesktopScaleFactor", _primaryScaleFactor);
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
-            if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch
-            || _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
+            if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch || _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
                 _rdp.AdvancedSettings2.SmartSizing = true;
             // to enhance user experience, i let the form handled full screen
             _rdp.AdvancedSettings6.ContainerHandledFullScreen = 1;
 
-            if (_rdpServer.RdpFullScreenFlag != ERdpFullScreenFlag.EnableFullAllScreens)
-                switch (_rdpServer.RdpWindowResizeMode)
-                {
-                    case ERdpWindowResizeMode.Stretch:
-                    case ERdpWindowResizeMode.Fixed:
-                        _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth);
-                        _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight);
-                        break;
-
-                    case ERdpWindowResizeMode.StretchFullScreen:
-                    case ERdpWindowResizeMode.FixedFullScreen:
-                        var screenSize = GetScreenSize();
-                        _rdp.DesktopWidth = (int)(screenSize.Width);
-                        _rdp.DesktopHeight = (int)(screenSize.Height);
-                        break;
-
-                    case ERdpWindowResizeMode.AutoResize:
-                    default:
-                        if (width > 100 && height > 100)
-                        {
-                            // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
-                            // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
-                            if (isReconn)
-                                _primaryScaleFactor = 100;
-                            _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
-                            _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
-                        }
-                        else
-                        {
-                            _rdp.DesktopWidth = (int)(800 * (_primaryScaleFactor / 100.0));
-                            _rdp.DesktopHeight = (int)(600 * (_primaryScaleFactor / 100.0));
-                        }
-                        break;
-                }
+            // pre-set the rdp width & height
+            switch (_rdpServer.RdpWindowResizeMode)
+            {
+                case ERdpWindowResizeMode.Stretch:
+                case ERdpWindowResizeMode.Fixed:
+                    _rdp.DesktopWidth = (int)(_rdpServer.RdpWidth ?? 800);
+                    _rdp.DesktopHeight = (int)(_rdpServer.RdpHeight ?? 600);
+                    break;
+                case ERdpWindowResizeMode.FixedFullScreen:
+                case ERdpWindowResizeMode.StretchFullScreen:
+                    var size = GetScreenSize();
+                    _rdp.DesktopWidth = size.Width;
+                    _rdp.DesktopHeight = size.Height;
+                    break;
+                case ERdpWindowResizeMode.AutoResize:
+                case null:
+                default:
+                    // default case, set rdp size to tab window size.
+                    if (width > 100 && height > 100)
+                    {
+                        // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
+                        // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
+                        if (isReconn)
+                            _primaryScaleFactor = 100;
+                        _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
+                    }
+                    else
+                    {
+                        _rdp.DesktopWidth = (int)(800 * (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopHeight = (int)(600 * (_primaryScaleFactor / 100.0));
+                    }
+                    break;
+            }
 
             SimpleLogHelper.Debug($"RDP Host: Display init as RDP.DesktopWidth = {_rdp.DesktopWidth}, RDP.DesktopWidth = {_rdp.DesktopWidth},");
 
@@ -358,26 +356,11 @@ namespace PRM.View.ProtocolHosts
 
                 case ERdpFullScreenFlag.EnableFullAllScreens:
                     base.CanFullScreen = true;
-                    // every time reconnect, EnableFullAllScreens will go to full screen.
-                    if (Screen.AllScreens.Length == 1)
-                    {
-                        var screenSize = GetScreenSize();
-                        _rdp.DesktopWidth = (int)(screenSize.Width);
-                        _rdp.DesktopHeight = (int)(screenSize.Height);
-                    }
                     ((IMsRdpClientNonScriptable5)_rdp.GetOcx()).UseMultimon = true;
                     break;
-
                 case ERdpFullScreenFlag.EnableFullScreen:
                 default:
                     base.CanFullScreen = true;
-                    if (_isLastTimeFullScreen)
-                    {
-                        var screenSize = GetScreenSize();
-                        _rdp.DesktopWidth = (int)(screenSize.Width);
-                        _rdp.DesktopHeight = (int)(screenSize.Height);
-                        _rdp.FullScreen = true;
-                    }
                     break;
             }
 
@@ -505,7 +488,7 @@ namespace PRM.View.ProtocolHosts
             {
                 Status = ProtocolHostStatus.Initializing;
                 RdpDispose();
-                CreatRdp();
+                CreateRdp();
                 RdpInitServerInfo();
                 RdpInitStatic();
                 RdpInitConnBar();
@@ -592,13 +575,23 @@ namespace PRM.View.ProtocolHosts
         {
             Debug.Assert(this.ParentWindow != null);
 
-            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
-                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
-            else
-                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
+            switch (_rdpServer.RdpFullScreenFlag)
+            {
+                case ERdpFullScreenFlag.Disable:
+                    return;
+                case ERdpFullScreenFlag.EnableFullScreen:
+                case null:
+                    _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
+                    break;
+                case ERdpFullScreenFlag.EnableFullAllScreens:
+                    _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             Context.DataService.Database_UpdateServer(_rdpServer);
-            _rdp.FullScreen = true;
+            _rdp.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
         }
 
         public override ProtocolHostType GetProtocolHostType()
@@ -626,16 +619,19 @@ namespace PRM.View.ProtocolHosts
 
         private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
+            this.Dispatcher.Invoke(() =>
+            {
+                Grid?.Children?.Clear();
+            });
+
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
             if (_rdp == null)
                 return;
 
-            _isLastTimeFullScreen = _rdp.FullScreen;
-
             Status = ProtocolHostStatus.Disconnected;
             ResizeEndStopFireDelegate();
             if (this._onResizeEnd != null)
-                this._onResizeEnd -= ReSizeRdp;
+                this._onResizeEnd -= ReSizeRdpOnResizeEnd;
 
             const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
             string reason = _rdp?.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
@@ -722,13 +718,18 @@ namespace PRM.View.ProtocolHosts
             ResizeEndStartFireDelegate();
             try
             {
-                this._onResizeEnd -= ReSizeRdp;
+                this._onResizeEnd -= ReSizeRdpOnResizeEnd;
             }
             finally
             {
-                this._onResizeEnd += ReSizeRdp;
+                this._onResizeEnd += ReSizeRdpOnResizeEnd;
             }
-            ReSizeRdp();
+
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(1000);
+                ReSizeRdpOnResizeEnd();
+            });
         }
 
         private void RdpOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
@@ -743,7 +744,7 @@ namespace PRM.View.ProtocolHosts
         /// <summary>
         /// set remote resolution to _rdp size if is AutoResize
         /// </summary>
-        private void ReSizeRdp()
+        private void ReSizeRdpOnResizeEnd()
         {
             if (_rdp?.FullScreen == false
                 && _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
@@ -759,10 +760,9 @@ namespace PRM.View.ProtocolHosts
             try
             {
                 SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
-                var p = _primaryScaleFactor;
-                ReadScaleFactor();
-                if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || p != _primaryScaleFactor)
-                    _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, _primaryScaleFactor, 100);
+                var currentScaleFactor = ReadScaleFactor();
+                if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || currentScaleFactor != _primaryScaleFactor)
+                    _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, currentScaleFactor, 100);
             }
             catch (Exception e)
             {
@@ -770,12 +770,7 @@ namespace PRM.View.ProtocolHosts
             }
         }
 
-        private double _normalWidth = 800;
-        private double _normalHeight = 600;
-        private double _normalTop = 0;
-        private double _normalLeft = 0;
-
-        private void MakeNormal2FullScreen(bool saveSize = true)
+        private void MakeNormal2FullScreen()
         {
             // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
@@ -783,20 +778,13 @@ namespace PRM.View.ProtocolHosts
             {
                 // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
                 _rdp.FullScreen = false;
-                _isLastTimeFullScreen = false;
+                _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
                 return;
             }
 
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
 
             var screenSize = GetScreenSize();
-            if (saveSize)
-            {
-                _normalWidth = ParentWindow.Width;
-                _normalHeight = ParentWindow.Height;
-                _normalTop = ParentWindow.Top;
-                _normalLeft = ParentWindow.Left;
-            }
 
             ParentWindow.WindowState = WindowState.Normal;
             ParentWindow.WindowStyle = WindowStyle.None;
@@ -809,12 +797,25 @@ namespace PRM.View.ProtocolHosts
 
             SimpleLogHelper.Debug($"RDP to FullScreen resize ParentWindow to : W = {ParentWindow.Width}, H = {ParentWindow.Height}, while screen size is {screenSize.Width} × {screenSize.Height}, ScaleFactor = {_primaryScaleFactor}");
 
-            // WARNING!: EnableFullAllScreens do not need to SetRdpResolution
+            // WARNING!: EnableFullAllScreens do not need SetRdpResolution
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
-                SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
+                switch (_rdpServer.RdpWindowResizeMode)
+                {
+                    case null:
+                    case ERdpWindowResizeMode.AutoResize:
+                    case ERdpWindowResizeMode.FixedFullScreen:
+                        SetRdpResolution((uint)screenSize.Width, (uint)screenSize.Height);
+                        break;
+                    case ERdpWindowResizeMode.Stretch:
+                    case ERdpWindowResizeMode.Fixed:
+                        SetRdpResolution((uint)(_rdpServer.RdpWidth ?? 800), (uint)(_rdpServer.RdpHeight ?? 600));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
-            _isLastTimeFullScreen = true;
+            _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
 
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
             {
@@ -841,25 +842,16 @@ namespace PRM.View.ProtocolHosts
 
         private void MakeFullScreen2Normal()
         {
+            _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
             if (ParentWindow is ITab)
             {
-                _isLastTimeFullScreen = false;
                 return;
             }
 
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
-            //ParentWindow.Topmost = false;
-            ParentWindow.ResizeMode = ResizeMode.CanResize;
-            ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
-            ParentWindow.WindowState = WindowState.Normal;
-            ParentWindow.Width = _normalWidth;
-            ParentWindow.Height = _normalHeight;
-            ParentWindow.Top = _normalTop;
-            ParentWindow.Left = _normalLeft;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
-            _isLastTimeFullScreen = false;
             Context.DataService.Database_UpdateServer(_rdpServer);
         }
 
@@ -871,26 +863,39 @@ namespace PRM.View.ProtocolHosts
 
         #endregion event handler
 
-        private void ReadScaleFactor()
+        private static uint ReadScaleFactor()
         {
+            uint sf = 100;
             try
             {
                 // !must use PrimaryScreen scale factor
-                _primaryScaleFactor = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
-                //_primaryScaleFactor = (uint)(100 * ScreenInfoEx.GetCurrentScreen(this.ParentWindow).ScaleFactor);
+                sf = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
             }
             catch (Exception)
             {
-                _primaryScaleFactor = 100;
+                sf = 100;
             }
             finally
             {
-                if (_primaryScaleFactor < 100)
-                    _primaryScaleFactor = 100;
+                if (sf < 100)
+                    sf = 100;
             }
+            return sf;
         }
 
         #region WindowOnResizeEnd
+
+        private bool _canAutoResizeByWindowSizeChanged = true;
+
+        /// <summary>
+        /// when tab window goes to min from max, base.SizeChanged invoke and size will get bigger, normal to min will not tiger this issue, don't know why.
+        /// so stop resize when window status change to min until status restore.
+        /// </summary>
+        /// <param name="isEnable"></param>
+        public override void ToggleAutoResize(bool isEnable)
+        {
+            _canAutoResizeByWindowSizeChanged = isEnable;
+        }
 
         private delegate void ResizeEndDelegage();
 
@@ -946,7 +951,7 @@ namespace PRM.View.ProtocolHosts
 
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (_canAutoResize)
+            if (_canAutoResizeByWindowSizeChanged && this._rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
                 try
                 {
@@ -974,18 +979,6 @@ namespace PRM.View.ProtocolHosts
         }
 
         #endregion WindowOnResizeEnd
-
-        private bool _canAutoResize = true;
-
-        /// <summary>
-        /// when tab window goes to min from max, base.SizeChanged invoke and size will get bigger, normal to min will not tiger this issue, don't know why.
-        /// so stop resize when window status change to min until status restore.
-        /// </summary>
-        /// <param name="isEnable"></param>
-        public override void ToggleAutoResize(bool isEnable)
-        {
-            _canAutoResize = isEnable;
-        }
 
         private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
         {
@@ -1021,6 +1014,10 @@ namespace PRM.View.ProtocolHosts
                     }
                     finally
                     {
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            RdpHost.Child = null;
+                        });
                         tmp = null;
                     }
                 });
