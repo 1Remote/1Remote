@@ -64,7 +64,7 @@ namespace PRM.Core.Protocol.Extend
 
         protected override string GetSubTitle()
         {
-            return base.DisplayName;
+            return GetCmd();
         }
 
         public override double GetListOrder()

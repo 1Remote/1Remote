@@ -25,8 +25,8 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
-                    <ColumnDefinition Width="40" SharedSizeGroup="Name"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="230" Width="*" SharedSizeGroup="Name"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>

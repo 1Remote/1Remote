@@ -143,22 +143,21 @@
     <s:String x:Key="server_editor_group_title_advantage">Advantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD Gateway Server</s:String>
     <!-- server editor - common group items -->
-    <s:String x:Key="server_editor_tag">Tags</s:String>
+    <s:String x:Key="Tags">Tags</s:String>
     <s:String x:Key="server_editor_tags_tag">Can enter multiple, separated by ','</s:String>
-    <s:String x:Key="server_editor_icon">Logo</s:String>
-    <s:String x:Key="server_editor_color_mark">Color</s:String>
+    <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="server_editor_cmd_before_connected">Before cmd</s:String>
     <s:String x:Key="server_editor_cmd_before_connected_tag">Run before connecting by cmd.exe (e.g. 'C:\openVpn.bat' will run 'cmd.exe C:\openVpn.bat')</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected">After cmd</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected_tag">Run after disconnecting by cmd.exe (e.g. 'C:\closeVpn.bat' will run 'cmd.exe C:\closeVpn.bat')</s:String>
     <!-- server editor - connection group items -->
-    <s:String x:Key="server_editor_connection_address">Hostname</s:String>
-    <s:String x:Key="server_editor_connection_port">Port</s:String>
-    <s:String x:Key="server_editor_connection_username">User</s:String>
-    <s:String x:Key="server_editor_connection_password">Password</s:String>
-    <s:String x:Key="server_editor_connection_private_key_checker">Use private key</s:String>
-    <s:String x:Key="server_editor_connection_private_key">Private key</s:String>
-    <s:String x:Key="server_editor_open_sftp_when_connected">Open SFTP when connected</s:String>
+    <s:String x:Key="Hostname">Hostname</s:String>
+    <s:String x:Key="Port">Port</s:String>
+    <s:String x:Key="User">User</s:String>
+    <s:String x:Key="Password">Password</s:String>
+    <s:String x:Key="Use private key">Use private key</s:String>
+    <s:String x:Key="Private key">Private key</s:String>
+    <s:String x:Key="Open SFTP when connected">Open SFTP when connected</s:String>
     <!-- server editor - display group items -->
     <s:String x:Key="server_editor_display_full_screen_flag">Full screen</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Disable</s:String>

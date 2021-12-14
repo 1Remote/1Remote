@@ -588,7 +588,7 @@ namespace PRM.ViewModel
                         var obj = o as Tag;
                         if (obj == null)
                             return;
-                        string newTag = InputWindow.InputBox(Context.LanguageService.Translate("server_editor_tag"), Context.LanguageService.Translate("server_editor_tag"), obj.Name);
+                        string newTag = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
                         if (t == obj.Name)
                             t = newTag;
                         if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)

@@ -97,7 +97,7 @@
 
                             <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_tag}"></TextBlock>
+                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Tags}"></TextBlock>
                                     <Grid Style="{StaticResource EditorRowGridInput}">
                                         <controls:TagsEditor x:Name="TagsEditor"
                                                               Tags="{Binding Server.Tags, Mode=TwoWay}"
@@ -109,7 +109,7 @@
                             <Grid Style="{StaticResource EditorRowGrid}" Margin="0" Height="Auto">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_icon}"></TextBlock>
+                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Logo}"></TextBlock>
                                         <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                             <StackPanel Orientation="Horizontal">
                                                 <Grid Name="GridLogo" Width="64" Height="64"
@@ -121,7 +121,7 @@
                                                         <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                                     </Border>
                                                 </Grid>
-                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource server_editor_color_mark}"></TextBlock>
+                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource Color}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
                                                     HexColor="{Binding Server.MarkColorHex}"
                                                     Foreground="{DynamicResource BackgroundTextBrush}" 

@@ -108,7 +108,7 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_match">Datenbank: der private RSA-schlüssel stimmt nicht mit dem öffentlichen Schlüssel überein! Bitte wählen Sie einen korrekten Schlüssel aus.</s:String>
 
     <s:String x:Key="Theme">Thema</s:String>
-    <s:String x:Key="Color">Farbthema</s:String>
+    <s:String x:Key="Color">Farbe</s:String>
     <s:String x:Key="Color1">Farbe1</s:String>
     <s:String x:Key="Color2">Farbe2</s:String>
     <s:String x:Key="Background">Hintergrund</s:String>
@@ -143,22 +143,21 @@
     <s:String x:Key="server_editor_group_title_advantage">Erweitert</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Remotedesktop-Gatewayserver</s:String>
     <!-- server editor - common group items -->
-    <s:String x:Key="server_editor_tag">Etikett</s:String>
+    <s:String x:Key="Tags">Etikett</s:String>
     <s:String x:Key="server_editor_tags_tag">Can enter multiple, separated by ','</s:String>
-    <s:String x:Key="server_editor_icon">Logo</s:String>
-    <s:String x:Key="server_editor_color_mark">Farbe</s:String>
+    <s:String x:Key="Logo">Logo</s:String>
     <s:String x:Key="server_editor_cmd_before_connected">App vorher starten</s:String>
     <s:String x:Key="server_editor_cmd_before_connected_tag">Vor Verbinden durch cmd.exe ausführen (z. B. 'C:\\openVpn.bat' führt 'cmd.exe C:\\openVpn.bat' aus)</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected">App nachher starten</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected_tag">Nach Beendigung durch cmd.exe ausführen (z. B. 'C:\\closeVpn.bat' wird 'cmd.exe C:\\closeVpn.bat' ausführen)</s:String>
     <!-- server editor - connection group items -->
-    <s:String x:Key="server_editor_connection_address">Hostname</s:String>
-    <s:String x:Key="server_editor_connection_port">Port</s:String>
-    <s:String x:Key="server_editor_connection_username">Benutzer</s:String>
-    <s:String x:Key="server_editor_connection_password">Passwort</s:String>
-    <s:String x:Key="server_editor_connection_private_key_checker">Benutze privaten Schlüssel</s:String>
-    <s:String x:Key="server_editor_connection_private_key">Privater Schlüssel</s:String>
-    <s:String x:Key="server_editor_open_sftp_when_connected">Öffnen Sie SFTP beim Anschluss</s:String>
+    <s:String x:Key="Hostname">Hostname</s:String>
+    <s:String x:Key="Port">Port</s:String>
+    <s:String x:Key="User">Benutzer</s:String>
+    <s:String x:Key="Password">Passwort</s:String>
+    <s:String x:Key="Use private key">Benutze privaten Schlüssel</s:String>
+    <s:String x:Key="Private key">Privater Schlüssel</s:String>
+    <s:String x:Key="Open SFTP when connected">Öffnen Sie SFTP beim Anschluss</s:String>
     <!-- server editor - display group items -->
     <s:String x:Key="server_editor_display_full_screen_flag">Vollbild</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Deaktivieren</s:String>

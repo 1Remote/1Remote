@@ -108,7 +108,7 @@
     <s:String x:Key="string_database_error_rsa_private_key_not_match">数据库：存储的 RSA 私钥公钥不匹配，请重新选择！</s:String>
 
     <s:String x:Key="Theme">主题</s:String>
-    <s:String x:Key="Color">配色</s:String>
+    <s:String x:Key="Color">颜色</s:String>
     <s:String x:Key="Color1">主色</s:String>
     <s:String x:Key="Color2">副色</s:String>
     <s:String x:Key="Background">背景色</s:String>
@@ -143,22 +143,21 @@
     <s:String x:Key="server_editor_group_title_advantage">高级</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD 网关服务器</s:String>
     <!-- server editor - common group items -->
-    <s:String x:Key="server_editor_tag">标签</s:String>
+    <s:String x:Key="Tags">标签</s:String>
     <s:String x:Key="server_editor_tags_tag">可以输入多个，用 ',' 分隔</s:String>
-    <s:String x:Key="server_editor_icon">图标</s:String>
-    <s:String x:Key="server_editor_color_mark">颜色标记</s:String>
+    <s:String x:Key="Logo">图标</s:String>
     <s:String x:Key="server_editor_cmd_before_connected">连接前cmd</s:String>
     <s:String x:Key="server_editor_cmd_before_connected_tag">启动会话前用cmd运行脚本(如：'C:\\openVpn.bat' 将执行 'cmd.exe C:\\openVpn.bat')</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected">断开后cmd</s:String>
     <s:String x:Key="server_editor_cmd_after_disconnected_tag">关闭会话后用cmd运行脚本(如：'C:\\closeVpn.bat' 将运行 'cmd.exe C:\\closeVpn.bat')</s:String>
     <!-- server editor - connection group items -->
-    <s:String x:Key="server_editor_connection_address">地址</s:String>
-    <s:String x:Key="server_editor_connection_port">端口</s:String>
-    <s:String x:Key="server_editor_connection_username">用户名</s:String>
-    <s:String x:Key="server_editor_connection_password">密码</s:String>
-    <s:String x:Key="server_editor_connection_private_key_checker">使用私钥连接</s:String>
-    <s:String x:Key="server_editor_connection_private_key">私钥</s:String>
-    <s:String x:Key="server_editor_open_sftp_when_connected">同时打开 SFTP</s:String>
+    <s:String x:Key="Hostname">地址</s:String>
+    <s:String x:Key="Port">端口</s:String>
+    <s:String x:Key="User">用户名</s:String>
+    <s:String x:Key="Password">密码</s:String>
+    <s:String x:Key="Use private key">使用私钥连接</s:String>
+    <s:String x:Key="Private key">私钥</s:String>
+    <s:String x:Key="Open SFTP when connected">同时打开 SFTP</s:String>
     <!-- server editor - display group items -->
     <s:String x:Key="server_editor_display_full_screen_flag">全屏模式</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">禁用</s:String>
