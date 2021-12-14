@@ -129,7 +129,7 @@ namespace PRM.View.TabWindow
             };
         }
 
-        private void InitStateChanged()
+        private void InitWindowStateChanged()
         {
             this.StateChanged += delegate (object sender, EventArgs args)
             {
@@ -215,7 +215,7 @@ namespace PRM.View.TabWindow
                 this.WindowState = _localityService.TabWindowState;
 
             InitSizeChanged();
-            InitStateChanged();
+            InitWindowStateChanged();
             InitClosingItemCallback();
             InitClosed();
         }

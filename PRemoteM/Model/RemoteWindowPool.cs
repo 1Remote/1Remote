@@ -403,15 +403,16 @@ namespace PRM.Model
             var host = _protocolHosts[connectionId];
 
             // first time to full
-            var full = new FullScreenWindow { LastTabToken = "" };
+            var full = new FullScreenWindow
+            {
+                LastTabToken = fromTab?.Token ?? "",
+                WindowStartupLocation = WindowStartupLocation.Manual,
+            };
 
             // full screen placement
             ScreenInfoEx screenEx;
             if (fromTab != null)
-            {
                 screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
-                full.LastTabToken = _lastTabToken;
-            }
             else if (host.ProtocolServer is ProtocolServerRDP rdp
                      && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
                      && rdp.AutoSetting.FullScreenLastSessionScreenIndex >= 0
@@ -420,7 +421,6 @@ namespace PRM.Model
             else
                 screenEx = ScreenInfoEx.GetCurrentScreen(App.MainUi);
 
-            full.WindowStartupLocation = WindowStartupLocation.Manual;
             full.Top = screenEx.VirtualWorkingAreaCenter.Y - full.Height / 2;
             full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
             full.SetProtocolHost(host);
@@ -642,7 +642,14 @@ namespace PRM.Model
             // Dispose
             try
             {
-                host.Close();
+                if(host is IDisposable d)
+                {
+                    d.Dispose();
+                }
+                else
+                {
+                    host.Close();
+                }
             }
             catch (Exception e)
             {
