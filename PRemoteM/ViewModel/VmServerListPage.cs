@@ -439,7 +439,7 @@ namespace PRM.ViewModel
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => App.MainUi.Vm.DispPage == null && ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
+                    }, o => App.MainUi?.Vm?.DispPage == null && ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
             }
         }
 

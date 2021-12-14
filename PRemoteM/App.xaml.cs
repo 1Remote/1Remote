@@ -138,7 +138,6 @@ namespace PRM
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
-
             #region Check permissions
 #if FOR_MICROSOFT_STORE_ONLY
             CanPortable = false;
@@ -163,9 +162,7 @@ namespace PRM
 
             #endregion
 
-
-
-
+            InitLog(CanPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
 
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
@@ -174,7 +171,6 @@ namespace PRM
             KillPutty();
 
             // BASE MODULES
-            InitLog(CanPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
             InitExceptionHandle();
             OnlyOneAppInstanceCheck();
             InitEvent();
@@ -273,12 +269,12 @@ namespace PRM
         {
             try
             {
-                App.MainUi?.Hide();
-                App.MainUi?.Close();
-                App.MainUi = null;
                 App.SearchBoxWindow?.Hide();
                 App.SearchBoxWindow?.Close();
                 App.SearchBoxWindow = null;
+                App.MainUi?.Hide();
+                App.MainUi?.Close();
+                App.MainUi = null;
 
                 if (App.TaskTrayIcon != null)
                 {
