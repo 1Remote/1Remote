@@ -55,39 +55,11 @@
                 </Setter>
             </Style>
 
-            <ControlTemplate x:Key="ListBoxTemplateForServerCards" TargetType="{x:Type ListBox}">
-                <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="True" HorizontalAlignment="Center">
-                    <ScrollViewer Focusable="False">
-                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                    </ScrollViewer>
-                </Border>
-            </ControlTemplate>
-            <ItemsPanelTemplate x:Key="ItemsPanelTemplateForServerCards">
-                <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="0 0 0 20"/>
-            </ItemsPanelTemplate>
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="protocol:VmProtocolServer">
-                <Grid>
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList}"></Setter>
-                            <Setter Property="Height" Value="164"></Setter>
-                            <Setter Property="Width" Value="165"></Setter>
-                        </Style>
-                    </Grid.Style>
-                    <controls:ServerCard VmProtocolServer="{Binding}">
-                    </controls:ServerCard>
-                </Grid>
-            </DataTemplate>
-
 
 
             <ControlTemplate x:Key="ListBoxTemplateForServerList" TargetType="{x:Type ListBox}">
                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
                     <Grid>
-                        <!--<Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>-->
 
                         <Grid Name="GridHeader" Height="{StaticResource OneItemHeight}" VerticalAlignment="Top" ZIndex="999">
                             <Grid.Style>
@@ -127,8 +99,8 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
-                                    <ColumnDefinition Width="40"   SharedSizeGroup="Name"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
+                                    <ColumnDefinition MinWidth="230" Width="*" SharedSizeGroup="Name"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
@@ -232,7 +204,7 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource server_editor_connection_address}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Hostname}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -272,10 +244,6 @@
 
             <Style x:Key="ServerListStyle" TargetType="ListBox">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <!--<Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>-->
-                <!--<Setter Property="ItemsPanel" Value="{StaticResource ItemsPanelTemplateForServerCards}"></Setter>-->
-                <!--<Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>-->
-
                 <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
@@ -285,20 +253,6 @@
                     </Setter.Value>
                 </Setter>
                 <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
-
-                <!--<Style.Triggers>
-                    <DataTrigger Binding="{Binding Source={x:Static service:SystemConfig.Instance}, Path=Theme.ServerListPageUI}" Value="{x:Static service:EnumServerListPageUI.List}">
-                        <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
-                        <Setter Property="ItemsPanel">
-                            <Setter.Value>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Margin="0 0 0 30"/>
-                                </ItemsPanelTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
-                    </DataTrigger>
-                </Style.Triggers>-->
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -561,7 +515,7 @@
                     <Button Grid.Column="1" Padding="0 1 0 0"
                                         MinWidth="80"
                                         Click="BtnTagsListView_Click"
-                                        BorderThickness="0" Content="{DynamicResource server_editor_tag}">
+                                        BorderThickness="0" Content="{DynamicResource Tags}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                 <Setter Property="Template">
