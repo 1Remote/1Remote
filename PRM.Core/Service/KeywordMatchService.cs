@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using VariableKeywordMatcher;
 using VariableKeywordMatcher.Model;
 using VariableKeywordMatcher.Provider.ChineseZhCnPinYin;
 using VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials;
@@ -80,23 +79,22 @@ namespace PRM.Core.Service
 
         private readonly Dictionary<string, Cache> _caches = new Dictionary<string, Cache>(500);
 
-        private Matcher _matcher = null;
+        private VariableKeywordMatcher.Matcher _matcher = null;
 
         public KeywordMatchService()
         {
-            var pns = new string[]
+            Init(new string[]
             {
                 DirectMatchProvider.GetName(),
                 DiscreteMatchProvider.GetName(),
-            };
-            _matcher = Builder.Build(pns, false);
+            });
         }
 
 
         public void Init(string[] providerNames)
         {
             Debug.Assert(providerNames.Length > 0);
-            _matcher = Builder.Build(providerNames, false);
+            _matcher = VariableKeywordMatcherIn1.Builder.Build(providerNames, false);
         }
 
         private void CleanUp()
@@ -164,7 +162,7 @@ namespace PRM.Core.Service
                 });
             }
             // first time init.
-            CultureInfo ci = CultureInfo.CurrentCulture;
+            var ci = CultureInfo.CurrentCulture;
             string code = ci.Name.ToLower();
             foreach (var matchProviderInfo in matchProviderInfos)
             {
