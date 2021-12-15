@@ -152,6 +152,7 @@
     <s:String x:Key="server_editor_cmd_after_disconnected_tag">Nach Beendigung durch cmd.exe ausführen (z. B. 'C:\\closeVpn.bat' wird 'cmd.exe C:\\closeVpn.bat' ausführen)</s:String>
     <!-- server editor - connection group items -->
     <s:String x:Key="Hostname">Hostname</s:String>
+    <s:String x:Key="Target">Target</s:String>
     <s:String x:Key="Port">Port</s:String>
     <s:String x:Key="User">Benutzer</s:String>
     <s:String x:Key="Password">Passwort</s:String>
@@ -262,5 +263,7 @@
     <s:String x:Key="Selected">Ausgewählt</s:String>
     <s:String x:Key="Custom">Benutzerdefiniert</s:String>
     <s:String x:Key="write permissions alert" xml:space="preserve">We don't have write permissions for the `{0}` directory!&#13;&#10;Please try:&#13;&#10;1. `run as administrator`&#13;&#10;2. change directory/file permissions &#13;&#10;3. move PRemoteM to another folder</s:String>
+    <s:String x:Key="Follow system">Follow system</s:String>
+    <s:String x:Key="Scale">Scale</s:String>
 
 </ResourceDictionary>

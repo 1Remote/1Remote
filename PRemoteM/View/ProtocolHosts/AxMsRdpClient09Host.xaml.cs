@@ -58,6 +58,7 @@ namespace PRM.View.ProtocolHosts
         /// system scale factor, 100 = 100%, 200 = 200%
         /// </summary>
         private uint _primaryScaleFactor = 100;
+        private uint _lastScaleFactor = 0;
 
         private bool _flagHasConnected = false;
         private bool _flagHasLogin = false;
@@ -303,7 +304,15 @@ namespace PRM.View.ProtocolHosts
 
             _primaryScaleFactor = ReadScaleFactor();
             SimpleLogHelper.Debug($"RDP Host: init Display with ScaleFactor = {_primaryScaleFactor}, W = {width}, H = {height}");
-            _rdp.SetExtendedProperty("DesktopScaleFactor", _primaryScaleFactor);
+
+            if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
+            {
+                _rdp.SetExtendedProperty("DesktopScaleFactor", this._rdpServer.ScaleFactorCustomValue ??  _primaryScaleFactor);
+            }
+            else
+            {
+                _rdp.SetExtendedProperty("DesktopScaleFactor", _primaryScaleFactor);
+            }
             _rdp.SetExtendedProperty("DeviceScaleFactor", (uint)100);
             if (_rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.Stretch || _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.StretchFullScreen)
                 _rdp.AdvancedSettings2.SmartSizing = true;
@@ -328,19 +337,22 @@ namespace PRM.View.ProtocolHosts
                 case null:
                 default:
                     // default case, set rdp size to tab window size.
-                    if (width > 100 && height > 100)
+                    if (width < 100)
+                        width = 800;
+                    if (height < 100)
+                        height = 600;
+
+                    // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
+                    // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
+                    if (isReconn)
                     {
-                        // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
-                        // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
-                        if (isReconn)
-                            _primaryScaleFactor = 100;
-                        _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
-                        _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopWidth = (int)(width);
+                        _rdp.DesktopHeight = (int)(height);
                     }
                     else
                     {
-                        _rdp.DesktopWidth = (int)(800 * (_primaryScaleFactor / 100.0));
-                        _rdp.DesktopHeight = (int)(600 * (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
+                        _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
                     }
                     break;
             }
@@ -760,9 +772,15 @@ namespace PRM.View.ProtocolHosts
             try
             {
                 SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
-                var currentScaleFactor = ReadScaleFactor();
-                if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || currentScaleFactor != _primaryScaleFactor)
-                    _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, currentScaleFactor, 100);
+                _primaryScaleFactor = ReadScaleFactor();
+                var newScaleFactor = _primaryScaleFactor;
+                if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
+                    newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
+                if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                {
+                    _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
+                    _lastScaleFactor = newScaleFactor;
+                }
             }
             catch (Exception e)
             {

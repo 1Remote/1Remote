@@ -195,7 +195,7 @@
                             </ContentControl.Resources>
                         </ContentControl>
 
-                        <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.5" Content="{Binding SubTitleControl}">
+                        <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.5" Content="{Binding SubTitleControl}" ToolTip="{Binding Server.SubTitle}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="FontSize" Value="12"></Setter>

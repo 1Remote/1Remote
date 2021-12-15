@@ -204,7 +204,7 @@
                                                 </Style>
                                             </Path.Style>
                                         </Path>
-                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Hostname}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
+                                        <TextBlock Margin="5" HorizontalAlignment="Left" Text="{DynamicResource Target}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"></TextBlock>
                                     </Grid>
                                 </Button>
                             </Grid>

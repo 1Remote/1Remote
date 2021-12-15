@@ -152,6 +152,7 @@
     <s:String x:Key="server_editor_cmd_after_disconnected_tag">关闭会话后用cmd运行脚本(如：'C:\\closeVpn.bat' 将运行 'cmd.exe C:\\closeVpn.bat')</s:String>
     <!-- server editor - connection group items -->
     <s:String x:Key="Hostname">地址</s:String>
+    <s:String x:Key="Target">目标</s:String>
     <s:String x:Key="Port">端口</s:String>
     <s:String x:Key="User">用户名</s:String>
     <s:String x:Key="Password">密码</s:String>
@@ -260,7 +261,9 @@
     <s:String x:Key="Environment variables">环境变量</s:String>
     <s:String x:Key="Add environment variables">添加环境变量</s:String>
     <s:String x:Key="Selected">选中</s:String>
-    <s:String x:Key="Custom">Custom</s:String>
+    <s:String x:Key="Custom">定制</s:String>
     <s:String x:Key="write permissions alert" xml:space="preserve">我们没有路径 `{0}` 的写入权限！&#13;&#10;请尝试用以下方法修复问题：&#13;&#10;1. 使用管理员权限运行程序&#13;&#10;2. 修改路径的权限设置 &#13;&#10;3. 将 PRemoteM 移动到其他目录</s:String>
+    <s:String x:Key="Follow system">跟随系统</s:String>
+    <s:String x:Key="Scale">缩放</s:String>
 
 </ResourceDictionary>
