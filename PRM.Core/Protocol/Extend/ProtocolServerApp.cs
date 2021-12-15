@@ -64,7 +64,7 @@ namespace PRM.Core.Protocol.Extend
 
         protected override string GetSubTitle()
         {
-            return GetCmd();
+            return $"{this.ExePath} {this.Arguments}";
         }
 
         public override double GetListOrder()
@@ -77,7 +77,7 @@ namespace PRM.Core.Protocol.Extend
             // 若参数中有空格，则需要使用引号包裹命令参数
             if (ExePath.Trim().IndexOf(" ", StringComparison.Ordinal) > 0)
                 return $"\"{this.ExePath}\" " + this.Arguments;
-            return $"{this.ExePath}" + this.Arguments;
+            return $"{this.ExePath} {this.Arguments}";
         }
 
         private RelayCommand _cmdSelectExePath;

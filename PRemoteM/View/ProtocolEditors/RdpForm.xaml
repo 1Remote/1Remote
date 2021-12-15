@@ -240,6 +240,56 @@
                 </StackPanel>
             </Grid>
 
+
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Scale}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <CheckBox HorizontalAlignment="Left" Margin="0 0 10 0" 
+                                  Content="{DynamicResource 'Follow system'}" 
+                                  IsChecked="{Binding IsScaleFactorFollowSystem}"></CheckBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid" BasedOn="{StaticResource EditorRowGrid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MstscModeEnabled}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsScaleFactorFollowSystem}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="0 0 5 0" Text="{DynamicResource Custom}"></TextBlock>
+                        <Slider Grid.Column="1" Value="{Binding ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Minimum="100" Maximum="200"></Slider>
+                        <TextBox Grid.Column="2" Width="50" TextAlignment="Center" Text="{Binding ScaleFactorCustomValue, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_rdp_performance}"></TextBlock>

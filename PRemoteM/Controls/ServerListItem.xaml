@@ -117,11 +117,11 @@
 
 
                 <!-- setting menu button -->
-                <Button Grid.Column="5" 
-                                   x:Name="BtnSettingMenu"
-                                   Margin="10 0"
-                                   Width="20" Height="20" HorizontalAlignment="Right"
-                                   Click="BtnSettingMenu_OnClick">
+                <Button Grid.Column="1" 
+                        x:Name="BtnSettingMenu"
+                        Margin="10 0"
+                        Width="20" Height="20" HorizontalAlignment="Right"
+                        Click="BtnSettingMenu_OnClick">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                             <Setter Property="Visibility" Value="Hidden"></Setter>

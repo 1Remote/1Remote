@@ -151,7 +151,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private bool? _isConnWithFullScreen = false;
-
         public bool? IsConnWithFullScreen
         {
             get => _isConnWithFullScreen;
@@ -159,7 +158,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private bool? _isFullScreenWithConnectionBar = true;
-
         public bool? IsFullScreenWithConnectionBar
         {
             get => _isFullScreenWithConnectionBar;
@@ -167,7 +165,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private ERdpWindowResizeMode? _rdpWindowResizeMode = ERdpWindowResizeMode.AutoResize;
-
         public ERdpWindowResizeMode? RdpWindowResizeMode
         {
             get => _rdpWindowResizeMode;
@@ -187,7 +184,6 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private int? _rdpWidth = 800;
-
         public int? RdpWidth
         {
             get => _rdpWidth;
@@ -195,15 +191,41 @@ namespace PRM.Core.Protocol.RDP
         }
 
         private int? _rdpHeight = 600;
-
         public int? RdpHeight
         {
             get => _rdpHeight;
             set => SetAndNotifyIfChanged(ref _rdpHeight, value);
         }
 
-        private EDisplayPerformance? _displayPerformance = EDisplayPerformance.Auto;
 
+        private bool? _isScaleFactorFollowSystem = true;
+        public bool? IsScaleFactorFollowSystem
+        {
+            get => _isScaleFactorFollowSystem;
+            set => SetAndNotifyIfChanged(ref _isScaleFactorFollowSystem, value);
+        }
+
+        private uint? _scaleFactorCustomValue = 100;
+        public uint? ScaleFactorCustomValue
+        {
+            get => _scaleFactorCustomValue;
+            set
+            {
+                uint? @new = value;
+                if (value != null)
+                {
+                    @new = (uint)value;
+                    if (@new > 300)
+                        @new = 300;
+                    if (@new < 100)
+                        @new = 100;
+                }
+                SetAndNotifyIfChanged(ref _scaleFactorCustomValue, @new);
+            }
+        }
+
+
+        private EDisplayPerformance? _displayPerformance = EDisplayPerformance.Auto;
         public EDisplayPerformance? DisplayPerformance
         {
             get => _displayPerformance;
