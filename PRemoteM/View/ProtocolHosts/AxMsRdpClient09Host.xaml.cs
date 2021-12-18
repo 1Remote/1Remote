@@ -373,6 +373,9 @@ namespace PRM.View.ProtocolHosts
                 case ERdpFullScreenFlag.EnableFullScreen:
                 default:
                     base.CanFullScreen = true;
+                    var screenSize = GetScreenSize();
+                    _rdp.DesktopWidth = (int)(screenSize.Width);
+                    _rdp.DesktopHeight = (int)(screenSize.Height);
                     break;
             }
 
@@ -804,6 +807,7 @@ namespace PRM.View.ProtocolHosts
 
             var screenSize = GetScreenSize();
 
+            // ! don not remove
             ParentWindow.WindowState = WindowState.Normal;
             ParentWindow.WindowStyle = WindowStyle.None;
             ParentWindow.ResizeMode = ResizeMode.NoResize;
@@ -867,6 +871,12 @@ namespace PRM.View.ProtocolHosts
             {
                 return;
             }
+
+            // ! don not remove
+            ParentWindow.Topmost = false;
+            ParentWindow.ResizeMode = ResizeMode.CanResize;
+            ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
+            ParentWindow.WindowState = WindowState.Normal;
 
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
