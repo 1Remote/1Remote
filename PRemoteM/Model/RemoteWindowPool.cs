@@ -220,7 +220,7 @@ namespace PRM.Model
             // open SFTP when SSH is connected.
             if (protocolServer is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
             {
-                var sshRunner = ProtocolHostFactory.GetRunner(_context, ProtocolServerSSH.ProtocolName);
+                var tmpRunner = ProtocolHostFactory.GetRunner(_context, ProtocolServerSFTP.ProtocolName);
                 var sftp = new ProtocolServerSFTP
                 {
                     MarkColorHex = ssh.MarkColorHex,
@@ -232,7 +232,7 @@ namespace PRM.Model
                     Password = ssh.Password,
                     PrivateKey = ssh.PrivateKey
                 };
-                ConnectWithTab(sftp, sshRunner, assignTabToken);
+                ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
 
             Size size = new Size(0, 0);
