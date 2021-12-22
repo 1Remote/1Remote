@@ -53,7 +53,7 @@
             <system:Double x:Key="TitleBarHeight">35</system:Double>
             <system:Double x:Key="TrapezoidHeight">30</system:Double>
             <!--cs code will read this vale-->
-            <Thickness x:Key="TabContentBorder">2,1,2,2</Thickness>
+            <Thickness x:Key="TabContentBorder">0,1,0,0</Thickness>
 
             <!--Tab header content DataTemplate-->
             <DataTemplate DataType="{x:Type vm:TabItemViewModel}">
