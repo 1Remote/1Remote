@@ -231,7 +231,7 @@ namespace PRM.Core.Service
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppName);
 #else
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
+            //SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
         }
 
@@ -257,7 +257,7 @@ namespace PRM.Core.Service
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppName);
 #else
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
+            //SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
         }
 

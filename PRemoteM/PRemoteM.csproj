@@ -109,8 +109,8 @@
       <HintPath>..\PRM.Core\Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
+    <Reference Include="Dragablz, Version=0.0.3.223, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dragablz.0.0.3.223\lib\net45\Dragablz.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.2.30, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.6.1.2.30\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
@@ -120,8 +120,8 @@
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -138,8 +138,8 @@
     <Reference Include="ToolGood.Words.FirstPinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
       <HintPath>..\packages\ToolGood.Words.FirstPinyin.3.0.1.4\lib\net40\ToolGood.Words.FirstPinyin.dll</HintPath>
     </Reference>
-    <Reference Include="ToolGood.Words.Pinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
-      <HintPath>..\packages\ToolGood.Words.Pinyin.3.0.1.4\lib\net40\ToolGood.Words.Pinyin.dll</HintPath>
+    <Reference Include="ToolGood.Words.Pinyin, Version=3.0.2.6, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToolGood.Words.Pinyin.3.0.2.6\lib\net40\ToolGood.Words.Pinyin.dll</HintPath>
     </Reference>
     <Reference Include="VariableKeywordMatcher.I, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VariableKeywordMatcher.I.1.0.7\lib\net48\VariableKeywordMatcher.I.dll</HintPath>
@@ -569,22 +569,13 @@
     <Resource Include="Resources\Icons\20200501\M_Hp1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Icons\20200501\M_Hp2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Icons\20200501\T_Docker1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20200501\T_Docker2.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\20200501\T_Gitea.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\20200501\T_GitHub1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20200501\T_GitHub2.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\20200501\T_Gitlab.png" />
@@ -627,324 +618,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\20200501\Windows7.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_001.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_002.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_003.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_004.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_005.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_006.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_007.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_008.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_009.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_010.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_011.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_012.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_013.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_014.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_015.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_016.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_017.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_018.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_019.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_020.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_021.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_022.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_023.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_024.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_025.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_026.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_027.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_028.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_029.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_030.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_031.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_032.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_033.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_034.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_035.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_036.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_037.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_038.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_039.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_040.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_041.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_042.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_043.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_044.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_045.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_046.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_047.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_048.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_049.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_050.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_051.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_052.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_053.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_054.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_055.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_056.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_057.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_058.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_059.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_060.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_061.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_062.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_063.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_064.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_065.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_066.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_067.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_068.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_069.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_070.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_071.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_072.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_073.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_074.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_075.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_076.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_077.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_078.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_079.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_080.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_081.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_082.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_083.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_084.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_085.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_086.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_087.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_088.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_089.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_090.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_091.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_092.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_093.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_094.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_095.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_096.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_097.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_098.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_099.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_100.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_101.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_102.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_103.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_104.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\20210106_105.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icons\20210106\NoMachine.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

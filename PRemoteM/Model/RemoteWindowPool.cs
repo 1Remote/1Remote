@@ -533,8 +533,13 @@ namespace PRM.Model
                 tab.Width = screenEx.VirtualWorkingArea.Width;
                 tab.Height = screenEx.VirtualWorkingArea.Height;
             }
-            tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
-            tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
+            if (tab.Width < 800) { tab.Width = 800; }
+            if (tab.Height < 600) { tab.Height = 600; }
+
+            tab.Top = 0; // screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
+            tab.Left = 0; // screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
+            //tab.Top = screenEx.VirtualWorkingAreaCenter.Y - tab.Height / 2;
+            //tab.Left = screenEx.VirtualWorkingAreaCenter.X - tab.Width / 2;
             tab.Show();
             _lastTabToken = tab.Token;
 
