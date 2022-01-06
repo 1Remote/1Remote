@@ -87,7 +87,12 @@ namespace Shawn.Utils
             set => _simpleLogHelper.LogFileType = value;
         }
 
-        private static readonly SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
+        private static SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
+
+        public static void SetLogger(SimpleLogHelperObject logger)
+        {
+            _simpleLogHelper = logger;
+        }
 
         public static void Debug(params object[] o)
         {

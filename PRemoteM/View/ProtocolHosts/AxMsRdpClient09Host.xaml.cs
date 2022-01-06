@@ -307,7 +307,7 @@ namespace PRM.View.ProtocolHosts
 
             if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
             {
-                _rdp.SetExtendedProperty("DesktopScaleFactor", this._rdpServer.ScaleFactorCustomValue ??  _primaryScaleFactor);
+                _rdp.SetExtendedProperty("DesktopScaleFactor", this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor);
             }
             else
             {
@@ -582,6 +582,10 @@ namespace PRM.View.ProtocolHosts
 
         public override void Close()
         {
+            this.Dispatcher.Invoke(() =>
+            {
+                Grid?.Children?.Clear();
+            });
             RdpDispose();
             base.Close();
         }
@@ -634,11 +638,6 @@ namespace PRM.View.ProtocolHosts
 
         private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
-            this.Dispatcher.Invoke(() =>
-            {
-                Grid?.Children?.Clear();
-            });
-
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
             if (_rdp == null)
                 return;
