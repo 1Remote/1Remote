@@ -8,7 +8,7 @@ namespace PRM.Core
         public const int Minor = 6;
         public const int Patch = 0;
         public const int Build = 0;
-        public const string PreRelease = "beta.2"; // e.g. "alpha" "beta.2"
+        public const string PreRelease = ""; // e.g. "alpha" "beta.2"
         public static string Version
         {
             get
