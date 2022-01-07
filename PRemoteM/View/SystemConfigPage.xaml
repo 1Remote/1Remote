@@ -199,6 +199,17 @@
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="1" IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
                     </Grid>
+
+                    <Grid Style="{StaticResource GridOneRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
+                            <ColumnDefinition MinWidth="280" SharedSizeGroup="GeneralColumn2"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource ListView}"></TextBlock>
+                        <CheckBox Grid.Column="1" IsChecked="{Binding AppStartAutomatically, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_when_win_login}" VerticalAlignment="Center"></CheckBox>
+                    </Grid>
+
                     <Grid Style="{StaticResource GridOneRow}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>

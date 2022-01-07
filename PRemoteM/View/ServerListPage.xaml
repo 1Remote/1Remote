@@ -56,6 +56,28 @@
             </Style>
 
 
+            <ControlTemplate x:Key="ListBoxTemplateForServerCards" TargetType="{x:Type ListBox}">
+                <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="True" HorizontalAlignment="Center">
+                    <ScrollViewer Focusable="False">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </ScrollViewer>
+                </Border>
+            </ControlTemplate>
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="protocol:VmProtocolServer">
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList}"></Setter>
+                            <Setter Property="Height" Value="164"></Setter>
+                            <Setter Property="Width" Value="165"></Setter>
+                        </Style>
+                    </Grid.Style>
+                    <controls:ServerCard VmProtocolServer="{Binding}">
+                    </controls:ServerCard>
+                </Grid>
+            </DataTemplate>
+
+
 
             <ControlTemplate x:Key="ListBoxTemplateForServerList" TargetType="{x:Type ListBox}">
                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
@@ -244,7 +266,19 @@
 
             <Style x:Key="ServerListStyle" TargetType="ListBox">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
+
+                <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>
+
+
+                <!--<Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
                         <ItemsPanelTemplate>
@@ -252,7 +286,21 @@
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
-                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
+                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>-->
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ConfigurationViewModel.ListPageIsCardView}" Value="False">
+                        <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
+                        <Setter Property="ItemsPanel">
+                            <Setter.Value>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="0 0 0 30"/>
+                                </ItemsPanelTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>

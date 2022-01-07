@@ -13,8 +13,7 @@ namespace PRM.View
         public ServerListPage(PrmContext context)
         {
             InitializeComponent();
-
-
+            
             Vm = new VmServerListPage(context, LvServerCards);
             DataContext = Vm;
 

@@ -171,6 +171,10 @@
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Options}"></Button>
+                            <Button Command="{Binding CmdToggleCardList}" 
+                                    Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
+                                    Padding="25 8 0 8"
+                                    Content="{DynamicResource 'Toggle Cards/List'}"></Button>
                             <Button Command="{Binding CmdGoAboutPage}"
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="0 8 0 8">

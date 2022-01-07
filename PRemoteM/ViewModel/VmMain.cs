@@ -10,7 +10,7 @@ using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
 using PRM.View;
-
+using PRM.ViewModel.Configuration;
 using Shawn.Utils;
 
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
@@ -105,6 +105,10 @@ namespace PRM.ViewModel
             Context = context;
             Window = window;
             this.VmAboutPage = new VmAboutPage();
+            _aboutPage = new AboutPage(VmAboutPage, this);
+            ConfigurationViewModel.Init(context);
+            ConfigurationViewModel.GetInstance().Host = this;
+
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
                 Window.Dispatcher.Invoke(() =>
@@ -175,7 +179,6 @@ namespace PRM.ViewModel
                 Page = new ServerListPage(Context),
             };
             //_managementPage = new ServerManagementPage(Context);
-            _aboutPage = new AboutPage(VmAboutPage, this);
         }
 
         private void CalcTbFilterVisible()
@@ -194,20 +197,30 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdGoSysOptionsPage == null)
+                return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
-                    _cmdGoSysOptionsPage = new RelayCommand((o) =>
+                    DispPage = new AnimationPage()
                     {
-                        DispPage = new AnimationPage()
-                        {
-                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = new SystemConfigPage(this, Context, o?.ToString()),
-                        };
-                        Window.PopupMenu.IsOpen = false;
-                    }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
-                }
-                return _cmdGoSysOptionsPage;
+                        InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                        Page = new SystemConfigPage(Context, o?.ToString()),
+                    };
+                    Window.PopupMenu.IsOpen = false;
+                }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+            }
+        }
+
+        private RelayCommand _cmdToggleCardList;
+
+        public RelayCommand CmdToggleCardList
+        {
+            get
+            {
+                return _cmdToggleCardList ??= new RelayCommand((o) =>
+                {
+                    ConfigurationViewModel.GetInstance().ListPageIsCardView = !ConfigurationViewModel.GetInstance().ListPageIsCardView;
+                    Window.PopupMenu.IsOpen = false;
+                }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
             }
         }
 
@@ -217,20 +230,16 @@ namespace PRM.ViewModel
         {
             get
             {
-                if (_cmdGoAboutPage == null)
+                return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
-                    _cmdGoAboutPage = new RelayCommand((o) =>
+                    TopPage = new AnimationPage()
                     {
-                        TopPage = new AnimationPage()
-                        {
-                            InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                            OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                            Page = _aboutPage,
-                        };
-                        Window.PopupMenu.IsOpen = false;
-                    }, o => TopPage?.Page?.GetType() != typeof(AboutPage));
-                }
-                return _cmdGoAboutPage;
+                        InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
+                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
+                        Page = _aboutPage,
+                    };
+                    Window.PopupMenu.IsOpen = false;
+                }, o => TopPage?.Page?.GetType() != typeof(AboutPage));
             }
         }
 

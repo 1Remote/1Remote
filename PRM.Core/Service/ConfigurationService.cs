@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Newtonsoft.Json;
@@ -26,6 +27,7 @@ namespace PRM.Core.Service
 #else
         public bool AppStartMinimized  = true;
 #endif
+        public bool ListPageIsCardView = true;
         #endregion
     }
 
