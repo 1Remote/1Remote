@@ -22,7 +22,7 @@ namespace PRM.ViewModel.Configuration
 {
     public class ConfigurationViewModel : NotifyPropertyChangedBase
     {
-        public readonly VmMain Host;
+        public VmMain Host = null;
         private readonly PrmContext _context;
         private readonly LanguageService _languageService;
         private readonly ConfigurationService _configurationService;
@@ -31,8 +31,7 @@ namespace PRM.ViewModel.Configuration
         private readonly DataService _dataService;
         private readonly ThemeService _themeService;
 
-        public ConfigurationViewModel(
-            VmMain host,
+        protected ConfigurationViewModel(
             PrmContext context,
             string languageCode = "")
         {
@@ -43,13 +42,31 @@ namespace PRM.ViewModel.Configuration
             _launcherService = context.LauncherService;
             _dataService = context.DataService;
             _themeService = context.ThemeService;
-            Host = host;
             if (string.IsNullOrEmpty(languageCode) == false
                 && _languageService.LanguageCode2Name.ContainsKey(languageCode)
                 && _languageService.SetLanguage(languageCode))
             {
                 _configurationService.General.CurrentLanguageCode = languageCode;
             }
+        }
+
+        private static ConfigurationViewModel _configuration;
+
+        public static void Init(
+            PrmContext context,
+            string languageCode = "")
+        {
+            _configuration = new ConfigurationViewModel(context, languageCode);
+        }
+
+        public static ConfigurationViewModel GetInstance(VmMain host = null)
+        {
+            Debug.Assert(_configuration != null);
+            if (host != null)
+            {
+                _configuration.Host = host;
+            }
+            return _configuration;
         }
 
 
@@ -153,6 +170,18 @@ namespace PRM.ViewModel.Configuration
             set
             {
                 if (SetAndNotifyIfChanged(ref _configurationService.General.AppStartMinimized, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
+        public bool ListPageIsCardView
+        {
+            get => _configurationService.General.ListPageIsCardView;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.ListPageIsCardView, value))
                 {
                     _configurationService.Save();
                 }
