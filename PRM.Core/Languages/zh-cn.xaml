@@ -71,6 +71,7 @@
     <!-- sys menu -->
     <s:String x:Key="Options">设置</s:String>
     <s:String x:Key="About">关于</s:String>
+    <s:String x:Key="Toggle Cards/List">切换卡片/列表</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">常规</s:String>
