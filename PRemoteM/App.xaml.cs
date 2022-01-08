@@ -186,9 +186,6 @@ namespace PRM
                 var gw = new GuidanceWindow(Context);
                 gw.ShowDialog();
             }
-            InitMainWindow();
-            InitLauncher();
-            InitTaskTray();
 
             // init Database here, to show alert if db connection goes wrong.
             var connStatus = Context.InitSqliteDb(Context.ConfigurationService.Database.SqliteDatabasePath);
@@ -203,6 +200,9 @@ namespace PRM
                 Context.AppData.ReloadServerList();
             }
 
+            InitMainWindow();
+            InitLauncher();
+            InitTaskTray();
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {
