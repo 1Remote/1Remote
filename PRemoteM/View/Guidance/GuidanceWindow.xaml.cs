@@ -51,7 +51,8 @@ namespace PRM.View.Guidance
             Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
             Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
 
-            ConfigurationViewModel = new ConfigurationViewModel(null, context, CultureInfo.CurrentCulture.Name.ToLower());
+            ConfigurationViewModel.Init(context, CultureInfo.CurrentCulture.Name.ToLower());
+            ConfigurationViewModel = ConfigurationViewModel.GetInstance();
 
             // saving config when this window close
             Closed += (sender, args) =>
