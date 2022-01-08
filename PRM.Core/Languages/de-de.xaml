@@ -71,6 +71,7 @@
     <!-- sys menu -->
     <s:String x:Key="Options">Optionen</s:String>
     <s:String x:Key="About">Über</s:String>
+    <s:String x:Key="Toggle Cards/List">Karten/Liste umschalten</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Allgemein</s:String>
