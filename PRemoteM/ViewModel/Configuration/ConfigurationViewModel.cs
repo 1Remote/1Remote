@@ -42,6 +42,7 @@ namespace PRM.ViewModel.Configuration
             _launcherService = context.LauncherService;
             _dataService = context.DataService;
             _themeService = context.ThemeService;
+
             if (string.IsNullOrEmpty(languageCode) == false
                 && _languageService.LanguageCode2Name.ContainsKey(languageCode)
                 && _languageService.SetLanguage(languageCode))
