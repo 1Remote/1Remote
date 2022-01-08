@@ -23,18 +23,15 @@ namespace PRM.View
 {
     public partial class SystemConfigPage : UserControl
     {
-        public VmMain Host;
-
         private readonly ConfigurationViewModel _vm;
 
         private readonly PrmContext _context;
 
-        public SystemConfigPage(VmMain host, PrmContext context, string destination = null)
+        public SystemConfigPage(PrmContext context, string destination = null)
         {
-            Host = host;
             _context = context;
             InitializeComponent();
-            _vm = new ConfigurationViewModel(host, context);
+            _vm = ConfigurationViewModel.GetInstance();
             DataContext = _vm;
 
             if (destination == "Data")
