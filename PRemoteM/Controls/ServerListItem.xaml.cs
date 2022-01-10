@@ -50,7 +50,7 @@ namespace PRM.Controls
             PopupCardSettingMenu.IsOpen = true;
         }
 
-        private void ButtonEditServer_OnClick(object sender, RoutedEventArgs e)
+        private void ServerMenuButton_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
             if (sender is Button { CommandParameter: ActionForServer afs })
