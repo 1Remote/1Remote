@@ -23,7 +23,7 @@ namespace PRM.ViewModel
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
         private readonly PrmContext _context;
-        public bool IsAddMode => _orgServers == null && _orgServer.Id == 0;
+        public bool IsAddMode => _orgServers == null && Server.Id == 0;
 
 
         #region single edit
@@ -36,7 +36,9 @@ namespace PRM.ViewModel
             _context = context;
             Server = (ProtocolServerBase)server.Clone();
             if (isDuplicate)
+            {
                 Server.Id = 0; // set id = 0 and turn into edit mode
+            }
             _orgServer = (ProtocolServerBase)Server.Clone();
             Title = "";
             Init();
