@@ -281,7 +281,7 @@
                                         </Border.Effect>
                                         <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                                             <StackPanel>
-                                                <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonEditServer_OnClick" Content="{DynamicResource Edit}"></Button>
+                                                <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ServerMenuButton_OnClick" Content="{DynamicResource Edit}"></Button>
                                                 <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                                             </StackPanel>
                                         </Grid>
@@ -322,10 +322,10 @@
                                                             <Setter.Value>
                                                                 <DataTemplate DataType="model:ActionForServer">
                                                                     <Button Padding="10" Style="{StaticResource ButtonBarPrimaryStyle}" 
-                                                            Click="ButtonEditServer_OnClick"
-                                                            CommandParameter="{Binding}"
-                                                            HorizontalContentAlignment="Left"
-                                                            Content="{Binding ActionName}">
+                                                                        Click="ServerMenuButton_OnClick"
+                                                                        CommandParameter="{Binding}"
+                                                                        HorizontalContentAlignment="Left"
+                                                                        Content="{Binding ActionName}">
                                                                     </Button>
                                                                 </DataTemplate>
                                                             </Setter.Value>
@@ -334,7 +334,7 @@
                                                 </ListBox.Style>
                                             </ListBox>
                                             <!--<StackPanel>
-                        <Button Padding="5" Click="ButtonEditServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource Edit}"></Button>
+                        <Button Padding="5" Click="ServerMenuButton_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource Edit}"></Button>
                         <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                     </StackPanel>-->
                                         </Grid>
