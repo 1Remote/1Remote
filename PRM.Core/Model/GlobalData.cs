@@ -197,20 +197,6 @@ namespace PRM.Core.Model
             }
         }
 
-        private void OrderServerByConnectTime()
-        {
-            for (var i = 1; i < VmItemList.Count; i++)
-            {
-                var s0 = VmItemList[i - 1];
-                var s1 = VmItemList[i];
-                if (s0.Server.LastConnTime < s1.Server.LastConnTime)
-                {
-                    VmItemList = new ObservableCollection<VmProtocolServer>(VmItemList.OrderByDescending(x => x.Server.LastConnTime));
-                    break;
-                }
-            }
-        }
-
         #endregion Server Data
     }
 }

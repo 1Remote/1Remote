@@ -141,7 +141,7 @@ namespace PRM.Core.Service
             return str;
         }
 
-        public void EncryptToDatabaseLevel(ref ProtocolServerBase server)
+        public void EncryptToDatabaseLevel(ProtocolServerBase server)
         {
             if (_rsa == null) return;
             Debug.Assert(Database_IsEncrypted() == true);
@@ -237,7 +237,7 @@ namespace PRM.Core.Service
         {
             var tmp = (ProtocolServerBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(ref tmp);
+            EncryptToDatabaseLevel(tmp);
             _db.AddServer(tmp);
         }
 
@@ -246,7 +246,7 @@ namespace PRM.Core.Service
             Debug.Assert(org.Id > 0);
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(ref tmp);
+            EncryptToDatabaseLevel(tmp);
             _db.UpdateServer(tmp);
         }
 

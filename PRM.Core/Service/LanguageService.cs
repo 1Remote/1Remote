@@ -19,7 +19,6 @@ namespace PRM.Core.Service
         public static LanguageService TmpLanguageService = null;
 
         private string _languageCode = "en-us";
-        private readonly ResourceDictionary _defaultLanguageResourceDictionary;
         private readonly ResourceDictionary _applicationResourceDictionary;
 
 
@@ -39,7 +38,6 @@ namespace PRM.Core.Service
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("de-de");
             AddStaticLanguageResources("fr-fr");
-            _defaultLanguageResourceDictionary = Resources["en-us"];
 
             //#if DEV
             //            // check if any field missing in the LanguageResources.
