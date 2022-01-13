@@ -26,7 +26,7 @@ namespace PRM.Core.DB.Dapper
             }
         }
 
-        public void OpenConnection(DatabaseType? type = null, string newConnectionString = "")
+        public void OpenConnection(DatabaseType type, string newConnectionString)
         {
             lock (_locker)
             {
