@@ -52,10 +52,10 @@ namespace PRM.Model
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
-        /// <param name="psb"></param>
+        /// <param name="protocolServerBase"></param>
         /// <param name="runner"></param>
         /// <returns></returns>
-        public static HostBase GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T psb, Runner runner) where T : ProtocolServerBase
+        public static HostBase GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T protocolServerBase, Runner runner) where T : ProtocolServerBase
         {
             if (!(runner is ExternalRunner er)) return null;
 
@@ -68,23 +68,23 @@ namespace PRM.Model
             }
 
 
-            // decrypt
-            var protocolServerBase = psb.Clone();
-            protocolServerBase.ConnectPreprocess(context);
-            var exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
-
-            // make environment variables
+            // make exeArguments and environment variables
+            var exeArguments = "";
             var environmentVariables = new Dictionary<string, string>();
-            if (er.EnvironmentVariables != null)
-                foreach (var kv in er.EnvironmentVariables)
-                {
-                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
-                }
+            {
+                exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
+
+                if (er.EnvironmentVariables != null)
+                    foreach (var kv in er.EnvironmentVariables)
+                    {
+                        environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
+                    }
+            }
 
             // start process
             if (er.RunWithHosting)
             {
-                var integrateHost = new IntegrateHost(context, psb, exePath, exeArguments, environmentVariables);
+                var integrateHost = new IntegrateHost(context, protocolServerBase, exePath, exeArguments, environmentVariables);
                 return integrateHost;
             }
             else

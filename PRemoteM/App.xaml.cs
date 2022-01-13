@@ -203,22 +203,24 @@ namespace PRM
                 gw.ShowDialog();
             }
 
+            InitMainWindow();
+            InitLauncher();
+            InitTaskTray();
+
             // init Database here, to show alert if db connection goes wrong.
-            var connStatus = Context.InitSqliteDb(Context.ConfigurationService.Database.SqliteDatabasePath);
+            var connStatus = Context.InitSqliteDb();
             if (connStatus != EnumDbStatus.OK)
             {
                 string error = connStatus.GetErrorInfo(Context.LanguageService);
                 MessageBox.Show(error, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 MainUi.Vm.CmdGoSysOptionsPage.Execute("Data");
+                MainUi.ActivateMe();
             }
             else
             {
                 Context.AppData.ReloadServerList();
             }
 
-            InitMainWindow();
-            InitLauncher();
-            InitTaskTray();
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {

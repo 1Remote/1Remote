@@ -23,6 +23,7 @@ namespace PRM.Core.DB.Dapper
                 _dbConnection?.Close();
                 _dbConnection?.Dispose();
                 _dbConnection = null;
+                SQLiteConnection.ClearAllPools();
             }
         }
 

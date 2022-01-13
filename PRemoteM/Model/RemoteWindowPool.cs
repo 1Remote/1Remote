@@ -243,6 +243,7 @@ namespace PRM.Model
                 size = tab.GetTabContentSize();
             }
 
+            protocolServer.ConnectPreprocess(_context);
             HostBase host;
             if (runner is ExternalRunner)
             {

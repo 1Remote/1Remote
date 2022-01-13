@@ -71,13 +71,6 @@ namespace PRM.Core.Protocol
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
-        [Obsolete]
-        public string DispName
-        {
-            get => DisplayName;
-            set => DisplayName = value;
-        }
-
         private string _displayName = "";
         public string DisplayName
         {
@@ -267,7 +260,7 @@ namespace PRM.Core.Protocol
         public ProtocolServerBase Clone()
         {
             var clone = this.MemberwiseClone() as ProtocolServerBase;
-            clone.Server_editor_different_options = LanguageService.TmpLanguageService.Translate("server_editor_different_options");
+            clone.Server_editor_different_options = LanguageService.TmpLanguageService?.Translate("server_editor_different_options") ?? "<different options>";
             clone.Tags = new List<string>(this.Tags);
             return clone;
         }
