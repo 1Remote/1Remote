@@ -161,7 +161,7 @@ namespace PRM
             CanPortable = true;
 #endif
 
-            var tmp = new ConfigurationService(true, null);
+            var tmp = new ConfigurationService(CanPortable, null);
             var languageService = new LanguageService(this.Resources, CultureInfo.CurrentCulture.Name.ToLower());
             var dbDir = new FileInfo(tmp.Database.SqliteDatabasePath).Directory;
             if (IOPermissionHelper.HasWritePermissionOnDir(dbDir.FullName) == false)
