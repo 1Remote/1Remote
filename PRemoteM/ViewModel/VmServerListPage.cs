@@ -20,6 +20,7 @@ using PRM.Core.Service;
 using PRM.Core.Utils.mRemoteNG;
 using PRM.Model;
 using PRM.Resources.Icons;
+using PRM.ViewModel.Configuration;
 using Shawn.Utils;
 
 namespace PRM.ViewModel
@@ -28,6 +29,7 @@ namespace PRM.ViewModel
     {
         public const string TagsListViewMark = "tags_selector_for_list@#@1__()!";
         public PrmContext Context { get; }
+        public ConfigurationViewModel ConfigurationViewModel => ConfigurationViewModel.GetInstance();
         private readonly ListBox _list;
 
         public VmServerListPage(PrmContext context, ListBox list)

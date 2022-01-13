@@ -199,6 +199,7 @@
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="1" IsChecked="{Binding AppStartMinimized, Mode=TwoWay}" Content="{DynamicResource system_options_general_start_minimized}" VerticalAlignment="Center"></CheckBox>
                     </Grid>
+
                     <Grid Style="{StaticResource GridOneRow}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column1"></ColumnDefinition>
@@ -374,6 +375,11 @@
 
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_database}"></TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding DbPath, Mode=OneWay}" FontSize="9" VerticalContentAlignment="Center" IsReadOnly="True" Tag="{Binding DbPath, Mode=OneWay}"></TextBox>
+
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource Select}" Command="{Binding CmdSelectDbPath}"></Button>
+                            <Button Style="{StaticResource ButtonPrimaryStyle}" Margin="5 0 0 0" Content="{DynamicResource system_options_data_security_database_migrate}" Command="{Binding CmdDbMigrate}"></Button>
+                        </StackPanel>
                     </Grid>
 
 
@@ -439,7 +445,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
                         <TextBox Grid.Column="1" Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
-                        <Button Grid.Column="2" Content="{DynamicResource Select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
+                        <Button Grid.Column="2" HorizontalAlignment="Left" Content="{DynamicResource Select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                     <Style.Triggers>
@@ -481,7 +487,7 @@
                                       SelectedItem="{Binding ThemeName}">
                         </ComboBox>
 
-                        <Button Grid.Column="2"  Margin="5 0 0 0" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Reset}" Command="{Binding CmdResetTheme}"></Button>
+                        <Button Grid.Column="2" HorizontalAlignment="Left" Margin="5 0 0 0" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Reset}" Command="{Binding CmdResetTheme}"></Button>
                     </Grid>
 
                     <Grid Style="{StaticResource GridOneRow}" Margin="0 20 0 0">

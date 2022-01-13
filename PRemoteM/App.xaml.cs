@@ -36,16 +36,32 @@ namespace PRM
         private DesktopResolutionWatcher _desktopResolutionWatcher;
         public static bool CanPortable { get; private set; }
 
-        private void InitLog(string appDateFolder)
+        private void InitLog()
         {
+            var baseDir = CanPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
             SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
             // init log file placement
-            var logFilePath = Path.Combine(appDateFolder, "Logs", $"{ConfigurationService.AppName}.log.md");
+            var logFilePath = Path.Combine(baseDir, "Logs", $"{ConfigurationService.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
             if (!fi.Directory.Exists)
                 fi.Directory.Create();
             SimpleLogHelper.LogFileName = logFilePath;
+
+            // old version log files cleanup
+            if (CanPortable)
+            {
+                var diLogs = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Logs"));
+                if (diLogs.Exists)
+                    diLogs.Delete(true);
+                var diApp = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
+                var fis = diApp.GetFiles("*.md");
+                foreach (var info in fis)
+                {
+                    info.Delete();
+                }
+            }
         }
 
         private static void OnUnhandledException(Exception e)
@@ -162,7 +178,7 @@ namespace PRM
 
             #endregion
 
-            InitLog(CanPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
+            InitLog();
 
 #if DEV
             SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
@@ -186,9 +202,6 @@ namespace PRM
                 var gw = new GuidanceWindow(Context);
                 gw.ShowDialog();
             }
-            InitMainWindow();
-            InitLauncher();
-            InitTaskTray();
 
             // init Database here, to show alert if db connection goes wrong.
             var connStatus = Context.InitSqliteDb(Context.ConfigurationService.Database.SqliteDatabasePath);
@@ -203,6 +216,9 @@ namespace PRM
                 Context.AppData.ReloadServerList();
             }
 
+            InitMainWindow();
+            InitLauncher();
+            InitTaskTray();
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {

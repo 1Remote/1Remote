@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PRM.Core.Model;
 using PRM.Core.Protocol;
+using PRM.Model;
 using PRM.ViewModel;
 
 namespace PRM.Controls
@@ -30,15 +32,16 @@ namespace PRM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
+            VmProtocolServer.Actions = VmProtocolServer.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
             PopupCardSettingMenu.IsOpen = true;
         }
 
-        private void ButtonEditServer_OnClick(object sender, RoutedEventArgs e)
+        private void ServerMenuButton_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmProtocolServer != null && VmProtocolServer.CmdEditServer.CanExecute())
+            if (sender is Button { CommandParameter: ActionForServer afs })
             {
-                VmProtocolServer.CmdEditServer.Execute();
+                afs.Run();
             }
         }
 

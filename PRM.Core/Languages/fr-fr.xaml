@@ -71,6 +71,7 @@
     <!-- sys menu -->
     <s:String x:Key="Options">Options</s:String>
     <s:String x:Key="About">À propos</s:String>
+    <s:String x:Key="Toggle Cards/List">Basculer les Tuiles/Liste</s:String>
 
     <!-- system options -->
     <s:String x:Key="system_options_general_title">Général</s:String>

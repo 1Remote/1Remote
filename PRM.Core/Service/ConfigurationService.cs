@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Newtonsoft.Json;
@@ -26,6 +27,7 @@ namespace PRM.Core.Service
 #else
         public bool AppStartMinimized  = true;
 #endif
+        public bool ListPageIsCardView = true;
         #endregion
     }
 
@@ -227,8 +229,8 @@ namespace PRM.Core.Service
             }
 
 #if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppName);
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
 #else
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
             //SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
@@ -253,8 +255,8 @@ namespace PRM.Core.Service
             File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
 
 #if FOR_MICROSOFT_STORE_ONLY
-            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"{AppName}\")");
-            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, AppName);
+            SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
+            SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
 #else
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
             //SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
@@ -276,7 +278,7 @@ namespace PRM.Core.Service
 #if FOR_MICROSOFT_STORE_ONLY
                 Task.Factory.StartNew(async () =>
                 {
-                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask(ConfigurationService.AppName);
+                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask("PRemoteM");
                 });
 #endif
             }

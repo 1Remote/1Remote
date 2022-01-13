@@ -7,6 +7,7 @@
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
@@ -270,7 +271,7 @@
                                           Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                           Stretch="Uniform" />
                                 </Button>
-                                <Popup 
+                                <!--<Popup 
                                     AllowsTransparency="True"
                                     Name="PopupCardSettingMenu"
                                     PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
@@ -280,9 +281,62 @@
                                         </Border.Effect>
                                         <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
                                             <StackPanel>
-                                                <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonEditServer_OnClick" Content="{DynamicResource Edit}"></Button>
+                                                <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ServerMenuButton_OnClick" Content="{DynamicResource Edit}"></Button>
                                                 <Button Padding="0 5" Style="{StaticResource ButtonBarPrimaryStyle}" Click="ButtonDuplicateServer_OnClick" Content="{DynamicResource server_card_operate_duplicate}"></Button>
                                             </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Popup>-->
+                                <Popup Name="PopupCardSettingMenu"
+                                   AllowsTransparency="True"
+                                   PlacementTarget="{Binding ElementName=BtnSettingMenu}" StaysOpen="False">
+                                    <Border Padding="0 0 4 4">
+                                        <Border.Effect>
+                                            <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                                        </Border.Effect>
+                                        <Grid MinWidth="80" Background="{DynamicResource PrimaryDarkBrush}">
+                                            <ListBox ItemsSource="{Binding Actions}" BorderThickness="0">
+                                                <ListBox.Style>
+                                                    <Style TargetType="{x:Type ListBox}">
+                                                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                                        <Setter Property="Cursor" Value="Hand" />
+                                                        <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" />
+                                                        <Setter Property="ItemContainerStyle">
+                                                            <Setter.Value>
+                                                                <Style TargetType="ListBoxItem">
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="ListBoxItem">
+                                                                                <Grid>
+                                                                                    <Border x:Name="GridContainer">
+                                                                                    </Border>
+                                                                                    <ContentPresenter x:Name="ContentPresenter"/>
+                                                                                </Grid>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                </Style>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="ItemTemplate">
+                                                            <Setter.Value>
+                                                                <DataTemplate DataType="model:ActionForServer">
+                                                                    <Button Padding="10" Style="{StaticResource ButtonBarPrimaryStyle}" 
+                                                                        Click="ServerMenuButton_OnClick"
+                                                                        CommandParameter="{Binding}"
+                                                                        HorizontalContentAlignment="Left"
+                                                                        Content="{Binding ActionName}">
+                                                                    </Button>
+                                                                </DataTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ListBox.Style>
+                                            </ListBox>
+                                            <!--<StackPanel>
+                        <Button Padding="5" Click="ServerMenuButton_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource Edit}"></Button>
+                        <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
+                    </StackPanel>-->
                                         </Grid>
                                     </Border>
                                 </Popup>

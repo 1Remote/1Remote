@@ -75,10 +75,10 @@
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Style>
                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                             <Setter Property="Background" Value="Transparent"></Setter>
                             <Setter Property="Opacity" Value="0.5"></Setter>
-                            <Setter Property="CaretBrush" Value="{DynamicResource AccentTextBrush}"></Setter>
+                            <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                             <Setter Property="IsEnabled" Value="False" />
                             <Style.Triggers>
                                 <MultiDataTrigger>
@@ -171,6 +171,10 @@
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Options}"></Button>
+                            <Button Command="{Binding CmdToggleCardList}" 
+                                    Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
+                                    Padding="25 8 0 8"
+                                    Content="{DynamicResource 'Toggle Cards/List'}"></Button>
                             <Button Command="{Binding CmdGoAboutPage}"
                                     Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
                                     Padding="0 8 0 8">

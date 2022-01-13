@@ -20,11 +20,12 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 - Multiple languages, themes and tabbed interface
 - [Import connections from mRemoteNG](https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/Migrate.jpg)
 - [Password encryption via RSA](https://github.com/VShawn/PRemoteM/wiki/Security)
+- Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner)
 - Portable - just unpack and run
 
 ## Installation
 
-Latest Version: 0.5.11.1
+Latest Version: 0.6.1
 
 Use one of the following methods to install the application:
 
@@ -37,14 +38,20 @@ Use one of the following methods to install the application:
 - [Windows10 17763 and above](https://support.lenovo.com/us/en/solutions/ht502786)
 - [.NET Framework 4.8](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 
+P.S. You can clone the code and remove all of the Win10 dependencies if you are likely to use PRemoteM in Win7.
+
 ### [Quick start](https://github.com/VShawn/PRemoteM/wiki/Quick-start)
+
+1. Open PRemote.exe.
+
+2. Click "+" button and fill address\username\password... then save
+
+3. Press <kbd>Alt</kbd> + <kbd>M</kbd> Open the launcher, type keyword to find your server, press <kbd>enter</kbd> to start session
 
 ## Overview
 
-
 <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/maindemo.png" width="800" />
 
-### Others
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/quickstart.gif" width="400"/>
@@ -78,6 +85,14 @@ Use one of the following methods to install the application:
 
 <p align="center">
     ↑ RemoteApp via RDP
+</p>
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/VShawn/PRemoteM/Doc/DocPic/Runner/vnc_runners.jpg" width="800"/>
+</p>
+
+<p align="center">
+    ↑ Customizable runners
 </p>
 
 ## Make PRemoteM Stronger
