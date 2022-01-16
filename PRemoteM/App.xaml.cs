@@ -203,12 +203,14 @@ namespace PRM
                 gw.ShowDialog();
             }
 
+            // init Database here, to show alert if db connection goes wrong.
+            var connStatus = Context.InitSqliteDb();
+
             InitMainWindow();
             InitLauncher();
             InitTaskTray();
 
-            // init Database here, to show alert if db connection goes wrong.
-            var connStatus = Context.InitSqliteDb();
+
             if (connStatus != EnumDbStatus.OK)
             {
                 string error = connStatus.GetErrorInfo(Context.LanguageService);

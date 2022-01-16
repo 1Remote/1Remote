@@ -48,17 +48,6 @@ namespace PRM.Core.Model
 
         public Action VmItemListDataChanged;
 
-        //private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
-        //public ObservableCollection<VmProtocolServer> VmItemList
-        //{
-        //    get => _vmItemList;
-        //    set
-        //    {
-        //        SetAndNotifyIfChanged(ref _vmItemList, value);
-        //        VmItemListDataChanged?.Invoke();
-        //    }
-        //}
-
         public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
 
         private ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();

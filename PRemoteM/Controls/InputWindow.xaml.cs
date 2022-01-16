@@ -18,7 +18,7 @@ namespace PRM.Controls
     {
         public enum Results
         {
-            OK = 1,
+            Ok = 1,
             Cancel = 2
         }
 
@@ -27,14 +27,18 @@ namespace PRM.Controls
         public string Response { get; private set; }
 
         public Results Result { get; private set; }
-        public Func<string, string> Validater { get; private set; } = null;
+
+        /// <summary>
+        /// input string return error message or null
+        /// </summary>
+        public Func<string, string> Validator { get; private set; } = null;
 
         protected InputWindow()
         {
             InitializeComponent();
         }
 
-        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string> validate = null, Window owner =null)
+        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string> validate = null, Window owner = null)
         {
             var inputWindow = new InputWindow
             {
@@ -42,7 +46,7 @@ namespace PRM.Controls
                 Prompt = prompt,
                 Response = defaultResponse,
                 Result = Results.Cancel,
-                Validater = validate,
+                Validator = validate,
                 ShowInTaskbar = false,
             };
             if (owner != null)
@@ -52,7 +56,7 @@ namespace PRM.Controls
             }
             inputWindow.ShowDialog();
 
-            return inputWindow.Result == Results.OK ? inputWindow.Response : string.Empty;
+            return inputWindow.Result == Results.Ok ? inputWindow.Response : string.Empty;
         }
 
         private void inputWindow_Loaded(object sender, RoutedEventArgs e)
@@ -71,34 +75,18 @@ namespace PRM.Controls
             }
             else
             {
-                var msg = Validater(textBox.Text);
-                if (string.IsNullOrWhiteSpace(msg) == false)
-                {
-                    alert.Visibility = Visibility.Visible;
-                    alert.Text = msg;
-                }
-                else
-                {
-                    alert.Visibility = Visibility.Collapsed;
-                }
+                TestValidator();
             }
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Validater != null)
+            if (TestValidator())
             {
-                var msg = Validater(textBox.Text);
-                if (string.IsNullOrWhiteSpace(msg) == false)
-                {
-                    alert.Visibility = Visibility.Visible;
-                    alert.Text = msg;
-                    return;
-                }
+                Result = Results.Ok;
+                Response = textBox.Text;
+                Close();
             }
-            Result = Results.OK;
-            Response = textBox.Text;
-            Close();
         }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
@@ -106,6 +94,21 @@ namespace PRM.Controls
             Result = Results.Cancel;
             Response = null;
             Close();
+        }
+
+        private bool TestValidator()
+        {
+            if (Validator != null)
+            {
+                var msg = Validator(textBox.Text);
+                if (string.IsNullOrWhiteSpace(msg) == false)
+                {
+                    alert.Visibility = Visibility.Visible;
+                    alert.Text = msg;
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

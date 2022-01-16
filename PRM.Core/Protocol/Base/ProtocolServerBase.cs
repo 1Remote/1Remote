@@ -71,6 +71,16 @@ namespace PRM.Core.Protocol
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
+        /// <summary>
+        /// this is for old db to new db. do not remove!
+        /// </summary>
+        [Obsolete]
+        public string DispName
+        {
+            get => DisplayName;
+            set => DisplayName = value;
+        }
+
         private string _displayName = "";
         public string DisplayName
         {

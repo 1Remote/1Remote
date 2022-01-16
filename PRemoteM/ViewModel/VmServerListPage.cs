@@ -577,7 +577,6 @@ namespace PRM.ViewModel
 
 
         private RelayCommand _cmdTagRename;
-
         public RelayCommand CmdTagRename
         {
             get
@@ -606,7 +605,17 @@ namespace PRM.ViewModel
                             Context.AppData.UpdateServer(s, false);
                         }
                         Context.AppData.ReloadServerList();
-                        Context.AppData.SelectedTagName = t;
+
+                        // restore selected scene
+                        if (Context.AppData.SelectedTagName == obj.Name)
+                        {
+                            Context.AppData.SelectedTagName = t;
+                        }
+                        // restore display scene
+                        if (Context.AppData.Tags.Any(x => x.Name == newTag))
+                        {
+                            Context.AppData.Tags.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
+                        }
                     });
                 }
                 return _cmdTagRename;
