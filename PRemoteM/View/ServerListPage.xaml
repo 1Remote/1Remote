@@ -120,7 +120,7 @@
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Logo"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol" MinWidth="80"></ColumnDefinition>
                                     <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
                                     <ColumnDefinition MinWidth="230" Width="*" SharedSizeGroup="Name"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
@@ -430,8 +430,7 @@
 
 
 
-
-
+        <!-- the page to config which tag should be display. --> 
         <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
             <Grid.Style>
                 <Style TargetType="Grid">
