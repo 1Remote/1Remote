@@ -68,11 +68,18 @@ namespace PRM
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                SimpleLogHelper.Fatal(e);
-                CloseAllWindow();
-                var errorReport = new ErrorReportWindow(e);
-                errorReport.ShowDialog();
-                App.Close();
+                lock (App.Current)
+                {
+                    SimpleLogHelper.Fatal(e);
+                    var errorReport = new ErrorReportWindow(e);
+                    errorReport.ShowDialog();
+#if FOR_MICROSOFT_STORE_ONLY
+                    throw e;
+#else
+                    CloseAllWindow();
+                    App.Close();
+#endif 
+                }
             });
         }
 
