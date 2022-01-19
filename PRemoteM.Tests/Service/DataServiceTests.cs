@@ -32,7 +32,6 @@ namespace PRemoteM.Tests.Service
         public void DataServiceTest()
         {
             Init();
-            Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.NotConnected);
             _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(_dbPath));
             Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.OK);
 
@@ -160,7 +159,6 @@ namespace PRemoteM.Tests.Service
             }
 
             _dataService.Database_CloseConnection();
-            Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.NotConnected);
 
             if (Directory.Exists(nameof(DataServiceTests)))
             {

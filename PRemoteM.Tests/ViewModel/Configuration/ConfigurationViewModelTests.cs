@@ -35,7 +35,6 @@ namespace PRemoteM.Tests.ViewModel.Configuration
             UriParser.Register(new GenericUriParser(GenericUriParserOptions.GenericAuthority), "pack", -1);
 
             Init();
-            Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.NotConnected);
             _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(_dbPath));
             Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.OK);
             _dataService.Database_InsertServer(_rdp);
