@@ -35,7 +35,6 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(ref _itemsCount, value);
         }
 
-
         private bool _isPinned = false;
         public bool IsPinned
         {

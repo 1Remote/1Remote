@@ -158,21 +158,21 @@ namespace PRM.ViewModel
             // decrypt pwd
             _context.DataService.DecryptToConnectLevel(Server);
             NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-            TagSelections = _context.AppData.Tags.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();
+            TagSelections = _context.AppData.TagNames;
         }
 
         public string Title { get; set; }
 
-        private ProtocolServerBase _server = null;
 
+        private ProtocolServerBase _server = null;
         public ProtocolServerBase Server
         {
             get => _server;
             set => SetAndNotifyIfChanged(ref _server, value);
         }
 
-        private ProtocolServerBase _selectedProtocol = null;
 
+        private ProtocolServerBase _selectedProtocol = null;
         public ProtocolServerBase SelectedProtocol
         {
             get => _selectedProtocol;
@@ -191,21 +191,25 @@ namespace PRM.ViewModel
                 ReflectProtocolEditControl(SelectedProtocol.GetType());
             }
         }
+
+
         public List<ProtocolServerBase> ProtocolList { get; set; } = new List<ProtocolServerBase>();
 
 
         private ProtocolServerFormBase _protocolEditControl = null;
-
         public ProtocolServerFormBase ProtocolEditControl
         {
             get => _protocolEditControl;
             set => SetAndNotifyIfChanged(ref _protocolEditControl, value);
         }
 
+
         public List<string> NameSelections { get; set; }
         public List<string> TagSelections { get; set; }
 
         public TagsEditor TagsEditor { get; set; }
+
+
         private RelayCommand _cmdSave;
         public RelayCommand CmdSave
         {
@@ -286,8 +290,9 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _cmdCancel;
 
+
+        private RelayCommand _cmdCancel;
         public RelayCommand CmdCancel
         {
             get
@@ -300,6 +305,9 @@ namespace PRM.ViewModel
                 return _cmdCancel;
             }
         }
+
+
+
 
         private void UpdateServerWhenProtocolChanged(Type newProtocolType)
         {

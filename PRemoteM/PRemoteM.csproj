@@ -189,6 +189,7 @@
     <Compile Include="ViewModel\Configuration\ConfigurationViewModel.cs" />
     <Compile Include="ViewModel\Configuration\ProtocolConfigerViewModel.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
+    <Compile Include="ViewModel\VmServerListPage.Tag.cs" />
     <Compile Include="ViewModel\VmTabWindow.cs" />
     <Compile Include="ViewModel\VmMain.cs" />
     <Compile Include="ViewModel\VmSearchBox.cs" />
