@@ -17,12 +17,13 @@ namespace PRM.Core.Service
 
         public DataService()
         {
-            _db = new DapperDb();
+            //_db = new DapperDb();
+            _db = new DapperDbFree();
         }
 
         public bool Database_OpenConnection(DatabaseType type, string newConnectionString)
         {
-            // open db connection
+            // open db connection, or create a sqlite db.
             Debug.Assert(_db != null);
             _db.OpenConnection(type, newConnectionString);
 
@@ -55,6 +56,7 @@ namespace PRM.Core.Service
 
         public EnumDbStatus Database_SelfCheck()
         {
+            _db?.OpenConnection();
             // check connection
             if (_db?.IsConnected() != true)
                 return EnumDbStatus.NotConnected;

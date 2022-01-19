@@ -27,7 +27,7 @@ namespace PRM.ViewModel
 {
     public class VmServerListPage : NotifyPropertyChangedBase
     {
-        public const string TagsListViewMark = "tags_selector_for_list@#@1__()!";
+        public const string TagsListViewMark = GlobalData.TagsListViewMark;
         public PrmContext Context { get; }
         public ConfigurationViewModel ConfigurationViewModel => ConfigurationViewModel.GetInstance();
         private readonly ListBox _list;
@@ -423,9 +423,8 @@ namespace PRM.ViewModel
                         if (!(ss?.Count > 0)) return;
                         foreach (var vs in ss)
                         {
-                            Context.DataService.Database_DeleteServer(vs.Server.Id);
+                            Context.AppData.DeleteServer(vs.Server.Id, false);
                         }
-
                         Context.AppData.ReloadServerList();
                     }
                 }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));

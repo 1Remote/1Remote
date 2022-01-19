@@ -57,6 +57,7 @@ namespace PRM.Core.Model
             set => SetAndNotifyIfChanged(ref _tags, value);
         }
 
+        public const string TagsListViewMark = "tags_selector_for_list@#@1__()!";
         private string _selectedTagName = "";
         public string SelectedTagName
         {
@@ -72,8 +73,6 @@ namespace PRM.Core.Model
 
         private void UpdateTags()
         {
-            var t = SelectedTagName;
-
             var pinnedTags = _configurationService.PinnedTags;
             // set pinned
             // TODO del after 2022.05.31
@@ -99,8 +98,16 @@ namespace PRM.Core.Model
                 }
             }
 
+            var selectedTagName = this.SelectedTagName;
             Tags = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
-            SelectedTagName = t;
+            if (Tags.All(x => x.Name != selectedTagName))
+            {
+                SelectedTagName = "";
+            }
+            else
+            {
+                SelectedTagName = selectedTagName;
+            }
         }
 
         private void SaveOnPinnedTagsChanged()
@@ -148,7 +155,6 @@ namespace PRM.Core.Model
             if (doInvoke)
             {
                 ReloadServerList();
-                VmItemListDataChanged?.Invoke();
             }
         }
 
@@ -171,9 +177,10 @@ namespace PRM.Core.Model
 
             if (doInvoke)
                 VmItemListDataChanged?.Invoke();
+            UpdateTags();
         }
 
-        public void DeleteServer(int id)
+        public void DeleteServer(int id, bool doInvoke = true)
         {
             if (_dataService == null)
             {
@@ -182,7 +189,8 @@ namespace PRM.Core.Model
             Debug.Assert(id > 0);
             if (_dataService.Database_DeleteServer(id))
             {
-                ReloadServerList();
+                if (doInvoke)
+                    ReloadServerList();
             }
         }
 

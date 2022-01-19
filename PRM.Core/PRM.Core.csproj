@@ -129,6 +129,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\Dapper\DapperDbFree.cs" />
     <Compile Include="DB\Dapper\DapperDb.cs" />
     <Compile Include="DB\EnumDbStatus.cs" />
     <None Include="app.config" />
