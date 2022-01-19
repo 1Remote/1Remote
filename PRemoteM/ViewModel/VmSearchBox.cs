@@ -232,9 +232,9 @@ namespace PRM.ViewModel
 
             // TODO need a better tag matching
             // if tag name search enabled, show group name as prefix
-            foreach (var tag in Context.AppData.Tags.Select(x => x.Name))
+            foreach (var tag in Context.AppData.TagNames)
             {
-                if (keywords.Any(keyword => tag.ToLower() == keyword.ToLower()))
+                if (keywords.Any(keyword => string.Equals(tag, keyword, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     return tag;
                 }
