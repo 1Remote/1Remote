@@ -86,7 +86,6 @@
     <s:String x:Key="Launcher">启动器</s:String>
     <s:String x:Key="system_options_quick_launcher_enable">启用</s:String>
     <s:String x:Key="system_options_quick_launcher_hotkey">快捷键</s:String>
-    <s:String x:Key="system_options_quick_launcher_allow_group_name_search">允许搜索标签</s:String>
 
     <s:String x:Key="system_options_data_security_title">数据与安全</s:String>
     <s:String x:Key="system_options_data_security_database">数据库</s:String>

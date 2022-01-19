@@ -362,9 +362,7 @@
                     </Style>
                 </Grid.Style>
 
-                <ItemsControl Name="ListViewTags" 
-                                  VerticalAlignment="Center" HorizontalAlignment="Center"
-                                  ItemsSource="{Binding TagFilters}">
+                <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding TagFilters}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />

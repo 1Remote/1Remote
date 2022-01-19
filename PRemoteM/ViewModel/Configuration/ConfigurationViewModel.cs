@@ -232,19 +232,6 @@ namespace PRM.ViewModel.Configuration
             }
         }
 
-
-        public bool LauncherAllowTagSearch
-        {
-            get => _configurationService.Launcher.AllowTagSearch;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _configurationService.Launcher.AllowTagSearch, value))
-                {
-                    _configurationService.Save();
-                }
-            }
-        }
-
         public string LogFolderName => new FileInfo(SimpleLogHelper.LogFileName).DirectoryName;
 
         public List<MatchProviderInfo> AvailableMatcherProviders => _configurationService.AvailableMatcherProviders;

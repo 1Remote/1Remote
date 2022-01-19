@@ -86,7 +86,6 @@
     <s:String x:Key="Launcher">Startprogramm</s:String>
     <s:String x:Key="system_options_quick_launcher_enable">Aktiv</s:String>
     <s:String x:Key="system_options_quick_launcher_hotkey">Hotkey</s:String>
-    <s:String x:Key="system_options_quick_launcher_allow_group_name_search">Allow search tags</s:String>
 
     <s:String x:Key="system_options_data_security_title">Datenbank &amp; Sicherheit</s:String>
     <s:String x:Key="system_options_data_security_database">Datenbank</s:String>

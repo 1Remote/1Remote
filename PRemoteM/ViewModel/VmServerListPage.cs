@@ -225,7 +225,7 @@ namespace PRM.ViewModel
                     {
                         vm.ObjectVisibilityInList = Visibility.Collapsed;
                     }
-                    else if (string.IsNullOrEmpty(keyWord))
+                    else if (keyWords.Length == 0)
                     {
                         vm.ObjectVisibilityInList = Visibility.Visible;
                     }
