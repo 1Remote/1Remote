@@ -7,6 +7,7 @@
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:viewModel="clr-namespace:PRM.ViewModel"
                   xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+                  xmlns:view="clr-namespace:PRM.View"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -332,9 +333,66 @@
                          VerticalContentAlignment="Center"
                          Style="{StaticResource SearchBoxTbKeyWordStyle}"></TextBox>
 
+            <Grid Height="40" HorizontalAlignment="Right" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove">
+                <Grid.Resources>
+                    <view:ConverterTagName x:Key="ConverterTagName" />
+                </Grid.Resources>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Value="0" Binding="{Binding TagFilters.Count}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Null}" Binding="{Binding TagFilters.Count}">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding TagFilters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="viewModel:TagFilter">
+                            <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
+                                <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
+                                    <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                               Margin="5">
+                                        <TextBlock.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsNegative}" Value="True">
+                                                        <Setter Property="TextDecorations">
+                                                            <Setter.Value>
+                                                                <TextDecorationCollection>
+                                                                    <TextDecoration Location="Strikethrough">
+                                                                        <TextDecoration.Pen>
+                                                                            <Pen Brush="{DynamicResource PrimaryMidBrush}" Thickness="3"></Pen>
+                                                                        </TextDecoration.Pen>
+                                                                    </TextDecoration>
+                                                                </TextDecorationCollection>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Resources>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+
             <Grid Width="50" Height="40" HorizontalAlignment="Right" Cursor="SizeAll"
-                          Background="{DynamicResource PrimaryMidBrush}"
-                          PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
+                  Background="Transparent"
+                  PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
 
         <Grid Name="GridSelections"

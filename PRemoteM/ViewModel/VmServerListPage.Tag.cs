@@ -213,20 +213,6 @@ namespace PRM.ViewModel
                         SetSelectedTabName(filters);
                     }
                 }
-                // append action
-                else if (action == FilterTagsControlAction.AppendNegativeFilter)
-                {
-                    if (existed == null)
-                    {
-                        filters.Add(new TagFilter(newTagName, true));
-                        SetSelectedTabName(filters);
-                    }
-                    if (existed == null)
-                    {
-                        filters.Add(new TagFilter(newTagName, true));
-                        SetSelectedTabName(filters);
-                    }
-                }
                 // set action
                 else
                 {
