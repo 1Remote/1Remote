@@ -68,11 +68,18 @@ namespace PRM
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                SimpleLogHelper.Fatal(e);
-                CloseAllWindow();
-                var errorReport = new ErrorReportWindow(e);
-                errorReport.ShowDialog();
-                App.Close();
+                lock (App.Current)
+                {
+                    SimpleLogHelper.Fatal(e);
+                    var errorReport = new ErrorReportWindow(e);
+                    errorReport.ShowDialog();
+#if FOR_MICROSOFT_STORE_ONLY
+                    throw e;
+#else
+                    CloseAllWindow();
+                    App.Close();
+#endif 
+                }
             });
         }
 
@@ -161,7 +168,7 @@ namespace PRM
             CanPortable = true;
 #endif
 
-            var tmp = new ConfigurationService(true, null);
+            var tmp = new ConfigurationService(CanPortable, null);
             var languageService = new LanguageService(this.Resources, CultureInfo.CurrentCulture.Name.ToLower());
             var dbDir = new FileInfo(tmp.Database.SqliteDatabasePath).Directory;
             if (IOPermissionHelper.HasWritePermissionOnDir(dbDir.FullName) == false)
@@ -204,21 +211,25 @@ namespace PRM
             }
 
             // init Database here, to show alert if db connection goes wrong.
-            var connStatus = Context.InitSqliteDb(Context.ConfigurationService.Database.SqliteDatabasePath);
+            var connStatus = Context.InitSqliteDb();
+
+            InitMainWindow();
+            InitLauncher();
+            InitTaskTray();
+
+
             if (connStatus != EnumDbStatus.OK)
             {
                 string error = connStatus.GetErrorInfo(Context.LanguageService);
                 MessageBox.Show(error, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 MainUi.Vm.CmdGoSysOptionsPage.Execute("Data");
+                MainUi.ActivateMe();
             }
             else
             {
                 Context.AppData.ReloadServerList();
             }
 
-            InitMainWindow();
-            InitLauncher();
-            InitTaskTray();
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {

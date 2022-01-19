@@ -30,10 +30,13 @@ namespace PRM.Core.Model
             KeywordMatchService = new KeywordMatchService();
             ConfigurationService = new ConfigurationService(isPortable, KeywordMatchService);
             ProtocolConfigurationService = new ProtocolConfigurationService(isPortable);
-            LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
-            LanguageService.TmpLanguageService = LanguageService;
+            if (applicationResourceDictionary != null)
+            {
+                LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
+                LanguageService.TmpLanguageService = LanguageService;
+                ThemeService = new ThemeService(applicationResourceDictionary, ConfigurationService.Theme);
+            }
             LauncherService = new LauncherService(LanguageService);
-            ThemeService = new ThemeService(applicationResourceDictionary, ConfigurationService.Theme);
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
             AppData = new GlobalData(LocalityService, ConfigurationService);
@@ -46,14 +49,18 @@ namespace PRM.Core.Model
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>
         /// <param name="sqlitePath"></param>
-        public EnumDbStatus InitSqliteDb(string sqlitePath)
+        public EnumDbStatus InitSqliteDb(string sqlitePath = "")
         {
+            if (string.IsNullOrWhiteSpace(sqlitePath))
+            {
+                sqlitePath = ConfigurationService.Database.SqliteDatabasePath;
+            }
             if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
                 DataService = null;
                 return EnumDbStatus.AccessDenied;
             }
-            
+
             DataService = new DataService();
             DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
             var ret = DataService.Database_SelfCheck();

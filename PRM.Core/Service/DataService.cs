@@ -20,7 +20,7 @@ namespace PRM.Core.Service
             _db = new DapperDb();
         }
 
-        public bool Database_OpenConnection(DatabaseType? type = null, string newConnectionString = "")
+        public bool Database_OpenConnection(DatabaseType type, string newConnectionString)
         {
             // open db connection
             Debug.Assert(_db != null);
@@ -101,26 +101,32 @@ namespace PRM.Core.Service
         public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, bool generateNewPublicKey = true)
         {
             Debug.Assert(_db != null);
-            Debug.Assert(Database_IsEncrypted() == false);
 
+            // clear rsa key
             if (string.IsNullOrEmpty(privateKeyPath))
             {
+                Debug.Assert(Database_IsEncrypted() == true);
                 _db.Set_RSA_PublicKey("");
                 _db.Set_RSA_PrivateKeyPath("");
+                _rsa = null;
                 return RSA.EnumRsaStatus.NoError;
             }
+            // set rsa key
+            else
+            {
+                Debug.Assert(Database_IsEncrypted() == false);
+                var pks = RSA.KeyFileCheck(privateKeyPath, true);
+                if (pks != RSA.EnumRsaStatus.NoError)
+                    return pks;
 
-            var pks = RSA.KeyFileCheck(privateKeyPath, true);
-            if (pks != RSA.EnumRsaStatus.NoError)
-                return pks;
-
-            var rsa = new RSA(File.ReadAllText(privateKeyPath), true);
-            _db.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
-            if (generateNewPublicKey)
-                _db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
-            _db.Set_RSA_PrivateKeyPath(privateKeyPath);
-            _rsa = rsa;
-            return RSA.EnumRsaStatus.NoError;
+                var rsa = new RSA(File.ReadAllText(privateKeyPath), true);
+                _db.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
+                if (generateNewPublicKey)
+                    _db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
+                _db.Set_RSA_PrivateKeyPath(privateKeyPath);
+                _rsa = rsa;
+                return RSA.EnumRsaStatus.NoError;
+            }
         }
 
         public string DecryptOrReturnOriginalString(string originalString)
@@ -135,7 +141,7 @@ namespace PRM.Core.Service
             return str;
         }
 
-        public void EncryptToDatabaseLevel(ref ProtocolServerBase server)
+        public void EncryptToDatabaseLevel(ProtocolServerBase server)
         {
             if (_rsa == null) return;
             Debug.Assert(Database_IsEncrypted() == true);
@@ -231,7 +237,7 @@ namespace PRM.Core.Service
         {
             var tmp = (ProtocolServerBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(ref tmp);
+            EncryptToDatabaseLevel(tmp);
             _db.AddServer(tmp);
         }
 
@@ -240,7 +246,7 @@ namespace PRM.Core.Service
             Debug.Assert(org.Id > 0);
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(ref tmp);
+            EncryptToDatabaseLevel(tmp);
             _db.UpdateServer(tmp);
         }
 

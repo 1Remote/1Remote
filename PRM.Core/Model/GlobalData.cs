@@ -48,17 +48,6 @@ namespace PRM.Core.Model
 
         public Action VmItemListDataChanged;
 
-        //private ObservableCollection<VmProtocolServer> _vmItemList = new ObservableCollection<VmProtocolServer>();
-        //public ObservableCollection<VmProtocolServer> VmItemList
-        //{
-        //    get => _vmItemList;
-        //    set
-        //    {
-        //        SetAndNotifyIfChanged(ref _vmItemList, value);
-        //        VmItemListDataChanged?.Invoke();
-        //    }
-        //}
-
         public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
 
         private ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();
@@ -194,20 +183,6 @@ namespace PRM.Core.Model
             if (_dataService.Database_DeleteServer(id))
             {
                 ReloadServerList();
-            }
-        }
-
-        private void OrderServerByConnectTime()
-        {
-            for (var i = 1; i < VmItemList.Count; i++)
-            {
-                var s0 = VmItemList[i - 1];
-                var s1 = VmItemList[i];
-                if (s0.Server.LastConnTime < s1.Server.LastConnTime)
-                {
-                    VmItemList = new ObservableCollection<VmProtocolServer>(VmItemList.OrderByDescending(x => x.Server.LastConnTime));
-                    break;
-                }
             }
         }
 

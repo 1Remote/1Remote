@@ -71,6 +71,9 @@ namespace PRM.Core.Protocol
         [JsonIgnore]
         public string ProtocolDisplayNameInShort { get; }
 
+        /// <summary>
+        /// this is for old db to new db. do not remove!
+        /// </summary>
         [Obsolete]
         public string DispName
         {
@@ -267,7 +270,7 @@ namespace PRM.Core.Protocol
         public ProtocolServerBase Clone()
         {
             var clone = this.MemberwiseClone() as ProtocolServerBase;
-            clone.Server_editor_different_options = LanguageService.TmpLanguageService.Translate("server_editor_different_options");
+            clone.Server_editor_different_options = LanguageService.TmpLanguageService?.Translate("server_editor_different_options") ?? "<different options>";
             clone.Tags = new List<string>(this.Tags);
             return clone;
         }

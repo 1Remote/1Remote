@@ -23,10 +23,11 @@ namespace PRM.Core.DB.Dapper
                 _dbConnection?.Close();
                 _dbConnection?.Dispose();
                 _dbConnection = null;
+                SQLiteConnection.ClearAllPools();
             }
         }
 
-        public void OpenConnection(DatabaseType? type = null, string newConnectionString = "")
+        public void OpenConnection(DatabaseType type, string newConnectionString)
         {
             lock (_locker)
             {

@@ -39,8 +39,6 @@ namespace PRM.Core.External.KiTTY
             throw new NotSupportedException("you should not access here! something goes wrong");
         }
 
-        private static Dictionary<string, List<KittyConfigKeyValuePair>> themes = PuttyThemes.GetThemes();
-
         public static void SetKittySessionConfig(this IKittyConnectable iKittyConnectable, int fontSize, string themeName, string sshPrivateKeyPath)
         {
             var kittyExeFullName = GetKittyExeFullName();
@@ -64,6 +62,7 @@ namespace PRM.Core.External.KiTTY
                 puttyOption.Set(EnumKittyConfigKey.Protocol, "ssh");
             }
 
+            var themes = PuttyThemes.GetThemes();
             // set color theme
             if (themes.ContainsKey(themeName) == false)
                 themeName = themes.Keys.First();
