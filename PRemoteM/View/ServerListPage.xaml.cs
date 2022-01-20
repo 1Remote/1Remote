@@ -76,7 +76,7 @@ namespace PRM.View
         public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if(value.Length > 1 
-               && value[0] is List<string> selectedTagNames
+               && value[0] is List<TagFilter> selectedTagNames
                && value[1] is ObservableCollection<Tag> tags)
             {
                 if (selectedTagNames.Count == 0)
@@ -84,7 +84,7 @@ namespace PRM.View
                 else if (selectedTagNames.Count > 1)
                     return true;
 
-                var tag = selectedTagNames[0];
+                var tag = selectedTagNames[0].TagName;
                 return tags.First(x => x.Name == tag).IsPinned == false;
             }
             return false;
@@ -92,6 +92,23 @@ namespace PRM.View
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+    }
+
+    public class ConverterTagName : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string tagName)
+            {
+                return "#" + tagName;
+            }
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -107,7 +107,7 @@ namespace PRM.ViewModel
                 }
             }
             OrderServerList();
-            UpdateTags();
+            ReadTagsFromServers();
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -202,14 +202,19 @@ namespace PRM.ViewModel
             var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
             if (SelectedTabName != TabTagsListName)
             {
-                var selectedTagNames = SelectedTagNames;
-                foreach (var card in ServerListItems)
+                var tagFilters = TagFilters;
+                foreach (var vm in ServerListItems)
                 {
-                    var server = card.Server;
+                    var server = vm.Server;
                     bool bTagMatched = true;
-                    foreach (var tagName in selectedTagNames)
+                    foreach (var tagFilter in tagFilters)
                     {
-                        if (server.Tags.Contains(tagName) == false)
+                        if (tagFilter.IsNegative == false && server.Tags.Contains(tagFilter.TagName) == false)
+                        {
+                            bTagMatched = false;
+                            break;
+                        }
+                        if (tagFilter.IsNegative == true && server.Tags.Contains(tagFilter.TagName) == true)
                         {
                             bTagMatched = false;
                             break;
@@ -218,11 +223,11 @@ namespace PRM.ViewModel
 
                     if (!bTagMatched)
                     {
-                        card.ObjectVisibilityInList = Visibility.Collapsed;
+                        vm.ObjectVisibilityInList = Visibility.Collapsed;
                     }
                     else if (string.IsNullOrEmpty(keyWord))
                     {
-                        card.ObjectVisibilityInList = Visibility.Visible;
+                        vm.ObjectVisibilityInList = Visibility.Visible;
                     }
                     else
                     {
@@ -230,13 +235,13 @@ namespace PRM.ViewModel
                         var subTitle = server.SubTitle;
                         var matched = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
                         if (matched)
-                            card.ObjectVisibilityInList = Visibility.Visible;
+                            vm.ObjectVisibilityInList = Visibility.Visible;
                         else
-                            card.ObjectVisibilityInList = Visibility.Collapsed;
+                            vm.ObjectVisibilityInList = Visibility.Collapsed;
                     }
 
-                    if (card.ObjectVisibilityInList == Visibility.Collapsed && card.IsSelected)
-                        card.IsSelected = false;
+                    if (vm.ObjectVisibilityInList == Visibility.Collapsed && vm.IsSelected)
+                        vm.IsSelected = false;
                 }
 
                 if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))

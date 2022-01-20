@@ -27,12 +27,30 @@ using Shawn.Utils;
 
 namespace PRM.ViewModel
 {
+    public class TagFilter
+    {
+        public TagFilter(string tagName, bool isNegative)
+        {
+            TagName = tagName;
+            IsNegative = isNegative;
+        }
+
+        public string TagName { get; }
+        public bool IsNegative { get; }
+
+        public override string ToString()
+        {
+            return TagName + (IsNegative ? VmServerListPage.TagTypeSeparator + "Negative" : "");
+        }
+    }
+
     public partial class VmServerListPage : NotifyPropertyChangedBase
     {
-        public const string SelectedTabNameSeparator = "__|||__";
         public const string TabAllName = "";
         public const string TabTagsListName = "tags_selector_for_list@#@1__()!";
         public const string TabNoneSelected = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
+        public const string TagSeparator = "__|||__";
+        public const string TagTypeSeparator = "===!|!===";
 
         private string _selectedTabName = "";
         public string SelectedTabName
@@ -46,7 +64,7 @@ namespace PRM.ViewModel
                 {
                     Context.LocalityService.MainWindowTabSelected = value;
                     CalcVisible();
-                    RaisePropertyChanged(nameof(SelectedTagNames));
+                    RaisePropertyChanged(nameof(TagFilters));
                 }
             }
         }
@@ -61,20 +79,7 @@ namespace PRM.ViewModel
             private set => SetAndNotifyIfChanged(ref _tags, value);
         }
 
-        [NotNull]
-        public List<string> SelectedTagNames
-        {
-            get
-            {
-                if (SelectedTabName == VmServerListPage.TabAllName
-                    || SelectedTabName == VmServerListPage.TabTagsListName
-                    || SelectedTabName == VmServerListPage.TabNoneSelected)
-                    return new List<string>();
-                return SelectedTabName.Split(new string[] { SelectedTabNameSeparator }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            }
-        }
-
-        private void UpdateTags()
+        private void ReadTagsFromServers()
         {
             var pinnedTags = Context.ConfigurationService.PinnedTags;
             // set pinned
@@ -99,7 +104,8 @@ namespace PRM.ViewModel
                         {
                             Context.ConfigurationService.PinnedTags = Tags.Where(x => x.IsPinned).Select(x => x.Name).ToList();
                             Context.ConfigurationService.Save();
-                        }) { ItemsCount = 1 });
+                        })
+                        { ItemsCount = 1 });
                     else
                         tags.First(x => x.Name == tagName).ItemsCount++;
                 }
@@ -118,25 +124,110 @@ namespace PRM.ViewModel
             }
         }
 
-        private void SelectedTagsAdd(string newTagName, bool canRemove)
+
+
+        [NotNull]
+        public List<TagFilter> TagFilters
         {
-            if (string.IsNullOrEmpty(newTagName) == false)
+            get
             {
-                var sts = SelectedTagNames;
-                var isStsContainNewTag = sts.Contains(newTagName);
-                if (canRemove && isStsContainNewTag)
+                var ret = new List<TagFilter>();
+                if (SelectedTabName == VmServerListPage.TabAllName
+                    || SelectedTabName == VmServerListPage.TabTagsListName
+                    || SelectedTabName == VmServerListPage.TabNoneSelected)
+                    return ret;
+                var tags = SelectedTabName.Split(new string[] { TagSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var tmp in tags)
                 {
-                    sts.Remove(newTagName);
-                    SelectedTabName = string.Join(SelectedTabNameSeparator, sts);
-                }
-                else if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-                {
-                    if (isStsContainNewTag == false)
+                    var strings = tmp.Split(new string[] { TagTypeSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    if (strings.Length > 0
+                    && Tags.Any(x => x.Name == strings[0].Trim()))
                     {
-                        sts.Add(newTagName);
-                        SelectedTabName = string.Join(SelectedTabNameSeparator, sts);
+                        ret.Add(new TagFilter(strings[0], strings.Length > 1));
                     }
                 }
+                return ret;
+            }
+        }
+
+        private void SetSelectedTabName(List<TagFilter> tagFilters)
+        {
+            var sts = tagFilters.Select(x => x.ToString());
+            SelectedTabName = string.Join(TagSeparator, sts);
+        }
+
+
+        #region Tag filter control
+
+        enum FilterTagsControlAction
+        {
+            Append,
+            AppendNegativeFilter,
+            Remove,
+            Set,
+        }
+        private void FilterTagsControl(object o, FilterTagsControlAction action)
+        {
+            if (o == null)
+                return;
+
+            string newTagName = string.Empty;
+            if (o is Tag obj
+                && Tags.Any(x => x.Name == obj.Name))
+            {
+                newTagName = obj.Name;
+            }
+            else if (o is string str
+                     && Tags.Any(x => x.Name == str))
+            {
+                newTagName = str;
+            }
+
+            if (string.IsNullOrEmpty(newTagName) == false)
+            {
+                var filters = TagFilters;
+                var existed = filters.FirstOrDefault(x => x.TagName == newTagName);
+                // remove action
+                if (action == FilterTagsControlAction.Remove)
+                {
+                    if (existed != null)
+                    {
+                        filters.Remove(existed);
+                        SetSelectedTabName(filters);
+                    }
+                }
+                // append action
+                else if (action == FilterTagsControlAction.Append
+                         || action == FilterTagsControlAction.AppendNegativeFilter)
+                {
+                    bool isNegative = action == FilterTagsControlAction.AppendNegativeFilter;
+                    if (existed == null)
+                    {
+                        filters.Add(new TagFilter(newTagName, isNegative));
+                        SetSelectedTabName(filters);
+                    }
+                    if (existed != null && existed.IsNegative != isNegative)
+                    {
+                        filters.Remove(existed);
+                        filters.Add(new TagFilter(newTagName, isNegative));
+                        SetSelectedTabName(filters);
+                    }
+                }
+                // append action
+                else if (action == FilterTagsControlAction.AppendNegativeFilter)
+                {
+                    if (existed == null)
+                    {
+                        filters.Add(new TagFilter(newTagName, true));
+                        SetSelectedTabName(filters);
+                    }
+                    if (existed == null)
+                    {
+                        filters.Add(new TagFilter(newTagName, true));
+                        SetSelectedTabName(filters);
+                    }
+                }
+                // set action
                 else
                 {
                     SelectedTabName = newTagName;
@@ -152,48 +243,34 @@ namespace PRM.ViewModel
             {
                 return _cmdTagSelect ??= new RelayCommand((o) =>
                 {
-                    if (o == null)
-                        return;
-
-                    string tag = string.Empty;
-                    if (o is Tag obj
-                        && Tags.Any(x => x.Name == obj.Name))
-                    {
-                        tag = obj.Name;
-                    }
-                    else if (o is string str
-                             && Tags.Any(x => x.Name == str))
-                    {
-                        tag = str;
-                    }
-                    SelectedTagsAdd(tag, false);
+                    var isCtrlDown = (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
+                    FilterTagsControl(o, isCtrlDown ? FilterTagsControlAction.Append : FilterTagsControlAction.Set);
                 });
             }
         }
 
 
-        private RelayCommand _cmdTagSelectWithRemove;
-        public RelayCommand CmdTagSelectWithRemove
+        private RelayCommand _cmdTagSelectWithLeftRemove;
+        public RelayCommand CmdTagSelectWithLeftRemove
         {
             get
             {
-                return _cmdTagSelectWithRemove ??= new RelayCommand((o) =>
+                return _cmdTagSelectWithLeftRemove ??= new RelayCommand((o) =>
                 {
-                    if (o == null)
-                        return;
+                    FilterTagsControl(o, FilterTagsControlAction.Remove);
+                });
+            }
+        }
 
-                    string tag = string.Empty;
-                    if (o is Tag obj
-                        && Tags.Any(x => x.Name == obj.Name))
-                    {
-                        tag = obj.Name;
-                    }
-                    else if (o is string str
-                             && Tags.Any(x => x.Name == str))
-                    {
-                        tag = str;
-                    }
-                    SelectedTagsAdd(tag, true);
+
+        private RelayCommand _cmdTagSelectWithRightRemove;
+        public RelayCommand CmdTagSelectWithRightRemove
+        {
+            get
+            {
+                return _cmdTagSelectWithRightRemove ??= new RelayCommand((o) =>
+                {
+                    FilterTagsControl(o, FilterTagsControlAction.AppendNegativeFilter);
                 });
             }
         }
@@ -228,50 +305,52 @@ namespace PRM.ViewModel
         }
 
 
+        #endregion
+
+
 
         private RelayCommand _cmdTagRename;
         public RelayCommand CmdTagRename
         {
             get
             {
-                if (_cmdTagRename == null)
+                return _cmdTagRename ??= new RelayCommand((o) =>
                 {
-                    _cmdTagRename = new RelayCommand((o) =>
+                    var t = SelectedTabName;
+                    var obj = o as Tag;
+                    if (obj == null)
+                        return;
+                    string newTag = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
+                    if (t == obj.Name)
+                        t = newTag;
+                    if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
+                        return;
+                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
-                        var t = SelectedTabName;
-                        var obj = o as Tag;
-                        if (obj == null)
-                            return;
-                        string newTag = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
-                        if (t == obj.Name)
-                            t = newTag;
-                        if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
-                            return;
-                        foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
+                        var s = vmProtocolServer.Server;
+                        if (s.Tags.Contains(obj.Name))
                         {
-                            var s = vmProtocolServer.Server;
-                            if (s.Tags.Contains(obj.Name))
-                            {
-                                s.Tags.Remove(obj.Name);
-                                s.Tags.Add(newTag);
-                            }
-                            Context.AppData.UpdateServer(s, false);
+                            s.Tags.Remove(obj.Name);
+                            s.Tags.Add(newTag);
                         }
-                        Context.AppData.ReloadServerList();
 
-                        // restore selected scene
-                        if (SelectedTabName == obj.Name)
-                        {
-                            SelectedTabName = t;
-                        }
-                        // restore display scene
-                        if (Tags.Any(x => x.Name == newTag))
-                        {
-                            Tags.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
-                        }
-                    });
-                }
-                return _cmdTagRename;
+                        Context.AppData.UpdateServer(s, false);
+                    }
+
+                    Context.AppData.ReloadServerList();
+
+                    // restore selected scene
+                    if (SelectedTabName == obj.Name)
+                    {
+                        SelectedTabName = t;
+                    }
+
+                    // restore display scene
+                    if (Tags.Any(x => x.Name == newTag))
+                    {
+                        Tags.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
+                    }
+                });
             }
         }
 

@@ -305,6 +305,7 @@
             </Style>
 
             <view:ConverterTagsIndicatorIsShow x:Key="ConverterTagsIndicatorIsShow" />
+            <view:ConverterTagName x:Key="ConverterTagName" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -331,7 +332,7 @@
                             <DataTrigger Value="True">
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource ConverterTagsIndicatorIsShow}">
-                                        <Binding Path="SelectedTagNames" Mode="OneWay"></Binding>
+                                        <Binding Path="TagFilters" Mode="OneWay"></Binding>
                                         <Binding Path="Tags" Mode="OneWay"></Binding>
                                     </MultiBinding>
                                 </DataTrigger.Binding>
@@ -361,39 +362,61 @@
                     </Style>
                 </Grid.Style>
 
-                    <ItemsControl Name="ListViewTags" 
+                <ItemsControl Name="ListViewTags" 
                                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                                  ItemsSource="{Binding SelectedTagNames}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="system:String">
-                                <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
-                                    <Grid>
-                                        <Label Content="{Binding}" Foreground="{DynamicResource AccentTextBrush}" Margin="0 0 15 0"></Label>
-                                        <Button Width="10" Height="10" Tag="{Binding}"
-                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelectWithRemove}"
-                                                    CommandParameter="{Binding}"
+                                  ItemsSource="{Binding TagFilters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="viewModel:TagFilter">
+                            <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
+                                <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
+                                    <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                               Margin="5 5 15 5">
+                                        <TextBlock.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsNegative}" Value="True">
+                                                        <Setter Property="TextDecorations">
+                                                            <Setter.Value>
+                                                                <TextDecorationCollection>
+                                                                    <TextDecoration Location="Strikethrough">
+                                                                        <TextDecoration.Pen>
+                                                                            <Pen Brush="{DynamicResource PrimaryMidBrush}" Thickness="3"></Pen>
+                                                                        </TextDecoration.Pen>
+                                                                    </TextDecoration>
+                                                                </TextDecorationCollection>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Resources>
+                                    </TextBlock>
+                                    <Button Width="10" Height="10" Tag="{Binding TagName}"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelectWithLeftRemove}"
+                                                    CommandParameter="{Binding TagName}"
                                                     Style="{StaticResource ButtonBarAccentStyle}"
                                                     HorizontalAlignment="Right"
                                                     attachProperty:VisionElement.Opacity="0.5"
                                                     attachProperty:VisionElement.OpacityAccent="0.9"
                                                     Margin="0 0 5 0">
-                                            <Grid Height="10" Width="8">
-                                                <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                        <Grid Height="10" Width="8">
+                                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                                           Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                                           StrokeThickness="2" Stretch="Uniform" />
-                                            </Grid>
-                                        </Button>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Grid>
 
 
@@ -565,7 +588,8 @@
                             </Grid.ColumnDefinitions>
 
                             <Grid>
-                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding Name}" 
+                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" 
+                                        Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
                                         HorizontalAlignment="Left"></Button>
                             </Grid>
 
@@ -731,7 +755,7 @@
                                                         Name="Bd"
                                                         SnapsToDevicePixels="True">
                                                         <ContentPresenter Margin="8 0"
-                                                                Content="{Binding Name}"
+                                                                Content="{Binding Name, Converter={StaticResource ConverterTagName}}"
                                                                 ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                                 ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
                                                                 HorizontalAlignment="Center"

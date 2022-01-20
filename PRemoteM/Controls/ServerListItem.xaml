@@ -86,6 +86,9 @@
 
 
                 <ItemsControl Grid.Column="4" Margin="5 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
+                    <ItemsControl.Resources>
+                        <view:ConverterTagName x:Key="ConverterTagName" />
+                    </ItemsControl.Resources>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -94,7 +97,13 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="system:String">
                             <Grid Margin="3">
-                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding }" HorizontalAlignment="Left"></Button>
+                                <Button Content="{Binding Converter={StaticResource ConverterTagName}}" HorizontalAlignment="Left">
+                                    <Button.InputBindings>
+                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelectWithRightRemove}" CommandParameter="{Binding}" />
+                                    </Button.InputBindings>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

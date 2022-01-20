@@ -247,6 +247,17 @@ namespace PRM.ViewModel
 
         public void UpdateItemsList(string keyword)
         {
+            //var words = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            //var keyWords= new List<string>(words.Count);
+            //var tagFilters = new List<TagFilter>();
+            //foreach (var word in words)
+            //{
+            //    if (word.StartsWith("#") || word.StartsWith("-#") || word.StartsWith("+#"))
+            //    {
+            //        bool 
+            //    }
+            //}
+
             if (string.IsNullOrEmpty(keyword))
             {
                 ShowAllItems();
