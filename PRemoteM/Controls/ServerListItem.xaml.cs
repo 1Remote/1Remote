@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Model;
+using Shawn.Utils;
 
 namespace PRM.Controls
 {
