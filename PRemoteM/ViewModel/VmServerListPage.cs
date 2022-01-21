@@ -25,9 +25,8 @@ using Shawn.Utils;
 
 namespace PRM.ViewModel
 {
-    public class VmServerListPage : NotifyPropertyChangedBase
+    public partial class VmServerListPage : NotifyPropertyChangedBase
     {
-        public const string TagsListViewMark = "tags_selector_for_list@#@1__()!";
         public PrmContext Context { get; }
         public ConfigurationViewModel ConfigurationViewModel => ConfigurationViewModel.GetInstance();
         private readonly ListBox _list;
@@ -44,18 +43,9 @@ namespace PRM.ViewModel
                 CalcVisible();
                 RaisePropertyChanged(nameof(IsMultipleSelected));
             });
-
-            Context.AppData.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(GlobalData.SelectedTagName))
-                {
-                    CalcVisible();
-                }
-            };
         }
 
         private VmProtocolServer _selectedServerListItem = null;
-
         public VmProtocolServer SelectedServerListItem
         {
             get => _selectedServerListItem;
@@ -63,7 +53,6 @@ namespace PRM.ViewModel
         }
 
         private ObservableCollection<VmProtocolServer> _serverListItems = new ObservableCollection<VmProtocolServer>();
-
         /// <summary>
         /// AllServerList data source for list view
         /// </summary>
@@ -77,18 +66,7 @@ namespace PRM.ViewModel
                 ServerListItems.CollectionChanged += (sender, args) => { OrderServerList(); };
             }
         }
-
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
-
-
-        private ObservableCollection<string> _serverTagList = new ObservableCollection<string>();
-        public ObservableCollection<string> ServerTagList
-        {
-            get => _serverTagList;
-            set => SetAndNotifyIfChanged(ref _serverTagList, value);
-        }
-
-        private string SelectedTagName => Context.AppData.SelectedTagName;
 
 
         private bool _isSelectedAll;
@@ -111,10 +89,7 @@ namespace PRM.ViewModel
             }
         }
 
-
-
         public bool IsMultipleSelected => ServerListItems.Count(x => x.IsSelected) > 0;
-
 
         private void RebuildVmServerList()
         {
@@ -132,6 +107,7 @@ namespace PRM.ViewModel
                 }
             }
             OrderServerList();
+            ReadTagsFromServers();
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -203,7 +179,7 @@ namespace PRM.ViewModel
 
             dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server.Id), ListSortDirection.Ascending));
             dataView.Refresh();
-            SimpleLogHelper.Debug($"OrderServerList: {ServerOrderBy}");
+            SimpleLogHelper.Debug($"OrderServerList: by {ServerOrderBy}");
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -224,20 +200,34 @@ namespace PRM.ViewModel
         {
             var keyWord = Context.AppData.MainWindowServerFilter;
             var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if (SelectedTagName != TagsListViewMark)
+            if (SelectedTabName != TabTagsListName)
             {
-                foreach (var card in ServerListItems)
+                var tagFilters = TagFilters;
+                foreach (var vm in ServerListItems)
                 {
-                    var server = card.Server;
-                    bool bTagMatched = string.IsNullOrEmpty(SelectedTagName) || server.Tags?.Contains(SelectedTagName) == true;
+                    var server = vm.Server;
+                    bool bTagMatched = true;
+                    foreach (var tagFilter in tagFilters)
+                    {
+                        if (tagFilter.IsNegative == false && server.Tags.Contains(tagFilter.TagName) == false)
+                        {
+                            bTagMatched = false;
+                            break;
+                        }
+                        if (tagFilter.IsNegative == true && server.Tags.Contains(tagFilter.TagName) == true)
+                        {
+                            bTagMatched = false;
+                            break;
+                        }
+                    }
 
                     if (!bTagMatched)
                     {
-                        card.ObjectVisibilityInList = Visibility.Collapsed;
+                        vm.ObjectVisibilityInList = Visibility.Collapsed;
                     }
-                    else if (string.IsNullOrEmpty(keyWord))
+                    else if (keyWords.Length == 0)
                     {
-                        card.ObjectVisibilityInList = Visibility.Visible;
+                        vm.ObjectVisibilityInList = Visibility.Visible;
                     }
                     else
                     {
@@ -245,13 +235,13 @@ namespace PRM.ViewModel
                         var subTitle = server.SubTitle;
                         var matched = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
                         if (matched)
-                            card.ObjectVisibilityInList = Visibility.Visible;
+                            vm.ObjectVisibilityInList = Visibility.Visible;
                         else
-                            card.ObjectVisibilityInList = Visibility.Collapsed;
+                            vm.ObjectVisibilityInList = Visibility.Collapsed;
                     }
 
-                    if (card.ObjectVisibilityInList == Visibility.Collapsed && card.IsSelected)
-                        card.IsSelected = false;
+                    if (vm.ObjectVisibilityInList == Visibility.Collapsed && vm.IsSelected)
+                        vm.IsSelected = false;
                 }
 
                 if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
@@ -262,7 +252,7 @@ namespace PRM.ViewModel
             }
             else
             {
-                foreach (var tag in Context.AppData.Tags)
+                foreach (var tag in Tags)
                 {
                     if (string.IsNullOrEmpty(keyWord))
                     {
@@ -280,24 +270,25 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _cmdAdd;
 
+        private RelayCommand _cmdAdd;
         public RelayCommand CmdAdd
         {
             get
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (Context.AppData.Tags.Any(x => x.Name == SelectedTagName))
-                        GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedTagName);
+                    if (Tags.Any(x => x.Name == SelectedTabName))
+                        GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedTabName);
                     else
                         GlobalEventHelper.OnGoToServerAddPage?.Invoke();
                 });
             }
         }
 
-        private RelayCommand _cmdExportSelectedToJson;
 
+
+        private RelayCommand _cmdExportSelectedToJson;
         public RelayCommand CmdExportSelectedToJson
         {
             get
@@ -317,7 +308,7 @@ namespace PRM.ViewModel
                             list.Add(serverBase);
                         }
                     else
-                        foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true))
+                        foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
                         {
                             var serverBase = (ProtocolServerBase)vs.Server.Clone();
                             Context.DataService.DecryptToConnectLevel(serverBase);
@@ -329,8 +320,9 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _cmdImportFromJson;
 
+
+        private RelayCommand _cmdImportFromJson;
         public RelayCommand CmdImportFromJson
         {
             get
@@ -368,8 +360,9 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _cmdImportFromCsv;
 
+
+        private RelayCommand _cmdImportFromCsv;
         public RelayCommand CmdImportFromCsv
         {
             get
@@ -406,8 +399,9 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _cmdDeleteSelected;
 
+
+        private RelayCommand _cmdDeleteSelected;
         public RelayCommand CmdDeleteSelected
         {
             get
@@ -419,21 +413,21 @@ namespace PRM.ViewModel
                         Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
-                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true).ToList();
+                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true).ToList();
                         if (!(ss?.Count > 0)) return;
                         foreach (var vs in ss)
                         {
-                            Context.DataService.Database_DeleteServer(vs.Server.Id);
+                            Context.AppData.DeleteServer(vs.Server.Id, false);
                         }
-
                         Context.AppData.ReloadServerList();
                     }
-                }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
+                }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true));
             }
         }
 
-        private RelayCommand _cmdMultiEditSelected;
 
+
+        private RelayCommand _cmdMultiEditSelected;
         public RelayCommand CmdMultiEditSelected
         {
             get
@@ -441,12 +435,13 @@ namespace PRM.ViewModel
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => App.MainUi?.Vm?.DispPage == null && ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTagName) || x.Server.Tags?.Contains(SelectedTagName) == true) && x.IsSelected == true));
+                    }, o => App.MainUi?.Vm?.DispPage == null && ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true));
             }
         }
 
-        private RelayCommand _cmdCancelSelected;
 
+
+        private RelayCommand _cmdCancelSelected;
         public RelayCommand CmdCancelSelected
         {
             get
@@ -459,7 +454,6 @@ namespace PRM.ViewModel
 
         private DateTime _lastCmdReOrder;
         private RelayCommand _cmdReOrder;
-
         public RelayCommand CmdReOrder
         {
             get
@@ -491,9 +485,7 @@ namespace PRM.ViewModel
 
 
 
-
         private RelayCommand _cmdConnectSelected;
-
         public RelayCommand CmdConnectSelected
         {
             get
@@ -510,168 +502,5 @@ namespace PRM.ViewModel
             }
         }
 
-
-
-
-
-
-
-
-        private RelayCommand _cmdTagSelect;
-
-        public RelayCommand CmdTagSelect
-        {
-            get
-            {
-                return _cmdTagSelect ??= new RelayCommand((o) =>
-                {
-                    if (o == null)
-                        return;
-                    if (o is Tag obj
-                        && Context.AppData.Tags.Any(x => x.Name == obj.Name))
-                    {
-                        Context.AppData.SelectedTagName = obj.Name;
-                    }
-                    else if (o is string str
-                             && Context.AppData.Tags.Any(x => x.Name == str))
-                    {
-                        Context.AppData.SelectedTagName = str;
-                    }
-                });
-            }
-        }
-
-
-
-        private RelayCommand _cmdTagDelete;
-
-        public RelayCommand CmdTagDelete
-        {
-            get
-            {
-                return _cmdTagDelete ??= new RelayCommand((o) =>
-                {
-                    var obj = o as Tag;
-                    if (obj == null || MessageBox.Show(Context.LanguageService.Translate("confirm_to_delete"), Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
-                        return;
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
-                    {
-                        var s = vmProtocolServer.Server;
-                        if (s.Tags.Contains(obj.Name))
-                        {
-                            s.Tags.Remove(obj.Name);
-                        }
-
-                        Context.AppData.UpdateServer(s, false);
-                    }
-
-                    Context.AppData.ReloadServerList();
-                    Context.AppData.SelectedTagName = "";
-                });
-            }
-        }
-
-
-
-
-
-
-        private RelayCommand _cmdTagRename;
-        public RelayCommand CmdTagRename
-        {
-            get
-            {
-                if (_cmdTagRename == null)
-                {
-                    _cmdTagRename = new RelayCommand((o) =>
-                    {
-                        var t = SelectedTagName;
-                        var obj = o as Tag;
-                        if (obj == null)
-                            return;
-                        string newTag = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
-                        if (t == obj.Name)
-                            t = newTag;
-                        if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
-                            return;
-                        foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
-                        {
-                            var s = vmProtocolServer.Server;
-                            if (s.Tags.Contains(obj.Name))
-                            {
-                                s.Tags.Remove(obj.Name);
-                                s.Tags.Add(newTag);
-                            }
-                            Context.AppData.UpdateServer(s, false);
-                        }
-                        Context.AppData.ReloadServerList();
-
-                        // restore selected scene
-                        if (Context.AppData.SelectedTagName == obj.Name)
-                        {
-                            Context.AppData.SelectedTagName = t;
-                        }
-                        // restore display scene
-                        if (Context.AppData.Tags.Any(x => x.Name == newTag))
-                        {
-                            Context.AppData.Tags.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
-                        }
-                    });
-                }
-                return _cmdTagRename;
-            }
-        }
-
-
-
-
-
-
-        private RelayCommand _cmdTagConnect;
-
-        public RelayCommand CmdTagConnect
-        {
-            get
-            {
-                return _cmdTagConnect ??= new RelayCommand((o) =>
-                {
-                    if (!(o is Tag obj))
-                        return;
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
-                    {
-                        if (vmProtocolServer.Server.Tags.Contains(obj.Name))
-                        {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id);
-                            Thread.Sleep(100);
-                        }
-                    }
-                });
-            }
-        }
-
-
-        private RelayCommand _cmdTagConnectToNewTab;
-
-        public RelayCommand CmdTagConnectToNewTab
-        {
-            get
-            {
-                return _cmdTagConnectToNewTab ??= new RelayCommand((o) =>
-                {
-                    if (!(o is Tag obj))
-                        return;
-
-                    var token = DateTime.Now.Ticks.ToString();
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
-                    {
-                        if (vmProtocolServer.Server.Tags.Contains(obj.Name))
-                        {
-                            GlobalEventHelper.OnRequestServerConnect?.Invoke(vmProtocolServer.Id, token);
-                            Thread.Sleep(100);
-                        }
-                    }
-                });
-            }
-        }
     }
 }

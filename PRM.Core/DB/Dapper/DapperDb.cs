@@ -12,49 +12,65 @@ namespace PRM.Core.DB.Dapper
 {
     public class DapperDb : IDb
     {
-        private IDbConnection _dbConnection;
-        private string _connectionString;
-        private readonly object _locker = new object();
+        protected IDbConnection _dbConnection;
+        protected string _connectionString;
+        protected readonly object _locker = new object();
+        protected DatabaseType _databaseType = DatabaseType.Sqlite;
 
-        public void CloseConnection()
+        public virtual void CloseConnection()
         {
+            if (_dbConnection == null)
+                return;
             lock (_locker)
             {
-                _dbConnection?.Close();
-                _dbConnection?.Dispose();
-                _dbConnection = null;
+                _dbConnection.Close();
                 SQLiteConnection.ClearAllPools();
             }
         }
 
-        public void OpenConnection(DatabaseType type, string newConnectionString)
+        public virtual void OpenConnection()
+        {
+            if (string.IsNullOrWhiteSpace(_connectionString))
+                return;
+            if (IsConnected()) return;
+            lock (_locker)
+            {
+                if (IsConnected()) return;
+                if (_dbConnection == null)
+                {
+                    if (_databaseType == DatabaseType.Sqlite)
+                        _dbConnection = new SQLiteConnection(_connectionString);
+                    else
+                        throw new NotImplementedException(_databaseType.ToString() + " not supported!");
+                }
+                _dbConnection.Open();
+            }
+        }
+
+        public virtual void OpenConnection(DatabaseType type, string newConnectionString)
         {
             lock (_locker)
             {
-                if (_connectionString == newConnectionString
-                    && IsConnected())
+                if (_databaseType == type && _connectionString == newConnectionString && IsConnected())
                     return;
 
                 if (string.IsNullOrWhiteSpace(newConnectionString))
                     return;
 
+                _databaseType = type;
                 _connectionString = newConnectionString;
 
                 _dbConnection?.Close();
                 _dbConnection?.Dispose();
                 SQLiteConnection.ClearAllPools();
-                if (type == DatabaseType.Sqlite)
-                    _dbConnection = new SQLiteConnection(_connectionString);
-                else
-                    throw new NotImplementedException(type.ToString() + " not supported!");
-
-                _dbConnection.Open();
+                _dbConnection = null;
+                OpenConnection();
             }
 
             InitTables();
         }
 
-        public bool IsConnected()
+        public virtual bool IsConnected()
         {
             lock (_locker)
             {
@@ -62,7 +78,7 @@ namespace PRM.Core.DB.Dapper
             }
         }
 
-        public void InitTables()
+        public virtual void InitTables()
         {
             _dbConnection?.Execute(@"
 CREATE TABLE IF NOT EXISTS `Server` (
@@ -91,7 +107,7 @@ COMMIT TRANSACTION;
             }
         }
 
-        public ProtocolServerBase GetServer(int id)
+        public virtual ProtocolServerBase GetServer(int id)
         {
             Debug.Assert(id > 0);
             var dbServer =
@@ -101,13 +117,13 @@ COMMIT TRANSACTION;
             return dbServer?.ToProtocolServerBase();
         }
 
-        public List<ProtocolServerBase> GetServers()
+        public virtual List<ProtocolServerBase> GetServers()
         {
             return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`")
                 ?.Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
         }
 
-        public int AddServer(ProtocolServerBase server)
+        public virtual int AddServer(ProtocolServerBase server)
         {
             Debug.Assert(server.Id == 0);
             return _dbConnection?.Execute(
@@ -121,7 +137,7 @@ VALUES
                 : 0;
         }
 
-        public bool UpdateServer(ProtocolServerBase server)
+        public virtual bool UpdateServer(ProtocolServerBase server)
         {
             Debug.Assert(server.Id > 0);
             return _dbConnection?.Execute(
@@ -134,21 +150,21 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};",
                 server.ToDbServer()) > 0;
         }
 
-        public bool DeleteServer(int id)
+        public virtual bool DeleteServer(int id)
         {
             return _dbConnection?.Execute($@"
 DELETE FROM `{nameof(Server)}`
 WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
         }
 
-        public string GetConfig(string key)
+        public virtual string GetConfig(string key)
         {
             var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{nameof(Config)}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                 new { Key = key, });
             return config?.Value;
         }
 
-        public void SetConfig(string key, string value)
+        public virtual void SetConfig(string key, string value)
         {
             if (GetConfig(key) != null)
             {
@@ -172,12 +188,12 @@ WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
             }
         }
 
-        public string GetProtocolTemplate(string key)
+        public virtual string GetProtocolTemplate(string key)
         {
             throw new NotImplementedException();
         }
 
-        public void SetProtocolTemplate(string key, string value)
+        public virtual void SetProtocolTemplate(string key, string value)
         {
             throw new NotImplementedException();
         }

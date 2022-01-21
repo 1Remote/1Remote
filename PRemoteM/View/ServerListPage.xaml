@@ -11,6 +11,7 @@
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
+             xmlns:view="clr-namespace:PRM.View"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -302,6 +303,9 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <view:ConverterTagsIndicatorIsShow x:Key="ConverterTagsIndicatorIsShow" />
+            <view:ConverterTagName x:Key="ConverterTagName" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -313,11 +317,109 @@
     <Grid Background="{DynamicResource PrimaryMidBrush}" Grid.IsSharedSizeScope="True">
         <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
+            <!-- Tag indicator: popup when any tag which not in shown tag list is selected-->
             <Grid Grid.Row="0">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="VerticalAlignment" Value="Top"></Setter>
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource ConverterTagsIndicatorIsShow}">
+                                        <Binding Path="TagFilters" Mode="OneWay"></Binding>
+                                        <Binding Path="Tags" Mode="OneWay"></Binding>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Height" AccelerationRatio="0.9">
+                                                <LinearDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
+                                                <LinearDoubleKeyFrame KeyTime="0:0:0.400" Value="40" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Height">
+                                                <LinearDoubleKeyFrame KeyTime="0:0:0.0" Value="40" />
+                                                <LinearDoubleKeyFrame KeyTime="0:0:0.200" Value="0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <ItemsControl VerticalAlignment="Center" HorizontalAlignment="Center" ItemsSource="{Binding TagFilters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="viewModel:TagFilter">
+                            <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
+                                <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
+                                    <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                               Margin="5 5 15 5">
+                                        <TextBlock.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsNegative}" Value="True">
+                                                        <Setter Property="TextDecorations">
+                                                            <Setter.Value>
+                                                                <TextDecorationCollection>
+                                                                    <TextDecoration Location="Strikethrough">
+                                                                        <TextDecoration.Pen>
+                                                                            <Pen Brush="{DynamicResource PrimaryMidBrush}" Thickness="3"></Pen>
+                                                                        </TextDecoration.Pen>
+                                                                    </TextDecoration>
+                                                                </TextDecorationCollection>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Resources>
+                                    </TextBlock>
+                                    <Button Width="10" Height="10" Tag="{Binding TagName}"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelectWithLeftRemove}"
+                                                    CommandParameter="{Binding TagName}"
+                                                    Style="{StaticResource ButtonBarAccentStyle}"
+                                                    HorizontalAlignment="Right"
+                                                    attachProperty:VisionElement.Opacity="0.5"
+                                                    attachProperty:VisionElement.OpacityAccent="0.9"
+                                                    Margin="0 0 5 0">
+                                        <Grid Height="10" Width="8">
+                                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                                          StrokeThickness="2" Stretch="Uniform" />
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+
+            <!-- server list-->
+            <Grid Grid.Row="1">
 
                 <!-- tooltip for how to add -->
                 <Border HorizontalAlignment="Right">
@@ -349,6 +451,7 @@
                          Style="{DynamicResource ServerListStyle}">
                 </ListBox>
 
+                <!-- show detail of a server -->
                 <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource PrimaryMidBrush}" IsHitTestVisible="False">
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -376,7 +479,9 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="1" Background="{DynamicResource PrimaryMidBrush}" Height="40">
+
+            <!-- popup when any item is selected-->
+            <Grid Grid.Row="2" Background="{DynamicResource PrimaryMidBrush}" Height="40">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Setter Property="Visibility" Value="Visible"></Setter>
@@ -430,19 +535,19 @@
 
 
 
-        <!-- the page to config which tag should be display. --> 
+        <!-- the page to config which tag should be display. -->
         <Grid Margin="0 21 0 0" Background="{DynamicResource BackgroundBrush}">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
+                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static viewModel:VmServerListPage.TabTagsListName}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <ListBox ItemsSource="{Binding Context.AppData.Tags}" Margin="20" MaxWidth="700">
+            <ListBox ItemsSource="{Binding Tags}" Margin="20" MaxWidth="700">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ItemsPresenter></ItemsPresenter>
@@ -481,7 +586,8 @@
                             </Grid.ColumnDefinitions>
 
                             <Grid>
-                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" Content="{Binding Name}" 
+                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" 
+                                        Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
                                         HorizontalAlignment="Left"></Button>
                             </Grid>
 
@@ -544,12 +650,12 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="">
+                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Null}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
@@ -585,7 +691,7 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding Context.AppData.SelectedTagName}" Value="{x:Static viewModel:VmServerListPage.TagsListViewMark}">
+                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static viewModel:VmServerListPage.TabTagsListName}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
@@ -606,9 +712,9 @@
                             <ListBox
                                     Name="ListBoxTags"
                                     IsSynchronizedWithCurrentItem="True"
-                                    ItemsSource="{Binding Context.AppData.Tags}"
                                     SelectedValuePath="Name"
-                                    SelectedValue="{Binding Context.AppData.SelectedTagName}"
+                                    SelectedValue="{Binding SelectedTabName}"
+                                    ItemsSource="{Binding Tags}"
                                     Background="{DynamicResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
@@ -640,14 +746,14 @@
                                         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                         <Setter Property="Template">
                                             <Setter.Value>
-                                                <ControlTemplate TargetType="ListBoxItem">
+                                                <ControlTemplate TargetType="ListBoxItem" d:DataContext="{d:DesignInstance model:Tag}">
                                                     <Border BorderThickness="0" Margin="{TemplateBinding Margin}" FocusVisualStyle="{x:Null}"
                                                         Padding="{TemplateBinding Control.Padding}"
                                                         Background="{TemplateBinding Panel.Background}"
                                                         Name="Bd"
                                                         SnapsToDevicePixels="True">
                                                         <ContentPresenter Margin="8 0"
-                                                                Content="{Binding Name}"
+                                                                Content="{Binding Name, Converter={StaticResource ConverterTagName}}"
                                                                 ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                                 ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
                                                                 HorizontalAlignment="Center"
@@ -658,13 +764,13 @@
                                                         <DataTrigger Binding="{Binding IsPinned}" Value="false">
                                                             <Setter Property="Visibility" TargetName="Bd" Value="Collapsed"></Setter>
                                                         </DataTrigger>
-                                                        <Trigger Property="Selector.IsSelected" Value="True">
+                                                        <Trigger Property="IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
                                                             <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentMidBrush}"></Setter>
                                                         </Trigger>
                                                         <MultiTrigger>
                                                             <MultiTrigger.Conditions>
-                                                                <Condition Property="Selector.IsSelected" Value="False"></Condition>
+                                                                <Condition Property="IsSelected" Value="False"></Condition>
                                                                 <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
                                                             </MultiTrigger.Conditions>
                                                             <MultiTrigger.Setters>

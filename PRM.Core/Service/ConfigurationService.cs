@@ -42,8 +42,6 @@ namespace PRM.Core.Service
 #endif
 
         public Key HotKeyKey = Key.M;
-
-        public bool AllowTagSearch = true;
     }
 
     public class KeywordMatchConfig
@@ -298,7 +296,6 @@ namespace PRM.Core.Service
                         cfg.Launcher.HotKeyModifiers = HotkeyModifierKeys.Alt;
                         cfg.Launcher.HotKeyKey = Key.M;
                     }
-                    cfg.Launcher.AllowTagSearch = ini.GetValue("AllowGroupNameSearch".ToLower(), "Launcher", cfg.Launcher.AllowTagSearch);
                 }
             }
 

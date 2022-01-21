@@ -18,6 +18,7 @@ namespace PRM.Core.I
     {
         void CloseConnection();
 
+        void OpenConnection();
         void OpenConnection(DatabaseType type, string newConnectionString);
 
         bool IsConnected();

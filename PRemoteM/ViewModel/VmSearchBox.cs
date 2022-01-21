@@ -156,6 +156,13 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(ref _gridActionsHeight, value);
         }
 
+        private List<TagFilter> _tagFilters;
+        public List<TagFilter> TagFilters
+        {
+            get => _tagFilters;
+            set => SetAndNotifyIfChanged(ref _tagFilters, value);
+        }
+
         public void ReCalcWindowHeight(bool showGridAction)
         {
             // show action list
@@ -226,36 +233,44 @@ namespace PRM.ViewModel
             });
         }
 
-        private string IsAnyGroupNameMatched(List<string> keywords)
-        {
-            if (!Context.ConfigurationService.Launcher.AllowTagSearch) return string.Empty;
-
-            // TODO need a better tag matching
-            // if tag name search enabled, show group name as prefix
-            foreach (var tag in Context.AppData.Tags.Select(x => x.Name))
-            {
-                if (keywords.Any(keyword => tag.ToLower() == keyword.ToLower()))
-                {
-                    return tag;
-                }
-            }
-
-            return string.Empty;
-        }
-
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
 
         public void UpdateItemsList(string keyword)
         {
-            if (string.IsNullOrEmpty(keyword))
+            var words = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var keyWords = new List<string>(words.Count);
+            var tagFilters = new List<TagFilter>();
+            //string prefix = "";
+            foreach (var word in words)
+            {
+                        SimpleLogHelper.Debug($"----  {word}");
+                if (word.StartsWith("#") || word.StartsWith("-#") || word.StartsWith("+#"))
+                {
+                    bool isNegative = word.StartsWith("-#");
+                    string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
+                    if (Context.AppData.TagNames.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        tagFilters.Add(new TagFilter(tagName, isNegative));
+                        //if (isNegative == false)
+                        //    prefix += "#" + tagName + " ";
+                        //else
+                        //    prefix += "-#" + tagName + " ";
+                        SimpleLogHelper.Debug($"{tagName} {isNegative}");
+                    }
+                }
+                else
+                {
+                    keyWords.Add(word);
+                }
+            }
+
+            TagFilters = tagFilters;
+            if (keyWords.Count == 0 && tagFilters.Count == 0)
             {
                 ShowAllItems();
             }
             else
             {
-                var keyWords = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var matchedTag = IsAnyGroupNameMatched(keyWords);
-
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     // match keyword
@@ -264,76 +279,108 @@ namespace PRM.ViewModel
                         Debug.Assert(vm != null);
                         Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
                         Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
+                        var server = vm.Server;
 
-                        if (string.IsNullOrEmpty(matchedTag) == false && vm.Server.Tags.Contains(matchedTag) == false)
-                            continue;
+                        bool bTagMatched = true;
+                        foreach (var tagFilter in tagFilters)
+                        {
+                            if (tagFilter.IsNegative == false && server.Tags.Any(x=>String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == false)
+                            {
+                                bTagMatched = false;
+                                break;
+                            }
+                            if (tagFilter.IsNegative == true && server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == true)
+                            {
+                                bTagMatched = false;
+                                break;
+                            }
+                        }
 
-                        var dispName = vm.Server.DisplayName;
-                        // if tag name search enabled, and keyword match the tag name, show tag name as prefix
-                        if (string.IsNullOrEmpty(matchedTag) == false)
-                            dispName = $"{matchedTag} - {dispName}";
-                        var subTitle = vm.Server.SubTitle;
-
-                        var mrs = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
-                        if (mrs.IsMatchAllKeywords)
+                        if (!bTagMatched)
+                        {
+                            vm.ObjectVisibility = Visibility.Collapsed;
+                        }
+                        else if (keyWords.Count == 0)
                         {
                             vm.ObjectVisibility = Visibility.Visible;
-
-                            var m1 = mrs.HitFlags[0];
-                            if (m1.Any(x => x == true))
-                            {
-                                var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                for (int i = 0; i < m1.Count; i++)
-                                {
-                                    if (m1[i])
-                                        sp.Children.Add(new TextBlock()
-                                        {
-                                            Text = dispName[i].ToString(),
-                                            Background = _highLightBrush,
-                                        });
-                                    else
-                                        sp.Children.Add(new TextBlock()
-                                        {
-                                            Text = dispName[i].ToString(),
-                                        });
-                                }
-
-                                vm.DispNameControl = sp;
-                            }
-                            else
-                            {
-                                vm.DispNameControl = vm.OrgDispNameControl;
-                            }
-
-                            var m2 = mrs.HitFlags[1];
-                            if (m2.Any(x => x == true))
-                            {
-                                var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                for (int i = 0; i < m2.Count; i++)
-                                {
-                                    if (m2[i])
-                                        sp.Children.Add(new TextBlock()
-                                        {
-                                            Text = subTitle[i].ToString(),
-                                            Background = _highLightBrush,
-                                        });
-                                    else
-                                        sp.Children.Add(new TextBlock()
-                                        {
-                                            Text = subTitle[i].ToString(),
-                                        });
-                                }
-
-                                vm.SubTitleControl = sp;
-                            }
-                            else
-                            {
-                                vm.SubTitleControl = vm.OrgSubTitleControl;
-                            }
+                            vm.DispNameControl = vm.OrgDispNameControl;
+                            vm.SubTitleControl = vm.OrgSubTitleControl;
                         }
                         else
                         {
-                            vm.ObjectVisibility = Visibility.Collapsed;
+                            var dispName = vm.Server.DisplayName;
+                            var subTitle = vm.Server.SubTitle;
+
+                            var mrs = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
+                            if (mrs.IsMatchAllKeywords)
+                            {
+                                vm.ObjectVisibility = Visibility.Visible;
+
+                                var m1 = mrs.HitFlags[0];
+                                if (m1.Any(x => x == true))
+                                {
+                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
+                                    //// if tag name search enabled, and keyword match the tag name, show tag name as prefix
+                                    //if (string.IsNullOrEmpty(prefix) == false)
+                                    //    foreach (var c in $"{prefix} - ")
+                                    //    {
+                                    //        sp.Children.Add(new TextBlock()
+                                    //        {
+                                    //            Text = c.ToString(),
+                                    //        });
+                                    //    }
+                                    for (int i = 0; i < m1.Count; i++)
+                                    {
+                                        if (m1[i])
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = dispName[i].ToString(),
+                                                Background = _highLightBrush,
+                                            });
+                                        else
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = dispName[i].ToString(),
+                                            });
+                                    }
+
+                                    vm.DispNameControl = sp;
+                                }
+                                else
+                                {
+                                    vm.DispNameControl = vm.OrgDispNameControl;
+                                }
+
+                                var m2 = mrs.HitFlags[1];
+                                if (m2.Any(x => x == true))
+                                {
+                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
+                                    for (int i = 0; i < m2.Count; i++)
+                                    {
+                                        if (m2[i])
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = subTitle[i].ToString(),
+                                                Background = _highLightBrush,
+                                            });
+                                        else
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = subTitle[i].ToString(),
+                                            });
+                                    }
+
+                                    vm.SubTitleControl = sp;
+                                }
+                                else
+                                {
+                                    vm.SubTitleControl = vm.OrgSubTitleControl;
+                                }
+                            }
+                            else
+                            {
+                                vm.ObjectVisibility = Visibility.Collapsed;
+                            }
                         }
                     }
                 });

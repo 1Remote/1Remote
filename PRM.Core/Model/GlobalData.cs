@@ -29,8 +29,9 @@ namespace PRM.Core.Model
 
         public Action<string> OnMainWindowServerFilterChanged;
 
-        private string _mainWindowServerFilter = "";
 
+
+        private string _mainWindowServerFilter = "";
         public string MainWindowServerFilter
         {
             get => _mainWindowServerFilter;
@@ -44,70 +45,16 @@ namespace PRM.Core.Model
             }
         }
 
+
+        public List<string> TagNames;
+
+
         #region Server Data
 
         public Action VmItemListDataChanged;
 
         public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
 
-        private ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();
-        public ObservableCollection<Tag> Tags
-        {
-            get => _tags;
-            set => SetAndNotifyIfChanged(ref _tags, value);
-        }
-
-        private string _selectedTagName = "";
-        public string SelectedTagName
-        {
-            get => _selectedTagName;
-            set
-            {
-                if (_selectedTagName == value) return;
-                MainWindowServerFilter = "";
-                SetAndNotifyIfChanged(ref _selectedTagName, value);
-                _localityService.MainWindowTabSelected = value;
-            }
-        }
-
-        private void UpdateTags()
-        {
-            var t = SelectedTagName;
-
-            var pinnedTags = _configurationService.PinnedTags;
-            // set pinned
-            // TODO del after 2022.05.31
-            if (pinnedTags.Count == 0)
-            {
-                var allExistedTags = Tag.GetPinnedTags();
-                pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
-            }
-
-
-            // get distinct tag from servers
-            var tags = new List<Tag>();
-            foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
-            {
-                if (tagNames == null)
-                    continue;
-                foreach (var tagName in tagNames)
-                {
-                    if (tags.All(x => x.Name != tagName))
-                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), this.SaveOnPinnedTagsChanged) { ItemsCount = 1 });
-                    else
-                        tags.First(x => x.Name == tagName).ItemsCount++;
-                }
-            }
-
-            Tags = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
-            SelectedTagName = t;
-        }
-
-        private void SaveOnPinnedTagsChanged()
-        {
-            _configurationService.PinnedTags = Tags.Where(x => x.IsPinned).Select(x => x.Name).ToList();
-            _configurationService.Save();
-        }
 
         public void ReloadServerList()
         {
@@ -131,7 +78,6 @@ namespace PRM.Core.Model
             }
             VmItemList = tmp;
             VmItemListDataChanged?.Invoke();
-            UpdateTags();
         }
 
         public void UnselectAllServers()
@@ -148,7 +94,6 @@ namespace PRM.Core.Model
             if (doInvoke)
             {
                 ReloadServerList();
-                VmItemListDataChanged?.Invoke();
             }
         }
 
@@ -173,7 +118,7 @@ namespace PRM.Core.Model
                 VmItemListDataChanged?.Invoke();
         }
 
-        public void DeleteServer(int id)
+        public void DeleteServer(int id, bool doInvoke = true)
         {
             if (_dataService == null)
             {
@@ -182,7 +127,8 @@ namespace PRM.Core.Model
             Debug.Assert(id > 0);
             if (_dataService.Database_DeleteServer(id))
             {
-                ReloadServerList();
+                if (doInvoke)
+                    ReloadServerList();
             }
         }
 
