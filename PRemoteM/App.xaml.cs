@@ -56,10 +56,13 @@ namespace PRM
                 if (diLogs.Exists)
                     diLogs.Delete(true);
                 var diApp = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
-                var fis = diApp.GetFiles("*.md");
-                foreach (var info in fis)
+                if (diApp.Exists)
                 {
-                    info.Delete();
+                    var fis = diApp.GetFiles("*.md");
+                    foreach (var info in fis)
+                    {
+                        info.Delete();
+                    }
                 }
             }
         }
