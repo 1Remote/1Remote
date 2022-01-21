@@ -139,6 +139,7 @@ namespace PRM.Core.Service
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
             IsPortable = isPortable;
 
+            #region init
             // init path by `IsPortable`
             // default path of db
             // default value of ini
@@ -162,11 +163,14 @@ namespace PRM.Core.Service
                 JsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
                 oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
                 Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
-            }
+            } 
+            #endregion
 
             if (_keywordMatchService == null)
                 return;
 
+
+            #region load settings
             // old user convert the 0.5 ini file to 0.6 json file
             if (File.Exists(oldIniFilePath))
             {
@@ -200,6 +204,25 @@ namespace PRM.Core.Service
             {
                 // new user
             }
+            var fi = new FileInfo(Database.SqliteDatabasePath);
+            if (fi.Exists == false)
+                try
+                {
+                    if (fi.Directory.Exists == false)
+                        fi.Directory.Create();
+                }
+                catch (Exception)
+                {
+                    if (IsPortable)
+                        Database.SqliteDatabasePath = new DatabaseConfig().SqliteDatabasePath;
+                }
+            #endregion
+
+
+
+
+
+
 
             // init matcher
             if (KeywordMatch.EnabledMatchers.Count > 0)

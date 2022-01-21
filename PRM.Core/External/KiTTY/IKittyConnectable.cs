@@ -279,8 +279,22 @@ reload=yes
 #else
             const string kittyExeName = "kitty_portable_PRemoteM.exe";
 #endif
-
+#if FOR_MICROSOFT_STORE_ONLY
             var kittyExeFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Kitty");
+#else
+            var kittyExeFolderPath = Path.Combine(Environment.CurrentDirectory, "Kitty");
+            try
+            {
+                var kittyExeFolderPathAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, "Kitty");
+                if (Directory.Exists(kittyExeFolderPathAppData))
+                    Directory.Delete(kittyExeFolderPathAppData, true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+#endif
+
             if (!Directory.Exists(kittyExeFolderPath))
                 Directory.CreateDirectory(kittyExeFolderPath);
             var kittyExeFullName = Path.Combine(kittyExeFolderPath, kittyExeName);
