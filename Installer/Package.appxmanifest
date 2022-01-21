@@ -5,17 +5,20 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
   IgnorableNamespaces="uap rescap">
 
 	<Identity
 	  Name="16536Shawn.V.Workshop.PRemoteM"
 	  Publisher="CN=72AC6E85-B8C4-48F8-A07B-9A985863E628"
-	  Version="1.0.28.0" />
+	  Version="1.0.31.0" />
 
 	<Properties>
 		<DisplayName>PRemoteM</DisplayName>
 		<PublisherDisplayName>Shawn Veck</PublisherDisplayName>
 		<Logo>Images\PackageLogo.png</Logo>
+		<!-- If you don't want virtualization of file system writes to the user's AppData folder, then include the property, and set it to disabled. https://docs.microsoft.com/zh-cn/windows/msix/desktop/flexible-virtualization -->
+		<desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
 	</Properties>
 
 	<Dependencies>
@@ -62,5 +65,7 @@
 	<Capabilities>
 		<Capability Name="internetClient" />
 		<rescap:Capability Name="runFullTrust" />
+		<!-- Include the required restricted capability. https://docs.microsoft.com/zh-cn/windows/msix/desktop/flexible-virtualization -->
+		<rescap:Capability Name="unvirtualizedResources"/>
 	</Capabilities>
 </Package>
