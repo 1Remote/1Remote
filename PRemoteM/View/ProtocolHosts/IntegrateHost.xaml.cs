@@ -126,24 +126,45 @@ namespace PRM.View.ProtocolHosts
                 Dock = System.Windows.Forms.DockStyle.Fill,
                 BorderStyle = BorderStyle.None
             };
+            _panel.SizeChanged += PanelOnSizeChanged;
 
             FormsHost.Child = _panel;
         }
 
         #region Resize
-        protected override void OnRender(DrawingContext drawingContext)
+
+        private void SetToPanelSize()
         {
             if (_process != null)
             {
                 CleanupClosedHandle();
-
                 foreach (var exeHandle in _exeHandles)
                 {
-                    MoveWindow(exeHandle, 0, 0, (int)(FormsHost.ActualWidth), (int)(FormsHost.ActualHeight), true);
+                    MoveWindow(exeHandle, 0, 0, (int)(_panel.Width), (int)(_panel.Height), true);
                 }
-                //MoveWindow(_exeHandle, 0, 0, (int)(FormsHost.ActualWidth), (int)(FormsHost.ActualHeight), true);
             }
-            base.OnRender(drawingContext);
+        }
+
+        // not work with UHD + scaling, e.g. 4k+150%, the ActualWidth will return 1500 / 150% = 1000pix while the real width is 1500pix.
+        //protected override void OnRender(DrawingContext drawingContext)
+        //{
+        //    if (_process != null)
+        //    {
+        //        CleanupClosedHandle();
+        //        SimpleLogHelper.Debug($"ActualWidth = {(int)(FormsHost.ActualWidth)}, ActualHeight = {(int)(FormsHost.ActualHeight)}");
+        //        SimpleLogHelper.Debug($"GridActualWidth = {(int)(Grid.ActualWidth)}, GridActualHeight = {(int)(Grid.ActualHeight)}");
+        //        foreach (var exeHandle in _exeHandles)
+        //        {
+        //            MoveWindow(exeHandle, 0, 0, (int)(Grid.ActualWidth), (int)(Grid.ActualHeight), true);
+        //        }
+        //        //MoveWindow(_exeHandle, 0, 0, (int)(FormsHost.ActualWidth), (int)(FormsHost.ActualHeight), true);
+        //    }
+        //    base.OnRender(drawingContext);
+        //}
+
+        private void PanelOnSizeChanged(object sender, EventArgs e)
+        {
+            SetToPanelSize();
         }
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
@@ -175,19 +196,19 @@ namespace PRM.View.ProtocolHosts
             CleanupClosedHandle();
             Dispatcher.Invoke(() =>
             {
-                foreach (var handle in _exeHandles)
+                foreach (var exeHandle in _exeHandles)
                 {
                     // must be set or exe will be shown out of panel
-                    SetParent(handle, _panel.Handle);
-                    ShowWindow(handle, SW_SHOWMAXIMIZED);
-                    int lStyle = GetWindowLong(handle, GWL_STYLE);
+                    SetParent(exeHandle, _panel.Handle);
+                    ShowWindow(exeHandle, SW_SHOWMAXIMIZED);
+                    int lStyle = GetWindowLong(exeHandle, GWL_STYLE);
                     lStyle &= ~WS_CAPTION; // no title
                     lStyle &= ~WS_BORDER; // no border
                     lStyle &= ~WS_THICKFRAME;
                     lStyle &= ~WS_VSCROLL;
-                    SetWindowLong(handle, GWL_STYLE, lStyle);
-                    MoveWindow(handle, 0, 0, (int)(FormsHost.ActualWidth), (int)(FormsHost.ActualHeight), true);
+                    SetWindowLong(exeHandle, GWL_STYLE, lStyle);
                 }
+                SetToPanelSize();
             });
         }
 
