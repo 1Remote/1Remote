@@ -42,7 +42,7 @@ namespace PRM.View.TabWindow
             DataContext = Vm;
             _timer4CheckForegroundWindow = new Timer();
 
-            _lastWindowState = this.WindowState;
+            _lastWindowState = _localityService?.TabWindowState ?? WindowState.Normal;
 
             this.Loaded += (sender, args) =>
             {
@@ -123,7 +123,7 @@ namespace PRM.View.TabWindow
                 {
                     _localityService.TabWindowHeight = this.Height;
                     _localityService.TabWindowWidth = this.Width;
-                    _localityService.TabWindowState = this.WindowState;
+                    //_localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -211,8 +211,6 @@ namespace PRM.View.TabWindow
                 this.Height = Math.Min(screenEx.VirtualWorkingArea.Height * 0.8, this.Height * 0.8);
 
             this.MinWidth = this.MinHeight = 300;
-            if (_localityService.TabWindowState != WindowState.Minimized)
-                this.WindowState = _localityService.TabWindowState;
 
             InitSizeChanged();
             InitWindowStateChanged();
