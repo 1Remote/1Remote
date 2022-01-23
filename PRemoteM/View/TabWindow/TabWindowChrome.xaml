@@ -14,7 +14,7 @@
                      ResizeMode="{Binding WindowResizeMode}"
                      Title="{Binding Title}" Height="600" Width="800">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <Window.InputBindings>
         <KeyBinding Gesture="Ctrl+1" Command="{Binding CmdShowTabByIndex}" CommandParameter="1"></KeyBinding>
@@ -33,7 +33,7 @@
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="BorderBrush" Value="#333"></Setter>
-                        <Setter Property="BorderThickness" Value="1"></Setter>
+                        <Setter Property="BorderThickness" Value="2"></Setter>
                     </Style>
                 </Border.Style>
                 <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">
