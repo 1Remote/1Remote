@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using PRM.Core.Service;
+using Shawn.Utils;
 
 namespace PRM.View.TabWindow
 {
@@ -7,8 +8,16 @@ namespace PRM.View.TabWindow
     {
         public TabWindowChrome(string token, LocalityService localityService) : base(token, localityService)
         {
+            var ws = localityService.TabWindowState;
             InitializeComponent();
             base.Init(TabablzControl);
+            if (ws != System.Windows.WindowState.Minimized)
+            {
+                this.Loaded += (sender, args) =>
+                {
+                    this.WindowState = ws;
+                };
+            }
         }
     }
 }
