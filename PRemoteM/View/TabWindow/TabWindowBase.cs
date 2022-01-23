@@ -235,7 +235,8 @@ namespace PRM.View.TabWindow
 
         public void AddItem(TabItemViewModel newItem)
         {
-            if (Vm.Items.Any(x => x.Content.ConnectionId == newItem.Content.ConnectionId))
+            Debug.Assert(newItem?.Content?.ConnectionId != null);
+            if (Vm.Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
             {
                 Vm.SelectedItem = Vm.Items.First(x => x.Content.ConnectionId == newItem.Content.ConnectionId);
                 return;

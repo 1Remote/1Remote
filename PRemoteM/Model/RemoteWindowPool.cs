@@ -566,10 +566,12 @@ namespace PRM.Model
             return tab;
         }
 
-        public Window MoveProtocolHostToTab(string connectionId)
+        public void MoveProtocolHostToTab(string connectionId)
         {
             Debug.Assert(_protocolHosts.ContainsKey(connectionId) == true);
             var host = _protocolHosts[connectionId];
+            if(host == null)
+                return;
             // get tab
             var tab = GetOrCreateTabWindow(host);
             // assign host to tab
@@ -591,7 +593,6 @@ namespace PRM.Model
             tab.Activate();
             SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to tab({tab.GetHashCode()})");
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-            return tab;
         }
 
         private void CloseFullWindow(string connectionId)
@@ -721,7 +722,8 @@ namespace PRM.Model
             lock (this)
             {
                 var tabs = _tabWindows.Values.Where(x => x?.GetViewModel()?.Items == null
-                                                 || x.GetViewModel().Items.Count == 0).ToArray();
+                                                         || x.GetViewModel().Items.Count == 0
+                                                         || x.GetViewModel().Items.All(x=>x.Content == null)).ToArray();
                 foreach (var tab in tabs)
                 {
                     SimpleLogHelper.Debug($@"Close tab({tab.GetHashCode()})");
