@@ -34,7 +34,7 @@
     <s:String x:Key="Connect">连接</s:String>
     <s:String x:Key="Connect (New window)">连接 (新窗口)</s:String>
 
-    <s:String x:Key="filter_mainwindow">在此输入关键词</s:String>
+    <s:String x:Key="filter_mainwindow">输入关键词或 '#' + 标签名</s:String>
     <s:String x:Key="filter_searchbox">搜索 (Ctrl+F)</s:String>
 
     <s:String x:Key="hotkey_already_registered">快捷键已被占用</s:String>
@@ -265,5 +265,5 @@
     <s:String x:Key="write permissions alert" xml:space="preserve">我们没有路径 `{0}` 的写入权限！&#13;&#10;请尝试用以下方法修复问题：&#13;&#10;1. 使用管理员权限运行程序&#13;&#10;2. 修改路径的权限设置 &#13;&#10;3. 将 PRemoteM 移动到其他目录</s:String>
     <s:String x:Key="Follow system">跟随系统</s:String>
     <s:String x:Key="Scale">缩放</s:String>
-
+    <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>
 </ResourceDictionary>

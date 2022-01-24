@@ -135,12 +135,12 @@ namespace PRM.ViewModel
                 });
             });
 
-            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagName, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
             {
-                var server = new ProtocolServerRDP();
-                if (string.IsNullOrWhiteSpace(tagName) == false)
-                    server.Tags = new List<string>() { tagName };
-
+                var server = new ProtocolServerRDP
+                {
+                    Tags = new List<string>(tagNames)
+                };
                 Window.Dispatcher.Invoke(() =>
                 {
                     DispPage = new AnimationPage()

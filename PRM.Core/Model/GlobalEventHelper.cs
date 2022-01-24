@@ -20,9 +20,9 @@ namespace PRM.Core.Model
         /// <summary>
         /// Go to server edit by server id, if id == 0 goto add page
         /// </summary>
-        /// <param name="presetTagName">preset tag name</param>
+        /// <param name="presetTagNames">preset tag names</param>
         /// <param name="showAnimation">show in animation?</param>
-        public delegate void OnGoToServerAddPageDelegate(string presetTagName = "", bool showAnimation = true);
+        public delegate void OnGoToServerAddPageDelegate(List<string> presetTagNames = null, bool showAnimation = true);
 
         public static OnGoToServerAddPageDelegate OnGoToServerAddPage { get; set; } = null;
 
