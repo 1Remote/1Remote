@@ -278,10 +278,7 @@ namespace PRM.ViewModel
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    if (Tags.Any(x => x.Name == SelectedTabName))
-                        GlobalEventHelper.OnGoToServerAddPage?.Invoke(SelectedTabName);
-                    else
-                        GlobalEventHelper.OnGoToServerAddPage?.Invoke();
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where(x => x.IsNegative == false).Select(x => x.TagName).ToList());
                 });
             }
         }
@@ -413,7 +410,7 @@ namespace PRM.ViewModel
                         Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
-                        var ss = ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true).ToList();
+                        var ss = ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true).ToList();
                         if (!(ss?.Count > 0)) return;
                         foreach (var vs in ss)
                         {
@@ -421,7 +418,7 @@ namespace PRM.ViewModel
                         }
                         Context.AppData.ReloadServerList();
                     }
-                }, o => ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true));
+                }, o => ServerListItems.Any(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true));
             }
         }
 
@@ -435,7 +432,7 @@ namespace PRM.ViewModel
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => App.MainUi?.Vm?.DispPage == null && ServerListItems.Any(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true));
+                    }, o => App.MainUi?.Vm?.DispPage == null && ServerListItems.Any(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true));
             }
         }
 

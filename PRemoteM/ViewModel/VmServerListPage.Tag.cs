@@ -125,7 +125,9 @@ namespace PRM.ViewModel
         }
 
 
-
+        /// <summary>
+        /// decode from SelectedTabName, SelectedTabName may contains many selected tags
+        /// </summary>
         [NotNull]
         public List<TagFilter> TagFilters
         {
@@ -150,7 +152,11 @@ namespace PRM.ViewModel
             }
         }
 
-        private void SetSelectedTabName(List<TagFilter> tagFilters)
+        /// <summary>
+        /// convert TagFilters[] to (string)SelectedTabName
+        /// </summary>
+        /// <param name="tagFilters"></param>
+        private void SetSelectedTabName(IEnumerable<TagFilter> tagFilters)
         {
             var sts = tagFilters.Select(x => x.ToString());
             SelectedTabName = string.Join(TagSeparator, sts);
