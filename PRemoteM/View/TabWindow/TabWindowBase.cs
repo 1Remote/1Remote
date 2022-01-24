@@ -123,7 +123,7 @@ namespace PRM.View.TabWindow
                 {
                     _localityService.TabWindowHeight = this.Height;
                     _localityService.TabWindowWidth = this.Width;
-                    _localityService.TabWindowState = this.WindowState;
+                    //_localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
