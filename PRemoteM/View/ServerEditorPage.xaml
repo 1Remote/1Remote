@@ -233,18 +233,41 @@
 
             <Border BorderThickness="0 0 0 2" BorderBrush="{DynamicResource AccentMidBrush}" Background="{DynamicResource PrimaryMidBrush}">
                 <Grid Height="{StaticResource TopHeight}">
+                    <!-- buck edit title -->
                     <TextBlock Foreground="{DynamicResource PrimaryTextBrush}" 
                                Margin="50 0" TextTrimming="CharacterEllipsis"
                                Text="{Binding Title}"
                                ToolTip="{Binding Title}"
-                               VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                               VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsBuckEdit}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
 
+                    </TextBlock>
+
+                    <!-- protocols list -->
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
                                   utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                   attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
-                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
-                                  Style="{StaticResource ScrollViewMiniStyle}">
+                                  attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}">
+                        <ScrollViewer.Style>
+                            <Style TargetType="ScrollViewer" BasedOn="{StaticResource ScrollViewMiniStyle}">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsBuckEdit}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ScrollViewer.Style>
                         <StackPanel Orientation="Horizontal">
                             <ListBox Name="ListBoxProtocols"
                                     IsSynchronizedWithCurrentItem="True"

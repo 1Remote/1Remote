@@ -17,7 +17,7 @@
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'D2Win32|AnyCPU' ">
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -28,7 +28,7 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'R2Win32|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -53,7 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStore|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'D2Store|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\DebugStore\</OutputPath>
     <DefineConstants>TRACE;DEBUG;DEV;UseKiTTY;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
@@ -135,6 +135,7 @@
     <None Include="app.config" />
     <None Include="DB\freesql\DbConfig.csexp" />
     <None Include="DB\freesql\DbServer.csexp" />
+    <Compile Include="I\IDataService.cs" />
     <Compile Include="I\ILanguageService.cs" />
     <Compile Include="Model\ActionForServer.cs" />
     <Compile Include="Protocol\Base\ExtendOption.cs" />

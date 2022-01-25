@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using PRM.Controls;
 using PRM.Core;
+using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Extend;
@@ -15,6 +16,7 @@ using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
+using PRM.Core.Service;
 using PRM.View.ProtocolEditors;
 using Shawn.Utils;
 
@@ -22,18 +24,24 @@ namespace PRM.ViewModel
 {
     public class VmServerEditorPage : NotifyPropertyChangedBase
     {
-        private readonly PrmContext _context;
-        public bool IsAddMode => _orgServers == null && Server.Id == 0;
+        //private readonly PrmContext _context;
+        private readonly GlobalData _globalData;
+        private readonly IDataService _dataService;
+        private readonly ILanguageService _languageService;
 
+        public bool IsAddMode => _orgServers == null && Server.Id == 0;
+        public bool IsBuckEdit => IsAddMode == false && _orgServers?.Count() > 1;
 
         #region single edit
         /// <summary>
         /// to remember original protocol's options, for restore use
         /// </summary>
         private readonly ProtocolServerBase _orgServer = null;
-        public VmServerEditorPage(PrmContext context, ProtocolServerBase server, bool isDuplicate = false)
+        public VmServerEditorPage(GlobalData globalData, IDataService dataService, ILanguageService languageService, ProtocolServerBase server, bool isDuplicate = false)
         {
-            _context = context;
+            _globalData = globalData;
+            _dataService = dataService;
+            _languageService = languageService;
             Server = (ProtocolServerBase)server.Clone();
             if (isDuplicate)
             {
@@ -50,15 +58,22 @@ namespace PRM.ViewModel
         /// to remember original protocols' options, for restore use
         /// </summary>
         private readonly IEnumerable<ProtocolServerBase> _orgServers = null;
+        /// <summary>
+        /// the common parent class of _orgServers
+        /// </summary>
         private readonly Type _orgServersCommonType = null;
+        private readonly List<string> _commonTags;
 
-        public VmServerEditorPage(PrmContext context, IEnumerable<ProtocolServerBase> servers)
+        public VmServerEditorPage(GlobalData globalData, IDataService dataService, ILanguageService languageService, IEnumerable<ProtocolServerBase> servers)
         {
+            _globalData = globalData;
+            _dataService = dataService;
+            _languageService = languageService;
             var serverBases = servers as ProtocolServerBase[] ?? servers.ToArray();
             // must be bulk edit
             Debug.Assert(serverBases.Count() > 1);
             // init title
-            Title = context.LanguageService.Translate("server_editor_bulk_editing_title");
+            Title = _languageService.Translate("server_editor_bulk_editing_title") + " ";
             foreach (var serverBase in serverBases)
             {
                 Title += serverBase.DisplayName;
@@ -66,10 +81,8 @@ namespace PRM.ViewModel
                     Title += ", ";
             }
 
-            _context = context;
 
             Server = (ProtocolServerBase)serverBases.First().Clone();
-
             _orgServers = serverBases;
 
 
@@ -104,27 +117,26 @@ namespace PRM.ViewModel
             }
 
             // tags
-            var tags = new List<string>();
-            if (serverBases.All(x => x.Tags.Count == serverBases.First().Tags.Count))
+            _commonTags = new List<string>(); // remember the common tags
+            bool isAllTagsSameFlag = true;
+            for (var i = 0; i < serverBases.Length; i++)
             {
-                bool flag = true;
-                foreach (var tag in serverBases.First().Tags)
+                foreach (var tagName in serverBases[i].Tags)
                 {
-                    if (serverBases.All(x => x.Tags.Contains(tag)) == false)
+                    if (serverBases.All(x => x.Tags.Contains(tagName)))
                     {
-                        flag = false;
-                        break;
+                        _commonTags.Add(tagName);
+                    }
+                    else
+                    {
+                        isAllTagsSameFlag = false;  
                     }
                 }
-
-                if (serverBases.First().Tags.Count == 0 || flag)
-                    tags = new List<string>(serverBases.First().Tags);
-                else
-                    tags.Add(Server.Server_editor_different_options);
             }
-            else
-                tags.Add(Server.Server_editor_different_options);
-            Server.Tags = tags;
+            Server.Tags = new List<string>(_commonTags.Count + 1);
+            if (isAllTagsSameFlag == false)
+                Server.Tags.Add(Server.Server_editor_different_options);
+            Server.Tags.AddRange(_commonTags);
 
             _orgServer = Server.Clone();
             // init ui
@@ -140,7 +152,7 @@ namespace PRM.ViewModel
         {
             ProtocolList.Clear();
             // init protocol list for single add / edit mode
-            if (_orgServers?.Any() != true)
+            if (IsBuckEdit == false)
             {
                 // reflect remote protocols
                 ProtocolList = ProtocolServerBase.GetAllSubInstance();
@@ -156,9 +168,9 @@ namespace PRM.ViewModel
             }
 
             // decrypt pwd
-            _context.DataService.DecryptToConnectLevel(Server);
-            NameSelections = _context.AppData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-            TagSelections = _context.AppData.TagNames;
+            _dataService.DecryptToConnectLevel(Server);
+            NameSelections = _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
+            TagSelections = _globalData.TagNames;
         }
 
         public string Title { get; set; }
@@ -178,7 +190,7 @@ namespace PRM.ViewModel
             get => _selectedProtocol;
             set
             {
-                if (_orgServers != null)
+                if (IsBuckEdit)
                 {
                     // bulk edit can not change protocol
                 }
@@ -219,7 +231,7 @@ namespace PRM.ViewModel
                 _cmdSave = new RelayCommand((o) =>
                 {
                     // bulk edit
-                    if (_orgServers != null)
+                    if (IsBuckEdit == true)
                     {
                         // copy the same value properties
                         var properties = _orgServersCommonType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -245,44 +257,52 @@ namespace PRM.ViewModel
 
 
                         // merge tags
-                        if (Server.Tags.Contains(Server.Server_editor_different_options))
+                        foreach (var server in _orgServers)
                         {
-                            foreach (var server in _orgServers)
+                            // process old tags, remove the not existed tags.
+                            foreach (var tag in server.Tags.ToArray())
                             {
-                                foreach (var tag in Server.Tags)
+                                if (_commonTags.Contains(tag) == true)
                                 {
-                                    if (tag != Server.Server_editor_different_options)
-                                        server.Tags.Add(tag);
+                                    // remove tag if it is in common and not in Server.Tags
+                                    if(Server.Tags.Contains(tag) == false)
+                                        server.Tags.Remove(tag);
                                 }
-
-                                server.Tags = server.Tags.Distinct().ToList();
+                                else
+                                {
+                                    // remove tag if it is in not common and Server_editor_different_options is not existed
+                                    if(Server.Tags.Contains(Server.Server_editor_different_options) == false)
+                                        server.Tags.Remove(tag);
+                                }
                             }
-                        }
-                        else
-                        {
-                            foreach (var server in _orgServers)
+
+                            // add new tags
+                            foreach (var tag in Server.Tags.Where(tag => tag != Server.Server_editor_different_options))
                             {
-                                server.Tags = Server.Tags;
+                                server.Tags.Add(tag);
                             }
+
+                            server.Tags = server.Tags.Distinct().ToList();
                         }
 
+                        // save
                         foreach (var server in _orgServers.ToList())
                         {
-                            _context.AppData.UpdateServer(server, false);
+                            _globalData.UpdateServer(server, false);
                         }
 
-                        _context.AppData.VmItemListDataChanged?.Invoke();
+                        _globalData.VmItemListDataChanged?.Invoke();
                         App.MainUi.Vm.DispPage = null;
                     }
                     // edit
                     else if (Server.Id > 0)
                     {
-                        _context.AppData.UpdateServer(Server);
+                        _globalData.UpdateServer(Server);
                     }
                     // add
                     else
                     {
-                        _context.AppData.AddServer(Server);
+                        _globalData.AddServer(Server);
                     }
                     App.MainUi.Vm.DispPage = null;
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
