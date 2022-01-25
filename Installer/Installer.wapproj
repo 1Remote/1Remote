@@ -4,40 +4,40 @@
     <VisualStudioVersion>15.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="DebugStore|x86">
-      <Configuration>DebugStore</Configuration>
+    <ProjectConfiguration Include="D2Store|x86">
+      <Configuration>D2Store</Configuration>
       <Platform>x86</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="R2Store|x86">
       <Configuration>R2Store</Configuration>
       <Platform>x86</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugStore|x64">
-      <Configuration>DebugStore</Configuration>
+    <ProjectConfiguration Include="D2Store|x64">
+      <Configuration>D2Store</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="R2Store|x64">
       <Configuration>R2Store</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugStore|ARM">
-      <Configuration>DebugStore</Configuration>
+    <ProjectConfiguration Include="D2Store|ARM">
+      <Configuration>D2Store</Configuration>
       <Platform>ARM</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="R2Store|ARM">
       <Configuration>R2Store</Configuration>
       <Platform>ARM</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugStore|ARM64">
-      <Configuration>DebugStore</Configuration>
+    <ProjectConfiguration Include="D2Store|ARM64">
+      <Configuration>D2Store</Configuration>
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="R2Store|ARM64">
       <Configuration>R2Store</Configuration>
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugStore|AnyCPU">
-      <Configuration>DebugStore</Configuration>
+    <ProjectConfiguration Include="D2Store|AnyCPU">
+      <Configuration>D2Store</Configuration>
       <Platform>AnyCPU</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="R2Store|AnyCPU">
@@ -68,7 +68,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStore|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D2Store|x64'">
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
@@ -80,15 +80,15 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStore|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D2Store|AnyCPU'">
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStore|ARM64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D2Store|ARM64'">
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStore|ARM'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D2Store|ARM'">
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
@@ -100,7 +100,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStore|x86'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='D2Store|x86'">
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
