@@ -181,6 +181,7 @@ namespace PRM.View.TabWindow
                 }
                 try
                 {
+                    Vm?.CmdCloseAll.Execute();
                     RemoteWindowPool.Instance.DelTabWindow(Token);
                     Vm?.Dispose();
                 }
