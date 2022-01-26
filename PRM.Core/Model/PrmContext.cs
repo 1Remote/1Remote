@@ -70,6 +70,9 @@ namespace PRM.Core.Model
                             sqlitePath = new DatabaseConfig().SqliteDatabasePath;
                     }
             }
+
+            DataService?.Database_CloseConnection();
+
             if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
                 DataService = null;

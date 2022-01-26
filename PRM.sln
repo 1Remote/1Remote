@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32014.148
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31605.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRM.Core", "PRM.Core\PRM.Core.csproj", "{BB2390FE-00DC-4650-A856-DDB69FD92BBC}"
 EndProject
@@ -159,7 +159,6 @@ Global
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Store|x64.ActiveCfg = R2Store|x64
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Store|x86.ActiveCfg = R2Store|x86
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Win32|Any CPU.ActiveCfg = R2Store|Any CPU
-		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Win32|Any CPU.Build.0 = R2Store|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Win32|Any CPU.Deploy.0 = R2Store|Any CPU
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Win32|ARM.ActiveCfg = R2Store|ARM
 		{349F615B-B9A9-41F9-9C60-96D761C1AB77}.R2Win32|ARM.Build.0 = R2Store|ARM

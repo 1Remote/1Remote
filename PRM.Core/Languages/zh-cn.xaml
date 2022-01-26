@@ -79,6 +79,7 @@
     <s:String x:Key="Startup">启动</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">开机自启动</s:String>
     <s:String x:Key="system_options_general_start_minimized">启动时最小化到托盘</s:String>
+    <s:String x:Key="Confirm before closing">关闭前需确认</s:String>
     <s:String x:Key="system_options_general_log_file_path">日志文件</s:String>
 
     <s:String x:Key="system_options_quick_description">快速连接允许用户在桌面任何位置，通过快捷键唤起快速连接搜索框，键入关键字筛选所要连接的服务器，并按下回车开启远程连接。</s:String>
@@ -138,7 +139,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">你正在批量编辑:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">选中数量：</s:String>
     <s:String x:Key="server_editor_group_title_common">常规</s:String>
-    <s:String x:Key="server_editor_group_title_connection">连接</s:String>
+    <s:String x:Key="Connection">连接</s:String>
     <s:String x:Key="server_editor_group_title_display">显示</s:String>
     <s:String x:Key="server_editor_group_title_advantage">高级</s:String>
     <s:String x:Key="server_editor_group_title_gateway">RD 网关服务器</s:String>
@@ -266,4 +267,5 @@
     <s:String x:Key="Follow system">跟随系统</s:String>
     <s:String x:Key="Scale">缩放</s:String>
     <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>
+    <s:String x:Key="Are you sure you want to close the connection?">确定要关闭连接么？</s:String>
 </ResourceDictionary>

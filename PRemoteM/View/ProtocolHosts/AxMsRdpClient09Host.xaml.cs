@@ -671,6 +671,7 @@ namespace PRM.View.ProtocolHosts
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                // log out from win2008 will reply exDiscReasonNoInfo
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser          // log out from win10 will reply exDiscReasonLogoffByUser
+                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonRpcInitiatedDisconnectByUser    // log out from win2016 will reply exDiscReasonLogoffByUser
                 ))
             {
                 BtnReconn.Visibility = Visibility.Collapsed;
