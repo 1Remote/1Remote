@@ -325,13 +325,13 @@ namespace PRM.View.ProtocolHosts
                 else
                 {
                     SetExeWindowStyle();
+                    var endTime = DateTime.Now.AddSeconds(10);
                     _timer?.Dispose();
-                    _timer = new Timer { Interval = 100, AutoReset = false };
+                    _timer = new Timer { Interval = 200, AutoReset = false };
                     _timer.Elapsed += (sender, args) =>
                     {
                         if (_process == null)
                             return;
-                        _timer.Start();
                         if (_process.MainWindowHandle == IntPtr.Zero || _exeHandles.Contains(_process.MainWindowHandle))
                         {
                             _process.Refresh();
@@ -339,12 +339,16 @@ namespace PRM.View.ProtocolHosts
                         else
                         {
                             var title = GetWindowTitle(_process.MainWindowHandle);
-                            Console.WriteLine($"new handle = {_process.MainWindowHandle}, title = {title}");
-                            if (string.IsNullOrWhiteSpace(title))
-                                return;
-                            _exeHandles.Add(_process.MainWindowHandle);
-                            SetExeWindowStyle();
+                            //Console.WriteLine($"new handle = {_process.MainWindowHandle}, title = {title}");
+                            if (string.IsNullOrWhiteSpace(title) == false)
+                            {
+                                _exeHandles.Add(_process.MainWindowHandle);
+                                SetExeWindowStyle();
+                            }
                         }
+                        if(DateTime.Now > endTime && _exeHandles.Count > 0)
+                            return;
+                        _timer.Start();
                     };
                     _timer.Start();
                 }
