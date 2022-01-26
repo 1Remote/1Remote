@@ -666,13 +666,18 @@ namespace PRM.Model
         /// <summary>
         /// terminate remote connection
         /// </summary>
-        public void DelProtocolHostInSyncContext(string connectionId)
+        public void DelProtocolHostInSyncContext(string connectionId, bool needConfirm = false)
         {
-            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-            SynchronizationContext.Current.Post(pl =>
+            if (_context.ConfigurationService.General.ConfirmBeforeClosingSession == true
+                && needConfirm == true
+                && MessageBox.Show(_context.LanguageService.Translate("Are you sure you want to close the connection?"), _context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
             {
-                DelProtocolHost(connectionId);
-            }, null);
+                return;
+            }
+
+
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+            SynchronizationContext.Current.Post(pl => { DelProtocolHost(connectionId); }, null);
         }
 
         /// <summary>

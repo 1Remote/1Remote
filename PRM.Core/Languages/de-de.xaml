@@ -79,6 +79,7 @@
     <s:String x:Key="Startup">Start</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">Mit dem Betriebssystem starten</s:String>
     <s:String x:Key="system_options_general_start_minimized">Minimiert starten</s:String>
+    <s:String x:Key="Confirm before closing">Bestätigen Sie vor dem Schließen</s:String>
     <s:String x:Key="system_options_general_log_file_path">Logdatei</s:String>
 
     <s:String x:Key="system_options_quick_description">Mit der Schnellverbindungsfunktion können Sie eine Schnellverbindungsleiste per Tastendruck aufrufen, dann können Sie das Schlüsselwort eingeben und die Verbindung durch drücken der Eingabetaste öffnen.</s:String>
@@ -138,7 +139,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">You are editing in bulk:</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Number of selected items:</s:String>
     <s:String x:Key="server_editor_group_title_common">Allgemein</s:String>
-    <s:String x:Key="server_editor_group_title_connection">Verbindung</s:String>
+    <s:String x:Key="Connection">Verbindung</s:String>
     <s:String x:Key="server_editor_group_title_display">Anzeige</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Erweitert</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Remotedesktop-Gatewayserver</s:String>
@@ -266,4 +267,5 @@
     <s:String x:Key="Follow system">Follow system</s:String>
     <s:String x:Key="Scale">Scale</s:String>
     <s:String x:Key="tag_tooltips">Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list</s:String>
+    <s:String x:Key="Are you sure you want to close the connection?">Möchten Sie die Verbindung wirklich beenden?</s:String>
 </ResourceDictionary>

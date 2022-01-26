@@ -119,7 +119,7 @@ namespace PRM.Model
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
-                SimpleLogHelper.Error($"we don't have a protocol named: {protocolName}!");
+                SimpleLogHelper.Info($"we don't have a custom protocol named: {protocolName}!");
                 return null;
             }
 

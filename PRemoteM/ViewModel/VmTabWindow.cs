@@ -284,6 +284,13 @@ namespace PRM.ViewModel
             {
                 return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
+
+                    if (App.Context.ConfigurationService.General.ConfirmBeforeClosingSession == true
+                        && this.Items.Count > 0
+                        && MessageBox.Show(App.Context.LanguageService.Translate("Are you sure you want to close the connection?"), App.Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                    {
+                        return;
+                    }
                     if (IsLocked) return;
                     RemoteWindowPool.Instance.DelTabWindow(Token);
                 });
@@ -301,7 +308,7 @@ namespace PRM.ViewModel
                     if (IsLocked) return;
                     if (SelectedItem != null)
                     {
-                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
+                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId, true);
                     }
                     else
                     {

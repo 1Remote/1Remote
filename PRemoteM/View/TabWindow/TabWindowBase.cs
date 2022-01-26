@@ -163,7 +163,7 @@ namespace PRM.View.TabWindow
                 if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
                 {
                     var pb = viewModel.Content;
-                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId);
+                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId, true);
                 }
             };
         }
@@ -181,7 +181,7 @@ namespace PRM.View.TabWindow
                 }
                 try
                 {
-                    Vm?.CmdCloseAll.Execute();
+                    RemoteWindowPool.Instance.DelTabWindow(Token);
                     Vm?.Dispose();
                 }
                 finally
