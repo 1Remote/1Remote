@@ -11,7 +11,8 @@ using PRM.Core.Protocol.RDP;
 
 namespace PRM.Core.Service
 {
-    public class DataService
+
+    public class DataService : IDataService
     {
         private readonly IDb _db;
 

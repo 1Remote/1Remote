@@ -393,6 +393,10 @@ namespace PRM.Core.External.KiTTY
                     if (item.Value != null)
                         sb.AppendLine($@"{item.Key}\{item.Value}\");
                 }
+
+                var fi = new FileInfo(configPath);
+                if (fi.Directory.Exists == false)
+                    fi.Directory.Create();
                 File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
             }
             catch (Exception e)

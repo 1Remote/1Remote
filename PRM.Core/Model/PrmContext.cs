@@ -23,9 +23,11 @@ namespace PRM.Core.Model
         public readonly ThemeService ThemeService;
         public readonly LocalityService LocalityService;
         public readonly KeywordMatchService KeywordMatchService;
+        public readonly bool IsPortable;
 
         public PrmContext(bool isPortable, ResourceDictionary applicationResourceDictionary)
         {
+            IsPortable = isPortable;
             // init service
             KeywordMatchService = new KeywordMatchService();
             ConfigurationService = new ConfigurationService(isPortable, KeywordMatchService);
@@ -37,8 +39,9 @@ namespace PRM.Core.Model
                 ThemeService = new ThemeService(applicationResourceDictionary, ConfigurationService.Theme);
             }
             LauncherService = new LauncherService(LanguageService);
-            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-            LocalityService = new LocalityService(new Ini(Path.Combine(appDateFolder, "locality.ini")));
+
+            var baseFolder = isPortable? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+            LocalityService = new LocalityService(new Ini(Path.Combine(baseFolder, "locality.ini")));
             AppData = new GlobalData(LocalityService, ConfigurationService);
         }
 
@@ -54,7 +57,22 @@ namespace PRM.Core.Model
             if (string.IsNullOrWhiteSpace(sqlitePath))
             {
                 sqlitePath = ConfigurationService.Database.SqliteDatabasePath;
+                var fi = new FileInfo(sqlitePath);
+                if (fi.Exists == false)
+                    try
+                    {
+                        if (fi.Directory.Exists == false)
+                            fi.Directory.Create();
+                    }
+                    catch (Exception e)
+                    {
+                        if (IsPortable)
+                            sqlitePath = new DatabaseConfig().SqliteDatabasePath;
+                    }
             }
+
+            DataService?.Database_CloseConnection();
+
             if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
                 DataService = null;

@@ -129,25 +129,25 @@ namespace PRM.ViewModel
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server, isDuplicate)),
+                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, server, isDuplicate)),
                     };
                     Window.ActivateMe();
                 });
             });
 
-            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagName, isInAnimationShow) =>
+            GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
             {
-                var server = new ProtocolServerRDP();
-                if (string.IsNullOrWhiteSpace(tagName) == false)
-                    server.Tags = new List<string>() { tagName };
-
+                var server = new ProtocolServerRDP
+                {
+                    Tags = new List<string>(tagNames)
+                };
                 Window.Dispatcher.Invoke(() =>
                 {
                     DispPage = new AnimationPage()
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, server)),
+                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, server)),
                     };
                     Window.ActivateMe();
                 });
@@ -164,9 +164,9 @@ namespace PRM.ViewModel
                     };
                     var serverBases = servers as ProtocolServerBase[] ?? servers.ToArray();
                     if (serverBases.Count() > 1)
-                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases));
+                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases));
                     else
-                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context, serverBases.First()));
+                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases.First()));
                     DispPage = page;
                     Window.ActivateMe();
                 });

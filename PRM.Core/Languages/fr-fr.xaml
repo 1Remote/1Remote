@@ -34,7 +34,7 @@
     <s:String x:Key="Connect">Connexion</s:String>
     <s:String x:Key="Connect (New window)">Connexion (Nouvelle fenetre)</s:String>
 
-    <s:String x:Key="filter_mainwindow">Saisissez vos mots clés</s:String>
+    <s:String x:Key="filter_mainwindow">Mots-clés ou '#' + nom de tag</s:String>
     <s:String x:Key="filter_searchbox">Rechercher (Ctrl+F)</s:String>
 
     <s:String x:Key="hotkey_already_registered">Raccourci clavier déjà enregistré</s:String>
@@ -79,6 +79,7 @@
     <s:String x:Key="Startup">Commencez</s:String>
     <s:String x:Key="system_options_general_start_when_win_login">Exécuter automatiquement au démarrage du système d'exploitation</s:String>
     <s:String x:Key="system_options_general_start_minimized">Démarrer minimisé</s:String>
+    <s:String x:Key="Confirm before closing">Confirmer avant de fermer</s:String>
     <s:String x:Key="system_options_general_log_file_path">Fichier journal</s:String>
 
     <s:String x:Key="system_options_quick_description">La connexion rapide vous permet de raccrocher une barre de connexion rapide par raccourci clavier, puis vous pouvez taper le mot-clé et démarrer la connexion en appuyant sur la touche Entrée</s:String>
@@ -138,7 +139,7 @@
     <s:String x:Key="server_editor_bulk_editing_title">Vous modifiez en masse :</s:String>
     <s:String x:Key="server_editor_multi_selected_count">Nombre d'éléments sélectionnés:</s:String>
     <s:String x:Key="server_editor_group_title_common">Commun</s:String>
-    <s:String x:Key="server_editor_group_title_connection">Connection</s:String>
+    <s:String x:Key="Connection">Connection</s:String>
     <s:String x:Key="server_editor_group_title_display">Affichage</s:String>
     <s:String x:Key="server_editor_group_title_advantage">Avantage</s:String>
     <s:String x:Key="server_editor_group_title_gateway">Serveur de passerelle RD</s:String>
@@ -265,5 +266,6 @@
     <s:String x:Key="write permissions alert" xml:space="preserve">We don't have write permissions for the `{0}` directory!&#13;&#10;Please try:&#13;&#10;1. `run as administrator`&#13;&#10;2. change directory/file permissions &#13;&#10;3. move PRemoteM to another folder</s:String>
     <s:String x:Key="Follow system">Follow system</s:String>
     <s:String x:Key="Scale">Scale</s:String>
-
+    <s:String x:Key="tag_tooltips">Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list</s:String>
+    <s:String x:Key="Are you sure you want to close the connection?">Voulez-vous vraiment fermer la connexion?</s:String>
 </ResourceDictionary>

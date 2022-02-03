@@ -58,12 +58,11 @@ namespace PRM
                 var diApp = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName));
                 if (diApp.Exists)
                 {
-                var fis = diApp.GetFiles("*.md");
-                foreach (var info in fis)
-                {
-                    info.Delete();
-                }
-
+                    var fis = diApp.GetFiles("*.md");
+                    foreach (var info in fis)
+                    {
+                        info.Delete();
+                    }
                 }
             }
         }
