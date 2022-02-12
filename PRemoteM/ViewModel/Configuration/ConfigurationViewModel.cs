@@ -24,24 +24,18 @@ namespace PRM.ViewModel.Configuration
     {
         public VmMain Host = null;
         private readonly PrmContext _context;
-        private readonly LanguageService _languageService;
-        private readonly ConfigurationService _configurationService;
-        private readonly ProtocolConfigurationService _protocolConfigurationService;
-        private readonly LauncherService _launcherService;
-        private readonly DataService _dataService;
-        private readonly ThemeService _themeService;
+        private LanguageService _languageService => _context.LanguageService;
+        private ConfigurationService _configurationService => _context.ConfigurationService;
+        private ProtocolConfigurationService _protocolConfigurationService => _context.ProtocolConfigurationService;
+        private LauncherService _launcherService => _context.LauncherService;
+        private DataService _dataService => _context.DataService;
+        private ThemeService _themeService => _context.ThemeService;
 
         protected ConfigurationViewModel(
             PrmContext context,
             string languageCode = "")
         {
             _context = context;
-            _configurationService = context.ConfigurationService;
-            _protocolConfigurationService = context.ProtocolConfigurationService;
-            _languageService = context.LanguageService;
-            _launcherService = context.LauncherService;
-            _dataService = context.DataService;
-            _themeService = context.ThemeService;
 
             if (string.IsNullOrEmpty(languageCode) == false
                 && _languageService.LanguageCode2Name.ContainsKey(languageCode)
@@ -187,6 +181,18 @@ namespace PRM.ViewModel.Configuration
             }
         }
 
+        public bool ConfirmBeforeClosingSession
+        {
+            get => _configurationService.General.ConfirmBeforeClosingSession;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _configurationService.General.ConfirmBeforeClosingSession, value))
+                {
+                    _configurationService.Save();
+                }
+            }
+        }
+
 
 
         public bool LauncherEnabled
@@ -239,8 +245,8 @@ namespace PRM.ViewModel.Configuration
         #region Database
 
         public string DbPath => _configurationService.Database.SqliteDatabasePath;
-        public string RsaPublicKey => _dataService.Database_GetPublicKey();
-        public string RsaPrivateKeyPath => _dataService.Database_GetPrivateKeyPath();
+        public string RsaPublicKey => _dataService?.Database_GetPublicKey() ?? "";
+        public string RsaPrivateKeyPath => _dataService?.Database_GetPrivateKeyPath() ?? "";
 
 
 
@@ -496,7 +502,7 @@ namespace PRM.ViewModel.Configuration
 
                     try
                     {
-                        _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(path));
+                        _context.InitSqliteDb(path);
                         _configurationService.Database.SqliteDatabasePath = path;
                         RaisePropertyChanged(nameof(DbPath));
                         _context.AppData.ReloadServerList();
@@ -506,7 +512,7 @@ namespace PRM.ViewModel.Configuration
                     catch (Exception ee)
                     {
                         _configurationService.Database.SqliteDatabasePath = oldDbPath;
-                        _dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(oldDbPath));
+                        _context.InitSqliteDb(oldDbPath);
                         SimpleLogHelper.Warning(ee);
                         MessageBox.Show(_languageService.Translate("system_options_data_security_error_can_not_open"), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                     }

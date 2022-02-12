@@ -299,7 +299,6 @@ namespace PRM.View.ProtocolHosts
 
         private void RdpInitDisplay(double width = 0, double height = 0, bool isReconn = false)
         {
-
             #region Display
 
             _primaryScaleFactor = ReadScaleFactor();
@@ -671,6 +670,7 @@ namespace PRM.View.ProtocolHosts
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                // log out from win2008 will reply exDiscReasonNoInfo
                  && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser          // log out from win10 will reply exDiscReasonLogoffByUser
+                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonRpcInitiatedDisconnectByUser    // log out from win2016 will reply exDiscReasonLogoffByUser
                 ))
             {
                 BtnReconn.Visibility = Visibility.Collapsed;
@@ -771,23 +771,24 @@ namespace PRM.View.ProtocolHosts
 
         private void SetRdpResolution(uint w, uint h)
         {
-            try
-            {
-                SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
-                _primaryScaleFactor = ReadScaleFactor();
-                var newScaleFactor = _primaryScaleFactor;
-                if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
-                    newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+            if (w > 0 && h > 0)
+                try
                 {
-                    _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
-                    _lastScaleFactor = newScaleFactor;
+                    SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
+                    _primaryScaleFactor = ReadScaleFactor();
+                    var newScaleFactor = _primaryScaleFactor;
+                    if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
+                        newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
+                    if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                    {
+                        _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
+                        _lastScaleFactor = newScaleFactor;
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
         }
 
         private void MakeNormal2FullScreen()
@@ -1041,10 +1042,6 @@ namespace PRM.View.ProtocolHosts
                     }
                     finally
                     {
-                        this.Dispatcher.Invoke(() =>
-                        {
-                            RdpHost.Child = null;
-                        });
                         tmp = null;
                     }
                 });

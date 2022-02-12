@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using System.Linq;
+using Microsoft.Win32;
 
 namespace PRM.Core.Protocol.Putty
 {
@@ -16,7 +17,8 @@ namespace PRM.Core.Protocol.Putty
 
         public static KittyConfigKeyValuePair Create(string key, string value)
         {
-            if (double.TryParse(value.Replace(',', '_'), out double nValue))
+            if (key.ToCharArray().Count(c => c == '.') <= 1 
+                && double.TryParse(value.Replace(',', '_'), out double nValue))
             {
                 return new KittyConfigKeyValuePair
                 {
