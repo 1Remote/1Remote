@@ -167,12 +167,12 @@
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">允许（所有显示器）</s:String>
     <s:String x:Key="server_editor_display_full_screen_with_conn_bar">显示连接栏</s:String>
     <s:String x:Key="server_editor_display_connect_with_full_screen">连接即全屏</s:String>
-    <s:String x:Key="server_editor_display_window_resize_mode">窗口尺寸</s:String>
-    <s:String x:Key="server_editor_display_window_resize_mode_auto">自动调整</s:String>
-    <s:String x:Key="server_editor_display_window_resize_mode_stretch">拉伸显示</s:String>
-    <s:String x:Key="server_editor_display_window_resize_mode_stretch_full_screen">拉伸显示(全屏)</s:String>
-    <s:String x:Key="server_editor_display_window_resize_mode_fixed">固定分辨率</s:String>
-    <s:String x:Key="server_editor_display_window_resize_mode_fixed_full_screen">固定分辨率(全屏)</s:String>
+    <s:String x:Key="Resolution">分辨率</s:String>
+    <s:String x:Key="Fit to window">适应窗口大小</s:String>
+    <s:String x:Key="Custom resolution (stretch)">自定义分辨率 (拉伸)</s:String>
+    <s:String x:Key="Custom resolution (fixed)">自定义分辨率 (固定)</s:String>
+    <s:String x:Key="Full-screen resolution (stretch)">屏幕分辨率 (拉伸)</s:String>
+    <s:String x:Key="Full-screen resolution (fixed)">屏幕分辨率 (固定)</s:String>
     <s:String x:Key="server_editor_display_rdp_performance">桌面体验</s:String>
     <s:String x:Key="server_editor_display_rdp_performance_auto">自动（根据网速）</s:String>
     <s:String x:Key="server_editor_display_rdp_performance_high">高（32位色彩与所有特性）</s:String>
@@ -268,4 +268,5 @@
     <s:String x:Key="Scale">缩放</s:String>
     <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">确定要关闭连接么？</s:String>
+    <s:String x:Key="Default window size">确定要关闭连接么？</s:String>
 </ResourceDictionary>

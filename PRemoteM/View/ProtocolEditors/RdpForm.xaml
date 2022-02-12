@@ -158,15 +158,15 @@
 
             <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_display_window_resize_mode}"></TextBlock>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Resolution}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <Grid.Resources>
                             <protocolEditors:ConverterERdpWindowResizeMode x:Key="ConverterERdpWindowResizeMode" />
                             <protocolEditors:ConverterTrueWhenERdpFullScreen x:Key="ConverterTrueWhenERdpFullScreen" />
                         </Grid.Resources>
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_auto}"></ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch}">
+                            <ComboBoxItem Content="{DynamicResource 'Fit to window'}"></ComboBoxItem>
+                            <ComboBoxItem Content="{DynamicResource 'Custom resolution (stretch)'}">
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
                                         <Style.Triggers>
@@ -177,7 +177,7 @@
                                     </Style>
                                 </ComboBoxItem.Style>
                             </ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed}">
+                            <ComboBoxItem Content="{DynamicResource 'Custom resolution (fixed)'}">
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
                                         <Style.Triggers>
@@ -188,7 +188,7 @@
                                     </Style>
                                 </ComboBoxItem.Style>
                             </ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_stretch_full_screen}">
+                            <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (stretch)'}">
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
                                         <Style.Triggers>
@@ -199,7 +199,7 @@
                                     </Style>
                                 </ComboBoxItem.Style>
                             </ComboBoxItem>
-                            <ComboBoxItem Content="{DynamicResource server_editor_display_window_resize_mode_fixed_full_screen}">
+                            <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (fixed)'}">
                                 <ComboBoxItem.Style>
                                     <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
                                         <Style.Triggers>
