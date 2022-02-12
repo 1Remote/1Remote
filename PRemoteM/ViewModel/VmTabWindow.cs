@@ -276,8 +276,9 @@ namespace PRM.ViewModel
             }
         }
 
-        private RelayCommand _cmdCloseAll;
+        private bool _canCmdClose = true;
 
+        private RelayCommand _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {
             get
@@ -285,13 +286,26 @@ namespace PRM.ViewModel
                 return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
                     if (IsLocked) return;
-                    RemoteWindowPool.Instance.DelTabWindow(Token);
+                    if (_canCmdClose)
+                    {
+                        _canCmdClose = false;
+                        if (App.Context.ConfigurationService.General.ConfirmBeforeClosingSession == true
+                            && this.Items.Count > 0
+                            && MessageBox.Show(App.Context.LanguageService.Translate("Are you sure you want to close the connection?"), App.Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo) !=
+                            MessageBoxResult.Yes)
+                        {
+                        }
+                        else
+                        {
+                            RemoteWindowPool.Instance.DelTabWindow(Token);
+                        }
+                        _canCmdClose = true;
+                    }
                 });
             }
         }
 
         private RelayCommand _cmdClose;
-
         public RelayCommand CmdClose
         {
             get
@@ -299,13 +313,13 @@ namespace PRM.ViewModel
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
                     if (IsLocked) return;
-                    if (SelectedItem != null)
+                    if (_canCmdClose)
                     {
-                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(SelectedItem?.Content?.ConnectionId);
-                    }
-                    else
-                    {
-                        CmdCloseAll.Execute();
+                        _canCmdClose = false;
+                        var cid = SelectedItem?.Content?.ConnectionId;
+                        this.SelectedItem = Items.FirstOrDefault(x => x != SelectedItem);
+                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(cid, true);
+                        _canCmdClose = true;
                     }
                 }, o => this.SelectedItem != null);
             }

@@ -4,6 +4,11 @@ using System.Windows.Input;
 
 namespace Shawn.Utils
 {
+    /***
+     * 
+                    <ScrollViewer utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+     */
+
     /// <summary>
     /// thanks to https://stackoverflow.com/questions/25366784/wpf-scrollviewer-mousewheel-not-working-with-stackpanel/25375433#25375433
     /// </summary>
