@@ -190,7 +190,7 @@ namespace PRM.Core.External.KiTTY
 
             if (File.Exists(kittyExeFullName))
             {
-#if !DEV
+//#if !DEV
                 // verify MD5
                 var md5 = MD5Helper.GetMd5Hash32BitString(File.ReadAllBytes(kittyExeFullName));
                 var kitty = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/PRM.Core;component/External/KiTTY/kitty_portable.exe")).Stream;
@@ -214,7 +214,7 @@ namespace PRM.Core.External.KiTTY
                     kitty.Seek(0, SeekOrigin.Begin);
                     kitty.CopyTo(fileStream);
                 }
-#endif
+//#endif
             }
             else
             {
