@@ -1,27 +1,26 @@
 using System.Text;
+using Shawn.Utils;
 
 namespace PRM.Core
 {
     public static class PRMVersion
     {
-        public const int Major = 0;
-        public const int Minor = 6;
-        public const int Patch = 2;
-        public const int Build = 0;
+        public const uint Major = 0;
+        public const uint Minor = 6;
+        public const uint Patch = 0;
+        public const uint Build = 0;
         public const string PreRelease = "alpha"; // e.g. "alpha" "beta.2"
-        public static string Version
+
+        public static readonly VersionHelper.Version VersionData = new VersionHelper.Version(Major, Minor, Patch, Build, PreRelease);
+        public static string Version => VersionData.ToString();
+
+
+        public static readonly string[] UpdateUrls =
         {
-            get
-            {
-                var sb = new StringBuilder($"{Major}.{Minor}.{Patch}");
-                if (Build > 0)
-                    sb.Append($".{Build}");
-
-                if (!string.IsNullOrEmpty(PreRelease))
-                    sb.Append($"-{PreRelease}");
-
-                return sb.ToString();
-            }
-        }
+            "https://github.com/VShawn/PRemoteM",
+#if DEV
+            "https://github.com/VShawn/PRemoteM-Test/wiki",
+#endif
+        };
     }
 }

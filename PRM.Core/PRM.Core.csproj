@@ -173,7 +173,7 @@
     <Compile Include="Utils\MouseMiddleClick.cs" />
     <Compile Include="Utils\SelectFileHelper.cs" />
     <Compile Include="Utils\OtherNameAttribute.cs" />
-    <Compile Include="Utils\UpdateChecker.cs" />
+    <Compile Include="Utils\VersionHelper.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\FileTransmit\ProtocolServerFTP.cs" />

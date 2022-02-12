@@ -18,7 +18,7 @@ namespace PRM.ViewModel
 
         public VmAboutPage()
         {
-            var checker = new UpdateChecker(PRMVersion.Version);
+            var checker = new VersionHelper(PRMVersion.VersionData, null, PRMVersion.UpdateUrls);
             checker.OnNewVersionRelease += OnNewVersionRelease;
             _checkUpdateTimer = new Timer()
             {
