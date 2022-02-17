@@ -114,9 +114,17 @@ namespace PRM
             _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(ConfigurationService.AppName);
             if (!_onlyOneAppInstanceHelper.IsFirstInstance())
             {
-                _onlyOneAppInstanceHelper.NamedPipeSendMessage("ActivateMe");
-                _onlyOneAppInstanceHelper.Dispose();
-                Environment.Exit(0);
+                try
+                {
+                    _onlyOneAppInstanceHelper.NamedPipeSendMessage("ActivateMe");
+                    _onlyOneAppInstanceHelper.Dispose();
+                    Environment.Exit(0);
+                }
+                catch (Exception e)
+                {
+                    SimpleLogHelper.Fatal(e);
+                    Environment.Exit(0);
+                }
             }
 
             _onlyOneAppInstanceHelper.OnMessageReceived += message =>

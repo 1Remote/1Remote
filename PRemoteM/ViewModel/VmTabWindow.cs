@@ -317,7 +317,6 @@ namespace PRM.ViewModel
                     {
                         _canCmdClose = false;
                         var cid = SelectedItem?.Content?.ConnectionId;
-                        this.SelectedItem = Items.FirstOrDefault(x => x != SelectedItem);
                         RemoteWindowPool.Instance.DelProtocolHostInSyncContext(cid, true);
                         _canCmdClose = true;
                     }
