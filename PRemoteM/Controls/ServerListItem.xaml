@@ -97,9 +97,13 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="system:String">
                             <Grid Margin="3">
-                                <Button Content="{Binding Converter={StaticResource ConverterTagName}}" HorizontalAlignment="Left"
-                                        ToolTip="{Binding StringFormat=DynamicResource tag_tooltips, Source={x:Static system:Environment.NewLine}}"
-                                        >
+                                <Button Content="{Binding Converter={StaticResource ConverterTagName}}" HorizontalAlignment="Left">
+                                    <Button.ToolTip>
+                                        <Label
+                                            Content="{x:Static system:Environment.NewLine}"
+                                            ContentStringFormat="{DynamicResource tag_tooltips}"
+                                        ></Label>
+                                    </Button.ToolTip>
                                     <Button.InputBindings>
                                         <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" />
                                         <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" />

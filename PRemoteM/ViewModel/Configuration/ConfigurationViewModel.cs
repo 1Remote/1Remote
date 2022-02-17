@@ -726,8 +726,13 @@ namespace PRM.ViewModel.Configuration
         public string BackgroundColor
         {
             get => _configurationService.Theme.BackgroundColor;
-            set => SetAndNotifyIfChanged(ref _configurationService.Theme.BackgroundColor, value);
+            set
+            {
+                SetAndNotifyIfChanged(ref _configurationService.Theme.BackgroundColor, value);
+                _themeService.ApplyTheme(_configurationService.Theme);
+            }
         }
+
         public string BackgroundTextColor
         {
             get => _configurationService.Theme.BackgroundTextColor;

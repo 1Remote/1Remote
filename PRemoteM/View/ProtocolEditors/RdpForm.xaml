@@ -135,8 +135,8 @@
                     <Grid>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                <StackPanel Orientation="Horizontal">
-                                    <CheckBox HorizontalAlignment="Right" Margin="0 0 10 0" Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
+                                <StackPanel>
+                                    <CheckBox HorizontalAlignment="Right" Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
                                         <CheckBox.Style>
                                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
                                                 <Style.Triggers>

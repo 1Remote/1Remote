@@ -31,15 +31,41 @@ namespace PRM.Core.Service
         public ThemeService(ResourceDictionary appResourceDictionary, ThemeConfig defaultTheme)
         {
             _appResourceDictionary = appResourceDictionary;
-            Themes.Add("Default", new Theme()
+            Themes.Add("Light", new Theme()
+            {
+                PrimaryMidColor = "#FFF2F3F5",
+                PrimaryLightColor = "#FFFFFFFF",
+                PrimaryDarkColor = "#FFE4E7EB",
+                PrimaryTextColor = "#FF232323",
+                AccentMidColor = "#FFE83D61",
+                AccentLightColor = "#FFED6884",
+                AccentDarkColor = "#FFB5304C",
+                AccentTextColor = "#FFFFFFFF",
+                BackgroundColor = "#FFFFFFFF",
+                BackgroundTextColor = "#000000",
+            });
+            Themes.Add("Dark", new Theme()
+            {
+                PrimaryMidColor = "#323233",
+                PrimaryLightColor = "#474748",
+                PrimaryDarkColor = "#2d2d2d",
+                PrimaryTextColor = "#cccccc",
+                AccentMidColor = "#FF007ACC",
+                AccentLightColor = "#FF32A7F4",
+                AccentDarkColor = "#FF0061A3",
+                AccentTextColor = "#FFFFFFFF",
+                BackgroundColor = "#1e1e1e",
+                BackgroundTextColor = "#cccccc",
+            });
+            Themes.Add("PRM", new Theme()
             {
                 PrimaryMidColor = "#102b3e",
                 PrimaryLightColor = "#445a68",
                 PrimaryDarkColor = "#0c2230",
                 PrimaryTextColor = "#FFFFFFFF",
-                AccentMidColor = "#e83d61",
-                AccentLightColor = "#ed6884",
-                AccentDarkColor = "#b5304c",
+                AccentMidColor = "#FFE83D61",
+                AccentLightColor = "#FFED6884",
+                AccentDarkColor = "#FFB5304C",
                 AccentTextColor = "#FFFFFFFF",
                 BackgroundColor = "#ced8e1",
                 BackgroundTextColor = "#000000",

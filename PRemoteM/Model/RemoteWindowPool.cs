@@ -682,6 +682,11 @@ namespace PRM.Model
         /// </summary>
         public void DelProtocolHostInSyncContext(string connectionId, bool needConfirm = false)
         {
+            if (_protocolHosts.ContainsKey(connectionId) == false)
+            {
+                return;
+            }
+
             if (_context.ConfigurationService.General.ConfirmBeforeClosingSession == true
                 && needConfirm == true
                 && MessageBox.Show(_context.LanguageService.Translate("Are you sure you want to close the connection?"), _context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
