@@ -438,7 +438,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <Path Fill="{DynamicResource BackgroundTextBrush}" Margin="25 10 30 5" Width="50" Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
-                        <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">Add</TextBlock>
+                        <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">New session</TextBlock>
                     </StackPanel>
                 </Border>
 
@@ -826,7 +826,7 @@
                                     <Grid Margin="1" VerticalAlignment="Center">
                                         <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
                                               Stretch="Uniform" Name="Path"
-                                              Margin="2" Fill="{DynamicResource PrimaryLightBrush}"></Path>
+                                              Margin="2" Fill="{DynamicResource PrimaryTextBrush}"></Path>
                                     </Grid>
                                 </Border>
                                 <ControlTemplate.Triggers>

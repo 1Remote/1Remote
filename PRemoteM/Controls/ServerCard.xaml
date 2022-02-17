@@ -8,6 +8,7 @@
              xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
+             xmlns:view="clr-namespace:PRM.View"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
@@ -190,6 +191,33 @@
                                     </Style>
                                 </CheckBox.Style>
                             </CheckBox>
+
+
+                            <Button Width="20" HorizontalAlignment="Right" 
+                                    Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
+                                    attachProperty:VisionElement.OpacityAccent="0.9"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=view:ServerListPage}, Path=DataContext.CmdDelete}"
+                                    CommandParameter="{Binding Id}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Grid>
+                                    <Path Margin="5" Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          StrokeThickness="2" Stretch="Uniform" />
+                                </Grid>
+                            </Button>
                         </Grid>
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
