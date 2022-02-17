@@ -19,7 +19,7 @@ namespace PRM.View
         {
             InitializeComponent();
             
-            Vm = new VmServerListPage(context, LvServerCards);
+            Vm = VmServerListPage.Instance(context, LvServerCards);
             DataContext = Vm;
 
             // hide GridBottom when hover.

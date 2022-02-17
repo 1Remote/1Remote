@@ -46,6 +46,8 @@ namespace PRM.Core.Model
         public delegate void OnRequestGoToServerMultipleEditPageDelegate(IEnumerable<ProtocolServerBase> servers, bool showAnimation = true);
         public static OnRequestGoToServerMultipleEditPageDelegate OnRequestGoToServerMultipleEditPage { get; set; } = null;
 
+        public delegate void OnRequestDeleteServerDelegate(int serverId);
+        public static OnRequestDeleteServerDelegate OnRequestDeleteServer { get; set; } = null;
 
         /// <summary>
         /// Invoke to show up progress bar when arg2 > 0

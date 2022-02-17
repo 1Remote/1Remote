@@ -167,16 +167,21 @@
                     </Border.Effect>
                     <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
                         <StackPanel>
+                            <StackPanel.Resources>
+                                <Style BasedOn="{StaticResource ButtonBarPrimaryStyle}" TargetType="Button">
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
+                                </Style>
+                            </StackPanel.Resources>
                             <Button Command="{Binding CmdGoSysOptionsPage}" 
-                                    Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
+                                    HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Options}"></Button>
                             <Button Command="{Binding CmdToggleCardList}" 
-                                    Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
+                                    HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource 'Toggle Cards/List'}"></Button>
                             <Button Command="{Binding CmdGoAboutPage}"
-                                    Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
+                                    HorizontalContentAlignment="Left" 
                                     Padding="0 8 0 8">
                                 <Grid>
                                     <Grid HorizontalAlignment="Left" Margin="13 0">
@@ -204,7 +209,7 @@
                                 </Grid>
                             </Button>
                             <Button Click="ButtonExit_OnClick"
-                                    Style="{StaticResource ButtonBarPrimaryStyle}" HorizontalContentAlignment="Left" 
+                                    HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Exit}"></Button>
                         </StackPanel>

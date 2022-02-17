@@ -27,11 +27,26 @@ namespace PRM.ViewModel
 {
     public partial class VmServerListPage : NotifyPropertyChangedBase
     {
+        #region singleton
+
+        private static VmServerListPage _uniqueInstance = null;
+        private static readonly object InstanceLock = new object();
+        public static VmServerListPage Instance() => _uniqueInstance;
+        public static VmServerListPage Instance(PrmContext context, ListBox list)
+        {
+            if (_uniqueInstance == null)
+                _uniqueInstance = new VmServerListPage(context, list);
+            return _uniqueInstance;
+        } 
+
+        #endregion singleton
+
+
         public PrmContext Context { get; }
         public ConfigurationViewModel ConfigurationViewModel => ConfigurationViewModel.GetInstance();
         private readonly ListBox _list;
 
-        public VmServerListPage(PrmContext context, ListBox list)
+        protected VmServerListPage(PrmContext context, ListBox list)
         {
             Context = context;
             _list = list;
@@ -43,7 +58,20 @@ namespace PRM.ViewModel
                 CalcVisible();
                 RaisePropertyChanged(nameof(IsMultipleSelected));
             });
+
+            if (GlobalEventHelper.OnRequestDeleteServer == null)
+                GlobalEventHelper.OnRequestDeleteServer += id =>
+                {
+                    if (MessageBoxResult.Yes == MessageBox.Show(
+                        Context.LanguageService.Translate("confirm_to_delete_selected"),
+                        Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        MessageBoxImage.Question, MessageBoxResult.None))
+                    {
+                        Context.AppData.DeleteServer(id, true);
+                    }
+                };
         }
+
 
         private VmProtocolServer _selectedServerListItem = null;
         public VmProtocolServer SelectedServerListItem
@@ -398,6 +426,21 @@ namespace PRM.ViewModel
 
 
 
+        private RelayCommand _cmdDelete;
+        public RelayCommand CmdDelete
+        {
+            get
+            {
+                return _cmdDelete ??= new RelayCommand((o) =>
+                {
+                    if (o is int id)
+                    {
+                        GlobalEventHelper.OnRequestDeleteServer?.Invoke(id);
+                    }
+                });
+            }
+        }
+
         private RelayCommand _cmdDeleteSelected;
         public RelayCommand CmdDeleteSelected
         {
@@ -405,13 +448,13 @@ namespace PRM.ViewModel
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
+                    var ss = ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true).ToList();
+                    if (!(ss?.Count > 0)) return;
                     if (MessageBoxResult.Yes == MessageBox.Show(
                         Context.LanguageService.Translate("confirm_to_delete_selected"),
                         Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
-                        var ss = ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true).ToList();
-                        if (!(ss?.Count > 0)) return;
                         foreach (var vs in ss)
                         {
                             Context.AppData.DeleteServer(vs.Server.Id, false);

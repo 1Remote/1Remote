@@ -121,6 +121,11 @@ namespace PRM.Core.Model
                     }));
             }
 
+            actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Delete"), (id) =>
+            {
+                GlobalEventHelper.OnRequestDeleteServer?.Invoke(id);
+            }));
+
             #endregion Build Actions
 
             return actions;
