@@ -52,9 +52,32 @@ namespace PRM.Core.Protocol.Runner
         public string ExePath
         {
             get => _exePath;
-            set => SetAndNotifyIfChanged(ref _exePath, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _exePath, value))
+                {
+                    RaisePropertyChanged(nameof(IsExeExisted));
+                }
+            }
         }
 
+        public bool IsExeExisted
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_exePath))
+                    return false;
+                try
+                {
+                    return File.Exists(_exePath);
+                }
+                catch
+                {
+                    throw;
+                }
+                return false;
+            }
+        }
 
         protected string _arguments = "";
         public string Arguments

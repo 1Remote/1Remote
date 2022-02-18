@@ -114,15 +114,21 @@ namespace PRM.Resources.Converter
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (targetType != typeof(bool))
-                throw new InvalidOperationException("The target must be a boolean");
-            return !(bool)value;
+            if (value is bool b)
+                return !b;
+            else if (value is null)
+                return true;
+            throw new InvalidOperationException("The target must be a boolean");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            throw new NotSupportedException();
+            if (value is bool b)
+                return !b;
+            else if (value is null)
+                return true;
+            return false;
         }
 
         #endregion

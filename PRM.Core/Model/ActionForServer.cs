@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Core.Protocol;
+using PRM.Core.Protocol.Runner;
 using PRM.Core.Protocol.Runner.Default;
 
 namespace PRM.Core.Model
@@ -54,6 +55,7 @@ namespace PRM.Core.Model
                     foreach (var runner in context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
+                        if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
                         actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Connect") + $" ({runner.Name})", (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, assignRunnerName: runner.Name); }));
                     }
                 }
