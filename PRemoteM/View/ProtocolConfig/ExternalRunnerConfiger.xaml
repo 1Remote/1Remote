@@ -46,7 +46,17 @@
             <TextBox Grid.Column="1" Text="{Binding ExternalRunner.ExePath, UpdateSourceTrigger=PropertyChanged}" 
                      ToolTip="{Binding ExternalRunner.ExePath}"
                      TextWrapping="Wrap"
-                     VerticalContentAlignment="Center"></TextBox>
+                     VerticalContentAlignment="Center">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxPrimaryStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ExternalRunner.IsExeExisted}" Value="False">
+                                <Setter Property="BorderBrush" Value="Red"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
             <Button Grid.Column="2" Style="{StaticResource ButtonPrimaryStyle}" 
                     Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
                     Content="{DynamicResource Select}" 

@@ -165,9 +165,9 @@
     <s:String x:Key="server_editor_display_full_screen_flag_window">禁用</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">允许（单显示器）</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">允许（所有显示器）</s:String>
-    <s:String x:Key="server_editor_display_full_screen_with_conn_bar">显示连接栏</s:String>
-    <s:String x:Key="server_editor_display_connect_with_full_screen">连接即全屏</s:String>
-    <s:String x:Key="Always enter fullscreen rdp mode when starting a session">启动会话时永远进入全屏模式</s:String>
+    <s:String x:Key="Display the connection bar when use the full screen">全屏时显示连接栏</s:String>
+    <s:String x:Key="New session always use full screen">启动会话时永远进入全屏模式</s:String>
+    <s:String x:Key="New session use full screen if the last session is full screen">启动会话时根据上次会话决定是否进入全屏模式</s:String>
     <s:String x:Key="Resolution">分辨率</s:String>
     <s:String x:Key="Fit to window">适应窗口大小</s:String>
     <s:String x:Key="Custom resolution (stretch)">自定义分辨率 (拉伸)</s:String>

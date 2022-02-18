@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -113,6 +114,7 @@ namespace PRM.Core.Service
             protocolConfigs.Add(ProtocolServerFTP.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerFTP(), new InternalDefaultRunner(), $"Internal FTP"));
 
 
+
             // custom protocol
             var di = new DirectoryInfo(protocolFolderName);
             {
@@ -121,7 +123,7 @@ namespace PRM.Core.Service
                 {
                     var protocolName = fi.Name.Replace(fi.Extension, "");
                     // remove existed protocol
-                    if (protocolConfigs.Any(x=>string.Equals(protocolName, x.Key, StringComparison.CurrentCultureIgnoreCase)))
+                    if (protocolConfigs.Any(x => string.Equals(protocolName, x.Key, StringComparison.CurrentCultureIgnoreCase)))
                         continue;
                     // remove special protocol
                     if (CustomProtocolBlackList.Any(x => string.Equals(protocolName, x, StringComparison.CurrentCultureIgnoreCase)))
@@ -132,7 +134,6 @@ namespace PRM.Core.Service
                         customs.Add(protocolName, c);
                     }
                 }
-
                 foreach (var custom in customs)
                 {
                     protocolConfigs.Add(custom.Key, custom.Value);
@@ -198,11 +199,40 @@ namespace PRM.Core.Service
         {
             var t = protocolBase.GetType();
             var protocolName = protocolBase.Protocol;
-            var macros = OtherNameAttributeExtensions.GetOtherNames(t);
+            var macros = OtherNameAttributeExtensions.GetOtherNames(t); // get property name for auto complete
             var c = LoadConfig(protocolFolderName, protocolName) ?? new ProtocolConfig();
             c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
-            c.Runners ??= new List<Runner>();
-            var runnerType = defaultRunner.GetType();
+            if (c.Runners == null || c.Runners.Count == 0 || c.Runners.All(x => x is InternalDefaultRunner))
+            {
+                c.Runners ??= new List<Runner>();
+                if (ProtocolServerVNC.ProtocolName == protocolBase.Protocol)
+                {
+                    if (c.Runners.All(x => x.Name != "UltraVNC"))
+                        c.Runners.Add(new ExternalRunner("UltraVNC")
+                        {
+                            ExePath = @"C:\Program Files (x86)\uvnc\vncviewer.exe",
+                            Arguments = @"%PRM_HOSTNAME%:%PRM_PORT% -password %PRM_PASSWORD%",
+                            RunWithHosting = false,
+                        });
+                    if (c.Runners.All(x => x.Name != "TightVNC"))
+                        c.Runners.Add(new ExternalRunner("TightVNC")
+                        {
+                            ExePath = @"C:\Program Files\TightVNC\tvnviewer.exe",
+                            Arguments = @"%PRM_HOSTNAME%::%PRM_PORT% -password=%PRM_PASSWORD% -scale=auto",
+                            RunWithHosting = true,
+                            EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PRM_PASSWORD%") }),
+                        });
+                }
+                if (ProtocolServerSFTP.ProtocolName == protocolBase.Protocol)
+                {
+                    if (c.Runners.All(x => x.Name != "WinSCP"))
+                        c.Runners.Add(new ExternalRunner("WinSCP")
+                        {
+                            ExePath = @"C:\Program Files (x86)\WinSCP\WinSCP.exe",
+                            Arguments = @"sftp://%PRM_USERNAME%:%PRM_PASSWORD%@%PRM_HOSTNAME%:%PRM_PORT%",
+                        });
+                }
+            }
             if (c.Runners.FirstOrDefault() is InternalDefaultRunner == false)
             {
                 c.Runners.RemoveAll(x => x is InternalDefaultRunner);
@@ -210,11 +240,6 @@ namespace PRM.Core.Service
             }
             c.Runners.First(x => x is InternalDefaultRunner).Name = defaultRunnerName;
             return c;
-        }
-
-        public bool Check()
-        {
-            return true;
         }
 
         public void Save()

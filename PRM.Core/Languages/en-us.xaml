@@ -161,13 +161,13 @@
     <s:String x:Key="Private key">Private key</s:String>
     <s:String x:Key="Open SFTP when connected">Open SFTP when connected</s:String>
     <!-- server editor - display group items -->
-    <s:String x:Key="server_editor_display_full_screen_flag">Full screen</s:String>
+    <s:String x:Key="server_editor_display_full_screen_flag">Full screen remote desktop</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_window">Disable</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_full_screen">Enable (single monitor)</s:String>
     <s:String x:Key="server_editor_display_full_screen_flag_all_screens">Enable (multi monitors)</s:String>
-    <s:String x:Key="server_editor_display_full_screen_with_conn_bar">Display the connection bar</s:String>
-    <s:String x:Key="server_editor_display_connect_with_full_screen">Connect with full screen</s:String>
-    <s:String x:Key="Always enter fullscreen rdp mode when starting a session">Always enter fullscreen rdp mode when starting a session</s:String>
+    <s:String x:Key="Display the connection bar when use the full screen">Display the connection bar when use the full screen</s:String>
+    <s:String x:Key="New session always use full screen">New session always use full screen</s:String>
+    <s:String x:Key="New session use full screen if the last session is full screen">New session use full screen if the last session is full screen</s:String>
     <s:String x:Key="Resolution">Resolution</s:String>
     <s:String x:Key="Fit to window">Fit to window</s:String>
     <s:String x:Key="Custom resolution (stretch)">Custom resolution (stretch)</s:String>

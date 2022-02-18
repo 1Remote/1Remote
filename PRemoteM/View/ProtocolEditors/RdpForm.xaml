@@ -136,9 +136,11 @@
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                                 <StackPanel>
-                                    <CheckBox HorizontalAlignment="Right" Content="{DynamicResource server_editor_display_connect_with_full_screen}" IsChecked="{Binding IsConnWithFullScreen}">
+                                    <CheckBox Content="{DynamicResource 'New session always use full screen'}" 
+                                              IsChecked="{Binding IsConnWithFullScreen}">
                                         <CheckBox.Style>
                                             <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
+                                                <Setter Property="Margin" Value="0 5 0 5"></Setter>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                         <Setter Property="CheckBox.IsChecked" Value="True"></Setter>
@@ -148,7 +150,21 @@
                                             </Style>
                                         </CheckBox.Style>
                                     </CheckBox>
-                                    <CheckBox HorizontalAlignment="Right" Content="{DynamicResource server_editor_display_full_screen_with_conn_bar}" IsChecked="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
+                                    <CheckBox Content="{DynamicResource 'New session use full screen if the last session is full screen'}" 
+                                              IsChecked="{Binding IsConnWithFullScreen, Converter={StaticResource ConverterBoolInverse}}">
+                                        <CheckBox.Style>
+                                            <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxAccentStyle}">
+                                                <Setter Property="Margin" Value="0 0 0 5"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
+                                                        <Setter Property="CheckBox.IsChecked" Value="False"></Setter>
+                                                        <Setter Property="CheckBox.IsEnabled" Value="False"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+                                    <CheckBox Content="{DynamicResource 'Display the connection bar when use the full screen'}" IsChecked="{Binding IsFullScreenWithConnectionBar}"></CheckBox>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
