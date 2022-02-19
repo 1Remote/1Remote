@@ -19,6 +19,7 @@ namespace PRM.View.Guidance
         public GuidanceWindow(PrmContext context)
         {
             InitializeComponent();
+            context.ConfigurationService.CanSave = false;
 
             // stop auto saving configs.
 
@@ -55,16 +56,22 @@ namespace PRM.View.Guidance
             ConfigurationViewModel = ConfigurationViewModel.GetInstance();
 
             // saving config when this window close
+            Closing += (sender, args) =>
+            {
+                if (Step >= 0)
+                    args.Cancel = true;
+            };
             Closed += (sender, args) =>
             {
+                context.ConfigurationService.CanSave = true;
                 context.ConfigurationService.Save();
             };
         }
 
         public ConfigurationViewModel ConfigurationViewModel { get; set; }
 
-        private int _step = 0;
 
+        private int _step = 0;
         public int Step
         {
             get => _step;
@@ -100,8 +107,9 @@ namespace PRM.View.Guidance
 
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
         {
+            Step = -1;
 #if !DEV
-            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM#premotem");
 #endif
             this.Close();
         }

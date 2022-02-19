@@ -184,7 +184,7 @@
                             <ComboBoxItem Content="{DynamicResource 'Fit to window'}"></ComboBoxItem>
                             <ComboBoxItem Content="{DynamicResource 'Custom resolution (stretch)'}">
                                 <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -195,7 +195,7 @@
                             </ComboBoxItem>
                             <ComboBoxItem Content="{DynamicResource 'Custom resolution (fixed)'}">
                                 <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.EnableFullAllScreens}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -206,7 +206,7 @@
                             </ComboBoxItem>
                             <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (stretch)'}">
                                 <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.Disable}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -217,7 +217,7 @@
                             </ComboBoxItem>
                             <ComboBoxItem Content="{DynamicResource 'Full-screen resolution (fixed)'}">
                                 <ComboBoxItem.Style>
-                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+                                    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RdpFullScreenFlag}" Value="{x:Static rdp:ERdpFullScreenFlag.Disable}">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>

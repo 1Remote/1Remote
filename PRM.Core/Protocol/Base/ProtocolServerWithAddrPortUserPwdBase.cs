@@ -29,7 +29,7 @@ namespace PRM.Core.Protocol
 
         protected override string GetSubTitle()
         {
-            return $"@{Address}:{Port} ({UserName})";
+            return $"{Address}:{Port} ({UserName})";
         }
 
         #endregion
