@@ -47,7 +47,6 @@ namespace PRM.Core.Model
 
         public GlobalData AppData { get; }
 
-
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
         /// </summary>

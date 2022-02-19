@@ -43,7 +43,7 @@
     <CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
     <CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseStore|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'StoreRelease|AnyCPU' ">
     <OutputPath>bin\ReleaseToStore\</OutputPath>
     <DefineConstants>DEBUG;TRACE;UseKiTTY;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
     <Optimize>true</Optimize>
@@ -53,7 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugStore|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'StoreDebug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\DebugStore\</OutputPath>
     <DefineConstants>TRACE;DEBUG;DEV;UseKiTTY;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
@@ -152,6 +152,7 @@
     <Compile Include="I\IDbServerModel.cs" />
     <Compile Include="DB\Dapper\Config.cs" />
     <Compile Include="DB\Dapper\ServerModel.cs" />
+    <Compile Include="Service\FileWatcher.cs" />
     <Compile Include="Service\KeywordMatchService.cs" />
     <Compile Include="Service\ConfigurationService.cs" />
     <Compile Include="Model\PrmContext.cs" />

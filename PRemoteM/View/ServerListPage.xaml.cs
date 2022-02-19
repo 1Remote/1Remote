@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Core.Model;
 using PRM.ViewModel;
+using PRM.ViewModel.Configuration;
 
 namespace PRM.View
 {
@@ -15,11 +16,11 @@ namespace PRM.View
     {
         public VmServerListPage Vm;
 
-        public ServerListPage(PrmContext context)
+        public ServerListPage(PrmContext context, ConfigurationViewModel configurationViewModel)
         {
             InitializeComponent();
             
-            Vm = VmServerListPage.Instance(context, LvServerCards);
+            Vm = VmServerListPage.Instance(context, configurationViewModel, LvServerCards);
             DataContext = Vm;
 
             // hide GridBottom when hover.

@@ -63,7 +63,7 @@ namespace PRM.Core.Model
                 return;
             }
             // read from db
-            var tmp = new ObservableCollection<VmProtocolServer>();
+            var tmp = new List<VmProtocolServer>();
             foreach (var serverAbstract in _dataService.Database_GetServers())
             {
                 try
@@ -76,7 +76,7 @@ namespace PRM.Core.Model
                     SimpleLogHelper.Info(e);
                 }
             }
-            VmItemList = tmp;
+            VmItemList = new ObservableCollection<VmProtocolServer>(tmp);
             VmItemListDataChanged?.Invoke();
         }
 

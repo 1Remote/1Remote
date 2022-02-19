@@ -28,14 +28,13 @@ namespace PRM.ViewModel
     public partial class VmServerListPage : NotifyPropertyChangedBase
     {
         #region singleton
-
         private static VmServerListPage _uniqueInstance = null;
         private static readonly object InstanceLock = new object();
         public static VmServerListPage Instance() => _uniqueInstance;
-        public static VmServerListPage Instance(PrmContext context, ListBox list)
+        public static VmServerListPage Instance(PrmContext context, ConfigurationViewModel configurationView, ListBox list)
         {
             if (_uniqueInstance == null)
-                _uniqueInstance = new VmServerListPage(context, list);
+                _uniqueInstance = new VmServerListPage(context, configurationView, list);
             return _uniqueInstance;
         } 
 
@@ -43,12 +42,13 @@ namespace PRM.ViewModel
 
 
         public PrmContext Context { get; }
-        public ConfigurationViewModel ConfigurationViewModel => ConfigurationViewModel.GetInstance();
+        public ConfigurationViewModel ConfigurationViewModel { get; }
         private readonly ListBox _list;
 
-        protected VmServerListPage(PrmContext context, ListBox list)
+        protected VmServerListPage(PrmContext context, ConfigurationViewModel configurationView, ListBox list)
         {
             Context = context;
+            ConfigurationViewModel = configurationView;
             _list = list;
             RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;

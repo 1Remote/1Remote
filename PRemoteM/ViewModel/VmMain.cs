@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using PRM.Core.DB.Dapper;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
+using PRM.Core.Service;
 using Shawn.Utils;
 using Shawn.Utils.PageHost;
 using PRM.View;
@@ -20,6 +25,7 @@ namespace PRM.ViewModel
     public class VmMain : NotifyPropertyChangedBase
     {
         public VmAboutPage VmAboutPage { get; }
+        public ConfigurationViewModel ConfigurationVm { get; }
 
         #region Properties
 
@@ -100,14 +106,15 @@ namespace PRM.ViewModel
         public readonly MainWindow Window;
         public PrmContext Context { get; }
 
-        public VmMain(PrmContext context, MainWindow window)
+        public VmMain(PrmContext context, ConfigurationViewModel configurationVm, MainWindow window)
         {
             Context = context;
             Window = window;
             this.VmAboutPage = new VmAboutPage();
             _aboutPage = new AboutPage(VmAboutPage, this);
             ConfigurationViewModel.Init(context);
-            ConfigurationViewModel.GetInstance().Host = this;
+            ConfigurationVm = configurationVm;
+            ConfigurationVm.Host = this;
 
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
@@ -176,7 +183,7 @@ namespace PRM.ViewModel
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,
                 OutAnimationType = AnimationPage.InOutAnimationType.None,
-                Page = new ServerListPage(Context),
+                Page = new ServerListPage(Context, configurationVm),
             };
             //_managementPage = new ServerManagementPage(Context);
         }
@@ -203,7 +210,7 @@ namespace PRM.ViewModel
                     {
                         InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new SystemConfigPage(Context, o?.ToString()),
+                        Page = new SystemConfigPage(Context, ConfigurationVm, o?.ToString()),
                     };
                     Window.PopupMenu.IsOpen = false;
                 }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));

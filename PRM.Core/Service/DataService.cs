@@ -15,6 +15,7 @@ namespace PRM.Core.Service
     public class DataService : IDataService
     {
         private readonly IDb _db;
+        public IDb IDB => _db;
 
         public DataService()
         {

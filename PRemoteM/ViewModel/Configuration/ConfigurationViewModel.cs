@@ -503,9 +503,9 @@ namespace PRM.ViewModel.Configuration
                     try
                     {
                         _context.InitSqliteDb(path);
+                        _context.AppData.ReloadServerList();
                         _configurationService.Database.SqliteDatabasePath = path;
                         RaisePropertyChanged(nameof(DbPath));
-                        _context.AppData.ReloadServerList();
                         _configurationService.Save();
                         ValidateDbStatusAndShowMessageBox();
                     }
