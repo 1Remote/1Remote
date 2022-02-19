@@ -221,6 +221,8 @@ namespace PRM
                 gw.ShowDialog();
             }
 
+            throw new Exception("hahahah");
+
             // init Database here, to show alert if db connection goes wrong.
             var connStatus = Context.InitSqliteDb();
 

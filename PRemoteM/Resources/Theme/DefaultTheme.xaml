@@ -5,8 +5,6 @@
     <system:Double x:Key="DefaultControlHeight">30</system:Double>
     <Thickness x:Key="DefaultControlPadding">10,6</Thickness>
     <CornerRadius x:Key="DefaultCornerRadius">4</CornerRadius>
-    <SolidColorBrush x:Key="Primary300" Color="#CBCCC6" />
-    <SolidColorBrush x:Key="Primary400" Color="#707A8C" />
 
     <Geometry x:Key="DownGeometry">M512 801.6896L5.12 282.0096l58.1632-59.5968L512 682.3936l448.7168-460.0832 58.1632 59.5968-506.88 519.7824z</Geometry>
     <Geometry x:Key="UpGeometry">M50.000001,0 L100,51.262779 94.262627,57.141584 50.000001,11.767713 5.7373757,57.151686 0,51.27288 z</Geometry>

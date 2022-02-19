@@ -17,7 +17,7 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border Padding="40" Background="Transparent">
-                <Border CornerRadius="16" Background="{StaticResource PrimaryMidBrush}">
+                <Border CornerRadius="16" Background="{DynamicResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" />
                     </Border.Effect>
@@ -27,23 +27,34 @@
         </ControlTemplate>
     </Window.Template>
 
-    <Grid Margin="12" Background="{StaticResource PrimaryMidBrush}">
+    <Grid Margin="12" Background="{DynamicResource PrimaryMidBrush}">
+        <Grid.Resources>
+            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
+                <Setter Property="Foreground">
+                    <Setter.Value>
+                        <SolidColorBrush Color="{DynamicResource PrimaryTextColor}" Opacity="0.7"></SolidColorBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0" Name="WinGrid" Background="{StaticResource PrimaryMidBrush}">
+        <Grid Grid.Row="0" Margin="0" Name="WinGrid" Background="{DynamicResource PrimaryMidBrush}">
             <StackPanel HorizontalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Grid HorizontalAlignment="Center" Margin="5">
                         <Image Source="/Resources/Image/Logo/logo64.png" Width="30" HorizontalAlignment="Left"></Image>
                     </Grid>
-                    <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{StaticResource PrimaryTextBrush}"
+                    <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}"
                                Text="{DynamicResource word_oops}"
                                VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBlock HorizontalAlignment="Center" FontSize="18" Foreground="{StaticResource Primary300}" VerticalAlignment="Center"
+                <TextBlock HorizontalAlignment="Center" FontSize="18" Opacity="0.7"
+                           Foreground="{DynamicResource PrimaryTextBrush}" 
+                           VerticalAlignment="Center"
                            Text="{DynamicResource error_report_unexpected_error_occurred}" />
             </StackPanel>
         </Grid>
@@ -71,14 +82,9 @@
             <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
 
                 <Button Margin="0 5 5 5" 
-                                    MinWidth="100" Height="20"
-                                    Padding="0"
-                                   Click="ButtonSaveAs_OnClick">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                        </Style>
-                    </Button.Style>
+                        MinWidth="100" Height="20"
+                        Padding="0"
+                        Click="ButtonSaveAs_OnClick">
                     <Grid>
                         <Path Name="IconSaveDone" Margin="3" Width="12" Height="12"
                               HorizontalAlignment="Left"
@@ -92,11 +98,6 @@
                 <Button MinWidth="100" Height="20" Margin="0 5"
                                    Padding="0"
                                    Click="ButtonCopyToClipboard_OnClick">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                        </Style>
-                    </Button.Style>
                     <Grid>
                         <Path Name="IconCopyDone" Margin="3" Width="12" Height="12"
                               HorizontalAlignment="Left"
@@ -110,8 +111,8 @@
 
             <Grid Grid.Row="2">
                 <StackPanel>
-                    <TextBlock Margin="0 5 0 0" FontWeight="Bold" FontSize="20" Foreground="{StaticResource Primary300}" VerticalAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource error_report_please_help_us_improve}" />
-                    <TextBlock Margin="0 0 0 10" FontSize="16" Foreground="{StaticResource Primary400}" VerticalAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource error_report_how_help_us_improve}" />
+                    <TextBlock Margin="0 5 0 0" FontWeight="Bold" FontSize="20" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.8" VerticalAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource error_report_please_help_us_improve}" />
+                    <TextBlock Margin="0 0 0 10" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" Opacity="0.6" VerticalAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource error_report_how_help_us_improve}" />
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Margin="10 5" Padding="0" Width="150" Height="40"
@@ -119,17 +120,12 @@
                                                    Click="ButtonSendByEmail_OnClick"
                                                    ToolTip="veckshawn@gmail.com"
                                                    BorderThickness="1">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                                    <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                                </Style>
-                            </Button.Style>
                             <StackPanel Orientation="Horizontal">
                                 <Path Margin="5 0" Width="16" Height="16" Data="M512 0C229.239467 0 0 229.239467 0 512c0 282.760533 229.239467 512 512 512 282.760533 0 512-229.239467 512-512 0-282.760533-229.239467-512-512-512z m0 179.848533l303.0016 188.928H209.032533L512 179.848533z m306.7904 490.632534h-0.068267c0 30.3104-24.541867 54.852267-54.852266 54.852266H260.130133c-30.276267 0-54.852267-24.576-54.852266-54.852266v-289.6896c0-3.208533 0.341333-6.314667 0.853333-9.386667l289.4848 150.5312 1.092267 0.546133 1.160533 0.648534c2.048 1.024 4.164267 1.877333 6.314667 2.423466l0.648533 0.170667c2.389333 0.546133 4.778667 0.887467 7.168 0.887467h0.034133c2.389333 0 4.778667-0.341333 7.168-0.887467l0.648534-0.170667a31.675733 31.675733 0 0 0 6.314666-2.423466l1.160534-0.648534 1.092266-0.546133 289.4848-150.5312c0.546133 3.072 0.887467 6.178133 0.887467 9.386667v289.6896z"
                                               Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                 <StackPanel>
                                     <TextBlock FontSize="14" Text="{DynamicResource error_report_send_by_email}"></TextBlock>
-                                    <TextBlock FontSize="10" Foreground="{StaticResource Primary400}" Text="veckshawn@gmail.com"></TextBlock>
+                                    <TextBlock FontSize="10" Opacity="0.5" Text="veckshawn@gmail.com"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Button>
@@ -138,17 +134,12 @@
                                                    Click="ButtonSendByGithub_OnClick"
                                                    ToolTip="https://github.com/VShawn/PRemoteM/issues"
                                                    BorderThickness="1">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                                    <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
-                                </Style>
-                            </Button.Style>
                             <StackPanel Orientation="Horizontal">
                                 <Path Margin="5 0" Width="16" Height="16" Data="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z"
                                               Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}" StrokeThickness="1" Stretch="Uniform" />
                                 <StackPanel>
                                     <TextBlock FontSize="14" Text="{DynamicResource error_report_send_by_github}"></TextBlock>
-                                    <TextBlock FontSize="10" Foreground="{StaticResource Primary400}" Text="github.com/vshawn"></TextBlock>
+                                    <TextBlock FontSize="10" Opacity="0.5" Text="github.com/vshawn"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Button>
