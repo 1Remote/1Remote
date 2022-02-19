@@ -6,6 +6,7 @@ using PRM.Core.Service;
 using Shawn.Utils;
 using PRM.View;
 using PRM.ViewModel;
+using PRM.ViewModel.Configuration;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -15,10 +16,11 @@ namespace PRM
     {
         public VmMain Vm { get; set; }
 
-        public MainWindow(PrmContext context)
+        public MainWindow(PrmContext context, ConfigurationViewModel configurationViewModel)
         {
+            App.UiDispatcher = Dispatcher;
             InitializeComponent();
-            Vm = new VmMain(context, this);
+            Vm = new VmMain(context, configurationViewModel, this);
             this.DataContext = Vm;
             Title = ConfigurationService.AppName;
             // restore the window size from 

@@ -61,7 +61,7 @@
   <PropertyGroup>
     <ApplicationIcon>LOGO.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseStore|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'StoreRelease|AnyCPU' ">
     <OutputPath>bin\ReleaseToStore\</OutputPath>
     <DefineConstants>DEBUG;TRACE;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY</DefineConstants>
     <Optimize>true</Optimize>
@@ -93,7 +93,7 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugStore|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'StoreDebug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\DebugStore\</OutputPath>
     <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>

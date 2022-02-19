@@ -27,11 +27,11 @@ namespace PRM.View
 
         private readonly PrmContext _context;
 
-        public SystemConfigPage(PrmContext context, string destination = null)
+        public SystemConfigPage(PrmContext context, ConfigurationViewModel vm, string destination = null)
         {
             _context = context;
             InitializeComponent();
-            _vm = ConfigurationViewModel.GetInstance();
+            _vm = vm;
             DataContext = _vm;
 
             if (destination == "Data")

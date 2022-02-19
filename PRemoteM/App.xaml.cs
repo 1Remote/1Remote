@@ -2,9 +2,12 @@
 using System.IO;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using PRM.Core.DB;
+using PRM.Core.DB.Dapper;
 using PRM.Core.External.KiTTY;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
@@ -16,6 +19,7 @@ using PRM.View;
 using PRM.View.ErrorReport;
 using PRM.View.Guidance;
 using PRM.View.ProtocolHosts;
+using PRM.ViewModel.Configuration;
 
 namespace PRM
 {
@@ -28,13 +32,15 @@ namespace PRM
     public partial class App : Application
     {
         private OnlyOneAppInstanceHelper _onlyOneAppInstanceHelper;
-
         public static MainWindow MainUi { get; private set; } = null;
+        public static ConfigurationViewModel ConfigurationVm { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
         public static PrmContext Context { get; private set; }
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
         private DesktopResolutionWatcher _desktopResolutionWatcher;
         public static bool CanPortable { get; private set; }
+
+        public static Dispatcher UiDispatcher = null;
 
         private void InitLog()
         {
@@ -161,9 +167,9 @@ namespace PRM
             }
         }
 
-        private void InitMainWindow()
+        private void InitMainWindow(ConfigurationViewModel c)
         {
-            MainUi = new MainWindow(Context);
+            MainUi = new MainWindow(Context, c);
             MainWindow = MainUi;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
@@ -221,12 +227,12 @@ namespace PRM
                 gw.ShowDialog();
             }
 
-            throw new Exception("hahahah");
-
             // init Database here, to show alert if db connection goes wrong.
             var connStatus = Context.InitSqliteDb();
 
-            InitMainWindow();
+            ConfigurationViewModel.Init(App.Context);
+            App.ConfigurationVm = ConfigurationViewModel.GetInstance();
+            InitMainWindow(App.ConfigurationVm);
             InitLauncher();
             InitTaskTray();
 
@@ -241,6 +247,17 @@ namespace PRM
             else
             {
                 Context.AppData.ReloadServerList();
+                SetDbWatcher();
+                if (Context.DataService.IDB is DapperDbFree)
+                {
+                    ConfigurationVm.PropertyChanged += (sender, args) =>
+                    {
+                        if (args.PropertyName == nameof(ConfigurationViewModel.DbPath))
+                        {
+                            SetDbWatcher();
+                        }
+                    };
+                }
             }
 
             if (Context.ConfigurationService.General.AppStartMinimized == false
@@ -250,6 +267,39 @@ namespace PRM
             }
         }
 
+        private FileWatcher _dbFileWatcher;
+        private void SetDbWatcher()
+        {
+            _dbFileWatcher?.Dispose();
+            var dbfi = new FileInfo(ConfigurationVm.DbPath);
+            if (dbfi.Exists)
+            {
+                _dbFileWatcher = new FileWatcher(FileWatcherMode.ContentChanged, dbfi.Directory.FullName, TimeSpan.FromMilliseconds(300), "*.db");
+                _dbFileWatcher.PathChanged += (sender, args) =>
+                {
+                    var fi = new FileInfo(args.Path);
+                    if (fi.FullName == dbfi.FullName)
+                    {
+                        Task.Factory.StartNew(() =>
+                        {
+                            for (int i = 0; i < 20; i++)
+                            {
+                                if (IOPermissionHelper.HasWritePermissionOnFile(dbfi.FullName))
+                                {
+                                    Context.InitSqliteDb(fi.FullName);
+                                    App.UiDispatcher?.Invoke(() =>
+                                    {
+                                        Context.AppData.ReloadServerList();
+                                    });
+                                    return;
+                                }
+                                Thread.Sleep(100);
+                            }
+                        });
+                    }
+                };
+            }
+        }
         private static void InitTaskTray()
         {
             if (TaskTrayIcon != null) return;

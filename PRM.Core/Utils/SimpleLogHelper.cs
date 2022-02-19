@@ -88,6 +88,7 @@ namespace Shawn.Utils
         }
 
         private static SimpleLogHelperObject _simpleLogHelper = new SimpleLogHelperObject();
+        public static SimpleLogHelperObject StaticInstance => _simpleLogHelper;
 
         public static void SetLogger(SimpleLogHelperObject logger)
         {
