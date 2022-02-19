@@ -5,6 +5,7 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:guidance="clr-namespace:PRM.View.Guidance"
+                  xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                   mc:Ignorable="d"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
@@ -19,7 +20,7 @@
     <Window.Template>
         <ControlTemplate TargetType="Window">
             <Border Padding="40" Background="Transparent">
-                <Border CornerRadius="16" Background="{StaticResource PrimaryMidBrush}">
+                <Border CornerRadius="16" Background="{DynamicResource PrimaryMidBrush}">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="30" />
                     </Border.Effect>
@@ -29,7 +30,7 @@
         </ControlTemplate>
     </Window.Template>
 
-    <Grid Margin="16" Name="WinGrid" Background="{StaticResource PrimaryMidBrush}">
+    <Grid Margin="16" Name="WinGrid" Background="{DynamicResource PrimaryMidBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -44,14 +45,18 @@
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="FontSize" Value="11" />
                             <Setter Property="FontWeight" Value="Medium" />
-                            <Setter Property="Foreground" Value="{StaticResource Primary300}" />
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                         </Style>
                     </Style.Resources>
                     <Setter Property="MinWidth" Value="17" />
                     <Setter Property="HorizontalAlignment" Value="Left" />
                     <Setter Property="Height" Value="18" />
                     <Setter Property="CornerRadius" Value="2" />
-                    <Setter Property="Background" Value="{StaticResource Primary600}" />
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <SolidColorBrush Color="{DynamicResource PrimaryDarkColor}" Opacity="0.5"></SolidColorBrush>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="Padding" Value="4,0,4,0" />
                 </Style>
             </Grid.Resources>
@@ -68,8 +73,8 @@
                         <Grid HorizontalAlignment="Center">
                             <Image Source="/Resources/Image/Logo/logo256.png" Width="80" HorizontalAlignment="Left"></Image>
                         </Grid>
-                        <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{StaticResource Primary300}">PRemoteM</TextBlock>
-                        <TextBlock HorizontalAlignment="Center" FontSize="8" Foreground="{StaticResource Primary300}">
+                        <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}">PRemoteM</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontSize="8" Foreground="{DynamicResource PrimaryTextBrush}">
                             <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM">https://github.com/VShawn/PRemoteM</Hyperlink>
                         </TextBlock>
                     </StackPanel>
@@ -77,10 +82,10 @@
 
                 <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-                        <TextBlock Margin="2" Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center">Language:</TextBlock>
+                        <TextBlock Margin="2" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center">Language:</TextBlock>
                         <ComboBox ItemsSource="{Binding ConfigurationViewModel.Languages}"
-                              Foreground="{StaticResource PrimaryTextBrush}"
-                              Background="{StaticResource PrimaryMidBrush}"
+                              Foreground="{DynamicResource PrimaryTextBrush}"
+                              Background="{DynamicResource PrimaryMidBrush}"
                               SelectedValue="{Binding ConfigurationViewModel.Language}"
                               SelectedValuePath="Key"
                               HorizontalAlignment="Right"
@@ -126,12 +131,12 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Grid Margin="8" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+                        <Grid Margin="8" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Opacity="0.8">
                             <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
                             TextWrapping="WrapWithOverflow"
-                            Foreground="{StaticResource Primary300}"
+                            Foreground="{DynamicResource PrimaryTextBrush}"
                             Text="{DynamicResource guidance_introduce}">
                             </TextBlock>
                         </Grid>
@@ -156,7 +161,7 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
-                                           Foreground="{StaticResource Gray600}"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            Text="{DynamicResource guidance_feature_launcher_key}">
                                 </TextBlock>
 
@@ -164,13 +169,13 @@
                                     <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0 0 0">
                                         <TextBlock>Alt</TextBlock>
                                     </Border>
-                                    <TextBlock Text="+" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" Margin="5 0"></TextBlock>
+                                    <TextBlock Text="+" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0"></TextBlock>
                                     <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="0 0 8 0">
                                         <TextBlock>M</TextBlock>
                                     </Border>
                                 </StackPanel>
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" HorizontalAlignment="Right"
+                                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
                                            Text="{DynamicResource guidance_feature_launcher_select}"></TextBlock>
 
                                 <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
@@ -182,7 +187,7 @@
                                     </Border>
                                 </StackPanel>
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" HorizontalAlignment="Right"
+                                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
                                            Text="{DynamicResource guidance_feature_launcher_connect}"></TextBlock>
                                 <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
                                     <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
@@ -190,7 +195,7 @@
                                     </Border>
                                 </StackPanel>
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="{StaticResource Gray600}" HorizontalAlignment="Right"
+                                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" HorizontalAlignment="Right"
                                            Text="{DynamicResource guidance_feature_launcher_menu}"></TextBlock>
                                 <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="0 5">
                                     <Border Style="{DynamicResource ShortcutBorderStyle}" Margin="8 0">
@@ -207,26 +212,26 @@
                             <TextBlock
                                 VerticalAlignment="Center"
                                 TextWrapping="Wrap"
-                                Foreground="{StaticResource Gray600}"
+                                Foreground="{DynamicResource PrimaryTextBrush}"
                                 Text="{DynamicResource guidance_feature_tab_demo}">
                             </TextBlock>
                         </Grid>
                     </Grid>
 
-                    <Grid Name="Grid2" Background="{StaticResource PrimaryMidBrush}">
+                    <Grid Name="Grid2" Background="{DynamicResource PrimaryMidBrush}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="8">
+                        <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="8" Opacity="0.8">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="14"
                                     FontWeight="SemiBold"
                                     TextWrapping="WrapWithOverflow"
                                     HorizontalAlignment="Center"
-                                    Foreground="{StaticResource Primary300}"
+                                    Foreground="{DynamicResource PrimaryTextBrush}"
                                     Text="{DynamicResource guidance_feature_start_setting1}">
                                 </TextBlock>
                                 <TextBlock
@@ -234,7 +239,7 @@
                                     FontWeight="SemiBold"
                                     TextWrapping="WrapWithOverflow"
                                     HorizontalAlignment="Center"
-                                    Foreground="{StaticResource Primary300}"
+                                    Foreground="{DynamicResource PrimaryTextBrush}"
                                     Text="{DynamicResource guidance_feature_start_setting2}">
                                 </TextBlock>
                             </StackPanel>
@@ -244,10 +249,10 @@
                             <Grid.Resources>
                                 <Style TargetType="StackPanel">
                                     <Setter Property="Margin" Value="8"></Setter>
-                                    <Setter Property="MinHeight" Value="50"></Setter>
+                                    <Setter Property="MinHeight" Value="40"></Setter>
                                 </Style>
                                 <Style TargetType="TextBlock" x:Key="HeaderStyle" BasedOn="{StaticResource TextBlockBase}">
-                                    <Setter Property="Foreground" Value="{StaticResource Gray600}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                     <Setter Property="Width" Value="200"></Setter>
                                     <Setter Property="HorizontalAlignment" Value="Center"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -256,7 +261,7 @@
                             <StackPanel Margin="0 15 0 0">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
-                                        Style="{StaticResource HeaderStyle}"
+                                        Style="{DynamicResource HeaderStyle}"
                                         Text="{DynamicResource system_options_general_start_when_win_login}">
                                     </TextBlock>
                                     <ToggleButton IsChecked="{Binding ConfigurationViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
@@ -264,10 +269,26 @@
 
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
-                                        Style="{StaticResource HeaderStyle}"
+                                        Style="{DynamicResource HeaderStyle}"
                                         Text="{DynamicResource system_options_general_start_minimized}">
                                     </TextBlock>
                                     <ToggleButton IsChecked="{Binding ConfigurationViewModel.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock
+                                        Style="{DynamicResource HeaderStyle}"
+                                        Text="{DynamicResource Theme}">
+                                    </TextBlock>
+                                    <ComboBox Width="100"
+                                              Foreground="{DynamicResource PrimaryTextBrush}"
+                                              Background="{DynamicResource PrimaryMidBrush}"
+                                              Height="20"
+                                              attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
+                                              attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
+                                              ItemsSource="{Binding ConfigurationViewModel.ThemeList}"
+                                              SelectedItem="{Binding ConfigurationViewModel.ThemeName}">
+                                    </ComboBox>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -282,10 +303,10 @@
                 <Border CornerRadius="5" BorderBrush="Gray" BorderThickness="1"  Width="10" Height="10" Margin="5">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
+                            <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Step}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
+                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -294,10 +315,10 @@
                 <Border CornerRadius="5" BorderBrush="Gray" BorderThickness="1"  Width="10" Height="10" Margin="5">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
+                            <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Step}" Value="1">
-                                    <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
+                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -311,7 +332,6 @@
                                Content="{DynamicResource Previous}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                        <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Step}" Value="0">
@@ -329,7 +349,6 @@
                                Content="{DynamicResource Next}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                        <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Step}" Value="1">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -346,7 +365,6 @@
                                Content="{DynamicResource Done}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
-                        <Setter Property="Foreground" Value="{StaticResource Primary300}"></Setter>
                         <Setter Property="Visibility" Value="Collapsed"></Setter>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Step}" Value="1">

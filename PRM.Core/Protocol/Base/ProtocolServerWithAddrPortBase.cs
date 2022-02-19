@@ -46,7 +46,7 @@ namespace PRM.Core.Protocol
 
         protected override string GetSubTitle()
         {
-            return $"@{Address}:{Port}";
+            return $"{Address}:{Port}";
         }
 
         #endregion Conn

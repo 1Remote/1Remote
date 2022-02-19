@@ -269,8 +269,12 @@ namespace PRM.Core.Service
             }
         }
 
+        public bool CanSave = true;
+
         public void Save()
         {
+            if(CanSave == false)
+                return;
             var fi = new FileInfo(JsonPath);
             if (fi.Directory.Exists == false)
                 fi.Directory.Create();

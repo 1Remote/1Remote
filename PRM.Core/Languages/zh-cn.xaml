@@ -218,7 +218,7 @@
     <s:String x:Key="about_page_feedback">提意见/需求</s:String>
 
     <!-- guidance -->
-    <s:String x:Key="guidance_introduce">PRemoteM 为您管理远程会话，无论何时何地</s:String>
+    <s:String x:Key="guidance_introduce">PRemoteM 您管理远程会话，并允许你通过启动器快速打开你的远程桌面</s:String>
     <s:String x:Key="guidance_feature_launcher_key">快速呼出启动器</s:String>
     <s:String x:Key="guidance_feature_launcher_select">选择项目</s:String>
     <s:String x:Key="guidance_feature_launcher_connect">启动会话</s:String>

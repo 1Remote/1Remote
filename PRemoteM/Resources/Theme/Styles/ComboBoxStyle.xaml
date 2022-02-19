@@ -49,17 +49,17 @@
                                 <Condition Property="IsMouseOver" Value="False" />
                                 <Condition Property="IsSelected" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}" />
                             <Setter Property="BorderThickness" TargetName="Bd" Value="5 0 0 0" />
-                            <Setter Property="Background" TargetName="Background" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Background" TargetName="Background" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}" />
                             <Setter Property="Opacity" TargetName="Background" Value="0.1" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="Background" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
-                            <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Background" TargetName="Background" Value="{Binding Path=(attachProperty:VisionElement.BackgroundAccent),RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}" />
+                            <Setter Property="TextElement.Foreground" TargetName="ContentPresenter" Value="{Binding Path=(attachProperty:VisionElement.ForegroundAccent),RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -67,15 +67,15 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ComboBoxItemPrimaryStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
-    </Style>
+    <!--<Style x:Key="ComboBoxItemPrimaryStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
+    </Style>-->
 
-    <Style x:Key="ComboBoxItemAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
+    <!--<Style x:Key="ComboBoxItemAccentStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
         <Setter Property="attachProperty:VisionElement.ForegroundAccent" Value="{DynamicResource AccentTextBrush}"/>
         <Setter Property="attachProperty:VisionElement.BackgroundAccent" Value="{DynamicResource AccentMidBrush}"/>
-    </Style>
+    </Style>-->
 
-    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemAccentStyle}">
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource ComboBoxItemBaseStyle}">
     </Style>
 
 
