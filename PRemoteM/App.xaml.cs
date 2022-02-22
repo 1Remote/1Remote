@@ -117,13 +117,17 @@ namespace PRM
 
         private void OnlyOneAppInstanceCheck()
         {
-            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName));
+#if FOR_MICROSOFT_STORE_ONLY
+            string instanceName = ConfigurationService.AppName + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName);
+#else
+            string instanceName = ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName);
+#endif
+            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(instanceName);
             if (!_onlyOneAppInstanceHelper.IsFirstInstance())
             {
                 try
                 {
                     _onlyOneAppInstanceHelper.NamedPipeSendMessage("ActivateMe");
-                    _onlyOneAppInstanceHelper.Dispose();
                     Environment.Exit(0);
                 }
                 catch (Exception e)
