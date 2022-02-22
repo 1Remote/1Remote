@@ -82,11 +82,15 @@ namespace PRM.View
             {
                 if (selectedTagNames.Count == 0)
                     return false;
-                else if (selectedTagNames.Count > 1)
+                else
                     return true;
 
-                var tag = selectedTagNames[0].TagName;
-                return tags.First(x => x.Name == tag).IsPinned == false;
+                //if (selectedTagNames.Count == 0)
+                //    return false;
+                //else if (selectedTagNames.Count > 1)
+                //    return true;
+                //var tag = selectedTagNames[0].TagName;
+                //return tags.First(x => x.Name == tag).IsPinned == false;
             }
             return false;
         }

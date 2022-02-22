@@ -4,38 +4,6 @@
     <VisualStudioVersion>15.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="StoreDebug|x86">
-      <Configuration>StoreDebug</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreRelease|x86">
-      <Configuration>StoreRelease</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreDebug|x64">
-      <Configuration>StoreDebug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreRelease|x64">
-      <Configuration>StoreRelease</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreDebug|ARM">
-      <Configuration>StoreDebug</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreRelease|ARM">
-      <Configuration>StoreRelease</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreDebug|ARM64">
-      <Configuration>StoreDebug</Configuration>
-      <Platform>ARM64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="StoreRelease|ARM64">
-      <Configuration>StoreRelease</Configuration>
-      <Platform>ARM64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="StoreDebug|AnyCPU">
       <Configuration>StoreDebug</Configuration>
       <Platform>AnyCPU</Platform>
@@ -68,39 +36,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|x64'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|ARM'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|ARM64'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|AnyCPU'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|ARM64'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|ARM'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|x64'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|x86'">
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxBundle>Always</AppxBundle>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|x86'">
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
