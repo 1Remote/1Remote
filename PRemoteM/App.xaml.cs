@@ -38,7 +38,7 @@ namespace PRM
         public static PrmContext Context { get; private set; }
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
         private DesktopResolutionWatcher _desktopResolutionWatcher;
-        public static bool CanPortable { get; private set; }
+        public bool CanPortable { get; private set; }
 
         public static Dispatcher UiDispatcher = null;
 
@@ -117,7 +117,7 @@ namespace PRM
 
         private void OnlyOneAppInstanceCheck()
         {
-            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(ConfigurationService.AppName);
+            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName));
             if (!_onlyOneAppInstanceHelper.IsFirstInstance())
             {
                 try
