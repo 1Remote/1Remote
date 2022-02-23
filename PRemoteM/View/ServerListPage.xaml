@@ -13,6 +13,7 @@
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
              mc:Ignorable="d"
+             Background="White"
              d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>

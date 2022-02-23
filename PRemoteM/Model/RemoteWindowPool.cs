@@ -240,7 +240,7 @@ namespace PRM.Model
             if (protocolServer is ProtocolServerRDP)
             {
                 tab = GetOrCreateTabWindow(assignTabToken);
-                size = tab.GetTabContentSize();
+                size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocolServer.ColorHex));
             }
 
             protocolServer.ConnectPreprocess(_context);
@@ -340,7 +340,7 @@ namespace PRM.Model
                 }
 
                 // rdp full screen
-                if (rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens || rdp.IsConnWithFullScreen == true || rdp.AutoSetting?.FullScreenLastSessionIsFullScreen == true)
+                if (vmProtocolServer.Server.IsConnWithFullScreen())
                 {
                     ConnectWithFullScreen(vmProtocolServer, runner);
                     return;

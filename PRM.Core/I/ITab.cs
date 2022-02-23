@@ -4,6 +4,6 @@ namespace PRM.Core.I
 {
     public interface ITab
     {
-        Size GetTabContentSize();
+        Size GetTabContentSize(bool colorIsTransparent);
     }
 }

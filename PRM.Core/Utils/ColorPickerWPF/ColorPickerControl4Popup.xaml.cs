@@ -87,7 +87,7 @@ namespace ColorPickerWPF
         {
             return new List<Brush>()
             {
-                Brushes.Black,
+                ChessboardBrush(5),
                 Brushes.Red,
                 Brushes.DarkOrange,
                 Brushes.Yellow,
@@ -211,8 +211,10 @@ namespace ColorPickerWPF
             var border = (sender as Border);
             if (border == null)
                 return;
-            var color = border.Background as SolidColorBrush;
-            OnPickColor?.Invoke(color.Color);
+            if (border.Background is SolidColorBrush sb)
+                OnPickColor?.Invoke(sb.Color);
+            if (border.Background is ImageBrush ib)
+                OnPickColor?.Invoke(Brushes.Transparent.Color);
         }
 
         private void ColorPickerControl_MouseMove(object sender, MouseEventArgs e)
@@ -332,6 +334,43 @@ namespace ColorPickerWPF
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
+            }
+        }
+
+
+        private static readonly object obj = new object();
+        private static Dictionary<int, ImageBrush> chessbordBrushes = new Dictionary<int, ImageBrush>();
+        public static ImageBrush ChessboardBrush(int blockPixSize = 32)
+        {
+            lock (obj)
+            {
+                if (chessbordBrushes.ContainsKey(blockPixSize))
+                    return chessbordBrushes[blockPixSize];
+                // 绘制透明背景
+                var wpen = System.Drawing.Brushes.White;
+                var gpen = System.Drawing.Brushes.LightGray;
+                int span = blockPixSize;
+                var bg = new System.Drawing.Bitmap(span * 2, span * 2);
+                using (var g = System.Drawing.Graphics.FromImage(bg))
+                {
+                    g.FillRectangle(wpen, new System.Drawing.Rectangle(0, 0, bg.Width, bg.Height));
+                    for (var v = 0; v < span * 2; v += span)
+                    {
+                        for (int h = (v / (span)) % 2 == 0 ? 0 : span; h < span * 2; h += span * 2)
+                        {
+                            g.FillRectangle(gpen, new System.Drawing.Rectangle(h, v, span, span));
+                        }
+                    }
+                }
+                return new ImageBrush(bg.ToBitmapImage())
+                {
+                    Stretch = Stretch.None,
+                    TileMode = TileMode.Tile,
+                    AlignmentX = AlignmentX.Left,
+                    AlignmentY = AlignmentY.Top,
+                    Viewport = new Rect(new Point(0, 0), new Point(span * 2, span * 2)),
+                    ViewportUnits = BrushMappingMode.Absolute
+                };
             }
         }
     }

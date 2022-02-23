@@ -8,6 +8,7 @@
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              mc:Ignorable="d"
+             Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid.Resources>
