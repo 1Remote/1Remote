@@ -13,6 +13,7 @@
              xmlns:converter="clr-namespace:PRM.Resources.Converter"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance configuration:ConfigurationViewModel}"
+             Background="White"
              d:DesignHeight="2450" d:DesignWidth="1000">
     <UserControl.Resources>
         <ResourceDictionary>

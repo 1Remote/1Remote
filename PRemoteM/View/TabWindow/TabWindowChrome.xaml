@@ -14,7 +14,7 @@
                      ResizeMode="{Binding WindowResizeMode}"
                      Title="{Binding Title}" Height="600" Width="800">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
     <Window.InputBindings>
         <KeyBinding Gesture="Ctrl+1" Command="{Binding CmdShowTabByIndex}" CommandParameter="1"></KeyBinding>
@@ -32,8 +32,8 @@
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource PrimaryMidBrush}">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderBrush" Value="#333"></Setter>
-                        <Setter Property="BorderThickness" Value="1 0 1 1"></Setter>
+                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"></Setter>
+                        <Setter Property="BorderThickness" Value="2"></Setter>
                     </Style>
                 </Border.Style>
                 <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">
@@ -50,22 +50,20 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-            <system:Double x:Key="TitleBarHeight">32</system:Double>
-            <system:Double x:Key="TrapezoidHeight">32</system:Double>
-            <!--cs code will read this vale-->
-            <Thickness x:Key="TabContentBorder">0,1,0,0</Thickness>
-
+            <system:Double x:Key="TitleBarHeight">30</system:Double>
+            <system:Double x:Key="TrapezoidHeight">30</system:Double>
+            <Thickness x:Key="TabContentBorderWithColor">5,0,5,5</Thickness>
+            <Thickness x:Key="TabContentBorderWithOutColor">0,0,0,0</Thickness>
             <!--Tab header content DataTemplate-->
             <DataTemplate DataType="{x:Type vm:TabItemViewModel}">
-                <!--leave some border of remote desktop-->
-                <Border Margin="{StaticResource TabContentBorder}" 
-                        BorderBrush="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}">
+                <!--MarkColor border l r b -->
+                <Border BorderBrush="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="BorderThickness" Value="5"/>
+                            <Setter Property="BorderThickness" Value="{StaticResource TabContentBorderWithColor}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="True">
-                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="BorderThickness" Value="{StaticResource TabContentBorderWithOutColor}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -124,9 +122,6 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!--header item identify color-->
-                                    <!--<Grid Width="1" Name="ColorMark" Visibility="Hidden" HorizontalAlignment="Left" Background="{Binding ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>-->
-
                                     <!--header item icon-->
                                     <Border Grid.Column="1" Padding="4 0 4 0">
                                         <Grid Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -184,6 +179,7 @@
                                 <Trigger Property="dragablz:TabablzControl.IsWrappingTabItem" Value="True">
                                     <Setter TargetName="contentPresenter" Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.Header}" />
                                 </Trigger>
+                                <!-- Whe MarkColor is not transparent, give more margin to tab header to display border -->
                                 <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="False">
                                     <Setter TargetName="Trapezoid" Property="Margin" Value="3 0" />
                                 </DataTrigger>
@@ -191,6 +187,9 @@
                                     <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" TargetName="DragablzHeaderItemContent" />
                                     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                                     <Setter Property="Background" TargetName="DragablzHeaderItemContent" Value="{DynamicResource PrimaryMidBrush}" />
+                                    <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="0 0 0 5"/>
+                                    <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" 
+                                            Value="{Binding  RelativeSource={RelativeSource FindAncestor, AncestorType=tabWindow:TabWindowBase}, Path=DataContext.SelectedItem.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" TargetName="DragablzHeaderItemContent" />
@@ -228,10 +227,6 @@
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItemsControl}">
                             <Grid Background="{DynamicResource PrimaryMidBrush}"
                                   Height="{StaticResource TitleBarHeight}">
-                                <!--<Border BorderThickness="{TemplateBinding Border.BorderThickness}"
-                                        Padding="{TemplateBinding Control.Padding}" BorderBrush="{TemplateBinding Border.BorderBrush}"
-                                        Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                                </Border>-->
                                 <Grid Height="{StaticResource TitleBarHeight}" VerticalAlignment="Bottom">
                                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                                   Width="{TemplateBinding ActualWidth}"
@@ -547,9 +542,10 @@
                                         Grid.Row="1"
                                         KeyboardNavigation.DirectionalNavigation="Contained"
                                         KeyboardNavigation.TabIndex="2" 
-                                        KeyboardNavigation.TabNavigation="Local"
-                                        Margin="0 -1 0 0">
-                                    <Grid x:Name="PART_ItemsHolder" Margin="0" />
+                                        KeyboardNavigation.TabNavigation="Local">
+                                    <Grid>
+                                        <Grid x:Name="PART_ItemsHolder" Margin="0" />
+                                    </Grid>
                                 </Border>
                                 <Grid Grid.Column="0" Grid.Row="0" Margin="0" x:Name="HeaderContainerGrid" Visibility="{TemplateBinding IsHeaderPanelVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Grid.ColumnDefinitions>
@@ -597,6 +593,14 @@
                                             ContentTemplate="{TemplateBinding HeaderSuffixContentStringFormat}"
                                             ContentTemplateSelector="{TemplateBinding HeaderSuffixContentTemplateSelector}"
                                             HorizontalAlignment="Stretch" />
+
+
+                                    <!--MarkColor border top-->
+                                    <Border BorderThickness="0 0 0 5"
+                                            Grid.Column="0" Grid.ColumnSpan="4"
+                                            BorderBrush="{Binding SelectedItem.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"
+                                            SnapsToDevicePixels="True">
+                                    </Border>
                                 </Grid>
                             </Grid>
                         </ControlTemplate>

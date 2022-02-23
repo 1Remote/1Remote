@@ -10,6 +10,7 @@
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
+                  Background="White"
                   KeyDown="MainWindow_OnKeyDown"
                   d:DataContext="{d:DesignInstance viewModel:VmMain}"
                   Title="PRemoteM" Height="560" Width="900" MinWidth="900" MinHeight="560">
@@ -21,7 +22,8 @@
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource PrimaryMidBrush}">
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="BorderThickness" Value="0"></Setter>
+                        <Setter Property="BorderThickness" Value="1"></Setter>
+                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"></Setter>
                     </Style>
                 </Border.Style>
                 <Grid x:Name="WindowContentGrid" Background="{TemplateBinding Background}">

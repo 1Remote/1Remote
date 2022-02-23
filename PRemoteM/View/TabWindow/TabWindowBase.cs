@@ -235,7 +235,7 @@ namespace PRM.View.TabWindow
         public void AddItem(TabItemViewModel newItem)
         {
             Debug.Assert(newItem?.Content?.ConnectionId != null);
-            if(Vm?.Items == null)
+            if (Vm?.Items == null)
                 return;
             if (Vm.Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
             {
@@ -246,17 +246,26 @@ namespace PRM.View.TabWindow
             Vm.SelectedItem = Vm.Items.Last();
         }
 
-        public Size GetTabContentSize()
+        public Size GetTabContentSize(bool colorIsTransparent)
         {
-            Debug.Assert(this.Resources["TabContentBorder"] != null);
             Debug.Assert(this.Resources["TitleBarHeight"] != null);
-            var tabContentBorder = (Thickness)this.Resources["TabContentBorder"];
+            Debug.Assert(this.Resources["TabContentBorderWithColor"] != null);
+            Debug.Assert(this.Resources["TabContentBorderWithOutColor"] != null);
+            var tabContentBorderWithColor = (Thickness)this.Resources["TabContentBorderWithColor"];
+            var tabContentBorderWithOutColor = (Thickness)this.Resources["TabContentBorderWithOutColor"];
             var trapezoidHeight = (double)this.Resources["TitleBarHeight"];
-            return new Size()
-            {
-                Width = _tabablzControl.ActualWidth - tabContentBorder.Left - tabContentBorder.Right,
-                Height = _tabablzControl.ActualHeight - trapezoidHeight - tabContentBorder.Bottom - tabContentBorder.Top - 1,
-            };
+            if (colorIsTransparent)
+                return new Size()
+                {
+                    Width = _tabablzControl.ActualWidth - tabContentBorderWithOutColor.Left - tabContentBorderWithOutColor.Right,
+                    Height = _tabablzControl.ActualHeight - trapezoidHeight - tabContentBorderWithOutColor.Top - tabContentBorderWithOutColor.Bottom,
+                };
+            else
+                return new Size()
+                {
+                    Width = _tabablzControl.ActualWidth - tabContentBorderWithColor.Left - tabContentBorderWithColor.Right,
+                    Height = _tabablzControl.ActualHeight - trapezoidHeight - tabContentBorderWithColor.Top - tabContentBorderWithColor.Bottom,
+                };
         }
 
         [DllImport("user32.dll", SetLastError = true)]

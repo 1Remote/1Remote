@@ -75,7 +75,12 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{Binding}" Width="20" Height="20" MouseDown="Swatch_OnMouseDown">
+                        <Border Width="20" Height="20" MouseDown="Swatch_OnMouseDown">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{Binding}"></Setter>
+                                </Style>
+                            </Border.Style>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

@@ -356,7 +356,6 @@ namespace PRM.View.ProtocolHosts
                     break;
             }
 
-            SimpleLogHelper.Debug($"RDP Host: Display init as RDP.DesktopWidth = {_rdp.DesktopWidth}, RDP.DesktopWidth = {_rdp.DesktopWidth},");
 
 
             switch (_rdpServer.RdpFullScreenFlag)
@@ -372,13 +371,12 @@ namespace PRM.View.ProtocolHosts
                 case ERdpFullScreenFlag.EnableFullScreen:
                 default:
                     base.CanFullScreen = true;
-                    var screenSize = GetScreenSize();
-                    _rdp.DesktopWidth = (int)(screenSize.Width);
-                    _rdp.DesktopHeight = (int)(screenSize.Height);
                     break;
             }
 
             #endregion Display
+
+            SimpleLogHelper.Debug($"RDP Host: Display init end: RDP.DesktopWidth = {_rdp.DesktopWidth}, RDP.DesktopWidth = {_rdp.DesktopWidth},");
         }
 
         private void RdpInitPerformance()
@@ -772,6 +770,7 @@ namespace PRM.View.ProtocolHosts
         private void SetRdpResolution(uint w, uint h)
         {
             if (w > 0 && h > 0)
+            {
                 try
                 {
                     SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
@@ -788,7 +787,33 @@ namespace PRM.View.ProtocolHosts
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                    //Task.Factory.StartNew(() =>
+                    //{
+                    //    for (int i = 0; i < 5; i++)
+                    //    {
+                    //        Thread.Sleep(500);
+                    //        try
+                    //        {
+                    //            SimpleLogHelper.Debug($@"RDP resize again to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
+                    //            _primaryScaleFactor = ReadScaleFactor();
+                    //            var newScaleFactor = _primaryScaleFactor;
+                    //            if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
+                    //                newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
+                    //            if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                    //            {
+                    //                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
+                    //                _lastScaleFactor = newScaleFactor;
+                    //            }
+                    //            return;
+                    //        }
+                    //        catch (Exception e)
+                    //        {
+                    //            Console.WriteLine(e);
+                    //        }
+                    //    }
+                    //});
                 }
+            }
         }
 
         private void MakeNormal2FullScreen()

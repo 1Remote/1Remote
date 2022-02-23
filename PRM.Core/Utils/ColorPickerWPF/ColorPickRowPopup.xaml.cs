@@ -46,7 +46,7 @@ namespace ColorPickerWPF
                 {
                     SetValue(ColorProperty, null);
                     SetValue(HexColorProperty, null);
-                    ColorDisplayGrid.Background = System.Windows.Media.Brushes.LightGray;
+                    ColorDisplayGrid.Background = ColorPickerControl4Popup.ChessboardBrush(2);
                 }
                 else
                 {
@@ -55,7 +55,14 @@ namespace ColorPickerWPF
                         SetValue(ColorProperty, value);
                     if (HexColor != hexColor)
                         SetValue(HexColorProperty, hexColor);
-                    ColorDisplayGrid.Background = new SolidColorBrush((Color)value);
+                    if (value.Value.ColorIsTransparent())
+                    {
+                        ColorDisplayGrid.Background = ColorPickerControl4Popup.ChessboardBrush(4);
+                    }
+                    else
+                    {
+                        ColorDisplayGrid.Background = new SolidColorBrush((Color)value);
+                    }
                     ColorPicker.SetColor((Color)value);
                 }
             }
@@ -73,12 +80,19 @@ namespace ColorPickerWPF
             {
                 var c = ColorAndBrushHelper.HexColorToMediaColor(value);
                 ((ColorPickRowPopup)d).Color = c;
-                ((ColorPickRowPopup)d).ColorDisplayGrid.Background = new SolidColorBrush(c);
+                if (ColorAndBrushHelper.ColorIsTransparent(value))
+                {
+                    ((ColorPickRowPopup)d).ColorDisplayGrid.Background = ColorPickerControl4Popup.ChessboardBrush(4);
+                }
+                else
+                {
+                    ((ColorPickRowPopup)d).ColorDisplayGrid.Background = new SolidColorBrush(c);
+                }
             }
-            catch (Exception ex)
+            catch
             {
                 ((ColorPickRowPopup)d).Color = null;
-                ((ColorPickRowPopup) d).ColorDisplayGrid.Background = System.Windows.Media.Brushes.Gray;
+                ((ColorPickRowPopup)d).ColorDisplayGrid.Background = ColorPickerControl4Popup.ChessboardBrush(2);
             }
         }
         public string HexColor
@@ -96,12 +110,19 @@ namespace ColorPickerWPF
                         SetValue(HexColorProperty, hexColor);
                     if (c != Color)
                         SetValue(ColorProperty, c);
-                    ColorDisplayGrid.Background = new SolidColorBrush(c);
+                    if (ColorAndBrushHelper.ColorIsTransparent(c))
+                    {
+                        ColorPickerControl4Popup.ChessboardBrush(4);
+                    }
+                    else
+                    {
+                        ColorDisplayGrid.Background = new SolidColorBrush(c);
+                    }
                     ColorPicker.SetColor(c);
                 }
                 catch (Exception e)
                 {
-                    ColorDisplayGrid.Background = System.Windows.Media.Brushes.Gray;
+                    ColorDisplayGrid.Background = ColorPickerControl4Popup.ChessboardBrush(2);
                     SetValue(ColorProperty, null);
                     SetValue(HexColorProperty, null);
                     Console.WriteLine(e);

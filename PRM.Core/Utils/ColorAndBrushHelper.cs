@@ -141,5 +141,28 @@ namespace Shawn.Utils
             var b = new System.Windows.Media.SolidColorBrush(color);
             return b;
         }
+
+
+
+        public static bool ColorIsTransparent(this System.Windows.Media.Color color)
+        {
+            return color.A < 20;
+        }
+        public static bool ColorIsTransparent(this System.Drawing.Color color)
+        {
+            return color.A < 20;
+        }
+        public static bool ColorIsTransparent(string hexColor)
+        {
+            try
+            {
+                var color = ColorAndBrushHelper.HexColorToMediaColor(hexColor);
+                return color.A < 20;
+            }
+            catch (Exception e)
+            {
+                return true;
+            }
+        }
     }
 }

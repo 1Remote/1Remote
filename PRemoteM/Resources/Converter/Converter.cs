@@ -279,16 +279,7 @@ namespace PRM.Resources.Converter
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            try
-            {
-                string hex = value.ToString();
-                var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
-                return brush.A < 20;
-            }
-            catch (Exception e)
-            {
-                return true;
-            }
+            return ColorAndBrushHelper.ColorIsTransparent(value.ToString());
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
