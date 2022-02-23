@@ -90,10 +90,10 @@ namespace ColorPickerWPF
                     return;
                 try
                 {
+                    var c = ColorAndBrushHelper.HexColorToMediaColor(value);
                     var hexColor = value;
                     if (HexColor != hexColor)
                         SetValue(HexColorProperty, hexColor);
-                    var c = ColorAndBrushHelper.HexColorToMediaColor(value);
                     if (c != Color)
                         SetValue(ColorProperty, c);
                     ColorDisplayGrid.Background = new SolidColorBrush(c);

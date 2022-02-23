@@ -153,12 +153,12 @@ namespace PRM.Core.Protocol
         }
 
 
-        private string _markColorHex = "#FFFFFF";
 
-        public string MarkColorHex
+        private string _colorHex = "#00000000";
+        public string ColorHex
         {
-            get => _markColorHex;
-            set => SetAndNotifyIfChanged(ref _markColorHex, value);
+            get => _colorHex;
+            set => SetAndNotifyIfChanged(ref _colorHex, value);
         }
 
         private DateTime _lastConnTime = DateTime.MinValue;

@@ -9,7 +9,6 @@ namespace PRM.ViewModel
     {
         public TabItemViewModel()
         {
-            _markColorHex = "#102b3e";
         }
 
         private object _header;
@@ -28,7 +27,8 @@ namespace PRM.ViewModel
             set
             {
                 SetAndNotifyIfChanged(ref _content, value);
-                MarkColorHex = Content.ProtocolServer.MarkColorHex;
+                //MarkColorHex = Content.ProtocolServer.MarkColorHex;
+                ColorHex = Content.ProtocolServer.ColorHex;
                 IconImg = Content.ProtocolServer.IconImg;
                 CanResizeNow = _content.CanResizeNow();
                 _content.OnCanResizeNowChanged += () => CanResizeNow = _content.CanResizeNow();
@@ -43,23 +43,22 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(ref _canResizeNow, value);
         }
 
-        private string _markColorHex;
-
+        private string _colorHex = "#00000000";
         /// <summary>
         /// tab title mark color
         /// </summary>
-        public string MarkColorHex
+        public string ColorHex
         {
-            get => _markColorHex;
+            get => _colorHex;
             private set
             {
                 try
                 {
-                    SetAndNotifyIfChanged(ref _markColorHex, value);
+                    SetAndNotifyIfChanged(ref _colorHex, value);
                 }
                 catch (Exception)
                 {
-                    MarkColorHex = "#FFFFFF";
+                    ColorHex = "#00000000";
                 }
             }
         }

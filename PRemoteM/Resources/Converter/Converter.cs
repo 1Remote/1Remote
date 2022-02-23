@@ -237,7 +237,7 @@ namespace PRM.Resources.Converter
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return "#FFFFFF";
+            throw new NotSupportedException();
         }
 
         #endregion IValueConverter
@@ -257,13 +257,43 @@ namespace PRM.Resources.Converter
             }
             catch (Exception e)
             {
-                return Brushes.White;
+                return Brushes.Transparent;
             }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return "#FFFFFF";
+            if (value is Color c)
+            {
+                return c.ColorToHexColor(true);
+            }
+            return "#00000000";
+        }
+
+        #endregion IValueConverter
+    }
+
+    public class ConverterColorIsTransparent : IValueConverter
+    {
+        #region IValueConverter
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            try
+            {
+                string hex = value.ToString();
+                var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
+                return brush.A < 20;
+            }
+            catch (Exception e)
+            {
+                return true;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
         }
 
         #endregion IValueConverter
