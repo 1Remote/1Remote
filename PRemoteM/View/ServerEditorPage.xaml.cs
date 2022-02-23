@@ -32,7 +32,7 @@ namespace PRM.View
             if (vm.IsAddMode)
             {
                 ButtonSave.Content = Context.LanguageService.Translate("Add");
-                ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
+                //ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
 
                 if (vm.Server.IconImg == null
                     && ServerIcons.Instance.Icons.Count > 0)

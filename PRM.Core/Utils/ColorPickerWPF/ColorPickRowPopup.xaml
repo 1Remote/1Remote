@@ -16,7 +16,20 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border x:Name="ColorDisplayGrid" BorderBrush="Black" BorderThickness="1" Background="White" Height="16" CornerRadius="4">
+            <Border x:Name="ColorDisplayGrid" BorderThickness="1" Background="White" Height="16" CornerRadius="4">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=GridPickerRow, Path=IsMouseOver}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentDarkBrush}"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=PopupPicker, Path=IsOpen}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
             </Border>
 
             <TextBlock x:Name="HexLabel" Visibility="{Binding HexVisible, ElementName=control}"

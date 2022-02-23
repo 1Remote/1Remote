@@ -10,6 +10,7 @@
     <converter:ConverterDouble2Half x:Key="ConverterDouble2Half" />
     <converter:ConverterColorHexString2Brush x:Key="ConverterColorHexString2Brush"></converter:ConverterColorHexString2Brush>
     <converter:ConverterColorHexString2Color x:Key="ConverterColorHexString2Color"></converter:ConverterColorHexString2Color>
+    <converter:ConverterColorIsTransparent x:Key="ConverterColorIsTransparent"></converter:ConverterColorIsTransparent>
     <converter:ConverterIsTheSame x:Key="ConverterIsTheSame"></converter:ConverterIsTheSame>
     <converter:ConverterEqual2Visible x:Key="ConverterEqual2Visible"></converter:ConverterEqual2Visible>
     <converter:DoubleAdd x:Key="DoubleAdd_2" AddValue="-2"></converter:DoubleAdd>

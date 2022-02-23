@@ -117,17 +117,31 @@
                                                   Background="Transparent"
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
-                                                    <Border BorderThickness="1" BorderBrush="Black" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+                                                    <Border BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
+                                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
+                                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
                                                         <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
                                                     </Border>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource Color}"></TextBlock>
                                                 <colorPickerWpf1:ColorPickRowPopup
-                                                    HexColor="{Binding Server.MarkColorHex}"
+                                                    HexColor="{Binding Server.ColorHex}"
                                                     Foreground="{DynamicResource BackgroundTextBrush}" 
                                                     HexVisible="Collapsed"
                                                     Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="Auto" HorizontalAlignment="Left" Text="{Binding Server.MarkColorHex}"></TextBlock>
+                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="Auto" HorizontalAlignment="Left" 
+                                                           Text="{Binding Server.ColorHex}"></TextBlock>
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>

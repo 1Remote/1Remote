@@ -223,7 +223,7 @@ namespace PRM.Model
                 var tmpRunner = ProtocolHostFactory.GetRunner(_context, ProtocolServerSFTP.ProtocolName);
                 var sftp = new ProtocolServerSFTP
                 {
-                    MarkColorHex = ssh.MarkColorHex,
+                    ColorHex = ssh.ColorHex,
                     IconBase64 = ssh.IconBase64,
                     DisplayName = ssh.DisplayName + " (SFTP)",
                     Address = ssh.Address,

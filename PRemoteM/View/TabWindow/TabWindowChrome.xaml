@@ -50,17 +50,28 @@
     </Window.Template>
     <Window.Resources>
         <ResourceDictionary>
-            <system:Double x:Key="TitleBarHeight">29</system:Double>
-            <system:Double x:Key="TrapezoidHeight">27</system:Double>
+            <system:Double x:Key="TitleBarHeight">32</system:Double>
+            <system:Double x:Key="TrapezoidHeight">32</system:Double>
             <!--cs code will read this vale-->
             <Thickness x:Key="TabContentBorder">0,1,0,0</Thickness>
 
             <!--Tab header content DataTemplate-->
             <DataTemplate DataType="{x:Type vm:TabItemViewModel}">
                 <!--leave some border of remote desktop-->
-                <Grid Margin="{StaticResource TabContentBorder}">
+                <Border Margin="{StaticResource TabContentBorder}" 
+                        BorderBrush="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderThickness" Value="5"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="True">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <ContentControl Content="{Binding Content}" Background="Transparent" />
-                </Grid>
+                </Border>
             </DataTemplate>
 
             <!--Tab header item Template-->
@@ -78,59 +89,54 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:DragablzItem}">
-                            <Grid Background="{DynamicResource PrimaryMidBrush}" Height="{StaticResource TitleBarHeight}">
-                                <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True"
+                            <Grid x:Name="DragablzHeaderItemContent" FocusManager.IsFocusScope="True" 
+                                      Background="{DynamicResource PrimaryMidBrush}"
                                       SnapsToDevicePixels="true"
                                       Height="{StaticResource TitleBarHeight}"
                                       utils:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
                                       VerticalAlignment="Bottom">
-                                    <Grid.ContextMenu>
-                                        <ContextMenu ItemsSource="{Binding Content.MenuItems}">
-                                            <ContextMenu.Style>
-                                                <Style TargetType="{x:Type ContextMenu}">
-                                                    <Setter Property="OverridesDefaultStyle" Value="True" />
-                                                    <Setter Property="SnapsToDevicePixels" Value="True" />
-                                                    <Setter Property="Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate TargetType="{x:Type ContextMenu}">
-                                                                <Border BorderThickness="1" BorderBrush="#666" x:Name="Border" Background="{DynamicResource PrimaryMidBrush}">
-                                                                    <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
-                                                                </Border>
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Style>
-                                            </ContextMenu.Style>
-                                        </ContextMenu>
-                                    </Grid.ContextMenu>
-                                    <!--<Grid.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Color="{Binding MarkColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0"></GradientStop>
-                                            <GradientStop Color="{DynamicResource PrimaryMidColor}" Offset="1"></GradientStop>
-                                        </LinearGradientBrush>
-                                    </Grid.Background>-->
-                                    <Grid Name="Trapezoid" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center" Margin="1 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
+                                <Grid.ContextMenu>
+                                    <ContextMenu ItemsSource="{Binding Content.MenuItems}">
+                                        <ContextMenu.Style>
+                                            <Style TargetType="{x:Type ContextMenu}">
+                                                <Setter Property="OverridesDefaultStyle" Value="True" />
+                                                <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type ContextMenu}">
+                                                            <Border BorderThickness="1" BorderBrush="{DynamicResource DefaultBorderBrush}" x:Name="Border" Background="{DynamicResource PrimaryMidBrush}">
+                                                                <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ContextMenu.Style>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Border Name="DragablzHeaderItemBorder"></Border>
+                                <Grid Name="Trapezoid" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                        <!--header item identify color-->
-                                        <!--<Grid Width="1" Name="ColorMark" Visibility="Hidden" HorizontalAlignment="Left" Background="{Binding MarkColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>-->
+                                    <!--header item identify color-->
+                                    <!--<Grid Width="1" Name="ColorMark" Visibility="Hidden" HorizontalAlignment="Left" Background="{Binding ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>-->
 
-                                        <!--header item icon-->
-                                        <Border Grid.Column="1" Padding="4 0 4 0">
-                                            <Grid Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                <Image Source="{Binding IconImg}" Stretch="Uniform"></Image>
-                                            </Grid>
-                                        </Border>
+                                    <!--header item icon-->
+                                    <Border Grid.Column="1" Padding="4 0 4 0">
+                                        <Grid Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Image Source="{Binding IconImg}" Stretch="Uniform"></Image>
+                                        </Grid>
+                                    </Border>
 
-                                        <!--header item content-->
-                                        <Border Grid.Column="2" Padding="0">
-                                            <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
+                                    <!--header item content-->
+                                    <Border Grid.Column="2" Padding="0">
+                                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}"
                                                   ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
                                                   ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
                                                   HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
@@ -138,26 +144,26 @@
                                                   SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
                                                   Margin="{TemplateBinding Control.Padding }"
                                                   x:Name="contentPresenter" />
-                                        </Border>
+                                    </Border>
 
-                                        <!--header item placeholder(do not remove this)-->
-                                        <Thumb Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
-                                            <Thumb.Style>
-                                                <Style TargetType="{x:Type Thumb}">
-                                                    <Setter Property="Background" Value="Transparent" />
-                                                    <Setter Property="Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate>
-                                                                <Grid Background="{TemplateBinding Background}" />
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Style>
-                                            </Thumb.Style>
-                                        </Thumb>
+                                    <!--header item placeholder(do not remove this)-->
+                                    <Thumb Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" x:Name="PART_Thumb">
+                                        <Thumb.Style>
+                                            <Style TargetType="{x:Type Thumb}">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate>
+                                                            <Grid Background="{TemplateBinding Background}" />
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Thumb.Style>
+                                    </Thumb>
 
 
-                                        <Button Grid.Column="4" Width="10" Height="10" 
+                                    <Button Grid.Column="4" Width="10" Height="10" 
                                                 Style="{StaticResource ButtonBarAccentStyle}"
                                                 Background="Transparent"
                                                 attachProperty:VisionElement.Opacity="0.5"
@@ -165,49 +171,38 @@
                                                 attachProperty:VisionElement.BackgroundAccent="Transparent"
                                                 Margin="5 0"
                                                 Command="dragablz:TabablzControl.CloseItemCommand">
-                                            <Grid Height="10" Width="8">
-                                                <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                        <Grid Height="10" Width="8">
+                                            <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                                       Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
                                                       StrokeThickness="2" Stretch="Uniform" />
-                                            </Grid>
-                                        </Button>
-                                    </Grid>
+                                        </Grid>
+                                    </Button>
                                 </Grid>
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="dragablz:TabablzControl.IsWrappingTabItem" Value="True">
                                     <Setter TargetName="contentPresenter" Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=DataContext.Header}" />
                                 </Trigger>
+                                <DataTrigger Binding="{Binding ColorHex, Converter={StaticResource ConverterColorIsTransparent}}" Value="False">
+                                    <Setter TargetName="Trapezoid" Property="Margin" Value="3 0" />
+                                </DataTrigger>
                                 <Trigger Property="IsSelected" Value="False">
-                                    <!--<Setter Property="Visibility" Value="Hidden" TargetName="ColorMark" />-->
-                                    <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" TargetName="Trapezoid" />
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}" TargetName="DragablzHeaderItemContent" />
                                     <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
-                                    <Setter Property="Height" TargetName="DragablzHeaderItemContent" Value="{StaticResource TitleBarHeight}" />
                                     <Setter Property="Background" TargetName="DragablzHeaderItemContent" Value="{DynamicResource PrimaryMidBrush}" />
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" TargetName="Trapezoid" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" TargetName="DragablzHeaderItemContent" />
                                     <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-                                    <Setter Property="Background" TargetName="DragablzHeaderItemContent">
-                                        <Setter.Value>
-                                            <SolidColorBrush Color="{Binding MarkColorHex, Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}">
-                                            </SolidColorBrush>
-                                        </Setter.Value>
-                                    </Setter>
+                                    <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="5"/>
+                                    <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" Value="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <!--<Setter Property="Visibility" Value="Visible" TargetName="ColorMark" />-->
-                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="Trapezoid" />
+                                    <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="DragablzHeaderItemContent" />
                                     <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-                                    <Setter Property="Height" TargetName="DragablzHeaderItemContent" Value="{StaticResource TitleBarHeight}" />
-                                    <!--<Setter Property="Background" TargetName="DragablzHeaderItemContent" Value="{DynamicResource PrimaryMidBrush}" />-->
-                                    <Setter Property="Background" TargetName="DragablzHeaderItemContent">
-                                        <Setter.Value>
-                                            <SolidColorBrush Color="{Binding MarkColorHex, Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}">
-                                            </SolidColorBrush>
-                                        </Setter.Value>
-                                    </Setter>
+                                    <Setter Property="BorderThickness" TargetName="DragablzHeaderItemBorder" Value="5 5 5 0"/>
+                                    <Setter Property="BorderBrush" TargetName="DragablzHeaderItemBorder" Value="{Binding ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -545,7 +540,9 @@
                                     <RowDefinition x:Name="RowDefinition0" Height="Auto" />
                                     <RowDefinition x:Name="RowDefinition1" Height="*" />
                                 </Grid.RowDefinitions>
-                                <Border x:Name="contentPanel" BorderThickness="0" Background="{TemplateBinding Background}"
+                                <Border x:Name="contentPanel" 
+                                        BorderThickness="0" 
+                                        Background="{TemplateBinding Background}"
                                         Grid.Column="0" 
                                         Grid.Row="1"
                                         KeyboardNavigation.DirectionalNavigation="Contained"
@@ -618,11 +615,11 @@
                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                  ItemsSource="{Binding Items}"
                                  HeaderMemberPath="Header">
-                <!-- important for docking -->
-                <dragablz:TabablzControl.InterTabController>
-                    <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
-                    <!--<dragablz:InterTabController />-->
-                </dragablz:TabablzControl.InterTabController>
-            </dragablz:TabablzControl>
+            <!-- important for docking -->
+            <dragablz:TabablzControl.InterTabController>
+                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
+                <!--<dragablz:InterTabController />-->
+            </dragablz:TabablzControl.InterTabController>
+        </dragablz:TabablzControl>
     </Grid>
 </tabWindow:TabWindowBase>
