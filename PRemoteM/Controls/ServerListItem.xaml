@@ -16,10 +16,19 @@
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
             <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
         </Grid.InputBindings>
-
+        <Grid Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
+        <!--<Grid Opacity="0.4">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0.9,0">
+                    <GradientStop Color="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0.2"></GradientStop>
+                    <GradientStop Color="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Color}, Mode=OneWay}" Offset="0.7"></GradientStop>
+                    <GradientStop Color="Transparent" Offset="0.9"></GradientStop>
+                </LinearGradientBrush>
+            </Grid.Background>
+        </Grid>-->
         <Grid>
             <Grid.Margin>
-                <Thickness Left="10" Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
+                <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
             </Grid.Margin>
             <Grid VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -31,7 +40,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
+                <CheckBox Margin="10 0 0 0" Width="20" Height="20" HorizontalAlignment="Left" 
                                       Name="CbIsSelected"
                                       IsChecked="{Binding IsSelected, Mode=TwoWay}">
                     <CheckBox.Style>
@@ -52,15 +61,7 @@
                 <TextBlock Grid.Column="1" Margin="5 0"
                                                    Text="{Binding Server.ProtocolDisplayName}"
                                                    FontSize="14" FontWeight="Bold"
-                                                   HorizontalAlignment="Left"
-                                                   Opacity="0.4"
-                                                   Foreground="{DynamicResource PrimaryMidBrush}"
-                                                   VerticalAlignment="Center"></TextBlock>
-                <TextBlock Grid.Column="1" Margin="5 0"
-                                                   Text="{Binding Server.ProtocolDisplayName}"
-                                                   FontSize="14" FontWeight="Bold"
-                                                   Foreground="{DynamicResource PrimaryTextBrush}"
-                                                   Opacity="0.2"
+                                                   Opacity="0.6"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center">
                 </TextBlock>

@@ -280,7 +280,6 @@
 
         <Grid Grid.Row="1">
             <pageHost:PageHost NewPage="{Binding ServersShownPage}"></pageHost:PageHost>
-            <pageHost:PageHost x:Name="BottomPageHost" NewPage="{Binding BottomPage}"></pageHost:PageHost>
             <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost:PageHost>
             <pageHost:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost:PageHost>
 

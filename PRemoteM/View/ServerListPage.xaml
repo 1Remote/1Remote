@@ -235,11 +235,16 @@
                         </Grid>
 
                         <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="0" HorizontalScrollBarVisibility="Disabled">
+                            <ScrollViewer.Margin>
+                                <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
+                            </ScrollViewer.Margin>
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                            </ItemsPresenter>
+                            <!--<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
                                 <ItemsPresenter.Margin>
                                     <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
                                 </ItemsPresenter.Margin>
-                            </ItemsPresenter>
+                            </ItemsPresenter>-->
                         </ScrollViewer>
                     </Grid>
                 </Border>
@@ -279,19 +284,19 @@
                 </Setter>
                 <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>
 
-
-                <!--<Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <StackPanel Margin="0 0 0 30"/>
-                        </ItemsPanelTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>-->
-
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding ConfigurationViewModel.ListPageIsCardView}" Value="False">
+                    <DataTrigger Binding="{Binding ListPageIsCardView}" Value="True">
+                        <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>
+                        <Setter Property="ItemsPanel">
+                            <Setter.Value>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
+                                </ItemsPanelTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding ListPageIsCardView}" Value="False">
                         <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
                         <Setter Property="ItemsPanel">
                             <Setter.Value>

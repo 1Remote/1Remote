@@ -22,7 +22,9 @@
             </Grid.InputBindings>
 
             <!-- Card Bottom Layer - with shadow effect -->
-            <Border CornerRadius="5" BorderThickness="1" Background="Black" BorderBrush="{DynamicResource BackgroundBrush}"  Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
+            <Border CornerRadius="5" BorderThickness="0" 
+                    Background="Black" 
+                    Width="{StaticResource CardWidth}" Height="{StaticResource CardWidth}">
                 <Border.Effect>
                     <DropShadowEffect Opacity="0.6" ShadowDepth="4"></DropShadowEffect>
                 </Border.Effect>
@@ -34,15 +36,18 @@
                     <RectangleGeometry RadiusX="5" RadiusY="5" Rect="0 0 144 144"></RectangleGeometry>
                 </Grid.Clip>
                 <!-- Card Content Middle Layer - with icon -->
-                <Grid Name="CardContent" Background="{DynamicResource PrimaryMidBrush}">
+                <Grid Name="CardContent" Background="{DynamicResource PrimaryMidBrush}" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="20"></RowDefinition>
                     </Grid.RowDefinitions>
 
+                    <Grid Grid.Row="0" Opacity="0.4" Grid.RowSpan="3" 
+                          Background="{Binding Server.ColorHex, Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
+
                     <Grid Grid.Row="0" Grid.RowSpan="3">
-                        <Image Source="{Binding Server.IconImg}" Width="110" Height="110"
+                        <Image Source="{Binding Server.IconImg, Mode=OneWay}" Width="110" Height="110"
                                Stretch="UniformToFill">
                             <Image.Style>
                                 <Style TargetType="Image">
@@ -81,7 +86,7 @@
 
                     <Grid Grid.Row="0" Grid.RowSpan="3">
                         <TextBlock Name="TbServerType" Opacity="0.3"
-                               FontWeight="Bold" Text="{Binding Server.ProtocolDisplayNameInShort}" 
+                               FontWeight="Bold" Text="{Binding Server.ProtocolDisplayNameInShort, Mode=OneWay}" 
                                Width="40"
                                TextAlignment="Center"
                                HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -222,33 +227,7 @@
 
                         <Grid Name="GridNameBar" Grid.Row="2" Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" >
                             <Grid HorizontalAlignment="Center" Margin="0 4 0 0">
-                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryMidBrush}"></Setter>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ElementName=CardNameBarMask,Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                    <TextBlock.Effect>
-                                        <DropShadowEffect ShadowDepth="0"
-                                                          Direction="0"
-                                                          Color="{DynamicResource PrimaryDarkColor}"
-                                                          Opacity="10"
-                                                          BlurRadius="3"
-                                        />
-                                    </TextBlock.Effect>
-                                </TextBlock>
-                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}">
+                                <TextBlock VerticalAlignment="Center" FontSize="12" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName, Mode=OneWay}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>

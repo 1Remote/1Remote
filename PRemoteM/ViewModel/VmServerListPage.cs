@@ -45,6 +45,20 @@ namespace PRM.ViewModel
         public ConfigurationViewModel ConfigurationViewModel { get; }
         private readonly ListBox _list;
 
+
+        public bool ListPageIsCardView
+        {
+            get => ConfigurationViewModel.ListPageIsCardView;
+            set
+            {
+                if (ConfigurationViewModel.ListPageIsCardView != value)
+                {
+                    ConfigurationViewModel.ListPageIsCardView = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         protected VmServerListPage(PrmContext context, ConfigurationViewModel configurationView, ListBox list)
         {
             Context = context;

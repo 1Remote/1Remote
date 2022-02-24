@@ -163,6 +163,7 @@
 
         <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
             <Grid Visibility="{Binding ObjectVisibility}"  Height="{StaticResource OneItemHeight}">
+
                 <Grid VerticalAlignment="Center" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
@@ -209,21 +210,12 @@
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                Text="{Binding Server.ProtocolDisplayName}"
-                               FontSize="18" FontWeight="Bold"
+                               FontSize="16" FontWeight="Bold"
                                HorizontalAlignment="Right"
-                               Opacity="0.4"
-                               Foreground="{DynamicResource PrimaryMidBrush}"
+                               Opacity="0.3"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                Margin="10 0"
                                VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
-                               Text="{Binding Server.ProtocolDisplayName}"
-                               FontSize="18" FontWeight="Bold"
-                               Foreground="{DynamicResource PrimaryTextBrush}"
-                               Opacity="0.2"
-                               HorizontalAlignment="Right"
-                               Margin="10 0"
-                               VerticalAlignment="Center">
-                        </TextBlock>
                     </Grid>
                 </Grid>
             </Grid>
@@ -253,6 +245,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Grid>
+                                        <Grid x:Name="GridColor" Opacity="0.4" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
                                         <Border x:Name="GridContainer">
                                             <!--<Border.CornerRadius>
                                                 <CornerRadius
@@ -262,6 +255,9 @@
                                                     BottomLeft="{StaticResource CornerRadius}" />
                                             </Border.CornerRadius>-->
                                         </Border>
+                                        <Grid x:Name="GridColorOnSelected" 
+                                              Visibility="Collapsed"
+                                              Width="40" HorizontalAlignment="Left" Background="{Binding Server.ColorHex,Converter={StaticResource ConverterColorHexString2Brush}, Mode=OneWay}"></Grid>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
@@ -277,6 +273,8 @@
                                             <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
                                             <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                            <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
+                                            <Setter TargetName="GridColor" Property="Visibility" Value="Collapsed" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>

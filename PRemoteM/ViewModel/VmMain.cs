@@ -16,7 +16,6 @@ using Shawn.Utils;
 using Shawn.Utils.PageHost;
 using PRM.View;
 using PRM.ViewModel.Configuration;
-using Shawn.Utils;
 
 using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
@@ -26,6 +25,8 @@ namespace PRM.ViewModel
     {
         public VmAboutPage VmAboutPage { get; }
         public ConfigurationViewModel ConfigurationVm { get; }
+
+        public ServerListPage ServerListPage { get; }
 
         #region Properties
 
@@ -41,20 +42,8 @@ namespace PRM.ViewModel
 
         public AnimationPage ServersShownPage { get; }
 
-        private AnimationPage _bottomPage = null;
-
-        public AnimationPage BottomPage
-        {
-            get => _bottomPage;
-            set
-            {
-                SetAndNotifyIfChanged(ref _bottomPage, value);
-                CalcTbFilterVisible();
-            }
-        }
 
         private AnimationPage _dispPage = null;
-
         public AnimationPage DispPage
         {
             get => _dispPage;
@@ -179,11 +168,12 @@ namespace PRM.ViewModel
                 });
             };
 
+            ServerListPage = new ServerListPage(Context, configurationVm);
             ServersShownPage = new AnimationPage()
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,
                 OutAnimationType = AnimationPage.InOutAnimationType.None,
-                Page = new ServerListPage(Context, configurationVm),
+                Page = ServerListPage,
             };
             //_managementPage = new ServerManagementPage(Context);
         }
@@ -225,9 +215,9 @@ namespace PRM.ViewModel
             {
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
-                    ConfigurationViewModel.GetInstance().ListPageIsCardView = !ConfigurationViewModel.GetInstance().ListPageIsCardView;
+                    this.ServerListPage.Vm.ListPageIsCardView = !this.ServerListPage.Vm.ListPageIsCardView;
                     Window.PopupMenu.IsOpen = false;
-                }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                }, o => TopPage == null && DispPage == null);
             }
         }
 
