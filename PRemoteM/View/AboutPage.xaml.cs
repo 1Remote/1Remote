@@ -37,7 +37,7 @@ namespace PRM.View
 
         private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
         {
-            _vmMain.TopPage = null;
+            _vmMain.AnimationPageAbout = null;
         }
     }
 }

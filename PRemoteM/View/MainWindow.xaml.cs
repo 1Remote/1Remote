@@ -133,13 +133,13 @@ namespace PRM
             }
             else if (e.Key == Key.Escape)
             {
-                if (Vm.TopPage != null)
+                if (Vm.AnimationPageAbout != null)
                 {
-                    Vm.TopPage = null;
+                    Vm.AnimationPageAbout = null;
                 }
-                else if (Vm.DispPage?.Page is SystemConfigPage)
+                else if (Vm.AnimationPageSettings != null)
                 {
-                    Vm.DispPage = null;
+                    Vm.AnimationPageSettings = null;
                 }
             }
             else

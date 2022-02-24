@@ -85,8 +85,8 @@
                             <Style.Triggers>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding TopPage}" Value="{x:Null}"></Condition>
-                                        <Condition Binding="{Binding DispPage}" Value="{x:Null}"></Condition>
+                                        <Condition Binding="{Binding AnimationPageAbout}" Value="{x:Null}"></Condition>
+                                        <Condition Binding="{Binding AnimationPageEditor}" Value="{x:Null}"></Condition>
                                     </MultiDataTrigger.Conditions>
                                     <MultiDataTrigger.EnterActions>
                                         <BeginStoryboard>
@@ -279,9 +279,10 @@
         </StackPanel>
 
         <Grid Grid.Row="1">
-            <pageHost:PageHost NewPage="{Binding ServersShownPage}"></pageHost:PageHost>
-            <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding DispPage}"></pageHost:PageHost>
-            <pageHost:PageHost x:Name="TopPageHost" NewPage="{Binding TopPage}"></pageHost:PageHost>
+            <pageHost:PageHost NewPage="{Binding AnimationPageServerList}"></pageHost:PageHost>
+            <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding AnimationPageEditor}"></pageHost:PageHost>
+            <pageHost:PageHost x:Name="SettingsPageHost" NewPage="{Binding AnimationPageSettings}"></pageHost:PageHost>
+            <pageHost:PageHost x:Name="AboutPageHost" NewPage="{Binding AnimationPageAbout}"></pageHost:PageHost>
 
             <Grid>
                 <Grid.Resources>
