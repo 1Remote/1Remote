@@ -92,7 +92,7 @@ namespace PRM.ViewModel.Configuration
                     _configurationService.Save();
                     _protocolConfigurationService.Save();
                     if (Host != null)
-                        Host.DispPage = null;
+                        Host.AnimationPageSettings = null;
                 });
                 return _cmdSaveAndGoBack;
             }

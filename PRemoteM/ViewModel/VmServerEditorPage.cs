@@ -290,9 +290,7 @@ namespace PRM.ViewModel
                         {
                             _globalData.UpdateServer(server, false);
                         }
-
                         _globalData.VmItemListDataChanged?.Invoke();
-                        App.MainUi.Vm.DispPage = null;
                     }
                     // edit
                     else if (Server.Id > 0)
@@ -304,7 +302,7 @@ namespace PRM.ViewModel
                     {
                         _globalData.AddServer(Server);
                     }
-                    App.MainUi.Vm.DispPage = null;
+                    App.MainUi.Vm.AnimationPageEditor = null;
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -320,7 +318,7 @@ namespace PRM.ViewModel
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    App.MainUi.Vm.DispPage = null;
+                    App.MainUi.Vm.AnimationPageEditor = null;
                 });
                 return _cmdCancel;
             }

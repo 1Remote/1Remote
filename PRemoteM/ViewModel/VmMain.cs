@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Threading;
 using PRM.Core.DB.Dapper;
 using PRM.Core.Model;
@@ -23,47 +24,37 @@ namespace PRM.ViewModel
 {
     public class VmMain : NotifyPropertyChangedBase
     {
-        public VmAboutPage VmAboutPage { get; }
         public ConfigurationViewModel ConfigurationVm { get; }
-
-        public ServerListPage ServerListPage { get; }
+        public VmAboutPage VmAboutPage { get; }
+        private readonly ServerListPage _serverListPage;
 
         #region Properties
 
-        private Visibility _tbFilterVisible = Visibility.Visible;
 
-        public Visibility TbFilterVisible
+        public AnimationPage AnimationPageServerList { get; }
+
+
+        private AnimationPage _animationPageEditor = null;
+        public AnimationPage AnimationPageEditor
         {
-            get => _tbFilterVisible;
-            set => SetAndNotifyIfChanged(ref _tbFilterVisible, value);
+            get => _animationPageEditor;
+            set => SetAndNotifyIfChanged(ref _animationPageEditor, value);
         }
 
-        private readonly AboutPage _aboutPage;
-
-        public AnimationPage ServersShownPage { get; }
-
-
-        private AnimationPage _dispPage = null;
-        public AnimationPage DispPage
+        private AnimationPage _animationPageSettings = null;
+        public AnimationPage AnimationPageSettings
         {
-            get => _dispPage;
-            set
-            {
-                SetAndNotifyIfChanged(ref _dispPage, value);
-                CalcTbFilterVisible();
-            }
+            get => _animationPageSettings;
+            set => SetAndNotifyIfChanged(ref _animationPageSettings, value);
         }
 
-        private AnimationPage _topPage = null;
 
-        public AnimationPage TopPage
+
+        private AnimationPage _animationPageAbout = null;
+        public AnimationPage AnimationPageAbout
         {
-            get => _topPage;
-            set
-            {
-                SetAndNotifyIfChanged(ref _topPage, value);
-                CalcTbFilterVisible();
-            }
+            get => _animationPageAbout;
+            set => SetAndNotifyIfChanged(ref _animationPageAbout, value);
         }
 
         private int _progressBarValue = 0;
@@ -99,12 +90,10 @@ namespace PRM.ViewModel
         {
             Context = context;
             Window = window;
-            this.VmAboutPage = new VmAboutPage();
-            _aboutPage = new AboutPage(VmAboutPage, this);
             ConfigurationViewModel.Init(context);
             ConfigurationVm = configurationVm;
             ConfigurationVm.Host = this;
-
+            VmAboutPage = new VmAboutPage();
             GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
             {
                 Window.Dispatcher.Invoke(() =>
@@ -121,7 +110,7 @@ namespace PRM.ViewModel
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
                 Window.Dispatcher.Invoke(() =>
                 {
-                    DispPage = new AnimationPage()
+                    AnimationPageEditor = new AnimationPage()
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
@@ -139,7 +128,7 @@ namespace PRM.ViewModel
                 };
                 Window.Dispatcher.Invoke(() =>
                 {
-                    DispPage = new AnimationPage()
+                    AnimationPageEditor = new AnimationPage()
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
@@ -163,27 +152,18 @@ namespace PRM.ViewModel
                         page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases));
                     else
                         page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases.First()));
-                    DispPage = page;
+                    AnimationPageEditor = page;
                     Window.ActivateMe();
                 });
             };
 
-            ServerListPage = new ServerListPage(Context, configurationVm);
-            ServersShownPage = new AnimationPage()
+            _serverListPage = new ServerListPage(Context, configurationVm);
+            AnimationPageServerList = new AnimationPage()
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,
                 OutAnimationType = AnimationPage.InOutAnimationType.None,
-                Page = ServerListPage,
+                Page = _serverListPage,
             };
-            //_managementPage = new ServerManagementPage(Context);
-        }
-
-        private void CalcTbFilterVisible()
-        {
-            if (TopPage == null && DispPage == null)
-                TbFilterVisible = Visibility.Visible;
-            else
-                TbFilterVisible = Visibility.Collapsed;
         }
 
         #region CMD
@@ -196,14 +176,14 @@ namespace PRM.ViewModel
             {
                 return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
-                    DispPage = new AnimationPage()
+                    AnimationPageSettings = new AnimationPage()
                     {
                         InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                         Page = new SystemConfigPage(Context, ConfigurationVm, o?.ToString()),
                     };
                     Window.PopupMenu.IsOpen = false;
-                }, o => TopPage == null && DispPage?.Page?.GetType() != typeof(SystemConfigPage));
+                }, o => AnimationPageAbout == null && AnimationPageSettings == null && AnimationPageEditor == null);
             }
         }
 
@@ -215,9 +195,9 @@ namespace PRM.ViewModel
             {
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
-                    this.ServerListPage.Vm.ListPageIsCardView = !this.ServerListPage.Vm.ListPageIsCardView;
+                    this._serverListPage.Vm.ListPageIsCardView = !this._serverListPage.Vm.ListPageIsCardView;
                     Window.PopupMenu.IsOpen = false;
-                }, o => TopPage == null && DispPage == null);
+                }, o => AnimationPageAbout == null && AnimationPageEditor == null && AnimationPageSettings == null);
             }
         }
 
@@ -229,14 +209,14 @@ namespace PRM.ViewModel
             {
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
-                    TopPage = new AnimationPage()
+                    AnimationPageAbout = new AnimationPage()
                     {
                         InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = _aboutPage,
+                        Page = new AboutPage(VmAboutPage, this),
                     };
                     Window.PopupMenu.IsOpen = false;
-                }, o => TopPage?.Page?.GetType() != typeof(AboutPage));
+                }, o => AnimationPageAbout?.Page?.GetType() != typeof(AboutPage));
             }
         }
 
