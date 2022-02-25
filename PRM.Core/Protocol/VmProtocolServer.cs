@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using PRM.Core.Model;
 using Shawn.Utils;
+using VariableKeywordMatcher.Model;
 
 namespace PRM.Core.Protocol
 {
@@ -37,32 +39,32 @@ namespace PRM.Core.Protocol
                 Text = Server?.SubTitle,
             };
 
-        private object _dispNameControl = null;
 
+        private object _dispNameControl = null;
         public object DispNameControl
         {
             get => _dispNameControl;
             set => SetAndNotifyIfChanged(ref _dispNameControl, value);
         }
 
-        private object _subTitleControl = null;
 
+        private object _subTitleControl = null;
         public object SubTitleControl
         {
             get => _subTitleControl;
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
         }
 
-        private Visibility _objectVisibility = Visibility.Visible;
 
-        public Visibility ObjectVisibility
+        private Visibility _objectVisibilityInLauncher = Visibility.Visible;
+        public Visibility ObjectVisibilityInLauncher
         {
-            get => _objectVisibility;
-            set => SetAndNotifyIfChanged(ref _objectVisibility, value);
+            get => _objectVisibilityInLauncher;
+            set => SetAndNotifyIfChanged(ref _objectVisibilityInLauncher, value);
         }
 
-        private Visibility _objectVisibilityInList = Visibility.Visible;
 
+        private Visibility _objectVisibilityInList = Visibility.Visible;
         public Visibility ObjectVisibilityInList
         {
             get => _objectVisibilityInList;

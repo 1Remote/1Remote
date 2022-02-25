@@ -22,27 +22,12 @@ using PRM.Core.Service;
 using PRM.Core.Utils.mRemoteNG;
 using PRM.Model;
 using PRM.Resources.Icons;
+using PRM.Utils.Filters;
 using PRM.ViewModel.Configuration;
 using Shawn.Utils;
 
 namespace PRM.ViewModel
 {
-    public class TagFilter
-    {
-        public TagFilter(string tagName, bool isNegative)
-        {
-            TagName = tagName;
-            IsNegative = isNegative;
-        }
-
-        public string TagName { get; }
-        public bool IsNegative { get; }
-
-        public override string ToString()
-        {
-            return TagName + (IsNegative ? VmServerListPage.TagTypeSeparator + "Negative" : "");
-        }
-    }
 
     public partial class VmServerListPage : NotifyPropertyChangedBase
     {
@@ -64,127 +49,59 @@ namespace PRM.ViewModel
                 {
                     Context.LocalityService.MainWindowTabSelected = value;
                     CalcVisible();
-                    RaisePropertyChanged(nameof(TagFilters));
-                }
-            }
-        }
-
-        private ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();
-        /// <summary>
-        /// list all tags of servers
-        /// </summary>
-        public ObservableCollection<Tag> Tags
-        {
-            get => _tags;
-            private set => SetAndNotifyIfChanged(ref _tags, value);
-        }
-
-        private void ReadTagsFromServers()
-        {
-            var pinnedTags = Context.ConfigurationService.PinnedTags;
-            // set pinned
-            // TODO del after 2022.05.31
-            if (pinnedTags.Count == 0)
-            {
-                var allExistedTags = Tag.GetPinnedTags();
-                pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
-            }
 
 
-            // get distinct tag from servers
-            var tags = new List<Tag>();
-            foreach (var tagNames in ServerListItems.Select(x => x.Server.Tags))
-            {
-                if (tagNames == null)
-                    continue;
-                foreach (var tagName in tagNames)
-                {
-                    if (tags.All(x => x.Name != tagName))
-                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), () =>
-                        {
-                            Context.ConfigurationService.PinnedTags = Tags.Where(x => x.IsPinned).Select(x => x.Name).ToList();
-                            Context.ConfigurationService.Save();
-                        })
-                        { ItemsCount = 1 });
+                    var tagFilters = new List<TagFilter>();
+                    if (SelectedTabName == VmServerListPage.TabAllName
+                        || SelectedTabName == VmServerListPage.TabTagsListName
+                        || SelectedTabName == VmServerListPage.TabNoneSelected)
+                    {
+
+                    }
                     else
-                        tags.First(x => x.Name == tagName).ItemsCount++;
+                    {
+                        var tags = SelectedTabName.Split(new string[] { TagSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var tmp in tags)
+                        {
+                            var strings = tmp.Split(new string[] { TagTypeSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                            if (strings.Length > 0
+                                && Context.AppData.TagList.Any(x => x.Name == strings[0].Trim()))
+                            {
+                                tagFilters.Add(new TagFilter(strings[0], strings.Length > 1 ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+                            }
+                        }
+                    }
+                    TagFilters = tagFilters;
                 }
             }
-
-            var selectedTagName = this.SelectedTabName;
-            Tags = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
-            Context.AppData.TagNames = tags.Select(x => x.Name).ToList();
-            if (Tags.All(x => x.Name != selectedTagName))
-            {
-                SelectedTabName = "";
-            }
-            else
-            {
-                SelectedTabName = selectedTagName;
-            }
         }
+        
 
 
-        /// <summary>
-        /// decode from SelectedTabName, SelectedTabName may contains many selected tags
-        /// </summary>
+        private List<TagFilter> _tagFilters;
         [NotNull]
         public List<TagFilter> TagFilters
         {
-            get
-            {
-                var ret = new List<TagFilter>();
-                if (SelectedTabName == VmServerListPage.TabAllName
-                    || SelectedTabName == VmServerListPage.TabTagsListName
-                    || SelectedTabName == VmServerListPage.TabNoneSelected)
-                    return ret;
-                var tags = SelectedTabName.Split(new string[] { TagSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var tmp in tags)
-                {
-                    var strings = tmp.Split(new string[] { TagTypeSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                    if (strings.Length > 0
-                    && Tags.Any(x => x.Name == strings[0].Trim()))
-                    {
-                        ret.Add(new TagFilter(strings[0], strings.Length > 1));
-                    }
-                }
-                return ret;
-            }
-        }
-
-        /// <summary>
-        /// convert TagFilters[] to (string)SelectedTabName
-        /// </summary>
-        /// <param name="tagFilters"></param>
-        private void SetSelectedTabName(IEnumerable<TagFilter> tagFilters)
-        {
-            var sts = tagFilters.Select(x => x.ToString());
-            SelectedTabName = string.Join(TagSeparator, sts);
+            get => _tagFilters;
+            set => SetAndNotifyIfChanged(ref _tagFilters, value);
         }
 
 
         #region Tag filter control
 
-        enum FilterTagsControlAction
-        {
-            Append,
-            AppendNegativeFilter,
-            Remove,
-            Set,
-        }
-        private void FilterTagsControl(object o, FilterTagsControlAction action)
+        private void FilterTagsControl(object o, TagFilter.FilterTagsControlAction action)
         {
             if (o == null)
                 return;
 
             string newTagName = string.Empty;
             if (o is Tag obj
-                && Tags.Any(x => x.Name == obj.Name))
+                && Context.AppData.TagList.Any(x => x.Name == obj.Name))
             {
                 newTagName = obj.Name;
             }
             else if (o is string str
-                     && Tags.Any(x => x.Name == str))
+                     && Context.AppData.TagList.Any(x => x.Name == str))
             {
                 newTagName = str;
             }
@@ -194,29 +111,46 @@ namespace PRM.ViewModel
                 var filters = TagFilters;
                 var existed = filters.FirstOrDefault(x => x.TagName == newTagName);
                 // remove action
-                if (action == FilterTagsControlAction.Remove)
+                if (action == TagFilter.FilterTagsControlAction.Remove)
                 {
                     if (existed != null)
                     {
                         filters.Remove(existed);
-                        SetSelectedTabName(filters);
+                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
+                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(filters, s.Item2);
+                        if (filters.Count == 1)
+                        {
+                            SelectedTabName = filters.First().TagName;
+                        }
                     }
                 }
                 // append action
-                else if (action == FilterTagsControlAction.Append
-                         || action == FilterTagsControlAction.AppendNegativeFilter)
+                else if (action == TagFilter.FilterTagsControlAction.AppendIncludedFilter
+                         || action == TagFilter.FilterTagsControlAction.AppendExcludedFilter)
                 {
-                    bool isNegative = action == FilterTagsControlAction.AppendNegativeFilter;
+                    bool isExcluded = action == TagFilter.FilterTagsControlAction.AppendExcludedFilter;
                     if (existed == null)
                     {
-                        filters.Add(new TagFilter(newTagName, isNegative));
-                        SetSelectedTabName(filters);
+                        filters.Add(new TagFilter(newTagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+
+                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
+                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(filters, s.Item2);
+                        if (filters.Count == 1)
+                        {
+                            SelectedTabName = filters.First().TagName;
+                        }
                     }
-                    if (existed != null && existed.IsNegative != isNegative)
+                    if (existed != null && existed.IsExcluded != isExcluded)
                     {
                         filters.Remove(existed);
-                        filters.Add(new TagFilter(newTagName, isNegative));
-                        SetSelectedTabName(filters);
+                        filters.Add(new TagFilter(newTagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+
+                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
+                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(filters, s.Item2);
+                        if (filters.Count == 1)
+                        {
+                            SelectedTabName = filters.First().TagName;
+                        }
                     }
                 }
                 // set action
@@ -236,7 +170,7 @@ namespace PRM.ViewModel
                 return _cmdTagSelect ??= new RelayCommand((o) =>
                 {
                     var isCtrlDown = (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
-                    FilterTagsControl(o, isCtrlDown ? FilterTagsControlAction.Append : FilterTagsControlAction.Set);
+                    FilterTagsControl(o, isCtrlDown ? TagFilter.FilterTagsControlAction.AppendIncludedFilter : TagFilter.FilterTagsControlAction.Set);
                 });
             }
         }
@@ -249,20 +183,20 @@ namespace PRM.ViewModel
             {
                 return _cmdTagSelectWithLeftRemove ??= new RelayCommand((o) =>
                 {
-                    FilterTagsControl(o, FilterTagsControlAction.Remove);
+                    FilterTagsControl(o, TagFilter.FilterTagsControlAction.Remove);
                 });
             }
         }
 
 
-        private RelayCommand _cmdTagSelectWithRightRemove;
-        public RelayCommand CmdTagSelectWithRightRemove
+        private RelayCommand _cmdTagSelectWithRightMouse;
+        public RelayCommand CmdTagSelectWithRightMouse
         {
             get
             {
-                return _cmdTagSelectWithRightRemove ??= new RelayCommand((o) =>
+                return _cmdTagSelectWithRightMouse ??= new RelayCommand((o) =>
                 {
-                    FilterTagsControl(o, FilterTagsControlAction.AppendNegativeFilter);
+                    FilterTagsControl(o, TagFilter.FilterTagsControlAction.AppendExcludedFilter);
                 });
             }
         }
@@ -338,9 +272,9 @@ namespace PRM.ViewModel
                     }
 
                     // restore display scene
-                    if (Tags.Any(x => x.Name == newTag))
+                    if (Context.AppData.TagList.Any(x => x.Name == newTag))
                     {
-                        Tags.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
+                        Context.AppData.TagList.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
                     }
                 });
             }

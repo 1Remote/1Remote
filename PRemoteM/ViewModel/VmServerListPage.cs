@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,10 @@ using PRM.Core.Service;
 using PRM.Core.Utils.mRemoteNG;
 using PRM.Model;
 using PRM.Resources.Icons;
+using PRM.Utils.Filters;
 using PRM.ViewModel.Configuration;
 using Shawn.Utils;
+using VariableKeywordMatcher.Model;
 
 namespace PRM.ViewModel
 {
@@ -95,9 +98,6 @@ namespace PRM.ViewModel
         }
 
         private ObservableCollection<VmProtocolServer> _serverListItems = new ObservableCollection<VmProtocolServer>();
-        /// <summary>
-        /// AllServerList data source for list view
-        /// </summary>
         public ObservableCollection<VmProtocolServer> ServerListItems
         {
             get => _serverListItems;
@@ -112,9 +112,6 @@ namespace PRM.ViewModel
 
 
         private bool _isSelectedAll;
-        /// <summary>
-        /// MultipleSelected all
-        /// </summary>
         public bool IsSelectedAll
         {
             get => _isSelectedAll;
@@ -149,7 +146,10 @@ namespace PRM.ViewModel
                 }
             }
             OrderServerList();
-            ReadTagsFromServers();
+            if (false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                SelectedTabName = "";
+            }
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
@@ -198,14 +198,6 @@ namespace PRM.ViewModel
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.DisplayName), ListSortDirection.Descending));
                     break;
 
-                //case EnumServerOrderBy.TagAsc:
-                //    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Ascending));
-                //    break;
-
-                //case EnumServerOrderBy.TagDesc:
-                //    dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerBase.Tags), ListSortDirection.Descending));
-                //    break;
-
                 case EnumServerOrderBy.AddressAsc:
                     dataView.SortDescriptions.Add(new SortDescription(nameof(VmProtocolServer.Server) + "." + nameof(ProtocolServerWithAddrPortBase.Address), ListSortDirection.Ascending));
                     break;
@@ -240,76 +232,38 @@ namespace PRM.ViewModel
 
         private void CalcVisible()
         {
-            var keyWord = Context.AppData.MainWindowServerFilter;
-            var keyWords = keyWord.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if (SelectedTabName != TabTagsListName)
-            {
-                var tagFilters = TagFilters;
-                foreach (var vm in ServerListItems)
-                {
-                    var server = vm.Server;
-                    bool bTagMatched = true;
-                    foreach (var tagFilter in tagFilters)
-                    {
-                        if (tagFilter.IsNegative == false && server.Tags.Contains(tagFilter.TagName) == false)
-                        {
-                            bTagMatched = false;
-                            break;
-                        }
-                        if (tagFilter.IsNegative == true && server.Tags.Contains(tagFilter.TagName) == true)
-                        {
-                            bTagMatched = false;
-                            break;
-                        }
-                    }
+            var keyword = Context.AppData.MainWindowServerFilter;
+            var tmp = TagAndKeywordFilter.DecodeKeyword(keyword);
+            var tagFilters = tmp.Item1;
+            var keyWords = tmp.Item2;
+            TagFilters = tagFilters;
 
-                    if (!bTagMatched)
+
+            foreach (var vm in Context.AppData.VmItemList)
+            {
+                Debug.Assert(vm != null);
+                Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
+                Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
+                var server = vm.Server;
+                var s = TagAndKeywordFilter.MatchKeywords(server, tagFilters, keyWords);
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (s.Item1 == false)
                     {
                         vm.ObjectVisibilityInList = Visibility.Collapsed;
                     }
-                    else if (keyWords.Length == 0)
+                    else
                     {
                         vm.ObjectVisibilityInList = Visibility.Visible;
                     }
-                    else
-                    {
-                        var dispName = server.DisplayName;
-                        var subTitle = server.SubTitle;
-                        var matched = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords).IsMatchAllKeywords;
-                        if (matched)
-                            vm.ObjectVisibilityInList = Visibility.Visible;
-                        else
-                            vm.ObjectVisibilityInList = Visibility.Collapsed;
-                    }
-
-                    if (vm.ObjectVisibilityInList == Visibility.Collapsed && vm.IsSelected)
-                        vm.IsSelected = false;
-                }
-
-                if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
-                    _isSelectedAll = true;
-                else
-                    _isSelectedAll = false;
-                RaisePropertyChanged(nameof(IsSelectedAll));
+                });
             }
+
+            if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
+                _isSelectedAll = true;
             else
-            {
-                foreach (var tag in Tags)
-                {
-                    if (string.IsNullOrEmpty(keyWord))
-                    {
-                        tag.ObjectVisibilityInList = Visibility.Visible;
-                    }
-                    else
-                    {
-                        var matched = Context.KeywordMatchService.Match(new List<string>() { tag.Name }, keyWords).IsMatchAllKeywords;
-                        if (matched)
-                            tag.ObjectVisibilityInList = Visibility.Visible;
-                        else
-                            tag.ObjectVisibilityInList = Visibility.Collapsed;
-                    }
-                }
-            }
+                _isSelectedAll = false;
         }
 
 
@@ -320,7 +274,7 @@ namespace PRM.ViewModel
             {
                 return _cmdAdd ??= new RelayCommand((o) =>
                 {
-                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where(x => x.IsNegative == false).Select(x => x.TagName).ToList());
+                    GlobalEventHelper.OnGoToServerAddPage?.Invoke(TagFilters.Where(x => x.IsIncluded == true).Select(x => x.TagName).ToList());
                 });
             }
         }
@@ -555,6 +509,5 @@ namespace PRM.ViewModel
                 });
             }
         }
-
     }
 }

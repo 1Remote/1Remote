@@ -169,7 +169,7 @@
     <s:String x:Key="New session always use full screen">启动会话时永远进入全屏模式</s:String>
     <s:String x:Key="New session use full screen if the last session is full screen">启动会话时根据上次会话决定是否进入全屏模式</s:String>
     <s:String x:Key="Resolution">分辨率</s:String>
-    <s:String x:Key="Fit to window">适应窗口大小</s:String>
+    <s:String x:Key="Fit to window">适应窗口大小(服务器要求Windows Server 2012 R2及以上)</s:String>
     <s:String x:Key="Custom resolution (stretch)">自定义分辨率 (拉伸)</s:String>
     <s:String x:Key="Custom resolution (fixed)">自定义分辨率 (固定)</s:String>
     <s:String x:Key="Full-screen resolution (stretch)">屏幕分辨率 (拉伸)</s:String>
@@ -265,7 +265,7 @@
     <s:String x:Key="Selected">选中</s:String>
     <s:String x:Key="Custom">定制</s:String>
     <s:String x:Key="write permissions alert" xml:space="preserve">我们没有路径 `{0}` 的写入权限！&#13;&#10;请尝试用以下方法修复问题：&#13;&#10;1. 使用管理员权限运行程序&#13;&#10;2. 修改路径的权限设置 &#13;&#10;3. 将 PRemoteM 移动到其他目录</s:String>
-    <s:String x:Key="Follow system">跟随系统</s:String>
+    <s:String x:Key="Follow system">跟随系统(服务器要求Windows Server 2012 R2及以上)</s:String>
     <s:String x:Key="Scale">缩放</s:String>
     <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">确定要关闭连接么？</s:String>

@@ -15,6 +15,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Runner.Default;
 using PRM.Model;
+using PRM.Utils.Filters;
 using Shawn.Utils.PageHost;
 using Shawn.Utils;
 
@@ -176,7 +177,7 @@ namespace PRM.ViewModel
             else
             {
                 const int nMaxCount = 8;
-                int visibleCount = Context.AppData.VmItemList.Count(vm => vm.ObjectVisibility == Visibility.Visible);
+                int visibleCount = Context.AppData.VmItemList.Count(vm => vm.ObjectVisibilityInLauncher == Visibility.Visible);
                 if (visibleCount >= nMaxCount)
                     GridSelectionsHeight = _oneItemHeight * nMaxCount;
                 else
@@ -187,7 +188,7 @@ namespace PRM.ViewModel
 
         public void ShowActionsList()
         {
-            if (Context.AppData.VmItemList.All(x => x.ObjectVisibility != Visibility.Visible)
+            if (Context.AppData.VmItemList.All(x => x.ObjectVisibilityInLauncher != Visibility.Visible)
                 || SelectedIndex < 0
                 || SelectedIndex >= Context.AppData.VmItemList.Count)
             {
@@ -226,7 +227,7 @@ namespace PRM.ViewModel
                 // show all
                 foreach (var vm in Context.AppData.VmItemList)
                 {
-                    vm.ObjectVisibility = Visibility.Visible;
+                    vm.ObjectVisibilityInLauncher = Visibility.Visible;
                     vm.DispNameControl = vm.OrgDispNameControl;
                     vm.SubTitleControl = vm.OrgSubTitleControl;
                 }
@@ -237,34 +238,103 @@ namespace PRM.ViewModel
 
         public void UpdateItemsList(string keyword)
         {
-            var words = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            var keyWords = new List<string>(words.Count);
-            var tagFilters = new List<TagFilter>();
-            //string prefix = "";
-            foreach (var word in words)
-            {
-                        SimpleLogHelper.Debug($"----  {word}");
-                if (word.StartsWith("#") || word.StartsWith("-#") || word.StartsWith("+#"))
-                {
-                    bool isNegative = word.StartsWith("-#");
-                    string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
-                    if (Context.AppData.TagNames.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        tagFilters.Add(new TagFilter(tagName, isNegative));
-                        //if (isNegative == false)
-                        //    prefix += "#" + tagName + " ";
-                        //else
-                        //    prefix += "-#" + tagName + " ";
-                        SimpleLogHelper.Debug($"{tagName} {isNegative}");
-                    }
-                }
-                else
-                {
-                    keyWords.Add(word);
-                }
-            }
-
+            var tmp = TagAndKeywordFilter.DecodeKeyword(keyword);
+            var tagFilters = tmp.Item1;
+            var keyWords = tmp.Item2;
             TagFilters = tagFilters;
+
+
+            foreach (var vm in Context.AppData.VmItemList)
+            {
+                Debug.Assert(vm != null);
+                Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
+                Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
+                var server = vm.Server;
+                var s = TagAndKeywordFilter.MatchKeywords(server, tagFilters, keyWords);
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (s.Item1 == false)
+                    {
+                        vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        if (s.Item2 == null)
+                        {
+                            vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
+                            vm.DispNameControl = vm.OrgDispNameControl;
+                            vm.SubTitleControl = vm.OrgSubTitleControl;
+                        }
+                        else
+                        {
+                            var mrs = s.Item2;
+                            if (mrs.IsMatchAllKeywords)
+                            {
+                                vm.ObjectVisibilityInLauncher = Visibility.Visible;
+                                var dispName = server.DisplayName;
+                                var subTitle = server.SubTitle;
+                                var m1 = mrs.HitFlags[0];
+                                if (m1.Any(x => x == true))
+                                {
+                                    var sp = new StackPanel() {Orientation = System.Windows.Controls.Orientation.Horizontal};
+                                    for (int i = 0; i < m1.Count; i++)
+                                    {
+                                        if (m1[i])
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = dispName[i].ToString(),
+                                                Background = _highLightBrush,
+                                            });
+                                        else
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = dispName[i].ToString(),
+                                            });
+                                    }
+
+                                    vm.DispNameControl = sp;
+                                }
+                                else
+                                {
+                                    vm.DispNameControl = vm.OrgDispNameControl;
+                                }
+
+                                var m2 = mrs.HitFlags[1];
+                                if (m2.Any(x => x == true))
+                                {
+                                    var sp = new StackPanel() {Orientation = System.Windows.Controls.Orientation.Horizontal};
+                                    for (int i = 0; i < m2.Count; i++)
+                                    {
+                                        if (m2[i])
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = subTitle[i].ToString(),
+                                                Background = _highLightBrush,
+                                            });
+                                        else
+                                            sp.Children.Add(new TextBlock()
+                                            {
+                                                Text = subTitle[i].ToString(),
+                                            });
+                                    }
+
+                                    vm.SubTitleControl = sp;
+                                }
+                                else
+                                {
+                                    vm.SubTitleControl = vm.OrgSubTitleControl;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            return;
+
+
+
+
             if (keyWords.Count == 0 && tagFilters.Count == 0)
             {
                 ShowAllItems();
@@ -273,23 +343,22 @@ namespace PRM.ViewModel
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    // match keyword
                     foreach (var vm in Context.AppData.VmItemList)
                     {
                         Debug.Assert(vm != null);
                         Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
                         Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
-                        var server = vm.Server;
+                        var server = vm.Server; 
 
                         bool bTagMatched = true;
                         foreach (var tagFilter in tagFilters)
                         {
-                            if (tagFilter.IsNegative == false && server.Tags.Any(x=>String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == false)
+                            if (tagFilter.IsExcluded == false && server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == false)
                             {
                                 bTagMatched = false;
                                 break;
                             }
-                            if (tagFilter.IsNegative == true && server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == true)
+                            if (tagFilter.IsExcluded == true && server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == true)
                             {
                                 bTagMatched = false;
                                 break;
@@ -298,23 +367,23 @@ namespace PRM.ViewModel
 
                         if (!bTagMatched)
                         {
-                            vm.ObjectVisibility = Visibility.Collapsed;
+                            vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
                         }
                         else if (keyWords.Count == 0)
                         {
-                            vm.ObjectVisibility = Visibility.Visible;
+                            vm.ObjectVisibilityInLauncher = Visibility.Visible;
                             vm.DispNameControl = vm.OrgDispNameControl;
                             vm.SubTitleControl = vm.OrgSubTitleControl;
                         }
                         else
                         {
-                            var dispName = vm.Server.DisplayName;
-                            var subTitle = vm.Server.SubTitle;
+                            var dispName = server.DisplayName;
+                            var subTitle = server.SubTitle;
 
                             var mrs = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
                             if (mrs.IsMatchAllKeywords)
                             {
-                                vm.ObjectVisibility = Visibility.Visible;
+                                vm.ObjectVisibilityInLauncher = Visibility.Visible;
 
                                 var m1 = mrs.HitFlags[0];
                                 if (m1.Any(x => x == true))
@@ -379,7 +448,7 @@ namespace PRM.ViewModel
                             }
                             else
                             {
-                                vm.ObjectVisibility = Visibility.Collapsed;
+                                vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
                             }
                         }
                     }
@@ -397,7 +466,7 @@ namespace PRM.ViewModel
                 for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
                 {
                     var vm = Context.AppData.VmItemList[i];
-                    if (vm.ObjectVisibility == Visibility.Visible)
+                    if (vm.ObjectVisibilityInLauncher == Visibility.Visible)
                     {
                         SelectedIndex = i;
                         SelectedItem = vm;
@@ -432,7 +501,7 @@ namespace PRM.ViewModel
             {
                 for (int i = SelectedIndex + 1; i < Context.AppData.VmItemList.Count; i++)
                 {
-                    if (Context.AppData.VmItemList[i].ObjectVisibility == Visibility.Visible)
+                    if (Context.AppData.VmItemList[i].ObjectVisibilityInLauncher == Visibility.Visible)
                     {
                         ++count;
                         index = i;
@@ -446,7 +515,7 @@ namespace PRM.ViewModel
                 step = Math.Abs(step);
                 for (int i = SelectedIndex - 1; i >= 0; i--)
                 {
-                    if (Context.AppData.VmItemList[i].ObjectVisibility == Visibility.Visible)
+                    if (Context.AppData.VmItemList[i].ObjectVisibilityInLauncher == Visibility.Visible)
                     {
                         ++count;
                         index = i;
