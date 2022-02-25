@@ -269,7 +269,7 @@
                 </Grid.Style>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Scale}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
+                    <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
                         <CheckBox HorizontalAlignment="Left" Margin="0 0 10 0" 
                                   Content="{DynamicResource 'Follow system'}" 
                                   IsChecked="{Binding IsScaleFactorFollowSystem}"></CheckBox>

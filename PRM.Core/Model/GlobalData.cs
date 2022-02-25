@@ -46,6 +46,13 @@ namespace PRM.Core.Model
         }
 
 
+        private ObservableCollection<Tag> _tagList = new ObservableCollection<Tag>();
+        public ObservableCollection<Tag> TagList
+        {
+            get => _tagList;
+            private set => SetAndNotifyIfChanged(ref _tagList, value);
+        }
+
         public List<string> TagNames;
 
 
@@ -55,6 +62,41 @@ namespace PRM.Core.Model
 
         public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
 
+
+        private void ReadTagsFromServers()
+        {
+            var pinnedTags = _configurationService.PinnedTags;
+            // set pinned
+            // TODO del after 2022.05.31
+            if (pinnedTags.Count == 0)
+            {
+                var allExistedTags = Tag.GetPinnedTags();
+                pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
+            }
+
+            // get distinct tag from servers
+            var tags = new List<Tag>();
+            foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
+            {
+                if (tagNames == null)
+                    continue;
+                foreach (var tagName in tagNames)
+                {
+                    if (tags.All(x => x.Name != tagName))
+                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), () =>
+                            {
+                                _configurationService.PinnedTags = TagList.Where(x => x.IsPinned).Select(x => x.Name).ToList();
+                                _configurationService.Save();
+                            })
+                            { ItemsCount = 1 });
+                    else
+                        tags.First(x => x.Name == tagName).ItemsCount++;
+                }
+            }
+
+            TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
+            TagNames = tags.Select(x => x.Name).ToList();
+        }
 
         public void ReloadServerList()
         {
@@ -77,6 +119,7 @@ namespace PRM.Core.Model
                 }
             }
             VmItemList = new ObservableCollection<VmProtocolServer>(tmp);
+            ReadTagsFromServers();
             VmItemListDataChanged?.Invoke();
         }
 
@@ -114,6 +157,7 @@ namespace PRM.Core.Model
                 }
             }
 
+            ReadTagsFromServers();
             if (doInvoke)
                 VmItemListDataChanged?.Invoke();
         }

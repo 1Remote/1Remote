@@ -169,7 +169,7 @@
     <s:String x:Key="New session always use full screen">Connectez-vous en plein écran</s:String>
     <s:String x:Key="New session use full screen if the last session is full screen">Nouvelle session Utilisez plein écran si la dernière session est en plein écran</s:String>
     <s:String x:Key="Resolution">Résolution</s:String>
-    <s:String x:Key="Fit to window">Apte à la fenêtre</s:String>
+    <s:String x:Key="Fit to window">Apte à la fenêtre(Serveur pris en charge: Windows Server 2012 R2 et supérieur)</s:String>
     <s:String x:Key="Custom resolution (stretch)">Résolution personnalisée (étirement)</s:String>
     <s:String x:Key="Custom resolution (fixed)">Résolution personnalisée (fixe)</s:String>
     <s:String x:Key="Full-screen resolution (stretch)">Résolution en plein écran (étirement)</s:String>
@@ -265,7 +265,7 @@
     <s:String x:Key="Selected">Selected</s:String>
     <s:String x:Key="Custom">Coutume</s:String>
     <s:String x:Key="write permissions alert" xml:space="preserve">We don't have write permissions for the `{0}` directory!&#13;&#10;Please try:&#13;&#10;1. `run as administrator`&#13;&#10;2. change directory/file permissions &#13;&#10;3. move PRemoteM to another folder</s:String>
-    <s:String x:Key="Follow system">Follow system</s:String>
+    <s:String x:Key="Follow system">Suivre le système(Serveur pris en charge: Windows Server 2012 R2 et supérieur)</s:String>
     <s:String x:Key="Scale">Scale</s:String>
     <s:String x:Key="tag_tooltips">Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Voulez-vous vraiment fermer la connexion?</s:String>

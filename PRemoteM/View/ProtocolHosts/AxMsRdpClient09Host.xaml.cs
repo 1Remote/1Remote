@@ -787,31 +787,6 @@ namespace PRM.View.ProtocolHosts
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    //Task.Factory.StartNew(() =>
-                    //{
-                    //    for (int i = 0; i < 5; i++)
-                    //    {
-                    //        Thread.Sleep(500);
-                    //        try
-                    //        {
-                    //            SimpleLogHelper.Debug($@"RDP resize again to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
-                    //            _primaryScaleFactor = ReadScaleFactor();
-                    //            var newScaleFactor = _primaryScaleFactor;
-                    //            if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
-                    //                newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                    //            if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
-                    //            {
-                    //                _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
-                    //                _lastScaleFactor = newScaleFactor;
-                    //            }
-                    //            return;
-                    //        }
-                    //        catch (Exception e)
-                    //        {
-                    //            Console.WriteLine(e);
-                    //        }
-                    //    }
-                    //});
                 }
             }
         }

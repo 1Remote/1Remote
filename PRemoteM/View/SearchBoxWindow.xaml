@@ -8,6 +8,7 @@
                   xmlns:viewModel="clr-namespace:PRM.ViewModel"
                   xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
                   xmlns:view="clr-namespace:PRM.View"
+                  xmlns:filters="clr-namespace:PRM.Utils.Filters"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -162,7 +163,7 @@
         </ControlTemplate>
 
         <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
-            <Grid Visibility="{Binding ObjectVisibility}"  Height="{StaticResource OneItemHeight}">
+            <Grid Visibility="{Binding ObjectVisibilityInLauncher}"  Height="{StaticResource OneItemHeight}">
 
                 <Grid VerticalAlignment="Center" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>
@@ -354,7 +355,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="viewModel:TagFilter">
+                        <DataTemplate DataType="filters:TagFilter">
                             <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
                                 <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
                                     <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
@@ -363,7 +364,7 @@
                                         <TextBlock.Resources>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsNegative}" Value="True">
+                                                    <DataTrigger Binding="{Binding IsExcluded}" Value="True">
                                                         <Setter Property="TextDecorations">
                                                             <Setter.Value>
                                                                 <TextDecorationCollection>

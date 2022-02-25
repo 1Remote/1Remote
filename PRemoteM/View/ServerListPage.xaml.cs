@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Core.Model;
+using PRM.Utils.Filters;
 using PRM.ViewModel;
 using PRM.ViewModel.Configuration;
 
@@ -19,7 +20,7 @@ namespace PRM.View
         public ServerListPage(PrmContext context, ConfigurationViewModel configurationViewModel)
         {
             InitializeComponent();
-            
+
             Vm = VmServerListPage.Instance(context, configurationViewModel, LvServerCards);
             DataContext = Vm;
 
@@ -44,6 +45,7 @@ namespace PRM.View
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
+            // TODO click all button, clear the tag filters
             Vm.SelectedTabName = "";
         }
 
@@ -76,7 +78,7 @@ namespace PRM.View
     {
         public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if(value.Length > 1 
+            if (value.Length > 1
                && value[0] is List<TagFilter> selectedTagNames
                && value[1] is ObservableCollection<Tag> tags)
             {
@@ -84,13 +86,6 @@ namespace PRM.View
                     return false;
                 else
                     return true;
-
-                //if (selectedTagNames.Count == 0)
-                //    return false;
-                //else if (selectedTagNames.Count > 1)
-                //    return true;
-                //var tag = selectedTagNames[0].TagName;
-                //return tags.First(x => x.Name == tag).IsPinned == false;
             }
             return false;
         }

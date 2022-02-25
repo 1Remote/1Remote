@@ -186,6 +186,8 @@
     <Compile Include="Resources\Icons\ServerIcons.cs" />
     <Compile Include="Resources\Theme\AttachProperty\PasswordBoxAttachProperty.cs" />
     <Compile Include="Resources\Theme\AttachProperty\VisionElement.cs" />
+    <Compile Include="Utils\Filters\TagAndKeywordFilter.cs" />
+    <Compile Include="Utils\Filters\TagFilter.cs" />
     <Compile Include="ViewModel\Configuration\ConfigurationViewModel.cs" />
     <Compile Include="ViewModel\Configuration\ProtocolConfigerViewModel.cs" />
     <Compile Include="ViewModel\VmAboutPage.cs" />
@@ -948,6 +950,7 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\20210106\NoMachine.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

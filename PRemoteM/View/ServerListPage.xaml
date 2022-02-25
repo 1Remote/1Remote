@@ -12,6 +12,7 @@
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
+             xmlns:filters="clr-namespace:PRM.Utils.Filters"
              mc:Ignorable="d"
              Background="White"
              d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
@@ -339,7 +340,7 @@
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource ConverterTagsIndicatorIsShow}">
                                         <Binding Path="TagFilters" Mode="OneWay"></Binding>
-                                        <Binding Path="Tags" Mode="OneWay"></Binding>
+                                        <Binding Path="Context.AppData.TagList" Mode="OneWay"></Binding>
                                     </MultiBinding>
                                 </DataTrigger.Binding>
                                 <Setter Property="Visibility" Value="Visible"></Setter>
@@ -375,7 +376,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="viewModel:TagFilter">
+                        <DataTemplate DataType="filters:TagFilter">
                             <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
                                 <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
                                     <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
@@ -384,7 +385,7 @@
                                         <TextBlock.Resources>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsNegative}" Value="True">
+                                                    <DataTrigger Binding="{Binding IsExcluded}" Value="True">
                                                         <Setter Property="TextDecorations">
                                                             <Setter.Value>
                                                                 <TextDecorationCollection>
@@ -553,7 +554,7 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <ListBox ItemsSource="{Binding Tags}" Margin="20" MaxWidth="700">
+            <ListBox ItemsSource="{Binding Context.AppData.TagList}" Margin="20" MaxWidth="700">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ItemsPresenter></ItemsPresenter>
@@ -720,7 +721,7 @@
                                     IsSynchronizedWithCurrentItem="True"
                                     SelectedValuePath="Name"
                                     SelectedValue="{Binding SelectedTabName}"
-                                    ItemsSource="{Binding Tags}"
+                                    ItemsSource="{Binding Context.AppData.TagList}"
                                     Background="{DynamicResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
