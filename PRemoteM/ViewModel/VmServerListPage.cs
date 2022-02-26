@@ -146,11 +146,14 @@ namespace PRM.ViewModel
                 }
             }
             OrderServerList();
-            if (false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
+            if (string.IsNullOrEmpty(SelectedTabName) == false 
+                && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
             {
                 SelectedTabName = "";
             }
+
             RaisePropertyChanged(nameof(IsMultipleSelected));
+            CalcVisible();
         }
 
         private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -348,7 +348,6 @@
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Height" AccelerationRatio="0.9">
-                                                <LinearDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                                                 <LinearDoubleKeyFrame KeyTime="0:0:0.400" Value="40" />
                                             </DoubleAnimationUsingKeyFrames>
                                         </Storyboard>
@@ -358,7 +357,6 @@
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <DoubleAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Height">
-                                                <LinearDoubleKeyFrame KeyTime="0:0:0.0" Value="40" />
                                                 <LinearDoubleKeyFrame KeyTime="0:0:0.200" Value="0" />
                                             </DoubleAnimationUsingKeyFrames>
                                         </Storyboard>
@@ -718,7 +716,6 @@
                         <StackPanel Orientation="Horizontal">
                             <ListBox
                                     Name="ListBoxTags"
-                                    IsSynchronizedWithCurrentItem="True"
                                     SelectedValuePath="Name"
                                     SelectedValue="{Binding SelectedTabName}"
                                     ItemsSource="{Binding Context.AppData.TagList}"

@@ -1,4 +1,5 @@
-﻿using PRM.ViewModel;
+﻿using System;
+using PRM.ViewModel;
 
 namespace PRM.Utils.Filters
 {
@@ -16,10 +17,15 @@ namespace PRM.Utils.Filters
             Included,
             Excluded,
         }
-        public TagFilter(string tagName, FilterType type)
+        protected TagFilter(string tagName, FilterType type)
         {
             TagName = tagName;
             IsExcluded = type == FilterType.Excluded;
+        }
+
+        public static TagFilter Create(string tagName, FilterType type)
+        {
+            return new TagFilter(tagName, type);
         }
 
         public string TagName { get; }
@@ -28,7 +34,7 @@ namespace PRM.Utils.Filters
 
         public override string ToString()
         {
-            return TagName + (IsExcluded ? VmServerListPage.TagTypeSeparator + "Negative" : "");
+            throw new NotSupportedException();
         }
     }
 }

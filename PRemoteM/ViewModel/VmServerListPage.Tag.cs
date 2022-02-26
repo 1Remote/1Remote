@@ -34,8 +34,6 @@ namespace PRM.ViewModel
         public const string TabAllName = "";
         public const string TabTagsListName = "tags_selector_for_list@#@1__()!";
         public const string TabNoneSelected = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
-        public const string TagSeparator = "__|||__";
-        public const string TagTypeSeparator = "===!|!===";
 
         private string _selectedTabName = "";
         public string SelectedTabName
@@ -43,42 +41,36 @@ namespace PRM.ViewModel
             get => _selectedTabName;
             set
             {
-                if (_selectedTabName == value) return;
-                //MainWindowServerFilter = "";
-                if (SetAndNotifyIfChanged(ref _selectedTabName, value))
+                if (Context.AppData.TagListDoInvokeSelectedTabName)
                 {
-                    Context.LocalityService.MainWindowTabSelected = value;
-                    CalcVisible();
-
-
-                    var tagFilters = new List<TagFilter>();
-                    if (SelectedTabName == VmServerListPage.TabAllName
-                        || SelectedTabName == VmServerListPage.TabTagsListName
-                        || SelectedTabName == VmServerListPage.TabNoneSelected)
+                    if (SetAndNotifyIfChanged(ref _selectedTabName, value))
                     {
-
-                    }
-                    else
-                    {
-                        var tags = SelectedTabName.Split(new string[] { TagSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (var tmp in tags)
+                        if (Context.AppData.TagList.Any(x => x.Name == value))
                         {
-                            var strings = tmp.Split(new string[] { TagTypeSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                            if (strings.Length > 0
-                                && Context.AppData.TagList.Any(x => x.Name == strings[0].Trim()))
-                            {
-                                tagFilters.Add(new TagFilter(strings[0], strings.Length > 1 ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
-                            }
+                            TagFilters = new List<TagFilter>() {TagFilter.Create(value, TagFilter.FilterType.Included)};
                         }
+                        else
+                        {
+                            TagFilters = new List<TagFilter>();
+                        }
+
+                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
+                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(TagFilters, s.Item2);
                     }
-                    TagFilters = tagFilters;
                 }
+                Context.AppData.TagListDoInvokeSelectedTabName = true;
             }
         }
-        
+
+        private void SetSelectedTabName(string name)
+        {
+            if (_selectedTabName == name) return;
+            _selectedTabName = name;
+            RaisePropertyChanged(nameof(SelectedTabName));
+        }
 
 
-        private List<TagFilter> _tagFilters;
+        private List<TagFilter> _tagFilters = new List<TagFilter>();
         [NotNull]
         public List<TagFilter> TagFilters
         {
@@ -116,12 +108,6 @@ namespace PRM.ViewModel
                     if (existed != null)
                     {
                         filters.Remove(existed);
-                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
-                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(filters, s.Item2);
-                        if (filters.Count == 1)
-                        {
-                            SelectedTabName = filters.First().TagName;
-                        }
                     }
                 }
                 // append action
@@ -131,32 +117,36 @@ namespace PRM.ViewModel
                     bool isExcluded = action == TagFilter.FilterTagsControlAction.AppendExcludedFilter;
                     if (existed == null)
                     {
-                        filters.Add(new TagFilter(newTagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
-
-                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
-                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(filters, s.Item2);
-                        if (filters.Count == 1)
-                        {
-                            SelectedTabName = filters.First().TagName;
-                        }
+                        filters.Add(TagFilter.Create(newTagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
                     }
                     if (existed != null && existed.IsExcluded != isExcluded)
                     {
                         filters.Remove(existed);
-                        filters.Add(new TagFilter(newTagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
-
-                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
-                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(filters, s.Item2);
-                        if (filters.Count == 1)
-                        {
-                            SelectedTabName = filters.First().TagName;
-                        }
+                        filters.Add(TagFilter.Create(newTagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
                     }
                 }
                 // set action
                 else
                 {
-                    SelectedTabName = newTagName;
+                    filters.Clear();
+                    filters.Add(TagFilter.Create(newTagName, TagFilter.FilterType.Included));
+                }
+
+                TagFilters = filters;
+                var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
+                Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(TagFilters, s.Item2);
+
+                if (filters.Count == 1)
+                {
+                    SetSelectedTabName(filters.First().TagName);
+                }
+                else if (filters.Count == 0)
+                {
+                    SetSelectedTabName(TabAllName);
+                }
+                else if (filters.Count == 0)
+                {
+                    SetSelectedTabName(TabNoneSelected);
                 }
             }
         }
@@ -210,8 +200,7 @@ namespace PRM.ViewModel
             {
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
-                    var obj = o as Tag;
-                    if (obj == null || MessageBox.Show(Context.LanguageService.Translate("confirm_to_delete"), Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
+                    if (!(o is Tag obj) || MessageBox.Show(Context.LanguageService.Translate("confirm_to_delete"), Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
                         return;
                     foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
@@ -225,7 +214,7 @@ namespace PRM.ViewModel
                     }
 
                     Context.AppData.ReloadServerList();
-                    SelectedTabName = TabAllName;
+                    SetSelectedTabName(TabAllName);
                 });
             }
         }
@@ -247,10 +236,13 @@ namespace PRM.ViewModel
                     if (obj == null)
                         return;
                     string newTag = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
+                    newTag = TagAndKeywordFilter.RectifyTagName(newTag);
                     if (t == obj.Name)
                         t = newTag;
                     if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
                         return;
+
+                    // TODO 出错了！
                     foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
                         var s = vmProtocolServer.Server;
@@ -268,7 +260,7 @@ namespace PRM.ViewModel
                     // restore selected scene
                     if (SelectedTabName == obj.Name)
                     {
-                        SelectedTabName = t;
+                        SetSelectedTabName(t);
                     }
 
                     // restore display scene

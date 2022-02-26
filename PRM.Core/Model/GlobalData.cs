@@ -45,7 +45,7 @@ namespace PRM.Core.Model
             }
         }
 
-
+        public bool TagListDoInvokeSelectedTabName = true;
         private ObservableCollection<Tag> _tagList = new ObservableCollection<Tag>();
         public ObservableCollection<Tag> TagList
         {
@@ -53,7 +53,6 @@ namespace PRM.Core.Model
             private set => SetAndNotifyIfChanged(ref _tagList, value);
         }
 
-        public List<string> TagNames;
 
 
         #region Server Data
@@ -94,8 +93,9 @@ namespace PRM.Core.Model
                 }
             }
 
+            TagListDoInvokeSelectedTabName = false;
             TagList = new ObservableCollection<Tag>(tags.OrderBy(x => x.Name));
-            TagNames = tags.Select(x => x.Name).ToList();
+            TagListDoInvokeSelectedTabName = true;
         }
 
         public void ReloadServerList()
@@ -157,9 +157,11 @@ namespace PRM.Core.Model
                 }
             }
 
-            ReadTagsFromServers();
             if (doInvoke)
+            {
+                ReadTagsFromServers();
                 VmItemListDataChanged?.Invoke();
+            }
         }
 
         public void DeleteServer(int id, bool doInvoke = true)
