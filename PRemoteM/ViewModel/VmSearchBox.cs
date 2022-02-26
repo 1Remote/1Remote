@@ -262,7 +262,7 @@ namespace PRM.ViewModel
                     {
                         if (s.Item2 == null)
                         {
-                            vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
+                            vm.ObjectVisibilityInLauncher = Visibility.Visible;
                             vm.DispNameControl = vm.OrgDispNameControl;
                             vm.SubTitleControl = vm.OrgSubTitleControl;
                         }

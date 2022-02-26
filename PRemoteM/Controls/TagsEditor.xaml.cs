@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.Annotations;
 using PRM.Core;
+using PRM.Utils.Filters;
 
 namespace PRM.Controls
 {
@@ -69,7 +70,7 @@ namespace PRM.Controls
             var newTag = TbNewTag.Text.Trim();
             if (string.IsNullOrEmpty(newTag) == false && Tags.Contains(TbNewTag.Text.Trim()) == false)
             {
-                Tags.Add(TbNewTag.Text.Trim());
+                Tags.Add(TagAndKeywordFilter.RectifyTagName(TbNewTag.Text));
                 Tags = Tags;
             }
             TbNewTag.Text = "";

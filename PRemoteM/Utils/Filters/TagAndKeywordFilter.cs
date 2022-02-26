@@ -11,30 +11,47 @@ namespace PRM.Utils.Filters
 {
     public static class TagAndKeywordFilter
     {
+        public static string RectifyTagName(string name)
+        {
+            return name.Replace("#", "").Trim();
+            // return name.Replace(" ", "_").Replace("#", "").Trim();
+        }
         public static Tuple<List<TagFilter>, List<string>> DecodeKeyword(string keyword)
         {
             var words = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var keyWords = new List<string>(words.Count);
             var tagFilters = new List<TagFilter>();
             //string prefix = "";
-            foreach (var word in words)
+            for (var i = 0; i < words.Count; i++)
             {
-                //SimpleLogHelper.Debug($"----  {word}");
+                var word = words[i];
                 if (word.StartsWith("#") || word.StartsWith("-#") || word.StartsWith("+#"))
                 {
                     bool isExcluded = word.StartsWith("-#");
                     string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
-                    if (App.Context.AppData.TagNames.Any(x => string.Equals(x, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                    if (App.Context.AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
-                        tagFilters.Add(new TagFilter(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
-                        //SimpleLogHelper.Debug($"{tagName} Excluded:{isExcluded}");
+                        tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+                    }
+                    // 考虑带空格的 tag 情况，遍历后续所有的 word，组装后查询是否是 tag
+                    for (int j = i + 1; j < words.Count; j++)
+                    {
+                        if (words[j].StartsWith("#") || words[j].StartsWith("-#") || words[j].StartsWith("+#"))
+                            break;
+                        tagName = $"{tagName} {words[j]}";
+                        if (App.Context.AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                        {
+                            words[j] = "";
+                            tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
+                        }
                     }
                 }
-                else
+                else if(string.IsNullOrEmpty(word) == false)
                 {
                     keyWords.Add(word);
                 }
             }
+
             return new Tuple<List<TagFilter>, List<string>>(tagFilters, keyWords);
         }
 

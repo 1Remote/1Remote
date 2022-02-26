@@ -170,7 +170,7 @@ namespace PRM.ViewModel
             // decrypt pwd
             _dataService.DecryptToConnectLevel(Server);
             NameSelections = _globalData.VmItemList.Select(x => x.Server.DisplayName).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-            TagSelections = _globalData.TagNames;
+            TagSelections = _globalData.TagList.Select(x => x.Name).ToList();
         }
 
         public string Title { get; set; }

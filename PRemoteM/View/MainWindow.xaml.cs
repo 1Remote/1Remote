@@ -145,6 +145,7 @@ namespace PRM
             else
             {
                 TbFilter.Focus();
+                TbFilter.CaretIndex = TbFilter.Text.Length;
             }
         }
     }
