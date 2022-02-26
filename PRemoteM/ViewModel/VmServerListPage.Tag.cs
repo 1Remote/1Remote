@@ -175,6 +175,7 @@ namespace PRM.ViewModel
             }
         }
 
+        #endregion
 
 
         private RelayCommand _cmdTagDelete;
@@ -204,7 +205,6 @@ namespace PRM.ViewModel
         }
 
 
-        #endregion
 
 
 
@@ -215,25 +215,22 @@ namespace PRM.ViewModel
             {
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
-                    var t = SelectedTabName;
+                    var selectedTabName = SelectedTabName;
                     var obj = o as Tag;
                     if (obj == null)
                         return;
-                    string newTag = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
-                    newTag = TagAndKeywordFilter.RectifyTagName(newTag);
-                    if (t == obj.Name)
-                        t = newTag;
-                    if (string.IsNullOrEmpty(newTag) || obj.Name == newTag)
+                    string newTagName = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
+                    newTagName = TagAndKeywordFilter.RectifyTagName(newTagName);
+                    if (string.IsNullOrEmpty(newTagName) || obj.Name == newTagName)
                         return;
 
-                    // TODO 出错了！
                     foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
                     {
                         var s = vmProtocolServer.Server;
                         if (s.Tags.Contains(obj.Name))
                         {
                             s.Tags.Remove(obj.Name);
-                            s.Tags.Add(newTag);
+                            s.Tags.Add(newTagName);
                         }
 
                         Context.AppData.UpdateServer(s, false);
@@ -242,15 +239,15 @@ namespace PRM.ViewModel
                     Context.AppData.ReloadServerList();
 
                     // restore selected scene
-                    if (SelectedTabName == obj.Name)
+                    if (selectedTabName == obj.Name)
                     {
-                        SelectedTabName = t;
+                        SelectedTabName = newTagName;
                     }
 
                     // restore display scene
-                    if (Context.AppData.TagList.Any(x => x.Name == newTag))
+                    if (Context.AppData.TagList.Any(x => x.Name == newTagName))
                     {
-                        Context.AppData.TagList.First(x => x.Name == newTag).IsPinned = obj.IsPinned;
+                        Context.AppData.TagList.First(x => x.Name == newTagName).IsPinned = obj.IsPinned;
                     }
                 });
             }

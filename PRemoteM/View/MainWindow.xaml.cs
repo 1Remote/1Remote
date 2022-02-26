@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using PRM.Core.Model;
 using PRM.Core.Service;
+using PRM.Utils.Filters;
 using Shawn.Utils;
 using PRM.View;
 using PRM.ViewModel;
@@ -119,7 +121,8 @@ namespace PRM
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Escape || !(sender is TextBox textBox)) return;
-            textBox.Text = "";
+            var s = TagAndKeywordFilter.DecodeKeyword(Vm.FilterString);
+            Vm.SetFilterStringByBackend(TagAndKeywordFilter.EncodeKeyword(s.Item1, new List<string>()));
             // Kill logical focus
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
             // Kill keyboard focus

@@ -434,12 +434,11 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <Border.Effect>
-                        <DropShadowEffect Color="{DynamicResource BackgroundTextColor}" BlurRadius="5" Opacity="0.8" Direction="300" ShadowDepth="3"></DropShadowEffect>
-                    </Border.Effect>
                     <StackPanel>
-                        <Path Fill="{DynamicResource BackgroundTextBrush}" Margin="25 10 30 5" Width="50" Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
-                        <TextBlock Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">New session</TextBlock>
+                        <Path Fill="{DynamicResource BackgroundTextBrush}" 
+                              Margin="25 10 30 5" Width="50" HorizontalAlignment="Right"
+                              Stretch="UniformToFill" Data="M 70.3711 1.2207 L 63.1409 2.666 L 68.054 2.78 C 61.006 12.645 49.14 12.505 47 24 C 46.938 24.449 47.885 24.549 48 24 C 50.066 12.953 62.38 12.673 68.819 3.201 L 69 8 Z" />
+                        <TextBlock Margin="0 0 10 0" Foreground="{DynamicResource BackgroundTextBrush}" FontSize="22" FontWeight="Bold">Add new session</TextBlock>
                     </StackPanel>
                 </Border>
 
@@ -625,8 +624,7 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Padding="0 1 0 0"
-                                        MinWidth="80"
+                    <Button MinWidth="80"
                                         Click="BtnAllServer_Click"
                                         Content="{DynamicResource All}">
                         <Button.Style>
@@ -666,7 +664,7 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Grid.Column="1" Padding="0 1 0 0"
+                    <Button Grid.Column="1"
                                         MinWidth="80"
                                         Click="BtnTagsListView_Click"
                                         BorderThickness="0" Content="{DynamicResource Tags}">
@@ -697,6 +695,9 @@
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding Context.AppData.TagList.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
@@ -720,14 +721,6 @@
                                     BorderThickness="0"
                                     Margin="0"
                                     Padding="0">
-                                <ItemsControl.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="{DynamicResource Delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
-                                        <MenuItem Header="{DynamicResource Rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
-                                        <MenuItem Header="{DynamicResource Connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
-                                        <MenuItem Header="{DynamicResource 'Connect (New window)'}" Command="{Binding CmdTagConnectToNewTab}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
-                                    </ContextMenu>
-                                </ItemsControl.ContextMenu>
                                 <ItemsControl.Style>
                                     <Style TargetType="ItemsControl">
                                         <Setter Property="Template">
@@ -747,7 +740,15 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="model:Tag">
-                                        <Grid>
+                                        <Grid Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=view:ServerListPage}}">
+                                            <Grid.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="{DynamicResource Delete}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="{DynamicResource Rename}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagRename}" CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="{DynamicResource Connect}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnect}" CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="{DynamicResource 'Connect (New window)'}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagConnectToNewTab}" CommandParameter="{Binding}"/>
+                                                </ContextMenu>
+                                            </Grid.ContextMenu>
                                             <Button 
                                                 MinWidth="80"
                                                 Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagAddIncluded}"

@@ -73,7 +73,7 @@
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="25"
                          Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
-                         Tag="{DynamicResource filter_searchbox}"
+                         Tag="{DynamicResource 'Search (Ctrl+F)'}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Style>
                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
