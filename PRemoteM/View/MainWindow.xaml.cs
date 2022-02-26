@@ -22,6 +22,7 @@ namespace PRM
             InitializeComponent();
             Vm = new VmMain(context, configurationViewModel, this);
             this.DataContext = Vm;
+            Vm.ShowListPage();
             Title = ConfigurationService.AppName;
             // restore the window size from 
             this.Width = context.LocalityService.MainWindowWidth;
@@ -72,6 +73,11 @@ namespace PRM
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
+
+            Vm.OnFilterStringChangedByBackend += () =>
+            {
+                TbFilter.CaretIndex = TbFilter.Text.Length;
+            };
         }
 
         public void ActivateMe(bool isForceActivate = false)
@@ -142,7 +148,7 @@ namespace PRM
                     Vm.AnimationPageSettings = null;
                 }
             }
-            else
+            else if(e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
                 TbFilter.Focus();
                 TbFilter.CaretIndex = TbFilter.Text.Length;

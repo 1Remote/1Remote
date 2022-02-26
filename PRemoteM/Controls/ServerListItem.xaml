@@ -104,9 +104,9 @@
                                                ContentStringFormat="{DynamicResource tag_tooltips}"/>
                                     </Button.ToolTip>
                                     <Button.InputBindings>
-                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" />
-                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelectWithRightMouse}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" />
+                                        <MouseBinding Gesture="Ctrl+RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagAddExcluded}" CommandParameter="{Binding}" />
                                     </Button.InputBindings>
                                 </Button>
                             </Grid>

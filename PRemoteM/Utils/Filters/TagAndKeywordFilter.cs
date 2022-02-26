@@ -13,15 +13,13 @@ namespace PRM.Utils.Filters
     {
         public static string RectifyTagName(string name)
         {
-            return name.Replace("#", "").Trim();
-            // return name.Replace(" ", "_").Replace("#", "").Trim();
+            return name.Replace("#", "").Replace(" ", "_").Trim();
         }
         public static Tuple<List<TagFilter>, List<string>> DecodeKeyword(string keyword)
         {
             var words = keyword.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var keyWords = new List<string>(words.Count);
             var tagFilters = new List<TagFilter>();
-            //string prefix = "";
             for (var i = 0; i < words.Count; i++)
             {
                 var word = words[i];
@@ -46,7 +44,7 @@ namespace PRM.Utils.Filters
                         }
                     }
                 }
-                else if(string.IsNullOrEmpty(word) == false)
+                else if (string.IsNullOrEmpty(word) == false)
                 {
                     keyWords.Add(word);
                 }
@@ -71,7 +69,11 @@ namespace PRM.Utils.Filters
             {
                 sb.Append(" " + keyWord);
             }
-            return sb.ToString().Trim();
+
+            var filterString = sb.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(filterString))
+                return "";
+            return filterString + (keyWords.Count > 0 ? "" : " ");
         }
 
         public static Tuple<bool, MatchResults> MatchKeywords(ProtocolServerBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keyWords)

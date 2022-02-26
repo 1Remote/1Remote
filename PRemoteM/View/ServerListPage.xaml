@@ -241,11 +241,6 @@
                             </ScrollViewer.Margin>
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
                             </ItemsPresenter>
-                            <!--<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                                <ItemsPresenter.Margin>
-                                    <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
-                                </ItemsPresenter.Margin>
-                            </ItemsPresenter>-->
                         </ScrollViewer>
                     </Grid>
                 </Border>
@@ -312,6 +307,7 @@
             </Style>
 
             <view:ConverterTagsIndicatorIsShow x:Key="ConverterTagsIndicatorIsShow" />
+            <view:ConverterStringIsEqual x:Key="ConverterStringIsEqual" />
             <view:ConverterTagName x:Key="ConverterTagName" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -401,7 +397,7 @@
                                         </TextBlock.Resources>
                                     </TextBlock>
                                     <Button Width="10" Height="10" Tag="{Binding TagName}"
-                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagSelectWithLeftRemove}"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagRemove}"
                                                     CommandParameter="{Binding TagName}"
                                                     Style="{StaticResource ButtonBarAccentStyle}"
                                                     HorizontalAlignment="Right"
@@ -591,7 +587,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Grid>
-                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagSelect}" CommandParameter="{Binding}" 
+                                <Button Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}, Path=DataContext.CmdTagAddIncluded}" CommandParameter="{Binding}" 
                                         Content="{Binding Name, Converter={StaticResource ConverterTagName}}" 
                                         HorizontalAlignment="Left"></Button>
                             </Grid>
@@ -714,10 +710,8 @@
                                   attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
                                   Style="{StaticResource ScrollViewMiniStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <ListBox
+                            <ItemsControl
                                     Name="ListBoxTags"
-                                    SelectedValuePath="Name"
-                                    SelectedValue="{Binding SelectedTabName}"
                                     ItemsSource="{Binding Context.AppData.TagList}"
                                     Background="{DynamicResource PrimaryMidBrush}"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
@@ -726,100 +720,78 @@
                                     BorderThickness="0"
                                     Margin="0"
                                     Padding="0">
-                                <ListBox.ContextMenu>
+                                <ItemsControl.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{DynamicResource Delete}" Command="{Binding CmdTagDelete}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                         <MenuItem Header="{DynamicResource Rename}" Command="{Binding CmdTagRename}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                         <MenuItem Header="{DynamicResource Connect}" Command="{Binding CmdTagConnect}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                         <MenuItem Header="{DynamicResource 'Connect (New window)'}" Command="{Binding CmdTagConnectToNewTab}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"/>
                                     </ContextMenu>
-                                </ListBox.ContextMenu>
-                                <ListBox.Style>
-                                    <Style TargetType="ListBox">
+                                </ItemsControl.ContextMenu>
+                                <ItemsControl.Style>
+                                    <Style TargetType="ItemsControl">
                                         <Setter Property="Template">
                                             <Setter.Value>
-                                                <ControlTemplate TargetType="ListBox">
+                                                <ControlTemplate TargetType="ItemsControl">
                                                     <ItemsPresenter />
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
-                                </ListBox.Style>
-                                <ListBox.Resources>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ListBoxItem" d:DataContext="{d:DesignInstance model:Tag}">
-                                                    <Border BorderThickness="0" Margin="{TemplateBinding Margin}" FocusVisualStyle="{x:Null}"
-                                                        Padding="{TemplateBinding Control.Padding}"
-                                                        Background="{TemplateBinding Panel.Background}"
-                                                        Name="Bd"
-                                                        SnapsToDevicePixels="True">
-                                                        <ContentPresenter Margin="8 0"
-                                                                Content="{Binding Name, Converter={StaticResource ConverterTagName}}"
-                                                                ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-                                                                ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-                                                                HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"
-                                                                SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <DataTrigger Binding="{Binding IsPinned}" Value="false">
-                                                            <Setter Property="Visibility" TargetName="Bd" Value="Collapsed"></Setter>
-                                                        </DataTrigger>
-                                                        <Trigger Property="IsSelected" Value="True">
-                                                            <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
-                                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                        </Trigger>
-                                                        <MultiTrigger>
-                                                            <MultiTrigger.Conditions>
-                                                                <Condition Property="IsSelected" Value="False"></Condition>
-                                                                <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
-                                                            </MultiTrigger.Conditions>
-                                                            <MultiTrigger.Setters>
-                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentLightBrush}"></Setter>
-                                                            </MultiTrigger.Setters>
-                                                        </MultiTrigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-
-                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                                        <Style.Triggers>
-                                            <MultiTrigger>
-                                                <MultiTrigger.Conditions>
-                                                    <Condition Property="Selector.IsSelected" Value="False"></Condition>
-                                                    <Condition Property="UIElement.IsMouseOver" Value="True"></Condition>
-                                                </MultiTrigger.Conditions>
-                                                <MultiTrigger.Setters>
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                                </MultiTrigger.Setters>
-                                            </MultiTrigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ListBox.Resources>
-                                <ListBox.ItemsPanel>
+                                </ItemsControl.Style>
+                                <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Horizontal"></StackPanel>
                                     </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
+                                </ItemsControl.ItemsPanel>
 
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
+                                    <DataTemplate DataType="model:Tag">
                                         <Grid>
-                                            <TextBlock Margin="15 0"
-                                                           Foreground="{Binding Path=Foreground,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           FontWeight="{Binding Path=FontWeight,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"
-                                                           Text="{Binding}"></TextBlock>
+                                            <Button 
+                                                MinWidth="80"
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagAddIncluded}"
+                                                CommandParameter="{Binding Name}"
+                                                Content="{Binding Name, Converter={StaticResource ConverterTagName}}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                                    <Grid>
+                                                                        <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="true"></Border>
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                                    </Grid>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
+                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                                            </Trigger>
+                                                            <DataTrigger Value="True">
+                                                                <DataTrigger.Binding>
+                                                                    <MultiBinding Converter="{StaticResource ConverterStringIsEqual}" >
+                                                                        <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPage}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
+                                                                        <Binding Path="Name" Mode="OneWay"></Binding>
+                                                                    </MultiBinding>
+                                                                </DataTrigger.Binding>
+                                                                <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+                                                                <Setter Property="Cursor" Value="Arrow" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsPinned}" Value="False">
+                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
-                            </ListBox>
+                            </ItemsControl>
                         </StackPanel>
                     </ScrollViewer>
 

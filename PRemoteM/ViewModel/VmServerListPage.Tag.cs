@@ -43,30 +43,22 @@ namespace PRM.ViewModel
             {
                 if (Context.AppData.TagListDoInvokeSelectedTabName)
                 {
-                    if (SetAndNotifyIfChanged(ref _selectedTabName, value))
+                    if (SetAndNotifyIfChanged(ref _selectedTabName, value) && value != TabTagsListName)
                     {
                         if (Context.AppData.TagList.Any(x => x.Name == value))
                         {
-                            TagFilters = new List<TagFilter>() {TagFilter.Create(value, TagFilter.FilterType.Included)};
+                            TagFilters = new List<TagFilter>() { TagFilter.Create(value, TagFilter.FilterType.Included) };
                         }
                         else
                         {
                             TagFilters = new List<TagFilter>();
                         }
-
-                        var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
-                        Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(TagFilters, s.Item2);
+                        var s = TagAndKeywordFilter.DecodeKeyword(_vmMain.FilterString);
+                        SetFilterString(TagFilters, s.Item2);
                     }
                 }
                 Context.AppData.TagListDoInvokeSelectedTabName = true;
             }
-        }
-
-        private void SetSelectedTabName(string name)
-        {
-            if (_selectedTabName == name) return;
-            _selectedTabName = name;
-            RaisePropertyChanged(nameof(SelectedTabName));
         }
 
 
@@ -81,6 +73,11 @@ namespace PRM.ViewModel
 
         #region Tag filter control
 
+        /// <summary>
+        /// 控制 tag 选择器，新增或删除 tag 过滤器。
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="action"></param>
         private void FilterTagsControl(object o, TagFilter.FilterTagsControlAction action)
         {
             if (o == null)
@@ -133,31 +130,18 @@ namespace PRM.ViewModel
                 }
 
                 TagFilters = filters;
-                var s = TagAndKeywordFilter.DecodeKeyword(Context.AppData.MainWindowServerFilter);
-                Context.AppData.MainWindowServerFilter = TagAndKeywordFilter.EncodeKeyword(TagFilters, s.Item2);
-
-                if (filters.Count == 1)
-                {
-                    SetSelectedTabName(filters.First().TagName);
-                }
-                else if (filters.Count == 0)
-                {
-                    SetSelectedTabName(TabAllName);
-                }
-                else if (filters.Count == 0)
-                {
-                    SetSelectedTabName(TabNoneSelected);
-                }
+                var s = TagAndKeywordFilter.DecodeKeyword(_vmMain.FilterString);
+                SetFilterString(TagFilters, s.Item2);
             }
         }
 
 
-        private RelayCommand _cmdTagSelect;
-        public RelayCommand CmdTagSelect
+        private RelayCommand _cmdTagAddIncluded;
+        public RelayCommand CmdTagAddIncluded
         {
             get
             {
-                return _cmdTagSelect ??= new RelayCommand((o) =>
+                return _cmdTagAddIncluded ??= new RelayCommand((o) =>
                 {
                     var isCtrlDown = (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl));
                     FilterTagsControl(o, isCtrlDown ? TagFilter.FilterTagsControlAction.AppendIncludedFilter : TagFilter.FilterTagsControlAction.Set);
@@ -166,12 +150,12 @@ namespace PRM.ViewModel
         }
 
 
-        private RelayCommand _cmdTagSelectWithLeftRemove;
-        public RelayCommand CmdTagSelectWithLeftRemove
+        private RelayCommand _cmdTagRemove;
+        public RelayCommand CmdTagRemove
         {
             get
             {
-                return _cmdTagSelectWithLeftRemove ??= new RelayCommand((o) =>
+                return _cmdTagRemove ??= new RelayCommand((o) =>
                 {
                     FilterTagsControl(o, TagFilter.FilterTagsControlAction.Remove);
                 });
@@ -179,12 +163,12 @@ namespace PRM.ViewModel
         }
 
 
-        private RelayCommand _cmdTagSelectWithRightMouse;
-        public RelayCommand CmdTagSelectWithRightMouse
+        private RelayCommand _cmdTagAddExcluded;
+        public RelayCommand CmdTagAddExcluded
         {
             get
             {
-                return _cmdTagSelectWithRightMouse ??= new RelayCommand((o) =>
+                return _cmdTagAddExcluded ??= new RelayCommand((o) =>
                 {
                     FilterTagsControl(o, TagFilter.FilterTagsControlAction.AppendExcludedFilter);
                 });
@@ -214,7 +198,7 @@ namespace PRM.ViewModel
                     }
 
                     Context.AppData.ReloadServerList();
-                    SetSelectedTabName(TabAllName);
+                    SelectedTabName = TabAllName;
                 });
             }
         }
@@ -260,7 +244,7 @@ namespace PRM.ViewModel
                     // restore selected scene
                     if (SelectedTabName == obj.Name)
                     {
-                        SetSelectedTabName(t);
+                        SelectedTabName = t;
                     }
 
                     // restore display scene
@@ -318,6 +302,38 @@ namespace PRM.ViewModel
                     }
                 });
             }
+        }
+
+
+
+
+
+
+
+        private void SetFilterString(List<TagFilter> filters, List<string> keywords)
+        {
+            _vmMain.SetFilterStringByBackend(TagAndKeywordFilter.EncodeKeyword(TagFilters, keywords));
+            SetSelectedTabName(filters);
+        }
+
+        private void SetSelectedTabName(List<TagFilter> filters = null)
+        {
+            var tagName = TabAllName;
+            if (filters?.Count == 1)
+            {
+                tagName = filters.First().TagName;
+            }
+            else if (filters == null || filters?.Count == 0)
+            {
+                tagName = TabAllName;
+            }
+            else // if (filters?.Count > 1)
+            {
+                tagName = TabNoneSelected;
+            }
+            if (_selectedTabName == tagName) return;
+            _selectedTabName = tagName;
+            RaisePropertyChanged(nameof(SelectedTabName));
         }
     }
 }
