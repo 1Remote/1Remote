@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using PRM.Core.Model;
@@ -17,12 +18,13 @@ namespace PRM.ViewModel
     {
         public ConfigurationViewModel ConfigurationVm { get; }
         public VmAboutPage VmAboutPage { get; }
-        private readonly ServerListPage _serverListPage;
+        private ServerListPage _serverListPage;
 
         #region Properties
 
+        public PrmContext Context { get; }
 
-        public AnimationPage AnimationPageServerList { get; }
+        public AnimationPage AnimationPageServerList { get; private set; }
 
 
         private AnimationPage _animationPageEditor = null;
@@ -74,8 +76,37 @@ namespace PRM.ViewModel
 
         #endregion Properties
 
+        #region FilterString
+        public Action OnFilterStringChangedByUi;
+        public Action OnFilterStringChangedByBackend;
+
+        private string _filterString = "";
+        public string FilterString
+        {
+            get => _filterString;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _filterString, value))
+                {
+                    // can only be called by the Ui
+                    OnFilterStringChangedByUi?.Invoke();
+                }
+            }
+        }
+
+        public void SetFilterStringByBackend(string newValue)
+        {
+            // 区分关键词的来源，若是从后端设置关键词，则需要把搜索框的 CaretIndex 设置到末尾，以方便用户输入其他关键词。 
+            // Distinguish the source of keywords, if the keyword is set from the backend, we need to set the CaretIndex of the search box to the end to facilitate the user to enter other keywords.
+            if (_filterString == newValue)
+                return;
+            _filterString = newValue;
+            RaisePropertyChanged(nameof(FilterString));
+            OnFilterStringChangedByBackend?.Invoke();
+        }
+        #endregion
+
         public readonly MainWindow Window;
-        public PrmContext Context { get; }
 
         public VmMain(PrmContext context, ConfigurationViewModel configurationVm, MainWindow window)
         {
@@ -147,8 +178,11 @@ namespace PRM.ViewModel
                     Window.ActivateMe();
                 });
             };
+        }
 
-            _serverListPage = new ServerListPage(Context, configurationVm);
+        public void ShowListPage()
+        {
+            _serverListPage = new ServerListPage(Context, ConfigurationVm, this);
             AnimationPageServerList = new AnimationPage()
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,

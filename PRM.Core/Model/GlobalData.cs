@@ -27,23 +27,6 @@ namespace PRM.Core.Model
             _dataService = dataService;
         }
 
-        public Action<string> OnMainWindowServerFilterChanged;
-
-
-
-        private string _mainWindowServerFilter = "";
-        public string MainWindowServerFilter
-        {
-            get => _mainWindowServerFilter;
-            set
-            {
-                if (value != _mainWindowServerFilter)
-                {
-                    SetAndNotifyIfChanged(ref _mainWindowServerFilter, value);
-                    OnMainWindowServerFilterChanged?.Invoke(value);
-                }
-            }
-        }
 
         public bool TagListDoInvokeSelectedTabName = true;
         private ObservableCollection<Tag> _tagList = new ObservableCollection<Tag>();

@@ -17,11 +17,11 @@ namespace PRM.View
     {
         public VmServerListPage Vm;
 
-        public ServerListPage(PrmContext context, ConfigurationViewModel configurationViewModel)
+        public ServerListPage(PrmContext context, ConfigurationViewModel configurationViewModel, VmMain vmMain)
         {
             InitializeComponent();
 
-            Vm = VmServerListPage.Instance(context, configurationViewModel, LvServerCards);
+            Vm = VmServerListPage.Instance(context, configurationViewModel, LvServerCards, vmMain);
             DataContext = Vm;
 
             // hide GridBottom when hover.
@@ -36,11 +36,6 @@ namespace PRM.View
             {
                 Vm.SelectedTabName = tagName;
             };
-
-            ListBoxTags.SelectionChanged += ((sender, args) =>
-            {
-                ListBoxTags.ScrollIntoView(ListBoxTags.SelectedItem);
-            });
         }
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
@@ -86,6 +81,26 @@ namespace PRM.View
                     return false;
                 else
                     return true;
+            }
+            return false;
+        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+
+
+    public class ConverterStringIsEqual : IMultiValueConverter
+    {
+        public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value.Length > 1
+                && value[0] is string s1
+                && value[1] is string s2)
+            {
+                return s1 == s2;
             }
             return false;
         }

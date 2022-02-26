@@ -34,20 +34,19 @@ namespace PRM.ViewModel
         private static VmServerListPage _uniqueInstance = null;
         private static readonly object InstanceLock = new object();
         public static VmServerListPage Instance() => _uniqueInstance;
-        public static VmServerListPage Instance(PrmContext context, ConfigurationViewModel configurationView, ListBox list)
+        public static VmServerListPage Instance(PrmContext context, ConfigurationViewModel configurationView, ListBox list, VmMain vmMain)
         {
             if (_uniqueInstance == null)
-                _uniqueInstance = new VmServerListPage(context, configurationView, list);
+                _uniqueInstance = new VmServerListPage(context, configurationView, list, vmMain);
             return _uniqueInstance;
         } 
-
         #endregion singleton
 
 
         public PrmContext Context { get; }
         public ConfigurationViewModel ConfigurationViewModel { get; }
         private readonly ListBox _list;
-
+        private readonly VmMain _vmMain;
 
         public bool ListPageIsCardView
         {
@@ -62,19 +61,24 @@ namespace PRM.ViewModel
             }
         }
 
-        protected VmServerListPage(PrmContext context, ConfigurationViewModel configurationView, ListBox list)
+        protected VmServerListPage(PrmContext context, ConfigurationViewModel configurationView, ListBox list, VmMain vmMain)
         {
             Context = context;
             ConfigurationViewModel = configurationView;
             _list = list;
+            _vmMain = vmMain;
             RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
 
-            Context.AppData.OnMainWindowServerFilterChanged += new Action<string>(s =>
+
+            _vmMain.PropertyChanged += (sender, args) =>
             {
-                CalcVisible();
-                RaisePropertyChanged(nameof(IsMultipleSelected));
-            });
+                if (args.PropertyName == nameof(VmMain.FilterString))
+                {
+                    SetFilterAndCalcVisible();
+                    RaisePropertyChanged(nameof(IsMultipleSelected));
+                }
+            };
 
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += id =>
@@ -149,11 +153,14 @@ namespace PRM.ViewModel
             if (string.IsNullOrEmpty(SelectedTabName) == false 
                 && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
             {
-                SelectedTabName = "";
+                SetSelectedTabName();
+            }
+            else
+            {
+                SetFilterAndCalcVisible();
             }
 
             RaisePropertyChanged(nameof(IsMultipleSelected));
-            CalcVisible();
         }
 
         private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -233,14 +240,15 @@ namespace PRM.ViewModel
             }
         }
 
-        private void CalcVisible()
+        private void SetFilterAndCalcVisible()
         {
-            var keyword = Context.AppData.MainWindowServerFilter;
+            Debug.Assert(_vmMain != null);
+            var keyword = _vmMain.FilterString;
             var tmp = TagAndKeywordFilter.DecodeKeyword(keyword);
             var tagFilters = tmp.Item1;
             var keyWords = tmp.Item2;
             TagFilters = tagFilters;
-
+            SetSelectedTabName(tagFilters);
 
             foreach (var vm in Context.AppData.VmItemList)
             {

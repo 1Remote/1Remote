@@ -72,7 +72,7 @@
 
             <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                 <TextBox Name="TbFilter" Width="150" Height="25"
-                         Text="{Binding Context.AppData.MainWindowServerFilter, UpdateSourceTrigger=PropertyChanged}"
+                         Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
                          Tag="{DynamicResource filter_searchbox}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
                     <TextBox.Style>
