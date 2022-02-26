@@ -35,7 +35,7 @@
     <s:String x:Key="Connect (New window)">Connexion (Nouvelle fenetre)</s:String>
 
     <s:String x:Key="filter_mainwindow">Mots-clés ou '#' + nom de tag</s:String>
-    <s:String x:Key="filter_searchbox">Rechercher (Ctrl+F)</s:String>
+    <s:String x:Key="Search (Ctrl+F)">Rechercher (Ctrl + F)</s:String>
 
     <s:String x:Key="hotkey_already_registered">Raccourci clavier déjà enregistré</s:String>
     <s:String x:Key="hotkey_registered_fail">Echec de l'enregistrement du raccourci clavier</s:String>

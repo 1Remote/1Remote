@@ -274,35 +274,36 @@ namespace PRM
         private FileWatcher _dbFileWatcher;
         private void SetDbWatcher()
         {
-            _dbFileWatcher?.Dispose();
-            var dbfi = new FileInfo(ConfigurationVm.DbPath);
-            if (dbfi.Exists)
-            {
-                _dbFileWatcher = new FileWatcher(FileWatcherMode.ContentChanged, dbfi.Directory.FullName, TimeSpan.FromMilliseconds(300), "*.db");
-                _dbFileWatcher.PathChanged += (sender, args) =>
-                {
-                    var fi = new FileInfo(args.Path);
-                    if (fi.FullName == dbfi.FullName)
-                    {
-                        Task.Factory.StartNew(() =>
-                        {
-                            for (int i = 0; i < 20; i++)
-                            {
-                                if (IOPermissionHelper.HasWritePermissionOnFile(dbfi.FullName))
-                                {
-                                    Context.InitSqliteDb(fi.FullName);
-                                    App.UiDispatcher?.Invoke(() =>
-                                    {
-                                        Context.AppData.ReloadServerList();
-                                    });
-                                    return;
-                                }
-                                Thread.Sleep(100);
-                            }
-                        });
-                    }
-                };
-            }
+            // 以下代码会在自己更新数据库时同时被激活，当进行循环批量修改时，每修改一条记录都会重新读取一次数据库，会导致数据库连接冲突
+            //_dbFileWatcher?.Dispose();
+            //var dbfi = new FileInfo(ConfigurationVm.DbPath);
+            //if (dbfi.Exists)
+            //{
+            //    _dbFileWatcher = new FileWatcher(FileWatcherMode.ContentChanged, dbfi.Directory.FullName, TimeSpan.FromMilliseconds(300), "*.db");
+            //    _dbFileWatcher.PathChanged += (sender, args) =>
+            //    {
+            //        var fi = new FileInfo(args.Path);
+            //        if (fi.FullName == dbfi.FullName)
+            //        {
+            //            Task.Factory.StartNew(() =>
+            //            {
+            //                for (int i = 0; i < 20; i++)
+            //                {
+            //                    if (IOPermissionHelper.HasWritePermissionOnFile(dbfi.FullName))
+            //                    {
+            //                        Context.InitSqliteDb(fi.FullName);
+            //                        App.UiDispatcher?.Invoke(() =>
+            //                        {
+            //                            Context.AppData.ReloadServerList();
+            //                        });
+            //                        return;
+            //                    }
+            //                    Thread.Sleep(100);
+            //                }
+            //            });
+            //        }
+            //    };
+            //}
         }
         private static void InitTaskTray()
         {

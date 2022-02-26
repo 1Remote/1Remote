@@ -35,7 +35,7 @@
     <s:String x:Key="Connect (New window)">Verbinden (Neues Fenster)</s:String>
 
     <s:String x:Key="filter_mainwindow">Schlüsselwörter oder '#' + Tag-Name</s:String>
-    <s:String x:Key="filter_searchbox">Suche (STRG + F)</s:String>
+    <s:String x:Key="Search (Ctrl+F)">Suche (STRG + F)</s:String>
 
     <s:String x:Key="hotkey_already_registered">Hotkey bereits registriert</s:String>
     <s:String x:Key="hotkey_registered_fail">Fehler bei der Hotkey Registrierung</s:String>

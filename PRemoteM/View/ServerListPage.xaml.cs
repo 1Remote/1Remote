@@ -40,7 +40,6 @@ namespace PRM.View
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
         {
-            // TODO click all button, clear the tag filters
             Vm.SelectedTabName = "";
         }
 

@@ -19,10 +19,12 @@
         <ResourceDictionary Source="Styles/ButtonStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/TextBoxStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Styles/Menu.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ScrollViewer.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/ToggleButtonStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/SliderStyle.xaml"></ResourceDictionary>
         <ResourceDictionary Source="Styles/CheckBoxStyle.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Geometry/Baisc.xaml"></ResourceDictionary>
 
         <ResourceDictionary>
             <Style TargetType="{x:Type Hyperlink}">
