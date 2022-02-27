@@ -265,7 +265,8 @@ namespace com.github.xiangyuecn.rsacsharp {
             try
             {
                 var sha1Tmp = ppk.Sign("SHA1", "Test");
-                if (pk?.Verify("SHA1", sha1Tmp, "SHA1") != true)
+                if (pk?.Verify("SHA1", sha1Tmp, "SHA1") != true
+                && pk?.Verify("SHA1", sha1Tmp, "Test") == true)
                 {
                     return EnumRsaStatus.NoError;
                 }

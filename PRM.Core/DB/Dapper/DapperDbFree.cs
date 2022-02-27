@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
@@ -46,10 +47,26 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        public override int AddServer(IEnumerable<ProtocolServerBase> servers)
+        {
+            OpenConnection();
+            var ret = base.AddServer(servers);
+            CloseConnection();
+            return ret;
+        }
+
         public override bool UpdateServer(ProtocolServerBase server)
         {
             OpenConnection();
             var ret = base.UpdateServer(server);
+            CloseConnection();
+            return ret;
+        }
+
+        public override bool UpdateServer(IEnumerable<ProtocolServerBase> servers)
+        {
+            OpenConnection();
+            var ret = base.UpdateServer(servers);
             CloseConnection();
             return ret;
         }
@@ -61,6 +78,16 @@ namespace PRM.Core.DB.Dapper
             CloseConnection();
             return ret;
         }
+
+
+        public override bool DeleteServer(IEnumerable<int> ids)
+        {
+            OpenConnection();
+            var ret = base.DeleteServer(ids);
+            CloseConnection();
+            return ret;
+        }
+
 
         public override string GetConfig(string key)
         {

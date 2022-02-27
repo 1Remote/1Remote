@@ -30,8 +30,9 @@ namespace PRM.Core.Service
             _db.OpenConnection(type, newConnectionString);
 
             // check database rsa encrypt
-            if (Database_IsEncrypted()
-                && File.Exists(Database_GetPrivateKeyPath()))
+            var privateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
+            if (!string.IsNullOrWhiteSpace(privateKeyPath)
+                && File.Exists(privateKeyPath))
             {
                 _rsa = new RSA(File.ReadAllText(Database_GetPrivateKeyPath()), true);
             }
@@ -49,13 +50,6 @@ namespace PRM.Core.Service
                 _db.CloseConnection();
         }
 
-        public bool Database_IsEncrypted()
-        {
-            Debug.Assert(_db != null);
-            var rsaPrivateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
-            return !string.IsNullOrWhiteSpace(rsaPrivateKeyPath);
-        }
-
         public EnumDbStatus Database_SelfCheck()
         {
             _db?.OpenConnection();
@@ -63,12 +57,13 @@ namespace PRM.Core.Service
             if (_db?.IsConnected() != true)
                 return EnumDbStatus.NotConnected;
 
-            // check encrypt
-            if (Database_IsEncrypted() == false)
-                return EnumDbStatus.OK;
-
             // validate encryption
             var privateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
+            if (string.IsNullOrWhiteSpace(privateKeyPath))
+            {
+                // no encrypt
+                return EnumDbStatus.OK;
+            }
             var publicKey = _db.Get_RSA_PublicKey();
             var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
             switch (pks)
@@ -109,7 +104,6 @@ namespace PRM.Core.Service
             // clear rsa key
             if (string.IsNullOrEmpty(privateKeyPath))
             {
-                Debug.Assert(Database_IsEncrypted() == true);
                 _db.Set_RSA_PublicKey("");
                 _db.Set_RSA_PrivateKeyPath("");
                 _rsa = null;
@@ -118,7 +112,6 @@ namespace PRM.Core.Service
             // set rsa key
             else
             {
-                Debug.Assert(Database_IsEncrypted() == false);
                 var pks = RSA.KeyFileCheck(privateKeyPath, true);
                 if (pks != RSA.EnumRsaStatus.NoError)
                     return pks;
@@ -148,8 +141,6 @@ namespace PRM.Core.Service
         public void EncryptToDatabaseLevel(ProtocolServerBase server)
         {
             if (_rsa == null) return;
-            Debug.Assert(Database_IsEncrypted() == true);
-            Debug.Assert(_rsa.DecodeOrNull(server.DisplayName) == null);
             // ! server must be decrypted
             for (var i = 0; i < server.Tags.Count; i++)
             {
@@ -245,18 +236,49 @@ namespace PRM.Core.Service
             _db.AddServer(tmp);
         }
 
-        public void Database_UpdateServer(ProtocolServerBase org)
+        public void Database_InsertServer(IEnumerable<ProtocolServerBase> servers)
+        {
+            var cloneList = new List<ProtocolServerBase>();
+            foreach (var server in servers)
+            {
+                var tmp = (ProtocolServerBase)server.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                EncryptToDatabaseLevel(tmp);
+                cloneList.Add(tmp);
+            }
+            _db.AddServer(cloneList);
+        }
+
+        public bool Database_UpdateServer(ProtocolServerBase org)
         {
             Debug.Assert(org.Id > 0);
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(tmp);
-            _db.UpdateServer(tmp);
+            return _db.UpdateServer(tmp);
+        }
+
+        public bool Database_UpdateServer(IEnumerable<ProtocolServerBase> servers)
+        {
+            var cloneList = new List<ProtocolServerBase>();
+            foreach (var server in servers)
+            {
+                var tmp = (ProtocolServerBase)server.Clone();
+                tmp.SetNotifyPropertyChangedEnabled(false);
+                EncryptToDatabaseLevel(tmp);
+                cloneList.Add(tmp);
+            }
+            return _db.UpdateServer(cloneList);
         }
 
         public bool Database_DeleteServer(int id)
         {
             return _db.DeleteServer(id);
+        }
+
+        public bool Database_DeleteServer(IEnumerable<int> ids)
+        {
+            return _db.DeleteServer(ids);
         }
 
         public List<ProtocolServerBase> Database_GetServers()

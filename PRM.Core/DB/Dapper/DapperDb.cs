@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Dapper;
 using PRM.Core.I;
 using PRM.Core.Protocol;
@@ -123,38 +124,50 @@ COMMIT TRANSACTION;
                 ?.Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
         }
 
+
+        static readonly string SqlInsert = $@"INSERT INTO `{nameof(Server)}`
+(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`)
+VALUES
+(@{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.JsonConfigString)});";
         public virtual int AddServer(ProtocolServerBase server)
         {
             Debug.Assert(server.Id == 0);
-            return _dbConnection?.Execute(
-                $@"
-INSERT INTO `{nameof(Server)}`
-(`{nameof(Server.Protocol)}`, `{nameof(Server.ClassVersion)}`, `{nameof(Server.JsonConfigString)}`)
-VALUES
-(@{nameof(Server.Protocol)}, @{nameof(Server.ClassVersion)}, @{nameof(Server.JsonConfigString)});",
-                server.ToDbServer()) > 0
-                ? _dbConnection?.QuerySingle<int>("SELECT LAST_INSERT_ROWID();") ?? 0
-                : 0;
+            var ret = _dbConnection?.Execute(SqlInsert, server.ToDbServer());
+            return ret > 0 ? (_dbConnection?.QuerySingle<int>("SELECT LAST_INSERT_ROWID();") ?? 0) : 0;
         }
 
-        public virtual bool UpdateServer(ProtocolServerBase server)
+        public virtual int AddServer(IEnumerable<ProtocolServerBase> servers)
         {
-            Debug.Assert(server.Id > 0);
-            return _dbConnection?.Execute(
-                $@"
-UPDATE Server SET
+            var dbss = servers.Select(x => x.ToDbServer());
+            return _dbConnection?.Execute(SqlInsert, dbss) > 0 ? servers.Count() : 0;
+        }
+
+        static readonly string SqlUpdate = $@"UPDATE Server SET
 `{nameof(Server.Protocol)}` = @{nameof(Server.Protocol)},
 `{nameof(Server.ClassVersion)}` = @{nameof(Server.ClassVersion)},
 `{nameof(Server.JsonConfigString)}` = @{nameof(Server.JsonConfigString)}
-WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};",
-                server.ToDbServer()) > 0;
+WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
+        public virtual bool UpdateServer(ProtocolServerBase server)
+        {
+            Debug.Assert(server.Id > 0);
+            return _dbConnection?.Execute(SqlUpdate, server.ToDbServer()) > 0;
+        }
+
+        public virtual bool UpdateServer(IEnumerable<ProtocolServerBase> servers)
+        {
+            var dbss = servers.Select(x => x.ToDbServer());
+            var ret = _dbConnection?.Execute(SqlUpdate, dbss);
+            return ret > 0;
         }
 
         public virtual bool DeleteServer(int id)
         {
-            return _dbConnection?.Execute($@"
-DELETE FROM `{nameof(Server)}`
-WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
+            return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` = @{nameof(Server.Id)};", new { Id = id }) > 0;
+        }
+
+        public virtual bool DeleteServer(IEnumerable<int> ids)
+        {
+            return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
         }
 
         public virtual string GetConfig(string key)
