@@ -187,18 +187,16 @@ namespace PRM.ViewModel
                 {
                     if (!(o is Tag obj) || MessageBox.Show(Context.LanguageService.Translate("confirm_to_delete"), Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
                         return;
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
+
+                    var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);
+                    foreach (var server in protocolServerBases)
                     {
-                        var s = vmProtocolServer.Server;
-                        if (s.Tags.Contains(obj.Name))
+                        if (server.Tags.Contains(obj.Name))
                         {
-                            s.Tags.Remove(obj.Name);
+                            server.Tags.Remove(obj.Name);
                         }
-
-                        Context.AppData.UpdateServer(s, false);
                     }
-
-                    Context.AppData.ReloadServerList();
+                    Context.AppData.UpdateServer(protocolServerBases);
                     SelectedTabName = TabAllName;
                 });
             }
@@ -224,19 +222,16 @@ namespace PRM.ViewModel
                     if (string.IsNullOrEmpty(newTagName) || obj.Name == newTagName)
                         return;
 
-                    foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
+                    var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);
+                    foreach (var server in protocolServerBases)
                     {
-                        var s = vmProtocolServer.Server;
-                        if (s.Tags.Contains(obj.Name))
+                        if (server.Tags.Contains(obj.Name))
                         {
-                            s.Tags.Remove(obj.Name);
-                            s.Tags.Add(newTagName);
+                            server.Tags.Remove(obj.Name);
+                            server.Tags.Add(newTagName);
                         }
-
-                        Context.AppData.UpdateServer(s, false);
                     }
-
-                    Context.AppData.ReloadServerList();
+                    Context.AppData.UpdateServer(protocolServerBases);
 
                     // restore selected scene
                     if (selectedTabName == obj.Name)

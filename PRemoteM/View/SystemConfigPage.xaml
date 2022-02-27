@@ -400,7 +400,7 @@
                                     <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                         <Setter Property="IsEnabled" Value="False"></Setter>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                            <DataTrigger Binding="{Binding DbRsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="True"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -412,7 +412,7 @@
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource ButtonAccentStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                            <DataTrigger Binding="{Binding DbRsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                                 <Setter Property="IsEnabled" Value="False"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -429,7 +429,7 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Name="TbPublicKey" Text="{DynamicResource system_options_data_security_rsa_public_key}"></TextBlock>
-                        <TextBox Grid.Column="1" Text="{Binding RsaPublicKey, Mode=OneWay}" 
+                        <TextBox Grid.Column="1" Text="{Binding DbRsaPublicKey, Mode=OneWay}" 
                                      VerticalContentAlignment="Center" 
                                      TextWrapping="Wrap" Height="200" MaxWidth="500"
                                      Focusable="False"
@@ -445,12 +445,12 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource system_options_data_security_rsa_private_key_path}"></TextBlock>
-                        <TextBox Grid.Column="1" Text="{Binding RsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
+                        <TextBox Grid.Column="1" Text="{Binding DbRsaPrivateKeyPath, Mode=OneWay}" VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
                         <Button Grid.Column="2" HorizontalAlignment="Left" Content="{DynamicResource Select}" Command="{Binding CmdSelectRsaPrivateKey}" Margin="5 0 0 0">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimaryStyle}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
+                                        <DataTrigger Binding="{Binding DbRsaPublicKey, Converter={StaticResource StringIsEmpty2BoolConverter}}" Value="true">
                                             <Setter Property="IsEnabled" Value="False"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>

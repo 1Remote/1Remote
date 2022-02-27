@@ -38,17 +38,24 @@ namespace PRM.Core.I
         /// <param name="server"></param>
         /// <returns></returns>
         int AddServer(ProtocolServerBase server);
+        /// <summary>
+        /// insert and return count
+        /// </summary>
+        /// <returns></returns>
+        int AddServer(IEnumerable<ProtocolServerBase> servers);
 
         /// <summary>
         /// update server by id
         /// </summary>
         bool UpdateServer(ProtocolServerBase server);
+        bool UpdateServer(IEnumerable<ProtocolServerBase> servers);
 
         /// <summary>
         /// delete server by id, if id lower than 0 delete all data.
         /// </summary>
         /// <param name="id"></param>
         bool DeleteServer(int id);
+        bool DeleteServer(IEnumerable<int> ids);
 
         string GetConfig(string key);
 

@@ -123,6 +123,20 @@ namespace PRM.Core.Model
             }
         }
 
+        public void AddServer(IEnumerable<ProtocolServerBase> protocolServers, bool doInvoke = true)
+        {
+            if (_dataService == null || protocolServers == null || !protocolServers.Any())
+            {
+                return;
+            }
+
+            _dataService.Database_InsertServer(protocolServers);
+            if (doInvoke)
+            {
+                ReloadServerList();
+            }
+        }
+
         public void UpdateServer(ProtocolServerBase protocolServer, bool doInvoke = true)
         {
             Debug.Assert(protocolServer.Id > 0);
@@ -147,6 +161,18 @@ namespace PRM.Core.Model
             }
         }
 
+        public void UpdateServer(IEnumerable<ProtocolServerBase> protocolServers, bool doInvoke = true)
+        {
+            if (_dataService == null || protocolServers == null || !protocolServers.Any())
+            {
+                return;
+            }
+
+            if (_dataService.Database_UpdateServer(protocolServers))
+                if (doInvoke)
+                    ReloadServerList();
+        }
+
         public void DeleteServer(int id, bool doInvoke = true)
         {
             if (_dataService == null)
@@ -155,6 +181,20 @@ namespace PRM.Core.Model
             }
             Debug.Assert(id > 0);
             if (_dataService.Database_DeleteServer(id))
+            {
+                if (doInvoke)
+                    ReloadServerList();
+            }
+        }
+
+        public void DeleteServer(IEnumerable<int> ids, bool doInvoke = true)
+        {
+            if (_dataService == null || ids == null || !ids.Any())
+            {
+                return;
+            }
+
+            if (_dataService.Database_DeleteServer(ids))
             {
                 if (doInvoke)
                     ReloadServerList();

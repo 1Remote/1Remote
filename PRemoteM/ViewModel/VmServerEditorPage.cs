@@ -286,11 +286,7 @@ namespace PRM.ViewModel
                         }
 
                         // save
-                        foreach (var server in _orgServers.ToList())
-                        {
-                            _globalData.UpdateServer(server, false);
-                        }
-                        _globalData.VmItemListDataChanged?.Invoke();
+                        _globalData.UpdateServer(_orgServers);
                     }
                     // edit
                     else if (Server.Id > 0)

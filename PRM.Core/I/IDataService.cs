@@ -13,7 +13,6 @@ namespace PRM.Core.I
     {
         public bool Database_OpenConnection(DatabaseType type, string newConnectionString);
         public void Database_CloseConnection();
-        public bool Database_IsEncrypted();
         public EnumDbStatus Database_SelfCheck();
         public string Database_GetPublicKey();
         public string Database_GetPrivateKeyPath();
@@ -24,8 +23,11 @@ namespace PRM.Core.I
         public void DecryptToRamLevel(ProtocolServerBase server);
         public void DecryptToConnectLevel(ProtocolServerBase server);
         public void Database_InsertServer(ProtocolServerBase server);
-        public void Database_UpdateServer(ProtocolServerBase org);
+        public void Database_InsertServer(IEnumerable<ProtocolServerBase> servers);
+        public bool Database_UpdateServer(ProtocolServerBase org);
+        public bool Database_UpdateServer(IEnumerable<ProtocolServerBase> servers);
         public bool Database_DeleteServer(int id);
+        public bool Database_DeleteServer(IEnumerable<int> ids);
         public List<ProtocolServerBase> Database_GetServers();
     }
 }

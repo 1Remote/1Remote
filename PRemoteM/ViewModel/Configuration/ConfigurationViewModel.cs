@@ -43,6 +43,8 @@ namespace PRM.ViewModel.Configuration
             {
                 _configurationService.General.CurrentLanguageCode = languageCode;
             }
+
+            ValidateDbStatusAndShowMessageBox();
         }
 
         private static ConfigurationViewModel _configuration;
@@ -245,24 +247,35 @@ namespace PRM.ViewModel.Configuration
         #region Database
 
         public string DbPath => _configurationService.Database.SqliteDatabasePath;
-        public string RsaPublicKey => _dataService?.Database_GetPublicKey() ?? "";
-        public string RsaPrivateKeyPath => _dataService?.Database_GetPrivateKeyPath() ?? "";
+        //public string RsaPublicKey => _dataService?.Database_GetPublicKey() ?? "";
+        //public string RsaPrivateKeyPath => _dataService?.Database_GetPrivateKeyPath() ?? "";
 
+        private string _dbRsaPublicKey;
+        public string DbRsaPublicKey
+        {
+            get => _dbRsaPublicKey;
+            set => SetAndNotifyIfChanged(ref _dbRsaPublicKey, value);
+        }
+        private string _dbRsaPrivateKeyPath;
+        public string DbRsaPrivateKeyPath
+        {
+            get => _dbRsaPrivateKeyPath;
+            set => SetAndNotifyIfChanged(ref _dbRsaPrivateKeyPath, value);
+        }
 
 
         private bool ValidateDbStatusAndShowMessageBox()
         {
             // validate rsa key
             var res = _dataService.Database_SelfCheck();
-            RaisePropertyChanged(nameof(RsaPublicKey));
-            RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+            DbRsaPublicKey = _dataService.Database_GetPublicKey() ?? "";
+            DbRsaPrivateKeyPath = _dataService.Database_GetPrivateKeyPath() ?? "";
             if (res == EnumDbStatus.OK) return true;
             MessageBox.Show(res.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
             return false;
         }
 
         private RelayCommand _cmdGenRsaKey;
-
         public RelayCommand CmdGenRsaKey
         {
             get
@@ -274,13 +287,10 @@ namespace PRM.ViewModel.Configuration
                     {
                         return;
                     }
-                    if (_dataService.Database_IsEncrypted() == true)
+                    if (string.IsNullOrEmpty(DbRsaPrivateKeyPath) == true)
                     {
-                        return;
+                        GenRsa();
                     }
-                    GenRsa();
-                    RaisePropertyChanged(nameof(RsaPublicKey));
-                    RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                 });
             }
         }
@@ -297,13 +307,10 @@ namespace PRM.ViewModel.Configuration
         public Task GenRsa(string privateKeyPath = "")
         {
             // validate rsa key
-            Debug.Assert(_dataService.Database_IsEncrypted() == false);
             var t = new Task(() =>
             {
                 lock (this)
                 {
-                    if (_dataService.Database_IsEncrypted()) return;
-
                     if (string.IsNullOrEmpty(privateKeyPath))
                     {
                         var path = SelectFileHelper.OpenFile(
@@ -340,12 +347,8 @@ namespace PRM.ViewModel.Configuration
                     }
 
                     // encrypt old data
-                    foreach (var vmProtocolServer in this._context.AppData.VmItemList)
-                    {
-                        OnRsaProgress(++val, max);
-                        _dataService.Database_UpdateServer(vmProtocolServer.Server);
-                        OnRsaProgress(++val, max);
-                    }
+                    var ss = _context.AppData.VmItemList.Select(x => x.Server);
+                    this._dataService.Database_UpdateServer(ss);
 
                     // del back up
                     File.Delete(DbPath + ".back");
@@ -353,8 +356,7 @@ namespace PRM.ViewModel.Configuration
                     // done
                     OnRsaProgress(0, 0);
 
-                    RaisePropertyChanged(nameof(RsaPublicKey));
-                    RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                    ValidateDbStatusAndShowMessageBox();
                 }
             });
             t.Start();
@@ -377,22 +379,19 @@ namespace PRM.ViewModel.Configuration
                     {
                         return;
                     }
-                    if (_dataService.Database_IsEncrypted() != true)
+                    if (string.IsNullOrEmpty(DbRsaPrivateKeyPath) != true)
                     {
-                        return;
+                        CleanRsa();
                     }
-                    CleanRsa();
                 });
             }
         }
         public Task CleanRsa()
         {
-            Debug.Assert(_dataService.Database_IsEncrypted() == true);
             var t = new Task(() =>
             {
                 lock (this)
                 {
-                    if (!_dataService.Database_IsEncrypted()) return;
                     OnRsaProgress(0, 1);
                     int max = this._context.AppData.VmItemList.Count() * 3 + 2 + 1;
                     int val = 1;
@@ -414,11 +413,8 @@ namespace PRM.ViewModel.Configuration
                     this._dataService.Database_SetEncryptionKey("");
 
                     // update db
-                    foreach (var vmProtocolServer in this._context.AppData.VmItemList)
-                    {
-                        this._dataService.Database_UpdateServer(vmProtocolServer.Server);
-                        OnRsaProgress(++val, max);
-                    }
+                    var ss = _context.AppData.VmItemList.Select(x => x.Server);
+                    this._dataService.Database_UpdateServer(ss);
 
                     // del key
                     //File.Delete(ppkPath);
@@ -426,11 +422,10 @@ namespace PRM.ViewModel.Configuration
                     // del back up
                     File.Delete(DbPath + ".back");
 
+                    ValidateDbStatusAndShowMessageBox();
+
                     // done
                     OnRsaProgress(0, 0);
-
-                    RaisePropertyChanged(nameof(RsaPublicKey));
-                    RaisePropertyChanged(nameof(RsaPrivateKeyPath));
                 }
             });
             t.Start();
@@ -451,27 +446,26 @@ namespace PRM.ViewModel.Configuration
                     {
                         lock (this)
                         {
-                            if (!_dataService.Database_IsEncrypted())
+                            if (string.IsNullOrEmpty(DbRsaPrivateKeyPath))
                             {
                                 return;
                             }
                             var path = SelectFileHelper.OpenFile(
-                                initialDirectory: new FileInfo(RsaPrivateKeyPath).DirectoryName,
+                                initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
                                 filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
                             if (path == null) return;
                             var pks = RSA.CheckPrivatePublicKeyMatch(path, _context.DataService.Database_GetPublicKey());
                             if (pks == RSA.EnumRsaStatus.NoError)
                             {
                                 _dataService.Database_SetEncryptionKey(path, false);
-                                RaisePropertyChanged(nameof(RsaPublicKey));
-                                RaisePropertyChanged(nameof(RsaPrivateKeyPath));
+                                ValidateDbStatusAndShowMessageBox();
                             }
                             else
                             {
                                 MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
-                    }, o => _context.DataService != null && _context.DataService.Database_IsEncrypted());
+                    });
                 }
                 return _cmdSelectRsaPrivateKey;
             }

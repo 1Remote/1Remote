@@ -88,7 +88,7 @@ namespace PRM.ViewModel
                         Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
-                        Context.AppData.DeleteServer(id, true);
+                        Context.AppData.DeleteServer(id);
                     }
                 };
         }
@@ -153,7 +153,7 @@ namespace PRM.ViewModel
             if (string.IsNullOrEmpty(SelectedTabName) == false 
                 && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
             {
-                SetSelectedTabName();
+                SelectedTabName = TabAllName;
             }
             else
             {
@@ -161,6 +161,8 @@ namespace PRM.ViewModel
             }
 
             RaisePropertyChanged(nameof(IsMultipleSelected));
+            RaisePropertyChanged(nameof(IsSelectedAll));
+            RaisePropertyChanged(nameof(SelectedCount));
         }
 
         private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -169,8 +171,6 @@ namespace PRM.ViewModel
             {
                 var displayCount = ServerListItems.Count(x => x.ObjectVisibilityInList == Visibility.Visible);
                 var selectedCount = ServerListItems.Count(x => x.IsSelected);
-
-                RaisePropertyChanged(nameof(IsMultipleSelected));
                 if (IsSelectedAll == true && selectedCount < displayCount)
                 {
                     _isSelectedAll = false;
@@ -179,6 +179,7 @@ namespace PRM.ViewModel
                 {
                     _isSelectedAll = true;
                 }
+                RaisePropertyChanged(nameof(IsMultipleSelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
             }
@@ -346,11 +347,9 @@ namespace PRM.ViewModel
                             {
                                 server.Id = 0;
                                 list.Add(server);
-                                Context.DataService.Database_InsertServer(server);
                             }
                         }
-
-                        Context.AppData.ReloadServerList();
+                        Context.AppData.AddServer(list);
                         MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
                             MessageBoxImage.None, MessageBoxResult.None);
                     }
@@ -380,12 +379,7 @@ namespace PRM.ViewModel
                         var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
                         if (list?.Count > 0)
                         {
-                            foreach (var serverBase in list)
-                            {
-                                Context.DataService.Database_InsertServer(serverBase);
-                            }
-
-                            Context.AppData.ReloadServerList();
+                            Context.AppData.AddServer(list);
                             MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
                                 MessageBoxImage.None, MessageBoxResult.None);
                         }
@@ -434,11 +428,8 @@ namespace PRM.ViewModel
                         Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
-                        foreach (var vs in ss)
-                        {
-                            Context.AppData.DeleteServer(vs.Server.Id, false);
-                        }
-                        Context.AppData.ReloadServerList();
+                        var ids = ss.Select(x => x.Id);
+                        Context.AppData.DeleteServer(ids);
                     }
                 }, o => ServerListItems.Any(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true));
             }
