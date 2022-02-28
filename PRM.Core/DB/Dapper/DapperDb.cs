@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Windows.Foundation.Collections;
 using Dapper;
 using PRM.Core.I;
 using PRM.Core.Protocol;
@@ -39,6 +40,7 @@ namespace PRM.Core.DB.Dapper
                 if (IsConnected()) return;
                 if (_dbConnection == null)
                 {
+                    _dbConnection?.Close();
                     if (_databaseType == DatabaseType.Sqlite)
                         _dbConnection = new SQLiteConnection(_connectionString);
                     else
@@ -177,27 +179,17 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             return config?.Value;
         }
 
+        private static readonly string SqlInsertConfig = $@"INSERT INTO `{nameof(Config)}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})";
+        private static readonly string SqlUpdateConfig = $@"UPDATE `{nameof(Config)}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}";
         public virtual void SetConfig(string key, string value)
         {
             if (GetConfig(key) != null)
             {
-                _dbConnection?.Execute(
-                    $@"UPDATE `{nameof(Config)}`  SET `{nameof(Config.Value)}` = @{nameof(Config.Value)} WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
-                    new
-                    {
-                        Key = key,
-                        Value = value,
-                    });
+                _dbConnection?.Execute(SqlUpdateConfig, new { Key = key, Value = value, });
             }
             else
             {
-                _dbConnection?.Execute(
-                    $@"INSERT INTO `{nameof(Config)}` (`{nameof(Config.Key)}`, `{nameof(Config.Value)}`)  VALUES (@{nameof(Config.Key)}, @{nameof(Config.Value)})",
-                    new
-                    {
-                        Key = key,
-                        Value = value,
-                    });
+                _dbConnection?.Execute(SqlInsertConfig, new { Key = key, Value = value, });
             }
         }
 
@@ -209,6 +201,37 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
         public virtual void SetProtocolTemplate(string key, string value)
         {
             throw new NotImplementedException();
+        }
+
+        public virtual bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolServerBase> servers)
+        {
+            var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;
+            var existedPublic = GetConfig("RSA_PublicKey") != null;
+            CloseConnection();
+            OpenConnection();
+            var data = servers.Select(x => x.ToDbServer());
+            using (var tran = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    _dbConnection.Execute(existedPrivate ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PrivateKeyPath", Value = privateKeyPath, }, tran);
+                    _dbConnection.Execute(existedPublic ? SqlUpdateConfig : SqlInsertConfig, new { Key = "RSA_PublicKey", Value = publicKey, }, tran);
+                    if (data.Any())
+                        _dbConnection?.Execute(SqlUpdate, data, tran);
+                    tran.Commit();
+                }
+                catch (Exception)
+                {
+                    tran.Rollback();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public virtual void SetRsaPrivateKeyPath(string privateKeyPath)
+        {
+            SetConfig("RSA_PrivateKeyPath", privateKeyPath);
         }
     }
 }

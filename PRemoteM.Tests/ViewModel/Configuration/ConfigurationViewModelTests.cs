@@ -50,7 +50,7 @@ namespace PRemoteM.Tests.ViewModel.Configuration
             ctx.InitSqliteDb();
             ConfigurationViewModel.Init(ctx);
             var vm = ConfigurationViewModel.GetInstance();
-            vm.GenRsa(_ppkPath).Wait();
+            vm.GenRsa(_ppkPath)?.Wait();
             vm.CleanRsa().Wait();
         }
 

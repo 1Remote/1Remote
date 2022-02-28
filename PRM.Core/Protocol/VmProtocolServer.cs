@@ -24,20 +24,12 @@ namespace PRM.Core.Protocol
         public VmProtocolServer(ProtocolServerBase psb)
         {
             Server = psb;
+            DispNameControl = OrgDispNameControl;
             SubTitleControl = OrgSubTitleControl;
         }
 
-        public object OrgDispNameControl =>
-            new TextBlock()
-            {
-                Text = Server.DisplayName,
-            };
-
-        public object OrgSubTitleControl =>
-            new TextBlock()
-            {
-                Text = Server?.SubTitle,
-            };
+        public object OrgDispNameControl => new TextBlock() { Text = Server.DisplayName, };
+        public object OrgSubTitleControl => new TextBlock() { Text = Server?.SubTitle, };
 
 
         private object _dispNameControl = null;

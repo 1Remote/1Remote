@@ -15,12 +15,16 @@ namespace PRM.Core.Service
     public class DataService : IDataService
     {
         private readonly IDb _db;
-        public IDb IDB => _db;
 
         public DataService()
         {
             //_db = new DapperDb();
             _db = new DapperDbFree();
+        }
+
+        public IDb DB()
+        {
+            return _db;
         }
 
         public bool Database_OpenConnection(DatabaseType type, string newConnectionString)
@@ -96,34 +100,77 @@ namespace PRM.Core.Service
             return _db?.GetFromDatabase_RSA_PrivateKeyPath();
         }
 
-
-        public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, bool generateNewPublicKey = true)
+        public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolServerBase> servers)
         {
             Debug.Assert(_db != null);
 
             // clear rsa key
             if (string.IsNullOrEmpty(privateKeyPath))
             {
-                _db.Set_RSA_PublicKey("");
-                _db.Set_RSA_PrivateKeyPath("");
-                _rsa = null;
+                Debug.Assert(_rsa != null);
+                Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
+
+                // decrypt
+                var cloneList = new List<ProtocolServerBase>();
+                foreach (var server in servers)
+                {
+                    var tmp = (ProtocolServerBase)server.Clone();
+                    tmp.SetNotifyPropertyChangedEnabled(false);
+                    DecryptToConnectLevel(ref tmp);
+                    cloneList.Add(tmp);
+                }
+
+                // update 
+                if (_db.SetRsa("", "", cloneList))
+                {
+                    _rsa = null;
+                }
                 return RSA.EnumRsaStatus.NoError;
             }
             // set rsa key
             else
             {
-                var pks = RSA.KeyFileCheck(privateKeyPath, true);
+                Debug.Assert(_rsa == null);
+                Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == true);
+
+                
+                var pks = RSA.KeyCheck(privateKeyContent, true);
                 if (pks != RSA.EnumRsaStatus.NoError)
                     return pks;
+                var rsa = new RSA(privateKeyContent, true);
 
-                var rsa = new RSA(File.ReadAllText(privateKeyPath), true);
-                _db.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
-                if (generateNewPublicKey)
-                    _db.Set_RSA_PublicKey(rsa.ToPEM_PKCS1(true));
-                _db.Set_RSA_PrivateKeyPath(privateKeyPath);
-                _rsa = rsa;
+                // encrypt
+                var cloneList = new List<ProtocolServerBase>();
+                foreach (var server in servers)
+                {
+                    var tmp = (ProtocolServerBase)server.Clone();
+                    tmp.SetNotifyPropertyChangedEnabled(false);
+                    EncryptToDatabaseLevel(rsa, ref tmp);
+                    cloneList.Add(tmp);
+                }
+
+                // update 
+                if (_db.SetRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
+                {
+                    _db.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
+                    _rsa = rsa;
+                }
                 return RSA.EnumRsaStatus.NoError;
             }
+        }
+
+        public RSA.EnumRsaStatus Database_UpdatePrivateKeyPathOnly(string privateKeyPath)
+        {
+            Debug.Assert(_rsa != null);
+            Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
+            Debug.Assert(File.Exists(privateKeyPath));
+
+            var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, Database_GetPublicKey());
+            if (pks == RSA.EnumRsaStatus.NoError)
+            {
+                _db.Set_RSA_PrivateKeyPath(privateKeyPath);
+            }
+            return pks;
         }
 
         public string DecryptOrReturnOriginalString(string originalString)
@@ -131,33 +178,38 @@ namespace PRM.Core.Service
             return _rsa?.DecodeOrNull(originalString) ?? originalString;
         }
 
-        public string Encrypt(string str)
+        public static string Encrypt(RSA rsa, string str)
         {
-            if (_rsa.DecodeOrNull(str) == null)
-                return _rsa.Encode(str);
+            if (rsa.DecodeOrNull(str) == null)
+                return rsa.Encode(str);
             return str;
         }
 
-        public void EncryptToDatabaseLevel(ProtocolServerBase server)
+        public string Encrypt(string str)
         {
-            if (_rsa == null) return;
+            return Encrypt(_rsa, str);
+        }
+
+        public static void EncryptToDatabaseLevel(RSA rsa, ref ProtocolServerBase server)
+        {
+            if (rsa == null) return;
             // ! server must be decrypted
             for (var i = 0; i < server.Tags.Count; i++)
             {
-                server.Tags[i] = Encrypt(server.Tags[i]);
+                server.Tags[i] = Encrypt(rsa, server.Tags[i]);
             }
 
             // encrypt some info
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
                 var p = (ProtocolServerWithAddrPortBase)server;
-                p.Address = Encrypt(p.Address);
-                p.Port = Encrypt(p.Port);
+                p.Address = Encrypt(rsa, p.Address);
+                p.Port = Encrypt(rsa, p.Port);
             }
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
             {
                 var p = (ProtocolServerWithAddrPortUserPwdBase)server;
-                p.UserName = Encrypt(p.UserName);
+                p.UserName = Encrypt(rsa, p.UserName);
             }
 
 
@@ -165,24 +217,28 @@ namespace PRM.Core.Service
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
             {
                 var s = (ProtocolServerWithAddrPortUserPwdBase)server;
-                s.Password = Encrypt(s.Password);
+                s.Password = Encrypt(rsa, s.Password);
             }
             switch (server)
             {
                 case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
                     {
-                        ssh.PrivateKey = Encrypt(ssh.PrivateKey);
+                        ssh.PrivateKey = Encrypt(rsa, ssh.PrivateKey);
                         break;
                     }
                 case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
                     {
-                        rdp.GatewayPassword = Encrypt(rdp.GatewayPassword);
+                        rdp.GatewayPassword = Encrypt(rsa, rdp.GatewayPassword);
                         break;
                     }
             }
         }
+        public void EncryptToDatabaseLevel(ref ProtocolServerBase server)
+        {
+            EncryptToDatabaseLevel(_rsa, ref server);
+        }
 
-        public void DecryptToRamLevel(ProtocolServerBase server)
+        public void DecryptToRamLevel(ref ProtocolServerBase server)
         {
             if (_rsa == null) return;
             server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
@@ -205,10 +261,10 @@ namespace PRM.Core.Service
             }
         }
 
-        public void DecryptToConnectLevel(ProtocolServerBase server)
+        public void DecryptToConnectLevel(ref ProtocolServerBase server)
         {
             if (_rsa == null) return;
-            DecryptToRamLevel(server);
+            DecryptToRamLevel(ref server);
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
             {
                 var s = (ProtocolServerWithAddrPortUserPwdBase)server;
@@ -232,7 +288,7 @@ namespace PRM.Core.Service
         {
             var tmp = (ProtocolServerBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(tmp);
+            EncryptToDatabaseLevel(ref tmp);
             _db.AddServer(tmp);
         }
 
@@ -243,7 +299,7 @@ namespace PRM.Core.Service
             {
                 var tmp = (ProtocolServerBase)server.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
-                EncryptToDatabaseLevel(tmp);
+                EncryptToDatabaseLevel(ref tmp);
                 cloneList.Add(tmp);
             }
             _db.AddServer(cloneList);
@@ -254,7 +310,7 @@ namespace PRM.Core.Service
             Debug.Assert(org.Id > 0);
             var tmp = (ProtocolServerBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
-            EncryptToDatabaseLevel(tmp);
+            EncryptToDatabaseLevel(ref tmp);
             return _db.UpdateServer(tmp);
         }
 
@@ -265,7 +321,7 @@ namespace PRM.Core.Service
             {
                 var tmp = (ProtocolServerBase)server.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
-                EncryptToDatabaseLevel(tmp);
+                EncryptToDatabaseLevel(ref tmp);
                 cloneList.Add(tmp);
             }
             return _db.UpdateServer(cloneList);

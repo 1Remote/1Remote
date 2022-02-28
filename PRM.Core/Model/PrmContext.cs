@@ -17,7 +17,7 @@ namespace PRM.Core.Model
     {
         public readonly ConfigurationService ConfigurationService;
         public readonly ProtocolConfigurationService ProtocolConfigurationService;
-        public DataService DataService;
+        public IDataService DataService;
         public readonly LanguageService LanguageService;
         public readonly LauncherService LauncherService;
         public readonly ThemeService ThemeService;

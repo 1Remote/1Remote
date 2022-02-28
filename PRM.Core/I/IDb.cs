@@ -64,6 +64,16 @@ namespace PRM.Core.I
         string GetProtocolTemplate(string key);
 
         void SetProtocolTemplate(string key, string value);
+
+        /// <summary>
+        /// set rsa encryption and encrypt or decrypt the data.
+        /// </summary>
+        /// <param name="privateKeyPath"></param>
+        /// <param name="publicKey"></param>
+        /// <param name="servers">已加密或已解密的数据</param>
+        public bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolServerBase> servers);
+
+        public void SetRsaPrivateKeyPath(string privateKeyPath);
     }
 
 

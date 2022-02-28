@@ -311,8 +311,9 @@ namespace PRM.Core.Protocol
         /// <param name="context"></param>
         public virtual void ConnectPreprocess(PrmContext context)
         {
-            context.DataService.DecryptToRamLevel(this);
-            context.DataService.DecryptToConnectLevel(this);
+            var s = this;
+            context.DataService.DecryptToRamLevel(ref s);
+            context.DataService.DecryptToConnectLevel(ref s);
         }
 
         public static List<ProtocolServerBase> GetAllSubInstance()

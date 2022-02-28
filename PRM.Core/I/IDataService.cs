@@ -11,17 +11,22 @@ namespace PRM.Core.I
 {
     public interface IDataService
     {
+        public IDb DB();
+
         public bool Database_OpenConnection(DatabaseType type, string newConnectionString);
         public void Database_CloseConnection();
         public EnumDbStatus Database_SelfCheck();
         public string Database_GetPublicKey();
         public string Database_GetPrivateKeyPath();
-        public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, bool generateNewPublicKey = true);
+        //public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, bool generateNewPublicKey = true);
+        public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolServerBase> servers);
+        public RSA.EnumRsaStatus Database_UpdatePrivateKeyPathOnly(string privateKeyPath);
+
         public string DecryptOrReturnOriginalString(string originalString);
         public string Encrypt(string str);
-        public void EncryptToDatabaseLevel(ProtocolServerBase server);
-        public void DecryptToRamLevel(ProtocolServerBase server);
-        public void DecryptToConnectLevel(ProtocolServerBase server);
+        public void EncryptToDatabaseLevel(ref ProtocolServerBase server);
+        public void DecryptToRamLevel(ref ProtocolServerBase server);
+        public void DecryptToConnectLevel(ref ProtocolServerBase server);
         public void Database_InsertServer(ProtocolServerBase server);
         public void Database_InsertServer(IEnumerable<ProtocolServerBase> servers);
         public bool Database_UpdateServer(ProtocolServerBase org);

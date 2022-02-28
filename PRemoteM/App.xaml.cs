@@ -252,7 +252,7 @@ namespace PRM
             {
                 Context.AppData.ReloadServerList();
                 SetDbWatcher();
-                if (Context.DataService.IDB is DapperDbFree)
+                if (Context.DataService.DB() is DapperDbFree)
                 {
                     ConfigurationVm.PropertyChanged += (sender, args) =>
                     {

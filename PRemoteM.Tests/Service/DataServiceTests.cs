@@ -7,6 +7,7 @@ using com.github.xiangyuecn.rsacsharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PRM.Core.DB;
 using PRM.Core.I;
+using PRM.Core.Protocol;
 using PRM.Core.Protocol.Extend;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.RDP;
@@ -61,14 +62,15 @@ namespace PRemoteM.Tests.Service
                 // gen rsa
                 var rsa = new RSA(2048);
                 // save key file
-                File.WriteAllText(_ppkPath, rsa.ToPEM_PKCS1());
+                var privateKeyContent = rsa.ToPEM_PKCS1();
+                File.WriteAllText(_ppkPath, privateKeyContent);
 
-                _dataService.Database_SetEncryptionKey(_ppkPath);
+                _dataService.Database_SetEncryptionKey(_ppkPath, privateKeyContent, new List<ProtocolServerBase>());
                 var path = _dataService.Database_GetPrivateKeyPath();
                 var pk = _dataService.Database_GetPublicKey();
                 Assert.IsTrue(_ppkPath == path);
                 Assert.IsTrue(RSA.CheckPrivatePublicKeyMatch(_ppkPath, pk) == RSA.EnumRsaStatus.NoError);
-                Assert.IsTrue(_dataService.Database_IsEncrypted() == true);
+                Assert.IsTrue(string.IsNullOrEmpty(_dataService.Database_GetPrivateKeyPath()) == false);
                 Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.OK);
 
                 // data encrypt
@@ -79,7 +81,7 @@ namespace PRemoteM.Tests.Service
                 var first = data.First(x => x is ProtocolServerSSH);
                 Assert.IsTrue(first != null);
                 {
-                    _dataService.EncryptToDatabaseLevel(first);
+                    _dataService.EncryptToDatabaseLevel(ref first);
                     if (first is ProtocolServerSSH r)
                     {
                         Assert.IsTrue(_ssh.DisplayName == r.DisplayName);
@@ -93,7 +95,7 @@ namespace PRemoteM.Tests.Service
                     }
                 }
                 {
-                    _dataService.DecryptToRamLevel(first);
+                    _dataService.DecryptToRamLevel(ref first);
                     if (first is ProtocolServerSSH r)
                     {
                         Assert.IsTrue(_ssh.DisplayName == r.DisplayName);
@@ -105,7 +107,7 @@ namespace PRemoteM.Tests.Service
                     }
                 }
                 {
-                    _dataService.DecryptToConnectLevel(first);
+                    _dataService.DecryptToConnectLevel(ref first);
                     if (first is ProtocolServerSSH r)
                     {
                         Assert.IsTrue(_ssh.DisplayName == r.DisplayName);
@@ -118,12 +120,12 @@ namespace PRemoteM.Tests.Service
                 }
 
 
-                _dataService.Database_SetEncryptionKey("");
+                _dataService.Database_SetEncryptionKey("", "", new List<ProtocolServerBase>());
                 path = _dataService.Database_GetPrivateKeyPath();
                 pk = _dataService.Database_GetPublicKey();
                 Assert.IsTrue("" == path);
                 Assert.IsTrue("" == pk);
-                Assert.IsTrue(_dataService.Database_IsEncrypted() == false);
+                Assert.IsTrue(string.IsNullOrEmpty(_dataService.Database_GetPrivateKeyPath()) == true);
                 Assert.IsTrue(_dataService.Database_SelfCheck() == EnumDbStatus.OK);
             }
 
@@ -151,11 +153,56 @@ namespace PRemoteM.Tests.Service
                 Assert.IsTrue(_rdp.Password == first.Password);
                 Assert.IsTrue(_rdp.Address == first.Address);
                 Assert.IsTrue(_rdp.CommandAfterDisconnected == first.CommandAfterDisconnected);
+            }
+
+
+            {
+                Init();
+
+                var data = _dataService.Database_GetServers();
+                Assert.IsTrue(data.Count == 4);
+                var first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                Assert.IsTrue(first != null);
+                _rdp.Id = first.Id;
+                _rdp.DisplayName = "2";
+                _rdp.Address = "3";
+                _rdp.Password = "4";
+                _rdp.UserName = "5";
+                var second = data.First(x => x is ProtocolServerSSH) as ProtocolServerSSH;
+                _ssh.Id = second.Id;
+                _ssh.DisplayName = "SS2";
+                _ssh.Address = "XXXXX";
+                Assert.IsTrue(_dataService.Database_UpdateServer(new List<ProtocolServerBase>(){ _rdp, _ssh }));
+                data = _dataService.Database_GetServers();
+                Assert.IsTrue(data.Count == 4);
+                first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                Assert.IsTrue(first != null);
+                Assert.IsTrue(_rdp.DisplayName == first.DisplayName);
+                Assert.IsTrue(_rdp.UserName == first.UserName);
+                Assert.IsTrue(_rdp.Password == first.Password);
+                Assert.IsTrue(_rdp.Address == first.Address);
+                Assert.IsTrue(_rdp.CommandAfterDisconnected == first.CommandAfterDisconnected);
+                second = data.First(x => x is ProtocolServerSSH) as ProtocolServerSSH;
+                Assert.IsTrue(second != null);
+                Assert.IsTrue(_ssh.DisplayName == second.DisplayName);
+                Assert.IsTrue(_ssh.Address == second.Address);
 
                 _dataService.Database_DeleteServer(_rdp.Id);
                 data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 3);
                 Assert.IsTrue(data.All(x => x.Id != _rdp.Id));
+
+
+                _dataService.Database_DeleteServer(new List<int>(){_rdp.Id, _ssh.Id});
+                data = _dataService.Database_GetServers();
+                Assert.IsTrue(data.Count == 2);
+                Assert.IsTrue(data.All(x => x.Id != _ssh.Id));
+            }
+
+            {
+                _dataService.Database_InsertServer(new List<ProtocolServerBase>() { _rdp, _ssh });
+                var data = _dataService.Database_GetServers();
+                Assert.IsTrue(data.Count == 4);
             }
 
             _dataService.Database_CloseConnection();
