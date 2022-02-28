@@ -184,33 +184,33 @@ namespace PRM.View.ProtocolHosts
             lock (this)
             {
                 _rdp = new AxMsRdpClient9NotSafeForScriptingEx();
+
+                SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
+
+                ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
+                _rdp.Dock = DockStyle.Fill;
+                _rdp.Enabled = true;
+                _rdp.BackColor = Color.Black;
+                // set call back
+                _rdp.OnRequestGoFullScreen += (sender, args) =>
+                {
+                    MakeNormal2FullScreen();
+                };
+                _rdp.OnRequestLeaveFullScreen += (sender, args) =>
+                {
+                    MakeFullScreen2Normal();
+                };
+                _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
+                _rdp.OnDisconnected += RdpOnDisconnected;
+                _rdp.OnConfirmClose += RdpOnConfirmClose;
+                _rdp.OnConnected += RdpOnOnConnected;
+                _rdp.OnLoginComplete += RdpOnOnLoginComplete;
+                ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
+                RdpHost.Child = _rdp;
+
+                SimpleLogHelper.Debug("RDP Host: init CreateControl();");
+                _rdp.CreateControl();
             }
-
-            SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
-
-            ((System.ComponentModel.ISupportInitialize)(_rdp)).BeginInit();
-            _rdp.Dock = DockStyle.Fill;
-            _rdp.Enabled = true;
-            _rdp.BackColor = Color.Black;
-            // set call back
-            _rdp.OnRequestGoFullScreen += (sender, args) =>
-            {
-                MakeNormal2FullScreen();
-            };
-            _rdp.OnRequestLeaveFullScreen += (sender, args) =>
-            {
-                MakeFullScreen2Normal();
-            };
-            _rdp.OnRequestContainerMinimize += (sender, args) => { MakeForm2Minimize(); };
-            _rdp.OnDisconnected += RdpOnDisconnected;
-            _rdp.OnConfirmClose += RdpOnConfirmClose;
-            _rdp.OnConnected += RdpOnOnConnected;
-            _rdp.OnLoginComplete += RdpOnOnLoginComplete;
-            ((System.ComponentModel.ISupportInitialize)(_rdp)).EndInit();
-            RdpHost.Child = _rdp;
-
-            SimpleLogHelper.Debug("RDP Host: init CreateControl();");
-            _rdp.CreateControl();
         }
 
         private void RdpInitConnBar()
@@ -636,72 +636,76 @@ namespace PRM.View.ProtocolHosts
         private void RdpOnDisconnected(object sender, IMsTscAxEvents_OnDisconnectedEvent e)
         {
             SimpleLogHelper.Debug("RDP Host: RdpOnDisconnected");
-            if (_rdp == null)
-                return;
 
-            Status = ProtocolHostStatus.Disconnected;
-            ResizeEndStopFireDelegate();
-            if (this._onResizeEnd != null)
-                this._onResizeEnd -= ReSizeRdpOnResizeEnd;
-
-            const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
-            string reason = _rdp?.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
-            if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
-                SimpleLogHelper.Warning($"RDP({_rdpServer.DisplayName}) exit with error code {e.discReason}({reason})");
-
-            // disconnectReasonByServer (3 (0x3))
-            // https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
-
-            try
+            lock (this)
             {
-                _resizeEndTimer?.Dispose();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-            }
+                if (_rdp == null)
+                    return;
 
-            if (!string.IsNullOrWhiteSpace(reason)
-                && (_flagHasConnected != true ||
-                 e.discReason != UI_ERR_NORMAL_DISCONNECT
-                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
-                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
-                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                // log out from win2008 will reply exDiscReasonNoInfo
-                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser          // log out from win10 will reply exDiscReasonLogoffByUser
-                 && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonRpcInitiatedDisconnectByUser    // log out from win2016 will reply exDiscReasonLogoffByUser
-                ))
-            {
-                BtnReconn.Visibility = Visibility.Collapsed;
-                RdpHost.Visibility = Visibility.Collapsed;
-                GridMessageBox.Visibility = Visibility.Visible;
-                if (_flagHasConnected == true
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnection
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnectionFips
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerInsufficientPrivileges
-                    && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo  // conn to a power-off PC will get exDiscReasonNoInfo
-                    && _retryCount < MaxRetryCount)
+                Status = ProtocolHostStatus.Disconnected;
+                ResizeEndStopFireDelegate();
+                if (this._onResizeEnd != null)
+                    this._onResizeEnd -= ReSizeRdpOnResizeEnd;
+
+                const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
+                string reason = _rdp?.GetErrorDescription((uint)e.discReason, (uint)_rdp.ExtendedDisconnectReason);
+                if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
+                    SimpleLogHelper.Warning($"RDP({_rdpServer.DisplayName}) exit with error code {e.discReason}({reason})");
+
+                // disconnectReasonByServer (3 (0x3))
+                // https://docs.microsoft.com/zh-cn/windows/win32/termserv/imstscaxevents-ondisconnected?redirectedfrom=MSDN
+
+                try
                 {
-                    ++_retryCount;
-                    TbMessageTitle.Visibility = Visibility.Visible;
-                    TbMessageTitle.Text = Context.LanguageService.Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
-                    TbMessage.Text = reason;
-                    ReConn();
+                    _resizeEndTimer?.Dispose();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+
+                if (!string.IsNullOrWhiteSpace(reason)
+                    && (_flagHasConnected != true ||
+                     e.discReason != UI_ERR_NORMAL_DISCONNECT
+                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedDisconnect
+                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonAPIInitiatedLogoff
+                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo                // log out from win2008 will reply exDiscReasonNoInfo
+                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonLogoffByUser          // log out from win10 will reply exDiscReasonLogoffByUser
+                     && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonRpcInitiatedDisconnectByUser    // log out from win2016 will reply exDiscReasonLogoffByUser
+                    ))
+                {
+                    BtnReconn.Visibility = Visibility.Collapsed;
+                    RdpHost.Visibility = Visibility.Collapsed;
+                    GridMessageBox.Visibility = Visibility.Visible;
+                    if (_flagHasConnected == true
+                        && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonReplacedByOtherConnection
+                        && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonOutOfMemory
+                        && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnection
+                        && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerDeniedConnectionFips
+                        && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonServerInsufficientPrivileges
+                        && _rdp?.ExtendedDisconnectReason != ExtendedDisconnectReasonCode.exDiscReasonNoInfo  // conn to a power-off PC will get exDiscReasonNoInfo
+                        && _retryCount < MaxRetryCount)
+                    {
+                        ++_retryCount;
+                        TbMessageTitle.Visibility = Visibility.Visible;
+                        TbMessageTitle.Text = Context.LanguageService.Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
+                        TbMessage.Text = reason;
+                        ReConn();
+                    }
+                    else
+                    {
+                        TbMessageTitle.Visibility = Visibility.Collapsed;
+                        BtnReconn.Visibility = Visibility.Visible;
+                        TbMessage.Text = reason;
+                    }
+                    this.ParentWindow.FlashIfNotActive();
                 }
                 else
                 {
-                    TbMessageTitle.Visibility = Visibility.Collapsed;
-                    BtnReconn.Visibility = Visibility.Visible;
-                    TbMessage.Text = reason;
+                    RdpDispose();
+                    if (_invokeOnClosedWhenDisconnected)
+                        base.OnClosed?.Invoke(base.ConnectionId);
                 }
-                this.ParentWindow.FlashIfNotActive();
-            }
-            else
-            {
-                RdpDispose();
-                if (_invokeOnClosedWhenDisconnected)
-                    base.OnClosed?.Invoke(base.ConnectionId);
             }
         }
 
@@ -740,7 +744,10 @@ namespace PRM.View.ProtocolHosts
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(1000);
-                ReSizeRdpOnResizeEnd();
+                lock (this)
+                {
+                    ReSizeRdpOnResizeEnd(); 
+                }
             });
         }
 
@@ -761,8 +768,8 @@ namespace PRM.View.ProtocolHosts
             if (_rdp?.FullScreen == false
                 && _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
-                var nw = (uint)_rdp.Width;
-                var nh = (uint)_rdp.Height;
+                var nw = (uint)(_rdp?.Width ?? 0);
+                var nh = (uint)(_rdp?.Width ?? 0);
                 SetRdpResolution(nw, nh);
             }
         }
@@ -778,9 +785,9 @@ namespace PRM.View.ProtocolHosts
                     var newScaleFactor = _primaryScaleFactor;
                     if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
                         newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
-                    if (_rdp.DesktopWidth != w || _rdp.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
+                    if (_rdp?.DesktopWidth != w || _rdp?.DesktopHeight != h || newScaleFactor != _lastScaleFactor)
                     {
-                        _rdp.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
+                        _rdp?.UpdateSessionDisplaySettings(w, h, w, h, 0, newScaleFactor, 100);
                         _lastScaleFactor = newScaleFactor;
                     }
                 }
