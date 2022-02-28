@@ -99,27 +99,23 @@ namespace PRM.ViewModel
         }
 
         private string _filter = "";
-
         public string Filter
         {
             get => _filter;
             set
             {
-                if (_filter != value)
+                if (SetAndNotifyIfChanged(ref _filter, value))
                 {
-                    SetAndNotifyIfChanged(ref _filter, value);
-                }
-
-
-                Task.Factory.StartNew(() =>
-                {
-                    var filter = _filter;
-                    Thread.Sleep(70);
-                    if (filter == _filter)
+                    Task.Factory.StartNew(() =>
                     {
-                        UpdateItemsList(value);
-                    }
-                });
+                        var filter = _filter;
+                        Thread.Sleep(100);
+                        if (filter == _filter)
+                        {
+                            UpdateItemsList(value);
+                        }
+                    });
+                }
             }
         }
 
@@ -220,20 +216,6 @@ namespace PRM.ViewModel
             sb.Begin(_gridMenuActions);
         }
 
-        private void ShowAllItems()
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                // show all
-                foreach (var vm in Context.AppData.VmItemList)
-                {
-                    vm.ObjectVisibilityInLauncher = Visibility.Visible;
-                    vm.DispNameControl = vm.OrgDispNameControl;
-                    vm.SubTitleControl = vm.OrgSubTitleControl;
-                }
-            });
-        }
-
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
 
         public void UpdateItemsList(string keyword)
@@ -330,137 +312,12 @@ namespace PRM.ViewModel
                     }
                 });
             }
-            return;
-
-
-
-
-            if (keyWords.Count == 0 && tagFilters.Count == 0)
-            {
-                ShowAllItems();
-            }
-            else
-            {
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    foreach (var vm in Context.AppData.VmItemList)
-                    {
-                        Debug.Assert(vm != null);
-                        Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
-                        Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
-                        var server = vm.Server; 
-
-                        bool bTagMatched = true;
-                        foreach (var tagFilter in tagFilters)
-                        {
-                            if (tagFilter.IsExcluded == false && server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == false)
-                            {
-                                bTagMatched = false;
-                                break;
-                            }
-                            if (tagFilter.IsExcluded == true && server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)) == true)
-                            {
-                                bTagMatched = false;
-                                break;
-                            }
-                        }
-
-                        if (!bTagMatched)
-                        {
-                            vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
-                        }
-                        else if (keyWords.Count == 0)
-                        {
-                            vm.ObjectVisibilityInLauncher = Visibility.Visible;
-                            vm.DispNameControl = vm.OrgDispNameControl;
-                            vm.SubTitleControl = vm.OrgSubTitleControl;
-                        }
-                        else
-                        {
-                            var dispName = server.DisplayName;
-                            var subTitle = server.SubTitle;
-
-                            var mrs = Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
-                            if (mrs.IsMatchAllKeywords)
-                            {
-                                vm.ObjectVisibilityInLauncher = Visibility.Visible;
-
-                                var m1 = mrs.HitFlags[0];
-                                if (m1.Any(x => x == true))
-                                {
-                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                    //// if tag name search enabled, and keyword match the tag name, show tag name as prefix
-                                    //if (string.IsNullOrEmpty(prefix) == false)
-                                    //    foreach (var c in $"{prefix} - ")
-                                    //    {
-                                    //        sp.Children.Add(new TextBlock()
-                                    //        {
-                                    //            Text = c.ToString(),
-                                    //        });
-                                    //    }
-                                    for (int i = 0; i < m1.Count; i++)
-                                    {
-                                        if (m1[i])
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = dispName[i].ToString(),
-                                                Background = _highLightBrush,
-                                            });
-                                        else
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = dispName[i].ToString(),
-                                            });
-                                    }
-
-                                    vm.DispNameControl = sp;
-                                }
-                                else
-                                {
-                                    vm.DispNameControl = vm.OrgDispNameControl;
-                                }
-
-                                var m2 = mrs.HitFlags[1];
-                                if (m2.Any(x => x == true))
-                                {
-                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
-                                    for (int i = 0; i < m2.Count; i++)
-                                    {
-                                        if (m2[i])
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = subTitle[i].ToString(),
-                                                Background = _highLightBrush,
-                                            });
-                                        else
-                                            sp.Children.Add(new TextBlock()
-                                            {
-                                                Text = subTitle[i].ToString(),
-                                            });
-                                    }
-
-                                    vm.SubTitleControl = sp;
-                                }
-                                else
-                                {
-                                    vm.SubTitleControl = vm.OrgSubTitleControl;
-                                }
-                            }
-                            else
-                            {
-                                vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
-                            }
-                        }
-                    }
-                });
-            }
 
 
             App.Current.Dispatcher.Invoke(() =>
             {
                 // reorder
                 OrderItemByLastConnTime();
-
 
                 // index the list to first item
                 for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
@@ -491,7 +348,6 @@ namespace PRM.ViewModel
                 }
             }
         }
-
 
         public void AddSelectedIndexOnVisibilityItems(int step)
         {

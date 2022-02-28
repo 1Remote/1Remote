@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using PRM.Core.DB;
+using PRM.Core.I;
 using PRM.Core.Protocol;
 using PRM.Core.Service;
 using Shawn.Utils;
@@ -18,11 +19,11 @@ namespace PRM.Core.Model
             _configurationService = configurationService;
         }
 
-        private DataService _dataService;
+        private IDataService _dataService;
         private readonly LocalityService _localityService;
         private readonly ConfigurationService _configurationService;
 
-        public void SetDbOperator(DataService dataService)
+        public void SetDbOperator(IDataService dataService)
         {
             _dataService = dataService;
         }
@@ -65,12 +66,7 @@ namespace PRM.Core.Model
                 foreach (var tagName in tagNames)
                 {
                     if (tags.All(x => x.Name != tagName))
-                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), () =>
-                            {
-                                _configurationService.PinnedTags = TagList.Where(x => x.IsPinned).Select(x => x.Name).ToList();
-                                _configurationService.Save();
-                            })
-                            { ItemsCount = 1 });
+                        tags.Add(new Tag(tagName, pinnedTags.Contains(tagName), SaveOnPinnedChanged) { ItemsCount = 1 });
                     else
                         tags.First(x => x.Name == tagName).ItemsCount++;
                 }
@@ -81,6 +77,12 @@ namespace PRM.Core.Model
             TagListDoInvokeSelectedTabName = true;
         }
 
+        private void SaveOnPinnedChanged()
+        {
+            _configurationService.PinnedTags = TagList.Where(x => x.IsPinned).Select(x => x.Name).ToList();
+            _configurationService.Save();
+        }
+
         public void ReloadServerList()
         {
             if (_dataService == null)
@@ -89,11 +91,12 @@ namespace PRM.Core.Model
             }
             // read from db
             var tmp = new List<VmProtocolServer>();
-            foreach (var serverAbstract in _dataService.Database_GetServers())
+            foreach (var server in _dataService.Database_GetServers())
             {
+                var serverAbstract = server;
                 try
                 {
-                    _dataService.DecryptToRamLevel(serverAbstract);
+                    _dataService.DecryptToRamLevel(ref serverAbstract);
                     tmp.Add(new VmProtocolServer(serverAbstract));
                 }
                 catch (Exception e)
@@ -101,7 +104,8 @@ namespace PRM.Core.Model
                     SimpleLogHelper.Info(e);
                 }
             }
-            VmItemList = new ObservableCollection<VmProtocolServer>(tmp);
+
+            VmItemList = new ObservableCollection<VmProtocolServer>(tmp.OrderByDescending(x => x.Server.LastConnTime));
             ReadTagsFromServers();
             VmItemListDataChanged?.Invoke();
         }

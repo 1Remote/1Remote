@@ -309,14 +309,14 @@ namespace PRM.ViewModel
                         foreach (var vs in Context.AppData.VmItemList)
                         {
                             var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                            Context.DataService.DecryptToConnectLevel(serverBase);
+                            Context.DataService.DecryptToConnectLevel(ref serverBase);
                             list.Add(serverBase);
                         }
                     else
                         foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
                         {
                             var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                            Context.DataService.DecryptToConnectLevel(serverBase);
+                            Context.DataService.DecryptToConnectLevel(ref serverBase);
                             list.Add(serverBase);
                         }
 

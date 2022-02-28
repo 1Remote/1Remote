@@ -16,6 +16,7 @@ namespace PRM.Core.DB.Dapper
     /// </summary>
     public sealed class DapperDbFree : DapperDb
     {
+        /// <inheritdoc />
         public override void InitTables()
         {
             OpenConnection();
@@ -23,6 +24,7 @@ namespace PRM.Core.DB.Dapper
             CloseConnection();
         }
 
+        /// <inheritdoc />
         public override ProtocolServerBase GetServer(int id)
         {
             OpenConnection();
@@ -31,6 +33,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override List<ProtocolServerBase> GetServers()
         {
             OpenConnection();
@@ -39,6 +42,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override int AddServer(ProtocolServerBase server)
         {
             OpenConnection();
@@ -47,6 +51,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override int AddServer(IEnumerable<ProtocolServerBase> servers)
         {
             OpenConnection();
@@ -55,6 +60,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override bool UpdateServer(ProtocolServerBase server)
         {
             OpenConnection();
@@ -63,6 +69,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override bool UpdateServer(IEnumerable<ProtocolServerBase> servers)
         {
             OpenConnection();
@@ -71,6 +78,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override bool DeleteServer(int id)
         {
             OpenConnection();
@@ -80,6 +88,7 @@ namespace PRM.Core.DB.Dapper
         }
 
 
+        /// <inheritdoc />
         public override bool DeleteServer(IEnumerable<int> ids)
         {
             OpenConnection();
@@ -89,6 +98,7 @@ namespace PRM.Core.DB.Dapper
         }
 
 
+        /// <inheritdoc />
         public override string GetConfig(string key)
         {
             OpenConnection();
@@ -97,6 +107,7 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override void SetConfig(string key, string value)
         {
             OpenConnection();
@@ -104,6 +115,7 @@ namespace PRM.Core.DB.Dapper
             CloseConnection();
         }
 
+        /// <inheritdoc />
         public override string GetProtocolTemplate(string key)
         {
             OpenConnection();
@@ -112,10 +124,28 @@ namespace PRM.Core.DB.Dapper
             return ret;
         }
 
+        /// <inheritdoc />
         public override void SetProtocolTemplate(string key, string value)
         {
             OpenConnection();
             base.SetProtocolTemplate(key, value);
+            CloseConnection();
+        }
+
+        /// <inheritdoc />
+        public override bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolServerBase> servers)
+        {
+            OpenConnection();
+            var ret = base.SetRsa(privateKeyPath, publicKey, servers);
+            CloseConnection();
+            return ret;
+        }
+
+        /// <inheritdoc />
+        public override void SetRsaPrivateKeyPath(string privateKeyPath)
+        {
+            OpenConnection();
+            SetRsaPrivateKeyPath(privateKeyPath);
             CloseConnection();
         }
     }

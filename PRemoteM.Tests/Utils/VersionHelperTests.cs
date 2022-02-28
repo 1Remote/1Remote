@@ -50,7 +50,7 @@ namespace TestsShawn.Utils
             Assert.IsTrue(v1 > v9);
             Assert.IsTrue(v9 != v8);
             Assert.IsTrue(Shawn.Utils.VersionHelper.Version.Compare(v1, v3) == true);
-            Assert.IsTrue(Shawn.Utils.VersionHelper.Version.Compare(v9, v1) == false);
+            Assert.IsTrue(Shawn.Utils.VersionHelper.Version.Compare(v9, v1) == true);
         }
 
 

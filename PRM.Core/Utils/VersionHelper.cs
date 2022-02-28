@@ -181,7 +181,7 @@ namespace Shawn.Utils
                     && v2.Minor == v1.Minor
                     && v2.Patch == v1.Patch
                     && v2.Build == v1.Build
-                    && string.CompareOrdinal(v2.PreRelease.ToLower(), v1.PreRelease.ToLower()) > 0)
+                    && (string.IsNullOrEmpty(v2.PreRelease) && string.IsNullOrEmpty(v1.PreRelease) == false) || string.CompareOrdinal(v2.PreRelease.ToLower(), v1.PreRelease.ToLower()) > 0)
                     return true;
 
                 return false;

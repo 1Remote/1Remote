@@ -28,7 +28,7 @@ namespace PRM.ViewModel.Configuration
         private ConfigurationService _configurationService => _context.ConfigurationService;
         private ProtocolConfigurationService _protocolConfigurationService => _context.ProtocolConfigurationService;
         private LauncherService _launcherService => _context.LauncherService;
-        private DataService _dataService => _context.DataService;
+        private IDataService _dataService => _context.DataService;
         private ThemeService _themeService => _context.ThemeService;
 
         protected ConfigurationViewModel(
@@ -306,20 +306,21 @@ namespace PRM.ViewModel.Configuration
         private const string PrivateKeyFileExt = ".prpk";
         public Task GenRsa(string privateKeyPath = "")
         {
+            if (string.IsNullOrEmpty(privateKeyPath))
+            {
+                var path = SelectFileHelper.OpenFile(
+                    selectedFileName: ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
+                    checkFileExists: false,
+                    filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
+                if (path == null) return null;
+                privateKeyPath = path;
+            }
+
             // validate rsa key
             var t = new Task(() =>
             {
                 lock (this)
                 {
-                    if (string.IsNullOrEmpty(privateKeyPath))
-                    {
-                        var path = SelectFileHelper.OpenFile(
-                            selectedFileName: ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
-                            checkFileExists: false,
-                            filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
-                        if (path == null) return;
-                        privateKeyPath = path;
-                    }
 
                     int max = this._context.AppData.VmItemList.Count() * 3 + 2;
                     int val = 0;
@@ -329,26 +330,32 @@ namespace PRM.ViewModel.Configuration
                     File.Copy(DbPath, DbPath + ".back", true);
                     OnRsaProgress(++val, max);
 
+                    string privateKeyContent = "";
                     if (!File.Exists(privateKeyPath))
                     {
                         // gen rsa
                         var rsa = new RSA(2048);
-                        // save key file
-                        File.WriteAllText(privateKeyPath, rsa.ToPEM_PKCS1());
+                        privateKeyContent = rsa.ToPEM_PKCS1();
+                    }
+                    else
+                    {
+                        privateKeyContent = File.ReadAllText(privateKeyPath);
                     }
 
-                    OnRsaProgress(++val, max);
-
-                    if (_dataService.Database_SetEncryptionKey(privateKeyPath) != RSA.EnumRsaStatus.NoError)
+                    var ss = _context.AppData.VmItemList.Select(x => x.Server);
+                    if (_dataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(0, 0);
                         return;
                     }
 
-                    // encrypt old data
-                    var ss = _context.AppData.VmItemList.Select(x => x.Server);
-                    this._dataService.Database_UpdateServer(ss);
+
+                    if (!File.Exists(privateKeyPath))
+                    {
+                        // save key file
+                        File.WriteAllText(privateKeyPath, privateKeyContent);
+                    }
 
                     // del back up
                     File.Delete(DbPath + ".back");
@@ -402,19 +409,13 @@ namespace PRM.ViewModel.Configuration
                     File.Copy(DbPath, DbPath + ".back", true);
                     OnRsaProgress(++val, max);
 
-                    // decrypt pwd
-                    foreach (var vmProtocolServer in this._context.AppData.VmItemList)
-                    {
-                        this._dataService.DecryptToConnectLevel(vmProtocolServer.Server);
-                        OnRsaProgress(++val, max);
-                    }
-
-                    // remove rsa keys from db
-                    this._dataService.Database_SetEncryptionKey("");
-
-                    // update db
                     var ss = _context.AppData.VmItemList.Select(x => x.Server);
-                    this._dataService.Database_UpdateServer(ss);
+                    if (_dataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
+                    {
+                        MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        OnRsaProgress(0, 0);
+                        return;
+                    }
 
                     // del key
                     //File.Delete(ppkPath);
@@ -457,7 +458,8 @@ namespace PRM.ViewModel.Configuration
                             var pks = RSA.CheckPrivatePublicKeyMatch(path, _context.DataService.Database_GetPublicKey());
                             if (pks == RSA.EnumRsaStatus.NoError)
                             {
-                                _dataService.Database_SetEncryptionKey(path, false);
+                                // update private key only
+                                _dataService.Database_UpdatePrivateKeyPathOnly(path);
                                 ValidateDbStatusAndShowMessageBox();
                             }
                             else
