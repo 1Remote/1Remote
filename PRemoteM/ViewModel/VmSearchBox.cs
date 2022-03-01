@@ -171,40 +171,47 @@ namespace PRM.ViewModel
 
         private void RebuildVmServerList()
         {
+            VmServerList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
             App.UiDispatcher.Invoke(() =>
             {
-                var list = new List<VmProtocolServer>();
-                VmServerList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+                foreach (var vm in VmServerList)
+                {
+                    vm.DispNameControl = vm.OrgDispNameControl;
+                    vm.SubTitleControl = vm.OrgSubTitleControl;
+                }
             });
         }
 
         public void ReCalcWindowHeight(bool showGridAction)
         {
-            // show action list
-            if (showGridAction)
+            App.UiDispatcher.Invoke(() =>
             {
-                GridSelectionsHeight = (Actions?.Count ?? 0) * _oneActionHeight;
-                GridActionsHeight = GridKeywordHeight + GridSelectionsHeight;
-                GridMainHeight = GridActionsHeight;
-            }
-            // show server list
-            else
-            {
-                const int nMaxCount = 8;
-                int visibleCount = Context.AppData.VmItemList.Count(vm => vm.ObjectVisibilityInLauncher == Visibility.Visible);
-                if (visibleCount >= nMaxCount)
-                    GridSelectionsHeight = _oneItemHeight * nMaxCount;
+                // show action list
+                if (showGridAction)
+                {
+                    GridSelectionsHeight = (Actions?.Count ?? 0) * _oneActionHeight;
+                    GridActionsHeight = GridKeywordHeight + GridSelectionsHeight;
+                    GridMainHeight = GridActionsHeight;
+                }
+                // show server list
                 else
-                    GridSelectionsHeight = _oneItemHeight * visibleCount;
-                GridMainHeight = GridKeywordHeight + GridSelectionsHeight;
-            }
+                {
+                    const int nMaxCount = 8;
+                    int visibleCount = VmServerList.Count();
+                    if (visibleCount >= nMaxCount)
+                        GridSelectionsHeight = _oneItemHeight * nMaxCount;
+                    else
+                        GridSelectionsHeight = _oneItemHeight * visibleCount;
+                    GridMainHeight = GridKeywordHeight + GridSelectionsHeight;
+                    SimpleLogHelper.Debug($"Launcher resize:  w = {_gridMainWidth}, h = {GridMainHeight}");
+                }
+            });
         }
 
         public void ShowActionsList()
         {
-            if (Context.AppData.VmItemList.All(x => x.ObjectVisibilityInLauncher != Visibility.Visible)
-                || SelectedIndex < 0
-                || SelectedIndex >= Context.AppData.VmItemList.Count)
+            if (SelectedIndex < 0
+                || SelectedIndex >= VmServerList.Count)
             {
                 return;
             }
@@ -255,7 +262,6 @@ namespace PRM.ViewModel
                     {
                         if (s.Item2 == null)
                         {
-                            vm.ObjectVisibilityInLauncher = Visibility.Visible;
                             vm.DispNameControl = vm.OrgDispNameControl;
                             vm.SubTitleControl = vm.OrgSubTitleControl;
                         }
@@ -264,7 +270,6 @@ namespace PRM.ViewModel
                             var mrs = s.Item2;
                             if (mrs.IsMatchAllKeywords)
                             {
-                                vm.ObjectVisibilityInLauncher = Visibility.Visible;
                                 var dispName = server.DisplayName;
                                 var subTitle = server.SubTitle;
                                 var m1 = mrs.HitFlags[0];
@@ -325,59 +330,27 @@ namespace PRM.ViewModel
                 }
             }
 
-
-            App.Current.Dispatcher.Invoke(() =>
+            if (newList.Count == 0)
             {
-                VmServerList = new ObservableCollection<VmProtocolServer>(newList);
-                ReCalcWindowHeight(false);
-            });
-        }
-
-        private void OrderItemByLastConnTime()
-        {
-            for (var i = 1; i < Context.AppData.VmItemList.Count; i++)
-            {
-                var s0 = Context.AppData.VmItemList[i - 1];
-                var s1 = Context.AppData.VmItemList[i];
-                if (s0.Server.LastConnTime < s1.Server.LastConnTime)
-                {
-                    Context.AppData.VmItemList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
-                    break;
-                }
+                RebuildVmServerList();
             }
+            else
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    VmServerList = new ObservableCollection<VmProtocolServer>(newList);
+                });
+            }
+            ReCalcWindowHeight(false);
         }
 
         public void AddSelectedIndexOnVisibilityItems(int step)
         {
-            var index = SelectedIndex;
-            int count = 0;
-            if (step > 0)
-            {
-                for (int i = SelectedIndex + 1; i < Context.AppData.VmItemList.Count; i++)
-                {
-                    if (Context.AppData.VmItemList[i].ObjectVisibilityInLauncher == Visibility.Visible)
-                    {
-                        ++count;
-                        index = i;
-                        if (count == step)
-                            break;
-                    }
-                }
-            }
-            else if (step < 0)
-            {
-                step = Math.Abs(step);
-                for (int i = SelectedIndex - 1; i >= 0; i--)
-                {
-                    if (Context.AppData.VmItemList[i].ObjectVisibilityInLauncher == Visibility.Visible)
-                    {
-                        ++count;
-                        index = i;
-                        if (count == step)
-                            break;
-                    }
-                }
-            }
+            var index = SelectedIndex + step;
+            if (index < 0)
+                index = 0;
+            if (index >= VmServerList.Count)
+                index = VmServerList.Count - 1;
             SelectedIndex = index;
         }
     }

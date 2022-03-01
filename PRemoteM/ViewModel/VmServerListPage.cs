@@ -64,7 +64,6 @@ namespace PRM.ViewModel
             }
         }
 
-
         private VmProtocolServer _selectedServerListItem = null;
         public VmProtocolServer SelectedServerListItem
         {
@@ -98,17 +97,19 @@ namespace PRM.ViewModel
             }
         }
 
-        private bool _isSelectedAll;
         public bool IsSelectedAll
         {
-            get => _isSelectedAll;
+            get
+            {
+                return ServerListItems.All(x => x.IsSelected);
+            }
             set
             {
-                SetAndNotifyIfChanged(ref _isSelectedAll, value);
                 foreach (var vmServerCard in ServerListItems)
                 {
                     vmServerCard.IsSelected = value;
                 }
+                RaisePropertyChanged();
             }
         }
 
@@ -161,7 +162,6 @@ namespace PRM.ViewModel
         {
             App.UiDispatcher.Invoke(() =>
             {
-                var list = new List<VmProtocolServer>();
                 foreach (var vs in Context.AppData.VmItemList)
                 {
                     try
@@ -195,16 +195,6 @@ namespace PRM.ViewModel
         {
             if (e.PropertyName == nameof(VmProtocolServer.IsSelected))
             {
-                var displayCount = ServerListItems.Count();
-                var selectedCount = ServerListItems.Count(x => x.IsSelected);
-                if (IsSelectedAll == true && selectedCount < displayCount)
-                {
-                    _isSelectedAll = false;
-                }
-                else if (IsSelectedAll == false && selectedCount >= displayCount)
-                {
-                    _isSelectedAll = true;
-                }
                 RaisePropertyChanged(nameof(IsMultipleSelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
@@ -276,10 +266,7 @@ namespace PRM.ViewModel
             }
 
             ServerListItems = new ObservableCollection<VmProtocolServer>(newList);
-            if (ServerListItems.All(x => x.IsSelected))
-                _isSelectedAll = true;
-            else
-                _isSelectedAll = false;
+            RaisePropertyChanged(nameof(IsSelectedAll));
         }
 
 
@@ -304,28 +291,19 @@ namespace PRM.ViewModel
         {
             get
             {
-                return _cmdExportSelectedToJson ??= new RelayCommand((isExportAll) =>
+                return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
                     var path = SelectFileHelper.SaveFile(title: Context.LanguageService.Translate("system_options_data_security_export_dialog_title"),
                         filter: "PRM json array|*.prma",
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
                     if (path == null) return;
                     var list = new List<ProtocolServerBase>();
-                    if (isExportAll != null || ServerListItems.All(x => x.IsSelected == false))
-                        foreach (var vs in Context.AppData.VmItemList)
-                        {
-                            var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                            Context.DataService.DecryptToConnectLevel(ref serverBase);
-                            list.Add(serverBase);
-                        }
-                    else
-                        foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
-                        {
-                            var serverBase = (ProtocolServerBase)vs.Server.Clone();
-                            Context.DataService.DecryptToConnectLevel(ref serverBase);
-                            list.Add(serverBase);
-                        }
-
+                    foreach (var vs in ServerListItems.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true))
+                    {
+                        var serverBase = (ProtocolServerBase)vs.Server.Clone();
+                        Context.DataService.DecryptToConnectLevel(ref serverBase);
+                        list.Add(serverBase);
+                    }
                     File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
                 });
             }
@@ -536,7 +514,7 @@ namespace PRM.ViewModel
                     }
                 });
             }
-        } 
+        }
         #endregion
     }
 }

@@ -57,16 +57,7 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
         }
 
-
-        private Visibility _objectVisibilityInLauncher = Visibility.Visible;
-        public Visibility ObjectVisibilityInLauncher
-        {
-            get => _objectVisibilityInLauncher;
-            set => SetAndNotifyIfChanged(ref _objectVisibilityInLauncher, value);
-        }
-
         private bool _isSelected;
-
         /// <summary>
         /// is selected in list of MainWindow?
         /// </summary>

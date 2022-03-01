@@ -46,7 +46,10 @@ namespace PRM.View
             {
                 if (args.PropertyName == nameof(VmSearchBox.SelectedIndex))
                 {
-                    ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                    Dispatcher.Invoke(() =>
+                    {
+                        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
+                    });
                 }
             };
         }
@@ -82,6 +85,7 @@ namespace PRM.View
             SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
+            if (App.MainUi.Vm.ProcessingRingVisibility == Visibility.Visible) return;
             if (!Context.ConfigurationService.Launcher.LauncherEnabled) return;
             if (_isHidden != true) return;
 

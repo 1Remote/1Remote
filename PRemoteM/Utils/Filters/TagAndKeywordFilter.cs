@@ -79,7 +79,7 @@ namespace PRM.Utils.Filters
         public static Tuple<bool, MatchResults> MatchKeywords(ProtocolServerBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
         {
             var kws = keywords?.ToArray();
-            if (kws?.Any() != true && kws?.Any() != true)
+            if (tagFilters?.Any() != true && kws?.Any() != true)
             {
                 return new Tuple<bool, MatchResults>(true, null);
             }
