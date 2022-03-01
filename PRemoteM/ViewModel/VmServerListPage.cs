@@ -26,7 +26,6 @@ using PRM.Resources.Icons;
 using PRM.Utils.Filters;
 using PRM.ViewModel.Configuration;
 using Shawn.Utils;
-using VariableKeywordMatcher.Model;
 
 namespace PRM.ViewModel
 {
@@ -50,6 +49,8 @@ namespace PRM.ViewModel
         private readonly ListBox _list;
         private readonly VmMain _vmMain;
 
+        #region properties
+
         public bool ListPageIsCardView
         {
             get => ConfigurationViewModel.ListPageIsCardView;
@@ -61,38 +62,6 @@ namespace PRM.ViewModel
                     RaisePropertyChanged();
                 }
             }
-        }
-
-        protected VmServerListPage(PrmContext context, ConfigurationViewModel configurationView, ListBox list, VmMain vmMain)
-        {
-            Context = context;
-            ConfigurationViewModel = configurationView;
-            _list = list;
-            _vmMain = vmMain;
-            RebuildVmServerList();
-            Context.AppData.VmItemListDataChanged += RebuildVmServerList;
-
-
-            _vmMain.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(VmMain.FilterString))
-                {
-                    SetFilterAndCalcVisible();
-                    RaisePropertyChanged(nameof(IsMultipleSelected));
-                }
-            };
-
-            if (GlobalEventHelper.OnRequestDeleteServer == null)
-                GlobalEventHelper.OnRequestDeleteServer += id =>
-                {
-                    if (MessageBoxResult.Yes == MessageBox.Show(
-                        Context.LanguageService.Translate("confirm_to_delete_selected"),
-                        Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question, MessageBoxResult.None))
-                    {
-                        Context.AppData.DeleteServer(id);
-                    }
-                };
         }
 
 
@@ -116,6 +85,18 @@ namespace PRM.ViewModel
         }
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
 
+        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
+        public EnumServerOrderBy ServerOrderBy
+        {
+            get => _serverOrderBy;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _serverOrderBy, value))
+                {
+                    Context.LocalityService.ServerOrderBy = value;
+                }
+            }
+        }
 
         private bool _isSelectedAll;
         public bool IsSelectedAll
@@ -126,24 +107,63 @@ namespace PRM.ViewModel
                 SetAndNotifyIfChanged(ref _isSelectedAll, value);
                 foreach (var vmServerCard in ServerListItems)
                 {
-                    if (vmServerCard.ObjectVisibilityInList == Visibility.Visible)
-                        vmServerCard.IsSelected = value;
-                    else
-                        vmServerCard.IsSelected = false;
+                    vmServerCard.IsSelected = value;
                 }
             }
         }
 
         public bool IsMultipleSelected => ServerListItems.Count(x => x.IsSelected) > 0;
 
+        #endregion
+
+        protected VmServerListPage(PrmContext context, ConfigurationViewModel configurationView, ListBox list, VmMain vmMain)
+        {
+            Context = context;
+            ConfigurationViewModel = configurationView;
+            _list = list;
+            _vmMain = vmMain;
+            RebuildVmServerList();
+            Context.AppData.VmItemListDataChanged += RebuildVmServerList;
+
+
+            _vmMain.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(VmMain.FilterString))
+                {
+
+                    Task.Factory.StartNew(() =>
+                    {
+                        var filter = _vmMain.FilterString;
+                        Thread.Sleep(100);
+                        if (filter == _vmMain.FilterString)
+                        {
+                            CalcVisibleByFilter();
+                            RaisePropertyChanged(nameof(IsMultipleSelected));
+                        }
+                    });
+                }
+            };
+
+            if (GlobalEventHelper.OnRequestDeleteServer == null)
+                GlobalEventHelper.OnRequestDeleteServer += id =>
+                {
+                    if (MessageBoxResult.Yes == MessageBox.Show(
+                        Context.LanguageService.Translate("confirm_to_delete_selected"),
+                        Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        MessageBoxImage.Question, MessageBoxResult.None))
+                    {
+                        Context.AppData.DeleteServer(id);
+                    }
+                };
+        }
+
         private void RebuildVmServerList()
         {
             App.UiDispatcher.Invoke(() =>
             {
-                _serverListItems.Clear();
+                var list = new List<VmProtocolServer>();
                 foreach (var vs in Context.AppData.VmItemList)
                 {
-                    ServerListItems.Add(vs);
                     try
                     {
                         vs.PropertyChanged -= VmServerPropertyChanged;
@@ -153,7 +173,8 @@ namespace PRM.ViewModel
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
                 }
-                OrderServerList();
+                ServerListItems = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList);
+
                 if (string.IsNullOrEmpty(SelectedTabName) == false
                     && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
                 {
@@ -161,7 +182,7 @@ namespace PRM.ViewModel
                 }
                 else
                 {
-                    SetFilterAndCalcVisible();
+                    CalcVisibleByFilter();
                 }
 
                 RaisePropertyChanged(nameof(IsMultipleSelected));
@@ -174,7 +195,7 @@ namespace PRM.ViewModel
         {
             if (e.PropertyName == nameof(VmProtocolServer.IsSelected))
             {
-                var displayCount = ServerListItems.Count(x => x.ObjectVisibilityInList == Visibility.Visible);
+                var displayCount = ServerListItems.Count();
                 var selectedCount = ServerListItems.Count(x => x.IsSelected);
                 if (IsSelectedAll == true && selectedCount < displayCount)
                 {
@@ -233,20 +254,7 @@ namespace PRM.ViewModel
             RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
-        private EnumServerOrderBy _serverOrderBy = EnumServerOrderBy.IdAsc;
-        public EnumServerOrderBy ServerOrderBy
-        {
-            get => _serverOrderBy;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _serverOrderBy, value))
-                {
-                    Context.LocalityService.ServerOrderBy = value;
-                }
-            }
-        }
-
-        private void SetFilterAndCalcVisible()
+        private void CalcVisibleByFilter()
         {
             Debug.Assert(_vmMain != null);
             var keyword = _vmMain.FilterString;
@@ -256,33 +264,26 @@ namespace PRM.ViewModel
             TagFilters = tagFilters;
             SetSelectedTabName(tagFilters);
 
+            var newList = new List<VmProtocolServer>();
             foreach (var vm in Context.AppData.VmItemList)
             {
-                Debug.Assert(vm != null);
-                Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
-                Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
                 var server = vm.Server;
                 var s = TagAndKeywordFilter.MatchKeywords(server, tagFilters, keyWords);
-
-                App.Current.Dispatcher.Invoke(() =>
+                if (s.Item1 == true)
                 {
-                    if (s.Item1 == false)
-                    {
-                        vm.ObjectVisibilityInList = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        vm.ObjectVisibilityInList = Visibility.Visible;
-                    }
-                });
+                    newList.Add(vm);
+                }
             }
 
-            if (ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible).All(x => x.IsSelected))
+            ServerListItems = new ObservableCollection<VmProtocolServer>(newList);
+            if (ServerListItems.All(x => x.IsSelected))
                 _isSelectedAll = true;
             else
                 _isSelectedAll = false;
         }
 
+
+        #region Commands
 
         private RelayCommand _cmdAdd;
         public RelayCommand CmdAdd
@@ -446,7 +447,7 @@ namespace PRM.ViewModel
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
-                    var ss = ServerListItems.Where(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true).ToList();
+                    var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (MessageBoxResult.Yes == MessageBox.Show(
                         Context.LanguageService.Translate("confirm_to_delete_selected"),
@@ -456,7 +457,7 @@ namespace PRM.ViewModel
                         var ids = ss.Select(x => x.Id);
                         Context.AppData.DeleteServer(ids);
                     }
-                }, o => ServerListItems.Any(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true));
+                }, o => ServerListItems.Any(x => x.IsSelected == true));
             }
         }
 
@@ -470,7 +471,7 @@ namespace PRM.ViewModel
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => App.MainUi?.Vm?.AnimationPageEditor == null && ServerListItems.Any(x => x.ObjectVisibilityInList == Visibility.Visible && x.IsSelected == true));
+                    }, o => App.MainUi?.Vm?.AnimationPageEditor == null && ServerListItems.Any(x => x.IsSelected == true));
             }
         }
 
@@ -535,6 +536,7 @@ namespace PRM.ViewModel
                     }
                 });
             }
-        }
+        } 
+        #endregion
     }
 }

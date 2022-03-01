@@ -32,58 +32,51 @@ namespace PRM.ViewModel
 
         public PrmContext Context { get; }
 
-        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
-        {
-            Context = context;
-            _gridMainWidth = gridMainWidth;
-            _oneItemHeight = oneItemHeight;
-            _oneActionHeight = oneActionHeight;
-            this._gridMenuActions = gridMenuActions;
-            _cornerRadius = cornerRadius;
-            ReCalcWindowHeight(false);
-        }
-
-        private VmProtocolServer _selectedItem;
+        #region properties
 
         public VmProtocolServer SelectedItem
         {
             get
             {
-                if (_selectedItem == null)
-                    if (Context.AppData.VmItemList.Count > 0
-                        && _selectedIndex >= 0
-                        && _selectedIndex < Context.AppData.VmItemList.Count)
-                    {
-                        _selectedItem = Context.AppData.VmItemList[_selectedIndex];
-                    }
-                return _selectedItem;
+                if (VmServerList.Count > 0
+                    && _selectedIndex >= 0
+                    && _selectedIndex < VmServerList.Count)
+                {
+                    return VmServerList[_selectedIndex];
+                }
+                return null;
             }
-            private set => SetAndNotifyIfChanged(ref _selectedItem, value);
         }
 
         private int _selectedIndex;
-
         public int SelectedIndex
         {
             get => _selectedIndex;
             set
             {
-                SetAndNotifyIfChanged(ref _selectedIndex, value);
-                if (Context.AppData.VmItemList.Count > 0
-                    && _selectedIndex >= 0
-                    && _selectedIndex < Context.AppData.VmItemList.Count)
+                if (SetAndNotifyIfChanged(ref _selectedIndex, value))
                 {
-                    SelectedItem = Context.AppData.VmItemList[_selectedIndex];
-                }
-                else
-                {
-                    SelectedItem = null;
+                    RaisePropertyChanged(nameof(SelectedItem));
                 }
             }
         }
 
-        private ObservableCollection<ActionForServer> _actions = new ObservableCollection<ActionForServer>();
 
+        private ObservableCollection<VmProtocolServer> _vmServerList = new ObservableCollection<VmProtocolServer>();
+        public ObservableCollection<VmProtocolServer> VmServerList
+        {
+            get => _vmServerList;
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _vmServerList, value))
+                {
+                    SelectedIndex = 0;
+                }
+            }
+        }
+
+
+        private ObservableCollection<ActionForServer> _actions = new ObservableCollection<ActionForServer>();
         public ObservableCollection<ActionForServer> Actions
         {
             get => _actions;
@@ -112,7 +105,7 @@ namespace PRM.ViewModel
                         Thread.Sleep(100);
                         if (filter == _filter)
                         {
-                            UpdateItemsList(value);
+                            CalcVisibleByFilter();
                         }
                     });
                 }
@@ -158,6 +151,31 @@ namespace PRM.ViewModel
         {
             get => _tagFilters;
             set => SetAndNotifyIfChanged(ref _tagFilters, value);
+        }
+
+        #endregion
+
+        public VmSearchBox(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
+        {
+            Context = context;
+            _gridMainWidth = gridMainWidth;
+            _oneItemHeight = oneItemHeight;
+            _oneActionHeight = oneActionHeight;
+            this._gridMenuActions = gridMenuActions;
+            _cornerRadius = cornerRadius;
+            ReCalcWindowHeight(false);
+            RebuildVmServerList();
+            Context.AppData.VmItemListDataChanged += RebuildVmServerList;
+        }
+
+
+        private void RebuildVmServerList()
+        {
+            App.UiDispatcher.Invoke(() =>
+            {
+                var list = new List<VmProtocolServer>();
+                VmServerList = new ObservableCollection<VmProtocolServer>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+            });
         }
 
         public void ReCalcWindowHeight(bool showGridAction)
@@ -218,29 +236,22 @@ namespace PRM.ViewModel
 
         private readonly SolidColorBrush _highLightBrush = new SolidColorBrush(Color.FromArgb(80, 239, 242, 132));
 
-        public void UpdateItemsList(string keyword)
+        public void CalcVisibleByFilter()
         {
+            var keyword = _filter;
             var tmp = TagAndKeywordFilter.DecodeKeyword(keyword);
             var tagFilters = tmp.Item1;
             var keyWords = tmp.Item2;
             TagFilters = tagFilters;
 
-
+            var newList = new List<VmProtocolServer>();
             foreach (var vm in Context.AppData.VmItemList)
             {
-                Debug.Assert(vm != null);
-                Debug.Assert(!string.IsNullOrEmpty(vm.Server.ClassVersion));
-                Debug.Assert(!string.IsNullOrEmpty(vm.Server.Protocol));
                 var server = vm.Server;
                 var s = TagAndKeywordFilter.MatchKeywords(server, tagFilters, keyWords);
-
-                App.Current.Dispatcher.Invoke(() =>
+                if (s.Item1 == true)
                 {
-                    if (s.Item1 == false)
-                    {
-                        vm.ObjectVisibilityInLauncher = Visibility.Collapsed;
-                    }
-                    else
+                    App.Current.Dispatcher.Invoke(() =>
                     {
                         if (s.Item2 == null)
                         {
@@ -259,7 +270,7 @@ namespace PRM.ViewModel
                                 var m1 = mrs.HitFlags[0];
                                 if (m1.Any(x => x == true))
                                 {
-                                    var sp = new StackPanel() {Orientation = System.Windows.Controls.Orientation.Horizontal};
+                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
                                     for (int i = 0; i < m1.Count; i++)
                                     {
                                         if (m1[i])
@@ -285,7 +296,7 @@ namespace PRM.ViewModel
                                 var m2 = mrs.HitFlags[1];
                                 if (m2.Any(x => x == true))
                                 {
-                                    var sp = new StackPanel() {Orientation = System.Windows.Controls.Orientation.Horizontal};
+                                    var sp = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal };
                                     for (int i = 0; i < m2.Count; i++)
                                     {
                                         if (m2[i])
@@ -309,28 +320,15 @@ namespace PRM.ViewModel
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                    newList.Add(vm);
+                }
             }
 
 
             App.Current.Dispatcher.Invoke(() =>
             {
-                // reorder
-                OrderItemByLastConnTime();
-
-                // index the list to first item
-                for (var i = 0; i < Context.AppData.VmItemList.Count; i++)
-                {
-                    var vm = Context.AppData.VmItemList[i];
-                    if (vm.ObjectVisibilityInLauncher == Visibility.Visible)
-                    {
-                        SelectedIndex = i;
-                        SelectedItem = vm;
-                        break;
-                    }
-                }
-
+                VmServerList = new ObservableCollection<VmProtocolServer>(newList);
                 ReCalcWindowHeight(false);
             });
         }

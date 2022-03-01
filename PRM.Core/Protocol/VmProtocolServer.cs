@@ -65,14 +65,6 @@ namespace PRM.Core.Protocol
             set => SetAndNotifyIfChanged(ref _objectVisibilityInLauncher, value);
         }
 
-
-        private Visibility _objectVisibilityInList = Visibility.Visible;
-        public Visibility ObjectVisibilityInList
-        {
-            get => _objectVisibilityInList;
-            set => SetAndNotifyIfChanged(ref _objectVisibilityInList, value);
-        }
-
         private bool _isSelected;
 
         /// <summary>

@@ -76,9 +76,10 @@ namespace PRM.Utils.Filters
             return filterString + (keyWords.Count > 0 ? "" : " ");
         }
 
-        public static Tuple<bool, MatchResults> MatchKeywords(ProtocolServerBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keyWords)
+        public static Tuple<bool, MatchResults> MatchKeywords(ProtocolServerBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
         {
-            if (keyWords?.Any() != true && tagFilters?.Any() != true)
+            var kws = keywords?.ToArray();
+            if (kws?.Any() != true && kws?.Any() != true)
             {
                 return new Tuple<bool, MatchResults>(true, null);
             }
@@ -102,7 +103,7 @@ namespace PRM.Utils.Filters
             }
 
             // no keyword
-            if (keyWords?.Any() != true)
+            if (kws?.Any() != true)
             {
                 return new Tuple<bool, MatchResults>(true, null);
             }
@@ -110,7 +111,7 @@ namespace PRM.Utils.Filters
             // match keywords
             var dispName = server.DisplayName;
             var subTitle = server.SubTitle;
-            var mrs = App.Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, keyWords);
+            var mrs = App.Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, kws);
             if (mrs.IsMatchAllKeywords)
                 return new Tuple<bool, MatchResults>(true, mrs);
 

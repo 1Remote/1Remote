@@ -30,7 +30,6 @@
                             <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
-                                        <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList, UpdateSourceTrigger=PropertyChanged}"></Setter>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Server.Id}" Value="0">
                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
@@ -70,7 +69,6 @@
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="{Binding ObjectVisibilityInList}"></Setter>
                             <Setter Property="Height" Value="164"></Setter>
                             <Setter Property="Width" Value="165"></Setter>
                         </Style>
@@ -108,7 +106,7 @@
                             </Grid>
                             <Grid VerticalAlignment="Center">
                                 <Grid.Margin>
-                                    <Thickness Left="10" Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
+                                    <Thickness Right="{StaticResource ScrollBarWidthMouseOver}"></Thickness>
                                 </Grid.Margin>
                                 <Grid.Resources>
                                     <Style TargetType="Path" x:Key="HeaderPathStyle">
@@ -123,15 +121,15 @@
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol" MinWidth="80"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol" MinWidth="150"></ColumnDefinition>
                                     <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
-                                    <ColumnDefinition MinWidth="230" Width="*" SharedSizeGroup="Name"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Name"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <CheckBox HorizontalAlignment="Center" 
-                                      IsChecked="{Binding IsSelectedAll, Mode=TwoWay}">
+                                <CheckBox Margin="10 0 0 0" Width="20" Height="20" HorizontalAlignment="Left" 
+                                          IsChecked="{Binding IsSelectedAll, Mode=TwoWay}">
                                 </CheckBox>
 
                                 <Button HorizontalContentAlignment="Left" Grid.Column="1" Style="{StaticResource ButtonBarPrimaryStyle}"
@@ -276,7 +274,13 @@
                         <Setter Property="ItemsPanel">
                             <Setter.Value>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
+                                    <!--<WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>-->
+                                    <controls:VirtualizingWrapPanel 
+                                        IsVirtualizing="True"
+                                        ScrollUnit="Pixel"
+                                        VirtualizationMode="Recycling"
+                                        CacheLengthUnit="Item"
+                                        Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
                                 </ItemsPanelTemplate>
                             </Setter.Value>
                         </Setter>
@@ -288,15 +292,15 @@
                         <Setter Property="ItemsPanel">
                             <Setter.Value>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Margin="0 0 0 30"/>
-                                    <!--<VirtualizingStackPanel Margin="0 0 0 30"/>-->
+                                    <VirtualizingStackPanel 
+                                        IsVirtualizing="True"
+                                        ScrollUnit="Pixel"
+                                        VirtualizationMode="Recycling"
+                                        CacheLengthUnit="Item"
+                                        Margin="0 0 0 30"/>
                                 </ItemsPanelTemplate>
                             </Setter.Value>
                         </Setter>
-                        <!--<Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"></Setter>
-                        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"></Setter>
-                        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"></Setter>
-                        <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Item"></Setter>-->
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -446,7 +450,7 @@
                          Style="{DynamicResource ServerListStyle}">
                 </ListBox>
 
-                <!-- show detail of a server -->
+                <!-- footer: show detail of a server -->
                 <Grid Name="GridBottom" VerticalAlignment="Bottom" Height="30" Background="{DynamicResource PrimaryMidBrush}" IsHitTestVisible="False">
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -574,7 +578,7 @@
                 </ListBox.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="model:Tag">
-                        <Grid Width="300" Margin="20 5" Visibility="{Binding ObjectVisibilityInList}">
+                        <Grid Width="300" Margin="20 5" Visibility="{Binding ObjectVisibility}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>

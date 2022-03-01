@@ -149,7 +149,6 @@
                         </Grid.RowDefinitions>
                         <Grid>
                             <CheckBox Width="20" Height="20" HorizontalAlignment="Left" 
-                                      Name="CbIsSelected"
                                       IsChecked="{Binding IsSelected}"
                                       Background="{DynamicResource AccentMidBrush}">
                                 <CheckBox.Style>
