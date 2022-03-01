@@ -141,8 +141,8 @@
     <Reference Include="ToolGood.Words.Pinyin, Version=3.0.1.4, Culture=neutral, PublicKeyToken=d330f4fd115e6143, processorArchitecture=MSIL">
       <HintPath>..\packages\ToolGood.Words.Pinyin.3.0.1.4\lib\net40\ToolGood.Words.Pinyin.dll</HintPath>
     </Reference>
-    <Reference Include="VariableKeywordMatcher.I, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VariableKeywordMatcher.I.1.0.7\lib\net48\VariableKeywordMatcher.I.dll</HintPath>
+    <Reference Include="VariableKeywordMatcher.I, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VariableKeywordMatcher.I.1.0.9\lib\net48\VariableKeywordMatcher.I.dll</HintPath>
     </Reference>
     <Reference Include="VncSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=61974755c7bfea7c, processorArchitecture=MSIL">
       <HintPath>..\packages\VncSharp.1.0.7.0\lib\VncSharp.dll</HintPath>
@@ -180,6 +180,7 @@
     <Compile Include="Controls\TagsEditor.xaml.cs">
       <DependentUpon>TagsEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\VirtualizingWrapPanel.cs" />
     <Compile Include="Model\RemoteWindowPool.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />

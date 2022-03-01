@@ -15,6 +15,7 @@
                   SizeToContent="WidthAndHeight"
                   Background="Transparent"
                   Title="SearchBoxWindow" Height="460" Width="480">
+    <!--d:DataContext="{d:DesignInstance viewModel:VmSearchBox}"-->
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
@@ -284,6 +285,18 @@
                     </Style>
                 </Setter.Value>
             </Setter>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel 
+                            IsVirtualizing="True"
+                            ScrollUnit="Pixel"
+                            VirtualizationMode="Recycling"
+                            CacheLengthUnit="Item"
+                            Margin="0 0 0 30"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <DataTemplate x:Key="SearchBoxActionItemDataTemplate" DataType="model:ActionForServer">
@@ -406,7 +419,7 @@
                          PreviewMouseRightButtonDown="ListBoxSelections_OnMouseRightButtonDown"
                          PreviewMouseLeftButtonDown="ListBoxSelections_OnMouseDoubleClick"
                          SelectedIndex="{Binding SelectedIndex}"
-                         ItemsSource="{Binding Context.AppData.VmItemList}"
+                         ItemsSource="{Binding VmServerList}"
                          Background="{DynamicResource PrimaryMidBrush}"
                          Foreground="{DynamicResource PrimaryTextBrush}"
                          Style="{StaticResource SearchBoxSelectionList}">

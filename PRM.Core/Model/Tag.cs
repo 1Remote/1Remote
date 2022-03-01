@@ -46,12 +46,12 @@ namespace PRM.Core.Model
             }
         }
 
-        private Visibility _objectVisibilityInList = Visibility.Visible;
+        private Visibility _objectVisibility = Visibility.Visible;
         [JsonIgnore]
-        public Visibility ObjectVisibilityInList
+        public Visibility ObjectVisibility
         {
-            get => _objectVisibilityInList;
-            set => SetAndNotifyIfChanged(ref _objectVisibilityInList, value);
+            get => _objectVisibility;
+            set => SetAndNotifyIfChanged(ref _objectVisibility, value);
         }
 
         #region The old code // TODO del after 2022.05.31

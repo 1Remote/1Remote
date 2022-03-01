@@ -10,7 +10,7 @@
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              d:DataContext="{d:DesignInstance protocol:VmProtocolServer}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="30" d:DesignWidth="800">
     <Grid FocusVisualStyle="{x:Null}">
         <Grid.InputBindings>
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
@@ -35,13 +35,12 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Selector"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Protocol"></ColumnDefinition>
                     <ColumnDefinition Width="40" SharedSizeGroup="Span"></ColumnDefinition>
-                    <ColumnDefinition MinWidth="230" Width="*" SharedSizeGroup="Name"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Tags"></ColumnDefinition>
+                    <ColumnDefinition Width="300" SharedSizeGroup="Name"></ColumnDefinition>
+                    <ColumnDefinition Width="200" SharedSizeGroup="Tags"></ColumnDefinition>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Address"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
                 <CheckBox Margin="10 0 0 0" Width="20" Height="20" HorizontalAlignment="Left" 
-                                      Name="CbIsSelected"
                                       IsChecked="{Binding IsSelected, Mode=TwoWay}">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
@@ -70,20 +69,11 @@
                     <Image Source="{Binding Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                 </Grid>
 
-                <TextBlock Grid.Column="3" Margin="5 0"
-                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.DisplayName}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="ToolTip" Value="{x:Null}"></Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+
+                <Grid Grid.Column="3" ToolTip="{Binding Server.DisplayName}" Background="Transparent">
+                    <TextBlock Margin="5 0" FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Server.DisplayName}">
                 </TextBlock>
+                </Grid>
 
 
                 <ItemsControl Grid.Column="4" Margin="5 0" MaxWidth="200" VerticalAlignment="Center" HorizontalAlignment="Right" ItemsSource="{Binding Server.Tags}">
@@ -114,20 +104,12 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Grid.Column="5" Margin="5 0" MaxWidth="500"
-                                                                 FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                                                                 Text="{Binding Server.SubTitle}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="ToolTip" Value="{x:Null}"></Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                <Grid Grid.Column="5" ToolTip="{Binding Server.SubTitle}" Background="Transparent">
+                    <TextBlock Margin="5 0" MaxWidth="500"
+                               FontSize="14" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                               Text="{Binding Server.SubTitle}">
+                    </TextBlock>
+                </Grid>
 
 
                 <!-- setting menu button -->
@@ -208,10 +190,6 @@
                             </Style>
                         </ListBox.Style>
                     </ListBox>
-                    <!--<StackPanel>
-                        <Button Padding="5" Click="ServerMenuButton_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource Edit}"></Button>
-                        <Button Padding="5" Click="ButtonDuplicateServer_OnClick" Style="{StaticResource ButtonBarPrimaryStyle}" Content="{DynamicResource server_card_operate_duplicate}"></Button>
-                    </StackPanel>-->
                 </Grid>
             </Border>
         </Popup>

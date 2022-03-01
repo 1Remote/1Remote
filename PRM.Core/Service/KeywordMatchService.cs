@@ -126,9 +126,10 @@ namespace PRM.Core.Service
 
         public MatchResults Match(List<string> originalStrings, IEnumerable<string> keywords)
         {
+            var kws = keywords.ToArray();
             CleanUp();
             var caches = originalStrings.Select(x => GetCache(x)).ToList();
-            return _matcher.Matchs(caches, keywords);
+            return _matcher.Matchs(caches, kws);
         }
 
         private ref MatchCache GetCache(string originalString)
