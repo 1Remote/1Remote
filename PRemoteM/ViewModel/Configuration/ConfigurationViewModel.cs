@@ -358,6 +358,8 @@ namespace PRM.ViewModel.Configuration
                     OnRsaProgress(true);
 
                     ValidateDbStatusAndShowMessageBox();
+
+                    _context.AppData.ReloadServerList();
                 }
             });
             t.Start();
@@ -365,16 +367,16 @@ namespace PRM.ViewModel.Configuration
         }
 
 
-
-
+        private bool clearingRsa = false;
         private RelayCommand _cmdClearRsaKey;
-
         public RelayCommand CmdClearRsaKey
         {
             get
             {
                 return _cmdClearRsaKey ??= new RelayCommand((o) =>
                 {
+                    if(clearingRsa) return;
+                    clearingRsa = true;
                     // validate rsa key
                     if (!ValidateDbStatusAndShowMessageBox())
                     {
@@ -391,10 +393,9 @@ namespace PRM.ViewModel.Configuration
         {
             var t = new Task(() =>
             {
+                OnRsaProgress(false);
                 lock (this)
                 {
-                    OnRsaProgress(false);
-
                     // database back up
                     Debug.Assert(File.Exists(DbPath));
                     File.Copy(DbPath, DbPath + ".back", true);
@@ -414,9 +415,11 @@ namespace PRM.ViewModel.Configuration
                     File.Delete(DbPath + ".back");
 
                     ValidateDbStatusAndShowMessageBox();
-
+                    _context.AppData.ReloadServerList();
                     // done
                     OnRsaProgress(true);
+
+                    clearingRsa = true;
                 }
             });
             t.Start();

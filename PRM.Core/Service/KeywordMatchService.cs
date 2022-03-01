@@ -99,14 +99,17 @@ namespace PRM.Core.Service
 
         private void CleanUp()
         {
-            if (_caches.Any(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-24)))
+            lock (this)
             {
-                var kvs = _caches.Where(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-12))?
-                    .OrderBy(x => x.Value.GetAccessTime())?.ToArray();
-                foreach (var kv in kvs)
+                if (_caches.Any(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-24)))
                 {
-                    _caches.Remove(kv.Key);
-                }
+                    var kvs = _caches.Where(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-12))?
+                        .OrderBy(x => x.Value.GetAccessTime())?.ToArray();
+                    foreach (var kv in kvs)
+                    {
+                        _caches.Remove(kv.Key);
+                    }
+                } 
             }
         }
 

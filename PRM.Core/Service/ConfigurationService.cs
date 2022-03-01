@@ -27,7 +27,7 @@ namespace PRM.Core.Service
 #else
         public bool AppStartMinimized  = true;
 #endif
-        public bool ListPageIsCardView = true;
+        public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
         #endregion
     }

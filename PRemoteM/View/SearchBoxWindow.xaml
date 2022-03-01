@@ -164,8 +164,7 @@
         </ControlTemplate>
 
         <DataTemplate DataType="{x:Type protocol:VmProtocolServer}">
-            <Grid Visibility="{Binding ObjectVisibilityInLauncher}"  Height="{StaticResource OneItemHeight}">
-
+            <Grid Height="{StaticResource OneItemHeight}">
                 <Grid VerticalAlignment="Center" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5"></ColumnDefinition>
@@ -292,8 +291,7 @@
                             IsVirtualizing="True"
                             ScrollUnit="Pixel"
                             VirtualizationMode="Recycling"
-                            CacheLengthUnit="Item"
-                            Margin="0 0 0 30"/>
+                            CacheLengthUnit="Item"/>
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
