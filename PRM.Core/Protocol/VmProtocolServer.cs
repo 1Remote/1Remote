@@ -24,8 +24,8 @@ namespace PRM.Core.Protocol
         public VmProtocolServer(ProtocolServerBase psb)
         {
             Server = psb;
-            DispNameControl = OrgDispNameControl;
-            SubTitleControl = OrgSubTitleControl;
+            //_dispNameControl = OrgDispNameControl;
+            //_subTitleControl = OrgSubTitleControl;
         }
 
         public object OrgDispNameControl => new TextBlock() { Text = Server.DisplayName, };
@@ -35,7 +35,12 @@ namespace PRM.Core.Protocol
         private object _dispNameControl = null;
         public object DispNameControl
         {
-            get => _dispNameControl;
+            get
+            {
+                if (_dispNameControl == null)
+                    _dispNameControl = OrgDispNameControl;
+                return _dispNameControl;
+            }
             set => SetAndNotifyIfChanged(ref _dispNameControl, value);
         }
 
@@ -43,7 +48,12 @@ namespace PRM.Core.Protocol
         private object _subTitleControl = null;
         public object SubTitleControl
         {
-            get => _subTitleControl;
+            get
+            {
+                if (_subTitleControl == null)
+                    _subTitleControl = OrgSubTitleControl;
+                return _subTitleControl;
+            }
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
         }
 

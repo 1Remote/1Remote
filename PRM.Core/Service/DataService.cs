@@ -194,17 +194,14 @@ namespace PRM.Core.Service
         {
             if (rsa == null) return;
             // ! server must be decrypted
-            for (var i = 0; i < server.Tags.Count; i++)
-            {
-                server.Tags[i] = Encrypt(rsa, server.Tags[i]);
-            }
+            server.DisplayName = Encrypt(rsa, server.DisplayName);
 
             // encrypt some info
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
                 var p = (ProtocolServerWithAddrPortBase)server;
                 p.Address = Encrypt(rsa, p.Address);
-                p.Port = Encrypt(rsa, p.Port);
+                p.SetPort(Encrypt(rsa, p.Port));
             }
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
             {
@@ -242,11 +239,6 @@ namespace PRM.Core.Service
         {
             if (_rsa == null) return;
             server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
-            for (var i = 0; i < server.Tags.Count; i++)
-            {
-                server.Tags[i] = DecryptOrReturnOriginalString(server.Tags[i]);
-            }
-
             if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
             {
                 var p = (ProtocolServerWithAddrPortBase)server;

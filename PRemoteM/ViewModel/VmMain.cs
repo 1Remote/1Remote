@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
@@ -50,28 +51,19 @@ namespace PRM.ViewModel
             set => SetAndNotifyIfChanged(ref _animationPageAbout, value);
         }
 
-        private int _progressBarValue = 0;
 
-        public int ProgressBarValue
+        private Visibility _processingRingVisibility = Visibility.Collapsed;
+        public Visibility ProcessingRingVisibility
         {
-            get => _progressBarValue;
-            set => SetAndNotifyIfChanged(ref _progressBarValue, value);
+            get => _processingRingVisibility;
+            set => SetAndNotifyIfChanged(ref _processingRingVisibility, value);
         }
 
-        private int _progressBarMaximum = 0;
-
-        public int ProgressBarMaximum
+        private string _processingRingMessage = "";
+        public string ProcessingRingMessage
         {
-            get => _progressBarMaximum;
-            set => SetAndNotifyIfChanged(ref _progressBarMaximum, value);
-        }
-
-        private string _progressBarInfo = "";
-
-        public string ProgressBarInfo
-        {
-            get => _progressBarInfo;
-            set => SetAndNotifyIfChanged(ref _progressBarInfo, value);
+            get => _processingRingMessage;
+            set => SetAndNotifyIfChanged(ref _processingRingMessage, value);
         }
 
         #endregion Properties
@@ -116,13 +108,19 @@ namespace PRM.ViewModel
             ConfigurationVm = configurationVm;
             ConfigurationVm.Host = this;
             VmAboutPage = new VmAboutPage();
-            GlobalEventHelper.OnLongTimeProgress += (arg1, arg2, arg3) =>
+            GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
                 Window.Dispatcher.Invoke(() =>
                 {
-                    ProgressBarValue = arg1;
-                    ProgressBarMaximum = arg2;
-                    ProgressBarInfo = arg2 > 0 ? arg3 : "";
+                    if (visibility == Visibility.Visible)
+                    {
+                        ProcessingRingVisibility = Visibility.Visible;
+                        ProcessingRingMessage = msg;
+                    }
+                    else
+                    {
+                        ProcessingRingVisibility = Visibility.Collapsed;
+                    }
                 });
             };
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
@@ -132,6 +130,8 @@ namespace PRM.ViewModel
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
                 Window.Dispatcher.Invoke(() =>
                 {
+                    AnimationPageAbout = null;
+                    AnimationPageSettings = null;
                     AnimationPageEditor = new AnimationPage()
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,

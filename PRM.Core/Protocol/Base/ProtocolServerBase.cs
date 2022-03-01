@@ -72,7 +72,7 @@ namespace PRM.Core.Protocol
         public string ProtocolDisplayNameInShort { get; }
 
         /// <summary>
-        /// this is for old db to new db. do not remove!
+        /// this is for old db to new db. do not remove until 2022.05!
         /// </summary>
         [Obsolete]
         public string DispName

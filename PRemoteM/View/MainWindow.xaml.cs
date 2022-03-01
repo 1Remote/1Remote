@@ -157,5 +157,12 @@ namespace PRM
                 TbFilter.CaretIndex = TbFilter.Text.Length;
             }
         }
+
+        private void ProcessingRing_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.ClickCount >= 2)
+                return;
+            base.WinTitleBar_MouseDown(sender, e);
+        }
     }
 }

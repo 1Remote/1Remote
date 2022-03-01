@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using PRM.Core.Protocol;
 
 namespace PRM.Core.Model
@@ -50,10 +51,10 @@ namespace PRM.Core.Model
         public static OnRequestDeleteServerDelegate OnRequestDeleteServer { get; set; } = null;
 
         /// <summary>
-        /// Invoke to show up progress bar when arg2 > 0
-        /// while progress percent = arg1 / arg2 * 100%, alert info = arg3
+        /// Invoke to show up processing ring
+        /// alert info = arg2
         /// </summary>
-        public static Action<int, int, string> OnLongTimeProgress { get; set; } = null;
+        public static Action<Visibility, string> ShowProcessingRing { get; set; } = null;
 
         /// <summary>
         /// Invoke to notify language was changed.

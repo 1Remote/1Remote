@@ -270,16 +270,6 @@
             <Style x:Key="ServerListStyle" TargetType="ListBox">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
 
-                <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListBox}, Path=ActualWidth}" Margin="15 10 0 20"/>
-                        </ItemsPanelTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerCards}"></Setter>
-
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ListPageIsCardView}" Value="True">
                         <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerCards}"></Setter>
@@ -294,14 +284,19 @@
                     </DataTrigger>
                     <DataTrigger Binding="{Binding ListPageIsCardView}" Value="False">
                         <Setter Property="Template" Value="{StaticResource ListBoxTemplateForServerList}"></Setter>
+                        <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
                         <Setter Property="ItemsPanel">
                             <Setter.Value>
                                 <ItemsPanelTemplate>
                                     <StackPanel Margin="0 0 0 30"/>
+                                    <!--<VirtualizingStackPanel Margin="0 0 0 30"/>-->
                                 </ItemsPanelTemplate>
                             </Setter.Value>
                         </Setter>
-                        <Setter Property="ItemTemplate" Value="{StaticResource DataTemplateForServerList}"></Setter>
+                        <!--<Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"></Setter>
+                        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"></Setter>
+                        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"></Setter>
+                        <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Item"></Setter>-->
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
