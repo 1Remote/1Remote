@@ -769,7 +769,7 @@ namespace PRM.View.ProtocolHosts
                 && _rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
                 var nw = (uint)(_rdp?.Width ?? 0);
-                var nh = (uint)(_rdp?.Width ?? 0);
+                var nh = (uint)(_rdp?.Height ?? 0);
                 SetRdpResolution(nw, nh);
             }
         }

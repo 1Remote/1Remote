@@ -52,259 +52,281 @@
     </utils:WindowChromeBase.InputBindings>
 
     <Grid Background="{DynamicResource BackgroundBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=ProcessingRingVisibility, Mode=OneWay}" Value="Visible">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
 
-        <Grid Background="{DynamicResource PrimaryMidBrush}" Name="WinTitleBar">
-            <StackPanel Orientation="Horizontal">
-                <Grid Background="Transparent" Width="24" Height="24" Margin="5">
-                    <Image Source="/Resources/Image/Logo/logo64.png"></Image>
-                </Grid>
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
-            </StackPanel>
-        </Grid>
+            <Grid Background="{DynamicResource PrimaryMidBrush}" Name="WinTitleBar">
+                <StackPanel Orientation="Horizontal">
+                    <Grid Background="Transparent" Width="24" Height="24" Margin="5">
+                        <Image Source="/Resources/Image/Logo/logo64.png"></Image>
+                    </Grid>
+                    <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding Title, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
+                </StackPanel>
+            </Grid>
 
-        <!-- System Button Area -->
-        <StackPanel Grid.Row="0"
+            <!-- System Button Area -->
+            <StackPanel Grid.Row="0"
                     Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource PrimaryMidBrush}">
 
-            <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
-                <TextBox Name="TbFilter" Width="150" Height="25"
+                <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
+                    <TextBox Name="TbFilter" Width="150" Height="25"
                          Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
                          Tag="{DynamicResource 'Search (Ctrl+F)'}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
-                    <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                            <Setter Property="Background" Value="Transparent"></Setter>
-                            <Setter Property="Opacity" Value="0.5"></Setter>
-                            <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
-                            <Setter Property="IsEnabled" Value="False" />
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding AnimationPageAbout}" Value="{x:Null}"></Condition>
-                                        <Condition Binding="{Binding AnimationPageEditor}" Value="{x:Null}"></Condition>
-                                    </MultiDataTrigger.Conditions>
-                                    <MultiDataTrigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                <Setter Property="Background" Value="Transparent"></Setter>
+                                <Setter Property="Opacity" Value="0.5"></Setter>
+                                <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding AnimationPageAbout}" Value="{x:Null}"></Condition>
+                                            <Condition Binding="{Binding AnimationPageEditor}" Value="{x:Null}"></Condition>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" 
                                                                  AccelerationRatio="0.9"
                                                                  To=".9" From="0" Duration="0:0:0.5"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </MultiDataTrigger.EnterActions>
-                                    <MultiDataTrigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </MultiDataTrigger.EnterActions>
+                                        <MultiDataTrigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" 
                                                                  AccelerationRatio="0.9"
                                                                  To="0" From=".9" Duration="0:0:0.5"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </MultiDataTrigger.ExitActions>
-                                    <Setter Property="IsEnabled" Value="True" />
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </Grid>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </MultiDataTrigger.ExitActions>
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </Grid>
 
-            <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">
-                <CheckBox Name="CbPopForMenu" Width="35" Height="35" VerticalAlignment="Top" Margin="0">
-                    <CheckBox.Template>
-                        <ControlTemplate>
-                            <Border Name="BG" Background="{DynamicResource PrimaryMidBrush}">
-                                <Grid VerticalAlignment="Center">
-                                    <Grid Width="15" Height="15">
-                                        <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
+                <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">
+                    <CheckBox Name="CbPopForMenu" Width="35" Height="35" VerticalAlignment="Top" Margin="0">
+                        <CheckBox.Template>
+                            <ControlTemplate>
+                                <Border Name="BG" Background="{DynamicResource PrimaryMidBrush}">
+                                    <Grid VerticalAlignment="Center">
+                                        <Grid Width="15" Height="15">
+                                            <Path Data="F1 M 88.000000 -60.500000 L 0.000000 -60.500000 L 0.000000 -66.000000 L 88.000000 -66.000000 L 88.000000 -60.500000 Z M 88.000000 -16.500000 L 0.000000 -16.500000 L 0.000000                                         -22.000000 L 88.000000 -22.000000 L 88.000000 -16.500000 Z M 88.000000 -38.500000 L 0.000000 -38.500000 L 0.000000 -44.000000 L 88.000000 -44.000000 L 88.000000 -38.500000 Z "
                                               Fill="{DynamicResource PrimaryTextBrush}" Opacity="0.8" StrokeThickness="0.5" Stretch="Fill" />
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="CheckBox.IsMouseOver" Value="True">
-                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryLightBrush}"></Setter>
-                                </Trigger>
-                                <Trigger Property="CheckBox.IsChecked" Value="True">
-                                    <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </CheckBox.Template>
-                </CheckBox>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="CheckBox.IsMouseOver" Value="True">
+                                        <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryLightBrush}"></Setter>
+                                    </Trigger>
+                                    <Trigger Property="CheckBox.IsChecked" Value="True">
+                                        <Setter TargetName="BG" Property="Background" Value="{DynamicResource PrimaryDarkBrush}"></Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </CheckBox.Template>
+                    </CheckBox>
 
-                <Grid Width="15" Height="15">
-                    <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
+                    <Grid Width="15" Height="15">
+                        <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
                                       Fill="Red"
                                       Stretch="Uniform"
                                       Width="6"
                                       Margin="0 -3 -3 0"
                                       VerticalAlignment="Top" HorizontalAlignment="Right">
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
-                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                    </Path>
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Popup Name="PopupMenu"
+                <Popup Name="PopupMenu"
                    AllowsTransparency="True"
                    IsOpen="{Binding ElementName=CbPopForMenu, Path=IsChecked}"
                    StaysOpen="False"
                    PlacementTarget="{Binding ElementName=CbPopForMenu}">
-                <Border Padding="0 0 4 4">
-                    <Border.Effect>
-                        <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
-                    </Border.Effect>
-                    <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <Style BasedOn="{StaticResource ButtonBarPrimaryStyle}" TargetType="Button">
-                                    <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
-                                </Style>
-                            </StackPanel.Resources>
-                            <Button Command="{Binding CmdGoSysOptionsPage}" 
+                    <Border Padding="0 0 4 4">
+                        <Border.Effect>
+                            <DropShadowEffect Opacity="0.5" ShadowDepth="3"></DropShadowEffect>
+                        </Border.Effect>
+                        <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <Style BasedOn="{StaticResource ButtonBarPrimaryStyle}" TargetType="Button">
+                                        <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Button Command="{Binding CmdGoSysOptionsPage}" 
                                     HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Options}"></Button>
-                            <Button Command="{Binding CmdToggleCardList}" 
+                                <Button Command="{Binding CmdToggleCardList}" 
                                     HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource 'Toggle Cards/List'}"></Button>
-                            <Button Command="{Binding CmdGoAboutPage}"
+                                <Button Command="{Binding CmdGoAboutPage}"
                                     HorizontalContentAlignment="Left" 
                                     Padding="0 8 0 8">
-                                <Grid>
-                                    <Grid HorizontalAlignment="Left" Margin="13 0">
-                                        <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
+                                    <Grid>
+                                        <Grid HorizontalAlignment="Left" Margin="13 0">
+                                            <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
                                           Fill="Red" Stretch="Uniform"
                                           Width="6"
                                           VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <Path.Style>
-                                                <Style TargetType="Path">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Path.Style>
-                                        </Path>
-                                    </Grid>
-                                    <StackPanel Orientation="Horizontal" Margin="25 0 0 0">
-                                        <TextBlock Text="{DynamicResource About}" VerticalAlignment="Center"
+                                                <Path.Style>
+                                                    <Style TargetType="Path">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
+                                                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Path.Style>
+                                            </Path>
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Margin="25 0 0 0">
+                                            <TextBlock Text="{DynamicResource About}" VerticalAlignment="Center"
                                                    Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}">
-                                        </TextBlock>
-                                        <Image Source="/Resources/Image/Logo/logo64.png" Width="20" Margin="10 0 0 0"></Image>
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
-                            <Button Click="ButtonExit_OnClick"
+                                            </TextBlock>
+                                            <Image Source="/Resources/Image/Logo/logo64.png" Width="20" Margin="10 0 0 0"></Image>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                                <Button Click="ButtonExit_OnClick"
                                     HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Exit}"></Button>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </Popup>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Popup>
 
-            <Button Name="BtnMinimize" Style="{StaticResource ButtonBarPrimaryStyle}"
+                <Button Name="BtnMinimize" Style="{StaticResource ButtonBarPrimaryStyle}"
                                Width="35" Height="35" VerticalAlignment="Top" BorderThickness="0">
-                <Rectangle Width="15" Height="1" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" StrokeThickness="0.5" />
-            </Button>
+                    <Rectangle Width="15" Height="1" Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" StrokeThickness="0.5" />
+                </Button>
 
-            <Button Name="BtnMaximize" Style="{StaticResource ButtonBarPrimaryStyle}" Width="35" Height="35" VerticalAlignment="Top">
-                <Grid>
-                    <Path Height="15" Width="15"
+                <Button Name="BtnMaximize" Style="{StaticResource ButtonBarPrimaryStyle}" Width="35" Height="35" VerticalAlignment="Top">
+                    <Grid>
+                        <Path Height="15" Width="15"
                           StrokeThickness="0.5" 
                           Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                           Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                           Data="F1 M 5.500000 -82.500000 L 82.500000 -82.500000 L 82.500000 -5.500000 L 5.500000 -5.500000 Z M 77.000000 -11.000000 L 77.000000 -77.000000 L 11.000000 -77.000000 L 11.000000 -11.000000 Z "
                           Stretch="Uniform">
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                                        <Setter Property="Visibility" Value="Hidden"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                    </Path>
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
 
-                    <Path Height="15" Width="15"
+                        <Path Height="15" Width="15"
                           StrokeThickness="1" 
                           Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                           Data="M2,2 L2,0 L8,0 L8,6 L6,6 M0,2 L6,2 L6,8 L0,8 Z"
                           Stretch="Uniform">
-                        <Path.Style>
-                            <Style TargetType="Path">
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
-                                        <Setter Property="Visibility" Value="Visible"></Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Path.Style>
-                    </Path>
-                </Grid>
-            </Button>
+                            <Path.Style>
+                                <Style TargetType="Path">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Path=WindowState}" Value="Maximized">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Path.Style>
+                        </Path>
+                    </Grid>
+                </Button>
 
-            <Button Name="BtnClose" Width="35" Height="35" VerticalAlignment="Top"
+                <Button Name="BtnClose" Width="35" Height="35" VerticalAlignment="Top"
                     Style="{StaticResource ButtonBarPrimaryStyle}"
                     attachProperty:VisionElement.ForegroundAccent="White"
                     attachProperty:VisionElement.BackgroundAccent="Red"
                     attachProperty:VisionElement.ForegroundOnMouseDown="White"
                     attachProperty:VisionElement.BackgroundOnMouseDown="Red">
-                <Path Height="15" Width="15"
+                    <Path Height="15" Width="15"
                       StrokeThickness="0.5" 
                       Stroke="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                       Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}"
                       Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                       Stretch="Uniform">
-                </Path>
-            </Button>
-        </StackPanel>
+                    </Path>
+                </Button>
+            </StackPanel>
 
-        <Grid Grid.Row="1">
-            <pageHost:PageHost NewPage="{Binding AnimationPageServerList}"></pageHost:PageHost>
-            <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding AnimationPageEditor}"></pageHost:PageHost>
-            <pageHost:PageHost x:Name="SettingsPageHost" NewPage="{Binding AnimationPageSettings}"></pageHost:PageHost>
-            <pageHost:PageHost x:Name="AboutPageHost" NewPage="{Binding AnimationPageAbout}"></pageHost:PageHost>
 
-            <Grid>
-                <Grid.Resources>
-                </Grid.Resources>
+            <!-- Paging Area -->
+            <Grid Grid.Row="1">
                 <Grid.Style>
                     <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Collapsed"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=ProgressBarMaximum, Converter={StaticResource ConverterIsGreaterThan0}}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            <DataTrigger Binding="{Binding Path=ProcessingRingVisibility, Mode=OneWay}" Value="Visible">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                                    </Setter.Value>
+                                </Setter>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Grid Background="{DynamicResource PrimaryMidBrush}" Opacity="0.5"></Grid>
-                <Grid>
-                    <StackPanel VerticalAlignment="Center">
-                        <ProgressBar Height="20" Width="200" Value="{Binding ProgressBarValue}" Maximum="{Binding ProgressBarMaximum}"></ProgressBar>
-                        <TextBlock Width="200" Foreground="{DynamicResource PrimaryTextBrush}" Text="{Binding ProgressBarInfo}" TextWrapping="Wrap"></TextBlock>
-                    </StackPanel>
-                </Grid>
+                <pageHost:PageHost NewPage="{Binding AnimationPageServerList}"></pageHost:PageHost>
+                <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding AnimationPageEditor}"></pageHost:PageHost>
+                <pageHost:PageHost x:Name="SettingsPageHost" NewPage="{Binding AnimationPageSettings}"></pageHost:PageHost>
+                <pageHost:PageHost x:Name="AboutPageHost" NewPage="{Binding AnimationPageAbout}"></pageHost:PageHost>
             </Grid>
+        </Grid>
+
+
+        <!--Processing Ring-->
+        <Grid Visibility="{Binding ProcessingRingVisibility, Mode=OneWay}"
+              PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
+              MouseUp="WinTitleBar_OnMouseUp"
+              PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
+        >
+            <Grid Background="Black" Opacity="0.5"></Grid>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 40 0 0">
+                <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
+                <TextBlock Margin="100 0" Foreground="White" Text="{Binding ProcessingRingMessage}" TextWrapping="Wrap"></TextBlock>
+            </StackPanel>
         </Grid>
     </Grid>
 </utils:WindowChromeBase>

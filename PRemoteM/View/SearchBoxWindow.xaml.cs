@@ -188,6 +188,9 @@ namespace PRM.View
         {
             if (_isHidden) return;
 
+            if (TbKeyWord.IsKeyboardFocused == false)
+                TbKeyWord.Focus();
+
             e.Handled = true;
             lock (_keyDownLocker)
             {

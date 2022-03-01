@@ -44,6 +44,11 @@ namespace PRM.Core.Protocol
             }
         }
 
+        public void SetPort(string str)
+        {
+            _port = str;
+        }
+
         protected override string GetSubTitle()
         {
             return $"{Address}:{Port}";

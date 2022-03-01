@@ -7,9 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using PRM.Controls;
@@ -39,7 +41,7 @@ namespace PRM.ViewModel
             if (_uniqueInstance == null)
                 _uniqueInstance = new VmServerListPage(context, configurationView, list, vmMain);
             return _uniqueInstance;
-        } 
+        }
         #endregion singleton
 
 
@@ -136,33 +138,36 @@ namespace PRM.ViewModel
 
         private void RebuildVmServerList()
         {
-            _serverListItems.Clear();
-            foreach (var vs in Context.AppData.VmItemList)
+            App.UiDispatcher.Invoke(() =>
             {
-                ServerListItems.Add(vs);
-                try
+                _serverListItems.Clear();
+                foreach (var vs in Context.AppData.VmItemList)
                 {
-                    vs.PropertyChanged -= VmServerPropertyChanged;
+                    ServerListItems.Add(vs);
+                    try
+                    {
+                        vs.PropertyChanged -= VmServerPropertyChanged;
+                    }
+                    finally
+                    {
+                        vs.PropertyChanged += VmServerPropertyChanged;
+                    }
                 }
-                finally
+                OrderServerList();
+                if (string.IsNullOrEmpty(SelectedTabName) == false
+                    && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
                 {
-                    vs.PropertyChanged += VmServerPropertyChanged;
+                    SelectedTabName = TabAllName;
                 }
-            }
-            OrderServerList();
-            if (string.IsNullOrEmpty(SelectedTabName) == false 
-                && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
-            {
-                SelectedTabName = TabAllName;
-            }
-            else
-            {
-                SetFilterAndCalcVisible();
-            }
+                else
+                {
+                    SetFilterAndCalcVisible();
+                }
 
-            RaisePropertyChanged(nameof(IsMultipleSelected));
-            RaisePropertyChanged(nameof(IsSelectedAll));
-            RaisePropertyChanged(nameof(SelectedCount));
+                RaisePropertyChanged(nameof(IsMultipleSelected));
+                RaisePropertyChanged(nameof(IsSelectedAll));
+                RaisePropertyChanged(nameof(SelectedCount));
+            });
         }
 
         private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -336,29 +341,39 @@ namespace PRM.ViewModel
                 {
                     var path = SelectFileHelper.OpenFile(title: Context.LanguageService.Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
                     if (path == null) return;
-                    try
+                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, Context.LanguageService.Translate("system_options_data_security_info_data_processing"));
+                    Task.Factory.StartNew(() =>
                     {
-                        var list = new List<ProtocolServerBase>();
-                        var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8));
-                        foreach (var json in jobj)
+                        try
                         {
-                            var server = ItemCreateHelper.CreateFromJsonString(json.ToString());
-                            if (server != null)
+                            var list = new List<ProtocolServerBase>();
+                            var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8));
+                            foreach (var json in jobj)
                             {
-                                server.Id = 0;
-                                list.Add(server);
+                                var server = ItemCreateHelper.CreateFromJsonString(json.ToString());
+                                if (server != null)
+                                {
+                                    server.Id = 0;
+                                    list.Add(server);
+                                }
                             }
+                            Context.AppData.AddServer(list);
+                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                            App.UiDispatcher.Invoke(() =>
+                            {
+                                MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                            });
                         }
-                        Context.AppData.AddServer(list);
-                        MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
-                            MessageBoxImage.None, MessageBoxResult.None);
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Debug(e);
-                        MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
-                            MessageBoxResult.None);
-                    }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Debug(e);
+                            GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                            App.UiDispatcher.Invoke(() =>
+                            {
+                                MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            });
+                        }
+                    });
                 });
             }
         }
@@ -374,25 +389,35 @@ namespace PRM.ViewModel
                 {
                     var path = SelectFileHelper.OpenFile(title: Context.LanguageService.Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
-                    try
+                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, Context.LanguageService.Translate("system_options_data_security_info_data_processing"));
+                    Task.Factory.StartNew(() =>
                     {
-                        var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
-                        if (list?.Count > 0)
+                        try
                         {
-                            Context.AppData.AddServer(list);
-                            MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK,
-                                MessageBoxImage.None, MessageBoxResult.None);
+                            var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
+                            if (list?.Count > 0)
+                            {
+                                Context.AppData.AddServer(list);
+                                GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                                App.UiDispatcher.Invoke(() =>
+                                {
+                                    MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                });
+                                return;
+                            }
                         }
-                        else
-                            MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error,
-                                MessageBoxResult.None);
-                    }
-                    catch (Exception e)
-                    {
-                        SimpleLogHelper.Debug(e);
-                        MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error") + $": {e.Message}", Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK,
-                            MessageBoxImage.Error, MessageBoxResult.None);
-                    }
+                        catch (Exception e)
+                        {
+                            SimpleLogHelper.Debug(e);
+                        }
+
+
+                        GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
+                        App.UiDispatcher.Invoke(() =>
+                        {
+                            MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        });
+                    });
                 });
             }
         }

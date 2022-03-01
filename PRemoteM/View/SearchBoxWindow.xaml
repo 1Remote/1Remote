@@ -394,7 +394,8 @@
                   PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"></Grid>
         </Grid>
 
-        <Grid Name="GridSelections"
+        <Grid Name="GridSelections" 
+              PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
               VerticalAlignment="Top">
             <StackPanel>
                 <Grid Height="{Binding ElementName=GridKeyword, Path=Height}"></Grid>
@@ -414,6 +415,7 @@
         </Grid>
 
         <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}"
+              PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
               Background="{DynamicResource PrimaryMidBrush}"
                 VerticalAlignment="Top">
             <StackPanel>
