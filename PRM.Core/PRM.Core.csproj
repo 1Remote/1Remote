@@ -160,14 +160,11 @@
     <Compile Include="Service\LauncherService.cs" />
     <Compile Include="Service\ProtocolConfigurationService.cs" />
     <Compile Include="Service\ThemeService.cs" />
-    <Compile Include="Utils\AssemblyHelper.cs" />
-    <Compile Include="Utils\DesktopResolutionWatcher.cs" />
+    <Compile Include="SetSelfStartingHelper.cs" />
     <Compile Include="Service\LocalityService.cs" />
     <Compile Include="External\KiTTY\KittyConfigKeyValuePair.cs" />
     <Compile Include="External\KiTTY\EnumKittyConfigKey.cs" />
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
-    <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
-    <Compile Include="Utils\SelectFileHelper.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\FileTransmit\ProtocolServerFTP.cs" />
@@ -190,19 +187,12 @@
     <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
     <Compile Include="Protocol\VNC\ProtocolServerVNC.cs" />
-    <Compile Include="Utils\ColorAndBrushHelper.cs" />
-    <Compile Include="Utils\GlobalHotkeyHooker.cs" />
-    <Compile Include="Utils\Ini.cs" />
-    <Compile Include="Utils\IOPermissionHelper.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
     <Compile Include="Helper\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\Base\ProtocolServerBase.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
-    <Compile Include="Utils\RSA\RSA.cs" />
-    <Compile Include="Utils\RSA\RSA_PEM.cs" />
-    <Compile Include="Utils\SetSelfStartingHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="External\KiTTY\kitty_portable.exe" />

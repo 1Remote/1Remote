@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using PRM.Core.Service;
 using Shawn.Utils.Wpf.Controls;
+using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 
 namespace PRM.View.ErrorReport

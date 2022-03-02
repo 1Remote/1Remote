@@ -27,6 +27,7 @@ using PRM.Utils.Filters;
 using PRM.ViewModel.Configuration;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.ViewModel
 {

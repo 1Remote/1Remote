@@ -7,6 +7,7 @@ using System.Windows;
 using Newtonsoft.Json;
 using PRM.Core.Service;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.Core.Model
 {
@@ -61,7 +62,7 @@ namespace PRM.Core.Model
             const string pinnedTagsPath = "PinnedTags.json";
             var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             var path = Path.Combine(Environment.CurrentDirectory, pinnedTagsPath);
-            if (IOPermissionHelper.IsFileCanWriteNow(path) == false)
+            if (IoPermissionHelper.IsFileCanWriteNow(path) == false)
             {
                 path = Path.Combine(appDateFolder, pinnedTagsPath);
             }

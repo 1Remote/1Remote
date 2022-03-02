@@ -10,6 +10,7 @@ using PRM.Core.Protocol.Putty;
 using PRM.Core.Protocol.Putty.SSH;
 using PRM.Core.Protocol.Putty.Telnet;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.View.ProtocolEditors
 {

@@ -12,6 +12,7 @@ using Microsoft.Win32;
 using PRM.Core.Model;
 using PRM.Core.Properties;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 
 namespace PRM.Controls

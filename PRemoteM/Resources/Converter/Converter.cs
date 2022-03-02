@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Resources.Converter
 {

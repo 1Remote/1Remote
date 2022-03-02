@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.FileTransmit.SFTP;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.View.ProtocolEditors
 {
