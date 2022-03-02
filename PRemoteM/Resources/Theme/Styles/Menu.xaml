@@ -70,7 +70,7 @@
             <Trigger Property="Role" Value="TopLevelHeader">
                 <Setter Property="Margin" Value="0"/>
                 <Setter Property="Cursor" Value="Hand" />
-                <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ItemsPresenter}, Path=ActualHeight}" />
+                <!--<Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ItemsPresenter}, Path=ActualHeight}" />-->
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="MenuItem">
@@ -126,7 +126,7 @@
             <Trigger Property="Role" Value="TopLevelItem">
                 <Setter Property="Margin" Value="0"/>
                 <Setter Property="Cursor" Value="Hand" />
-                <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ItemsPresenter}, Path=ActualHeight}" />
+                <!--<Setter Property="Height" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ItemsPresenter}, Path=ActualHeight}" />-->
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="MenuItem">

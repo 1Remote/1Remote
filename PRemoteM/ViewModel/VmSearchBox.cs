@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -216,7 +217,7 @@ namespace PRM.ViewModel
                 return;
             }
 
-            var protocolServer = Context.AppData.VmItemList[SelectedIndex].Server;
+            var protocolServer = VmServerList[SelectedIndex].Server;
             Actions = new ObservableCollection<ActionForServer>(protocolServer.GetActions(Context, RemoteWindowPool.Instance.TabWindowCount));
             SelectedActionIndex = 0;
 
@@ -245,7 +246,7 @@ namespace PRM.ViewModel
 
         public void CalcVisibleByFilter()
         {
-            var keyword = _filter;
+            var keyword = _filter.Trim();
             var tmp = TagAndKeywordFilter.DecodeKeyword(keyword);
             var tagFilters = tmp.Item1;
             var keyWords = tmp.Item2;
@@ -330,7 +331,7 @@ namespace PRM.ViewModel
                 }
             }
 
-            if (newList.Count == 0)
+            if (string.IsNullOrEmpty(keyword) && newList.Count == 0)
             {
                 RebuildVmServerList();
             }
@@ -338,7 +339,7 @@ namespace PRM.ViewModel
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    VmServerList = new ObservableCollection<VmProtocolServer>(newList);
+                    VmServerList = new ObservableCollection<VmProtocolServer>(newList.OrderByDescending(x => x.Server.LastConnTime));
                 });
             }
             ReCalcWindowHeight(false);

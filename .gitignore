@@ -340,3 +340,5 @@ ASALocalRun/
 healthchecksdb
 /PRM.sln.DotSettings
 /scripts/Test-Sandbox_Temp
+/PRemoteM/Resources/vncviewer.ico
+/PRemoteM/zlib.NET

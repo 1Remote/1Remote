@@ -13,14 +13,12 @@ namespace PRM.Core.Model
 {
     public class GlobalData : NotifyPropertyChangedBase
     {
-        public GlobalData(LocalityService localityService, ConfigurationService configurationService)
+        public GlobalData(ConfigurationService configurationService)
         {
-            _localityService = localityService;
             _configurationService = configurationService;
         }
 
         private IDataService _dataService;
-        private readonly LocalityService _localityService;
         private readonly ConfigurationService _configurationService;
 
         public void SetDbOperator(IDataService dataService)
@@ -43,7 +41,7 @@ namespace PRM.Core.Model
 
         public Action VmItemListDataChanged;
 
-        public ObservableCollection<VmProtocolServer> VmItemList { get; set; } = new ObservableCollection<VmProtocolServer>();
+        public List<VmProtocolServer> VmItemList { get; set; } = new List<VmProtocolServer>();
 
 
         private void ReadTagsFromServers()
@@ -105,7 +103,7 @@ namespace PRM.Core.Model
                 }
             }
 
-            VmItemList = new ObservableCollection<VmProtocolServer>(tmp.OrderByDescending(x => x.Server.LastConnTime));
+            VmItemList = tmp;
             ReadTagsFromServers();
             VmItemListDataChanged?.Invoke();
         }

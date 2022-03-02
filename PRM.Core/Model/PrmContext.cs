@@ -49,7 +49,7 @@ namespace PRM.Core.Model
 
             var baseFolder = isPortable? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(baseFolder, "locality.ini")));
-            AppData = new GlobalData(LocalityService, ConfigurationService);
+            AppData = new GlobalData(ConfigurationService);
         }
 
         public GlobalData AppData { get; }
