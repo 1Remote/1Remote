@@ -111,7 +111,7 @@ namespace PRM.View.ProtocolHosts
         private Timer _timer = null;
         public readonly string ExeFullName;
         public readonly string ExeArguments;
-        public readonly Dictionary<string, string> _environmentVariables;
+        private readonly Dictionary<string, string> _environmentVariables;
 
         public IntegrateHost(PrmContext context, ProtocolServerBase protocolServer, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(context, protocolServer, false)
         {
@@ -182,7 +182,7 @@ namespace PRM.View.ProtocolHosts
             {
                 if (IsWindow(handle) == false)
                 {
-                    Console.WriteLine($"_exeHandles remove {handle}");
+                    SimpleLogHelper.Debug($"_exeHandles remove {handle}");
                     _exeHandles.Remove(handle);
                 }
             }
@@ -291,70 +291,32 @@ namespace PRM.View.ProtocolHosts
 
             SimpleLogHelper.Debug($"{nameof(IntegrateHost)}: Start process {exeFullName}");
 
-            Task.Factory.StartNew(() =>
+
+            
+            // keep detect MainWindowHandle in next 10 seconds.
+            var endTime = DateTime.Now.AddSeconds(10);
+            _timer?.Dispose();
+            _timer = new Timer { Interval = 100, AutoReset = false };
+            _timer.Elapsed += (sender, args) =>
             {
-                const int waitSecond = 4;
-                const int sleepMs = 100;
-                for (int i = 0; i < waitSecond * 1000 / sleepMs; i++)
+                _process.Refresh();
+                if (_process == null)
                 {
-                    try
-                    {
-                        Thread.Sleep(sleepMs);
-                        _process.Refresh();
-                        if (_process.MainWindowHandle == IntPtr.Zero)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            _exeHandles.Add(_process.MainWindowHandle);
-                            break;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        break;
-                    }
+                    return;
+                }
+                else if (_process.MainWindowHandle != IntPtr.Zero
+                && _exeHandles.Contains(_process.MainWindowHandle) == false)
+                {
+                    _exeHandles.Add(_process.MainWindowHandle);
+                    SimpleLogHelper.Debug($"new _process.MainWindowHandle = {_process.MainWindowHandle}");
+                    SetExeWindowStyle();
                 }
 
-                if (_exeHandles.Count == 0)
-                {
-                    Console.WriteLine($"_process.Start(); can not get MainWindowHandle in {waitSecond}s");
-                    Close();
-                }
-                else
-                {
-                    SetExeWindowStyle();
-                    var endTime = DateTime.Now.AddSeconds(10);
-                    _timer?.Dispose();
-                    _timer = new Timer { Interval = 200, AutoReset = false };
-                    _timer.Elapsed += (sender, args) =>
-                    {
-                        if (_process == null)
-                            return;
-                        if (_process.MainWindowHandle == IntPtr.Zero || _exeHandles.Contains(_process.MainWindowHandle))
-                        {
-                            _process.Refresh();
-                        }
-                        else
-                        {
-                            var title = GetWindowTitle(_process.MainWindowHandle);
-                            //Console.WriteLine($"new handle = {_process.MainWindowHandle}, title = {title}");
-                            if (string.IsNullOrWhiteSpace(title) == false)
-                            {
-                                _exeHandles.Add(_process.MainWindowHandle);
-                                SetExeWindowStyle();
-                            }
-                        }
-                        if(DateTime.Now > endTime && _exeHandles.Count > 0)
-                            return;
-                        _timer.Start();
-                    };
-                    _timer.Start();
-                }
-                RunAfterConnected?.Invoke();
-                Status = ProtocolHostStatus.Connected;
-            });
+                if (DateTime.Now > endTime && _exeHandles.Count > 0)
+                    return;
+                _timer.Start();
+            };
+            _timer.Start();
         }
 
         private void ProcessOnExited(object? sender, EventArgs e)

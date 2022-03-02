@@ -6,7 +6,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
-using VncSharp;
+using VncSharpCore;
 
 namespace PRM.View.ProtocolHosts
 {
