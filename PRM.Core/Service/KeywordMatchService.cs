@@ -137,12 +137,15 @@ namespace PRM.Core.Service
 
         private ref MatchCache GetCache(string originalString)
         {
-            if (!_caches.ContainsKey(originalString))
+            lock (this)
             {
-                var cache = new MatchCache(originalString);
-                _caches.Add(originalString, new Cache(cache));
+                if (!_caches.ContainsKey(originalString))
+                {
+                    var cache = new MatchCache(originalString);
+                    _caches.Add(originalString, new Cache(cache));
+                } 
+                return ref _caches[originalString].GetMatchCache();
             }
-            return ref _caches[originalString].GetMatchCache();
         }
 
         public void UpdateMatchCache(string originalString)

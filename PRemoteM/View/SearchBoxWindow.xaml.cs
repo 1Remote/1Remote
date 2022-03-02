@@ -102,6 +102,7 @@ namespace PRM.View
                 this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
 
                 _vm.Filter = "";
+                _vm.CalcVisibleByFilter();
 
                 this.Show();
                 this.Visibility = Visibility.Visible;
@@ -288,12 +289,11 @@ namespace PRM.View
 
         private void OpenSessionAndHide()
         {
-            var si = _vm.SelectedIndex;
             HideMe();
-            if (si >= 0 && si < _vm.Context.AppData.VmItemList.Count)
+            var item = _vm.SelectedItem;
+            if (item?.Id != null)
             {
-                var s = _vm.Context.AppData.VmItemList[si];
-                GlobalEventHelper.OnRequestServerConnect?.Invoke(s.Server.Id, _assignTabTokenThisTime);
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id);
             }
         }
 

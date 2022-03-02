@@ -16,18 +16,16 @@ namespace PRM.Core.Model
     {
         public string ActionName { get; }
 
-        public int Id { get; }
 
-        private readonly Action<int> _action;
+        private readonly Action _action;
 
         public void Run()
         {
-            _action?.Invoke(Id);
+            _action?.Invoke();
         }
 
-        public ActionForServer(int id, string actionName, Action<int> action)
+        public ActionForServer(string actionName, Action action)
         {
-            Id = id;
             ActionName = actionName;
             _action = action;
         }
@@ -42,90 +40,79 @@ namespace PRM.Core.Model
             {
                 if (tabWindowCount > 0)
                     actions.Add(new ActionForServer(
-                        id: server.Id,
                         actionName: context.LanguageService.Translate("Connect (New window)"),
-                        action: (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, DateTime.Now.Ticks.ToString()); }
+                        action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString()); }
                     ));
 
                 // external runners
                 if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
                 && context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
                 {
-                    actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Connect") + $" (Internal)", (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, assignRunnerName: context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name); }));
+                    actions.Add(new ActionForServer(context.LanguageService.Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name); }));
                     foreach (var runner in context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
                         if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
-                        actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Connect") + $" ({runner.Name})", (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id, assignRunnerName: runner.Name); }));
+                        actions.Add(new ActionForServer(context.LanguageService.Translate("Connect") + $" ({runner.Name})", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: runner.Name); }));
                     }
                 }
                 else
                 {
-                    actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Connect"), (id) => { GlobalEventHelper.OnRequestServerConnect?.Invoke(id); }));
+                    actions.Add(new ActionForServer(context.LanguageService.Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id); }));
                 }
 
-                actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Edit"), (id) => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, false, false); }));
-                actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("server_card_operate_duplicate"), (id) => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(id, true, false); }));
+                actions.Add(new ActionForServer(context.LanguageService.Translate("Edit"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false); }));
+                actions.Add(new ActionForServer(context.LanguageService.Translate("server_card_operate_duplicate"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, true, false); }));
             };
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+            if (server is ProtocolServerWithAddrPortBase protocolServerWithAddrPortBase)
             {
-                actions.Add(new ActionForServer(
-                    server.Id,
-                    context.LanguageService.Translate("server_card_operate_copy_address"),
-                    (id) =>
+                actions.Add(new ActionForServer(context.LanguageService.Translate("server_card_operate_copy_address"),
+                    () =>
                     {
-                        var pb = context.AppData.VmItemList.First(x => x.Server.Id == id);
-                        if (pb.Server is ProtocolServerWithAddrPortBase tmp)
-                            try
-                            {
-                                Clipboard.SetText($"{tmp.Address}:{tmp.GetPort()}");
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
+                        try
+                        {
+                            Clipboard.SetText($"{protocolServerWithAddrPortBase.Address}:{protocolServerWithAddrPortBase.GetPort()}");
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
                     }));
             }
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (server is ProtocolServerWithAddrPortUserPwdBase tmp)
             {
-                actions.Add(new ActionForServer(server.Id,
-                    actionName: context.LanguageService.Translate("server_card_operate_copy_username"),
-                    action: (id) =>
+                actions.Add(new ActionForServer(context.LanguageService.Translate("server_card_operate_copy_username"),
+                    () =>
                    {
-                       var pb = context.AppData.VmItemList.First(x => x.Server.Id == id);
-                       if (pb.Server is ProtocolServerWithAddrPortUserPwdBase tmp)
-                           try
-                           {
-                               Clipboard.SetText(tmp.UserName);
-                           }
-                           catch (Exception)
-                           {
-                               // ignored
-                           }
+                       try
+                       {
+                           Clipboard.SetText(tmp.UserName);
+                       }
+                       catch (Exception)
+                       {
+                           // ignored
+                       }
                    }));
             }
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (server is ProtocolServerWithAddrPortUserPwdBase protocolServerWithAddrPortUserPwdBase)
             {
-                actions.Add(new ActionForServer(server.Id,
-                    actionName: context.LanguageService.Translate("server_card_operate_copy_password"),
-                    action: (id) =>
+                actions.Add(new ActionForServer(context.LanguageService.Translate("server_card_operate_copy_password"),
+                    action: () =>
                     {
-                        var pb = context.AppData.VmItemList.First(x => x.Server.Id == id);
-                        if (pb.Server is ProtocolServerWithAddrPortUserPwdBase tmp)
-                            try
-                            {
-                                Clipboard.SetText(context.DataService.DecryptOrReturnOriginalString(tmp.Password));
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
+                        try
+                        {
+                            Clipboard.SetText(context.DataService.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
                     }));
             }
 
-            actions.Add(new ActionForServer(server.Id, context.LanguageService.Translate("Delete"), (id) =>
+            actions.Add(new ActionForServer(context.LanguageService.Translate("Delete"), () =>
             {
-                GlobalEventHelper.OnRequestDeleteServer?.Invoke(id);
+                GlobalEventHelper.OnRequestDeleteServer?.Invoke(server.Id);
             }));
 
             #endregion Build Actions
