@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using PRM.Core.Model;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 using VariableKeywordMatcher.Model;
 
 namespace PRM.Core.Protocol

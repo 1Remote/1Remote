@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:colorPickerWpf1="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:icons="clr-namespace:PRM.Resources.Icons"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
+             xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModel:VmServerEditorPage}"
              Background="White"
@@ -136,7 +137,7 @@
                                                     </Border>
                                                 </Grid>
                                                 <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource Color}"></TextBlock>
-                                                <colorPickerWpf1:ColorPickRowPopup
+                                                <colorPickerWpf:ColorPickRowPopup
                                                     HexColor="{Binding Server.ColorHex}"
                                                     Foreground="{DynamicResource BackgroundTextBrush}" 
                                                     HexVisible="Collapsed"
@@ -270,7 +271,7 @@
                     <!-- protocols list -->
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}, Path=Height}"
-                                  utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                  controls1:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                   attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
                                   attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}">
                         <ScrollViewer.Style>

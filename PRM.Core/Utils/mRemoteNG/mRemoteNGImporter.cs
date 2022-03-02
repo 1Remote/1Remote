@@ -12,6 +12,7 @@ using PRM.Core.Protocol.Putty.Telnet;
 using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.Image;
 
 namespace PRM.Core.Utils.mRemoteNG
 {

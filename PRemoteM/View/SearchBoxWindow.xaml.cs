@@ -6,6 +6,7 @@ using System.Windows.Input;
 using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
+using Shawn.Utils.Wpf.Controls;
 
 namespace PRM.View
 {

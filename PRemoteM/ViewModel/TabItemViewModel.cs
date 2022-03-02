@@ -2,6 +2,7 @@
 using PRM.Core;
 using PRM.Core.Protocol;
 using PRM.View.ProtocolHosts;
+using Shawn.Utils;
 
 namespace PRM.ViewModel
 {

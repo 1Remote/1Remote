@@ -6,6 +6,7 @@
                         xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                        xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                         mc:Ignorable="d"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
@@ -77,7 +78,7 @@
                     <StackPanel>
                         <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource BackgroundTextBrush}" Text="Note: You can not register a RemoteApp directly, you have to config it on the server side first, or you will get the error 'The following RemoteApp program is not in the list of authorized programs'."></TextBlock>
                         <TextBlock>
-                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp#how-to-use" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol:-RemoteApp#how-to-use" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                     check how to config.
                                 </Hyperlink>
                         </TextBlock>

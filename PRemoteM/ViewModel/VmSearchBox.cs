@@ -17,8 +17,8 @@ using PRM.Core.Protocol;
 using PRM.Core.Protocol.Runner.Default;
 using PRM.Model;
 using PRM.Utils.Filters;
-using Shawn.Utils.PageHost;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.PageHost;
 
 namespace PRM.ViewModel
 {

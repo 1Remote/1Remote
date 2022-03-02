@@ -10,6 +10,8 @@ using PRM.Core.Protocol;
 using PRM.Resources.Icons;
 using Shawn.Utils;
 using PRM.ViewModel;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.Image;
 
 namespace PRM.View
 {
@@ -127,7 +129,7 @@ namespace PRM.View
             {
                 if (!string.IsNullOrWhiteSpace(cmd))
                 {
-                    CmdRunner.RunCmdAsync(cmd);
+                    WinCmdRunner.RunCmdAsync(cmd);
                 }
             }
             catch (Exception ex)

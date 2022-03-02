@@ -18,6 +18,8 @@ using PRM.Core.Protocol.RDP;
 using PRM.Core.Protocol.VNC;
 using PRM.Core.Service;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.Image;
 
 namespace PRM.Core.Protocol
 {
@@ -281,7 +283,7 @@ namespace PRM.Core.Protocol
             {
                 if (!string.IsNullOrWhiteSpace(CommandBeforeConnected))
                 {
-                    CmdRunner.RunCmdAsync(CommandBeforeConnected);
+                    WinCmdRunner.RunCmdAsync(CommandBeforeConnected);
                 }
             }
             catch (Exception e)
@@ -296,7 +298,7 @@ namespace PRM.Core.Protocol
             {
                 if (!string.IsNullOrWhiteSpace(CommandAfterDisconnected))
                 {
-                    CmdRunner.RunCmdAsync(CommandAfterDisconnected);
+                    WinCmdRunner.RunCmdAsync(CommandAfterDisconnected);
                 }
             }
             catch (Exception e)

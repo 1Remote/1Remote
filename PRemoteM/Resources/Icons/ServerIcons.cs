@@ -8,6 +8,7 @@ using System.Resources;
 using System.Windows.Media.Imaging;
 using PRM.Core.Model;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.Image;
 
 namespace PRM.Resources.Icons
 {

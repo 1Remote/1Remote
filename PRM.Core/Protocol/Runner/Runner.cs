@@ -10,6 +10,7 @@ using JsonKnownTypes;
 using Newtonsoft.Json;
 using PRM.Core.Protocol.Runner.Default;
 using PRM.Core.Service;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.Runner
 {

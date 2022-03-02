@@ -1,4 +1,4 @@
-﻿<utils:WindowChromeBase x:Class="PRM.View.Guidance.GuidanceWindow"
+﻿<controls:WindowChromeBase x:Class="PRM.View.Guidance.GuidanceWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,6 +6,7 @@
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:guidance="clr-namespace:PRM.View.Guidance"
                   xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                  xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                   mc:Ignorable="d"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
@@ -75,7 +76,7 @@
                         </Grid>
                         <TextBlock HorizontalAlignment="Center" FontSize="24" Foreground="{DynamicResource PrimaryTextBrush}">PRemoteM</TextBlock>
                         <TextBlock HorizontalAlignment="Center" FontSize="8" Foreground="{DynamicResource PrimaryTextBrush}">
-                            <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM">https://github.com/VShawn/PRemoteM</Hyperlink>
+                            <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM">https://github.com/VShawn/PRemoteM</Hyperlink>
                         </TextBlock>
                     </StackPanel>
                 </Grid>
@@ -93,7 +94,7 @@
                               DisplayMemberPath="Value" Height="20" Width="150" />
                     </StackPanel>
                     <TextBlock>
-                        <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">
+                        <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True" NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="10">
                             <Hyperlink.Style>
                                 <Style TargetType="{x:Type Hyperlink}">
                                     <Setter Property="Foreground" Value="{DynamicResource AccentMidBrush}"></Setter>
@@ -376,4 +377,4 @@
             </Button>
         </Grid>
     </Grid>
-</utils:WindowChromeBase>
+</controls:WindowChromeBase>

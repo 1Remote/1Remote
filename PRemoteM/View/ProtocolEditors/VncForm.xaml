@@ -7,6 +7,7 @@
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
+                        xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance vnc:ProtocolServerVNC}"
                         d:DesignHeight="1450" d:DesignWidth="800">
@@ -66,7 +67,7 @@
                         <StackPanel>
                             <TextBlock TextWrapping="WrapWithOverflow" Foreground="{DynamicResource AccentMidBrush}">
                                 <Run>Caution: RFB protocol over 3.8 are proprietary. If you would like using RFB 3.8+, you have to try your own VNC runner:</Run>
-                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                     protocol runner
                                 </Hyperlink>
                             </TextBlock>

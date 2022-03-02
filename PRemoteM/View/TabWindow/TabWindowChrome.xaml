@@ -9,6 +9,7 @@
                      xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                      xmlns:vm="clr-namespace:PRM.ViewModel"
                      xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                     xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                      mc:Ignorable="d"
                      d:DataContext="{d:DesignInstance vm:VmTabWindow}"
                      ResizeMode="{Binding WindowResizeMode}"
@@ -91,7 +92,7 @@
                                       Background="{DynamicResource PrimaryMidBrush}"
                                       SnapsToDevicePixels="true"
                                       Height="{StaticResource TitleBarHeight}"
-                                      utils:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
+                                      controls:MouseMiddleClick.MouseMiddleDown="dragablz:TabablzControl.CloseItemCommand"
                                       VerticalAlignment="Bottom">
                                 <Grid.ContextMenu>
                                     <ContextMenu ItemsSource="{Binding Content.MenuItems}">
@@ -233,7 +234,7 @@
                                                   Height="{StaticResource TitleBarHeight}"
                                                   VerticalAlignment="Bottom"
                                                   VerticalContentAlignment="Bottom"
-                                                  utils:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
+                                                  controls:ScrollViewerExtensions.IsHorizontalScrollOnWheelEnabled="true"
                                                   attachProperty:VisionElement.ForegroundAccent="{DynamicResource PrimaryTextBrush}"
                                                   attachProperty:VisionElement.BackgroundAccent="{DynamicResource PrimaryTextBrush}"
                                                   Style="{StaticResource ScrollViewMiniStyle}"

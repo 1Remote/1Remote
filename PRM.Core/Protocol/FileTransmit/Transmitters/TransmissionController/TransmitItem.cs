@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController
 {

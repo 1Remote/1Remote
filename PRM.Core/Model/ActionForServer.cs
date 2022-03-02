@@ -9,6 +9,7 @@ using System.Windows;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.Runner;
 using PRM.Core.Protocol.Runner.Default;
+using Shawn.Utils;
 
 namespace PRM.Core.Model
 {
