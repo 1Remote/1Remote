@@ -26,6 +26,7 @@ using PRM.Resources.Icons;
 using PRM.Utils.Filters;
 using PRM.ViewModel.Configuration;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.ViewModel
 {

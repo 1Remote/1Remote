@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props" Condition="Exists('..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -77,9 +76,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="PropertyChanged, Version=3.3.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
-      <HintPath>..\packages\PropertyChanged.Fody.3.3.3\lib\net40\PropertyChanged.dll</HintPath>
-    </Reference>
     <Reference Include="Renci.SshNet, Version=2020.0.1.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2020.0.1\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
@@ -171,10 +167,7 @@
     <Compile Include="External\KiTTY\EnumKittyConfigKey.cs" />
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
     <Compile Include="Utils\OnlyOneAppInstanceHelper.cs" />
-    <Compile Include="Utils\MouseMiddleClick.cs" />
     <Compile Include="Utils\SelectFileHelper.cs" />
-    <Compile Include="Utils\OtherNameAttribute.cs" />
-    <Compile Include="Utils\VersionHelper.cs" />
     <Compile Include="PRMVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Protocol\FileTransmit\ProtocolServerFTP.cs" />
@@ -198,57 +191,23 @@
     <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
     <Compile Include="Protocol\VNC\ProtocolServerVNC.cs" />
     <Compile Include="Utils\ColorAndBrushHelper.cs" />
-    <Compile Include="Utils\ColorPickerWPF\Code\Util.cs" />
-    <Compile Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml.cs">
-      <DependentUpon>ColorPickerControl4Popup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\ColorPickerWPF\ColorPickRowPopup.xaml.cs">
-      <DependentUpon>ColorPickRowPopup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\ColorPickerWPF\SliderRow.xaml.cs">
-      <DependentUpon>SliderRow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\ConsoleManager.cs" />
     <Compile Include="Utils\GlobalHotkeyHooker.cs" />
-    <Compile Include="Utils\HttpHelper.cs" />
-    <Compile Include="Utils\CmdRunner.cs" />
-    <Compile Include="Utils\MyVisualTreeHelper.cs" />
-    <Compile Include="Utils\HyperlinkHelper.cs" />
     <Compile Include="Utils\Ini.cs" />
     <Compile Include="Utils\IOPermissionHelper.cs" />
-    <Compile Include="Utils\MD5Helper.cs" />
-    <Compile Include="Utils\MultiLangHelper.cs" />
-    <Compile Include="NotifyPropertyChangedBase.cs" />
     <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
     <Compile Include="Helper\ItemCreateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\Base\ProtocolServerBase.cs" />
-    <Compile Include="Utils\NetImageProcessHelper.cs" />
-    <Compile Include="Utils\PageHost\AnimationPage.cs" />
-    <Compile Include="Utils\PageHost\PageHost.xaml.cs">
-      <DependentUpon>PageHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utils\PageHost\StoryboardHelpers.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
-    <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="Utils\RSA\RSA.cs" />
     <Compile Include="Utils\RSA\RSA_PEM.cs" />
-    <Compile Include="Utils\ScreenInfoEx.cs" />
-    <Compile Include="Utils\ScrollViewerExtensions.cs" />
     <Compile Include="Utils\SetSelfStartingHelper.cs" />
-    <Compile Include="Utils\StringHelper.cs" />
-    <Compile Include="Utils\SystemIconHelper.cs" />
-    <Compile Include="Utils\SimpleLogHelper.cs" />
-    <Compile Include="Utils\WindowChromeBase.cs" />
-    <Compile Include="Utils\WindowExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="External\KiTTY\kitty_portable.exe" />
-    <Resource Include="FodyWeavers.xml" />
     <Content Include="Protocol\RDP\Host\RDPv9\AxMSTSCLib.dll" />
     <Content Include="Protocol\RDP\Host\RDPv9\MSTSCLib.dll" />
-    <Resource Include="Utils\ColorPickerWPF\colorpicker1.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="External\KiTTY\PuttyThemes.json" />
@@ -271,25 +230,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Utils\ColorPickerWPF\ColorPickerControl4Popup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\ColorPickerWPF\ColorPickRowPopup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\ColorPickerWPF\SliderRow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Utils\PageHost\PageHost.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="External\WinSCP\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj">
+      <Project>{0cf000c2-d65d-4cb2-84fc-3687fc3a990b}</Project>
+      <Name>Shawn.Utils.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shawn.Utils\Shawn.Utils\Shawn.Utils.csproj">
+      <Project>{d50c87e7-ec1e-4968-899c-26a5543ae4cb}</Project>
+      <Name>Shawn.Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />
@@ -303,8 +256,5 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.6.4.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.4.0\build\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.3.3.3\build\PropertyChanged.Fody.props'))" />
   </Target>
-  <Import Project="..\packages\Fody.6.4.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.4.0\build\Fody.targets')" />
 </Project>

@@ -518,6 +518,14 @@
       <Project>{bb2390fe-00dc-4650-a856-ddb69fd92bbc}</Project>
       <Name>PRM.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj">
+      <Project>{0cf000c2-d65d-4cb2-84fc-3687fc3a990b}</Project>
+      <Name>Shawn.Utils.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shawn.Utils\Shawn.Utils\Shawn.Utils.csproj">
+      <Project>{d50c87e7-ec1e-4968-899c-26a5543ae4cb}</Project>
+      <Name>Shawn.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VncSharpCore\VncSharpCore\VncSharpCore.csproj">
       <Project>{bd2e9906-9fda-4bd9-b1cd-fad57ed6cb70}</Project>
       <Name>VncSharpCore</Name>

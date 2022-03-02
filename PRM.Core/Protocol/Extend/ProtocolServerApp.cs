@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using PRM.Core.Protocol.Base;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Core.Protocol.Extend
 {

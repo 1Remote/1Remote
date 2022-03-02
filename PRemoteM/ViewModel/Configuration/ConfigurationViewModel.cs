@@ -16,6 +16,8 @@ using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Service;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
+using ColorAndBrushHelper = Shawn.Utils.ColorAndBrushHelper;
 using HotkeyModifierKeys = PRM.Core.Service.HotkeyModifierKeys;
 
 namespace PRM.ViewModel.Configuration

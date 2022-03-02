@@ -12,7 +12,7 @@ using PRM.Core.Protocol.Runner;
 using PRM.Core.Service;
 using PRM.View;
 using Shawn.Utils;
-using Shawn.Utils.PageHost;
+using Shawn.Utils.Wpf;
 
 namespace PRM.ViewModel.Configuration
 {

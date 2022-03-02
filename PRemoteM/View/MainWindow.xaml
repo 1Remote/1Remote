@@ -1,12 +1,13 @@
-﻿<utils:WindowChromeBase x:Class="PRM.MainWindow"
+﻿<controls:WindowChromeBase x:Class="PRM.MainWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
-                  xmlns:pageHost="clr-namespace:Shawn.Utils.PageHost;assembly=PRM.Core"
+                  xmlns:pageHost="clr-namespace:Shawn.Utils.Wpf.PageHost;assembly=Shawn.Utils.Wpf"
                   xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                   xmlns:viewModel="clr-namespace:PRM.ViewModel"
+                  xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
@@ -17,7 +18,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <utils:WindowChromeBase.Template>
+    <controls:WindowChromeBase.Template>
         <ControlTemplate TargetType="Window">
             <Border x:Name="WindowBorder" Padding="0" Background="{DynamicResource PrimaryMidBrush}">
                 <Border.Style>
@@ -37,19 +38,19 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-    </utils:WindowChromeBase.Template>
-    <utils:WindowChromeBase.Resources>
+    </controls:WindowChromeBase.Template>
+    <controls:WindowChromeBase.Resources>
         <ResourceDictionary>
             <RoutedUICommand x:Key="CommandFocusFilter" Text="Focus on filter" />
         </ResourceDictionary>
-    </utils:WindowChromeBase.Resources>
-    <utils:WindowChromeBase.CommandBindings>
+    </controls:WindowChromeBase.Resources>
+    <controls:WindowChromeBase.CommandBindings>
         <CommandBinding Command="{StaticResource CommandFocusFilter}" Executed="CommandFocusFilter_OnExecuted"></CommandBinding>
-    </utils:WindowChromeBase.CommandBindings>
-    <utils:WindowChromeBase.InputBindings>
+    </controls:WindowChromeBase.CommandBindings>
+    <controls:WindowChromeBase.InputBindings>
         <!-- map ctrl + f to focus on filter-->
         <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
-    </utils:WindowChromeBase.InputBindings>
+    </controls:WindowChromeBase.InputBindings>
 
     <Grid Background="{DynamicResource BackgroundBrush}">
         <Grid>
@@ -329,4 +330,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</utils:WindowChromeBase>
+</controls:WindowChromeBase>

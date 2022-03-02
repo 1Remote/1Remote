@@ -6,6 +6,7 @@ using System.Windows.Interop;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.View.ProtocolHosts
 {

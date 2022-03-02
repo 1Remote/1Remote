@@ -28,6 +28,7 @@ using PRM.Core.Protocol.FileTransmit.SFTP;
 using PRM.Core.Protocol.Runner;
 using PRM.Core.Service;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.View.ProtocolConfig
 {

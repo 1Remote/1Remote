@@ -6,12 +6,12 @@ using System.Windows;
 using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
-using Shawn.Utils;
-using Shawn.Utils.PageHost;
 using PRM.View;
 using PRM.ViewModel.Configuration;
+using Shawn.Utils;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.PageHost;
 
-using NotifyPropertyChangedBase = PRM.Core.NotifyPropertyChangedBase;
 
 namespace PRM.ViewModel
 {
@@ -136,7 +136,7 @@ namespace PRM.ViewModel
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, server, isDuplicate)),
+                        Content = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, server, isDuplicate)),
                     };
                     Window.ActivateMe();
                 });
@@ -154,7 +154,7 @@ namespace PRM.ViewModel
                     {
                         InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, server)),
+                        Content = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, server)),
                     };
                     Window.ActivateMe();
                 });
@@ -171,9 +171,9 @@ namespace PRM.ViewModel
                     };
                     var serverBases = servers as ProtocolServerBase[] ?? servers.ToArray();
                     if (serverBases.Count() > 1)
-                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases));
+                        page.Content = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases));
                     else
-                        page.Page = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases.First()));
+                        page.Content = new ServerEditorPage(Context, new VmServerEditorPage(Context.AppData, Context.DataService, Context.LanguageService, serverBases.First()));
                     AnimationPageEditor = page;
                     Window.ActivateMe();
                 });
@@ -187,7 +187,7 @@ namespace PRM.ViewModel
             {
                 InAnimationType = AnimationPage.InOutAnimationType.None,
                 OutAnimationType = AnimationPage.InOutAnimationType.None,
-                Page = _serverListPage,
+                Content = _serverListPage,
             };
         }
 
@@ -205,7 +205,7 @@ namespace PRM.ViewModel
                     {
                         InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new SystemConfigPage(Context, ConfigurationVm, o?.ToString()),
+                        Content = new SystemConfigPage(Context, ConfigurationVm, o?.ToString()),
                     };
                     Window.PopupMenu.IsOpen = false;
                 }, o => AnimationPageAbout == null && AnimationPageSettings == null && AnimationPageEditor == null);
@@ -238,10 +238,10 @@ namespace PRM.ViewModel
                     {
                         InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Page = new AboutPage(VmAboutPage, this),
+                        Content = new AboutPage(VmAboutPage, this),
                     };
                     Window.PopupMenu.IsOpen = false;
-                }, o => AnimationPageAbout?.Page?.GetType() != typeof(AboutPage));
+                }, o => AnimationPageAbout?.Content?.GetType() != typeof(AboutPage));
             }
         }
 

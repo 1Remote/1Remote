@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using Shawn.Utils;
 using VariableKeywordMatcher.Model;
 using VariableKeywordMatcher.Provider.ChineseZhCnPinYin;
 using VariableKeywordMatcher.Provider.ChineseZhCnPinYinInitials;

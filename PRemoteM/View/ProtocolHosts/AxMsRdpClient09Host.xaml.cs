@@ -14,6 +14,7 @@ using PRM.Core.Model;
 using PRM.Core.Protocol;
 using PRM.Core.Protocol.RDP;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.Controls;
 using Color = System.Drawing.Color;
 
 namespace PRM.View.ProtocolHosts

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.Image;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {

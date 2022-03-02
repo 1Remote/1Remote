@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Media.Imaging;
+using Shawn.Utils;
 
 namespace PRM.Core.Protocol.FileTransmit.Transmitters
 {

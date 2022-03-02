@@ -5,12 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
-             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=PRM.Core"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:configuration="clr-namespace:PRM.ViewModel.Configuration"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              xmlns:protocolConfig="clr-namespace:PRM.View.ProtocolConfig"
              xmlns:converter="clr-namespace:PRM.Resources.Converter"
+             xmlns:shawnutils="clr-namespace:Shawn.Utils;assembly=Shawn.Utils"
+             xmlns:colorPickerWpf="clr-namespace:ColorPickerWPF;assembly=Shawn.Utils.Wpf"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance configuration:ConfigurationViewModel}"
              Background="White"
@@ -155,7 +157,7 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Column3"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="1" Margin="0 0 0 0" TextAlignment="Left" TextWrapping="WrapWithOverflow">
-                            <Hyperlink utils:HyperlinkHelper.IsOpenExternal="True"
+                            <Hyperlink controls:HyperlinkHelper.IsOpenExternal="True"
                                        MouseRightButtonDown="ContentElement_OnMouseRightButtonDown"
                                        NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Help-wanted:-Translation" FontSize="12">
                                 <Hyperlink.Style>
@@ -219,8 +221,8 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="Log"></TextBlock>
-                        <TextBox Grid.Column="1" Text="{x:Static utils:SimpleLogHelper.LogFileName}"
-                                 ToolTip="{x:Static utils:SimpleLogHelper.LogFileName}"
+                        <TextBox Grid.Column="1" Text="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
+                                 ToolTip="{x:Static shawnutils:SimpleLogHelper.LogFileName}"
                                  VerticalContentAlignment="Center" IsReadOnly="True"></TextBox>
                     </Grid>
                 </StackPanel>

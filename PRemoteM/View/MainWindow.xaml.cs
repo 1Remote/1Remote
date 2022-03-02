@@ -6,9 +6,9 @@ using PRM.Core.Model;
 using PRM.Core.Service;
 using PRM.Utils.Filters;
 using Shawn.Utils;
-using PRM.View;
 using PRM.ViewModel;
 using PRM.ViewModel.Configuration;
+using Shawn.Utils.Wpf.Controls;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 

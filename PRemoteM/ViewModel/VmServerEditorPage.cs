@@ -19,6 +19,7 @@ using PRM.Core.Protocol.VNC;
 using PRM.Core.Service;
 using PRM.View.ProtocolEditors;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.ViewModel
 {

@@ -6,8 +6,8 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using PRM.Core.Model;
 using PRM.ViewModel.Configuration;
-using Shawn.Utils;
-using Shawn.Utils.PageHost;
+using Shawn.Utils.Wpf.Controls;
+using Shawn.Utils.Wpf.PageHost;
 
 namespace PRM.View.Guidance
 {

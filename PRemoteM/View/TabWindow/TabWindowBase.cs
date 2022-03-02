@@ -18,6 +18,7 @@ using Shawn.Utils;
 using PRM.Model;
 using PRM.View.ProtocolHosts;
 using PRM.ViewModel;
+using Shawn.Utils.Wpf.Controls;
 using ProtocolHostType = PRM.View.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
 

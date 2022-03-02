@@ -7,6 +7,7 @@
              xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
              xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
+             xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              mc:Ignorable="d"
              Background="White"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -102,7 +103,7 @@
 
                                     <TextBlock Text="Update" Margin="0"/>
                                     <TextBlock Grid.Column="1" Margin="0">
-                                        <Hyperlink NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="{Binding NewVersionUrl}" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             <Grid>
                                                 <TextBlock Name="TbNewVersion" Margin="0" Text="{Binding NewVersion}" Foreground="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Hyperlink}, Path=Foreground}" />
                                                 <Path Data="F1 M 10 3.4375 C 10.605469 3.4375 11.186523 3.515625 11.743164 3.671875 C 12.299805 3.828125 12.822266 4.049479 13.310547 4.335938 C 13.798828 4.622396 14.241536 4.964193 14.638672 5.361328 C 15.035807 5.758464 15.377604 6.201172 15.664063 6.689453 C 15.950521 7.177734 16.171875 7.700195 16.328125 8.256836 C 16.484375 8.813477 16.5625 9.394531 16.5625 10 C 16.5625 10.605469 16.484375 11.186523 16.328125 11.743164 C 16.171875 12.299805 15.950521 12.822266 15.664063 13.310547 C 15.377604 13.798828 15.035807 14.241537 14.638672 14.638672 C 14.241536 15.035808 13.798828 15.377604 13.310547 15.664063 C 12.822266 15.950521 12.299805 16.171875 11.743164 16.328125 C 11.186523 16.484375 10.605469 16.5625 10 16.5625 C 9.394531 16.5625 8.813477 16.484375 8.256836 16.328125 C 7.700195 16.171875 7.177734 15.950521 6.689453 15.664063 C 6.201172 15.377604 5.758463 15.035808 5.361328 14.638672 C 4.964192 14.241537 4.622396 13.798828 4.335938 13.310547 C 4.049479 12.822266 3.828125 12.299805 3.671875 11.743164 C 3.515625 11.186523 3.4375 10.605469 3.4375 10 C 3.4375 9.394531 3.515625 8.813477 3.671875 8.256836 C 3.828125 7.700195 4.049479 7.177734 4.335938 6.689453 C 4.622396 6.201172 4.964192 5.758464 5.361328 5.361328 C 5.758463 4.964193 6.201172 4.622396 6.689453 4.335938 C 7.177734 4.049479 7.700195 3.828125 8.256836 3.671875 C 8.813477 3.515625 9.394531 3.4375 10 3.4375 Z "
@@ -126,12 +127,12 @@
                                 </Grid>
                                 <StackPanel Orientation="Vertical" Margin="10 0 0 0" VerticalAlignment="Center">
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/VShawn" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/VShawn" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             Shawn
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="mailto::veckshawn@gmail.com?subject=PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="mailto::veckshawn@gmail.com?subject=PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             (veckshawn@gmail.com)
                                         </Hyperlink>
                                     </TextBlock>
@@ -147,7 +148,7 @@
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     How to use
                                                 </Hyperlink>
                                             </TextBlock>
@@ -161,12 +162,12 @@
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/issues" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     Bug report
                                                 </Hyperlink>
                                             </TextBlock>
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     Github
                                                 </Hyperlink>
                                             </TextBlock>
@@ -178,52 +179,52 @@
                                 <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Included Components"></TextBlock>
                                 <StackPanel>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/cyd01/KiTTY" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/cyd01/KiTTY" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/cyd01/KiTTY
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/ButchersBoy/Dragablz" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/ButchersBoy/Dragablz" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/ButchersBoy/Dragablz
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/drogoganor/ColorPickerWPF" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/drogoganor/ColorPickerWPF" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/drogoganor/ColorPickerWPF
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/VShawn/VariableKeywordMatcher" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/VShawn/VariableKeywordMatcher" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/VShawn/VariableKeywordMatcher
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/praeclarum/sqlite-net" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/praeclarum/sqlite-net
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/AlexAkulov/putty-color-themes" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/AlexAkulov/putty-color-themes" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/AlexAkulov/putty-color-themes
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/xiangyuecn/RSA-csharp" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/xiangyuecn/RSA-csharp" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/xiangyuecn/RSA-csharp
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/robinrodricks/FluentFTP" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/robinrodricks/FluentFTP" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/robinrodricks/FluentFTP
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/sshnet/SSH.NET" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/sshnet/SSH.NET" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/sshnet/SSH.NET
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock>
-                                        <Hyperlink NavigateUri="https://github.com/icsharpcode/AvalonEdit" TextDecorations="{x:Null}" utils:HyperlinkHelper.IsOpenExternal="True">
+                                        <Hyperlink NavigateUri="https://github.com/icsharpcode/AvalonEdit" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                             https://github.com/icsharpcode/AvalonEdit
                                         </Hyperlink>
                                     </TextBlock>
