@@ -12,6 +12,7 @@ using PRM.Core.Protocol.Base;
 using PRM.Core.Protocol.VNC;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.Core.Protocol.Extend
 {

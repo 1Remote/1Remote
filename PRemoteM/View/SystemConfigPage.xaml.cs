@@ -14,6 +14,8 @@ using PRM.Core.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
 using PRM.ViewModel.Configuration;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 using Binding = System.Windows.Data.Binding;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -83,7 +85,7 @@ namespace PRM.View
                 filter: "xaml|*.xaml");
             if (path == null) return;
             var fi = new FileInfo(path);
-            var resourceDictionary = MultiLangHelper.LangDictFromXamlFile(fi.FullName);
+            var resourceDictionary = MultiLanguageHelper.LangDictFromXamlFile(fi.FullName);
             if (resourceDictionary?.Contains("language_name") != true)
             {
                 MessageBox.Show("language resource must contain field: \"language_name\"!", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
@@ -92,7 +94,7 @@ namespace PRM.View
 
             var en = _context.LanguageService.Resources["en-us"];
             Debug.Assert(en != null);
-            var missingFields = MultiLangHelper.FindMissingFields(en, resourceDictionary);
+            var missingFields = MultiLanguageHelper.FindMissingFields(en, resourceDictionary);
             if (missingFields.Count > 0)
             {
                 var mf = string.Join(", ", missingFields);

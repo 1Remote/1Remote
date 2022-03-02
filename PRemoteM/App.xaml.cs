@@ -20,6 +20,8 @@ using PRM.View.ErrorReport;
 using PRM.View.Guidance;
 using PRM.View.ProtocolHosts;
 using PRM.ViewModel.Configuration;
+using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM
 {
@@ -31,7 +33,7 @@ namespace PRM
 
     public partial class App : Application
     {
-        private OnlyOneAppInstanceHelper _onlyOneAppInstanceHelper;
+        private NamedPipeHelper _namedPipeHelper;
         public static MainWindow MainUi { get; private set; } = null;
         public static ConfigurationViewModel ConfigurationVm { get; private set; } = null;
         public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
@@ -122,12 +124,12 @@ namespace PRM
 #else
             string instanceName = ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName);
 #endif
-            _onlyOneAppInstanceHelper = new OnlyOneAppInstanceHelper(instanceName);
-            if (!_onlyOneAppInstanceHelper.IsFirstInstance())
+            _namedPipeHelper = new NamedPipeHelper(instanceName);
+            if (_namedPipeHelper.IsServer == false)
             {
                 try
                 {
-                    _onlyOneAppInstanceHelper.NamedPipeSendMessage("ActivateMe");
+                    _namedPipeHelper.NamedPipeSendMessage("ActivateMe");
                     Environment.Exit(0);
                 }
                 catch (Exception e)
@@ -137,7 +139,7 @@ namespace PRM
                 }
             }
 
-            _onlyOneAppInstanceHelper.OnMessageReceived += message =>
+            _namedPipeHelper.OnMessageReceived += message =>
             {
                 SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
                 if (message == "ActivateMe")
@@ -192,12 +194,12 @@ namespace PRM
             var tmp = new ConfigurationService(CanPortable, null);
             var languageService = new LanguageService(this.Resources, CultureInfo.CurrentCulture.Name.ToLower());
             var dbDir = new FileInfo(tmp.Database.SqliteDatabasePath).Directory;
-            if (IOPermissionHelper.HasWritePermissionOnDir(dbDir.FullName) == false)
+            if (IoPermissionHelper.HasWritePermissionOnDir(dbDir.FullName) == false)
             {
                 MessageBox.Show(languageService.Translate("write permissions alert", dbDir.FullName), languageService.Translate("messagebox_title_warning"), MessageBoxButton.OK);
                 Environment.Exit(1);
             }
-            if (IOPermissionHelper.HasWritePermissionOnFile(tmp.JsonPath) == false)
+            if (IoPermissionHelper.HasWritePermissionOnFile(tmp.JsonPath) == false)
             {
                 MessageBox.Show($"We don't have write permissions for the `{tmp.JsonPath}` file!\r\nPlease try:\r\n1. `run as administrator`\r\n2. change file permissions \r\n3. move PRemoteM to another folder.", languageService.Translate("messagebox_title_warning"), MessageBoxButton.OK);
                 Environment.Exit(1);
@@ -289,7 +291,7 @@ namespace PRM
             //            {
             //                for (int i = 0; i < 20; i++)
             //                {
-            //                    if (IOPermissionHelper.HasWritePermissionOnFile(dbfi.FullName))
+            //                    if (IoPermissionHelper.HasWritePermissionOnFile(dbfi.FullName))
             //                    {
             //                        Context.InitSqliteDb(fi.FullName);
             //                        App.UiDispatcher?.Invoke(() =>

@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using PRM.Core.Model;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Core.Service
 {

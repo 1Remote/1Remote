@@ -11,6 +11,7 @@ using PRM.Core.I;
 using PRM.Core.Model;
 using PRM.Core.Properties;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.Core.Service
 {
@@ -45,9 +46,9 @@ namespace PRM.Core.Service
             //            var zh_cn = Resources["zh-cn"];
             //            var de_de = Resources["de-de"];
             //            var fr_fr = Resources["fr-fr"];
-            //            Debug.Assert(MultiLangHelper.FindMissingFields(en, zh_cn).Count == 0);
-            //            Debug.Assert(MultiLangHelper.FindMissingFields(en, de_de).Count == 0);
-            //            Debug.Assert(MultiLangHelper.FindMissingFields(en, fr_fr).Count == 0);
+            //            Debug.Assert(MultiLanguageHelper.FindMissingFields(en, zh_cn).Count == 0);
+            //            Debug.Assert(MultiLanguageHelper.FindMissingFields(en, de_de).Count == 0);
+            //            Debug.Assert(MultiLanguageHelper.FindMissingFields(en, fr_fr).Count == 0);
             //#endif
 
             SetLanguage(languageCode);
@@ -77,7 +78,7 @@ namespace PRM.Core.Service
         {
             try
             {
-                var resourceDictionary = MultiLangHelper.LangDictFromXamlUri(new Uri(path));
+                var resourceDictionary = MultiLanguageHelper.LangDictFromXamlUri(new Uri(path));
                 if (resourceDictionary != null)
                 {
                     return resourceDictionary;
@@ -96,7 +97,7 @@ namespace PRM.Core.Service
             Debug.Assert(path.EndsWith(".xaml", true, CultureInfo.InstalledUICulture));
             try
             {
-                var resourceDictionary = MultiLangHelper.LangDictFromXamlFile(path);
+                var resourceDictionary = MultiLanguageHelper.LangDictFromXamlFile(path);
                 if (resourceDictionary != null)
                 {
                     return resourceDictionary;
@@ -134,7 +135,7 @@ namespace PRM.Core.Service
             var resource = Resources[code];
 
             var en = Resources["en-us"];
-            var missingFields = MultiLangHelper.FindMissingFields(en, resource);
+            var missingFields = MultiLanguageHelper.FindMissingFields(en, resource);
             if (missingFields.Count > 0)
             {
                 foreach (var field in missingFields)

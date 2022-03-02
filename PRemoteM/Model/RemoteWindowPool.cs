@@ -22,6 +22,7 @@ using PRM.View;
 using PRM.View.ProtocolHosts;
 using PRM.View.TabWindow;
 using PRM.ViewModel;
+using Shawn.Utils.Wpf;
 using MessageBox = System.Windows.MessageBox;
 using ProtocolHostStatus = PRM.View.ProtocolHosts.ProtocolHostStatus;
 
@@ -235,7 +236,7 @@ namespace PRM.Model
                 ConnectWithTab(sftp, tmpRunner, assignTabToken);
             }
 
-            Size size = new Size(0, 0);
+            var size = new Size(0, 0);
             TabWindowBase tab = null;
             if (protocolServer is ProtocolServerRDP)
             {

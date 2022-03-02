@@ -17,6 +17,7 @@ using PRM.Core.Protocol.FileTransmit.Transmitters;
 using PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.FileSystem;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 using ListView = System.Windows.Controls.ListView;
@@ -784,8 +785,8 @@ namespace PRM.ViewModel
                         {
                             var destinationDirectoryPath = new FileInfo(path).DirectoryName;
 
-                            if (!IOPermissionHelper.HasWritePermissionOnFile(path)
-                            || !IOPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
+                            if (!IoPermissionHelper.HasWritePermissionOnFile(path)
+                            || !IoPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
                             {
                                 IoMessage = Context.LanguageService.Translate("string_permission_denied") + $": {path}";
                                 IoMessageLevel = 2;

@@ -17,7 +17,7 @@ using PRM.Core.Model;
 using PRM.Core.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using ColorAndBrushHelper = Shawn.Utils.ColorAndBrushHelper;
+using Shawn.Utils.Wpf.FileSystem;
 using HotkeyModifierKeys = PRM.Core.Service.HotkeyModifierKeys;
 
 namespace PRM.ViewModel.Configuration
@@ -485,7 +485,7 @@ namespace PRM.ViewModel.Configuration
                     if (string.Equals(path, oldDbPath, StringComparison.CurrentCultureIgnoreCase))
                         return;
 
-                    if (!IOPermissionHelper.HasWritePermissionOnFile(path))
+                    if (!IoPermissionHelper.HasWritePermissionOnFile(path))
                     {
                         MessageBox.Show(_languageService.Translate("string_database_error_permission_denied"), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
@@ -533,7 +533,7 @@ namespace PRM.ViewModel.Configuration
                         return;
                     try
                     {
-                        if (IOPermissionHelper.HasWritePermissionOnFile(path))
+                        if (IoPermissionHelper.HasWritePermissionOnFile(path))
                         {
                             this._context.DataService.Database_CloseConnection();
                             File.Copy(oldDbPath, path);

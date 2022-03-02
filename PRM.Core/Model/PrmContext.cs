@@ -10,6 +10,7 @@ using PRM.Core.DB.Dapper;
 using PRM.Core.I;
 using PRM.Core.Service;
 using Shawn.Utils;
+using Shawn.Utils.Wpf.FileSystem;
 
 namespace PRM.Core.Model
 {
@@ -79,7 +80,7 @@ namespace PRM.Core.Model
 
             DataService?.Database_CloseConnection();
 
-            if (!IOPermissionHelper.HasWritePermissionOnFile(sqlitePath))
+            if (!IoPermissionHelper.HasWritePermissionOnFile(sqlitePath))
             {
                 DataService = null;
                 return EnumDbStatus.AccessDenied;

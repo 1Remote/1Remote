@@ -747,7 +747,7 @@ namespace PRM.View.ProtocolHosts
                 Thread.Sleep(1000);
                 lock (this)
                 {
-                    ReSizeRdpOnResizeEnd(); 
+                    ReSizeRdpOnResizeEnd();
                 }
             });
         }
