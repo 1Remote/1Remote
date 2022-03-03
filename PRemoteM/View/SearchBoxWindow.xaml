@@ -427,8 +427,7 @@
 
         <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}"
               PreviewKeyDown="TbKeyWord_OnPreviewKeyDown"
-              Background="{DynamicResource PrimaryMidBrush}"
-                VerticalAlignment="Top">
+              Background="{DynamicResource PrimaryMidBrush}" VerticalAlignment="Top">
             <StackPanel>
                 <Grid Margin="0 5" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>

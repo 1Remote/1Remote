@@ -28,10 +28,7 @@
                                 <ControlTemplate TargetType="ListBoxItem">
                                     <Grid Margin="10 3" Cursor="Hand">
                                         <Border x:Name="GridContainer" CornerRadius="5" 
-                                                BorderBrush="{DynamicResource PrimaryMidBrush}" BorderThickness="1">
-                                            <Border.Effect>
-                                                <DropShadowEffect BlurRadius="10" Opacity="0.5" ShadowDepth="5"></DropShadowEffect>
-                                            </Border.Effect>
+                                                BorderBrush="{DynamicResource DefaultBorderBrush}" BorderThickness="1">
                                         </Border>
                                         <ContentPresenter x:Name="ContentPresenter"/>
                                     </Grid>
@@ -212,13 +209,9 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="{DynamicResource 'Protocol'}" VerticalAlignment="Center" FontWeight="Bold" 
+                <!--<TextBlock Text="{DynamicResource 'Protocol'}" VerticalAlignment="Center" FontWeight="Bold" 
                            FontSize="14pt"
-                           Margin="5"></TextBlock>
-                <!--<Grid Margin="10">
-                    <Button HorizontalAlignment="Right">TXT:Add protocol</Button>
-                </Grid>-->
-
+                           Margin="5"></TextBlock>-->
                 <ListBox Grid.Row="1" ItemsSource="{Binding Protocols}"
                              SelectedItem="{Binding SelectedProtocol}"
                              Style="{StaticResource ListBoxForProtocols}">
@@ -227,7 +220,7 @@
         </Grid>
 
         <Grid Grid.Column="1" ClipToBounds="True">
-            <Grid Name="GridRunner">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
