@@ -215,6 +215,8 @@ namespace PRM.ViewModel
                 return;
             }
 
+            RaisePropertyChanged(nameof(SelectedItem));
+
             var protocolServer = VmServerList[SelectedIndex].Server;
             Actions = new ObservableCollection<ActionForServer>(protocolServer.GetActions(Context, RemoteWindowPool.Instance.TabWindowCount));
             SelectedActionIndex = 0;

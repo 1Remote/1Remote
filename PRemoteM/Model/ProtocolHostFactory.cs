@@ -220,22 +220,5 @@ namespace PRM.Model
                     throw new NotImplementedException($"Host of {server.GetType()} is not implemented");
             }
         }
-
-        public static bool IsConnWithFullScreen(this ProtocolServerBase server)
-        {
-            switch (server)
-            {
-                case ProtocolServerRDP rdp:
-                    {
-                        if (rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
-                            return true;
-                        if (rdp.IsConnWithFullScreen == true)
-                            return true;
-                        return rdp.AutoSetting.FullScreenLastSessionIsFullScreen ?? false;
-                    }
-                default:
-                    return false;
-            }
-        }
     }
 }
