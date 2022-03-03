@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using PRM.Model;
-using PRM.ViewModel.Configuration;
+using PRM.View.Settings;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.PageHost;
 

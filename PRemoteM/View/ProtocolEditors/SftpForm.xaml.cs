@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Win32;
-using PRM.Protocol.Base;
-using PRM.Protocol.FileTransmit;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.FileTransmit;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 

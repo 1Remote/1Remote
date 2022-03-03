@@ -15,8 +15,7 @@ using PRM.Utils.KiTTY;
 using PRM.View;
 using PRM.View.ErrorReport;
 using PRM.View.Guidance;
-using PRM.View.ProtocolHosts;
-using PRM.ViewModel.Configuration;
+using PRM.View.Settings;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 

@@ -5,9 +5,9 @@ using com.github.xiangyuecn.rsacsharp;
 using PRM.DB;
 using PRM.DB.Dapper;
 using PRM.I;
-using PRM.Protocol.Base;
-using PRM.Protocol.Putty.SSH;
-using PRM.Protocol.RDP;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.Putty;
+using PRM.Model.Protocol.RDP;
 
 namespace PRM.Service
 {

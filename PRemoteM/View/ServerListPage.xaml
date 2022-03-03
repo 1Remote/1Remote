@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:viewModel="clr-namespace:PRM.ViewModel"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:filters="clr-namespace:PRM.Utils.Filters"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
@@ -14,7 +13,7 @@
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d"
              Background="White"
-             d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
+             d:DataContext="{d:DesignInstance view:VmServerListPage}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -64,7 +63,7 @@
                     </ScrollViewer>
                 </Border>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="viewModel:VmProtocolServer">
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:VmProtocolServer">
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -247,7 +246,7 @@
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerList" DataType="viewModel:VmProtocolServer">
+            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:VmProtocolServer">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                     <Grid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
@@ -539,7 +538,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static viewModel:VmServerListPage.TabTagsListName}">
+                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:VmServerListPage.TabTagsListName}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
@@ -688,7 +687,7 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static viewModel:VmServerListPage.TabTagsListName}">
+                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:VmServerListPage.TabTagsListName}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />

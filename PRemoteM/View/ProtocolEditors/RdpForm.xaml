@@ -9,7 +9,7 @@
                         xmlns:controls="clr-namespace:PRM.Controls"
                         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
                         xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-                        xmlns:rdp="clr-namespace:PRM.Protocol.RDP"
+                        xmlns:rdp="clr-namespace:PRM.Model.Protocol.RDP"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance rdp:ProtocolServerRDP}"
                         d:DesignHeight="1450" d:DesignWidth="800">

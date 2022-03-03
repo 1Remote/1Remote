@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using PRM.Protocol.Base;
-using PRM.Protocol.FileTransmit;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.FileTransmit;
 
 namespace PRM.View.ProtocolEditors
 {

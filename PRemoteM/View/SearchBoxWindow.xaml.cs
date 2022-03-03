@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Model;
 using Shawn.Utils;
-using PRM.ViewModel;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 

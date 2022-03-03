@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Dapper;
 using PRM.I;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 
 namespace PRM.DB.Dapper
 {

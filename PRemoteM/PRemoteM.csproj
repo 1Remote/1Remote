@@ -226,32 +226,32 @@
     <Compile Include="Model\Tag.cs" />
     <Compile Include="AppVersion.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Protocol\Base\ExtendOption.cs" />
-    <Compile Include="Protocol\Base\ProtocolServerBase.cs" />
-    <Compile Include="Protocol\Base\ProtocolServerWithAddrPortBase.cs" />
-    <Compile Include="Protocol\Base\ProtocolServerWithAddrPortUserPwdBase.cs" />
-    <Compile Include="Protocol\Extend\ProtocolServerApp.cs" />
-    <Compile Include="Protocol\FileTransmit\IProtocolFileTransmittable.cs" />
-    <Compile Include="Protocol\FileTransmit\ProtocolServerFTP.cs" />
-    <Compile Include="Protocol\FileTransmit\ProtocolServerSFTP.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\ITransmitter.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\RemoteItem.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\ETransmissionType.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitItem.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
-    <Compile Include="Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
-    <Compile Include="Protocol\ProtocolConfig.cs" />
-    <Compile Include="Protocol\Putty\SSH\ProtocolServerSSH.cs" />
-    <Compile Include="Protocol\Putty\Telnet\ProtocolServerTelnet.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRDP.cs" />
-    <Compile Include="Protocol\RDP\ProtocolServerRemoteApp.cs" />
-    <Compile Include="Protocol\Runner\Default\InternalDefaultRunner.cs" />
-    <Compile Include="Protocol\Runner\Default\KittyRunner.cs" />
-    <Compile Include="Protocol\Runner\ExternalRunner.cs" />
-    <Compile Include="Protocol\Runner\Runner.cs" />
-    <Compile Include="ViewModel\VmProtocolServer.cs" />
-    <Compile Include="Protocol\VNC\ProtocolServerVNC.cs" />
+    <Compile Include="Model\Protocol\Base\ExtendOption.cs" />
+    <Compile Include="Model\Protocol\Base\ProtocolServerBase.cs" />
+    <Compile Include="Model\Protocol\Base\ProtocolServerWithAddrPortBase.cs" />
+    <Compile Include="Model\Protocol\Base\ProtocolServerWithAddrPortUserPwdBase.cs" />
+    <Compile Include="Model\Protocol\Extend\ProtocolServerApp.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\IProtocolFileTransmittable.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\ProtocolServerFTP.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\ProtocolServerSFTP.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\ITransmitter.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\RemoteItem.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\TransmissionController\ETransmissionType.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\TransmissionController\TransmitItem.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\TransmissionController\TransmitTask.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\TransmitterFtp.cs" />
+    <Compile Include="Model\Protocol\FileTransmit\Transmitters\TransmitterSFtp.cs" />
+    <Compile Include="Model\Protocol\ProtocolConfig.cs" />
+    <Compile Include="Model\Protocol\Putty\ProtocolServerSSH.cs" />
+    <Compile Include="Model\Protocol\Putty\ProtocolServerTelnet.cs" />
+    <Compile Include="Model\Protocol\RDP\ProtocolServerRDP.cs" />
+    <Compile Include="Model\Protocol\RDP\ProtocolServerRemoteApp.cs" />
+    <Compile Include="Model\Protocol\Runner\Default\InternalDefaultRunner.cs" />
+    <Compile Include="Model\Protocol\Runner\Default\KittyRunner.cs" />
+    <Compile Include="Model\Protocol\Runner\ExternalRunner.cs" />
+    <Compile Include="Model\Protocol\Runner\Runner.cs" />
+    <Compile Include="View\VmProtocolServer.cs" />
+    <Compile Include="Model\Protocol\VNC\ProtocolServerVNC.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Resources\Icons\ServerIcons.cs" />
     <Compile Include="Resources\Theme\AttachProperty\PasswordBoxAttachProperty.cs" />
@@ -270,40 +270,40 @@
     <Compile Include="Utils\KiTTY\KittyConfig.cs" />
     <Compile Include="Utils\KiTTY\KittyConfigKeyValuePair.cs" />
     <Compile Include="Utils\KiTTY\PuttyThemes.cs" />
-    <Compile Include="Utils\Filters\TagAndKeywordFilter.cs" />
-    <Compile Include="Utils\Filters\TagFilter.cs" />
+    <Compile Include="Utils\TagAndKeywordEncodeHelper.cs" />
+    <Compile Include="Model\TagFilter.cs" />
     <Compile Include="Utils\ItemCreateHelper.cs" />
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
-    <Compile Include="ViewModel\Configuration\ConfigurationViewModel.cs" />
-    <Compile Include="ViewModel\Configuration\ProtocolConfigerViewModel.cs" />
-    <Compile Include="ViewModel\VmAboutPage.cs" />
-    <Compile Include="ViewModel\VmServerListPage.Tag.cs" />
-    <Compile Include="ViewModel\VmTabWindow.cs" />
-    <Compile Include="ViewModel\VmMain.cs" />
-    <Compile Include="ViewModel\VmSearchBox.cs" />
-    <Compile Include="ViewModel\VmServerEditorPage.cs" />
-    <Compile Include="ViewModel\VmServerListPage.cs" />
+    <Compile Include="View\Settings\ConfigurationViewModel.cs" />
+    <Compile Include="View\Settings\ProtocolConfig\ProtocolConfigerViewModel.cs" />
+    <Compile Include="View\VmAboutPage.cs" />
+    <Compile Include="View\VmServerListPage.Tag.cs" />
+    <Compile Include="View\Host\VmTabWindow.cs" />
+    <Compile Include="View\VmMain.cs" />
+    <Compile Include="View\VmSearchBox.cs" />
+    <Compile Include="View\VmServerEditorPage.cs" />
+    <Compile Include="View\VmServerListPage.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ErrorReport\ErrorReportWindow.xaml.cs">
       <DependentUpon>ErrorReportWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\FullScreenWindow.xaml.cs">
+    <Compile Include="View\Host\FullScreenWindow.xaml.cs">
       <DependentUpon>FullScreenWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Guidance\GuidanceWindow.xaml.cs">
       <DependentUpon>GuidanceWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolConfig\ProtocolConfiger.xaml.cs">
+    <Compile Include="View\Settings\ProtocolConfig\ProtocolConfiger.xaml.cs">
       <DependentUpon>ProtocolConfiger.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolConfig\ExternalRunnerConfiger.xaml.cs">
+    <Compile Include="View\Settings\ProtocolConfig\ExternalRunnerConfiger.xaml.cs">
       <DependentUpon>ExternalRunnerConfiger.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolConfig\KittyRunnerConfiger.xaml.cs">
+    <Compile Include="View\Settings\ProtocolConfig\KittyRunnerConfiger.xaml.cs">
       <DependentUpon>KittyRunnerConfiger.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ProtocolEditors\FTPForm.xaml.cs">
@@ -335,28 +335,28 @@
       <DependentUpon>VncForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\ProtocolHostFactory.cs" />
-    <Compile Include="View\ProtocolHosts\AxMsRdpClient09Host.xaml.cs">
+    <Compile Include="View\Host\ProtocolHosts\AxMsRdpClient09Host.xaml.cs">
       <DependentUpon>AxMsRdpClient09Host.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolHosts\FileTransmitHost.xaml.cs">
+    <Compile Include="View\Host\ProtocolHosts\FileTransmitHost.xaml.cs">
       <DependentUpon>FileTransmitHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolHosts\IntegrateHost.xaml.cs">
+    <Compile Include="View\Host\ProtocolHosts\IntegrateHost.xaml.cs">
       <DependentUpon>IntegrateHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ProtocolEditors\BaseFormWithAddressPort.xaml.cs">
       <DependentUpon>BaseFormWithAddressPort.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ProtocolHosts\HostBase.cs" />
-    <Compile Include="ViewModel\VmFileTransmitHost.cs" />
-    <Compile Include="View\ProtocolHosts\VncHost.xaml.cs">
+    <Compile Include="View\Host\ProtocolHosts\HostBase.cs" />
+    <Compile Include="View\Host\ProtocolHosts\VmFileTransmitHost.cs" />
+    <Compile Include="View\Host\ProtocolHosts\VncHost.xaml.cs">
       <DependentUpon>VncHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ServerListPage.xaml.cs">
       <DependentUpon>ServerListPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\TabWindow\TabWindowBase.cs" />
-    <Compile Include="View\TabWindow\TabWindowChrome.xaml.cs">
+    <Compile Include="View\Host\TabWindowBase.cs" />
+    <Compile Include="View\Host\TabWindowChrome.xaml.cs">
       <DependentUpon>TabWindowChrome.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SearchBoxWindow.xaml.cs">
@@ -365,10 +365,10 @@
     <Compile Include="View\ServerEditorPage.xaml.cs">
       <DependentUpon>ServerEditorPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SystemConfigPage.xaml.cs">
+    <Compile Include="View\Settings\SystemConfigPage.xaml.cs">
       <DependentUpon>SystemConfigPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\TabItemViewModel.cs" />
+    <Compile Include="View\TabItemViewModel.cs" />
     <Page Include="Controls\AutoCompleteComboBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -493,7 +493,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\FullScreenWindow.xaml">
+    <Page Include="View\Host\FullScreenWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -501,15 +501,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ProtocolConfig\ProtocolConfiger.xaml">
+    <Page Include="View\Settings\ProtocolConfig\ProtocolConfiger.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ProtocolConfig\ExternalRunnerConfiger.xaml">
+    <Page Include="View\Settings\ProtocolConfig\ExternalRunnerConfiger.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ProtocolConfig\KittyRunnerConfiger.xaml">
+    <Page Include="View\Settings\ProtocolConfig\KittyRunnerConfiger.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -549,15 +549,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ProtocolHosts\AxMsRdpClient09Host.xaml">
+    <Page Include="View\Host\ProtocolHosts\AxMsRdpClient09Host.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ProtocolHosts\FileTransmitHost.xaml">
+    <Page Include="View\Host\ProtocolHosts\FileTransmitHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ProtocolHosts\IntegrateHost.xaml">
+    <Page Include="View\Host\ProtocolHosts\IntegrateHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -565,7 +565,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ProtocolHosts\VncHost.xaml">
+    <Page Include="View\Host\ProtocolHosts\VncHost.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -573,7 +573,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\TabWindow\TabWindowChrome.xaml">
+    <Page Include="View\Host\TabWindowChrome.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -585,7 +585,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SystemConfigPage.xaml">
+    <Page Include="View\Settings\SystemConfigPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1074,9 +1074,7 @@
   <ItemGroup>
     <Resource Include="Resources\Icons\20210106\NoMachine.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Protocol\Runner\ExternalRunnerSSH\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\KiTTY\kitty_portable.exe" />
   </ItemGroup>

@@ -4,19 +4,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using PRM.Protocol.Base;
-using PRM.Protocol.Extend;
-using PRM.Protocol.FileTransmit;
-using PRM.Protocol.Putty.SSH;
-using PRM.Protocol.Putty.Telnet;
-using PRM.Protocol.RDP;
-using PRM.Protocol.Runner;
-using PRM.Protocol.Runner.Default;
-using PRM.Protocol.VNC;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.Extend;
+using PRM.Model.Protocol.FileTransmit;
+using PRM.Model.Protocol.Putty;
+using PRM.Model.Protocol.RDP;
+using PRM.Model.Protocol.Runner;
+using PRM.Model.Protocol.Runner.Default;
+using PRM.Model.Protocol.VNC;
 using PRM.Utils.KiTTY;
-using PRM.View.ProtocolHosts;
+using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
-using VncHost = PRM.View.ProtocolHosts.VncHost;
+using VncHost = PRM.View.Host.ProtocolHosts.VncHost;
 
 namespace PRM.Model
 {

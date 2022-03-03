@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using PRM.Protocol.Base;
-using PRM.Protocol.Runner;
-using PRM.Protocol.Runner.Default;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.Runner;
+using PRM.Model.Protocol.Runner.Default;
 using Shawn.Utils;
 
 namespace PRM.Model

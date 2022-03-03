@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using com.github.xiangyuecn.rsacsharp;
 using PRM.DB;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 
 namespace PRM.I
 {

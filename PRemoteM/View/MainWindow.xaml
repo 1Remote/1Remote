@@ -3,17 +3,16 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:pageHost="clr-namespace:Shawn.Utils.Wpf.PageHost;assembly=Shawn.Utils.Wpf"
                   xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
-                  xmlns:viewModel="clr-namespace:PRM.ViewModel"
                   xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+                  xmlns:view="clr-namespace:PRM.View"
                   mc:Ignorable="d"
                   BorderThickness="0"
                   BorderBrush="Transparent"
                   Background="White"
                   KeyDown="MainWindow_OnKeyDown"
-                  d:DataContext="{d:DesignInstance viewModel:VmMain}"
+                  d:DataContext="{d:DesignInstance view:VmMain}"
                   Title="PRemoteM" Height="560" Width="900" MinWidth="900" MinHeight="560">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />

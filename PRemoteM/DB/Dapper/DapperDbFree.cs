@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 
 namespace PRM.DB.Dapper
 {

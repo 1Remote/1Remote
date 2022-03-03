@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 
 namespace PRM.Model
 {

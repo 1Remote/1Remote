@@ -6,14 +6,13 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PRM.Protocol;
-using PRM.Protocol.Base;
-using PRM.Protocol.FileTransmit;
-using PRM.Protocol.Putty.SSH;
-using PRM.Protocol.Putty.Telnet;
-using PRM.Protocol.Runner;
-using PRM.Protocol.Runner.Default;
-using PRM.Protocol.VNC;
+using PRM.Model.Protocol;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.FileTransmit;
+using PRM.Model.Protocol.Putty;
+using PRM.Model.Protocol.Runner;
+using PRM.Model.Protocol.Runner.Default;
+using PRM.Model.Protocol.VNC;
 using Shawn.Utils;
 
 namespace PRM.Service

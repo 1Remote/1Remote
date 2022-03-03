@@ -6,9 +6,9 @@
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         xmlns:system="clr-namespace:System;assembly=mscorlib"
-                        xmlns:ssh="clr-namespace:PRM.Protocol.Putty.SSH"
+                        xmlns:putty="clr-namespace:PRM.Model.Protocol.Putty"
                         mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance ssh:ProtocolServerSSH}"
+                        d:DataContext="{d:DesignInstance putty:ProtocolServerSSH}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
         <StackPanel>

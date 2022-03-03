@@ -5,7 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
-                        xmlns:base="clr-namespace:PRM.Protocol.Base"
+                        xmlns:base="clr-namespace:PRM.Model.Protocol.Base"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance base:ProtocolServerWithAddrPortUserPwdBase}"
                         d:DesignHeight="1450" d:DesignWidth="800">

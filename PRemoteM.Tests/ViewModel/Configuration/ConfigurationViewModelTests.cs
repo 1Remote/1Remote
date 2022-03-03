@@ -7,13 +7,14 @@ using PRemoteM.Tests.Service;
 using PRM.DB;
 using PRM.I;
 using PRM.Model;
-using PRM.Protocol.Extend;
-using PRM.Protocol.Putty.SSH;
-using PRM.Protocol.RDP;
-using PRM.Protocol.VNC;
+using PRM.Model.Protocol.Extend;
+using PRM.Model.Protocol.Putty;
+using PRM.Model.Protocol.RDP;
+using PRM.Model.Protocol.VNC;
 using PRM.Resources.Icons;
 using PRM.Service;
-using PRM.ViewModel.Configuration;
+using PRM.View;
+using PRM.View.Settings;
 using Shawn.Utils;
 
 namespace PRemoteM.Tests.ViewModel.Configuration
