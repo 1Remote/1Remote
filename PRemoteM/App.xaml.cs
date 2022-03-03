@@ -269,7 +269,7 @@ namespace PRM
             }
         }
 
-        private FileWatcher _dbFileWatcher;
+        //private FileWatcher _dbFileWatcher;
         private void SetDbWatcher()
         {
             // 以下代码会在自己更新数据库时同时被激活，当进行循环批量修改时，每修改一条记录都会重新读取一次数据库，会导致数据库连接冲突

@@ -67,7 +67,7 @@ namespace PRM.Model
                         if (fi.Directory.Exists == false)
                             fi.Directory.Create();
                     }
-                    catch (Exception e)
+                    catch
                     {
                         if (IsPortable)
                             sqlitePath = new DatabaseConfig().SqliteDatabasePath;
