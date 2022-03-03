@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using PRM.Core.Protocol.Runner.Default;
+using PRM.Protocol.Runner.Default;
 
 namespace PRM.View.ProtocolConfig
 {

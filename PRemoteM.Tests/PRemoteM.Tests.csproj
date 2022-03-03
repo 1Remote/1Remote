@@ -67,16 +67,13 @@
     <Compile Include="ViewModel\Configuration\ConfigurationViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PRemoteM\PRemoteM.csproj">
       <Project>{AF7B4735-78AB-41EB-A799-5BAB792B7E22}</Project>
       <Name>PRemoteM</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PRM.Core\PRM.Core.csproj">
-      <Project>{BB2390FE-00DC-4650-A856-DDB69FD92BBC}</Project>
-      <Name>PRM.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

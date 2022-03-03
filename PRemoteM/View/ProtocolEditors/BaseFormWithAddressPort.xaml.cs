@@ -1,4 +1,4 @@
-﻿using PRM.Core.Protocol;
+﻿using PRM.Protocol.Base;
 
 namespace PRM.View.ProtocolEditors
 {

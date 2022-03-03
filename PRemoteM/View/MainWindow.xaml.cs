@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
-using PRM.Core.Model;
-using PRM.Core.Service;
+using PRM.Model;
+using PRM.Service;
 using PRM.Utils.Filters;
 using Shawn.Utils;
 using PRM.ViewModel;

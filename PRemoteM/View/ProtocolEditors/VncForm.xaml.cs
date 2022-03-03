@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Data;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.VNC;
+using PRM.Protocol.Base;
+using PRM.Protocol.VNC;
 
 namespace PRM.View.ProtocolEditors
 {

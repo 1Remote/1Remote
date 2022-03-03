@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.FileTransmit.FTP;
+using PRM.Protocol.Base;
+using PRM.Protocol.FileTransmit;
 
 namespace PRM.View.ProtocolEditors
 {

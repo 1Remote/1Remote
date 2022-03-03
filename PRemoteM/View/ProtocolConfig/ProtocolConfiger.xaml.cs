@@ -12,9 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Core.Model;
-using PRM.Core.Protocol.Runner;
-using PRM.Core.Service;
+using PRM.Protocol.Runner;
+using PRM.Service;
 using PRM.ViewModel.Configuration;
 
 namespace PRM.View.ProtocolConfig

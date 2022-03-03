@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Core.Model;
-using PRM.Core.Protocol;
 using PRM.Model;
+using PRM.Protocol;
+using PRM.ViewModel;
 using Shawn.Utils;
 
 namespace PRM.Controls

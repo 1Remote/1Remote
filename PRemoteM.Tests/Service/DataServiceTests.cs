@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.Core.DB;
-using PRM.Core.I;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Extend;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.RDP;
-using PRM.Core.Protocol.VNC;
-using PRM.Core.Service;
+using PRM.DB;
+using PRM.I;
+using PRM.Protocol.Base;
+using PRM.Protocol.Extend;
+using PRM.Protocol.Putty.SSH;
+using PRM.Protocol.RDP;
+using PRM.Protocol.VNC;
 using PRM.Resources.Icons;
+using PRM.Service;
 using Shawn.Utils;
 
 namespace PRemoteM.Tests.Service

@@ -1,5 +1,4 @@
 ﻿using System;
-using PRM.Core.Protocol;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;

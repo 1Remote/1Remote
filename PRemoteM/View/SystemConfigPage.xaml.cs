@@ -10,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using MSTSCLib;
-using PRM.Core.Model;
+using PRM.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
 using PRM.ViewModel.Configuration;

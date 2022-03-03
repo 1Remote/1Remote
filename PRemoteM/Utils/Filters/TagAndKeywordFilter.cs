@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using PRM.Core.Protocol;
-using Shawn.Utils;
+using PRM.Protocol.Base;
 using VariableKeywordMatcher.Model;
 
 namespace PRM.Utils.Filters

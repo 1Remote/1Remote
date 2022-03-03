@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PRM.Core.Model;
+using PRM.Model;
 using Shawn.Utils;
 using PRM.ViewModel;
 using Shawn.Utils.Wpf;

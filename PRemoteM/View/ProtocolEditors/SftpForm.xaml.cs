@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Win32;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.FileTransmit.SFTP;
+using PRM.Protocol.Base;
+using PRM.Protocol.FileTransmit;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 

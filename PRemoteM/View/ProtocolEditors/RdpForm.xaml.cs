@@ -11,8 +11,8 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.RDP;
+using PRM.Protocol.Base;
+using PRM.Protocol.RDP;
 using PRM.View.ProtocolConfig;
 using Shawn.Utils;
 
