@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -171,11 +172,6 @@ namespace PRM.View.ProtocolHosts
             //- 3: No authentication requirement specified.
             _rdp.AdvancedSettings9.AuthenticationLevel = 0;
 
-            // - 0 Apply key combinations only locally at the client computer.
-            // - 1 Apply key combinations at the remote server.
-            // - 2 Apply key combinations to the remote server only when the client is running in full-screen mode. This is the default value.
-            _rdp.SecuredSettings3.KeyboardHookMode = 2;
-
             // ref: https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientadvancedsettings6-connecttoadministerserver
             _rdp.AdvancedSettings7.ConnectToAdministerServer = _rdpServer.IsAdministrativePurposes == true;
         }
@@ -260,7 +256,9 @@ namespace PRM.View.ProtocolHosts
                 _rdp.SecuredSettings3.KeyboardHookMode = 1;
             }
             else
+            {
                 _rdp.SecuredSettings3.KeyboardHookMode = 0;
+            }
 
             if (_rdpServer.AudioRedirectionMode == EAudioRedirectionMode.RedirectToLocal)
             {
@@ -329,32 +327,47 @@ namespace PRM.View.ProtocolHosts
                     break;
                 case ERdpWindowResizeMode.FixedFullScreen:
                 case ERdpWindowResizeMode.StretchFullScreen:
-                    var size = GetScreenSize();
-                    _rdp.DesktopWidth = size.Width;
-                    _rdp.DesktopHeight = size.Height;
-                    break;
+                    {
+                        var size = GetScreenSize();
+                        _rdp.DesktopWidth = size.Width;
+                        _rdp.DesktopHeight = size.Height;
+                        break;
+                    }
                 case ERdpWindowResizeMode.AutoResize:
                 case null:
                 default:
-                    // default case, set rdp size to tab window size.
-                    if (width < 100)
-                        width = 800;
-                    if (height < 100)
-                        height = 600;
+                    {
+                        // default case, set rdp size to tab window size.
+                        if (width < 100)
+                            width = 800;
+                        if (height < 100)
+                            height = 600;
 
-                    // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
-                    // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
-                    if (isReconn)
-                    {
-                        _rdp.DesktopWidth = (int)(width);
-                        _rdp.DesktopHeight = (int)(height);
+
+                        if (isReconn == true)
+                        {
+                            // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
+                            _rdp.DesktopWidth = (int)(width);
+                            _rdp.DesktopHeight = (int)(height);
+                        }
+                        else
+                        {
+                            // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
+                            if (_rdpServer.ThisTimeConnWithFullScreen())
+                            {
+                                var size = GetScreenSize();
+                                _rdp.DesktopWidth = size.Width;
+                                _rdp.DesktopHeight = size.Height;
+                            }
+                            else
+                            {
+                                _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
+                                _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
+                            }
+                        }
+
+                        break;
                     }
-                    else
-                    {
-                        _rdp.DesktopWidth = (int)(width * (_primaryScaleFactor / 100.0));
-                        _rdp.DesktopHeight = (int)(height * (_primaryScaleFactor / 100.0));
-                    }
-                    break;
             }
 
 
@@ -846,13 +859,6 @@ namespace PRM.View.ProtocolHosts
                 }
             }
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
-
-            if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen)
-            {
-                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
-            }
-            else
-                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
             Context.DataService.Database_UpdateServer(_rdpServer);
         }
 
@@ -860,14 +866,18 @@ namespace PRM.View.ProtocolHosts
         {
             if (_rdpServer.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
             {
+                _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = -1;
                 return ScreenInfoEx.GetAllScreensSize();
             }
-            else if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= 0
-                     && _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < System.Windows.Forms.Screen.AllScreens.Length)
+            else if (_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex < 0
+                     || _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
             {
-                return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
+                if (this.ParentWindow != null)
+                    _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreen(this.ParentWindow).Index;
+                else
+                    _rdpServer.AutoSetting.FullScreenLastSessionScreenIndex = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition()).Index;
             }
-            return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+            return System.Windows.Forms.Screen.AllScreens[_rdpServer.AutoSetting.FullScreenLastSessionScreenIndex].Bounds;
         }
 
         private void MakeFullScreen2Normal()

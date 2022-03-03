@@ -315,5 +315,11 @@ namespace PRM.Protocol.Base
             var protocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract).Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
             return protocolList;
         }
+
+
+        public virtual bool ThisTimeConnWithFullScreen()
+        {
+            return false;
+        }
     }
 }
