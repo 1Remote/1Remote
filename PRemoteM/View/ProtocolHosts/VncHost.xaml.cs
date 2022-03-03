@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.VNC;
+using PRM.Model;
+using PRM.Protocol.Base;
+using PRM.Protocol.VNC;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using VncSharpCore;

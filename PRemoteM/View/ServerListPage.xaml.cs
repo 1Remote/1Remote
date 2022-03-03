@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using PRM.Core.Model;
+using PRM.Model;
 using PRM.Utils.Filters;
 using PRM.ViewModel;
 using PRM.ViewModel.Configuration;

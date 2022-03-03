@@ -3,11 +3,11 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                        xmlns:base="clr-namespace:PRM.Protocol.Base"
                         mc:Ignorable="d"
-                        d:DataContext="{d:DesignInstance protocol:ProtocolServerWithAddrPortUserPwdBase}"
+                        d:DataContext="{d:DesignInstance base:ProtocolServerWithAddrPortUserPwdBase}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
 

@@ -6,15 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using PRM.Core.DB;
-using PRM.Core.DB.Dapper;
-using PRM.Core.External.KiTTY;
-using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty;
-using PRM.Core.Service;
+using PRM.DB;
+using PRM.DB.Dapper;
 using Shawn.Utils;
 using PRM.Model;
+using PRM.Service;
+using PRM.Utils.KiTTY;
 using PRM.View;
 using PRM.View.ErrorReport;
 using PRM.View.Guidance;
@@ -310,11 +307,11 @@ namespace PRM
         private static void InitTaskTray()
         {
             if (TaskTrayIcon != null) return;
-            Debug.Assert(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico"))?.Stream != null);
+            Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
             TaskTrayIcon = new System.Windows.Forms.NotifyIcon
             {
                 Text = ConfigurationService.AppName,
-                Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/LOGO.ico")).Stream),
+                Icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream),
                 BalloonTipText = "",
                 Visible = true
             };

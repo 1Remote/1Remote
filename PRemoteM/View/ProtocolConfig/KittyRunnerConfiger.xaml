@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
-             xmlns:default="clr-namespace:PRM.Core.Protocol.Runner.Default;assembly=PRM.Core"
              xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:default="clr-namespace:PRM.Protocol.Runner.Default"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance default:KittyRunner}"
              d:DesignHeight="450" d:DesignWidth="800">

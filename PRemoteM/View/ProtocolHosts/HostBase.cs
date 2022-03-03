@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using PRM.Core.Model;
-using PRM.Core.Protocol;
+using PRM.Model;
+using PRM.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 

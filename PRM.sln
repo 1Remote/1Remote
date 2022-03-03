@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRM.Core", "PRM.Core\PRM.Core.csproj", "{BB2390FE-00DC-4650-A856-DDB69FD92BBC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRemoteM", "PRemoteM\PRemoteM.csproj", "{AF7B4735-78AB-41EB-A799-5BAB792B7E22}"
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Installer", "Installer\Installer.wapproj", "{349F615B-B9A9-41F9-9C60-96D761C1AB77}"
@@ -24,6 +22,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shawn.Utils", "Shawn.Utils\Shawn.Utils\Shawn.Utils.csproj", "{D50C87E7-EC1E-4968-899C-26A5543AE4CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shawn.Utils.Wpf", "Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj", "{0CF000C2-D65D-4CB2-84FC-3687FC3A990B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{578B7968-F6DF-4A2E-8D1B-C74726C54413}"
+	ProjectSection(SolutionItems) = preProject
+		lib\AxMSTSCLib.dll = lib\AxMSTSCLib.dll
+		lib\MSTSCLib.dll = lib\MSTSCLib.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,46 +53,6 @@ Global
 		StoreRelease|x86 = StoreRelease|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|ARM.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|x64.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Debug|x86.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|ARM.ActiveCfg = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|ARM.Build.0 = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|ARM64.Build.0 = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|x64.ActiveCfg = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|x64.Build.0 = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|x86.ActiveCfg = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.Release|x86.Build.0 = Release|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|Any CPU.ActiveCfg = StoreDebug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|Any CPU.Build.0 = StoreDebug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|ARM.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|ARM.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|ARM64.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|ARM64.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|x64.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|x64.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|x86.ActiveCfg = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreDebug|x86.Build.0 = Debug|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|Any CPU.ActiveCfg = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|Any CPU.Build.0 = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|ARM.ActiveCfg = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|ARM.Build.0 = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|ARM64.ActiveCfg = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|ARM64.Build.0 = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|x64.ActiveCfg = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|x64.Build.0 = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|x86.ActiveCfg = StoreRelease|Any CPU
-		{BB2390FE-00DC-4650-A856-DDB69FD92BBC}.StoreRelease|x86.Build.0 = StoreRelease|Any CPU
 		{AF7B4735-78AB-41EB-A799-5BAB792B7E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF7B4735-78AB-41EB-A799-5BAB792B7E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF7B4735-78AB-41EB-A799-5BAB792B7E22}.Debug|ARM.ActiveCfg = Debug|Any CPU

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using Microsoft.Win32;
-using PRM.Core.External.KiTTY;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.Putty;
-using PRM.Core.Protocol.Putty.SSH;
-using PRM.Core.Protocol.Putty.Telnet;
+using PRM.Protocol.Base;
+using PRM.Protocol.Putty.SSH;
+using PRM.Protocol.Putty.Telnet;
+using PRM.Utils.KiTTY;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 

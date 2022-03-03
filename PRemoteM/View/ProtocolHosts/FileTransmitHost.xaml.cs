@@ -5,10 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using PRM.Core.Model;
-using PRM.Core.Protocol;
-using PRM.Core.Protocol.FileTransmit.FTP;
-using PRM.Core.Protocol.FileTransmit.SFTP;
+using PRM.Model;
+using PRM.Protocol.Base;
+using PRM.Protocol.FileTransmit;
 
 namespace PRM.View.ProtocolHosts
 {

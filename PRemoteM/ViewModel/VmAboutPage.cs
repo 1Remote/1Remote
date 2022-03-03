@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using PRM.Core;
-using PRM.Core.Model;
 using Shawn.Utils;
 
 using Shawn.Utils;
@@ -18,7 +17,7 @@ namespace PRM.ViewModel
 
         public VmAboutPage()
         {
-            var checker = new VersionHelper(PRMVersion.VersionData, null, PRMVersion.UpdateUrls);
+            var checker = new VersionHelper(AppVersion.VersionData, null, AppVersion.UpdateUrls);
             checker.OnNewVersionRelease += OnNewVersionRelease;
             _checkUpdateTimer = new Timer()
             {

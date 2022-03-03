@@ -11,14 +11,14 @@ using System.Windows.Input;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.Win32;
 using PRM.Core;
-using PRM.Core.DB;
-using PRM.Core.I;
-using PRM.Core.Model;
-using PRM.Core.Service;
+using PRM.DB;
+using PRM.I;
+using PRM.Model;
+using PRM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
-using HotkeyModifierKeys = PRM.Core.Service.HotkeyModifierKeys;
+using HotkeyModifierKeys = PRM.Service.HotkeyModifierKeys;
 
 namespace PRM.ViewModel.Configuration
 {

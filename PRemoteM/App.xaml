@@ -5,7 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/PRM.Core;component/Languages/en-us.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Languages/en-us.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="./Resources/Converter/Converter.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="./Resources/Theme/DefaultTheme.xaml"></ResourceDictionary>
                 <ResourceDictionary>

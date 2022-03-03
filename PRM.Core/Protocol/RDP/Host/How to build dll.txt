@@ -1,3 +1,0 @@
-"C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\AXIMP.EXE" %windir%\system32\mstscax.dll
-
-@ref https://www.yaosansi.com/post/how-to-use-mstsclib/

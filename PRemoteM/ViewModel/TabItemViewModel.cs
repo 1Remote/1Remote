@@ -1,6 +1,5 @@
 ﻿using System;
 using PRM.Core;
-using PRM.Core.Protocol;
 using PRM.View.ProtocolHosts;
 using Shawn.Utils;
 

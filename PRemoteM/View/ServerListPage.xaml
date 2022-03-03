@@ -6,13 +6,12 @@
              xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModel="clr-namespace:PRM.ViewModel"
-             xmlns:model="clr-namespace:PRM.Core.Model;assembly=PRM.Core"
-             xmlns:protocol="clr-namespace:PRM.Core.Protocol;assembly=PRM.Core"
-             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
-             xmlns:service="clr-namespace:PRM.Core.Service;assembly=PRM.Core"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:filters="clr-namespace:PRM.Utils.Filters"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:service="clr-namespace:PRM.Service"
+             xmlns:model="clr-namespace:PRM.Model"
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d"
              Background="White"
              d:DataContext="{d:DesignInstance viewModel:VmServerListPage}"
@@ -65,7 +64,7 @@
                     </ScrollViewer>
                 </Border>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="protocol:VmProtocolServer">
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="viewModel:VmProtocolServer">
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -248,7 +247,7 @@
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerList" DataType="protocol:VmProtocolServer">
+            <DataTemplate x:Key="DataTemplateForServerList" DataType="viewModel:VmProtocolServer">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                     <Grid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>

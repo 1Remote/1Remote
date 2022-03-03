@@ -6,8 +6,8 @@
                            xmlns:protocolHosts="clr-namespace:PRM.View.ProtocolHosts"
                            xmlns:viewModel="clr-namespace:PRM.ViewModel"
                            xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
-                           xmlns:transmissionController="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters.TransmissionController;assembly=PRM.Core"
-                           xmlns:transmitters="clr-namespace:PRM.Core.Protocol.FileTransmit.Transmitters;assembly=PRM.Core"
+                           xmlns:transmitters="clr-namespace:PRM.Protocol.FileTransmit.Transmitters"
+                           xmlns:transmissionController="clr-namespace:PRM.Protocol.FileTransmit.Transmitters.TransmissionController"
                            mc:Ignorable="d" 
                            d:DataContext="{d:DesignInstance viewModel:VmFileTransmitHost}"
                            d:DesignHeight="450" d:DesignWidth="800">

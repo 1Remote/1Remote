@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input;
-using PRM.Core.Service;
+using PRM.Service;
 using Shawn.Utils;
 
 namespace PRM.View.TabWindow
