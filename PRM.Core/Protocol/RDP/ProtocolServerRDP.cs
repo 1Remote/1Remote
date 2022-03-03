@@ -587,5 +587,16 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.GatewayCredentialsSource = 4;
             return rdpConfig;
         }
+
+
+
+        public override bool ThisTimeConnWithFullScreen()
+        {
+            if (this.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens)
+                return true;
+            if (this.IsConnWithFullScreen == true)
+                return true;
+            return this.AutoSetting.FullScreenLastSessionIsFullScreen ?? false;
+        }
     }
 }
