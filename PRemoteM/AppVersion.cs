@@ -5,8 +5,8 @@ namespace PRM
     public static class AppVersion
     {
         public const uint Major = 0;
-        public const uint Minor = 6;
-        public const uint Patch = 2;
+        public const uint Minor = 7;
+        public const uint Patch = 0;
         public const uint Build = 0;
         public const string PreRelease = "beta.4"; // e.g. "alpha" "beta.2"
 

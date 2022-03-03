@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 
 namespace PRM.View.ProtocolEditors
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 using Shawn.Utils;
 
 namespace PRM.I

@@ -7,13 +7,11 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using PRM.Protocol.Base;
-using PRM.Protocol.RDP;
-using PRM.View.ProtocolConfig;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.RDP;
 using Shawn.Utils;
 
 namespace PRM.View.ProtocolEditors

@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.Win32;
-using PRM.Core;
 using Shawn.Utils;
 using System.Windows;
 using System.Windows.Media.Animation;

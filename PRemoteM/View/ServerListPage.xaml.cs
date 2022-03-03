@@ -8,8 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Model;
 using PRM.Utils.Filters;
-using PRM.ViewModel;
-using PRM.ViewModel.Configuration;
+using PRM.View.Settings;
 
 namespace PRM.View
 {

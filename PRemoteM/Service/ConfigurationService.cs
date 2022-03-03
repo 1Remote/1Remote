@@ -143,18 +143,11 @@ namespace PRM.Service
             #region init
             // init path by `IsPortable`
             // default path of db
-            // default value of ini
             // default value of json
-            string oldIniFilePath;
             if (IsPortable)
             {
                 JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
                 Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
-                oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
-                if (File.Exists(oldIniFilePath) == false && File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, ConfigurationService.AppName + ".ini")))
-                {
-                    oldIniFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName, ConfigurationService.AppName + ".ini");
-                }
             }
             else
             {
@@ -162,9 +155,8 @@ namespace PRM.Service
                 if (Directory.Exists(appDateFolder) == false)
                     Directory.CreateDirectory(appDateFolder);
                 JsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
-                oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
                 Database.SqliteDatabasePath = Path.Combine(appDateFolder, $"{ConfigurationService.AppName}.db");
-            } 
+            }
             #endregion
 
             if (_keywordMatchService == null)
@@ -172,22 +164,7 @@ namespace PRM.Service
 
 
             #region load settings
-            // old user convert the 0.5 ini file to 0.6 json file
-            if (File.Exists(oldIniFilePath))
-            {
-                try
-                {
-                    var cfg = LoadFromIni(oldIniFilePath, Database.SqliteDatabasePath);
-                    _cfg = cfg;
-                    Save();
-                }
-                finally
-                {
-                    File.Delete(oldIniFilePath);
-                }
-            }
-            // load form json file
-            else if (File.Exists(JsonPath))
+            if (File.Exists(JsonPath))
             {
                 try
                 {
@@ -273,7 +250,7 @@ namespace PRM.Service
 
         public void Save()
         {
-            if(CanSave == false)
+            if (CanSave == false)
                 return;
             var fi = new FileInfo(JsonPath);
             if (fi.Directory.Exists == false)
@@ -287,65 +264,6 @@ namespace PRM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
-        }
-
-
-
-        // TODO remove after 2022.03.01
-        private static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
-        {
-            var cfg = new Configuration();
-            var ini = new Ini(iniPath);
-
-            {
-                const string sectionName = "General";
-                cfg.General.AppStartAutomatically = ini.GetValue("AppStartAutomatically".ToLower(), sectionName, cfg.General.AppStartAutomatically);
-                cfg.General.AppStartMinimized = ini.GetValue("AppStartMinimized".ToLower(), sectionName, cfg.General.AppStartMinimized);
-#if FOR_MICROSOFT_STORE_ONLY
-                Task.Factory.StartNew(async () =>
-                {
-                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask("PRemoteM");
-                });
-#endif
-            }
-
-            {
-                uint modifiers = 0;
-                uint key = 0;
-                if (ini.GetValue("Enable", "Launcher", "") == "")
-                {
-                    cfg.Launcher.LauncherEnabled = ini.GetValue("Enable".ToLower(), "Launcher", cfg.Launcher.LauncherEnabled);
-                    modifiers = ini.GetValue("HotKeyModifiers".ToLower(), "Launcher", modifiers);
-                    key = ini.GetValue("HotKeyKey".ToLower(), "Launcher", key);
-                    cfg.Launcher.HotKeyModifiers = (HotkeyModifierKeys)modifiers;
-                    cfg.Launcher.HotKeyKey = (Key)key;
-                    if (cfg.Launcher.HotKeyModifiers == HotkeyModifierKeys.None || cfg.Launcher.HotKeyKey == Key.None)
-                    {
-                        cfg.Launcher.HotKeyModifiers = HotkeyModifierKeys.Alt;
-                        cfg.Launcher.HotKeyKey = Key.M;
-                    }
-                }
-            }
-
-            cfg.KeywordMatch.EnabledMatchers = ini.GetValue("EnableProviders".ToLower(), "KeywordMatch", "").Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            cfg.Database.SqliteDatabasePath = ini.GetValue("DbPath".ToLower(), "DataSecurity", dbDefaultPath);
-
-            {
-                const string sectionName = "Theme";
-                cfg.Theme.ThemeName = ini.GetValue("(PrmColorThemeName".ToLower(), sectionName, cfg.Theme.ThemeName);
-                cfg.Theme.PrimaryMidColor = ini.GetValue("(PrimaryMidColor".ToLower(), sectionName, cfg.Theme.PrimaryMidColor);
-                cfg.Theme.PrimaryLightColor = ini.GetValue("(PrimaryLightColor".ToLower(), sectionName, cfg.Theme.PrimaryLightColor);
-                cfg.Theme.PrimaryDarkColor = ini.GetValue("(PrimaryDarkColor".ToLower(), sectionName, cfg.Theme.PrimaryDarkColor);
-                cfg.Theme.PrimaryTextColor = ini.GetValue("(PrimaryTextColor".ToLower(), sectionName, cfg.Theme.PrimaryTextColor);
-                cfg.Theme.AccentMidColor = ini.GetValue("(AccentMidColor".ToLower(), sectionName, cfg.Theme.AccentMidColor);
-                cfg.Theme.AccentLightColor = ini.GetValue("(AccentLightColor".ToLower(), sectionName, cfg.Theme.AccentLightColor);
-                cfg.Theme.AccentDarkColor = ini.GetValue("(AccentDarkColor".ToLower(), sectionName, cfg.Theme.AccentDarkColor);
-                cfg.Theme.AccentTextColor = ini.GetValue("(AccentTextColor".ToLower(), sectionName, cfg.Theme.AccentTextColor);
-                cfg.Theme.BackgroundColor = ini.GetValue("(BackgroundColor".ToLower(), sectionName, cfg.Theme.BackgroundColor);
-                cfg.Theme.BackgroundTextColor = ini.GetValue("(BackgroundTextColor".ToLower(), sectionName, cfg.Theme.BackgroundTextColor);
-            }
-
-            return cfg;
         }
     }
 }

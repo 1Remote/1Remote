@@ -4,7 +4,7 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
-                        xmlns:extend="clr-namespace:PRM.Protocol.Extend"
+                        xmlns:extend="clr-namespace:PRM.Model.Protocol.Extend"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance extend:ProtocolServerApp}"
                         d:DesignHeight="1450" d:DesignWidth="800">

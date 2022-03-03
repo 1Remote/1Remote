@@ -1,5 +1,5 @@
-﻿using PRM.Protocol.Base;
-using PRM.Protocol.RDP;
+﻿using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.RDP;
 
 namespace PRM.View.ProtocolEditors
 {

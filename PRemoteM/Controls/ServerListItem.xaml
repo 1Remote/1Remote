@@ -6,10 +6,8 @@
              xmlns:local="clr-namespace:PRM.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
-             xmlns:protocol1="clr-namespace:PRM.Protocol"
              xmlns:model="clr-namespace:PRM.Model"
-             xmlns:viewModel="clr-namespace:PRM.ViewModel"
-             d:DataContext="{d:DesignInstance viewModel:VmProtocolServer}"
+             d:DataContext="{d:DesignInstance view:VmProtocolServer}"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
     <Grid FocusVisualStyle="{x:Null}">

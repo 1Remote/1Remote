@@ -7,7 +7,7 @@
                         xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                         xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                         xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-                        xmlns:vnc="clr-namespace:PRM.Protocol.VNC"
+                        xmlns:vnc="clr-namespace:PRM.Model.Protocol.VNC"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance vnc:ProtocolServerVNC}"
                         d:DesignHeight="1450" d:DesignWidth="800">

@@ -1,5 +1,5 @@
 ﻿using PRM.I;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 using PRM.Utils;
 
 namespace PRM.DB.Dapper

@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using PRM.Protocol.Base;
-using PRM.Protocol.Extend;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.Extend;
 
 namespace PRM.View.ProtocolEditors
 {

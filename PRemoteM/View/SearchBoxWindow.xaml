@@ -3,11 +3,9 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:system="clr-namespace:System;assembly=mscorlib"
-                  xmlns:viewModel="clr-namespace:PRM.ViewModel"
                   xmlns:view="clr-namespace:PRM.View"
                   xmlns:filters="clr-namespace:PRM.Utils.Filters"
                   xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
-                  xmlns:protocol1="clr-namespace:PRM.Protocol"
                   xmlns:model="clr-namespace:PRM.Model"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
@@ -163,7 +161,7 @@
             </Border>
         </ControlTemplate>
 
-        <DataTemplate DataType="{x:Type viewModel:VmProtocolServer}">
+        <DataTemplate DataType="{x:Type view:VmProtocolServer}">
             <Grid Height="{StaticResource OneItemHeight}">
                 <Grid VerticalAlignment="Center" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>

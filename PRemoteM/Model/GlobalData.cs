@@ -4,10 +4,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using PRM.I;
-using PRM.Protocol;
-using PRM.Protocol.Base;
+using PRM.Model.Protocol.Base;
 using PRM.Service;
-using PRM.ViewModel;
+using PRM.View;
 using Shawn.Utils;
 
 namespace PRM.Model

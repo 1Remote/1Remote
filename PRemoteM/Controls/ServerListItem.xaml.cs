@@ -13,8 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PRM.Model;
-using PRM.Protocol;
-using PRM.ViewModel;
+using PRM.View;
 using Shawn.Utils;
 
 namespace PRM.Controls

@@ -1,8 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using PRM.Model;
-using PRM.Protocol;
-using PRM.ViewModel;
+using PRM.View;
 
 namespace PRM.Controls
 {

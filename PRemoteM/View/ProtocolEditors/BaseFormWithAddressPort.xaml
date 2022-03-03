@@ -4,7 +4,7 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:protocolEditors="clr-namespace:PRM.View.ProtocolEditors"
-                        xmlns:base="clr-namespace:PRM.Protocol.Base"
+                        xmlns:base="clr-namespace:PRM.Model.Protocol.Base"
                         mc:Ignorable="d"
                         d:DataContext="{d:DesignInstance base:ProtocolServerWithAddrPortBase}"
                         d:DesignHeight="1450" d:DesignWidth="800">

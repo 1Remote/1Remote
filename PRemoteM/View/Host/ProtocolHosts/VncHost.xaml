@@ -1,0 +1,31 @@
+﻿<protocolHosts1:HostBase x:Class="PRM.View.Host.ProtocolHosts.VncHost"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:vncSharpCore="clr-namespace:VncSharpCore;assembly=VncSharpCore"
+                   xmlns:protocolHosts1="clr-namespace:PRM.View.Host.ProtocolHosts"
+                   mc:Ignorable="d"
+                   d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <WindowsFormsHost HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="VncFormsHost">
+            <vncSharpCore:RemoteDesktop x:Name="Vnc"/>
+        </WindowsFormsHost>
+        <Control Name="GridLoading" Style="{StaticResource BusyAnimationStyle}" Background="Black"/>
+        <Grid Name="GridMessageBox" Background="Black">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*" MaxWidth="100" MinWidth="20"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="0.1*" MaxWidth="100" MinWidth="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Name="TbMessageTitle" FontSize="20" HorizontalAlignment="Center" Text="Title" Foreground="White" Margin="10"></TextBlock>
+                <TextBlock Name="TbMessage" FontSize="14" HorizontalAlignment="Center" Text="Say something:blablablablablablablablablablablablablablablablablabla" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow"></TextBlock>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 0">
+                    <Button x:Name="BtnReconn" Click="BtnReconn_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource Reconnect}"></Button>
+                    <Button x:Name="BtnCancel" Click="BtnCancel_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Width="80" Margin="5" Content="{DynamicResource Dismiss}"></Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</protocolHosts1:HostBase>

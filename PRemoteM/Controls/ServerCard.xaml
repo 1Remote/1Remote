@@ -7,10 +7,8 @@
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              xmlns:view="clr-namespace:PRM.View"
-             xmlns:protocol1="clr-namespace:PRM.Protocol"
              xmlns:model="clr-namespace:PRM.Model"
-             xmlns:viewModel="clr-namespace:PRM.ViewModel"
-             d:DataContext="{d:DesignInstance viewModel:VmProtocolServer}"
+             d:DataContext="{d:DesignInstance view:VmProtocolServer}"
              d:DesignHeight="450" d:DesignWidth="800" >
     <UserControl.Resources>
         <s:Double x:Key="CardWidth">144</s:Double>

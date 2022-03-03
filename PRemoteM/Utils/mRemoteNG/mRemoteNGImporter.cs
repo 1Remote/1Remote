@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using PRM.Protocol.Base;
-using PRM.Protocol.Putty.SSH;
-using PRM.Protocol.Putty.Telnet;
-using PRM.Protocol.RDP;
-using PRM.Protocol.VNC;
-using Shawn.Utils;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.Putty;
+using PRM.Model.Protocol.RDP;
+using PRM.Model.Protocol.VNC;
 using Shawn.Utils.Wpf.Image;
 
-namespace PRM.Core.Utils.mRemoteNG
+namespace PRM.Utils.mRemoteNG
 {
     public static class MRemoteNgImporter
     {
@@ -149,7 +145,7 @@ namespace PRM.Core.Utils.mRemoteNG
         }
         #endregion
 
-        private static string getValue(List<string> keyList, string[] valueList, string fieldName)
+        private static string GetValue(List<string> keyList, string[] valueList, string fieldName)
         {
             var i = keyList.IndexOf(fieldName.ToLower());
             if (i >= 0)
@@ -196,7 +192,7 @@ namespace PRM.Core.Utils.mRemoteNG
                 var item = new MRemoteNgItem();
                 foreach (var field in fields)
                 {
-                    var value = getValue(titles, arr, field.Name);
+                    var value = GetValue(titles, arr, field.Name);
                     field.SetValue(item, value);
                 }
 
@@ -308,7 +304,6 @@ namespace PRM.Core.Utils.mRemoteNG
                             EnableClipboard = string.Equals(item.RedirectClipboard, "TRUE", StringComparison.CurrentCultureIgnoreCase),
                             EnableDiskDrives = string.Equals(item.RedirectDiskDrives, "TRUE", StringComparison.CurrentCultureIgnoreCase),
                             EnableKeyCombinations = string.Equals(item.RedirectKeys, "TRUE", StringComparison.CurrentCultureIgnoreCase),
-                            // TODO can not divide form LeaveOnRemote
                             AudioRedirectionMode = string.Equals(item.RedirectSound, "BringToThisComputer", StringComparison.CurrentCultureIgnoreCase) ? EAudioRedirectionMode.RedirectToLocal : (string.Equals(item.RedirectSound, "LeaveAtRemoteComputer", StringComparison.CurrentCultureIgnoreCase) ? EAudioRedirectionMode.LeaveOnRemote : EAudioRedirectionMode.Disabled),
                             EnableAudioCapture = string.Equals(item.RedirectAudioCapture, "TRUE", StringComparison.CurrentCultureIgnoreCase),
                             EnablePorts = string.Equals(item.RedirectPorts, "TRUE", StringComparison.CurrentCultureIgnoreCase),

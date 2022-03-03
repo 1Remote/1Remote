@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using PRM.Protocol.Base;
-using PRM.Protocol.FileTransmit;
-using PRM.Protocol.Putty.SSH;
-using PRM.Protocol.RDP;
-using PRM.Protocol.Runner;
+using PRM.Model.Protocol.Base;
+using PRM.Model.Protocol.FileTransmit;
+using PRM.Model.Protocol.Putty;
+using PRM.Model.Protocol.RDP;
+using PRM.Model.Protocol.Runner;
 using Shawn.Utils;
 using PRM.View;
-using PRM.View.ProtocolHosts;
-using PRM.View.TabWindow;
-using PRM.ViewModel;
+using PRM.View.Host;
+using PRM.View.Host.ProtocolHosts;
+using PRM.View.Host.TabWindow;
 using Shawn.Utils.Wpf;
 using MessageBox = System.Windows.MessageBox;
-using ProtocolHostStatus = PRM.View.ProtocolHosts.ProtocolHostStatus;
+using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
 
 
 namespace PRM.Model

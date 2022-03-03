@@ -4,10 +4,11 @@ using System.Windows;
 using System.Windows.Input;
 using PRM.Model;
 using PRM.Service;
+using PRM.Utils;
 using PRM.Utils.Filters;
+using PRM.View;
+using PRM.View.Settings;
 using Shawn.Utils;
-using PRM.ViewModel;
-using PRM.ViewModel.Configuration;
 using Shawn.Utils.Wpf.Controls;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
@@ -121,8 +122,8 @@ namespace PRM
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Escape || !(sender is TextBox textBox)) return;
-            var s = TagAndKeywordFilter.DecodeKeyword(Vm.FilterString);
-            Vm.SetFilterStringByBackend(TagAndKeywordFilter.EncodeKeyword(s.Item1, new List<string>()));
+            var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.FilterString);
+            Vm.SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(s.Item1, new List<string>()));
             // Kill logical focus
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
             // Kill keyboard focus
