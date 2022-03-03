@@ -41,8 +41,6 @@ namespace PRM.ViewModel.Configuration
             {
                 _configurationService.General.CurrentLanguageCode = languageCode;
             }
-
-            ValidateDbStatusAndShowMessageBox();
         }
 
         private static ConfigurationViewModel _configuration;
@@ -266,8 +264,8 @@ namespace PRM.ViewModel.Configuration
         {
             // validate rsa key
             var res = (_dataService?.Database_SelfCheck()) ?? EnumDbStatus.NotConnected;
-            DbRsaPublicKey = _dataService.Database_GetPublicKey() ?? "";
-            DbRsaPrivateKeyPath = _dataService.Database_GetPrivateKeyPath() ?? "";
+            DbRsaPublicKey = _dataService?.Database_GetPublicKey() ?? "";
+            DbRsaPrivateKeyPath = _dataService?.Database_GetPrivateKeyPath() ?? "";
             if (res == EnumDbStatus.OK) return true;
             MessageBox.Show(res.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
             return false;
