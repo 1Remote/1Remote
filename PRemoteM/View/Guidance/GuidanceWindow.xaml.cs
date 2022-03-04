@@ -108,9 +108,9 @@ namespace PRM.View.Guidance
         private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
         {
             Step = -1;
-#if !DEV
-            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM#premotem");
-#endif
+//#if !DEV
+//            System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM#premotem");
+//#endif
             this.Close();
         }
 
