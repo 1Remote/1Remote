@@ -6,20 +6,18 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.FileTransmit;
-using PRM.Model.Protocol.Putty;
-using PRM.Model.Protocol.Runner;
-using PRM.Model.Protocol.Runner.Default;
-using PRM.Model.Protocol.VNC;
+using PRM.Model.ProtocolRunner;
+using PRM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
 
 namespace PRM.Service
 {
     public class ProtocolConfigurationService
     {
-        public Dictionary<string, ProtocolConfig> ProtocolConfigs { get; } = new Dictionary<string, ProtocolConfig>();
+        public Dictionary<string, ProtocolSettings> ProtocolConfigs { get; }
 
 
         private static string[] _customProtocolBlackList = null;
@@ -32,7 +30,7 @@ namespace PRM.Service
             {
                 if (_customProtocolBlackList == null)
                 {
-                    var protocolList = ProtocolServerBase.GetAllSubInstance();
+                    var protocolList = ProtocolBase.GetAllSubInstance();
                     var names = protocolList.Select(x => x.Protocol);
                     _customProtocolBlackList = names.ToArray();
                 }
@@ -97,23 +95,23 @@ namespace PRM.Service
             return true;
         }
 
-        private static Dictionary<string, ProtocolConfig> Load(string protocolFolderName)
+        private static Dictionary<string, ProtocolSettings> Load(string protocolFolderName)
         {
-            var protocolConfigs = new Dictionary<string, ProtocolConfig>();
+            var protocolConfigs = new Dictionary<string, ProtocolSettings>();
 
             // build-in protocol
-            protocolConfigs.Add(ProtocolServerVNC.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerVNC(), new InternalDefaultRunner(), $"Internal VNC"));
-            protocolConfigs.Add(ProtocolServerSSH.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerSSH(), new KittyRunner(), $"Internal KiTTY"));
-            protocolConfigs.Add(ProtocolServerTelnet.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerTelnet(), new KittyRunner(), $"Internal KiTTY"));
-            protocolConfigs.Add(ProtocolServerSFTP.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerSFTP(), new InternalDefaultRunner(), $"Internal SFTP"));
-            protocolConfigs.Add(ProtocolServerFTP.ProtocolName, InitProtocol(protocolFolderName, new ProtocolServerFTP(), new InternalDefaultRunner(), $"Internal FTP"));
+            protocolConfigs.Add(VNC.ProtocolName, InitProtocol(protocolFolderName, new VNC(), new InternalDefaultRunner(), $"Internal VNC"));
+            protocolConfigs.Add(SSH.ProtocolName, InitProtocol(protocolFolderName, new SSH(), new KittyRunner(), $"Internal KiTTY"));
+            protocolConfigs.Add(Telnet.ProtocolName, InitProtocol(protocolFolderName, new Telnet(), new KittyRunner(), $"Internal KiTTY"));
+            protocolConfigs.Add(SFTP.ProtocolName, InitProtocol(protocolFolderName, new SFTP(), new InternalDefaultRunner(), $"Internal SFTP"));
+            protocolConfigs.Add(FTP.ProtocolName, InitProtocol(protocolFolderName, new FTP(), new InternalDefaultRunner(), $"Internal FTP"));
 
 
 
             // custom protocol
             var di = new DirectoryInfo(protocolFolderName);
             {
-                var customs = new Dictionary<string, ProtocolConfig>();
+                var customs = new Dictionary<string, ProtocolSettings>();
                 foreach (var fi in di.GetFiles("*.json"))
                 {
                     var protocolName = fi.Name.Replace(fi.Extension, "");
@@ -153,7 +151,7 @@ namespace PRM.Service
         }
 
 
-        public static ProtocolConfig LoadConfig(string protocolFolderName, string protocolName)
+        public static ProtocolSettings LoadConfig(string protocolFolderName, string protocolName)
         {
             protocolName = protocolName.ToUpper();
             var file = Path.Combine(protocolFolderName, $"{protocolName}.json");
@@ -161,10 +159,10 @@ namespace PRM.Service
             {
                 var jsonStr = File.ReadAllText(file, Encoding.UTF8);
                 var jobj = JObject.Parse(jsonStr);
-                var runners = jobj[nameof(ProtocolConfig.Runners)] as JArray;
-                jobj.Remove(nameof(ProtocolConfig.Runners));
+                var runners = jobj[nameof(ProtocolSettings.Runners)] as JArray;
+                jobj.Remove(nameof(ProtocolSettings.Runners));
                 var serializer = new JsonSerializer();
-                var c = (ProtocolConfig)serializer.Deserialize(new JTokenReader(jobj), typeof(ProtocolConfig));
+                var c = (ProtocolSettings)serializer.Deserialize(new JTokenReader(jobj), typeof(ProtocolSettings));
 
                 if (runners != null)
                     foreach (var runner in runners)
@@ -190,17 +188,17 @@ namespace PRM.Service
         }
 
 
-        private static ProtocolConfig InitProtocol<T, T2>(string protocolFolderName, T protocolBase, T2 defaultRunner, string defaultRunnerName) where T : ProtocolServerBase where T2 : Runner
+        private static ProtocolSettings InitProtocol<T, T2>(string protocolFolderName, T protocolBase, T2 defaultRunner, string defaultRunnerName) where T : ProtocolBase where T2 : Runner
         {
             var t = protocolBase.GetType();
             var protocolName = protocolBase.Protocol;
             var macros = OtherNameAttributeExtensions.GetOtherNames(t); // get property name for auto complete
-            var c = LoadConfig(protocolFolderName, protocolName) ?? new ProtocolConfig();
+            var c = LoadConfig(protocolFolderName, protocolName) ?? new ProtocolSettings();
             c.Init(macros.Select(x => x.Value).ToList(), macros.Select(x => x.Key).ToList(), t);
             if (c.Runners == null || c.Runners.Count == 0 || c.Runners.All(x => x is InternalDefaultRunner))
             {
                 c.Runners ??= new List<Runner>();
-                if (ProtocolServerVNC.ProtocolName == protocolBase.Protocol)
+                if (VNC.ProtocolName == protocolBase.Protocol)
                 {
                     if (c.Runners.All(x => x.Name != "UltraVNC"))
                         c.Runners.Add(new ExternalRunner("UltraVNC")
@@ -218,7 +216,7 @@ namespace PRM.Service
                             EnvironmentVariables = new ObservableCollection<ExternalRunner.ObservableKvp<string, string>>(new[] { new ExternalRunner.ObservableKvp<string, string>("VNC_PASSWORD", "%PRM_PASSWORD%") }),
                         });
                 }
-                if (ProtocolServerSFTP.ProtocolName == protocolBase.Protocol)
+                if (SFTP.ProtocolName == protocolBase.Protocol)
                 {
                     if (c.Runners.All(x => x.Name != "WinSCP"))
                         c.Runners.Add(new ExternalRunner("WinSCP")

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Utils.Filters;
 using VariableKeywordMatcher.Model;
 
 namespace PRM.Utils
@@ -72,7 +73,7 @@ namespace PRM.Utils
                 return "";
             return filterString + (keyWords.Count > 0 ? "" : " ");
         }
-        public static Tuple<bool, MatchResults> MatchKeywords(ProtocolServerBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
+        public static Tuple<bool, MatchResults> MatchKeywords(ProtocolBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
         {
             var kws = keywords?.ToArray();
             if (tagFilters?.Any() != true && kws?.Any() != true)

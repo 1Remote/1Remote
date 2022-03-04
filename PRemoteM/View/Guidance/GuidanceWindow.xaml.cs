@@ -52,8 +52,8 @@ namespace PRM.View.Guidance
             Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
             Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
 
-            ConfigurationViewModel.Init(context, CultureInfo.CurrentCulture.Name.ToLower());
-            ConfigurationViewModel = ConfigurationViewModel.GetInstance();
+            SettingsPageViewModel.Init(context, CultureInfo.CurrentCulture.Name.ToLower());
+            SettingsPageViewModel = SettingsPageViewModel.GetInstance();
 
             // saving config when this window close
             Closing += (sender, args) =>
@@ -68,7 +68,7 @@ namespace PRM.View.Guidance
             };
         }
 
-        public ConfigurationViewModel ConfigurationViewModel { get; set; }
+        public SettingsPageViewModel SettingsPageViewModel { get; set; }
 
 
         private int _step = 0;

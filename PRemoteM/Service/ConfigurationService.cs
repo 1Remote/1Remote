@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
-using PRM.I;
+using PRM.Model.DAO;
 using PRM.Utils;
 using Shawn.Utils;
 using VariableKeywordMatcher.Provider.DirectMatch;
@@ -54,7 +54,7 @@ namespace PRM.Service
 
     public class DatabaseConfig
     {
-        public const DatabaseType DatabaseType = I.DatabaseType.Sqlite;
+        public const DatabaseType DatabaseType = Model.DAO.DatabaseType.Sqlite;
 
         private string _sqliteDatabasePath = "./" + ConfigurationService.AppName + ".db";
         public string SqliteDatabasePath

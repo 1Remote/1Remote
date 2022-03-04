@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
 using Path = System.IO.Path;
@@ -106,7 +107,7 @@ namespace PRM.View.Host.ProtocolHosts
         public readonly string ExeArguments;
         private readonly Dictionary<string, string> _environmentVariables;
 
-        public IntegrateHost(PrmContext context, ProtocolServerBase protocolServer, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(context, protocolServer, false)
+        public IntegrateHost(PrmContext context, ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(context, protocol, false)
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
@@ -285,7 +286,7 @@ namespace PRM.View.Host.ProtocolHosts
             SimpleLogHelper.Debug($"{nameof(IntegrateHost)}: Start process {exeFullName}");
 
 
-            
+
             // keep detect MainWindowHandle in next 10 seconds.
             var endTime = DateTime.Now.AddSeconds(10);
             _timer?.Dispose();
@@ -312,9 +313,8 @@ namespace PRM.View.Host.ProtocolHosts
             _timer.Start();
         }
 
-        private void ProcessOnExited(object? sender, EventArgs e)
+        private void ProcessOnExited(object sender, EventArgs e)
         {
-            Console.WriteLine($"ProcessOnExited");
             Dispatcher.Invoke(() =>
             {
                 _timer?.Stop();

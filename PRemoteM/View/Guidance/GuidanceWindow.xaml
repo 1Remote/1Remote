@@ -3,7 +3,6 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:utils="clr-namespace:Shawn.Utils;assembly=PRM.Core"
                   xmlns:guidance="clr-namespace:PRM.View.Guidance"
                   xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
                   xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
@@ -84,10 +83,10 @@
                 <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
                         <TextBlock Margin="2" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center">Language:</TextBlock>
-                        <ComboBox ItemsSource="{Binding ConfigurationViewModel.Languages}"
+                        <ComboBox ItemsSource="{Binding SettingsPageViewModel.Languages}"
                               Foreground="{DynamicResource PrimaryTextBrush}"
                               Background="{DynamicResource PrimaryMidBrush}"
-                              SelectedValue="{Binding ConfigurationViewModel.Language}"
+                              SelectedValue="{Binding SettingsPageViewModel.Language}"
                               SelectedValuePath="Key"
                               HorizontalAlignment="Right"
                               VerticalAlignment="Top"
@@ -265,7 +264,7 @@
                                         Style="{DynamicResource HeaderStyle}"
                                         Text="{DynamicResource system_options_general_start_when_win_login}">
                                     </TextBlock>
-                                    <ToggleButton IsChecked="{Binding ConfigurationViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
+                                    <ToggleButton IsChecked="{Binding SettingsPageViewModel.AppStartAutomatically, Mode=TwoWay}"></ToggleButton>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal">
@@ -273,7 +272,7 @@
                                         Style="{DynamicResource HeaderStyle}"
                                         Text="{DynamicResource system_options_general_start_minimized}">
                                     </TextBlock>
-                                    <ToggleButton IsChecked="{Binding ConfigurationViewModel.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
+                                    <ToggleButton IsChecked="{Binding SettingsPageViewModel.AppStartMinimized, Mode=TwoWay}"></ToggleButton>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal">
@@ -287,8 +286,8 @@
                                               Height="20"
                                               attachProperty:VisionElement.ForegroundAccent="{DynamicResource AccentTextBrush}"
                                               attachProperty:VisionElement.BackgroundAccent="{DynamicResource AccentMidBrush}"
-                                              ItemsSource="{Binding ConfigurationViewModel.ThemeList}"
-                                              SelectedItem="{Binding ConfigurationViewModel.ThemeName}">
+                                              ItemsSource="{Binding SettingsPageViewModel.ThemeList}"
+                                              SelectedItem="{Binding SettingsPageViewModel.ThemeName}">
                                     </ComboBox>
                                 </StackPanel>
                             </StackPanel>

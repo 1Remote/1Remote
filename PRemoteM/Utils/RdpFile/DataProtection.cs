@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace Shawn.Utils.RdpFile
+namespace PRM.Utils.RdpFile
 {
     [Serializable()]
     internal sealed class DataProtection

@@ -1,4 +1,4 @@
-﻿<controls:WindowChromeBase x:Class="PRM.MainWindow"
+﻿<controls:WindowChromeBase x:Class="PRM.View.MainWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,7 +12,7 @@
                   BorderBrush="Transparent"
                   Background="White"
                   KeyDown="MainWindow_OnKeyDown"
-                  d:DataContext="{d:DesignInstance view:VmMain}"
+                  d:DataContext="{d:DesignInstance view:MainWindowViewModel}"
                   Title="PRemoteM" Height="560" Width="900" MinWidth="900" MinHeight="560">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="3" UseAeroCaptionButtons="False" />
@@ -162,7 +162,7 @@
                             <Path.Style>
                                 <Style TargetType="Path">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
+                                        <DataTrigger Binding="{Binding AboutPageViewModel.NewVersion}" Value="">
                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -208,7 +208,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding VmAboutPage.NewVersion}" Value="">
+                                                            <DataTrigger Binding="{Binding AboutPageViewModel.NewVersion}" Value="">
                                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>

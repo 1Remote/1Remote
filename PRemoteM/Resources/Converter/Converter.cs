@@ -226,14 +226,18 @@ namespace PRM.Resources.Converter
         {
             try
             {
-                string hex = value.ToString();
-                var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
-                return brush;
+                if (value is string hex)
+                {
+                    var brush = ColorAndBrushHelper.ColorToMediaBrush(hex);
+                    return brush;
+                }
             }
-            catch (Exception e)
+            catch
             {
-                return Brushes.White;
+                // ignored
             }
+
+            return Brushes.Transparent;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -252,14 +256,18 @@ namespace PRM.Resources.Converter
         {
             try
             {
-                string hex = value.ToString();
-                var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
-                return brush;
+                if (value is string hex)
+                {
+                    var brush = ColorAndBrushHelper.HexColorToMediaColor(hex);
+                    return brush;
+                }
             }
-            catch (Exception e)
+            catch
             {
-                return Brushes.Transparent;
+                // ignored
             }
+
+            return Brushes.Transparent;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -170,7 +170,7 @@ namespace PRM.Utils
 
 #if REGISTRY_METHOD
 
-        public static async Task<bool> IsSelfStartByRegistryKey(string appName)
+        public static bool IsSelfStartByRegistryKey(string appName)
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 #if !DEV
@@ -179,10 +179,10 @@ namespace PRM.Utils
             return key?.GetValueNames().Contains(appName) == true;
         }
 
-        public static async void SetSelfStartByRegistryKey(bool isSetSelfStart, string appName)
+        public static void SetSelfStartByRegistryKey(bool isSetSelfStart, string appName)
         {
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            if (await IsSelfStartByRegistryKey(appName))
+            if (IsSelfStartByRegistryKey(appName))
             {
                 if (!isSetSelfStart)
                 {

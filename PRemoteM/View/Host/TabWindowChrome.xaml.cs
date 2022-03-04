@@ -1,6 +1,6 @@
 ﻿using PRM.Service;
 
-namespace PRM.View.Host.TabWindow
+namespace PRM.View.Host
 {
     public partial class TabWindowChrome : TabWindowBase
     {

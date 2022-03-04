@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using PRM.I;
+using PRM.Model.DAO;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 
 namespace PRM.Utils
@@ -10,33 +11,33 @@ namespace PRM.Utils
     public class ItemCreateHelper
     {
         private static readonly object Locker = new object();
-        private static List<ProtocolServerBase> _baseList = new List<ProtocolServerBase>();
+        private static List<ProtocolBase> _baseList = new List<ProtocolBase>();
 
-        public static ProtocolServerBase CreateFromDbOrm(IDbServerModel iServerModel)
+        public static ProtocolBase CreateFromDbOrm(IDataBaseServer iDbServer)
         {
             // reflect all the child class
             lock (Locker)
             {
                 if (_baseList.Count == 0)
                 {
-                    var assembly = typeof(ProtocolServerBase).Assembly;
+                    var assembly = typeof(ProtocolBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolServerBase)) && !x.IsAbstract)
-                        .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
+                    _baseList = types.Where(x => x.IsSubclassOf(typeof(ProtocolBase)) && !x.IsAbstract)
+                        .Select(type => (ProtocolBase)Activator.CreateInstance(type)).ToList();
                 }
             }
 
             // get instance form json string
             foreach (var serverBase in _baseList)
             {
-                if (iServerModel.GetProtocol() == serverBase.Protocol
-                    && iServerModel.GetClassVersion() == serverBase.ClassVersion)
+                if (iDbServer.GetProtocol() == serverBase.Protocol
+                    && iDbServer.GetClassVersion() == serverBase.ClassVersion)
                 {
-                    var jsonString = iServerModel.GetJson();
+                    var jsonString = iDbServer.GetJson();
                     var ret = serverBase.CreateFromJsonString(jsonString);
                     if (ret == null) continue;
                     // set id.
-                    ret.Id = iServerModel.GetId();
+                    ret.Id = iDbServer.GetId();
                     return ret;
                 }
             }
@@ -44,7 +45,7 @@ namespace PRM.Utils
             return null;
         }
 
-        public static ProtocolServerBase CreateFromJsonString(string jsonString)
+        public static ProtocolBase CreateFromJsonString(string jsonString)
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||
@@ -57,10 +58,10 @@ namespace PRM.Utils
             {
                 if (_baseList.Count == 0)
                 {
-                    var assembly = typeof(ProtocolServerBase).Assembly;
+                    var assembly = typeof(ProtocolBase).Assembly;
                     var types = assembly.GetTypes();
-                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolServerBase)) && !item.IsAbstract)
-                        .Select(type => (ProtocolServerBase)Activator.CreateInstance(type)).ToList();
+                    _baseList = types.Where(item => item.IsSubclassOf(typeof(ProtocolBase)) && !item.IsAbstract)
+                        .Select(type => (ProtocolBase)Activator.CreateInstance(type)).ToList();
                 }
             }
 

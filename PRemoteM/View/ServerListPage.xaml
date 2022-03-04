@@ -6,14 +6,13 @@
              xmlns:controls="clr-namespace:PRM.Controls"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:view="clr-namespace:PRM.View"
-             xmlns:filters="clr-namespace:PRM.Utils.Filters"
              xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
              xmlns:service="clr-namespace:PRM.Service"
              xmlns:model="clr-namespace:PRM.Model"
              xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
              mc:Ignorable="d"
              Background="White"
-             d:DataContext="{d:DesignInstance view:VmServerListPage}"
+             d:DataContext="{d:DesignInstance view:ServerListPageViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -63,7 +62,7 @@
                     </ScrollViewer>
                 </Border>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:VmProtocolServer">
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ServerViewModel">
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -71,7 +70,7 @@
                             <Setter Property="Width" Value="165"></Setter>
                         </Style>
                     </Grid.Style>
-                    <controls:ServerCard VmProtocolServer="{Binding}">
+                    <controls:ServerCard ServerViewModel="{Binding}">
                     </controls:ServerCard>
                 </Grid>
             </DataTemplate>
@@ -246,14 +245,14 @@
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:VmProtocolServer">
+            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:ServerViewModel">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                     <Grid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem VmProtocolServer="{Binding}" MinHeight="{StaticResource OneItemHeight}"></controls:ServerListItem>
+                    <controls:ServerListItem ServerViewModel="{Binding}" MinHeight="{StaticResource OneItemHeight}"></controls:ServerListItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
@@ -367,7 +366,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="filters:TagFilter">
+                        <DataTemplate DataType="model:TagFilter">
                             <Border VerticalAlignment="Center" Background="{DynamicResource AccentMidBrush}" CornerRadius="5" Margin="3 0">
                                 <Grid ToolTip="{Binding TagName, Converter={StaticResource ConverterTagName}}">
                                     <TextBlock Text="{Binding TagName, Converter={StaticResource ConverterTagName}}" Foreground="{DynamicResource AccentTextBrush}" 
@@ -441,7 +440,7 @@
 
                 <ListBox Name="LvServerCards"
                          HorizontalContentAlignment="Stretch"
-                         SelectedItem="{Binding SelectedServerListItem}"
+                         SelectedItem="{Binding SelectedServerViewModelListItem}"
                          ItemsSource="{Binding ServerListItems}"
                          Margin="0 2 0 0" BorderThickness="0" Background="Transparent"
                          ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -470,8 +469,8 @@
                                 <Setter Property="Margin" Value="0 0 5 0"></Setter>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="{Binding SelectedServerListItem.Server.DisplayName}"></TextBlock>
-                        <TextBlock Text="{Binding SelectedServerListItem.Server.SubTitle}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.DisplayName}"></TextBlock>
+                        <TextBlock Text="{Binding SelectedServerViewModelListItem.Server.SubTitle}"></TextBlock>
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -538,7 +537,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:VmServerListPage.TabTagsListName}">
+                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:ServerListPageViewModel.TabTagsListName}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
@@ -687,7 +686,7 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:VmServerListPage.TabTagsListName}">
+                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:ServerListPageViewModel.TabTagsListName}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />

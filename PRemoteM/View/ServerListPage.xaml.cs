@@ -7,20 +7,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Model;
-using PRM.Utils.Filters;
 using PRM.View.Settings;
 
 namespace PRM.View
 {
     public partial class ServerListPage : UserControl
     {
-        public VmServerListPage Vm;
+        public ServerListPageViewModel Vm;
 
-        public ServerListPage(PrmContext context, ConfigurationViewModel configurationViewModel, VmMain vmMain)
+        public ServerListPage(PrmContext context, SettingsPageViewModel settingsPageViewModel, MainWindowViewModel mainWindowViewModel)
         {
             InitializeComponent();
 
-            Vm = VmServerListPage.Instance(context, configurationViewModel, LvServerCards, vmMain);
+            Vm = ServerListPageViewModel.Instance(context, settingsPageViewModel, LvServerCards, mainWindowViewModel);
             DataContext = Vm;
 
             // hide GridBottom when hover.
@@ -44,7 +43,7 @@ namespace PRM.View
 
         private void BtnTagsListView_Click(object sender, RoutedEventArgs e)
         {
-            Vm.SelectedTabName = VmServerListPage.TabTagsListName;
+            Vm.SelectedTabName = ServerListPageViewModel.TabTagsListName;
         }
 
         private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)

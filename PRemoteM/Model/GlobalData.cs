@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using PRM.I;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Service;
 using PRM.View;
@@ -41,19 +41,12 @@ namespace PRM.Model
 
         public Action VmItemListDataChanged;
 
-        public List<VmProtocolServer> VmItemList { get; set; } = new List<VmProtocolServer>();
+        public List<ServerViewModel> VmItemList { get; set; } = new List<ServerViewModel>();
 
 
         private void ReadTagsFromServers()
         {
             var pinnedTags = _configurationService.PinnedTags;
-            // set pinned
-            // TODO del after 2022.05.31
-            if (pinnedTags.Count == 0)
-            {
-                var allExistedTags = Tag.GetPinnedTags();
-                pinnedTags = allExistedTags.Where(x => x.Value == true).Select(x => x.Key).ToList();
-            }
 
             // get distinct tag from servers
             var tags = new List<Tag>();
@@ -88,14 +81,14 @@ namespace PRM.Model
                 return;
             }
             // read from db
-            var tmp = new List<VmProtocolServer>();
+            var tmp = new List<ServerViewModel>();
             foreach (var server in _dataService.Database_GetServers())
             {
                 var serverAbstract = server;
                 try
                 {
                     _dataService.DecryptToRamLevel(ref serverAbstract);
-                    tmp.Add(new VmProtocolServer(serverAbstract));
+                    tmp.Add(new ServerViewModel(serverAbstract));
                 }
                 catch (Exception e)
                 {
@@ -116,7 +109,7 @@ namespace PRM.Model
             }
         }
 
-        public void AddServer(ProtocolServerBase protocolServer, bool doInvoke = true)
+        public void AddServer(ProtocolBase protocolServer, bool doInvoke = true)
         {
             _dataService.Database_InsertServer(protocolServer);
             if (doInvoke)
@@ -125,7 +118,7 @@ namespace PRM.Model
             }
         }
 
-        public void AddServer(IEnumerable<ProtocolServerBase> protocolServers, bool doInvoke = true)
+        public void AddServer(IEnumerable<ProtocolBase> protocolServers, bool doInvoke = true)
         {
             if (_dataService == null || protocolServers == null || !protocolServers.Any())
             {
@@ -139,7 +132,7 @@ namespace PRM.Model
             }
         }
 
-        public void UpdateServer(ProtocolServerBase protocolServer, bool doInvoke = true)
+        public void UpdateServer(ProtocolBase protocolServer, bool doInvoke = true)
         {
             Debug.Assert(protocolServer.Id > 0);
             UnselectAllServers();
@@ -152,7 +145,7 @@ namespace PRM.Model
                 {
                     i = VmItemList.IndexOf(old);
                     VmItemList.Remove(old);
-                    VmItemList.Insert(i, new VmProtocolServer(protocolServer));
+                    VmItemList.Insert(i, new ServerViewModel(protocolServer));
                 }
             }
 
@@ -163,7 +156,7 @@ namespace PRM.Model
             }
         }
 
-        public void UpdateServer(IEnumerable<ProtocolServerBase> protocolServers, bool doInvoke = true)
+        public void UpdateServer(IEnumerable<ProtocolBase> protocolServers, bool doInvoke = true)
         {
             if (_dataService == null || protocolServers == null || !protocolServers.Any())
             {

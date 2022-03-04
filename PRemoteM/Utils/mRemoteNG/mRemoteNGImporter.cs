@@ -4,10 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Imaging;
+using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.Putty;
-using PRM.Model.Protocol.RDP;
-using PRM.Model.Protocol.VNC;
 using Shawn.Utils.Wpf.Image;
 
 namespace PRM.Utils.mRemoteNG
@@ -245,7 +244,7 @@ namespace PRM.Utils.mRemoteNG
             }
         }
 
-        public static List<ProtocolServerBase> FromCsv(string csvPath, List<BitmapSource> icons)
+        public static List<ProtocolBase> FromCsv(string csvPath, List<BitmapSource> icons)
         {
             if (!File.Exists(csvPath))
                 return null;
@@ -260,7 +259,7 @@ namespace PRM.Utils.mRemoteNG
 
             Inherit(ref id2MRemoteNgItem);
 
-            var list = new List<ProtocolServerBase>();
+            var list = new List<ProtocolBase>();
             var r = new Random();
             foreach (var kv in id2MRemoteNgItem)
             {
@@ -268,7 +267,7 @@ namespace PRM.Utils.mRemoteNG
                 if (item.NodeType != NodeTypeConnection)
                     continue;
 
-                ProtocolServerBase server = null;
+                ProtocolBase server = null;
                 List<string> tags = new List<string>();
                 //if (id2MRemoteNgItem.ContainsKey(item.Parent))
                 //{
@@ -286,7 +285,7 @@ namespace PRM.Utils.mRemoteNG
                 switch (item.Protocol.ToLower())
                 {
                     case "rdp":
-                        server = new ProtocolServerRDP()
+                        server = new RDP()
                         {
                             DisplayName = item.Name,
                             Tags = tags,
@@ -318,7 +317,7 @@ namespace PRM.Utils.mRemoteNG
                         break;
 
                     case "ssh1":
-                        server = new ProtocolServerSSH()
+                        server = new SSH()
                         {
                             DisplayName = item.Name,
                             Tags = tags,
@@ -331,7 +330,7 @@ namespace PRM.Utils.mRemoteNG
                         break;
 
                     case "ssh2":
-                        server = new ProtocolServerSSH()
+                        server = new SSH()
                         {
                             DisplayName = item.Name,
                             Tags = tags,
@@ -344,7 +343,7 @@ namespace PRM.Utils.mRemoteNG
                         break;
 
                     case "vnc":
-                        server = new ProtocolServerVNC()
+                        server = new VNC()
                         {
                             DisplayName = item.Name,
                             Tags = tags,
@@ -355,7 +354,7 @@ namespace PRM.Utils.mRemoteNG
                         break;
 
                     case "telnet":
-                        server = new ProtocolServerTelnet()
+                        server = new Telnet()
                         {
                             DisplayName = item.Name,
                             Tags = tags,

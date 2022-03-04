@@ -7,15 +7,15 @@ namespace PRM.View
 {
     public partial class AboutPage : UserControl
     {
-        public readonly VmAboutPage Vm;
-        private readonly VmMain _vmMain;
+        public readonly AboutPageViewModel Vm;
+        private readonly MainWindowViewModel _mainWindowViewModel;
 
-        public AboutPage(VmAboutPage vm, VmMain vmMain)
+        public AboutPage(AboutPageViewModel vm, MainWindowViewModel mainWindowViewModel)
         {
             InitializeComponent();
             Vm = vm;
             DataContext = Vm;
-            _vmMain = vmMain;
+            _mainWindowViewModel = mainWindowViewModel;
             TbVersion.Text = AppVersion.Version;
 
 #if FOR_MICROSOFT_STORE_ONLY
@@ -33,7 +33,7 @@ namespace PRM.View
 
         private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
         {
-            _vmMain.AnimationPageAbout = null;
+            _mainWindowViewModel.AnimationPageAbout = null;
         }
     }
 }

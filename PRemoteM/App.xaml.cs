@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using PRM.DB;
-using PRM.DB.Dapper;
 using Shawn.Utils;
 using PRM.Model;
+using PRM.Model.DAO;
+using PRM.Model.DAO.Dapper;
 using PRM.Service;
 using PRM.Utils.KiTTY;
 using PRM.View;
@@ -31,8 +31,8 @@ namespace PRM
     {
         private NamedPipeHelper _namedPipeHelper;
         public static MainWindow MainUi { get; private set; } = null;
-        public static ConfigurationViewModel ConfigurationVm { get; private set; } = null;
-        public static SearchBoxWindow SearchBoxWindow { get; private set; } = null;
+        public static SettingsPageViewModel SettingsPageVm { get; private set; } = null;
+        public static LauncherWindow LauncherWindow { get; private set; } = null;
         public static PrmContext Context { get; private set; }
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
         private DesktopResolutionWatcher _desktopResolutionWatcher;
@@ -169,7 +169,7 @@ namespace PRM
             }
         }
 
-        private void InitMainWindow(ConfigurationViewModel c)
+        private void InitMainWindow(SettingsPageViewModel c)
         {
             MainUi = new MainWindow(Context, c);
             MainWindow = MainUi;
@@ -232,9 +232,9 @@ namespace PRM
             // init Database here, to show alert if db connection goes wrong.
             var connStatus = Context.InitSqliteDb();
 
-            ConfigurationViewModel.Init(App.Context);
-            App.ConfigurationVm = ConfigurationViewModel.GetInstance();
-            InitMainWindow(App.ConfigurationVm);
+            SettingsPageViewModel.Init(App.Context);
+            App.SettingsPageVm = SettingsPageViewModel.GetInstance();
+            InitMainWindow(App.SettingsPageVm);
             InitLauncher();
             InitTaskTray();
 
@@ -250,11 +250,11 @@ namespace PRM
             {
                 Context.AppData.ReloadServerList();
                 SetDbWatcher();
-                if (Context.DataService.DB() is DapperDbFree)
+                if (Context.DataService.DB() is DapperDataBaseFree)
                 {
-                    ConfigurationVm.PropertyChanged += (sender, args) =>
+                    SettingsPageVm.PropertyChanged += (sender, args) =>
                     {
-                        if (args.PropertyName == nameof(ConfigurationViewModel.DbPath))
+                        if (args.PropertyName == nameof(SettingsPageViewModel.DbPath))
                         {
                             SetDbWatcher();
                         }
@@ -274,7 +274,7 @@ namespace PRM
         {
             // 以下代码会在自己更新数据库时同时被激活，当进行循环批量修改时，每修改一条记录都会重新读取一次数据库，会导致数据库连接冲突
             //_dbFileWatcher?.Dispose();
-            //var dbfi = new FileInfo(ConfigurationVm.DbPath);
+            //var dbfi = new FileInfo(SettingsPageVm.DbPath);
             //if (dbfi.Exists)
             //{
             //    _dbFileWatcher = new FileWatcher(FileWatcherMode.ContentChanged, dbfi.Directory.FullName, TimeSpan.FromMilliseconds(300), "*.db");
@@ -354,17 +354,17 @@ namespace PRM
 
         private void InitLauncher()
         {
-            SearchBoxWindow = new SearchBoxWindow(Context);
-            SearchBoxWindow.SetHotKey();
+            LauncherWindow = new LauncherWindow(Context);
+            LauncherWindow.SetHotKey();
         }
 
         private static void CloseAllWindow()
         {
             try
             {
-                App.SearchBoxWindow?.Hide();
-                App.SearchBoxWindow?.Close();
-                App.SearchBoxWindow = null;
+                App.LauncherWindow?.Hide();
+                App.LauncherWindow?.Close();
+                App.LauncherWindow = null;
                 App.MainUi?.Hide();
                 App.MainUi?.Close();
                 App.MainUi = null;

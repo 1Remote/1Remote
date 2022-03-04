@@ -29,7 +29,7 @@ namespace PRM.View.Host.ProtocolHosts
     {
         public readonly PrmContext Context;
 
-        public VmFileTransmitHost(PrmContext context, IProtocolFileTransmittable protocol)
+        public VmFileTransmitHost(PrmContext context, IFileTransmittable protocol)
         {
             Context = context;
             _protocol = protocol;
@@ -979,7 +979,7 @@ namespace PRM.View.Host.ProtocolHosts
         #region Properties
 
         public ITransmitter Trans = null;
-        private readonly IProtocolFileTransmittable _protocol = null;
+        private readonly IFileTransmittable _protocol = null;
 
         private readonly CancellationTokenSource _consumingTransmitTaskCancellationTokenSource = new CancellationTokenSource();
 

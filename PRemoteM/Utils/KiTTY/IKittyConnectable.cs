@@ -4,34 +4,34 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using PRM.I;
 using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.Putty;
 using PRM.Service;
+using PRM.View.Host;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 
 namespace PRM.Utils.KiTTY
 {
-    public interface IKittyConnectable : IIntegratable
+    public interface IKittyConnectable
     {
         string GetPuttyConnString(PrmContext context);
-
         /// <summary>
-        /// Allowing implementing interface only for specific class 'ProtocolServerBase'
+        /// Allowing implementing interface only for specific class 'ProtocolBase'
         /// </summary>
         [JsonIgnore]
-        ProtocolServerBase ProtocolServerBase { get; }
-
+        ProtocolBase ProtocolBase { get; }
         string ExternalKittySessionConfigPath { get; set; }
+        string GetExeFullPath();
+        string GetExeArguments(PrmContext context);
     }
 
     public static class PuttyConnectableExtension
     {
         public static string GetSessionName(this IKittyConnectable item)
         {
-            if (item is ProtocolServerBase protocolServer)
+            if (item is ProtocolBase protocolServer)
             {
                 return $"{ConfigurationService.AppName}_{protocolServer.Protocol}_{protocolServer.Id}";
             }
@@ -49,7 +49,7 @@ namespace PRM.Utils.KiTTY
             var kittyExeFolderPath = fi.Directory.FullName;
 
             var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName(), iKittyConnectable.ExternalKittySessionConfigPath);
-            if (iKittyConnectable is ProtocolServerSSH server)
+            if (iKittyConnectable is SSH server)
             {
                 if (!string.IsNullOrEmpty(sshPrivateKeyPath))
                 {

@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Dragablz;
-using PRM.I;
 using PRM.Model;
 using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
@@ -20,9 +19,9 @@ using Timer = System.Timers.Timer;
 
 namespace PRM.View.Host
 {
-    public abstract class TabWindowBase : WindowChromeBase, ITab
+    public abstract class TabWindowBase : WindowChromeBase, ITabWindow
     {
-        protected VmTabWindow Vm;
+        protected TabWindowViewModel Vm;
         private TabablzControl _tabablzControl = null;
         public string Token => Vm?.Token;
 
@@ -35,7 +34,7 @@ namespace PRM.View.Host
         protected TabWindowBase(string token, LocalityService localityService)
         {
             _localityService = localityService;
-            Vm = new VmTabWindow(token);
+            Vm = new TabWindowViewModel(token);
             DataContext = Vm;
             _timer4CheckForegroundWindow = new Timer();
 
@@ -224,7 +223,7 @@ namespace PRM.View.Host
             }
         }
 
-        public VmTabWindow GetViewModel()
+        public TabWindowViewModel GetViewModel()
         {
             return Vm;
         }

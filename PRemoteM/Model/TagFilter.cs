@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PRM.Utils.Filters
+namespace PRM.Model
 {
     public class TagFilter
     {

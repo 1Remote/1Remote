@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.VNC;
 using Shawn.Utils.Wpf;
 using VncSharpCore;
 
@@ -12,20 +12,19 @@ namespace PRM.View.Host.ProtocolHosts
 {
     public sealed partial class VncHost : HostBase
     {
-        private readonly ProtocolServerVNC _vncServer = null;
+        private readonly VNC _vncBase;
 
-        public VncHost(PrmContext context, ProtocolServerBase protocolServer) : base(context, protocolServer, false)
+        public VncHost(PrmContext context, VNC vnc) : base(context, vnc, false)
         {
             InitializeComponent();
             GridMessageBox.Visibility = Visibility.Collapsed;
             GridLoading.Visibility = Visibility.Visible;
 
-            Debug.Assert(protocolServer.GetType() == typeof(ProtocolServerVNC));
 
             Vnc.ConnectComplete += OnConnected;
             Vnc.ConnectionLost += OnConnectionLost;
 
-            _vncServer = (ProtocolServerVNC)protocolServer;
+            _vncBase = vnc;
 
             MenuItems.Clear();
             MenuItems.Add(new System.Windows.Controls.MenuItem()
@@ -82,13 +81,13 @@ namespace PRM.View.Host.ProtocolHosts
             Status = ProtocolHostStatus.Connecting;
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
-            Vnc.VncPort = _vncServer.GetPort();
-            Vnc.GetPassword = () => Context.DataService.DecryptOrReturnOriginalString(_vncServer.Password);
+            Vnc.VncPort = _vncBase.GetPort();
+            Vnc.GetPassword = () => Context.DataService.DecryptOrReturnOriginalString(_vncBase.Password);
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try
             {
-                Vnc.Connect(_vncServer.Address, false, _vncServer.VncWindowResizeMode == ProtocolServerVNC.EVncWindowResizeMode.Stretch);
+                Vnc.Connect(_vncBase.Address, false, _vncBase.VncWindowResizeMode == VNC.EVncWindowResizeMode.Stretch);
                 VncFormsHost.Visibility = Visibility.Visible;
                 GridLoading.Visibility = Visibility.Collapsed;
                 GridMessageBox.Visibility = Visibility.Collapsed;
