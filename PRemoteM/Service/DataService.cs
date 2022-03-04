@@ -2,39 +2,37 @@
 using System.Diagnostics;
 using System.IO;
 using com.github.xiangyuecn.rsacsharp;
-using PRM.DB;
-using PRM.DB.Dapper;
-using PRM.I;
+using PRM.Model.DAO;
+using PRM.Model.DAO.Dapper;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.Putty;
-using PRM.Model.Protocol.RDP;
 
 namespace PRM.Service
 {
 
     public class DataService : IDataService
     {
-        private readonly IDb _db;
+        private readonly IDataBase _dataBase;
 
         public DataService()
         {
-            //_db = new DapperDb();
-            _db = new DapperDbFree();
+            //_dataBase = new DapperDataBase();
+            _dataBase = new DapperDataBaseFree();
         }
 
-        public IDb DB()
+        public IDataBase DB()
         {
-            return _db;
+            return _dataBase;
         }
 
         public bool Database_OpenConnection(DatabaseType type, string newConnectionString)
         {
             // open db connection, or create a sqlite db.
-            Debug.Assert(_db != null);
-            _db.OpenConnection(type, newConnectionString);
+            Debug.Assert(_dataBase != null);
+            _dataBase.OpenConnection(type, newConnectionString);
 
             // check database rsa encrypt
-            var privateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
+            var privateKeyPath = _dataBase.GetFromDatabase_RSA_PrivateKeyPath();
             if (!string.IsNullOrWhiteSpace(privateKeyPath)
                 && File.Exists(privateKeyPath))
             {
@@ -49,26 +47,26 @@ namespace PRM.Service
 
         public void Database_CloseConnection()
         {
-            Debug.Assert(_db != null);
-            if (_db.IsConnected())
-                _db.CloseConnection();
+            Debug.Assert(_dataBase != null);
+            if (_dataBase.IsConnected())
+                _dataBase.CloseConnection();
         }
 
         public EnumDbStatus Database_SelfCheck()
         {
-            _db?.OpenConnection();
+            _dataBase?.OpenConnection();
             // check connection
-            if (_db?.IsConnected() != true)
+            if (_dataBase?.IsConnected() != true)
                 return EnumDbStatus.NotConnected;
 
             // validate encryption
-            var privateKeyPath = _db.GetFromDatabase_RSA_PrivateKeyPath();
+            var privateKeyPath = _dataBase.GetFromDatabase_RSA_PrivateKeyPath();
             if (string.IsNullOrWhiteSpace(privateKeyPath))
             {
                 // no encrypt
                 return EnumDbStatus.OK;
             }
-            var publicKey = _db.Get_RSA_PublicKey();
+            var publicKey = _dataBase.Get_RSA_PublicKey();
             var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, publicKey);
             switch (pks)
             {
@@ -90,19 +88,19 @@ namespace PRM.Service
 
         public string Database_GetPublicKey()
         {
-            Debug.Assert(_db != null);
-            return _db?.Get_RSA_PublicKey();
+            Debug.Assert(_dataBase != null);
+            return _dataBase?.Get_RSA_PublicKey();
         }
 
         public string Database_GetPrivateKeyPath()
         {
-            Debug.Assert(_db != null);
-            return _db?.GetFromDatabase_RSA_PrivateKeyPath();
+            Debug.Assert(_dataBase != null);
+            return _dataBase?.GetFromDatabase_RSA_PrivateKeyPath();
         }
 
-        public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolServerBase> servers)
+        public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolBase> servers)
         {
-            Debug.Assert(_db != null);
+            Debug.Assert(_dataBase != null);
 
             // clear rsa key
             if (string.IsNullOrEmpty(privateKeyPath))
@@ -111,17 +109,17 @@ namespace PRM.Service
                 Debug.Assert(string.IsNullOrWhiteSpace(Database_GetPrivateKeyPath()) == false);
 
                 // decrypt
-                var cloneList = new List<ProtocolServerBase>();
+                var cloneList = new List<ProtocolBase>();
                 foreach (var server in servers)
                 {
-                    var tmp = (ProtocolServerBase)server.Clone();
+                    var tmp = (ProtocolBase)server.Clone();
                     tmp.SetNotifyPropertyChangedEnabled(false);
                     DecryptToConnectLevel(ref tmp);
                     cloneList.Add(tmp);
                 }
 
                 // update 
-                if (_db.SetRsa("", "", cloneList))
+                if (_dataBase.SetRsa("", "", cloneList))
                 {
                     _rsa = null;
                 }
@@ -140,19 +138,19 @@ namespace PRM.Service
                 var rsa = new RSA(privateKeyContent, true);
 
                 // encrypt
-                var cloneList = new List<ProtocolServerBase>();
+                var cloneList = new List<ProtocolBase>();
                 foreach (var server in servers)
                 {
-                    var tmp = (ProtocolServerBase)server.Clone();
+                    var tmp = (ProtocolBase)server.Clone();
                     tmp.SetNotifyPropertyChangedEnabled(false);
                     EncryptToDatabaseLevel(rsa, ref tmp);
                     cloneList.Add(tmp);
                 }
 
                 // update 
-                if (_db.SetRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
+                if (_dataBase.SetRsa(privateKeyPath, rsa.ToPEM_PKCS1(true), cloneList))
                 {
-                    _db.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
+                    _dataBase.Set_RSA_SHA1(rsa.Sign("SHA1", ConfigurationService.AppName));
                     _rsa = rsa;
                 }
                 return RSA.EnumRsaStatus.NoError;
@@ -168,7 +166,7 @@ namespace PRM.Service
             var pks = RSA.CheckPrivatePublicKeyMatch(privateKeyPath, Database_GetPublicKey());
             if (pks == RSA.EnumRsaStatus.NoError)
             {
-                _db.Set_RSA_PrivateKeyPath(privateKeyPath);
+                _dataBase.Set_RSA_PrivateKeyPath(privateKeyPath);
             }
             return pks;
         }
@@ -190,148 +188,148 @@ namespace PRM.Service
             return Encrypt(_rsa, str);
         }
 
-        public static void EncryptToDatabaseLevel(RSA rsa, ref ProtocolServerBase server)
+        public static void EncryptToDatabaseLevel(RSA rsa, ref ProtocolBase server)
         {
             if (rsa == null) return;
             // ! server must be decrypted
             server.DisplayName = Encrypt(rsa, server.DisplayName);
 
             // encrypt some info
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
             {
-                var p = (ProtocolServerWithAddrPortBase)server;
+                var p = (ProtocolBaseWithAddressPort)server;
                 p.Address = Encrypt(rsa, p.Address);
                 p.SetPort(Encrypt(rsa, p.Port));
             }
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
-                var p = (ProtocolServerWithAddrPortUserPwdBase)server;
+                var p = (ProtocolBaseWithAddressPortUserPwd)server;
                 p.UserName = Encrypt(rsa, p.UserName);
             }
 
 
             // encrypt password
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
-                var s = (ProtocolServerWithAddrPortUserPwdBase)server;
+                var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = Encrypt(rsa, s.Password);
             }
             switch (server)
             {
-                case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
+                case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
                     {
                         ssh.PrivateKey = Encrypt(rsa, ssh.PrivateKey);
                         break;
                     }
-                case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
+                case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
                     {
                         rdp.GatewayPassword = Encrypt(rsa, rdp.GatewayPassword);
                         break;
                     }
             }
         }
-        public void EncryptToDatabaseLevel(ref ProtocolServerBase server)
+        public void EncryptToDatabaseLevel(ref ProtocolBase server)
         {
             EncryptToDatabaseLevel(_rsa, ref server);
         }
 
-        public void DecryptToRamLevel(ref ProtocolServerBase server)
+        public void DecryptToRamLevel(ref ProtocolBase server)
         {
             if (_rsa == null) return;
             server.DisplayName = DecryptOrReturnOriginalString(server.DisplayName);
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortBase)))
+            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPort)))
             {
-                var p = (ProtocolServerWithAddrPortBase)server;
+                var p = (ProtocolBaseWithAddressPort)server;
                 p.Address = DecryptOrReturnOriginalString(p.Address);
                 p.Port = DecryptOrReturnOriginalString(p.Port);
             }
 
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
-                var p = (ProtocolServerWithAddrPortUserPwdBase)server;
+                var p = (ProtocolBaseWithAddressPortUserPwd)server;
                 p.UserName = DecryptOrReturnOriginalString(p.UserName);
             }
         }
 
-        public void DecryptToConnectLevel(ref ProtocolServerBase server)
+        public void DecryptToConnectLevel(ref ProtocolBase server)
         {
             if (_rsa == null) return;
             DecryptToRamLevel(ref server);
-            if (server.GetType().IsSubclassOf(typeof(ProtocolServerWithAddrPortUserPwdBase)))
+            if (server.GetType().IsSubclassOf(typeof(ProtocolBaseWithAddressPortUserPwd)))
             {
-                var s = (ProtocolServerWithAddrPortUserPwdBase)server;
+                var s = (ProtocolBaseWithAddressPortUserPwd)server;
                 s.Password = DecryptOrReturnOriginalString(s.Password);
             }
             switch (server)
             {
-                case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
+                case SSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
                     Debug.Assert(_rsa.DecodeOrNull(ssh.PrivateKey) != null);
                     ssh.PrivateKey = DecryptOrReturnOriginalString(ssh.PrivateKey);
                     break;
 
-                case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
+                case RDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
                     Debug.Assert(_rsa.DecodeOrNull(rdp.GatewayPassword) != null);
                     rdp.GatewayPassword = DecryptOrReturnOriginalString(rdp.GatewayPassword);
                     break;
             }
         }
 
-        public void Database_InsertServer(ProtocolServerBase server)
+        public void Database_InsertServer(ProtocolBase server)
         {
-            var tmp = (ProtocolServerBase)server.Clone();
+            var tmp = (ProtocolBase)server.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(ref tmp);
-            _db.AddServer(tmp);
+            _dataBase.AddServer(tmp);
         }
 
-        public void Database_InsertServer(IEnumerable<ProtocolServerBase> servers)
+        public void Database_InsertServer(IEnumerable<ProtocolBase> servers)
         {
-            var cloneList = new List<ProtocolServerBase>();
+            var cloneList = new List<ProtocolBase>();
             foreach (var server in servers)
             {
-                var tmp = (ProtocolServerBase)server.Clone();
+                var tmp = (ProtocolBase)server.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 EncryptToDatabaseLevel(ref tmp);
                 cloneList.Add(tmp);
             }
-            _db.AddServer(cloneList);
+            _dataBase.AddServer(cloneList);
         }
 
-        public bool Database_UpdateServer(ProtocolServerBase org)
+        public bool Database_UpdateServer(ProtocolBase org)
         {
             Debug.Assert(org.Id > 0);
-            var tmp = (ProtocolServerBase)org.Clone();
+            var tmp = (ProtocolBase)org.Clone();
             tmp.SetNotifyPropertyChangedEnabled(false);
             EncryptToDatabaseLevel(ref tmp);
-            return _db.UpdateServer(tmp);
+            return _dataBase.UpdateServer(tmp);
         }
 
-        public bool Database_UpdateServer(IEnumerable<ProtocolServerBase> servers)
+        public bool Database_UpdateServer(IEnumerable<ProtocolBase> servers)
         {
-            var cloneList = new List<ProtocolServerBase>();
+            var cloneList = new List<ProtocolBase>();
             foreach (var server in servers)
             {
-                var tmp = (ProtocolServerBase)server.Clone();
+                var tmp = (ProtocolBase)server.Clone();
                 tmp.SetNotifyPropertyChangedEnabled(false);
                 EncryptToDatabaseLevel(ref tmp);
                 cloneList.Add(tmp);
             }
-            return _db.UpdateServer(cloneList);
+            return _dataBase.UpdateServer(cloneList);
         }
 
         public bool Database_DeleteServer(int id)
         {
-            return _db.DeleteServer(id);
+            return _dataBase.DeleteServer(id);
         }
 
         public bool Database_DeleteServer(IEnumerable<int> ids)
         {
-            return _db.DeleteServer(ids);
+            return _dataBase.DeleteServer(ids);
         }
 
-        public List<ProtocolServerBase> Database_GetServers()
+        public List<ProtocolBase> Database_GetServers()
         {
-            return _db.GetServers();
+            return _dataBase.GetServers();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
@@ -29,7 +30,7 @@ namespace PRM.View.Host.ProtocolHosts
 
     public abstract class HostBase : UserControl
     {
-        public ProtocolServerBase ProtocolServer { get; }
+        public ProtocolBase ProtocolServer { get; }
         protected PrmContext Context;
 
         private Window _parentWindow = null;
@@ -71,7 +72,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        protected HostBase(PrmContext context, ProtocolServerBase protocolServer, bool canFullScreen = false)
+        protected HostBase(PrmContext context, ProtocolBase protocolServer, bool canFullScreen = false)
         {
             Context = context;
             ProtocolServer = protocolServer;

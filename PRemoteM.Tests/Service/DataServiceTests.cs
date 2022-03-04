@@ -5,13 +5,10 @@ using System.IO;
 using System.Linq;
 using com.github.xiangyuecn.rsacsharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PRM.DB;
-using PRM.I;
+using PRM.Model;
+using PRM.Model.DAO;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.Extend;
-using PRM.Model.Protocol.Putty;
-using PRM.Model.Protocol.RDP;
-using PRM.Model.Protocol.VNC;
 using PRM.Resources.Icons;
 using PRM.Service;
 using Shawn.Utils;
@@ -22,10 +19,10 @@ namespace PRemoteM.Tests.Service
     public class DataServiceTests
     {
         private DataService _dataService = null;
-        private ProtocolServerRDP _rdp = null;
-        private ProtocolServerSSH _ssh = null;
-        private ProtocolServerVNC _vnc = null;
-        private ProtocolServerApp _app = null;
+        private RDP _rdp = null;
+        private SSH _ssh = null;
+        private VNC _vnc = null;
+        private LocalApp _app = null;
         private string _dbPath;
         private string _ppkPath;
 
@@ -47,7 +44,7 @@ namespace PRemoteM.Tests.Service
             {
                 var data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
-                var first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                var first = data.First(x => x is RDP) as RDP;
                 Assert.IsTrue(first != null);
                 Assert.IsTrue(_rdp.DisplayName == first.DisplayName);
                 Assert.IsTrue(_rdp.UserName == first.UserName);
@@ -65,7 +62,7 @@ namespace PRemoteM.Tests.Service
                 var privateKeyContent = rsa.ToPEM_PKCS1();
                 File.WriteAllText(_ppkPath, privateKeyContent);
 
-                _dataService.Database_SetEncryptionKey(_ppkPath, privateKeyContent, new List<ProtocolServerBase>());
+                _dataService.Database_SetEncryptionKey(_ppkPath, privateKeyContent, new List<ProtocolBase>());
                 var path = _dataService.Database_GetPrivateKeyPath();
                 var pk = _dataService.Database_GetPublicKey();
                 Assert.IsTrue(_ppkPath == path);
@@ -78,11 +75,11 @@ namespace PRemoteM.Tests.Service
                 Assert.IsTrue("test" == _dataService.DecryptOrReturnOriginalString(_dataService.Encrypt("test")));
                 var data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
-                var first = data.First(x => x is ProtocolServerSSH);
+                var first = data.First(x => x is SSH);
                 Assert.IsTrue(first != null);
                 {
                     _dataService.EncryptToDatabaseLevel(ref first);
-                    if (first is ProtocolServerSSH r)
+                    if (first is SSH r)
                     {
                         Assert.IsTrue(_ssh.DisplayName == r.DisplayName);
                         Assert.IsTrue(_ssh.UserName != r.UserName);
@@ -96,7 +93,7 @@ namespace PRemoteM.Tests.Service
                 }
                 {
                     _dataService.DecryptToRamLevel(ref first);
-                    if (first is ProtocolServerSSH r)
+                    if (first is SSH r)
                     {
                         Assert.IsTrue(_ssh.DisplayName == r.DisplayName);
                         Assert.IsTrue(_ssh.UserName == r.UserName);
@@ -108,7 +105,7 @@ namespace PRemoteM.Tests.Service
                 }
                 {
                     _dataService.DecryptToConnectLevel(ref first);
-                    if (first is ProtocolServerSSH r)
+                    if (first is SSH r)
                     {
                         Assert.IsTrue(_ssh.DisplayName == r.DisplayName);
                         Assert.IsTrue(_ssh.UserName == r.UserName);
@@ -120,7 +117,7 @@ namespace PRemoteM.Tests.Service
                 }
 
 
-                _dataService.Database_SetEncryptionKey("", "", new List<ProtocolServerBase>());
+                _dataService.Database_SetEncryptionKey("", "", new List<ProtocolBase>());
                 path = _dataService.Database_GetPrivateKeyPath();
                 pk = _dataService.Database_GetPublicKey();
                 Assert.IsTrue("" == path);
@@ -136,7 +133,7 @@ namespace PRemoteM.Tests.Service
 
                 var data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
-                var first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                var first = data.First(x => x is RDP) as RDP;
                 Assert.IsTrue(first != null);
                 _rdp.Id = first.Id;
                 _rdp.DisplayName = "1";
@@ -146,7 +143,7 @@ namespace PRemoteM.Tests.Service
                 _dataService.Database_UpdateServer(_rdp);
                 data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
-                first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                first = data.First(x => x is RDP) as RDP;
                 Assert.IsTrue(first != null);
                 Assert.IsTrue(_rdp.DisplayName == first.DisplayName);
                 Assert.IsTrue(_rdp.UserName == first.UserName);
@@ -161,28 +158,28 @@ namespace PRemoteM.Tests.Service
 
                 var data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
-                var first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                var first = data.First(x => x is RDP) as RDP;
                 Assert.IsTrue(first != null);
                 _rdp.Id = first.Id;
                 _rdp.DisplayName = "2";
                 _rdp.Address = "3";
                 _rdp.Password = "4";
                 _rdp.UserName = "5";
-                var second = data.First(x => x is ProtocolServerSSH) as ProtocolServerSSH;
+                var second = data.First(x => x is SSH) as SSH;
                 _ssh.Id = second.Id;
                 _ssh.DisplayName = "SS2";
                 _ssh.Address = "XXXXX";
-                Assert.IsTrue(_dataService.Database_UpdateServer(new List<ProtocolServerBase>(){ _rdp, _ssh }));
+                Assert.IsTrue(_dataService.Database_UpdateServer(new List<ProtocolBase>(){ _rdp, _ssh }));
                 data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
-                first = data.First(x => x is ProtocolServerRDP) as ProtocolServerRDP;
+                first = data.First(x => x is RDP) as RDP;
                 Assert.IsTrue(first != null);
                 Assert.IsTrue(_rdp.DisplayName == first.DisplayName);
                 Assert.IsTrue(_rdp.UserName == first.UserName);
                 Assert.IsTrue(_rdp.Password == first.Password);
                 Assert.IsTrue(_rdp.Address == first.Address);
                 Assert.IsTrue(_rdp.CommandAfterDisconnected == first.CommandAfterDisconnected);
-                second = data.First(x => x is ProtocolServerSSH) as ProtocolServerSSH;
+                second = data.First(x => x is SSH) as SSH;
                 Assert.IsTrue(second != null);
                 Assert.IsTrue(_ssh.DisplayName == second.DisplayName);
                 Assert.IsTrue(_ssh.Address == second.Address);
@@ -200,7 +197,7 @@ namespace PRemoteM.Tests.Service
             }
 
             {
-                _dataService.Database_InsertServer(new List<ProtocolServerBase>() { _rdp, _ssh });
+                _dataService.Database_InsertServer(new List<ProtocolBase>() { _rdp, _ssh });
                 var data = _dataService.Database_GetServers();
                 Assert.IsTrue(data.Count == 4);
             }
@@ -216,7 +213,7 @@ namespace PRemoteM.Tests.Service
         public void MockData()
         {
             var r = new Random(DateTime.Now.Millisecond);
-            _rdp = new ProtocolServerRDP()
+            _rdp = new RDP()
             {
                 CommandAfterDisconnected = "rdp",
                 CommandBeforeConnected = "zzzz",
@@ -227,7 +224,7 @@ namespace PRemoteM.Tests.Service
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),
                 Tags = new List<string>() { "t1", "t2", "rdp" },
             };
-            _ssh = new ProtocolServerSSH()
+            _ssh = new SSH()
             {
                 CommandAfterDisconnected = "zxcvdafg",
                 CommandBeforeConnected = "fhjfgj",
@@ -239,7 +236,7 @@ namespace PRemoteM.Tests.Service
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),
                 Tags = new List<string>() { "t1", "t2", "ssh" },
             };
-            _vnc = new ProtocolServerVNC()
+            _vnc = new VNC()
             {
                 CommandAfterDisconnected = "asdasd123",
                 CommandBeforeConnected = "xczcasdas",
@@ -249,7 +246,7 @@ namespace PRemoteM.Tests.Service
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),
                 Tags = new List<string>() { "t1", "t2", "vnc" },
             };
-            _app = new ProtocolServerApp()
+            _app = new LocalApp()
             {
                 Arguments = "123",
                 CommandAfterDisconnected = "cxxxx",

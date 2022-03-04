@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 
 namespace PRM.Model
@@ -41,7 +42,7 @@ namespace PRM.Model
         /// </summary>
         public static OnRequestGoToServerEditPageDelegate OnRequestGoToServerEditPage { get; set; } = null;
 
-        public delegate void OnRequestGoToServerMultipleEditPageDelegate(IEnumerable<ProtocolServerBase> servers, bool showAnimation = true);
+        public delegate void OnRequestGoToServerMultipleEditPageDelegate(IEnumerable<ProtocolBase> servers, bool showAnimation = true);
         public static OnRequestGoToServerMultipleEditPageDelegate OnRequestGoToServerMultipleEditPage { get; set; } = null;
 
         public delegate void OnRequestDeleteServerDelegate(int serverId);

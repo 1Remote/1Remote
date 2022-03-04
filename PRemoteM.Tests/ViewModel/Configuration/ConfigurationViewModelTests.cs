@@ -4,13 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PRemoteM.Tests.Service;
-using PRM.DB;
-using PRM.I;
 using PRM.Model;
-using PRM.Model.Protocol.Extend;
-using PRM.Model.Protocol.Putty;
-using PRM.Model.Protocol.RDP;
-using PRM.Model.Protocol.VNC;
+using PRM.Model.DAO;
+using PRM.Model.Protocol;
 using PRM.Resources.Icons;
 using PRM.Service;
 using PRM.View;
@@ -23,10 +19,10 @@ namespace PRemoteM.Tests.ViewModel.Configuration
     public class ConfigurationViewModelTests
     {
         private DataService _dataService = null;
-        private ProtocolServerRDP _rdp = null;
-        private ProtocolServerSSH _ssh = null;
-        private ProtocolServerVNC _vnc = null;
-        private ProtocolServerApp _app = null;
+        private RDP _rdp = null;
+        private SSH _ssh = null;
+        private VNC _vnc = null;
+        private LocalApp _app = null;
         private string _dbPath;
         private string _ppkPath;
 
@@ -49,8 +45,8 @@ namespace PRemoteM.Tests.ViewModel.Configuration
                 File.Delete(ctx.ConfigurationService.JsonPath);
             ctx.ConfigurationService.Database.SqliteDatabasePath = _dbPath;
             ctx.InitSqliteDb();
-            ConfigurationViewModel.Init(ctx);
-            var vm = ConfigurationViewModel.GetInstance();
+            SettingsPageViewModel.Init(ctx);
+            var vm = SettingsPageViewModel.GetInstance();
             vm.GenRsa(_ppkPath)?.Wait();
             vm.CleanRsa().Wait();
         }
@@ -59,7 +55,7 @@ namespace PRemoteM.Tests.ViewModel.Configuration
         public void MockData()
         {
             var r = new Random(DateTime.Now.Millisecond);
-            _rdp = new ProtocolServerRDP()
+            _rdp = new RDP()
             {
                 CommandAfterDisconnected = "rdp",
                 CommandBeforeConnected = "zzzz",
@@ -70,7 +66,7 @@ namespace PRemoteM.Tests.ViewModel.Configuration
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),
                 Tags = new List<string>() { "t1", "t2", "rdp" },
             };
-            _ssh = new ProtocolServerSSH()
+            _ssh = new SSH()
             {
                 CommandAfterDisconnected = "zxcvdafg",
                 CommandBeforeConnected = "fhjfgj",
@@ -82,7 +78,7 @@ namespace PRemoteM.Tests.ViewModel.Configuration
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),
                 Tags = new List<string>() { "t1", "t2", "ssh" },
             };
-            _vnc = new ProtocolServerVNC()
+            _vnc = new VNC()
             {
                 CommandAfterDisconnected = "asdasd123",
                 CommandBeforeConnected = "xczcasdas",
@@ -92,7 +88,7 @@ namespace PRemoteM.Tests.ViewModel.Configuration
                 IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64(),
                 Tags = new List<string>() { "t1", "t2", "vnc" },
             };
-            _app = new ProtocolServerApp()
+            _app = new LocalApp()
             {
                 Arguments = "123",
                 CommandAfterDisconnected = "cxxxx",

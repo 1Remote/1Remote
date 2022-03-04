@@ -8,16 +8,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Model.Protocol.FileTransmit;
-using PRM.Model.Protocol.Putty;
-using PRM.Model.Protocol.RDP;
-using PRM.Model.Protocol.Runner;
+using PRM.Model.ProtocolRunner;
+using PRM.Utils;
 using Shawn.Utils;
 using PRM.View;
 using PRM.View.Host;
 using PRM.View.Host.ProtocolHosts;
-using PRM.View.Host.TabWindow;
 using Shawn.Utils.Wpf;
 using MessageBox = System.Windows.MessageBox;
 using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
@@ -88,11 +87,11 @@ namespace PRM.Model
 
         public int TabWindowCount => _tabWindows.Count;
 
-        private bool ActivateOrReConnIfServerSessionIsOpened(VmProtocolServer vmProtocolServer)
+        private bool ActivateOrReConnIfServerSessionIsOpened(ServerViewModel protocolServerViewModel)
         {
-            var serverId = vmProtocolServer.Server.Id;
+            var serverId = protocolServerViewModel.Server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (vmProtocolServer.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
+            if (protocolServerViewModel.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
@@ -108,7 +107,7 @@ namespace PRM.Model
             return false;
         }
 
-        private void ConnectRdpByMstsc(ProtocolServerRDP rdp)
+        private void ConnectRdpByMstsc(RDP rdp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
@@ -152,7 +151,7 @@ namespace PRM.Model
             });
         }
 
-        private void ConnectRemoteApp(ProtocolServerRemoteApp remoteApp)
+        private void ConnectRemoteApp(RdpApp remoteApp)
         {
             var tmp = Path.GetTempPath();
             var rdpFileName = $"{remoteApp.DisplayName}_{remoteApp.Port}_{remoteApp.UserName}";
@@ -196,10 +195,10 @@ namespace PRM.Model
             t.Start();
         }
 
-        private void ConnectWithFullScreen(VmProtocolServer vmProtocolServer, Runner runner)
+        private void ConnectWithFullScreen(ServerViewModel protocolServerViewModel, Runner runner)
         {
             // fullscreen normally
-            var host = ProtocolHostFactory.GetHostForInternalRunner(_context, vmProtocolServer.Server, runner);
+            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocolServerViewModel.Server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
@@ -209,16 +208,16 @@ namespace PRM.Model
             var full = MoveProtocolHostToFullScreen(host.ConnectionId);
             host.ParentWindow = full;
             host.Conn();
-            SimpleLogHelper.Debug($@"Start Conn: {vmProtocolServer.Server.DisplayName}({vmProtocolServer.GetHashCode()}) by host({host.GetHashCode()}) with full");
+            SimpleLogHelper.Debug($@"Start Conn: {protocolServerViewModel.Server.DisplayName}({protocolServerViewModel.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
-        private void ConnectWithTab(ProtocolServerBase protocolServer, Runner runner, string assignTabToken)
+        private void ConnectWithTab(ProtocolBase protocol, Runner runner, string assignTabToken)
         {
             // open SFTP when SSH is connected.
-            if (protocolServer is ProtocolServerSSH { OpenSftpOnConnected: true } ssh)
+            if (protocol is SSH { OpenSftpOnConnected: true } ssh)
             {
-                var tmpRunner = ProtocolHostFactory.GetRunner(_context, ProtocolServerSFTP.ProtocolName);
-                var sftp = new ProtocolServerSFTP
+                var tmpRunner = ProtocolRunnerHostHelper.GetRunner(_context, SFTP.ProtocolName);
+                var sftp = new SFTP
                 {
                     ColorHex = ssh.ColorHex,
                     IconBase64 = ssh.IconBase64,
@@ -234,21 +233,21 @@ namespace PRM.Model
 
             var size = new Size(0, 0);
             TabWindowBase tab = null;
-            if (protocolServer is ProtocolServerRDP)
+            if (protocol is RDP)
             {
                 tab = GetOrCreateTabWindow(assignTabToken);
-                size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocolServer.ColorHex));
+                size = tab.GetTabContentSize(ColorAndBrushHelper.ColorIsTransparent(protocol.ColorHex));
             }
 
-            protocolServer.ConnectPreprocess(_context);
+            protocol.ConnectPreprocess(_context);
             HostBase host;
             if (runner is ExternalRunner)
             {
-                host = ProtocolHostFactory.GetHostOrRunDirectlyForExternalRunner(_context, protocolServer, runner);
+                host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, protocol, runner);
             }
             else
             {
-                host = ProtocolHostFactory.GetHostForInternalRunner(_context, protocolServer, runner, size.Width, size.Height);
+                host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocol, runner, size.Width, size.Height);
             }
             if (host == null)
                 return;
@@ -262,7 +261,7 @@ namespace PRM.Model
             tab.AddItem(new TabItemViewModel()
             {
                 Content = host,
-                Header = protocolServer.DisplayName,
+                Header = protocol.DisplayName,
             });
             host.ParentWindow = tab;
             _protocolHosts.Add(host.ConnectionId, host);
@@ -308,7 +307,7 @@ namespace PRM.Model
             // run script before connected
             vmProtocolServer.Server.RunScriptBeforeConnect();
 
-            if (vmProtocolServer.Server is ProtocolServerRemoteApp remoteApp)
+            if (vmProtocolServer.Server is RdpApp remoteApp)
             {
                 ConnectRemoteApp(remoteApp);
                 return;
@@ -317,10 +316,10 @@ namespace PRM.Model
 
 
 
-            var runner = ProtocolHostFactory.GetRunner(_context, vmProtocolServer.Server.Protocol, assignRunnerName);
+            var runner = ProtocolRunnerHostHelper.GetRunner(_context, vmProtocolServer.Server.Protocol, assignRunnerName);
 
 
-            if (vmProtocolServer.Server is ProtocolServerRDP rdp)
+            if (vmProtocolServer.Server is RDP rdp)
             {
                 // check if screens are in different scale factors
                 int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
@@ -411,7 +410,7 @@ namespace PRM.Model
             ScreenInfoEx screenEx;
             if (fromTab != null)
                 screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
-            else if (host.ProtocolServer is ProtocolServerRDP rdp
+            else if (host.ProtocolServer is RDP rdp
                      && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullScreen
                      && rdp.AutoSetting.FullScreenLastSessionScreenIndex >= 0
                      && rdp.AutoSetting.FullScreenLastSessionScreenIndex < Screen.AllScreens.Length)

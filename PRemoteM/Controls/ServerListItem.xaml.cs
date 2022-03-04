@@ -23,20 +23,20 @@ namespace PRM.Controls
     /// </summary>
     public partial class ServerListItem : UserControl
     {
-        public static readonly DependencyProperty VmProtocolServerProperty =
-            DependencyProperty.Register("VmProtocolServer", typeof(VmProtocolServer), typeof(ServerListItem),
+        public static readonly DependencyProperty ProtocolServerViewModelProperty =
+            DependencyProperty.Register("ServerViewModel", typeof(ServerViewModel), typeof(ServerListItem),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (VmProtocolServer)e.NewValue;
+            var value = (ServerViewModel)e.NewValue;
             ((ServerListItem)d).DataContext = value;
         }
 
-        public VmProtocolServer VmProtocolServer
+        public ServerViewModel ServerViewModel
         {
-            get => (VmProtocolServer)GetValue(VmProtocolServerProperty);
-            set => SetValue(VmProtocolServerProperty, value);
+            get => (ServerViewModel)GetValue(ProtocolServerViewModelProperty);
+            set => SetValue(ProtocolServerViewModelProperty, value);
         }
 
         public ServerListItem()
@@ -46,14 +46,14 @@ namespace PRM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            VmProtocolServer.Actions = VmProtocolServer.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
+            ServerViewModel.Actions = ServerViewModel.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
             PopupCardSettingMenu.IsOpen = true;
         }
 
         private void ServerMenuButton_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (sender is Button { CommandParameter: ActionForServer afs })
+            if (sender is Button { CommandParameter: ProtocolAction afs })
             {
                 afs.Run();
             }
@@ -62,9 +62,9 @@ namespace PRM.Controls
         private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (VmProtocolServer != null && VmProtocolServer.CmdDuplicateServer.CanExecute())
+            if (ServerViewModel != null && ServerViewModel.CmdDuplicateServer.CanExecute())
             {
-                VmProtocolServer.CmdDuplicateServer.Execute();
+                ServerViewModel.CmdDuplicateServer.Execute();
             }
         }
     }

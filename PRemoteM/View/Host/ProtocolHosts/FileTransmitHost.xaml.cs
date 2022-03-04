@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Model;
+using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Model.Protocol.FileTransmit;
 
@@ -14,17 +15,17 @@ namespace PRM.View.Host.ProtocolHosts
     public partial class FileTransmitHost : HostBase
     {
         private readonly VmFileTransmitHost _vmRemote;
-        public FileTransmitHost(PrmContext context, ProtocolServerBase protocolServer) : base(context, protocolServer, false)
+        public FileTransmitHost(PrmContext context, ProtocolBase protocolServer) : base(context, protocolServer, false)
         {
             InitializeComponent();
             Focusable = true;
             Loaded += (s, e) => Keyboard.Focus(this);
 
-            if (protocolServer is ProtocolServerSFTP protocolServerSftp)
+            if (protocolServer is SFTP protocolServerSftp)
             {
                 _vmRemote = new VmFileTransmitHost(context, protocolServerSftp);
             }
-            else if (protocolServer is ProtocolServerFTP protocolServerFtp)
+            else if (protocolServer is FTP protocolServerFtp)
             {
                 _vmRemote = new VmFileTransmitHost(context, protocolServerFtp);
             }

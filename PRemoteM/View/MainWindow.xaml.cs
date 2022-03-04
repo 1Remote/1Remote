@@ -5,25 +5,23 @@ using System.Windows.Input;
 using PRM.Model;
 using PRM.Service;
 using PRM.Utils;
-using PRM.Utils.Filters;
-using PRM.View;
 using PRM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.Controls;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
-namespace PRM
+namespace PRM.View
 {
     public partial class MainWindow : WindowChromeBase
     {
-        public VmMain Vm { get; set; }
+        public MainWindowViewModel Vm { get; set; }
 
-        public MainWindow(PrmContext context, ConfigurationViewModel configurationViewModel)
+        public MainWindow(PrmContext context, SettingsPageViewModel settingsPageViewModel)
         {
             App.UiDispatcher = Dispatcher;
             InitializeComponent();
-            Vm = new VmMain(context, configurationViewModel, this);
+            Vm = new MainWindowViewModel(context, settingsPageViewModel, this);
             this.DataContext = Vm;
             Vm.ShowListPage();
             Title = ConfigurationService.AppName;
@@ -56,15 +54,14 @@ namespace PRM
 
             BtnClose.Click += (sender, args) =>
             {
-#if DEV
                 HideMe();
+#if DEV
                 App.Close();
                 return;
 #else
                 if (Shawn.Utils.ConsoleManager.HasConsole)
                     Shawn.Utils.ConsoleManager.Hide();
 #endif
-                HideMe();
             };
             this.Closing += (sender, args) =>
             {
@@ -72,6 +69,9 @@ namespace PRM
                 {
                     HideMe();
                     args.Cancel = true;
+#if DEV
+                    App.Close();
+#endif
                 }
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
@@ -152,7 +152,7 @@ namespace PRM
                     Vm.AnimationPageSettings = null;
                 }
             }
-            else if(e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
+            else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
                 TbFilter.Focus();
                 TbFilter.CaretIndex = TbFilter.Text.Length;
@@ -161,7 +161,7 @@ namespace PRM
 
         private void ProcessingRing_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.ClickCount >= 2)
+            if (e.ClickCount >= 2)
                 return;
             base.WinTitleBar_MouseDown(sender, e);
         }

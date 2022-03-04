@@ -1,0 +1,243 @@
+﻿<UserControl x:Class="PRM.View.Settings.ProtocolConfig.ExternalRunnerSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:controls="clr-namespace:PRM.Controls"
+             xmlns:controls1="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:protocolConfig="clr-namespace:PRM.View.Settings.ProtocolConfig"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance protocolConfig:ExternalRunnerSettingsViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+        <Style x:Key="GridOneRow" TargetType="Grid">
+            <Setter Property="Height" Value="Auto"></Setter>
+            <Setter Property="MinWidth" Value="300"></Setter>
+            <Setter Property="MinHeight" Value="30"></Setter>
+            <Setter Property="Margin">
+                <Setter.Value>
+                    <Thickness Bottom="15"></Thickness>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TextBlockTitleColumn" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+            <Setter Property="TextAlignment" Value="Right"></Setter>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+            <Setter Property="Margin" Value="20 0 10 0"></Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Grid Height="20"></Grid>
+        <Grid Style="{StaticResource GridOneRow}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition MinWidth="280" Width="280" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+            <TextBox Grid.Column="1" Text="{Binding ExternalRunner.ExePath, UpdateSourceTrigger=PropertyChanged}" 
+                     ToolTip="{Binding ExternalRunner.ExePath}"
+                     TextWrapping="Wrap"
+                     VerticalContentAlignment="Center">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxPrimaryStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ExternalRunner.IsExeExisted}" Value="False">
+                                <Setter Property="BorderBrush" Value="Red"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <Button Grid.Column="2" Style="{StaticResource ButtonPrimaryStyle}" 
+                    Margin="5 0 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                    Content="{DynamicResource Select}" 
+                    Command="{Binding CmdSelectExePath}"></Button>
+        </Grid>
+
+
+        <Grid Style="{StaticResource GridOneRow}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
+            <!--<TextBox Grid.Column="1" 
+                        Text="{Binding ExternalRunner.Arguments}"
+                        ToolTip="{Binding ExternalRunner.Arguments}"
+                        TextWrapping="Wrap"
+                        Tag="e.g. sftp://username:password@example.com:22/"
+                        VerticalContentAlignment="Center"></TextBox>-->
+            <Border Grid.Column="1">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="CornerRadius" Value="5" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                        <Setter Property="Padding" Value="5 1" />
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ElementName=TextEditor, Path=IsMouseOver}" Value="True"></Condition>
+                                    <Condition Binding="{Binding ElementName=TextEditor, Path=TextArea.IsFocused}" Value="False"></Condition>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                                <Setter Property="Opacity" Value="0.6" />
+                            </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=TextEditor, Path=TextArea.IsFocused}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            <controls:BindableAvalonEditor Grid.Column="1" 
+                                           Margin="8 0 4 0"
+                                           Padding="0 5 0 5"
+                                           x:Name="TextEditor"
+                                           WordWrap="False"
+                                           Background="Transparent"
+                                           Text="{Binding ExternalRunner.Arguments}"
+                                           SyntaxHighlighting="PowerShell"
+                                           FontSize="{DynamicResource TextFontSize}">
+            </controls:BindableAvalonEditor>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Margin="5 0">
+                    <Hyperlink Command="{Binding DataContext.CmdShowProtocolHelp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ProtocolRunnerSettingsPage}}}" 
+                               TextDecorations="{x:Null}" >
+                        (i)
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock VerticalAlignment="Center" Margin="2 0">
+                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Protocol-Runner" TextDecorations="{x:Null}" 
+                               controls1:HyperlinkHelper.IsOpenExternal="True">
+                        (?)
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Style="{StaticResource GridOneRow}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Environment variables'}"></TextBlock>
+
+            <StackPanel Grid.Column="1">
+                <ListBox
+                     ItemsSource="{Binding ExternalRunner.EnvironmentVariables}"
+                     BorderThickness="0" Background="Transparent">
+                    <ListBox.Style>
+                        <Style TargetType="{x:Type ListBox}">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="ItemContainerStyle">
+                                <Setter.Value>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Grid Margin="3">
+                                                        <Border x:Name="GridContainer"></Border>
+                                                        <ContentPresenter x:Name="ContentPresenter"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Style>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="270" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Grid.Column="0" Margin="2" 
+                                     Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" 
+                                     Tag="Key e.g. User"
+                                     ToolTip="Key e.g. User"/>
+
+                                <controls:AutoCompleteComboBox Grid.Column="1" Margin="2" 
+                                                               Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" 
+                                                               Selections="{Binding DataContext.ExternalRunner.MarcoNames, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}"
+                                                               Tag="Value e.g. %PRM_USERNAME%"
+                                                               ToolTip="Value e.g. %PRM_USERNAME%"/>
+
+                                <Button Grid.Column="2" Width="10" Height="10"
+                                        ToolTip="{DynamicResource 'Delete'}"
+                                        Style="{StaticResource ButtonBarPrimaryStyle}"
+                                        Background="Transparent"
+                                        Foreground="{DynamicResource PrimaryMidBrush}"
+                                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                                        HorizontalAlignment="Right"
+                                        attachProperty:VisionElement.Opacity="0.5"
+                                        attachProperty:VisionElement.OpacityAccent="0.9"
+                                        Command="{Binding DataContext.CmdDelEnvironmentVariable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type protocolConfig:ExternalRunnerSettings}}}" 
+                                        CommandParameter="{Binding }"
+                                        Margin="0 0 10 0">
+                                    <Grid Height="10" Width="8">
+                                        <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                                          StrokeThickness="2" Stretch="Uniform" />
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Button Width="20" Height="20" 
+                        Margin="0 0 20 0"
+                        ToolTip="{DynamicResource 'Add environment variables'}"
+                        Style="{StaticResource ButtonBarAccentBackgroundStyle}"
+                        Background="Transparent"
+                        attachProperty:VisionElement.BackgroundAccent="Transparent"
+                        attachProperty:VisionElement.BackgroundOnMouseDown="Transparent"
+                        HorizontalAlignment="Center"
+                        Command="{Binding CmdAddEnvironmentVariable}">
+                    <Grid Height="15" Width="15">
+                        <Path Data="M 41.888 18.304 L 41.888 23.584 L 23.584 23.584 L 23.584 41.888 L 18.304 41.888 L 18.304 23.584 L 0 23.584 L 0 18.304 L 18.304 18.304 L 18.304 0 L 23.584 0 L 23.584 18.304 Z"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
+                              StrokeThickness="2" Stretch="Uniform" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Style="{StaticResource GridOneRow}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn1"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn2"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ExternalRunnerColumn3"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource TextBlockTitleColumn}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+            <CheckBox Grid.Column="1" IsChecked="{Binding ExternalRunner.RunWithHosting}">
+                <TextBlock Foreground="{DynamicResource AccentMidBrush}" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+            </CheckBox>
+        </Grid>
+    </StackPanel>
+</UserControl>

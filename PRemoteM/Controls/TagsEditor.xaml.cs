@@ -16,9 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PRM.Annotations;
 using PRM.Utils;
-using PRM.Utils.Filters;
 
 namespace PRM.Controls
 {

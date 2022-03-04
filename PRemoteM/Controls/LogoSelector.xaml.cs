@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using PRM.Annotations;
+using PRM.Properties;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;

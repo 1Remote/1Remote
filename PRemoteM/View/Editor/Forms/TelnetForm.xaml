@@ -1,0 +1,48 @@
+﻿<editor:FormBase x:Class="PRM.View.Editor.Forms.TelnetForm"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:editor="clr-namespace:PRM.View.Editor"
+                        xmlns:protocol="clr-namespace:PRM.Model.Protocol"
+                        mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance protocol:Telnet}"
+                        d:DesignHeight="1450" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel>
+
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
+
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Hostname}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
+                                                                  Tag="e.g. 192.168.0.101"></TextBox>
+                    </Grid>
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="60" Text="{DynamicResource Port}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding Port,UpdateSourceTrigger=PropertyChanged,ValidatesOnExceptions=True,NotifyOnValidationError=True}"
+                                 MinWidth="50" HorizontalAlignment="Left"
+                                 InputMethod.IsInputMethodEnabled="False"
+                                 InputScope="Number"
+                                 ></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_advantage}"></TextBlock>
+            <Grid Style="{StaticResource EditorRowGrid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_ssh_startup_auto_command}"></TextBlock>
+                    <Grid Style="{StaticResource EditorRowGridInput}">
+                        <TextBox Text="{Binding StartupAutoCommand,UpdateSourceTrigger=PropertyChanged}"
+                                                                  Tag="e.g. cd /home/user/Desktop/"></TextBox>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </StackPanel>
+</editor:FormBase>
