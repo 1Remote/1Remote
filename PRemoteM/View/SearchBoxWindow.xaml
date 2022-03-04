@@ -193,18 +193,28 @@
                                     <Setter Property="FontSize" Value="18"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
 
-                        <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.5" Content="{Binding SubTitleControl}" ToolTip="{Binding Server.SubTitle}">
+                        <ContentControl Grid.Row="1" Grid.Column="0" Opacity="0.7" Content="{Binding SubTitleControl}" ToolTip="{Binding Server.SubTitle}">
                             <ContentControl.Resources>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
                                     <Setter Property="FontSize" Value="12"></Setter>
                                     <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                     <Setter Property="TextTrimming" Value="CharacterEllipsis"></Setter>
-                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}, Path=Foreground}"></Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
                                 </Style>
                             </ContentControl.Resources>
                         </ContentControl>
@@ -269,10 +279,7 @@
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter Property="Opacity" Value="1" TargetName="GridContainer" />
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextBrush}" TargetName="ContentPresenter" />
                                             <Setter Property="Background" Value="{DynamicResource AccentMidBrush}" TargetName="GridContainer" />
-                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
-                                            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"/>
                                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                             <Setter TargetName="GridColorOnSelected" Property="Visibility" Value="Visible" />
                                             <Setter TargetName="GridColor" Property="Visibility" Value="Collapsed" />
@@ -418,8 +425,6 @@
                          PreviewMouseLeftButtonDown="ListBoxSelections_OnMouseDoubleClick"
                          SelectedIndex="{Binding SelectedIndex}"
                          ItemsSource="{Binding VmServerList}"
-                         Background="{DynamicResource PrimaryMidBrush}"
-                         Foreground="{DynamicResource PrimaryTextBrush}"
                          Style="{StaticResource SearchBoxSelectionList}">
                 </ListBox>
             </StackPanel>
