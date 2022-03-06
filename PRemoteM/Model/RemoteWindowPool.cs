@@ -289,7 +289,8 @@ namespace PRM.Model
             #endregion
 
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
-
+            _context.ConfigurationService.Engagement.ConnectCount++;
+            _context.ConfigurationService.Save();
             // clear selected state
             _context.AppData.UnselectAllServers();
 

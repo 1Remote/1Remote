@@ -269,4 +269,10 @@
     <s:String x:Key="Scale">Scale</s:String>
     <s:String x:Key="tag_tooltips">Left click : set this tag as filter{0}Ctrl + Left click : add this tag to the include list {0}Ctrl + Right click : add this tag to the exclude list</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">Voulez-vous vraiment fermer la connexion?</s:String>
+    <s:String x:Key="Hi there,">Hi there,</s:String>
+    <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!</s:String>
+    <s:String x:Key="Give suggestions">Give suggestions</s:String>
+    <s:String x:Key="Buy a coffee">Buy a coffee</s:String>
+    <s:String x:Key="Give nice review">Give nice review</s:String>
+    <s:String x:Key="Do not show this again in current version">Do not show this again in current version</s:String>
 </ResourceDictionary>
