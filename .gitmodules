@@ -3,4 +3,4 @@
 	url = git@github.com:VShawn/VncSharp.git
 [submodule "Shawn.Utils"]
 	path = Shawn.Utils
-	url = https://github.com/VShawn/Shawn.Utils.git
+	url = git@github.com:VShawn/Shawn.Utils.git
