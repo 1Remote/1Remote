@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using PRM.Core;
 using PRM.Core.Model;
 using PRM.Core.Service;
 using PRM.Utils.Filters;
@@ -55,15 +56,26 @@ namespace PRM
 
             BtnClose.Click += (sender, args) =>
             {
+                if (Vm.AnimationPageEditor == null
+                    && (Vm.Context.ConfigurationService.Engagement.DoNotShowAgain == false || PRMVersion.VersionData > Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersion)
+                    && Vm.Context.ConfigurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
+                    && Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
+                    && Vm.Context.ConfigurationService.Engagement.ConnectCount > 100
+                   )
+                {
+                    // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
+                    Vm.RequestRatingPopupVisibility = Visibility.Visible;
+                    return;
+                }
+
 #if DEV
-                HideMe();
                 App.Close();
                 return;
 #else
                 if (Shawn.Utils.ConsoleManager.HasConsole)
                     Shawn.Utils.ConsoleManager.Hide();
-#endif
                 HideMe();
+#endif
             };
             this.Closing += (sender, args) =>
             {
@@ -98,7 +110,7 @@ namespace PRM
             });
         }
 
-        public void HideMe(bool isShowTip = true)
+        public void HideMe()
         {
             Dispatcher?.Invoke(() =>
             {
@@ -151,7 +163,7 @@ namespace PRM
                     Vm.AnimationPageSettings = null;
                 }
             }
-            else if(e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
+            else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
                 TbFilter.Focus();
                 TbFilter.CaretIndex = TbFilter.Text.Length;
@@ -160,9 +172,28 @@ namespace PRM
 
         private void ProcessingRing_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.ClickCount >= 2)
+            if (e.ClickCount >= 2)
                 return;
             base.WinTitleBar_MouseDown(sender, e);
+        }
+
+        private void ButtonDismissEngagementPopup_OnClick(object sender, RoutedEventArgs e)
+        {
+#if DEV
+            App.Close();
+            return;
+#else
+                if (Shawn.Utils.ConsoleManager.HasConsole)
+                    Shawn.Utils.ConsoleManager.Hide();
+                HideMe();
+#endif
+
+            Vm.RequestRatingPopupVisibility = Visibility.Collapsed;
+            Vm.Context.ConfigurationService.Engagement.DoNotShowAgain = CbDoNotShowEngagementAgain.IsChecked == true;
+            Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime = DateTime.Now;
+            Vm.Context.ConfigurationService.Engagement.ConnectCount = -100;
+            Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersionString = PRMVersion.Version;
+            Vm.Context.ConfigurationService.Save();
         }
     }
 }
