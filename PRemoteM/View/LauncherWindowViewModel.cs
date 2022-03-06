@@ -27,7 +27,7 @@ namespace PRM.View
 
         #region properties
 
-        public ServerViewModel SelectedItem
+        public ProtocolBaseViewModel SelectedItem
         {
             get
             {
@@ -55,8 +55,8 @@ namespace PRM.View
         }
 
 
-        private ObservableCollection<ServerViewModel> _vmServerList = new ObservableCollection<ServerViewModel>();
-        public ObservableCollection<ServerViewModel> VmServerList
+        private ObservableCollection<ProtocolBaseViewModel> _vmServerList = new ObservableCollection<ProtocolBaseViewModel>();
+        public ObservableCollection<ProtocolBaseViewModel> VmServerList
         {
             get => _vmServerList;
             set
@@ -164,7 +164,7 @@ namespace PRM.View
 
         private void RebuildVmServerList()
         {
-            VmServerList = new ObservableCollection<ServerViewModel>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
             App.UiDispatcher.Invoke(() =>
             {
                 foreach (var vm in VmServerList)
@@ -246,7 +246,7 @@ namespace PRM.View
             var keyWords = tmp.Item2;
             TagFilters = tagFilters;
 
-            var newList = new List<ServerViewModel>();
+            var newList = new List<ProtocolBaseViewModel>();
             foreach (var vm in Context.AppData.VmItemList)
             {
                 var server = vm.Server;
@@ -333,7 +333,7 @@ namespace PRM.View
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    VmServerList = new ObservableCollection<ServerViewModel>(newList.OrderByDescending(x => x.Server.LastConnTime));
+                    VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.Server.LastConnTime));
                 });
             }
             ReCalcWindowHeight(false);

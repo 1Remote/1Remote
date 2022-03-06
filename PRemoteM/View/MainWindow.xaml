@@ -320,8 +320,7 @@
         <Grid Visibility="{Binding ProcessingRingVisibility, Mode=OneWay}"
               PreviewMouseDown="ProcessingRing_OnPreviewMouseDown"
               MouseUp="WinTitleBar_OnMouseUp"
-              PreviewMouseMove="WinTitleBar_OnPreviewMouseMove"
-        >
+              PreviewMouseMove="WinTitleBar_OnPreviewMouseMove">
             <Grid Background="Black" Opacity="0.5"></Grid>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 40 0 0">
                 <Control Style="{StaticResource BusyAnimationStyle}" Background="Transparent"/>
