@@ -41,7 +41,7 @@ namespace PRM.Model
 
         public Action VmItemListDataChanged;
 
-        public List<ServerViewModel> VmItemList { get; set; } = new List<ServerViewModel>();
+        public List<ProtocolBaseViewModel> VmItemList { get; set; } = new List<ProtocolBaseViewModel>();
 
 
         private void ReadTagsFromServers()
@@ -81,14 +81,14 @@ namespace PRM.Model
                 return;
             }
             // read from db
-            var tmp = new List<ServerViewModel>();
+            var tmp = new List<ProtocolBaseViewModel>();
             foreach (var server in _dataService.Database_GetServers())
             {
                 var serverAbstract = server;
                 try
                 {
                     _dataService.DecryptToRamLevel(ref serverAbstract);
-                    tmp.Add(new ServerViewModel(serverAbstract));
+                    tmp.Add(new ProtocolBaseViewModel(serverAbstract));
                 }
                 catch (Exception e)
                 {
@@ -145,7 +145,7 @@ namespace PRM.Model
                 {
                     i = VmItemList.IndexOf(old);
                     VmItemList.Remove(old);
-                    VmItemList.Insert(i, new ServerViewModel(protocolServer));
+                    VmItemList.Insert(i, new ProtocolBaseViewModel(protocolServer));
                 }
             }
 

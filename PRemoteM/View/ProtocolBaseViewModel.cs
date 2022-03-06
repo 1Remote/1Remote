@@ -8,7 +8,7 @@ using Shawn.Utils.Wpf;
 
 namespace PRM.View
 {
-    public class ServerViewModel : NotifyPropertyChangedBase
+    public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
         private ProtocolBase _server = null;
 
@@ -20,7 +20,7 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _server, value);
         }
 
-        public ServerViewModel(ProtocolBase psb)
+        public ProtocolBaseViewModel(ProtocolBase psb)
         {
             Server = psb;
         }

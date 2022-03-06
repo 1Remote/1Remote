@@ -61,15 +61,15 @@ namespace PRM.View
             }
         }
 
-        private ServerViewModel _selectedServerViewModelListItem = null;
-        public ServerViewModel SelectedServerViewModelListItem
+        private ProtocolBaseViewModel _selectedServerViewModelListItem = null;
+        public ProtocolBaseViewModel SelectedServerViewModelListItem
         {
             get => _selectedServerViewModelListItem;
             set => SetAndNotifyIfChanged(ref _selectedServerViewModelListItem, value);
         }
 
-        private ObservableCollection<ServerViewModel> _serverListItems = new ObservableCollection<ServerViewModel>();
-        public ObservableCollection<ServerViewModel> ServerListItems
+        private ObservableCollection<ProtocolBaseViewModel> _serverListItems = new ObservableCollection<ProtocolBaseViewModel>();
+        public ObservableCollection<ProtocolBaseViewModel> ServerListItems
         {
             get => _serverListItems;
             set
@@ -170,7 +170,7 @@ namespace PRM.View
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
                 }
-                ServerListItems = new ObservableCollection<ServerViewModel>(Context.AppData.VmItemList);
+                ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList);
 
                 if (string.IsNullOrEmpty(SelectedTabName) == false
                     && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
@@ -190,7 +190,7 @@ namespace PRM.View
 
         private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ServerViewModel.IsSelected))
+            if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
             {
                 RaisePropertyChanged(nameof(IsMultipleSelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
@@ -207,35 +207,35 @@ namespace PRM.View
             switch (ServerOrderBy)
             {
                 case EnumServerOrderBy.ProtocolAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBase.Protocol), ListSortDirection.Ascending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.Protocol), ListSortDirection.Ascending));
                     break;
 
                 case EnumServerOrderBy.ProtocolDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBase.Protocol), ListSortDirection.Descending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.Protocol), ListSortDirection.Descending));
                     break;
 
                 case EnumServerOrderBy.NameAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBase.DisplayName), ListSortDirection.Ascending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.DisplayName), ListSortDirection.Ascending));
                     break;
 
                 case EnumServerOrderBy.NameDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBase.DisplayName), ListSortDirection.Descending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.DisplayName), ListSortDirection.Descending));
                     break;
 
                 case EnumServerOrderBy.AddressAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Address), ListSortDirection.Ascending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Address), ListSortDirection.Ascending));
                     break;
 
                 case EnumServerOrderBy.AddressDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Address), ListSortDirection.Descending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Address), ListSortDirection.Descending));
                     break;
 
                 default:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Id), ListSortDirection.Ascending));
+                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Id), ListSortDirection.Ascending));
                     break;
             }
 
-            dataView.SortDescriptions.Add(new SortDescription(nameof(ServerViewModel.Server.Id), ListSortDirection.Ascending));
+            dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server.Id), ListSortDirection.Ascending));
             dataView.Refresh();
             SimpleLogHelper.Debug($"OrderServerList: by {ServerOrderBy}");
             RaisePropertyChanged(nameof(IsMultipleSelected));
@@ -251,7 +251,7 @@ namespace PRM.View
             TagFilters = tagFilters;
             SetSelectedTabName(tagFilters);
 
-            var newList = new List<ServerViewModel>();
+            var newList = new List<ProtocolBaseViewModel>();
             foreach (var vm in Context.AppData.VmItemList)
             {
                 var server = vm.Server;
@@ -262,7 +262,7 @@ namespace PRM.View
                 }
             }
 
-            ServerListItems = new ObservableCollection<ServerViewModel>(newList);
+            ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(newList);
             RaisePropertyChanged(nameof(IsSelectedAll));
         }
 

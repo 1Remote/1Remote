@@ -160,7 +160,7 @@
             </Border>
         </ControlTemplate>
 
-        <DataTemplate DataType="{x:Type view:ServerViewModel}">
+        <DataTemplate DataType="{x:Type view:ProtocolBaseViewModel}">
             <Grid Height="{StaticResource OneItemHeight}">
                 <Grid VerticalAlignment="Center" Width="{StaticResource GridMainWidth}">
                     <Grid.ColumnDefinitions>

@@ -216,6 +216,7 @@
     <Compile Include="Model\DAO\IDataBase.cs" />
     <Compile Include="Model\DAO\IDbServerModel.cs" />
     <Compile Include="Service\ILanguageService.cs" />
+    <Compile Include="Utils\MicrosoftStoreUtils.cs" />
     <Compile Include="View\Host\ITabWindow.cs" />
     <Compile Include="Model\ProtocolAction.cs" />
     <Compile Include="Model\GlobalData.cs" />
@@ -248,7 +249,7 @@
     <Compile Include="Model\ProtocolRunner\Default\KittyRunner.cs" />
     <Compile Include="Model\ProtocolRunner\ExternalRunner.cs" />
     <Compile Include="Model\ProtocolRunner\Runner.cs" />
-    <Compile Include="View\ProtocolServerViewModel.cs" />
+    <Compile Include="View\ProtocolBaseViewModel.cs" />
     <Compile Include="Model\Protocol\Vnc.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Resources\Icons\ServerIcons.cs" />
@@ -428,6 +429,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Theme\Geometry\Baisc.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Theme\Styles\Others.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

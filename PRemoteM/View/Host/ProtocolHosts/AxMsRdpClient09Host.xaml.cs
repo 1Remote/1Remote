@@ -292,7 +292,7 @@ namespace PRM.View.Host.ProtocolHosts
         {
             #region Display
 
-            _primaryScaleFactor = ReadScaleFactor();
+            _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
             SimpleLogHelper.Debug($"RDP Host: init Display with ScaleFactor = {_primaryScaleFactor}, W = {width}, H = {height}");
 
             if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
@@ -788,7 +788,7 @@ namespace PRM.View.Host.ProtocolHosts
                 try
                 {
                     SimpleLogHelper.Debug($@"RDP resize to: W = {w}, H = {h}, ScaleFactor = {_primaryScaleFactor}");
-                    _primaryScaleFactor = ReadScaleFactor();
+                    _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
                     var newScaleFactor = _primaryScaleFactor;
                     if (this._rdpServer.IsScaleFactorFollowSystem == false && this._rdpServer.ScaleFactorCustomValue != null)
                         newScaleFactor = this._rdpServer.ScaleFactorCustomValue ?? _primaryScaleFactor;
@@ -901,26 +901,6 @@ namespace PRM.View.Host.ProtocolHosts
         }
 
         #endregion event handler
-
-        private static uint ReadScaleFactor()
-        {
-            uint sf = 100;
-            try
-            {
-                // !must use PrimaryScreen scale factor
-                sf = (uint)(100 * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth);
-            }
-            catch (Exception)
-            {
-                sf = 100;
-            }
-            finally
-            {
-                if (sf < 100)
-                    sf = 100;
-            }
-            return sf;
-        }
 
         #region WindowOnResizeEnd
 

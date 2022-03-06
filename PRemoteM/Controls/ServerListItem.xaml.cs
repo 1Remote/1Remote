@@ -24,18 +24,18 @@ namespace PRM.Controls
     public partial class ServerListItem : UserControl
     {
         public static readonly DependencyProperty ProtocolServerViewModelProperty =
-            DependencyProperty.Register("ServerViewModel", typeof(ServerViewModel), typeof(ServerListItem),
+            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerListItem),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnDataChanged)));
 
         private static void OnDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var value = (ServerViewModel)e.NewValue;
+            var value = (ProtocolBaseViewModel)e.NewValue;
             ((ServerListItem)d).DataContext = value;
         }
 
-        public ServerViewModel ServerViewModel
+        public ProtocolBaseViewModel ProtocolBaseViewModel
         {
-            get => (ServerViewModel)GetValue(ProtocolServerViewModelProperty);
+            get => (ProtocolBaseViewModel)GetValue(ProtocolServerViewModelProperty);
             set => SetValue(ProtocolServerViewModelProperty, value);
         }
 
@@ -46,7 +46,7 @@ namespace PRM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            ServerViewModel.Actions = ServerViewModel.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
+            ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
             PopupCardSettingMenu.IsOpen = true;
         }
 
@@ -62,9 +62,9 @@ namespace PRM.Controls
         private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
         {
             PopupCardSettingMenu.IsOpen = false;
-            if (ServerViewModel != null && ServerViewModel.CmdDuplicateServer.CanExecute())
+            if (ProtocolBaseViewModel != null && ProtocolBaseViewModel.CmdDuplicateServer.CanExecute())
             {
-                ServerViewModel.CmdDuplicateServer.Execute();
+                ProtocolBaseViewModel.CmdDuplicateServer.Execute();
             }
         }
     }

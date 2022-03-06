@@ -62,7 +62,7 @@
                     </ScrollViewer>
                 </Border>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ServerViewModel">
+            <DataTemplate x:Key="DataTemplateForServerCards" DataType="view:ProtocolBaseViewModel">
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -70,7 +70,7 @@
                             <Setter Property="Width" Value="165"></Setter>
                         </Style>
                     </Grid.Style>
-                    <controls:ServerCard ServerViewModel="{Binding}">
+                    <controls:ServerCard ProtocolBaseViewModel="{Binding}">
                     </controls:ServerCard>
                 </Grid>
             </DataTemplate>
@@ -245,14 +245,14 @@
                     </DataTrigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:ServerViewModel">
+            <DataTemplate x:Key="DataTemplateForServerList" DataType="view:ProtocolBaseViewModel">
                 <Grid Name="Grid" FocusVisualStyle="{x:Null}" Background="{DynamicResource BackgroundBrush}">
                     <Grid.InputBindings>
                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding CmdConnServer}"></MouseBinding>
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem ServerViewModel="{Binding}" MinHeight="{StaticResource OneItemHeight}"></controls:ServerListItem>
+                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" MinHeight="{StaticResource OneItemHeight}"></controls:ServerListItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">

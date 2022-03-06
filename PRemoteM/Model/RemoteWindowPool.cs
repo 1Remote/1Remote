@@ -87,7 +87,7 @@ namespace PRM.Model
 
         public int TabWindowCount => _tabWindows.Count;
 
-        private bool ActivateOrReConnIfServerSessionIsOpened(ServerViewModel protocolServerViewModel)
+        private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBaseViewModel protocolServerViewModel)
         {
             var serverId = protocolServerViewModel.Server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
@@ -195,7 +195,7 @@ namespace PRM.Model
             t.Start();
         }
 
-        private void ConnectWithFullScreen(ServerViewModel protocolServerViewModel, Runner runner)
+        private void ConnectWithFullScreen(ProtocolBaseViewModel protocolServerViewModel, Runner runner)
         {
             // fullscreen normally
             var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocolServerViewModel.Server, runner);
