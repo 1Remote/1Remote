@@ -54,13 +54,25 @@ namespace PRM.View
 
             BtnClose.Click += (sender, args) =>
             {
-                HideMe();
+                if (Vm.AnimationPageEditor == null
+                    && (Vm.Context.ConfigurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersion)
+                    && Vm.Context.ConfigurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
+                    && Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
+                    && Vm.Context.ConfigurationService.Engagement.ConnectCount > 100
+                   )
+                {
+                    // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
+                    Vm.RequestRatingPopupVisibility = Visibility.Visible;
+                    return;
+                }
+
 #if DEV
                 App.Close();
                 return;
 #else
                 if (Shawn.Utils.ConsoleManager.HasConsole)
                     Shawn.Utils.ConsoleManager.Hide();
+                HideMe();
 #endif
             };
             this.Closing += (sender, args) =>
@@ -99,7 +111,7 @@ namespace PRM.View
             });
         }
 
-        public void HideMe(bool isShowTip = true)
+        public void HideMe()
         {
             Dispatcher?.Invoke(() =>
             {
@@ -164,6 +176,25 @@ namespace PRM.View
             if (e.ClickCount >= 2)
                 return;
             base.WinTitleBar_MouseDown(sender, e);
+        }
+
+        private void ButtonDismissEngagementPopup_OnClick(object sender, RoutedEventArgs e)
+        {
+            Vm.RequestRatingPopupVisibility = Visibility.Collapsed;
+            Vm.Context.ConfigurationService.Engagement.DoNotShowAgain = CbDoNotShowEngagementAgain.IsChecked == true;
+            Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime = DateTime.Now;
+            Vm.Context.ConfigurationService.Engagement.ConnectCount = -100;
+            Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersionString = AppVersion.Version;
+            Vm.Context.ConfigurationService.Save();
+
+#if DEV
+            App.Close();
+            return;
+#else
+                if (Shawn.Utils.ConsoleManager.HasConsole)
+                    Shawn.Utils.ConsoleManager.Hide();
+                HideMe();
+#endif
         }
     }
 }

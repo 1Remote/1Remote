@@ -58,6 +58,13 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _processingRingVisibility, value);
         }
 
+        private Visibility _requestRatingPopupVisibility = Visibility.Collapsed;
+        public Visibility RequestRatingPopupVisibility
+        {
+            get => _requestRatingPopupVisibility;
+            set => SetAndNotifyIfChanged(ref _requestRatingPopupVisibility, value);
+        }
+
         private string _processingRingMessage = "";
         public string ProcessingRingMessage
         {
