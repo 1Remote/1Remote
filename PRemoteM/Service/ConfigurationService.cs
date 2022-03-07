@@ -15,7 +15,16 @@ using VariableKeywordMatcher.Provider.DirectMatch;
 
 namespace PRM.Service
 {
-    #region Configuration
+    public class EngagementSettings
+    {
+        public DateTime InstallTime = DateTime.Today.AddDays(1);
+        public bool DoNotShowAgain = false;
+        public string DoNotShowAgainVersionString = "";
+        [JsonIgnore]
+        public VersionHelper.Version DoNotShowAgainVersion => VersionHelper.Version.FromString(DoNotShowAgainVersionString);
+        public DateTime LastRequestRatingsTime = DateTime.MinValue;
+        public int ConnectCount = 0;
+    }
     public class GeneralConfig
     {
         #region General
@@ -92,10 +101,9 @@ namespace PRM.Service
         public KeywordMatchConfig KeywordMatch { get; set; } = new KeywordMatchConfig();
         public DatabaseConfig Database { get; set; } = new DatabaseConfig();
         public ThemeConfig Theme { get; set; } = new ThemeConfig();
+        public EngagementSettings Engagement { get; set; } = new EngagementSettings();
         public List<string> PinnedTags { get; set; } = new List<string>();
     }
-
-    #endregion
 
     public class ConfigurationService
     {
@@ -124,7 +132,7 @@ namespace PRM.Service
         public KeywordMatchConfig KeywordMatch => _cfg.KeywordMatch;
         public DatabaseConfig Database => _cfg.Database;
         public ThemeConfig Theme => _cfg.Theme;
-
+        public EngagementSettings Engagement => _cfg.Engagement;
         /// <summary>
         /// Tags that show on the tab bar of the main window
         /// </summary>
@@ -252,11 +260,14 @@ namespace PRM.Service
         {
             if (CanSave == false)
                 return;
+            CanSave = false;
             var fi = new FileInfo(JsonPath);
             if (fi.Directory.Exists == false)
                 fi.Directory.Create();
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
-
+            lock (this)
+            {
+                File.WriteAllText(JsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
+            }
 #if FOR_MICROSOFT_STORE_ONLY
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByStartupTask({General.AppStartAutomatically}, \"PRemoteM\")");
             SetSelfStartingHelper.SetSelfStartByStartupTask(General.AppStartAutomatically, "PRemoteM");
@@ -264,6 +275,7 @@ namespace PRM.Service
             SimpleLogHelper.Debug($"SetSelfStartingHelper.SetSelfStartByRegistryKey({General.AppStartAutomatically}, \"{AppName}\")");
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
+            CanSave = true;
         }
     }
 }

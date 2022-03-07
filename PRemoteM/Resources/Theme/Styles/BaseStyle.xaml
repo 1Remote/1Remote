@@ -6,8 +6,8 @@
 
     <Style TargetType="Control" x:Key="ControlBase">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="FontSize" Value="{StaticResource TextFontSize}"></Setter>
-        <Setter Property="FontFamily" Value="{StaticResource YaHei}"/>
+        <Setter Property="FontSize" Value="{DynamicResource TextFontSize}"></Setter>
+        <Setter Property="FontFamily" Value="{DynamicResource YaHei}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
@@ -20,14 +20,14 @@
     <Style TargetType="Control" BasedOn="{StaticResource ControlBase}" />
 
     <Style TargetType="TextElement" x:Key="TextElementBase">
-        <Setter Property="FontSize" Value="{StaticResource TextFontSize}"></Setter>
-        <Setter Property="FontFamily" Value="{StaticResource YaHei}"/>
+        <Setter Property="FontSize" Value="{DynamicResource TextFontSize}"></Setter>
+        <Setter Property="FontFamily" Value="{DynamicResource YaHei}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
     </Style>
     <Style TargetType="TextBlock" x:Key="TextBlockBase">
-        <Setter Property="FontSize" Value="{StaticResource TextFontSize}"></Setter>
-        <Setter Property="FontFamily" Value="{StaticResource YaHei}"/>
+        <Setter Property="FontSize" Value="{DynamicResource TextFontSize}"></Setter>
+        <Setter Property="FontFamily" Value="{DynamicResource YaHei}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
     </Style>

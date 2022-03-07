@@ -270,4 +270,10 @@
     <s:String x:Key="tag_tooltips">鼠标左键: 筛选出该标签{0}Ctrl + 鼠标左键 : 将该标签添加到筛选列表 {0}Ctrl + 鼠标右键 : 将该标签添加到排除列表</s:String>
     <s:String x:Key="Are you sure you want to close the connection?">确定要关闭连接么？</s:String>
     <s:String x:Key="Default window size">确定要关闭连接么？</s:String>
+    <s:String x:Key="Hi there,">你好呀！</s:String>
+    <s:String x:Key="I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!">希望你觉得这个APP还有点用处。如果你想支持我的工作，可以给我买杯咖啡或给我一个好评。谢啦！</s:String>
+    <s:String x:Key="Give suggestions">提点意见</s:String>
+    <s:String x:Key="Buy a coffee">买杯咖啡</s:String>
+    <s:String x:Key="Give nice review">给个好评</s:String>
+    <s:String x:Key="Do not show this again in current version">不再显示</s:String>
 </ResourceDictionary>
