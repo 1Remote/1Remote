@@ -74,9 +74,12 @@ namespace PRM.View
             get => _serverListItems;
             set
             {
-                SetAndNotifyIfChanged(ref _serverListItems, value);
-                OrderServerList();
-                ServerListItems.CollectionChanged += (sender, args) => { OrderServerList(); };
+                _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(GetOrderedVmProtocolServers(value, ServerOrderBy));
+                ServerListItems.CollectionChanged += (sender, args) =>
+                {
+                    ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(ServerListItems);
+                };
+                RaisePropertyChanged();
             }
         }
         public int SelectedCount => ServerListItems.Count(x => x.IsSelected);
@@ -170,7 +173,7 @@ namespace PRM.View
                         vs.PropertyChanged += VmServerPropertyChanged;
                     }
                 }
-                ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList);
+                _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList);
 
                 if (string.IsNullOrEmpty(SelectedTabName) == false
                     && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
@@ -198,47 +201,33 @@ namespace PRM.View
             }
         }
 
-        private void OrderServerList()
+        private static IEnumerable<ProtocolBaseViewModel> GetOrderedVmProtocolServers(IEnumerable<ProtocolBaseViewModel> servers, EnumServerOrderBy orderBy)
         {
-            if (!(ServerListItems?.Count > 0) || _list?.ItemsSource == null) return;
+            if (!(servers?.Count() > 0)) return new List<ProtocolBaseViewModel>();
 
-            ICollectionView dataView = CollectionViewSource.GetDefaultView(_list.ItemsSource);
-            dataView.SortDescriptions.Clear();
-            switch (ServerOrderBy)
+            switch (orderBy)
             {
                 case EnumServerOrderBy.ProtocolAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.Protocol), ListSortDirection.Ascending));
-                    break;
+                    return servers.OrderBy(x => x.Server.Protocol).ThenBy(x => x.Server.Id);
 
                 case EnumServerOrderBy.ProtocolDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.Protocol), ListSortDirection.Descending));
-                    break;
+                    return servers.OrderByDescending(x => x.Server.Protocol).ThenBy(x => x.Server.Id);
 
                 case EnumServerOrderBy.NameAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.DisplayName), ListSortDirection.Ascending));
-                    break;
+                    return servers.OrderBy(x => x.Server.DisplayName).ThenBy(x => x.Server.Id);
 
                 case EnumServerOrderBy.NameDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBase.DisplayName), ListSortDirection.Descending));
-                    break;
+                    return servers.OrderByDescending(x => x.Server.DisplayName).ThenBy(x => x.Server.Id);
 
                 case EnumServerOrderBy.AddressAsc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Address), ListSortDirection.Ascending));
-                    break;
+                    return servers.OrderBy(x => x.Server.SubTitle).ThenBy(x => x.Server.Id);
 
                 case EnumServerOrderBy.AddressDesc:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Address), ListSortDirection.Descending));
-                    break;
+                    return servers.OrderByDescending(x => x.Server.SubTitle).ThenBy(x => x.Server.Id);
 
                 default:
-                    dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server) + "." + nameof(ProtocolBaseWithAddressPort.Id), ListSortDirection.Ascending));
-                    break;
+                    return servers.OrderBy(x => x.Server.Id);
             }
-
-            dataView.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.Server.Id), ListSortDirection.Ascending));
-            dataView.Refresh();
-            SimpleLogHelper.Debug($"OrderServerList: by {ServerOrderBy}");
-            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
         private void CalcVisibleByFilter()
@@ -486,7 +475,7 @@ namespace PRM.View
                             }
 
                             ServerOrderBy = (EnumServerOrderBy)ot;
-                            OrderServerList();
+                            ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(GetOrderedVmProtocolServers(ServerListItems, ServerOrderBy));
                             _lastCmdReOrder = DateTime.Now;
                         }
                     }
