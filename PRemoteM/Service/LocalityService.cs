@@ -26,16 +26,6 @@ namespace PRM.Service
             Load();
         }
 
-        public string MainWindowTabSelected
-        {
-            get => _mainWindowTabSelected;
-            set
-            {
-                _mainWindowTabSelected = value;
-                Save();
-            }
-        }
-
         public double MainWindowWidth
         {
             get => _mainWindowWidth;
@@ -97,7 +87,6 @@ namespace PRM.Service
         }
 
 
-        private string _mainWindowTabSelected = "";
         private double _mainWindowWidth = 800;
         private double _mainWindowHeight = 530;
         private double _tabWindowWidth = 800;
@@ -116,7 +105,6 @@ namespace PRM.Service
                 _ini.WriteValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight.ToString());
                 _ini.WriteValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth.ToString());
                 _ini.WriteValue(nameof(TabWindowHeight).ToLower(), SectionName, TabWindowHeight.ToString());
-                _ini.WriteValue(nameof(MainWindowTabSelected).ToLower(), SectionName, MainWindowTabSelected);
                 _ini.WriteValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString());
                 _ini.Save();
             }
@@ -129,7 +117,6 @@ namespace PRM.Service
             MainWindowHeight = _ini.GetValue(nameof(MainWindowHeight).ToLower(), SectionName, MainWindowHeight);
             TabWindowWidth = _ini.GetValue(nameof(TabWindowWidth).ToLower(), SectionName, TabWindowWidth);
             TabWindowHeight = _ini.GetValue(nameof(TabWindowHeight).ToLower(), SectionName, TabWindowHeight);
-            MainWindowTabSelected = _ini.GetValue(nameof(MainWindowTabSelected).ToLower(), SectionName, MainWindowTabSelected);
             if (Enum.TryParse<EnumServerOrderBy>(_ini.GetValue(nameof(ServerOrderBy).ToLower(), SectionName, ServerOrderBy.ToString()), out var so))
                 ServerOrderBy = so;
             _saveEnabled = true;
