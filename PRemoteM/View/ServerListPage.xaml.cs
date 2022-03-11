@@ -30,12 +30,6 @@ namespace PRM.View
                 var p = args.GetPosition(GridBottom);
                 GridBottom.Visibility = p.Y > 0 ? Visibility.Collapsed : Visibility.Visible;
             };
-
-            var tagName = context.LocalityService.MainWindowTabSelected;
-            Loaded += (sender, args) =>
-            {
-                Vm.SelectedTabName = tagName;
-            };
         }
 
         private void BtnAllServer_Click(object sender, RoutedEventArgs e)
