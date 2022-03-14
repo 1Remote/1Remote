@@ -14,6 +14,7 @@ using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.Controls;
+using Shawn.Utils.WpfResources.Theme.Styles;
 using ProtocolHostType = PRM.View.Host.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
 
@@ -273,7 +274,7 @@ namespace PRM.View.Host
 
 
 
-        protected override void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        public override void WinTitleBar_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
             {
@@ -282,7 +283,7 @@ namespace PRM.View.Host
                 if (Vm.IsLocked)
                     return;
             }
-            base.WinTitleBar_MouseDown(sender, e);
+            base.WinTitleBar_OnPreviewMouseDown(sender, e);
         }
     }
 }

@@ -6,8 +6,8 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using PRM.Model;
 using PRM.View.Settings;
-using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.PageHost;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View.Guidance
 {
@@ -27,7 +27,7 @@ namespace PRM.View.Guidance
             Grid1.Visibility = Visibility.Visible;
             Grid2.Visibility = Visibility.Collapsed;
 
-            WinGrid.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinGrid.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
             WinGrid.MouseUp += WinTitleBar_OnMouseUp;
             WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
@@ -115,7 +115,7 @@ namespace PRM.View.Guidance
         }
 
 
-        protected override void WinTitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        public override void WinTitleBar_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             _isDragging = false;
             _isLeftMouseDown = false;

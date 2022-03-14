@@ -12,6 +12,7 @@ using PRM.Service;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View.ErrorReport
 {
@@ -72,7 +73,7 @@ namespace PRM.View.ErrorReport
 
         private void Init()
         {
-            WinGrid.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinGrid.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
             WinGrid.MouseUp += WinTitleBar_OnMouseUp;
             WinGrid.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 

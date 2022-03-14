@@ -8,6 +8,7 @@ using PRM.Utils;
 using PRM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.Controls;
+using Shawn.Utils.WpfResources.Theme.Styles;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -45,7 +46,7 @@ namespace PRM.View
                 }
             };
 
-            WinTitleBar.PreviewMouseDown += WinTitleBar_MouseDown;
+            WinTitleBar.PreviewMouseDown += WinTitleBar_OnPreviewMouseDown;
             WinTitleBar.MouseUp += WinTitleBar_OnMouseUp;
             WinTitleBar.PreviewMouseMove += WinTitleBar_OnPreviewMouseMove;
 
@@ -175,7 +176,7 @@ namespace PRM.View
         {
             if (e.ClickCount >= 2)
                 return;
-            base.WinTitleBar_MouseDown(sender, e);
+            base.WinTitleBar_OnPreviewMouseDown(sender, e);
         }
 
         private void ButtonDismissEngagementPopup_OnClick(object sender, RoutedEventArgs e)

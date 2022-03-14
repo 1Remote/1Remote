@@ -253,8 +253,6 @@
     <Compile Include="Model\Protocol\Vnc.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
     <Compile Include="Resources\Icons\ServerIcons.cs" />
-    <Compile Include="Resources\Theme\AttachProperty\PasswordBoxAttachProperty.cs" />
-    <Compile Include="Resources\Theme\AttachProperty\VisionElement.cs" />
     <Compile Include="Service\ConfigurationService.cs" />
     <Compile Include="Service\DataService.cs" />
     <Compile Include="Service\KeywordMatchService.cs" />
@@ -412,67 +410,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Theme\Basic\ColorsAndBrushes\Default.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Basic\Effects.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Basic\Font.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\DefaultTheme.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Geometry\Baisc.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Theme\Styles\Others.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Theme\Styles\AppStyles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\BaseStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\ButtonStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\CheckBoxStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\ComboBoxStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\Menu.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Theme\Styles\SliderStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\ScrollViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\TextBoxStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Theme\Styles\ToggleButtonStyle.xaml">
+    <Page Include="Resources\Theme\Default.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -627,6 +565,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Shawn.Utils\Shawn.Utils.WpfResources\Shawn.Utils.WpfResources.csproj">
+      <Project>{efcf9d57-12f3-4860-b902-7361be62272c}</Project>
+      <Name>Shawn.Utils.WpfResources</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shawn.Utils\Shawn.Utils.Wpf\Shawn.Utils.Wpf.csproj">
       <Project>{0cf000c2-d65d-4cb2-84fc-3687fc3a990b}</Project>
       <Name>Shawn.Utils.Wpf</Name>

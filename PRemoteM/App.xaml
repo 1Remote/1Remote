@@ -5,9 +5,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Resources/Languages/en-us.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Converter/Converter.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Shawn.Utils.WpfResources;component/Theme/DefaultTheme.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Theme/Default.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="./Resources/Languages/en-us.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="./Resources/Converter/Converter.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="./Resources/Theme/DefaultTheme.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
