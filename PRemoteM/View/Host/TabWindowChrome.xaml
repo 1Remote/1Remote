@@ -5,7 +5,7 @@
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
                      xmlns:system="clr-namespace:System;assembly=mscorlib"
-                     xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                     xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                      xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                      xmlns:host="clr-namespace:PRM.View.Host"
                      mc:Ignorable="d"
@@ -297,7 +297,7 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Column="1" MouseDown="WinTitleBar_MouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource PrimaryMidBrush}"></Grid>
+                                <Grid Grid.Column="1" MouseDown="WinTitleBar_OnPreviewMouseDown" MouseUp="WinTitleBar_OnMouseUp" PreviewMouseMove="WinTitleBar_OnPreviewMouseMove" Background="{DynamicResource PrimaryMidBrush}"></Grid>
 
                                 <Button Grid.Column="0" Width="25" Height="{StaticResource TrapezoidHeight}" VerticalAlignment="Center"
                                         Style="{StaticResource ButtonBarPrimaryStyle}"

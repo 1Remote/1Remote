@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              xmlns:s="clr-namespace:System;assembly=mscorlib"
-             xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+             xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
              xmlns:view="clr-namespace:PRM.View"
              xmlns:model="clr-namespace:PRM.Model"
              d:DataContext="{d:DesignInstance view:ProtocolBaseViewModel}"

@@ -6,7 +6,7 @@ using System.Windows.Input;
 using PRM.Model;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Controls;
+using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View
 {
@@ -117,7 +117,7 @@ namespace PRM.View
             }
         }
 
-        protected override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        public override void WinTitleBar_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed) return;
             try

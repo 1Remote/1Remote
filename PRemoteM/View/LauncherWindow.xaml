@@ -1,4 +1,4 @@
-﻿<controls:WindowChromeBase x:Class="PRM.View.LauncherWindow"
+﻿<styles:WindowChromeBase x:Class="PRM.View.LauncherWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,6 +6,7 @@
                   xmlns:view="clr-namespace:PRM.View"
                   xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                   xmlns:model="clr-namespace:PRM.Model"
+                  xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -504,4 +505,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</controls:WindowChromeBase>
+</styles:WindowChromeBase>

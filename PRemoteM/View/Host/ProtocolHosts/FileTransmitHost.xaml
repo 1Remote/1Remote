@@ -3,7 +3,7 @@
                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                           xmlns:attachProperty="clr-namespace:PRM.Resources.Theme.AttachProperty"
+                           xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                            xmlns:protocolHosts1="clr-namespace:PRM.View.Host.ProtocolHosts"
                            xmlns:transmitters="clr-namespace:PRM.Model.Protocol.FileTransmit.Transmitters"
                            xmlns:transmissionController="clr-namespace:PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController"
