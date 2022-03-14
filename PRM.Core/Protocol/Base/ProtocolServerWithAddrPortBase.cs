@@ -34,14 +34,7 @@ namespace PRM.Core.Protocol
         public string Port
         {
             get => _port;
-            set
-            {
-                if (value == base.Server_editor_different_options
-                    || (int.TryParse(value, out int port) == true && port > 0 && port <= 65535))
-                    SetAndNotifyIfChanged(ref _port, value);
-                else
-                    RaisePropertyChanged();
-            }
+            set => SetAndNotifyIfChanged(ref _port, value);
         }
 
         public void SetPort(string str)

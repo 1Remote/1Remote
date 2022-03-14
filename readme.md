@@ -25,7 +25,7 @@ PRemoteM is a modern personal remote session manager and launcher. It is a singl
 
 ## Installation
 
-Latest Version: 0.6.2
+Latest Version: 0.6.2.1
 
 Use one of the following methods to install the application:
 
