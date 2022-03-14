@@ -38,6 +38,13 @@ namespace PRM.View.Settings
             {
                 _configurationService.General.CurrentLanguageCode = languageCode;
             }
+
+            _context.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(PrmContext.DataService))
+                    ValidateDbStatusAndShowMessageBox(false);
+            };
+            ValidateDbStatusAndShowMessageBox(false);
         }
 
         private static SettingsPageViewModel _settingsPage;
@@ -257,13 +264,14 @@ namespace PRM.View.Settings
         }
 
 
-        private bool ValidateDbStatusAndShowMessageBox()
+        private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
             // validate rsa key
             var res = (_dataService?.Database_SelfCheck()) ?? EnumDbStatus.NotConnected;
             DbRsaPublicKey = _dataService?.Database_GetPublicKey() ?? "";
             DbRsaPrivateKeyPath = _dataService?.Database_GetPrivateKeyPath() ?? "";
             if (res == EnumDbStatus.OK) return true;
+            if (showAlert == false) return true;
             MessageBox.Show(res.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
             return false;
         }

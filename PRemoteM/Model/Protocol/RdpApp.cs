@@ -60,7 +60,7 @@ namespace PRM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig(PrmContext context)
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password));
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.KeyboardHook = 0;
             rdpConfig.AudioMode = 2;

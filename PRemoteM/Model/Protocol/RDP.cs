@@ -413,7 +413,7 @@ namespace PRM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig(PrmContext context)
         {
-            var rdpConfig = new RdpConfig($"{this.Address}:{this.Port}", this.UserName, context?.DataService?.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
+            var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, context?.DataService?.DecryptOrReturnOriginalString(Password), RdpFileAdditionalSettings)
             {
                 Domain = this.Domain,
                 LoadBalanceInfo = this.LoadBalanceInfo,
