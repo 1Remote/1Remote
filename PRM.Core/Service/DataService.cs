@@ -265,12 +265,10 @@ namespace PRM.Core.Service
             switch (server)
             {
                 case ProtocolServerSSH ssh when !string.IsNullOrWhiteSpace(ssh.PrivateKey):
-                    Debug.Assert(_rsa.DecodeOrNull(ssh.PrivateKey) != null);
                     ssh.PrivateKey = DecryptOrReturnOriginalString(ssh.PrivateKey);
                     break;
 
                 case ProtocolServerRDP rdp when !string.IsNullOrWhiteSpace(rdp.GatewayPassword):
-                    Debug.Assert(_rsa.DecodeOrNull(rdp.GatewayPassword) != null);
                     rdp.GatewayPassword = DecryptOrReturnOriginalString(rdp.GatewayPassword);
                     break;
             }
