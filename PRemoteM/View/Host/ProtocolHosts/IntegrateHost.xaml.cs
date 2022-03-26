@@ -335,7 +335,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void MakeItFocus()
         {
-            SetForegroundWindow(_process.MainWindowHandle);
+            SetForegroundWindow(this.GetHostHwnd());
         }
 
         public override ProtocolHostType GetProtocolHostType()
