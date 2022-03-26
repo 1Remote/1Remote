@@ -33,7 +33,7 @@ namespace PRM.Service
 #if DEV
         public bool AppStartMinimized = false;
 #else
-        public bool AppStartMinimized  = true;
+        public bool AppStartMinimized = true;
 #endif
         public bool ListPageIsCardView = false;
         public bool ConfirmBeforeClosingSession = false;
@@ -45,9 +45,9 @@ namespace PRM.Service
         public bool LauncherEnabled = true;
 
 #if DEV
-        public HotkeyModifierKeys HotKeyModifiers = HotkeyModifierKeys.ShiftAlt;
+        public HotkeyModifierKeys HotKeyModifiers = HotkeyModifierKeys.Shift;
 #else
-        public HotkeyModifierKeys HotKeyModifiers  = HotkeyModifierKeys.Alt;
+        public HotkeyModifierKeys HotKeyModifiers = HotkeyModifierKeys.Alt;
 #endif
 
         public Key HotKeyKey = Key.M;
@@ -151,7 +151,14 @@ namespace PRM.Service
             #region init
             // init path by `IsPortable`
             // default path of db
-            // default value of json
+            // default value of json'
+            var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+            string oldIniFilePath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".ini");
+            if (File.Exists(oldIniFilePath) == false)
+            {
+                oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
+            }
+
             if (IsPortable)
             {
                 JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
@@ -159,7 +166,6 @@ namespace PRM.Service
             }
             else
             {
-                var appDateFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
                 if (Directory.Exists(appDateFolder) == false)
                     Directory.CreateDirectory(appDateFolder);
                 JsonPath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".json");
@@ -172,7 +178,21 @@ namespace PRM.Service
 
 
             #region load settings
-            if (File.Exists(JsonPath))
+            // old user convert the 0.5 ini file to 0.6 json file
+            if (File.Exists(oldIniFilePath) && File.Exists(JsonPath) == false)
+            {
+                try
+                {
+                    var cfg = LoadFromIni(oldIniFilePath, Database.SqliteDatabasePath);
+                    _cfg = cfg;
+                    Save();
+                }
+                finally
+                {
+                    File.Delete(oldIniFilePath);
+                }
+            }
+            else if (File.Exists(JsonPath))
             {
                 try
                 {
@@ -190,6 +210,10 @@ namespace PRM.Service
             {
                 // new user
             }
+
+            if (File.Exists(oldIniFilePath))
+                File.Delete(oldIniFilePath);
+
             var fi = new FileInfo(Database.SqliteDatabasePath);
             if (fi.Exists == false)
                 try
@@ -276,6 +300,65 @@ namespace PRM.Service
             SetSelfStartingHelper.SetSelfStartByRegistryKey(General.AppStartAutomatically, AppName);
 #endif
             CanSave = true;
+        }
+
+
+
+        // TODO remove after 2023.01.01
+        private static Configuration LoadFromIni(string iniPath, string dbDefaultPath)
+        {
+            var cfg = new Configuration();
+            var ini = new Ini(iniPath);
+
+            {
+                const string sectionName = "General";
+                cfg.General.AppStartAutomatically = ini.GetValue("AppStartAutomatically".ToLower(), sectionName, cfg.General.AppStartAutomatically);
+                cfg.General.AppStartMinimized = ini.GetValue("AppStartMinimized".ToLower(), sectionName, cfg.General.AppStartMinimized);
+#if FOR_MICROSOFT_STORE_ONLY
+                Task.Factory.StartNew(async () =>
+                {
+                    cfg.General.AppStartAutomatically = await SetSelfStartingHelper.IsSelfStartByStartupTask("PRemoteM");
+                });
+#endif
+            }
+
+            {
+                uint modifiers = 0;
+                uint key = 0;
+                if (ini.GetValue("Enable", "Launcher", "") == "")
+                {
+                    cfg.Launcher.LauncherEnabled = ini.GetValue("Enable".ToLower(), "Launcher", cfg.Launcher.LauncherEnabled);
+                    modifiers = ini.GetValue("HotKeyModifiers".ToLower(), "Launcher", modifiers);
+                    key = ini.GetValue("HotKeyKey".ToLower(), "Launcher", key);
+                    cfg.Launcher.HotKeyModifiers = (HotkeyModifierKeys)modifiers;
+                    cfg.Launcher.HotKeyKey = (Key)key;
+                    if (cfg.Launcher.HotKeyModifiers == HotkeyModifierKeys.None || cfg.Launcher.HotKeyKey == Key.None)
+                    {
+                        cfg.Launcher.HotKeyModifiers = HotkeyModifierKeys.Alt;
+                        cfg.Launcher.HotKeyKey = Key.M;
+                    }
+                }
+            }
+
+            cfg.KeywordMatch.EnabledMatchers = ini.GetValue("EnableProviders".ToLower(), "KeywordMatch", "").Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            cfg.Database.SqliteDatabasePath = ini.GetValue("DbPath".ToLower(), "DataSecurity", dbDefaultPath);
+
+            {
+                const string sectionName = "Theme";
+                cfg.Theme.ThemeName = ini.GetValue("(PrmColorThemeName".ToLower(), sectionName, cfg.Theme.ThemeName);
+                cfg.Theme.PrimaryMidColor = ini.GetValue("(PrimaryMidColor".ToLower(), sectionName, cfg.Theme.PrimaryMidColor);
+                cfg.Theme.PrimaryLightColor = ini.GetValue("(PrimaryLightColor".ToLower(), sectionName, cfg.Theme.PrimaryLightColor);
+                cfg.Theme.PrimaryDarkColor = ini.GetValue("(PrimaryDarkColor".ToLower(), sectionName, cfg.Theme.PrimaryDarkColor);
+                cfg.Theme.PrimaryTextColor = ini.GetValue("(PrimaryTextColor".ToLower(), sectionName, cfg.Theme.PrimaryTextColor);
+                cfg.Theme.AccentMidColor = ini.GetValue("(AccentMidColor".ToLower(), sectionName, cfg.Theme.AccentMidColor);
+                cfg.Theme.AccentLightColor = ini.GetValue("(AccentLightColor".ToLower(), sectionName, cfg.Theme.AccentLightColor);
+                cfg.Theme.AccentDarkColor = ini.GetValue("(AccentDarkColor".ToLower(), sectionName, cfg.Theme.AccentDarkColor);
+                cfg.Theme.AccentTextColor = ini.GetValue("(AccentTextColor".ToLower(), sectionName, cfg.Theme.AccentTextColor);
+                cfg.Theme.BackgroundColor = ini.GetValue("(BackgroundColor".ToLower(), sectionName, cfg.Theme.BackgroundColor);
+                cfg.Theme.BackgroundTextColor = ini.GetValue("(BackgroundTextColor".ToLower(), sectionName, cfg.Theme.BackgroundTextColor);
+            }
+
+            return cfg;
         }
     }
 }
