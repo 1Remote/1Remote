@@ -288,13 +288,10 @@
         SerialStopHalfbits,
         SerialParity,
         SerialFlowControl,
-#if UseKiTTY
         /* For KiTTY */
         Autocommand,
         HostName,
         Protocol,
-#endif
-
         #endregion Enum
     }
 }

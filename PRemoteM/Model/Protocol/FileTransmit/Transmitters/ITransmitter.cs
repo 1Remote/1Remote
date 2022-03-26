@@ -9,33 +9,33 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 {
     public static class TransmitItemIconCache
     {
-        private static readonly Dictionary<string, BitmapImage> _fileIcons = new Dictionary<string, BitmapImage>();
-        private static readonly Dictionary<string, BitmapImage> _dictIcons = new Dictionary<string, BitmapImage>();
+        private static readonly Dictionary<string, BitmapSource> _fileIcons = new Dictionary<string, BitmapSource>();
+        private static readonly Dictionary<string, BitmapSource> _dictIcons = new Dictionary<string, BitmapSource>();
         private static readonly object _locker = new object();
 
-        public static BitmapImage GetFileIcon(string key = "*")
+        public static BitmapSource GetFileIcon(string key = "*")
         {
             lock (_locker)
             {
                 if (!_fileIcons.ContainsKey("*"))
-                    _fileIcons.Add("*", SystemIconHelper.GetFileIconByExt("*").ToBitmapImage());
+                    _fileIcons.Add("*", SystemIconHelper.GetIcon("*"));
                 if (_fileIcons.ContainsKey(key))
                     return _fileIcons[key];
-                var icon = SystemIconHelper.GetFileIconByExt(key).ToBitmapImage();
+                var icon = SystemIconHelper.GetIcon(key);
                 _fileIcons.Add(key, icon);
                 return icon;
             }
         }
 
-        public static BitmapImage GetDictIcon(string key = "")
+        public static BitmapSource GetDictIcon(string key = "")
         {
             lock (_locker)
             {
                 if (!_dictIcons.ContainsKey(""))
-                    _dictIcons.Add("", SystemIconHelper.GetFolderIcon().ToBitmapImage());
+                    _dictIcons.Add("", SystemIconHelper.GetFolderIcon(System.IO.Path.GetTempPath()));
                 if (_dictIcons.ContainsKey(key))
                     return _dictIcons[key];
-                var icon = SystemIconHelper.GetFolderIcon(key).ToBitmapImage();
+                var icon = SystemIconHelper.GetFolderIcon(key);
                 _dictIcons.Add(key, icon);
                 return icon;
             }
