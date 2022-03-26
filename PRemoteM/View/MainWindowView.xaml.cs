@@ -14,11 +14,11 @@ using TextBox = System.Windows.Controls.TextBox;
 
 namespace PRM.View
 {
-    public partial class MainWindow : WindowChromeBase
+    public partial class MainWindowView : WindowChromeBase
     {
         public MainWindowViewModel Vm { get; set; }
 
-        public MainWindow(PrmContext context, SettingsPageViewModel settingsPageViewModel)
+        public MainWindowView(PrmContext context, SettingsPageViewModel settingsPageViewModel)
         {
             App.UiDispatcher = Dispatcher;
             InitializeComponent();

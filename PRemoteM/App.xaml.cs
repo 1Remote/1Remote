@@ -23,14 +23,14 @@ namespace PRM
 {
     /*
     Defines:
-        FOR_MICROSOFT_STORE             =>  Let app try to use UWP code to fit microsoft store, if not define then app support win32 only.
         FOR_MICROSOFT_STORE_ONLY        =>  Disable all functions store not recommend.Must define FOR_MICROSOFT_STORE first!!!
     */
 
     public partial class App : Application
     {
+        public static LanguageService LanguageService { get; private set; }
         private NamedPipeHelper _namedPipeHelper;
-        public static MainWindow MainUi { get; private set; } = null;
+        public static MainWindowView MainUi { get; private set; } = null;
         public static SettingsPageViewModel SettingsPageVm { get; private set; } = null;
         public static LauncherWindow LauncherWindow { get; private set; } = null;
         public static PrmContext Context { get; private set; }
@@ -44,8 +44,8 @@ namespace PRM
         {
             var baseDir = CanPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
 
-            SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
-            SimpleLogHelper.PrintLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+            SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Warning;
+            SimpleLogHelper.PrintLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
             // init log file placement
             var logFilePath = Path.Combine(baseDir, "Logs", $"{ConfigurationService.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
@@ -171,12 +171,12 @@ namespace PRM
 
         private void InitMainWindow(SettingsPageViewModel c)
         {
-            MainUi = new MainWindow(Context, c);
+            MainUi = new MainWindowView(Context, c);
             MainWindow = MainUi;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
-        private void App_OnStartup(object sender, StartupEventArgs startupEvent)
+        protected override void OnStartup(StartupEventArgs e)
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory); // in case user start app in a different working dictionary.
 
@@ -207,7 +207,7 @@ namespace PRM
             InitLog();
 
 #if DEV
-            SimpleLogHelper.WriteLogEnumLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
+            SimpleLogHelper.WriteLogLevel = SimpleLogHelper.EnumLogLevel.Debug;
             ConsoleManager.Show();
 #endif
             KillPutty();
@@ -218,8 +218,8 @@ namespace PRM
             InitEvent();
 
             Context = new PrmContext(CanPortable, this.Resources);
+            LanguageService = Context.LanguageService;
             RemoteWindowPool.Init(Context);
-
             // UI
             // if cfg is not existed, then it would be a new user
             bool isNewUser = !File.Exists(Context.ConfigurationService.JsonPath);
@@ -261,12 +261,13 @@ namespace PRM
                     };
                 }
             }
-
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {
                 MainUi.ActivateMe();
             }
+
+            base.OnStartup(e);
         }
 
         //private FileWatcher _dbFileWatcher;

@@ -104,19 +104,19 @@ namespace PRM.View
         }
         #endregion
 
-        public readonly MainWindow Window;
+        public readonly MainWindowView WindowView;
 
-        public MainWindowViewModel(PrmContext context, SettingsPageViewModel settingsPageVm, MainWindow window)
+        public MainWindowViewModel(PrmContext context, SettingsPageViewModel settingsPageVm, MainWindowView windowView)
         {
             Context = context;
-            Window = window;
+            WindowView = windowView;
             SettingsPageViewModel.Init(context);
             SettingsPageVm = settingsPageVm;
             SettingsPageVm.Host = this;
             AboutPageViewModel = new AboutPageViewModel();
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
-                Window.Dispatcher.Invoke(() =>
+                WindowView.Dispatcher.Invoke(() =>
                 {
                     if (visibility == Visibility.Visible)
                     {
@@ -134,7 +134,7 @@ namespace PRM.View
                 if (id <= 0) return;
                 Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
-                Window.Dispatcher.Invoke(() =>
+                WindowView.Dispatcher.Invoke(() =>
                 {
                     AnimationPageAbout = null;
                     AnimationPageSettings = null;
@@ -144,7 +144,7 @@ namespace PRM.View
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                         Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, server, isDuplicate)),
                     };
-                    Window.ActivateMe();
+                    WindowView.ActivateMe();
                 });
             });
 
@@ -154,7 +154,7 @@ namespace PRM.View
                 {
                     Tags = new List<string>(tagNames)
                 };
-                Window.Dispatcher.Invoke(() =>
+                WindowView.Dispatcher.Invoke(() =>
                 {
                     AnimationPageEditor = new AnimationPage()
                     {
@@ -162,13 +162,13 @@ namespace PRM.View
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                         Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, server)),
                     };
-                    Window.ActivateMe();
+                    WindowView.ActivateMe();
                 });
             });
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                Window.Dispatcher.Invoke(() =>
+                WindowView.Dispatcher.Invoke(() =>
                 {
                     var page = new AnimationPage()
                     {
@@ -181,7 +181,7 @@ namespace PRM.View
                     else
                         page.Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, serverBases.First()));
                     AnimationPageEditor = page;
-                    Window.ActivateMe();
+                    WindowView.ActivateMe();
                 });
             };
         }
@@ -213,7 +213,7 @@ namespace PRM.View
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                         Content = new SettingsPage(Context, SettingsPageVm, o?.ToString()),
                     };
-                    Window.PopupMenu.IsOpen = false;
+                    WindowView.PopupMenu.IsOpen = false;
                 }, o => AnimationPageAbout == null && AnimationPageSettings == null && AnimationPageEditor == null);
             }
         }
@@ -227,7 +227,7 @@ namespace PRM.View
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
                     this._serverListPage.Vm.ListPageIsCardView = !this._serverListPage.Vm.ListPageIsCardView;
-                    Window.PopupMenu.IsOpen = false;
+                    WindowView.PopupMenu.IsOpen = false;
                 }, o => AnimationPageAbout == null && AnimationPageEditor == null && AnimationPageSettings == null);
             }
         }
@@ -246,7 +246,7 @@ namespace PRM.View
                         OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
                         Content = new AboutPage(AboutPageViewModel, this),
                     };
-                    Window.PopupMenu.IsOpen = false;
+                    WindowView.PopupMenu.IsOpen = false;
                 }, o => AnimationPageAbout?.Content?.GetType() != typeof(AboutPage));
             }
         }
