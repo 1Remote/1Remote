@@ -23,6 +23,7 @@ using PRM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
+using Stylet;
 
 namespace PRM.View
 {
@@ -160,7 +161,7 @@ namespace PRM.View
 
         private void RebuildVmServerList()
         {
-            App.UiDispatcher.Invoke(() =>
+            Execute.OnUIThread(() =>
             {
                 foreach (var vs in Context.AppData.VmItemList)
                 {
@@ -324,7 +325,7 @@ namespace PRM.View
                             }
                             Context.AppData.AddServer(list);
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
-                            App.UiDispatcher.Invoke(() =>
+                            Execute.OnUIThread(() =>
                             {
                                 MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             });
@@ -333,7 +334,7 @@ namespace PRM.View
                         {
                             SimpleLogHelper.Debug(e);
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
-                            App.UiDispatcher.Invoke(() =>
+                            Execute.OnUIThread(() =>
                             {
                                 MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             });
@@ -364,7 +365,7 @@ namespace PRM.View
                             {
                                 Context.AppData.AddServer(list);
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
-                                App.UiDispatcher.Invoke(() =>
+                                Execute.OnUIThread(() =>
                                 {
                                     MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 });
@@ -378,7 +379,7 @@ namespace PRM.View
 
 
                         GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
-                        App.UiDispatcher.Invoke(() =>
+                        Execute.OnUIThread(() =>
                         {
                             MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         });
@@ -435,7 +436,7 @@ namespace PRM.View
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => App.MainUi?.Vm?.AnimationPageEditor == null && ServerListItems.Any(x => x.IsSelected == true));
+                    }, o => App.MainWindowUi?.Vm?.AnimationPageEditor == null && ServerListItems.Any(x => x.IsSelected == true));
             }
         }
 

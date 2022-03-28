@@ -30,15 +30,14 @@ namespace PRM
     {
         public static LanguageService LanguageService { get; private set; }
         private NamedPipeHelper _namedPipeHelper;
-        public static MainWindowView MainUi { get; private set; } = null;
+        public static MainWindowView MainWindowUi { get; private set; } = null;
         public static SettingsPageViewModel SettingsPageVm { get; private set; } = null;
         public static LauncherWindow LauncherWindow { get; private set; } = null;
         public static PrmContext Context { get; private set; }
         public static System.Windows.Forms.NotifyIcon TaskTrayIcon { get; private set; } = null;
-        private DesktopResolutionWatcher _desktopResolutionWatcher;
         public bool CanPortable { get; private set; }
 
-        public static Dispatcher UiDispatcher = null;
+        //public static Dispatcher UiDispatcher = null;
 
         private void InitLog()
         {
@@ -142,20 +141,9 @@ namespace PRM
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        App.MainUi?.ActivateMe();
+                        App.MainWindowUi?.ActivateMe();
                     });
                 }
-            };
-        }
-
-        private void InitEvent()
-        {
-            // Event register
-            _desktopResolutionWatcher = new DesktopResolutionWatcher();
-            _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
-            {
-                GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
-                ReloadTaskTrayContextMenu();
             };
         }
 
@@ -171,9 +159,9 @@ namespace PRM
 
         private void InitMainWindow(SettingsPageViewModel c)
         {
-            MainUi = new MainWindowView(Context, c);
-            MainWindow = MainUi;
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            //MainWindowUi = new MainWindowView(Context, c);
+            //MainWindow = MainWindowUi;
+            //ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -215,7 +203,6 @@ namespace PRM
             // BASE MODULES
             InitExceptionHandle();
             OnlyOneAppInstanceCheck();
-            InitEvent();
 
             Context = new PrmContext(CanPortable, this.Resources);
             LanguageService = Context.LanguageService;
@@ -236,15 +223,14 @@ namespace PRM
             App.SettingsPageVm = SettingsPageViewModel.GetInstance();
             InitMainWindow(App.SettingsPageVm);
             InitLauncher();
-            InitTaskTray();
 
 
             if (connStatus != EnumDbStatus.OK)
             {
                 string error = connStatus.GetErrorInfo(Context.LanguageService);
                 MessageBox.Show(error, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
-                MainUi.Vm.CmdGoSysOptionsPage.Execute("Data");
-                MainUi.ActivateMe();
+                MainWindowUi.Vm.CmdGoSysOptionsPage.Execute("Data");
+                MainWindowUi.ActivateMe();
             }
             else
             {
@@ -264,7 +250,7 @@ namespace PRM
             if (Context.ConfigurationService.General.AppStartMinimized == false
                 || isNewUser)
             {
-                MainUi.ActivateMe();
+                MainWindowUi?.ActivateMe();
             }
 
             base.OnStartup(e);
@@ -304,54 +290,7 @@ namespace PRM
             //    };
             //}
         }
-        private static void InitTaskTray()
-        {
-            if (TaskTrayIcon != null) return;
-            Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
-            TaskTrayIcon = new System.Windows.Forms.NotifyIcon
-            {
-                Text = ConfigurationService.AppName,
-                Icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream),
-                BalloonTipText = "",
-                Visible = true
-            };
-            ReloadTaskTrayContextMenu();
-            GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
-            TaskTrayIcon.MouseDoubleClick += (sender, e) =>
-            {
-                if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                {
-                    MainUi.ActivateMe();
-                }
-            };
-        }
 
-        public static void ReloadTaskTrayContextMenu()
-        {
-            // rebuild TaskTrayContextMenu while language changed
-            if (TaskTrayIcon == null) return;
-
-            var title = new System.Windows.Forms.MenuItem(ConfigurationService.AppName);
-            title.Click += (sender, args) =>
-            {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
-            };
-            var @break = new System.Windows.Forms.MenuItem("-");
-            var linkHowToUse = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("about_page_how_to_use"));
-            linkHowToUse.Click += (sender, args) =>
-            {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
-            };
-            var linkFeedback = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("about_page_feedback"));
-            linkFeedback.Click += (sender, args) =>
-            {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
-            };
-            var exit = new System.Windows.Forms.MenuItem(Context.LanguageService.Translate("Exit"));
-            exit.Click += (sender, args) => App.Close();
-            var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
-            TaskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
-        }
 
         private void InitLauncher()
         {
@@ -366,9 +305,9 @@ namespace PRM
                 App.LauncherWindow?.Hide();
                 App.LauncherWindow?.Close();
                 App.LauncherWindow = null;
-                App.MainUi?.Hide();
-                App.MainUi?.Close();
-                App.MainUi = null;
+                App.MainWindowUi?.Hide();
+                App.MainWindowUi?.Close();
+                App.MainWindowUi = null;
 
                 if (App.TaskTrayIcon != null)
                 {

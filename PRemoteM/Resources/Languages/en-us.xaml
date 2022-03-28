@@ -247,7 +247,7 @@
     <s:String x:Key="New runner name">New runner name</s:String>
     <s:String x:Key="Can not be empty!">Can not be empty!</s:String>
     <s:String x:Key="Hosting">Hosting</s:String>
-    <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hosting this exe in PRemoteM tab view?</s:String>
+    <s:String x:Key="Hosting this exe in PRemoteM tab view?">Hosting this exe in PRemoteM tab windowView?</s:String>
     <s:String x:Key="Caution: some exe can not be hosted in PRemoteM.">Caution: some exe can not be hosted by PRemoteM, please test by your self.</s:String>
     <s:String x:Key="Show environment variables">Show environment variables</s:String>
     <s:String x:Key="How to select the specified monitors">How to select the specified monitors</s:String>

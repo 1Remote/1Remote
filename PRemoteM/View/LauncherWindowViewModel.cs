@@ -11,6 +11,7 @@ using PRM.Model;
 using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf.PageHost;
+using Stylet;
 
 namespace PRM.View
 {
@@ -165,7 +166,8 @@ namespace PRM.View
         private void RebuildVmServerList()
         {
             VmServerList = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
-            App.UiDispatcher.Invoke(() =>
+
+            Execute.OnUIThread(() =>
             {
                 foreach (var vm in VmServerList)
                 {
@@ -177,7 +179,7 @@ namespace PRM.View
 
         public void ReCalcWindowHeight(bool showGridAction)
         {
-            App.UiDispatcher.Invoke(() =>
+            Execute.OnUIThread(() =>
             {
                 // show action list
                 if (showGridAction)

@@ -81,7 +81,7 @@ namespace PRM.View.Settings.ProtocolConfig
                          if (c.Runners.Any(x => x.Name == str))
                              return _languageService.Translate("{0} is existed!", str);
                          return "";
-                     }), owner: App.MainUi).Trim();
+                     }), owner: App.MainWindowUi).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
                         var newRunner = new ExternalRunner(name) {MarcoNames = c.MarcoNames, ProtocolType = c.ProtocolType};

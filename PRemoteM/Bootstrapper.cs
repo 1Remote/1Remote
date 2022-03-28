@@ -9,7 +9,7 @@ using StyletIoC;
 
 namespace PRM
 {
-    public class Bootstrapper : Bootstrapper<MainWindowView>
+    public class Bootstrapper : Bootstrapper<MainWindowViewModel>
     {
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
