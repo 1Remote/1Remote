@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using PRM.Model;
@@ -7,6 +8,7 @@ using PRM.Service;
 using PRM.Utils;
 using PRM.View.Settings;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -16,19 +18,19 @@ namespace PRM.View
 {
     public partial class MainWindowView : WindowChromeBase
     {
-        public MainWindowViewModel Vm { get; set; }
+        public MainWindowViewModel Vm { get; }
+        private readonly DesktopResolutionWatcher _desktopResolutionWatcher;
 
-        public MainWindowView(PrmContext context, SettingsPageViewModel settingsPageViewModel)
+        public MainWindowView(MainWindowViewModel vm)
         {
-            App.UiDispatcher = Dispatcher;
             InitializeComponent();
-            Vm = new MainWindowViewModel(context, settingsPageViewModel, this);
+            Vm = vm;
             this.DataContext = Vm;
             Vm.ShowListPage();
             Title = ConfigurationService.AppName;
             // restore the window size from 
-            this.Width = context.LocalityService.MainWindowWidth;
-            this.Height = context.LocalityService.MainWindowHeight;
+            this.Width = Vm.Context.LocalityService.MainWindowWidth;
+            this.Height = Vm.Context.LocalityService.MainWindowHeight;
             // check the current screen size
             var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(ScreenInfoEx.GetMouseSystemPosition());
             if (this.Width > screenEx.VirtualWorkingArea.Width)
@@ -40,8 +42,8 @@ namespace PRM.View
             {
                 if (this.WindowState == WindowState.Normal)
                 {
-                    context.LocalityService.MainWindowHeight = this.Height;
-                    context.LocalityService.MainWindowWidth = this.Width;
+                    Vm.Context.LocalityService.MainWindowHeight = this.Height;
+                    Vm.Context.LocalityService.MainWindowWidth = this.Width;
                     Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
                 }
             };
@@ -94,12 +96,23 @@ namespace PRM.View
             {
                 TbFilter.CaretIndex = TbFilter.Text.Length;
             };
+
+            _desktopResolutionWatcher = new DesktopResolutionWatcher();
+            this.Loaded += (sender, args) =>
+            {
+                InitTaskTray();
+                _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
+                {
+                    GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
+                    ReloadTaskTrayContextMenu();
+                };
+            };
         }
 
         public void ActivateMe(bool isForceActivate = false)
         {
-            if (App.MainUi?.WindowState == WindowState.Minimized)
-                App.MainUi.WindowState = WindowState.Normal;
+            if (App.MainWindowUi?.WindowState == WindowState.Minimized)
+                App.MainWindowUi.WindowState = WindowState.Normal;
             if (isForceActivate)
                 HideMe();
             Dispatcher?.Invoke(() =>
@@ -196,6 +209,58 @@ namespace PRM.View
                     Shawn.Utils.ConsoleManager.Hide();
                 HideMe();
 #endif
+        }
+
+
+        private static System.Windows.Forms.NotifyIcon _taskTrayIcon = null;
+        private void InitTaskTray()
+        {
+            if (_taskTrayIcon != null) return;
+            Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
+            _taskTrayIcon = new System.Windows.Forms.NotifyIcon
+            {
+                Text = ConfigurationService.AppName,
+                Icon = new System.Drawing.Icon(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico")).Stream),
+                BalloonTipText = "",
+                Visible = true
+            };
+            ReloadTaskTrayContextMenu();
+            GlobalEventHelper.OnLanguageChanged += ReloadTaskTrayContextMenu;
+            _taskTrayIcon.MouseDoubleClick += (sender, e) =>
+            {
+                if (e.Button == System.Windows.Forms.MouseButtons.Left)
+                {
+                    this.ActivateMe();
+                }
+            };
+        }
+
+
+        public void ReloadTaskTrayContextMenu()
+        {
+            // rebuild TaskTrayContextMenu while language changed
+            if (_taskTrayIcon == null) return;
+
+            var title = new System.Windows.Forms.MenuItem(ConfigurationService.AppName);
+            title.Click += (sender, args) =>
+            {
+                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+            };
+            var @break = new System.Windows.Forms.MenuItem("-");
+            var linkHowToUse = new System.Windows.Forms.MenuItem(Vm.Context.LanguageService.Translate("about_page_how_to_use"));
+            linkHowToUse.Click += (sender, args) =>
+            {
+                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
+            };
+            var linkFeedback = new System.Windows.Forms.MenuItem(Vm.Context.LanguageService.Translate("about_page_feedback"));
+            linkFeedback.Click += (sender, args) =>
+            {
+                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
+            };
+            var exit = new System.Windows.Forms.MenuItem(Vm.Context.LanguageService.Translate("Exit"));
+            exit.Click += (sender, args) => App.Close();
+            var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
+            _taskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
         }
     }
 }

@@ -292,7 +292,7 @@ namespace PRM.View.Editor
                     {
                         _globalData.AddServer(Server);
                     }
-                    App.MainUi.Vm.AnimationPageEditor = null;
+                    App.MainWindowUi.Vm.AnimationPageEditor = null;
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -308,7 +308,7 @@ namespace PRM.View.Editor
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    App.MainUi.Vm.AnimationPageEditor = null;
+                    App.MainWindowUi.Vm.AnimationPageEditor = null;
                 });
                 return _cmdCancel;
             }

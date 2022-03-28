@@ -104,16 +104,20 @@ namespace PRM.View
         }
         #endregion
 
-        public readonly MainWindowView WindowView;
+        public MainWindowView WindowView { get; private set; }
 
-        public MainWindowViewModel(PrmContext context, SettingsPageViewModel settingsPageVm, MainWindowView windowView)
+        public MainWindowViewModel(PrmContext context, SettingsPageViewModel settingsPageVm)
         {
             Context = context;
-            WindowView = windowView;
             SettingsPageViewModel.Init(context);
             SettingsPageVm = settingsPageVm;
             SettingsPageVm.Host = this;
             AboutPageViewModel = new AboutPageViewModel();
+        }
+
+        public void Init(MainWindowView windowView)
+        {
+            WindowView = windowView;
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
                 WindowView.Dispatcher.Invoke(() =>
