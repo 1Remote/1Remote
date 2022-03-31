@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Data;
+using PRM.Model;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
+using Shawn.Utils.Interface;
 
 namespace PRM.View.Settings.ProtocolConfig
 {
@@ -11,7 +13,7 @@ namespace PRM.View.Settings.ProtocolConfig
         public ProtocolRunnerSettingsPage()
         {
             InitializeComponent();
-            var vm = new ProtocolRunnerSettingsPageViewModel(App.Context.ProtocolConfigurationService, App.Context.LanguageService);
+            var vm = new ProtocolRunnerSettingsPageViewModel(IoC.Get<PrmContext>().ProtocolConfigurationService, IoC.Get<ILanguageService>());
             this.DataContext = vm;
         }
     }
@@ -25,7 +27,7 @@ namespace PRM.View.Settings.ProtocolConfig
         {
             if (value is ExternalRunner er)
             {
-                return new ExternalRunnerSettingsViewModel(er, LanguageService.TmpLanguageService);
+                return new ExternalRunnerSettingsViewModel(er, IoC.Get<ILanguageService>());
             }
             return null;
         }

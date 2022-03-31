@@ -12,6 +12,7 @@ using PRM.Model.Protocol;
 using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
@@ -19,15 +20,15 @@ namespace PRM.View.Settings.ProtocolConfig
 {
     public class ExternalRunnerSettingsViewModel
     {
-        private readonly LanguageService _languageService;
+        private readonly ILanguageService _languageService;
         public ExternalRunner ExternalRunner { get; }
 
-        public ExternalRunnerSettingsViewModel(LanguageService languageService)
+        public ExternalRunnerSettingsViewModel(ILanguageService languageService)
         {
             ExternalRunner = new ExternalRunner("");
             _languageService = languageService;
         }
-        public ExternalRunnerSettingsViewModel(ExternalRunner externalRunner, LanguageService languageService)
+        public ExternalRunnerSettingsViewModel(ExternalRunner externalRunner, ILanguageService languageService)
         {
             ExternalRunner = externalRunner;
             _languageService = languageService;

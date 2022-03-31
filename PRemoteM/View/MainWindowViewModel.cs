@@ -6,15 +6,17 @@ using System.Windows;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Utils;
 using PRM.View.Editor;
 using PRM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
+using Stylet;
 
 namespace PRM.View
 {
-    public class MainWindowViewModel : NotifyPropertyChangedBase
+    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen
     {
         public SettingsPageViewModel SettingsPageVm { get; }
         public AboutPageViewModel AboutPageViewModel { get; }
@@ -109,7 +111,6 @@ namespace PRM.View
         public MainWindowViewModel(PrmContext context, SettingsPageViewModel settingsPageVm)
         {
             Context = context;
-            SettingsPageViewModel.Init(context);
             SettingsPageVm = settingsPageVm;
             SettingsPageVm.Host = this;
             AboutPageViewModel = new AboutPageViewModel();

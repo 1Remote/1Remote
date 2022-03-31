@@ -7,6 +7,7 @@ using PRM.Controls;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
 namespace PRM.View.Settings.ProtocolConfig
@@ -14,9 +15,9 @@ namespace PRM.View.Settings.ProtocolConfig
     public class ProtocolRunnerSettingsPageViewModel : NotifyPropertyChangedBase
     {
         private readonly ProtocolConfigurationService _protocolConfigurationService;
-        private readonly LanguageService _languageService;
+        private readonly ILanguageService _languageService;
 
-        public ProtocolRunnerSettingsPageViewModel(ProtocolConfigurationService protocolConfigurationService, LanguageService languageService)
+        public ProtocolRunnerSettingsPageViewModel(ProtocolConfigurationService protocolConfigurationService, ILanguageService languageService)
         {
             _protocolConfigurationService = protocolConfigurationService;
             _languageService = languageService;
@@ -74,6 +75,7 @@ namespace PRM.View.Settings.ProtocolConfig
                 return _cmdAddRunner ??= new RelayCommand((o) =>
                 {
                     var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
+                    // TODO 改为 window manager
                     var name = InputWindow.InputBox(_languageService.Translate("New runner name"), _languageService.Translate("New runner"), validate: new Func<string, string>((str) =>
                      {
                          if (string.IsNullOrWhiteSpace(str))
@@ -81,7 +83,7 @@ namespace PRM.View.Settings.ProtocolConfig
                          if (c.Runners.Any(x => x.Name == str))
                              return _languageService.Translate("{0} is existed!", str);
                          return "";
-                     }), owner: App.MainWindowUi).Trim();
+                     }), owner: IoC.Get<MainWindowView>()).Trim();
                     if (string.IsNullOrEmpty(name) == false && c.Runners.All(x => x.Name != name))
                     {
                         var newRunner = new ExternalRunner(name) {MarcoNames = c.MarcoNames, ProtocolType = c.ProtocolType};

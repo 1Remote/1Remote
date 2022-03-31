@@ -18,11 +18,11 @@ namespace PRM.View
 
     public class LauncherWindowViewModel : NotifyPropertyChangedBase
     {
-        private readonly double _gridMainWidth;
-        private readonly double _oneItemHeight;
-        private readonly double _oneActionHeight;
-        private readonly double _cornerRadius;
-        private readonly FrameworkElement _gridMenuActions;
+        private  double _gridMainWidth;
+        private double _oneItemHeight;
+        private double _oneActionHeight;
+        private double _cornerRadius;
+        private FrameworkElement _gridMenuActions;
 
         public PrmContext Context { get; }
 
@@ -149,17 +149,21 @@ namespace PRM.View
 
         #endregion
 
-        public LauncherWindowViewModel(PrmContext context, double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
+        public LauncherWindowViewModel(PrmContext context)
         {
             Context = context;
-            _gridMainWidth = gridMainWidth;
-            _oneItemHeight = oneItemHeight;
-            _oneActionHeight = oneActionHeight;
-            this._gridMenuActions = gridMenuActions;
-            _cornerRadius = cornerRadius;
             ReCalcWindowHeight(false);
             RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
+        }
+
+        public void Init(double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
+        {
+            _gridMainWidth = gridMainWidth;
+            _oneItemHeight = oneItemHeight;
+            _oneActionHeight = oneActionHeight;
+            _gridMenuActions = gridMenuActions;
+            _cornerRadius = cornerRadius;
         }
 
 

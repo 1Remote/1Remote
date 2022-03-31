@@ -27,7 +27,7 @@ namespace PRM.Utils
                 {
                     bool isExcluded = word.StartsWith("-#");
                     string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
-                    if (App.Context.AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                    if (IoC.Get<PrmContext>().AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
                     }
@@ -37,7 +37,7 @@ namespace PRM.Utils
                         if (words[j].StartsWith("#") || words[j].StartsWith("-#") || words[j].StartsWith("+#"))
                             break;
                         tagName = $"{tagName} {words[j]}";
-                        if (App.Context.AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                        if (IoC.Get<PrmContext>().AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                         {
                             words[j] = "";
                             tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
@@ -108,7 +108,7 @@ namespace PRM.Utils
             // match keywords
             var dispName = server.DisplayName;
             var subTitle = server.SubTitle;
-            var mrs = App.Context.KeywordMatchService.Match(new List<string>() { dispName, subTitle }, kws);
+            var mrs = IoC.Get<PrmContext>().KeywordMatchService.Match(new List<string>() { dispName, subTitle }, kws);
             if (mrs.IsMatchAllKeywords)
                 return new Tuple<bool, MatchResults>(true, mrs);
 

@@ -28,17 +28,9 @@ namespace PRM.View.Settings
         private IDataService _dataService => _context.DataService;
         private ThemeService _themeService => _context.ThemeService;
 
-        protected SettingsPageViewModel(PrmContext context, string languageCode = "")
+        public SettingsPageViewModel(PrmContext context)
         {
             _context = context;
-
-            if (string.IsNullOrEmpty(languageCode) == false
-                && _languageService.LanguageCode2Name.ContainsKey(languageCode)
-                && _languageService.SetLanguage(languageCode))
-            {
-                _configurationService.General.CurrentLanguageCode = languageCode;
-            }
-
             _context.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(PrmContext.DataService))
@@ -47,22 +39,30 @@ namespace PRM.View.Settings
             ValidateDbStatusAndShowMessageBox(false);
         }
 
-        private static SettingsPageViewModel _settingsPage;
-
-        public static void Init(PrmContext context, string languageCode = "")
+        public void SetLanguage(string languageCode = "")
         {
-            _settingsPage = new SettingsPageViewModel(context, languageCode);
-        }
-
-        public static SettingsPageViewModel GetInstance(MainWindowViewModel host = null)
-        {
-            Debug.Assert(_settingsPage != null);
-            if (host != null)
+            if (string.IsNullOrEmpty(languageCode) == false
+                && _languageService.LanguageCode2Name.ContainsKey(languageCode)
+                && _languageService.SetLanguage(languageCode))
             {
-                _settingsPage.Host = host;
+                _configurationService.General.CurrentLanguageCode = languageCode;
             }
-            return _settingsPage;
         }
+
+        //public static void Init(PrmContext context, string languageCode = "")
+        //{
+        //    _settingsPage = new SettingsPageViewModel(context, languageCode);
+        //}
+
+        //public static SettingsPageViewModel GetInstance(MainWindowViewModel host = null)
+        //{
+        //    Debug.Assert(_settingsPage != null);
+        //    if (host != null)
+        //    {
+        //        _settingsPage.Host = host;
+        //    }
+        //    return _settingsPage;
+        //}
 
 
         private Visibility _progressBarVisibility = Visibility.Collapsed;
@@ -86,7 +86,7 @@ namespace PRM.View.Settings
                     var res = _context.DataService?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
                     if (res != EnumDbStatus.OK)
                     {
-                        MessageBox.Show(res.GetErrorInfo(_context.LanguageService), _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        MessageBox.Show(res.GetErrorInfo(), _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
 
@@ -272,7 +272,7 @@ namespace PRM.View.Settings
             DbRsaPrivateKeyPath = _dataService?.Database_GetPrivateKeyPath() ?? "";
             if (res == EnumDbStatus.OK) return true;
             if (showAlert == false) return true;
-            MessageBox.Show(res.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+            MessageBox.Show(res.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
             return false;
         }
 
@@ -342,7 +342,7 @@ namespace PRM.View.Settings
                     var ss = _context.AppData.VmItemList.Select(x => x.Server);
                     if (_dataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
                     {
-                        MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(true);
                         return;
                     }
@@ -406,7 +406,7 @@ namespace PRM.View.Settings
                     var ss = _context.AppData.VmItemList.Select(x => x.Server);
                     if (_dataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
                     {
-                        MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(true);
                         return;
                     }
@@ -460,7 +460,7 @@ namespace PRM.View.Settings
                             }
                             else
                             {
-                                MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(_languageService), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             }
                         }
                     });

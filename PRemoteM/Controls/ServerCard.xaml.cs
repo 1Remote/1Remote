@@ -30,7 +30,7 @@ namespace PRM.Controls
 
         private void BtnSettingMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.Server.GetActions(App.Context, RemoteWindowPool.Instance.TabWindowCount);
+            ProtocolBaseViewModel.Actions = ProtocolBaseViewModel.Server.GetActions(IoC.Get<PrmContext>(), RemoteWindowPool.Instance.TabWindowCount);
             PopupCardSettingMenu.IsOpen = true;
         }
 

@@ -9,6 +9,7 @@ using PRM.Model;
 using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
 namespace PRM.View.Host
@@ -214,7 +215,7 @@ namespace PRM.View.Host
                 {
                     _cmdInvokeLauncher = new RelayCommand((o) =>
                     {
-                        App.LauncherWindow?.ShowMe(this.Token);
+                        IoC.Get<LauncherWindowView>().ShowMe(this.Token);
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdInvokeLauncher;
@@ -284,9 +285,9 @@ namespace PRM.View.Host
                     if (_canCmdClose)
                     {
                         _canCmdClose = false;
-                        if (App.Context.ConfigurationService.General.ConfirmBeforeClosingSession == true
+                        if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
-                            && MessageBox.Show(App.Context.LanguageService.Translate("Are you sure you want to close the connection?"), App.Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo) !=
+                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) !=
                             MessageBoxResult.Yes)
                         {
                         }
@@ -327,7 +328,7 @@ namespace PRM.View.Host
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
-            var v = new TabWindowChrome(token, App.Context.LocalityService);
+            var v = new TabWindowChrome(token, IoC.Get<PrmContext>().LocalityService);
             RemoteWindowPool.Instance.AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }

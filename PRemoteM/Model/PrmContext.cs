@@ -12,7 +12,7 @@ namespace PRM.Model
     public class PrmContext : NotifyPropertyChangedBase
     {
         public readonly ConfigurationService ConfigurationService;
-        public readonly ProtocolConfigurationService ProtocolConfigurationService;
+        public ProtocolConfigurationService ProtocolConfigurationService;
 
         private IDataService _dataService;
         public IDataService DataService
@@ -24,31 +24,31 @@ namespace PRM.Model
         public readonly LanguageService LanguageService;
         public readonly LauncherService LauncherService;
         public readonly ThemeService ThemeService;
-        public readonly LocalityService LocalityService;
         public readonly KeywordMatchService KeywordMatchService;
-        public readonly bool IsPortable;
+        public LocalityService LocalityService;
+        public bool IsPortable;
+        public GlobalData AppData { get; private set; }
 
-        public PrmContext(bool isPortable, ResourceDictionary applicationResourceDictionary)
+        public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService)
+        {
+            KeywordMatchService = keywordMatchService;
+            ConfigurationService = configurationService;
+            LanguageService = languageService;
+            LauncherService = launcherService;
+            ThemeService = themeService;
+        }
+
+        public void Init(bool isPortable)
         {
             IsPortable = isPortable;
             // init service
-            KeywordMatchService = new KeywordMatchService();
-            ConfigurationService = new ConfigurationService(isPortable, KeywordMatchService);
+            ConfigurationService.Init(isPortable);
             ProtocolConfigurationService = new ProtocolConfigurationService(isPortable);
-            if (applicationResourceDictionary != null)
-            {
-                LanguageService = new LanguageService(applicationResourceDictionary, ConfigurationService.General.CurrentLanguageCode);
-                TmpLanguageService = LanguageService;
-                ThemeService = new ThemeService(applicationResourceDictionary, ConfigurationService.Theme);
-            }
-            LauncherService = new LauncherService(LanguageService);
-
-            var baseFolder = isPortable? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
+            var baseFolder = isPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
             LocalityService = new LocalityService(new Ini(Path.Combine(baseFolder, "locality.ini")));
             AppData = new GlobalData(ConfigurationService);
         }
 
-        public GlobalData AppData { get; }
 
         /// <summary>
         /// init db connection to a sqlite db. Do make sure sqlitePath is writable!.
