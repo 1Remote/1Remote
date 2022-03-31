@@ -11,6 +11,7 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
+using Stylet;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -19,12 +20,13 @@ namespace PRM.View
     public partial class MainWindowView : WindowChromeBase
     {
         public MainWindowViewModel Vm { get; }
-        private readonly DesktopResolutionWatcher _desktopResolutionWatcher;
+        private readonly IWindowManager _wm;
 
-        public MainWindowView(MainWindowViewModel vm)
+        public MainWindowView(MainWindowViewModel vm, IWindowManager wm)
         {
             InitializeComponent();
             Vm = vm;
+            _wm = wm;
             this.DataContext = Vm;
             Vm.ShowListPage();
             Title = ConfigurationService.AppName;
@@ -88,6 +90,11 @@ namespace PRM.View
                     App.Close();
 #endif
                 }
+                else
+                {
+                    RemoteWindowPool.Instance?.Release();
+                    TaskTrayDispose();
+                }
             };
             BtnMaximize.Click += (sender, args) => this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
             BtnMinimize.Click += (sender, args) => { this.WindowState = WindowState.Minimized; };
@@ -97,22 +104,23 @@ namespace PRM.View
                 TbFilter.CaretIndex = TbFilter.Text.Length;
             };
 
-            _desktopResolutionWatcher = new DesktopResolutionWatcher();
+            var desktopResolutionWatcher = new DesktopResolutionWatcher();
             this.Loaded += (sender, args) =>
             {
-                InitTaskTray();
-                _desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
+                TaskTrayInit();
+                desktopResolutionWatcher.OnDesktopResolutionChanged += () =>
                 {
                     GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
-                    ReloadTaskTrayContextMenu();
+                    TaskTrayInit();
                 };
+                LauncherWindowView = IoC.Get<LauncherWindowView>();
             };
         }
 
         public void ActivateMe(bool isForceActivate = false)
         {
-            if (App.MainWindowUi?.WindowState == WindowState.Minimized)
-                App.MainWindowUi.WindowState = WindowState.Normal;
+            if (this.WindowState == WindowState.Minimized)
+                this.WindowState = WindowState.Normal;
             if (isForceActivate)
                 HideMe();
             Dispatcher?.Invoke(() =>
@@ -211,11 +219,12 @@ namespace PRM.View
 #endif
         }
 
+        #region TaskTray
 
         private static System.Windows.Forms.NotifyIcon _taskTrayIcon = null;
-        private void InitTaskTray()
+        private void TaskTrayInit()
         {
-            if (_taskTrayIcon != null) return;
+            TaskTrayDispose();
             Debug.Assert(Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("LOGO.ico"))?.Stream != null);
             _taskTrayIcon = new System.Windows.Forms.NotifyIcon
             {
@@ -235,8 +244,18 @@ namespace PRM.View
             };
         }
 
+        private void TaskTrayDispose()
+        {
+            if (_taskTrayIcon != null)
+            {
+                _taskTrayIcon.Visible = false;
+                _taskTrayIcon.Dispose();
+                _taskTrayIcon = null;
+            }
+        }
 
-        public void ReloadTaskTrayContextMenu()
+
+        private void ReloadTaskTrayContextMenu()
         {
             // rebuild TaskTrayContextMenu while language changed
             if (_taskTrayIcon == null) return;
@@ -262,5 +281,9 @@ namespace PRM.View
             var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
             _taskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
         }
+        #endregion
+
+        public LauncherWindowView LauncherWindowView { get; private set; } = null;
+
     }
 }

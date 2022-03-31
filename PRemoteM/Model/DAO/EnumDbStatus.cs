@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using PRM.Service;
 
 namespace PRM.Model.DAO
@@ -16,8 +17,10 @@ namespace PRM.Model.DAO
 
     public static class EnumConnectResultErrorInfo
     {
-        public static string GetErrorInfo(this EnumDbStatus result, LanguageService lang)
+        public static string GetErrorInfo(this EnumDbStatus result)
         {
+            var lang = IoC.Get<LanguageService>();
+            Debug.Assert(lang != null);
             switch (result)
             {
                 case EnumDbStatus.AccessDenied:

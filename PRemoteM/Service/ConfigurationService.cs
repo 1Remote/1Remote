@@ -29,10 +29,11 @@ namespace PRM.Service
     {
         #region General
         public string CurrentLanguageCode = "en-us";
-        public bool AppStartAutomatically = true;
 #if DEV
+        public bool AppStartAutomatically = false;
         public bool AppStartMinimized = false;
 #else
+        public bool AppStartAutomatically = true;
         public bool AppStartMinimized = true;
 #endif
         public bool ListPageIsCardView = false;
@@ -114,7 +115,7 @@ namespace PRM.Service
         public const string AppName = "PRemoteM";
         public const string AppFullName = "PersonalRemoteManager";
 #endif
-        public readonly string JsonPath;
+        public string JsonPath;
 
         private readonly KeywordMatchService _keywordMatchService;
 
@@ -122,10 +123,10 @@ namespace PRM.Service
         /// true -> Portable mode(for exe) setting files saved in Environment.CurrentDirectory;
         /// false -> ApplicationData mode(for Microsoft store.)  setting files saved in Environment.CurrentDirectory 
         /// </summary>
-        public readonly bool IsPortable;
+        public bool IsPortable { get; private set; }
 
         public List<MatchProviderInfo> AvailableMatcherProviders { get; }
-        private readonly Configuration _cfg = new Configuration();
+        private Configuration _cfg = new Configuration();
 
         public GeneralConfig General => _cfg.General;
         public LauncherConfig Launcher => _cfg.Launcher;
@@ -142,10 +143,15 @@ namespace PRM.Service
             get => _cfg.PinnedTags;
         }
 
-        public ConfigurationService(bool isPortable, KeywordMatchService keywordMatchService)
+        public ConfigurationService(KeywordMatchService keywordMatchService)
         {
             _keywordMatchService = keywordMatchService;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
+
+        }
+
+        public void Init(bool isPortable)
+        {
             IsPortable = isPortable;
 
             #region init

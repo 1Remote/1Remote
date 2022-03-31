@@ -436,7 +436,7 @@ namespace PRM.View
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => App.MainWindowUi?.Vm?.AnimationPageEditor == null && ServerListItems.Any(x => x.IsSelected == true));
+                    }, o => IoC.Get<MainWindowViewModel>().AnimationPageEditor == null && ServerListItems.Any(x => x.IsSelected == true));
             }
         }
 

@@ -5,14 +5,18 @@ using StyletIoC;
 
 public static class IoC
 {
-    public static Func<Type, string, object> GetInstance = (service, key) => throw new InvalidOperationException("IoC is not initialized");
-
-    public static IContainer Instances = null;
-
-    public static Action<object> BuildUp = instance => throw new InvalidOperationException("IoC is not initialized");
-
-    public static T Get<T>(string key = null)
+    public static void Init(IContainer iContainer)
     {
-        return (T)GetInstance(typeof(T), key);
+        Instances = iContainer;
+        BuildUp = iContainer.BuildUp;
+    }
+
+    public static IContainer Instances { get; private set; } = null;
+
+    public static Action<object> BuildUp { get; private set; } = instance => throw new InvalidOperationException("IoC is not initialized");
+
+    public static T Get<T>(string key = null) where T : class
+    {
+        return (T)Instances?.Get(typeof(T), key);
     }
 }

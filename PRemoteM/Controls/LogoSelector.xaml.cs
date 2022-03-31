@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using PRM.Properties;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 
@@ -370,7 +371,7 @@ namespace PRM.Controls
 
         private void BtnOpenImg_OnClick(object sender, RoutedEventArgs e)
         {
-            var path = SelectFileHelper.OpenFile(title: App.Context.LanguageService.Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp|all files|*.*");
+            var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("logo_selector_open_file_dialog_title"), filter: "image|*.jpg;*.png;*.bmp|all files|*.*");
             if (path != null)
                 SetImg(NetImageProcessHelper.ReadImgFile(path).ToBitmapSource());
         }

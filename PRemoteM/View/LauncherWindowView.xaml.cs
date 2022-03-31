@@ -10,12 +10,12 @@ using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View
 {
-    public partial class LauncherWindow : WindowChromeBase
+    public partial class LauncherWindowView : WindowChromeBase
     {
         private readonly LauncherWindowViewModel _vm;
         public readonly PrmContext Context;
 
-        public LauncherWindow(PrmContext context)
+        public LauncherWindowView(PrmContext context, LauncherWindowViewModel launcherWindowViewModel)
         {
             Context = context;
             InitializeComponent();
@@ -27,7 +27,8 @@ namespace PRM.View
             double oneItemHeight = (double)FindResource("OneItemHeight");
             double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
             double cornerRadius = (double)FindResource("CornerRadius");
-            _vm = new LauncherWindowViewModel(context, gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridMenuActions);
+            _vm = launcherWindowViewModel;
+            _vm.Init(gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridMenuActions);
 
             DataContext = _vm;
             Loaded += (sender, args) =>
@@ -38,6 +39,7 @@ namespace PRM.View
                 {
                     if (args1.Key == Key.Escape) HideMe();
                 };
+                SetHotKey();
             };
             Show();
 
@@ -86,7 +88,7 @@ namespace PRM.View
             SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
-            if (App.MainWindowUi.Vm.ProcessingRingVisibility == Visibility.Visible) return;
+            if (IoC.Get<MainWindowViewModel>().ProcessingRingVisibility == Visibility.Visible) return;
             if (!Context.ConfigurationService.Launcher.LauncherEnabled) return;
             if (_isHidden != true) return;
 

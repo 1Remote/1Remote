@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using PRM.Service;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
 
@@ -34,7 +35,7 @@ namespace PRM.Model.Protocol.Base
                 ProtocolDisplayNameInShort = ProtocolDisplayName;
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
-            ServerEditorDifferentOptions = LanguageService.TmpLanguageService?.Translate("server_editor_different_options") ?? "";
+            ServerEditorDifferentOptions = IoC.Get<ILanguageService>().Translate("server_editor_different_options") ?? "";
         }
 
         public abstract bool IsOnlyOneInstance();
@@ -259,7 +260,7 @@ namespace PRM.Model.Protocol.Base
         public ProtocolBase Clone()
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
-            clone.ServerEditorDifferentOptions = LanguageService.TmpLanguageService?.Translate("server_editor_different_options") ?? "<different options>";
+            clone.ServerEditorDifferentOptions = IoC.Get<ILanguageService>().Translate("server_editor_different_options") ?? "<different options>";
             clone.Tags = new List<string>(this.Tags);
             return clone;
         }

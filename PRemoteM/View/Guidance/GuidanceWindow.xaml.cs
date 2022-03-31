@@ -14,10 +14,12 @@ namespace PRM.View.Guidance
     /// <summary>
     /// GuidanceWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class GuidanceWindow : WindowChromeBase
+    public partial class GuidanceWindow : WindowBase
     {
-        public GuidanceWindow(PrmContext context)
+        public SettingsPageViewModel SettingsPageViewModel { get; }
+        public GuidanceWindow(PrmContext context, SettingsPageViewModel viewModel)
         {
+            SettingsPageViewModel = viewModel;
             InitializeComponent();
             context.ConfigurationService.CanSave = false;
 
@@ -52,10 +54,8 @@ namespace PRM.View.Guidance
             Console.WriteLine("* 3-letter ISO Name: {0}", ci.ThreeLetterISOLanguageName);
             Console.WriteLine("* 3-letter Win32 API Name: {0}", ci.ThreeLetterWindowsLanguageName);
 
-            SettingsPageViewModel.Init(context, CultureInfo.CurrentCulture.Name.ToLower());
-            SettingsPageViewModel = SettingsPageViewModel.GetInstance();
+            SettingsPageViewModel.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
 
-            // saving config when this window close
             Closing += (sender, args) =>
             {
                 if (Step >= 0)
@@ -63,12 +63,12 @@ namespace PRM.View.Guidance
             };
             Closed += (sender, args) =>
             {
+                // save config when close
                 context.ConfigurationService.CanSave = true;
                 context.ConfigurationService.Save();
             };
         }
 
-        public SettingsPageViewModel SettingsPageViewModel { get; set; }
 
 
         private int _step = 0;

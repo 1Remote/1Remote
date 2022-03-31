@@ -190,6 +190,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AppInit.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Controls\AutoCompleteComboBox.xaml.cs">
       <DependentUpon>AutoCompleteComboBox.xaml</DependentUpon>
@@ -220,8 +221,8 @@
     <Compile Include="Service\IDataService.cs" />
     <Compile Include="Model\DAO\IDataBase.cs" />
     <Compile Include="Model\DAO\IDbServerModel.cs" />
-    <Compile Include="Service\ILanguageService.cs" />
     <Compile Include="Utils\MicrosoftStoreUtils.cs" />
+    <Compile Include="Utils\NotifyPropertyChangedBaseScreen.cs" />
     <Compile Include="View\Host\ITabWindow.cs" />
     <Compile Include="Model\ProtocolAction.cs" />
     <Compile Include="Model\GlobalData.cs" />
@@ -361,8 +362,8 @@
     <Compile Include="View\Host\TabWindowChrome.xaml.cs">
       <DependentUpon>TabWindowChrome.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\LauncherWindow.xaml.cs">
-      <DependentUpon>LauncherWindow.xaml</DependentUpon>
+    <Compile Include="View\LauncherWindowView.xaml.cs">
+      <DependentUpon>LauncherWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Editor\ServerEditorPage.xaml.cs">
       <DependentUpon>ServerEditorPage.xaml</DependentUpon>
@@ -523,7 +524,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\LauncherWindow.xaml">
+    <Page Include="View\LauncherWindowView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

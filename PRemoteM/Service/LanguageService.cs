@@ -5,14 +5,13 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using PRM.Model;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
 namespace PRM.Service
 {
     public class LanguageService : ILanguageService
     {
-        public static LanguageService TmpLanguageService = null;
-
         private string _languageCode = "en-us";
         private readonly ResourceDictionary _applicationResourceDictionary;
 
@@ -24,29 +23,15 @@ namespace PRM.Service
         /// </summary>
         public Dictionary<string, string> LanguageCode2Name { get; } = new Dictionary<string, string>();
 
-        public LanguageService(ResourceDictionary applicationResourceDictionary, string languageCode)
+
+        public LanguageService(ResourceDictionary applicationResourceDictionary)
         {
             _applicationResourceDictionary = applicationResourceDictionary;
-
             // add static language resources
             AddStaticLanguageResources("en-us");
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("de-de");
             AddStaticLanguageResources("fr-fr");
-
-            //#if DEV
-            //            // check if any field missing in the LanguageResources.
-            //            var en = Resources["en-us"];
-            //            var zh_cn = Resources["zh-cn"];
-            //            var de_de = Resources["de-de"];
-            //            var fr_fr = Resources["fr-fr"];
-            //            Debug.Assert(MultiLanguageHelper.FindMissingFields(en, zh_cn).Count == 0);
-            //            Debug.Assert(MultiLanguageHelper.FindMissingFields(en, de_de).Count == 0);
-            //            Debug.Assert(MultiLanguageHelper.FindMissingFields(en, fr_fr).Count == 0);
-            //#endif
-
-            SetLanguage(languageCode);
-            this._languageCode = Resources.ContainsKey(languageCode) ? languageCode : "en-us";
         }
 
         public void AddXamlLanguageResources(string code, string fullName)

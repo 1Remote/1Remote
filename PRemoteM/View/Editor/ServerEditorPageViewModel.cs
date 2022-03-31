@@ -11,6 +11,7 @@ using PRM.Model.Protocol.FileTransmit;
 using PRM.Service;
 using PRM.View.Editor.Forms;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
 namespace PRM.View.Editor
@@ -292,7 +293,7 @@ namespace PRM.View.Editor
                     {
                         _globalData.AddServer(Server);
                     }
-                    App.MainWindowUi.Vm.AnimationPageEditor = null;
+                    IoC.Get<MainWindowViewModel>().AnimationPageEditor = null;
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -308,7 +309,7 @@ namespace PRM.View.Editor
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    App.MainWindowUi.Vm.AnimationPageEditor = null;
+                    IoC.Get<MainWindowViewModel>().AnimationPageEditor = null;
                 });
                 return _cmdCancel;
             }
