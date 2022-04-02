@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using PRM.Model;
@@ -46,7 +47,7 @@ namespace PRM.View
                 {
                     Vm.Context.LocalityService.MainWindowHeight = this.Height;
                     Vm.Context.LocalityService.MainWindowWidth = this.Width;
-                    Console.WriteLine($"main window w = {this.Width}, h = {this.Height}");
+                    SimpleLogHelper.Info($"Main window resize to: w = {this.Width}, h = {this.Height}");
                 }
             };
 

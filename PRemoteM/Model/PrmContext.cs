@@ -12,7 +12,7 @@ namespace PRM.Model
     public class PrmContext : NotifyPropertyChangedBase
     {
         public readonly ConfigurationService ConfigurationService;
-        public ProtocolConfigurationService ProtocolConfigurationService;
+        public readonly ProtocolConfigurationService ProtocolConfigurationService;
 
         private IDataService _dataService;
         public IDataService DataService
@@ -25,27 +25,25 @@ namespace PRM.Model
         public readonly LauncherService LauncherService;
         public readonly ThemeService ThemeService;
         public readonly KeywordMatchService KeywordMatchService;
-        public LocalityService LocalityService;
-        public bool IsPortable;
+        public readonly LocalityService LocalityService;
+        public bool IsPortable { get; private set; }
         public GlobalData AppData { get; private set; }
 
-        public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService)
+        public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService, LocalityService localityService, ProtocolConfigurationService protocolConfigurationService)
         {
             KeywordMatchService = keywordMatchService;
             ConfigurationService = configurationService;
             LanguageService = languageService;
             LauncherService = launcherService;
             ThemeService = themeService;
+            LocalityService = localityService;
+            ProtocolConfigurationService = protocolConfigurationService;
         }
 
         public void Init(bool isPortable)
         {
             IsPortable = isPortable;
             // init service
-            ConfigurationService.Init(isPortable);
-            ProtocolConfigurationService = new ProtocolConfigurationService(isPortable);
-            var baseFolder = isPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
-            LocalityService = new LocalityService(new Ini(Path.Combine(baseFolder, "locality.ini")));
             AppData = new GlobalData(ConfigurationService);
         }
 
@@ -81,7 +79,8 @@ namespace PRM.Model
                 return EnumDbStatus.AccessDenied;
             }
 
-            DataService = new DataService();
+            
+            DataService = IoC.Get<IDataService>();
             DataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
             var ret = DataService.Database_SelfCheck();
             if (ret == EnumDbStatus.OK)
