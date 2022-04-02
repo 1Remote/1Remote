@@ -87,11 +87,11 @@ namespace PRM.Model
 
         public int TabWindowCount => _tabWindows.Count;
 
-        private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBaseViewModel protocolServerViewModel)
+        private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBase server)
         {
-            var serverId = protocolServerViewModel.Server.Id;
+            var serverId = server.Id;
             // if is OnlyOneInstance Protocol and it is connected now, activate it and return.
-            if (protocolServerViewModel.Server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
+            if (server.IsOnlyOneInstance() && _protocolHosts.ContainsKey(serverId.ToString()))
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
@@ -195,10 +195,10 @@ namespace PRM.Model
             t.Start();
         }
 
-        private void ConnectWithFullScreen(ProtocolBaseViewModel protocolServerViewModel, Runner runner)
+        private void ConnectWithFullScreen(ProtocolBase server, Runner runner)
         {
             // fullscreen normally
-            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocolServerViewModel.Server, runner);
+            var host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, server, runner);
             if (host == null)
                 return;
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
@@ -208,7 +208,7 @@ namespace PRM.Model
             var full = MoveProtocolHostToFullScreen(host.ConnectionId);
             host.ParentWindow = full;
             host.Conn();
-            SimpleLogHelper.Debug($@"Start Conn: {protocolServerViewModel.Server.DisplayName}({protocolServerViewModel.GetHashCode()}) by host({host.GetHashCode()}) with full");
+            SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
 
         private void ConnectWithTab(ProtocolBase protocol, Runner runner, string assignTabToken)
@@ -276,9 +276,9 @@ namespace PRM.Model
             if (serverId <= 0)
             {
                 var list = _context.AppData.VmItemList.Where(x => x.IsSelected).ToArray();
-                foreach (var server in list)
+                foreach (var item in list)
                 {
-                    ShowRemoteHost(server.Id, assignTabToken, assignRunnerName);
+                    ShowRemoteHost(item.Id, assignTabToken, assignRunnerName);
                 }
                 return;
             }
@@ -290,25 +290,25 @@ namespace PRM.Model
             // clear selected state
             _context.AppData.UnselectAllServers();
 
-            var vmProtocolServer = _context.AppData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId);
-            if (vmProtocolServer == null)
+            var server = _context.AppData.VmItemList.FirstOrDefault(x => x.Server.Id == serverId)?.Server;
+            if (server == null)
             {
                 SimpleLogHelper.Error($@"try to connect Server Id = {serverId} while {serverId} is not in the db");
                 return;
             }
 
             // update the last conn time
-            vmProtocolServer.Server.LastConnTime = DateTime.Now;
-            _context.DataService.Database_UpdateServer(vmProtocolServer.Server);
+            server.LastConnTime = DateTime.Now;
+            _context.DataService.Database_UpdateServer(server);
 
             // if is OnlyOneInstance protocol and it is connected now, activate it and return.
-            if (ActivateOrReConnIfServerSessionIsOpened(vmProtocolServer))
+            if (ActivateOrReConnIfServerSessionIsOpened(server))
                 return;
 
             // run script before connected
-            vmProtocolServer.Server.RunScriptBeforeConnect();
+            server.RunScriptBeforeConnect();
 
-            if (vmProtocolServer.Server is RdpApp remoteApp)
+            if (server is RdpApp remoteApp)
             {
                 ConnectRemoteApp(remoteApp);
                 return;
@@ -317,16 +317,16 @@ namespace PRM.Model
 
 
 
-            var runner = ProtocolRunnerHostHelper.GetRunner(_context, vmProtocolServer.Server.Protocol, assignRunnerName);
+            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server.Protocol, assignRunnerName);
 
 
-            if (vmProtocolServer.Server is RDP rdp)
+            if (server is RDP rdp)
             {
                 // check if screens are in different scale factors
                 int factor = (int)(new ScreenInfoEx(Screen.PrimaryScreen).ScaleFactor * 100);
                 // for those people using 2+ monitors in different scale factors, we will try "mstsc.exe" instead of "PRemoteM".
                 if (rdp.MstscModeEnabled == true
-                    || (vmProtocolServer.Server.ThisTimeConnWithFullScreen()
+                    || (server.ThisTimeConnWithFullScreen()
                         && Screen.AllScreens.Length > 1
                         && rdp.RdpFullScreenFlag == ERdpFullScreenFlag.EnableFullAllScreens
                         && Screen.AllScreens.Select(screen => (int)(new ScreenInfoEx(screen).ScaleFactor * 100)).Any(factor2 => factor != factor2))
@@ -337,14 +337,14 @@ namespace PRM.Model
                 }
 
                 // rdp full screen
-                if (vmProtocolServer.Server.ThisTimeConnWithFullScreen())
+                if (server.ThisTimeConnWithFullScreen())
                 {
-                    ConnectWithFullScreen(vmProtocolServer, runner);
+                    ConnectWithFullScreen(server, runner);
                     return;
                 }
             }
 
-            ConnectWithTab(vmProtocolServer.Server, runner, assignTabToken);
+            ConnectWithTab(server, runner, assignTabToken);
 
             CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");

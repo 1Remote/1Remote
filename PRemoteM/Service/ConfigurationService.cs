@@ -119,14 +119,8 @@ namespace PRM.Service
 
         private readonly KeywordMatchService _keywordMatchService;
 
-        /// <summary>
-        /// true -> Portable mode(for exe) setting files saved in Environment.CurrentDirectory;
-        /// false -> ApplicationData mode(for Microsoft store.)  setting files saved in Environment.CurrentDirectory 
-        /// </summary>
-        public bool IsPortable { get; private set; }
-
-        public List<MatchProviderInfo> AvailableMatcherProviders { get; }
-        private Configuration _cfg = new Configuration();
+        public readonly List<MatchProviderInfo> AvailableMatcherProviders;
+        private readonly Configuration _cfg;
 
         public GeneralConfig General => _cfg.General;
         public LauncherConfig Launcher => _cfg.Launcher;
@@ -143,18 +137,15 @@ namespace PRM.Service
             get => _cfg.PinnedTags;
         }
 
-        public ConfigurationService(KeywordMatchService keywordMatchService)
+
+        public ConfigurationService(bool isPortable, KeywordMatchService keywordMatchService)
         {
             _keywordMatchService = keywordMatchService;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
-
-        }
-
-        public void Init(bool isPortable)
-        {
-            IsPortable = isPortable;
+            _cfg = new Configuration();
 
             #region init
+
             // init path by `IsPortable`
             // default path of db
             // default value of json'
@@ -165,7 +156,7 @@ namespace PRM.Service
                 oldIniFilePath = Path.Combine(appDateFolder, ConfigurationService.AppName + ".ini");
             }
 
-            if (IsPortable)
+            if (isPortable)
             {
                 JsonPath = Path.Combine(Environment.CurrentDirectory, ConfigurationService.AppName + ".json");
                 Database.SqliteDatabasePath = Path.Combine(Environment.CurrentDirectory, $"{ConfigurationService.AppName}.db");
@@ -229,7 +220,7 @@ namespace PRM.Service
                 }
                 catch (Exception)
                 {
-                    if (IsPortable)
+                    if (isPortable)
                         Database.SqliteDatabasePath = new DatabaseConfig().SqliteDatabasePath;
                 }
             #endregion
