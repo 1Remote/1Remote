@@ -11,7 +11,6 @@ using PRM.Resources.Icons;
 using PRM.Service;
 using PRM.View;
 using PRM.View.Settings;
-using Shawn.Utils;
 
 namespace PRemoteM.Tests.ViewModel.Configuration
 {
@@ -40,6 +39,7 @@ namespace PRemoteM.Tests.ViewModel.Configuration
             _dataService.Database_InsertServer(_app);
             _dataService.Database_CloseConnection();
 
+            
             var ctx = new PrmContext(true, null);
             if(File.Exists(ctx.ConfigurationService.JsonPath))
                 File.Delete(ctx.ConfigurationService.JsonPath);
