@@ -16,6 +16,7 @@ namespace PRM.Model
         public GlobalData(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
+            ReloadServerList();
         }
 
         private IDataService _dataService;

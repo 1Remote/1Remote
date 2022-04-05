@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using PRM.Model.DAO;
@@ -27,9 +28,9 @@ namespace PRM.Model
         public readonly KeywordMatchService KeywordMatchService;
         public readonly LocalityService LocalityService;
         public bool IsPortable { get; private set; }
-        public GlobalData AppData { get; private set; }
+        public readonly GlobalData AppData;
 
-        public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService, LocalityService localityService, ProtocolConfigurationService protocolConfigurationService)
+        public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService, LocalityService localityService, ProtocolConfigurationService protocolConfigurationService, GlobalData appData)
         {
             KeywordMatchService = keywordMatchService;
             ConfigurationService = configurationService;
@@ -38,13 +39,13 @@ namespace PRM.Model
             ThemeService = themeService;
             LocalityService = localityService;
             ProtocolConfigurationService = protocolConfigurationService;
+            AppData = appData;
         }
 
         public void Init(bool isPortable)
         {
             IsPortable = isPortable;
             // init service
-            AppData = new GlobalData(ConfigurationService);
         }
 
 
@@ -56,7 +57,7 @@ namespace PRM.Model
         {
             if (string.IsNullOrWhiteSpace(sqlitePath))
             {
-                sqlitePath = ConfigurationService.Database.SqliteDatabasePath;
+                sqlitePath = IoC.Get<ConfigurationService>().Database.SqliteDatabasePath;
                 var fi = new FileInfo(sqlitePath);
                 if (fi.Exists == false)
                     try
@@ -85,6 +86,22 @@ namespace PRM.Model
             var ret = DataService.Database_SelfCheck();
             if (ret == EnumDbStatus.OK)
                 AppData.SetDbOperator(DataService);
+            return ret;
+        }
+
+
+
+        public static EnumDbStatus SetupSqliteDbConnection(DataService dataService, string sqlitePath)
+        {
+            Debug.Assert(dataService != null);
+            Debug.Assert(string.IsNullOrEmpty(sqlitePath));
+            dataService.Database_CloseConnection();
+            if (!IoPermissionHelper.HasWritePermissionOnFile(sqlitePath))
+            {
+                return EnumDbStatus.AccessDenied;
+            }
+            dataService.Database_OpenConnection(DatabaseType.Sqlite, DbExtensions.GetSqliteConnectionString(sqlitePath));
+            var ret = dataService.Database_SelfCheck();
             return ret;
         }
     }

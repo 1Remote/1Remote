@@ -25,6 +25,11 @@ namespace PRM
         private bool _canPortable = false;
         private string _baseFolder;
 
+        private KeywordMatchService _keywordMatchService;
+        private ConfigurationService _configurationService;
+        private ThemeService _themeService;
+        private GlobalData _globalData;
+
         protected override void OnStart()
         {
             // Step1
@@ -66,20 +71,26 @@ namespace PRM
 
             AppInit.InitLog(_canPortable);
             AppInit.OnlyOneAppInstanceCheck();
-        }
 
+
+            _keywordMatchService = new KeywordMatchService();
+            _configurationService = new ConfigurationService(_canPortable, _keywordMatchService);
+            _themeService = new ThemeService(App.ResourceDictionary, _configurationService.Theme);
+            _globalData = new GlobalData(_configurationService);
+        }
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
+
             // Step2
             // Configure the IoC container in here
             builder.Bind<IDataService>().And<DataService>().To<DataService>();
             builder.Bind<ILanguageService>().And<LanguageService>().ToInstance(new LanguageService(App.ResourceDictionary));
-            builder.Bind<LocalityService>().ToInstance(new Ini(Path.Combine(_baseFolder, "locality.ini")));
-            builder.Bind<ThemeService>().ToSelf().InSingletonScope();
-            var kws = new KeywordMatchService();
-            builder.Bind<KeywordMatchService>().ToInstance(kws);
-            builder.Bind<ConfigurationService>().ToInstance(new ConfigurationService(_canPortable, kws));
+            builder.Bind<LocalityService>().ToInstance(new LocalityService(new Ini(Path.Combine(_baseFolder, "locality.ini"))));
+            builder.Bind<KeywordMatchService>().ToInstance(_keywordMatchService);
+            builder.Bind<ConfigurationService>().ToInstance(_configurationService);
+            builder.Bind<ThemeService>().ToInstance(_themeService);
+            builder.Bind<GlobalData>().ToInstance(_globalData);
             builder.Bind<ProtocolConfigurationService>().ToInstance(new ProtocolConfigurationService(_canPortable));
             builder.Bind<PrmContext>().ToSelf().InSingletonScope();
 
@@ -93,7 +104,7 @@ namespace PRM
 
 
 
-
+        private EnumDbStatus _dbConnectionStatus;
         protected override void Configure()
         {
             // Step3
@@ -106,7 +117,8 @@ namespace PRM
             var context = IoC.Get<PrmContext>();
             context.Init(_canPortable);
             RemoteWindowPool.Init(context);
-            
+            _dbConnectionStatus = context.InitSqliteDb();
+            IoC.Get<GlobalData>().ReloadServerList();
         }
 
         protected override void OnLaunch()
@@ -125,17 +137,12 @@ namespace PRM
             }
 
             // init Database here after ui init, to show alert if db connection goes wrong.
-            var connStatus = context.InitSqliteDb();
-            if (connStatus != EnumDbStatus.OK)
+            if (_dbConnectionStatus != EnumDbStatus.OK)
             {
-                string error = connStatus.GetErrorInfo();
+                string error = _dbConnectionStatus.GetErrorInfo();
                 MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().CmdGoSysOptionsPage.Execute("Data");
                 IoC.Get<MainWindowView>().ActivateMe();
-            }
-            else
-            {
-                context.AppData.ReloadServerList();
             }
 
 

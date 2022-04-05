@@ -35,7 +35,7 @@ namespace PRM.Model.Protocol.Base
                 ProtocolDisplayNameInShort = ProtocolDisplayName;
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
-            ServerEditorDifferentOptions = IoC.Get<ILanguageService>().Translate("server_editor_different_options") ?? "";
+            ServerEditorDifferentOptions = IoC.Get<ILanguageService>()?.Translate("server_editor_different_options") ?? "";
         }
 
         public abstract bool IsOnlyOneInstance();
