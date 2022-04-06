@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PRM.View.ServerListPage"
+﻿<UserControl x:Class="PRM.View.ServerListPageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,6 +10,7 @@
              xmlns:service="clr-namespace:PRM.Service"
              xmlns:model="clr-namespace:PRM.Model"
              xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              Background="White"
              d:DataContext="{d:DesignInstance view:ServerListPageViewModel}"
@@ -393,7 +394,7 @@
                                         </TextBlock.Resources>
                                     </TextBlock>
                                     <Button Width="10" Height="10" Tag="{Binding TagName}"
-                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagRemove}"
+                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagRemove}"
                                                     CommandParameter="{Binding TagName}"
                                                     Style="{StaticResource ButtonBarAccentStyle}"
                                                     HorizontalAlignment="Right"
@@ -621,7 +622,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button MinWidth="80"
-                                        Click="BtnAllServer_Click"
+                                        Command="{s:Action ShowTabByName}" CommandParameter=""
                                         Content="{DynamicResource All}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -662,7 +663,8 @@
 
                     <Button Grid.Column="1"
                                         MinWidth="80"
-                                        Click="BtnTagsListView_Click"
+                                        Command="{s:Action ShowTabByName}"
+                                        CommandParameter="{x:Static view:ServerListPageViewModel.TabTagsListName}"
                                         BorderThickness="0" Content="{DynamicResource Tags}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -736,7 +738,7 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="model:Tag">
-                                        <Grid Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=view:ServerListPage}}">
+                                        <Grid Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=view:ServerListPageView}}">
                                             <Grid.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Header="{DynamicResource Delete}" Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.CmdTagDelete}" CommandParameter="{Binding}"/>
@@ -747,7 +749,7 @@
                                             </Grid.ContextMenu>
                                             <Button 
                                                 MinWidth="80"
-                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPage}, Path=DataContext.CmdTagAddIncluded}"
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:ServerListPageView}, Path=DataContext.CmdTagAddIncluded}"
                                                 CommandParameter="{Binding Name}"
                                                 Content="{Binding Name, Converter={StaticResource ConverterTagName}}">
                                                 <Button.Style>
@@ -770,7 +772,7 @@
                                                             <DataTrigger Value="True">
                                                                 <DataTrigger.Binding>
                                                                     <MultiBinding Converter="{StaticResource ConverterStringIsEqual}" >
-                                                                        <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPage}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
+                                                                        <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType=view:ServerListPageView}" Path="DataContext.SelectedTabName" Mode="OneWay"></Binding>
                                                                         <Binding Path="Name" Mode="OneWay"></Binding>
                                                                     </MultiBinding>
                                                                 </DataTrigger.Binding>
@@ -828,9 +830,9 @@
                             </Border.Effect>
                             <Grid MinWidth="150" Background="{DynamicResource PrimaryDarkBrush}">
                                 <StackPanel>
-                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource Add}" Click="ButtonAdd_OnClick"></Button>
-                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource Import}" Click="ButtonImport_OnClick"></Button>
-                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Click="ButtonImportMRemoteNgCsv_OnClick"></Button>
+                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource Add}" Command="{Binding CmdAdd}"></Button>
+                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource Import}" Command="{Binding CmdImportFromJson}"></Button>
+                                    <Button Padding="5" Style="{StaticResource ButtonBarPrimaryStyle}" Background="{DynamicResource PrimaryDarkBrush}" Content="{DynamicResource import_from_csv}" Command="{Binding CmdImportFromCsv}"></Button>
                                 </StackPanel>
                             </Grid>
                         </Border>

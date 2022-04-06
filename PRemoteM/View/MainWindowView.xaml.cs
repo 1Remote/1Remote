@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using PRM.Model;
 using PRM.Service;
 using PRM.Utils;
-using PRM.View.Settings;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -29,7 +26,6 @@ namespace PRM.View
             Vm = vm;
             _wm = wm;
             this.DataContext = Vm;
-            Vm.ShowListPage();
             Title = ConfigurationService.AppName;
             // restore the window size from 
             this.Width = Vm.Context.LocalityService.MainWindowWidth;
@@ -68,7 +64,7 @@ namespace PRM.View
                    )
                 {
                     // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
-                    Vm.RequestRatingPopupVisibility = Visibility.Visible;
+                    Vm.TopLevelViewModel = IoC.Get<RequestRatingViewModel>();
                     return;
                 }
 
@@ -115,8 +111,10 @@ namespace PRM.View
                     TaskTrayInit();
                 };
                 LauncherWindowView = IoC.Get<LauncherWindowView>();
+                vm.Init(this);
             };
         }
+
 
         public void ActivateMe(bool isForceActivate = false)
         {
@@ -199,25 +197,6 @@ namespace PRM.View
             if (e.ClickCount >= 2)
                 return;
             base.WinTitleBar_OnPreviewMouseDown(sender, e);
-        }
-
-        private void ButtonDismissEngagementPopup_OnClick(object sender, RoutedEventArgs e)
-        {
-            Vm.RequestRatingPopupVisibility = Visibility.Collapsed;
-            Vm.Context.ConfigurationService.Engagement.DoNotShowAgain = CbDoNotShowEngagementAgain.IsChecked == true;
-            Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime = DateTime.Now;
-            Vm.Context.ConfigurationService.Engagement.ConnectCount = -100;
-            Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersionString = AppVersion.Version;
-            Vm.Context.ConfigurationService.Save();
-
-#if DEV
-            App.Close();
-            return;
-#else
-                if (Shawn.Utils.ConsoleManager.HasConsole)
-                    Shawn.Utils.ConsoleManager.Hide();
-                HideMe();
-#endif
         }
 
         #region TaskTray

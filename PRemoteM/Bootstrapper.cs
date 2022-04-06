@@ -99,6 +99,9 @@ namespace PRM
             builder.Bind<LauncherWindowView>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<ServerListPageViewModel>().ToSelf();
+            builder.Bind<ProcessingRingViewModel>().ToSelf();
+            builder.Bind<RequestRatingViewModel>().ToSelf();
             base.ConfigureIoC(builder);
         }
 

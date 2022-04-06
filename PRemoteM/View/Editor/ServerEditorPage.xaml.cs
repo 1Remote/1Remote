@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -7,6 +8,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using PRM.Model;
 using PRM.Resources.Icons;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
 
@@ -16,13 +18,11 @@ namespace PRM.View.Editor
     {
         public readonly ServerEditorPageViewModel Vm;
         private readonly BitmapSource _oldLogo;
-        public readonly PrmContext Context;
 
         public ServerEditorPage(PrmContext context, ServerEditorPageViewModel vm)
         {
             Debug.Assert(vm?.Server != null);
             InitializeComponent();
-            Context = context;
             Vm = vm;
             DataContext = vm;
             vm.TagsEditor = TagsEditor;
@@ -30,7 +30,7 @@ namespace PRM.View.Editor
             // add mode
             if (vm.IsAddMode)
             {
-                ButtonSave.Content = Context.LanguageService.Translate("Add");
+                ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
                 //ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
 
                 if (vm.Server.IconImg == null
@@ -131,7 +131,7 @@ namespace PRM.View.Editor
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBox.Show(ex.Message, IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
             }
         }
 

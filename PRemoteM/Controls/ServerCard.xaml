@@ -199,7 +199,7 @@
                             <Button Width="20" HorizontalAlignment="Right" 
                                     Background="{Binding ElementName=CardRealBorder,Path=BorderBrush}" 
                                     attachProperty:VisionElement.OpacityAccent="0.9"
-                                    Command="{Binding RelativeSource={RelativeSource AncestorType=view:ServerListPage}, Path=DataContext.CmdDelete}"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=view:ServerListPageView}, Path=DataContext.CmdDelete}"
                                     CommandParameter="{Binding Id}">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">

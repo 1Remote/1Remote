@@ -29,22 +29,8 @@ namespace PRM.View
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBase
     {
-        #region singleton
-        private static ServerListPageViewModel _uniqueInstance = null;
-        private static readonly object InstanceLock = new object();
-        public static ServerListPageViewModel Instance() => _uniqueInstance;
-        public static ServerListPageViewModel Instance(PrmContext context, SettingsPageViewModel settingsPageView, ListBox list, MainWindowViewModel mainWindowViewModel)
-        {
-            if (_uniqueInstance == null)
-                _uniqueInstance = new ServerListPageViewModel(context, settingsPageView, list, mainWindowViewModel);
-            return _uniqueInstance;
-        }
-        #endregion singleton
-
-
         public PrmContext Context { get; }
         public SettingsPageViewModel SettingsPageViewModel { get; }
-        private readonly ListBox _list;
         private readonly MainWindowViewModel _mainWindowViewModel;
 
         #region properties
@@ -118,11 +104,10 @@ namespace PRM.View
 
         #endregion
 
-        protected ServerListPageViewModel(PrmContext context, SettingsPageViewModel settingsPageView, ListBox list, MainWindowViewModel mainWindowViewModel)
+        public ServerListPageViewModel(PrmContext context, SettingsPageViewModel settingsPageView, MainWindowViewModel mainWindowViewModel)
         {
             Context = context;
             SettingsPageViewModel = settingsPageView;
-            _list = list;
             _mainWindowViewModel = mainWindowViewModel;
             RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
@@ -501,6 +486,11 @@ namespace PRM.View
                     }
                 });
             }
+        }
+
+        public void ShowTabByName(string tabName = "")
+        {
+            SelectedTabName = tabName;
         }
         #endregion
     }
