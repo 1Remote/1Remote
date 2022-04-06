@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -20,58 +21,49 @@ namespace PRM.View
     {
         public SettingsPageViewModel SettingsPageVm { get; }
         public AboutPageViewModel AboutPageViewModel { get; }
-        private ServerListPage _serverListPage;
+        public ServerListPageViewModel ServerListViewModel { get; }
 
         #region Properties
 
         public PrmContext Context { get; }
 
-        public AnimationPage AnimationPageServerList { get; private set; }
 
 
-        private AnimationPage _animationPageEditor = null;
-        public AnimationPage AnimationPageEditor
+        //private AnimationPage _animationPageEditor = null;
+        //public AnimationPage AnimationPageEditor
+        //{
+        //    get => _animationPageEditor;
+        //    set => SetAndNotifyIfChanged(ref _animationPageEditor, value);
+        //}
+
+        //private AnimationPage _animationPageSettings = null;
+        //public AnimationPage AnimationPageSettings
+        //{
+        //    get => _animationPageSettings;
+        //    set => SetAndNotifyIfChanged(ref _animationPageSettings, value);
+        //}
+
+
+
+        //private AnimationPage _animationPageAbout = null;
+        //public AnimationPage AnimationPageAbout
+        //{
+        //    get => _animationPageAbout;
+        //    set => SetAndNotifyIfChanged(ref _animationPageAbout, value);
+        //}
+
+        private INotifyPropertyChanged _contentViewModel;
+        public INotifyPropertyChanged ContentViewModel
         {
-            get => _animationPageEditor;
-            set => SetAndNotifyIfChanged(ref _animationPageEditor, value);
+            get => _contentViewModel;
+            set => SetAndNotifyIfChanged(ref _contentViewModel, value);
         }
 
-        private AnimationPage _animationPageSettings = null;
-        public AnimationPage AnimationPageSettings
+        private INotifyPropertyChanged _topLevelViewModel;
+        public INotifyPropertyChanged TopLevelViewModel
         {
-            get => _animationPageSettings;
-            set => SetAndNotifyIfChanged(ref _animationPageSettings, value);
-        }
-
-
-
-        private AnimationPage _animationPageAbout = null;
-        public AnimationPage AnimationPageAbout
-        {
-            get => _animationPageAbout;
-            set => SetAndNotifyIfChanged(ref _animationPageAbout, value);
-        }
-
-
-        private Visibility _processingRingVisibility = Visibility.Collapsed;
-        public Visibility ProcessingRingVisibility
-        {
-            get => _processingRingVisibility;
-            set => SetAndNotifyIfChanged(ref _processingRingVisibility, value);
-        }
-
-        private Visibility _requestRatingPopupVisibility = Visibility.Collapsed;
-        public Visibility RequestRatingPopupVisibility
-        {
-            get => _requestRatingPopupVisibility;
-            set => SetAndNotifyIfChanged(ref _requestRatingPopupVisibility, value);
-        }
-
-        private string _processingRingMessage = "";
-        public string ProcessingRingMessage
-        {
-            get => _processingRingMessage;
-            set => SetAndNotifyIfChanged(ref _processingRingMessage, value);
+            get => _topLevelViewModel;
+            set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
         }
 
         #endregion Properties
@@ -114,6 +106,8 @@ namespace PRM.View
             SettingsPageVm = settingsPageVm;
             SettingsPageVm.Host = this;
             AboutPageViewModel = new AboutPageViewModel();
+            ServerListViewModel = new ServerListPageViewModel(Context, SettingsPageVm, this);
+            ContentViewModel = ServerListViewModel;
         }
 
         public void Init(MainWindowView windowView)
@@ -121,16 +115,17 @@ namespace PRM.View
             WindowView = windowView;
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
-                WindowView.Dispatcher.Invoke(() =>
+                Execute.OnUIThread(() =>
                 {
                     if (visibility == Visibility.Visible)
                     {
-                        ProcessingRingVisibility = Visibility.Visible;
-                        ProcessingRingMessage = msg;
+                        var pvm = IoC.Get<ProcessingRingViewModel>();
+                        pvm.ProcessingRingMessage = msg;
+                        TopLevelViewModel = pvm;
                     }
                     else
                     {
-                        ProcessingRingVisibility = Visibility.Collapsed;
+                        TopLevelViewModel = null;
                     }
                 });
             };
@@ -139,7 +134,7 @@ namespace PRM.View
                 if (id <= 0) return;
                 Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
-                WindowView.Dispatcher.Invoke(() =>
+                Execute.OnUIThread(() =>
                 {
                     AnimationPageAbout = null;
                     AnimationPageSettings = null;
@@ -159,7 +154,7 @@ namespace PRM.View
                 {
                     Tags = new List<string>(tagNames)
                 };
-                WindowView.Dispatcher.Invoke(() =>
+                Execute.OnUIThread(() =>
                 {
                     AnimationPageEditor = new AnimationPage()
                     {
@@ -173,7 +168,7 @@ namespace PRM.View
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                WindowView.Dispatcher.Invoke(() =>
+                Execute.OnUIThread(() =>
                 {
                     var page = new AnimationPage()
                     {
@@ -188,17 +183,6 @@ namespace PRM.View
                     AnimationPageEditor = page;
                     WindowView.ActivateMe();
                 });
-            };
-        }
-
-        public void ShowListPage()
-        {
-            _serverListPage = new ServerListPage(Context, SettingsPageVm, this);
-            AnimationPageServerList = new AnimationPage()
-            {
-                InAnimationType = AnimationPage.InOutAnimationType.None,
-                OutAnimationType = AnimationPage.InOutAnimationType.None,
-                Content = _serverListPage,
             };
         }
 
@@ -231,7 +215,7 @@ namespace PRM.View
             {
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
-                    this._serverListPage.Vm.ListPageIsCardView = !this._serverListPage.Vm.ListPageIsCardView;
+                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
                     WindowView.PopupMenu.IsOpen = false;
                 }, o => AnimationPageAbout == null && AnimationPageEditor == null && AnimationPageSettings == null);
             }

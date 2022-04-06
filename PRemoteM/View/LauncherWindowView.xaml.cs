@@ -88,7 +88,7 @@ namespace PRM.View
             SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
 
-            if (IoC.Get<MainWindowViewModel>().ProcessingRingVisibility == Visibility.Visible) return;
+            if (IoC.Get<MainWindowViewModel>().TopLevelViewModel != null) return;
             if (!Context.ConfigurationService.Launcher.LauncherEnabled) return;
             if (_isHidden != true) return;
 

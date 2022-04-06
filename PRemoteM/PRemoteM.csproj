@@ -255,6 +255,10 @@
     <Compile Include="Model\ProtocolRunner\Default\KittyRunner.cs" />
     <Compile Include="Model\ProtocolRunner\ExternalRunner.cs" />
     <Compile Include="Model\ProtocolRunner\Runner.cs" />
+    <Compile Include="View\ProcessingRingView.xaml.cs">
+      <DependentUpon>ProcessingRingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProcessingRingViewModel.cs" />
     <Compile Include="View\ProtocolBaseViewModel.cs" />
     <Compile Include="Model\Protocol\Vnc.cs" />
     <Compile Include="Resources\Converter\Converter.cs" />
@@ -279,6 +283,10 @@
     <Compile Include="Utils\mRemoteNG\mRemoteNGImporter.cs" />
     <Compile Include="Utils\RdpFile\DataProtection.cs" />
     <Compile Include="Utils\RdpFile\RdpConfig.cs" />
+    <Compile Include="View\RequestRatingView.xaml.cs">
+      <DependentUpon>RequestRatingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\RequestRatingViewModel.cs" />
     <Compile Include="View\Settings\SettingsPageViewModel.cs" />
     <Compile Include="View\Settings\ProtocolConfig\ProtocolRunnerSettingsPageViewModel.cs" />
     <Compile Include="View\AboutPageViewModel.cs" />
@@ -355,8 +363,8 @@
     <Compile Include="View\Host\ProtocolHosts\VncHost.xaml.cs">
       <DependentUpon>VncHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ServerListPage.xaml.cs">
-      <DependentUpon>ServerListPage.xaml</DependentUpon>
+    <Compile Include="View\ServerListPageView.xaml.cs">
+      <DependentUpon>ServerListPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Host\TabWindowBase.cs" />
     <Compile Include="View\Host\TabWindowChrome.xaml.cs">
@@ -448,6 +456,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ProcessingRingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RequestRatingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Settings\ProtocolConfig\ProtocolRunnerSettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -516,7 +532,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\ServerListPage.xaml">
+    <Page Include="View\ServerListPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
