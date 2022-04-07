@@ -17,6 +17,7 @@ using Shawn.Utils;
 using PRM.View;
 using PRM.View.Host;
 using PRM.View.Host.ProtocolHosts;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using MessageBox = System.Windows.MessageBox;
 using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
@@ -686,7 +687,7 @@ namespace PRM.Model
 
             if (_context.ConfigurationService.General.ConfirmBeforeClosingSession == true
                 && needConfirm == true
-                && MessageBox.Show(_context.LanguageService.Translate("Are you sure you want to close the connection?"), _context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
             {
                 return;
             }

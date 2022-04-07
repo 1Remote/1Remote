@@ -7,7 +7,6 @@ using PRM.Controls;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.FileTransmit;
 using PRM.Service;
 using PRM.View.Editor.Forms;
 using Shawn.Utils;
@@ -21,7 +20,6 @@ namespace PRM.View.Editor
         //private readonly PrmContext _context;
         private readonly GlobalData _globalData;
         private readonly IDataService _dataService;
-        private readonly ILanguageService _languageService;
 
         public bool IsAddMode => _orgServers == null && Server.Id == 0;
         public bool IsBuckEdit => IsAddMode == false && _orgServers?.Count() > 1;
@@ -31,11 +29,10 @@ namespace PRM.View.Editor
         /// to remember original protocol's options, for restore use
         /// </summary>
         private readonly ProtocolBase _orgServer = null;
-        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, ILanguageService languageService, ProtocolBase server, bool isDuplicate = false)
+        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, ProtocolBase server, bool isDuplicate = false)
         {
             _globalData = globalData;
             _dataService = dataService;
-            _languageService = languageService;
             Server = (ProtocolBase)server.Clone();
             if (isDuplicate)
             {
@@ -58,16 +55,15 @@ namespace PRM.View.Editor
         private readonly Type _orgServersCommonType = null;
         private readonly List<string> _commonTags;
 
-        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, ILanguageService languageService, IEnumerable<ProtocolBase> servers)
+        public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, IEnumerable<ProtocolBase> servers)
         {
             _globalData = globalData;
             _dataService = dataService;
-            _languageService = languageService;
             var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
             // must be bulk edit
             Debug.Assert(serverBases.Count() > 1);
             // init title
-            Title = _languageService.Translate("server_editor_bulk_editing_title") + " ";
+            Title = IoC.Get<ILanguageService>().Translate("server_editor_bulk_editing_title") + " ";
             foreach (var serverBase in serverBases)
             {
                 Title += serverBase.DisplayName;
@@ -293,7 +289,7 @@ namespace PRM.View.Editor
                     {
                         _globalData.AddServer(Server);
                     }
-                    IoC.Get<MainWindowViewModel>().AnimationPageEditor = null;
+                    IoC.Get<MainWindowViewModel>().ShowList();
                 }, o => (this.Server.DisplayName?.Trim() != "" && (_protocolEditControl?.CanSave() ?? false)));
                 return _cmdSave;
             }
@@ -309,7 +305,7 @@ namespace PRM.View.Editor
                 if (_cmdCancel != null) return _cmdCancel;
                 _cmdCancel = new RelayCommand((o) =>
                 {
-                    IoC.Get<MainWindowViewModel>().AnimationPageEditor = null;
+                    IoC.Get<MainWindowViewModel>().ShowList();
                 });
                 return _cmdCancel;
             }

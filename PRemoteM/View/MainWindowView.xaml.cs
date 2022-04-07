@@ -7,6 +7,7 @@ using PRM.Model;
 using PRM.Service;
 using PRM.Utils;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
@@ -56,8 +57,7 @@ namespace PRM.View
 
             BtnClose.Click += (sender, args) =>
             {
-                if (Vm.AnimationPageEditor == null
-                    && (Vm.Context.ConfigurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersion)
+                if ((Vm.Context.ConfigurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersion)
                     && Vm.Context.ConfigurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
                     && Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
                     && Vm.Context.ConfigurationService.Engagement.ConnectCount > 100
@@ -154,7 +154,7 @@ namespace PRM.View
 
         private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Escape || !(sender is TextBox textBox)) return;
+            if (e.Key != Key.Escape || sender is TextBox textBox == false) return;
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.FilterString);
             Vm.SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(s.Item1, new List<string>()));
             // Kill logical focus
@@ -174,16 +174,9 @@ namespace PRM.View
             if (Keyboard.FocusedElement is TextBox)
             {
             }
-            else if (e.Key == Key.Escape)
+            else if (e.Key == Key.Escape && this.DataContext is MainWindowViewModel vm && vm.IsShownList() == false)
             {
-                if (Vm.AnimationPageAbout != null)
-                {
-                    Vm.AnimationPageAbout = null;
-                }
-                else if (Vm.AnimationPageSettings != null)
-                {
-                    Vm.AnimationPageSettings = null;
-                }
+                vm.ShowList();
             }
             else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
@@ -246,17 +239,17 @@ namespace PRM.View
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
             };
             var @break = new System.Windows.Forms.MenuItem("-");
-            var linkHowToUse = new System.Windows.Forms.MenuItem(Vm.Context.LanguageService.Translate("about_page_how_to_use"));
+            var linkHowToUse = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
             };
-            var linkFeedback = new System.Windows.Forms.MenuItem(Vm.Context.LanguageService.Translate("about_page_feedback"));
+            var linkFeedback = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
             {
                 System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
             };
-            var exit = new System.Windows.Forms.MenuItem(Vm.Context.LanguageService.Translate("Exit"));
+            var exit = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
             exit.Click += (sender, args) => App.Close();
             var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
             _taskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);

@@ -22,7 +22,6 @@ namespace PRM.Model
             set => SetAndNotifyIfChanged(ref _dataService, value);
         }
 
-        public readonly LanguageService LanguageService;
         public readonly LauncherService LauncherService;
         public readonly ThemeService ThemeService;
         public readonly KeywordMatchService KeywordMatchService;
@@ -34,7 +33,6 @@ namespace PRM.Model
         {
             KeywordMatchService = keywordMatchService;
             ConfigurationService = configurationService;
-            LanguageService = languageService;
             LauncherService = launcherService;
             ThemeService = themeService;
             LocalityService = localityService;

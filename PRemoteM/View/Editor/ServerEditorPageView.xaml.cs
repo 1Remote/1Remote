@@ -14,45 +14,39 @@ using Shawn.Utils.Wpf.Image;
 
 namespace PRM.View.Editor
 {
-    public partial class ServerEditorPage : UserControl
+    public partial class ServerEditorPageView : UserControl
     {
-        public readonly ServerEditorPageViewModel Vm;
-        private readonly BitmapSource _oldLogo;
+        private ServerEditorPageViewModel _vm;
+        private BitmapSource _oldLogo;
 
-        public ServerEditorPage(PrmContext context, ServerEditorPageViewModel vm)
+        public ServerEditorPageView(PrmContext context)
         {
-            Debug.Assert(vm?.Server != null);
-            InitializeComponent();
-            Vm = vm;
-            DataContext = vm;
-            vm.TagsEditor = TagsEditor;
-
-            // add mode
-            if (vm.IsAddMode)
+            this.Loaded += (sender, args) =>
             {
-                ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
-                //ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
-
-                if (vm.Server.IconImg == null
-                    && ServerIcons.Instance.Icons.Count > 0)
+                if (this.DataContext is ServerEditorPageViewModel vm)
                 {
-                    var r = new Random(DateTime.Now.Millisecond);
-                    vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                    _vm = vm;
+                    vm.TagsEditor = TagsEditor;
+                    // add mode
+                    if (vm.IsAddMode)
+                    {
+                        ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
+                        //ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
+
+                        if (vm.Server.IconImg == null
+                            && ServerIcons.Instance.Icons.Count > 0)
+                        {
+                            var r = new Random(DateTime.Now.Millisecond);
+                            vm.Server.IconBase64 = ServerIcons.Instance.Icons[r.Next(0, ServerIcons.Instance.Icons.Count)].ToBase64();
+                        }
+                    }
+                    _oldLogo = vm.Server.IconImg;
+                    LogoSelector.SetImg(vm.Server.IconImg);
+                    LogoSelector.OnLogoChanged += () => _vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
                 }
-            }
-
-
-            _oldLogo = vm.Server.IconImg;
-            LogoSelector.SetImg(vm.Server.IconImg);
-            LogoSelector.OnLogoChanged += () => Vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
-
-
-            this.Unloaded += (sender, args) =>
-            {
-                vm = null;
             };
         }
-        ~ServerEditorPage()
+        ~ServerEditorPageView()
         {
             Console.WriteLine($"Release {this.GetType().Name}({this.GetHashCode()})");
         }
@@ -72,7 +66,7 @@ namespace PRM.View.Editor
 
         private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
         {
-            Vm.Server.IconBase64 = _oldLogo.ToBase64();
+            _vm.Server.IconBase64 = _oldLogo.ToBase64();
             PopupLogoSelectorClose();
         }
 
@@ -112,12 +106,12 @@ namespace PRM.View.Editor
 
         private void ButtonTryCommandBeforeConnected_OnClick(object sender, RoutedEventArgs e)
         {
-            TryCmd(Vm.Server.CommandBeforeConnected);
+            TryCmd(_vm.Server.CommandBeforeConnected);
         }
 
         private void ButtonTryCommandAfterDisconnected_OnClick(object sender, RoutedEventArgs e)
         {
-            TryCmd(Vm.Server.CommandAfterDisconnected);
+            TryCmd(_vm.Server.CommandAfterDisconnected);
         }
 
         private void TryCmd(string cmd)
@@ -137,9 +131,9 @@ namespace PRM.View.Editor
 
         private void LogoList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (Vm?.Server != null)
+            if (_vm?.Server != null)
             {
-                Vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
+                _vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
             }
             PopupLogoSelectorClose();
         }

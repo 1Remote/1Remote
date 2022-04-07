@@ -6,6 +6,7 @@ using PRM.Model.Protocol.Base;
 using PRM.Model.ProtocolRunner;
 using PRM.Model.ProtocolRunner.Default;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 
 namespace PRM.Model
 {
@@ -36,7 +37,7 @@ namespace PRM.Model
             {
                 if (tabWindowCount > 0)
                     actions.Add(new ProtocolAction(
-                        actionName: context.LanguageService.Translate("Connect (New window)"),
+                        actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
                         action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString()); }
                     ));
 
@@ -44,25 +45,25 @@ namespace PRM.Model
                 if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
                 && context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
                 {
-                    actions.Add(new ProtocolAction(context.LanguageService.Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name); }));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name); }));
                     foreach (var runner in context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
                         if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
-                        actions.Add(new ProtocolAction(context.LanguageService.Translate("Connect") + $" ({runner.Name})", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: runner.Name); }));
+                        actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" ({runner.Name})", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: runner.Name); }));
                     }
                 }
                 else
                 {
-                    actions.Add(new ProtocolAction(context.LanguageService.Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id); }));
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect"), () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id); }));
                 }
 
-                actions.Add(new ProtocolAction(context.LanguageService.Translate("Edit"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false); }));
-                actions.Add(new ProtocolAction(context.LanguageService.Translate("server_card_operate_duplicate"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, true, false); }));
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Edit"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, false, false); }));
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_duplicate"), () => { GlobalEventHelper.OnRequestGoToServerEditPage?.Invoke(server.Id, true, false); }));
             };
             if (server is ProtocolBaseWithAddressPort protocolServerWithAddrPortBase)
             {
-                actions.Add(new ProtocolAction(context.LanguageService.Translate("server_card_operate_copy_address"),
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_address"),
                     () =>
                     {
                         try
@@ -77,7 +78,7 @@ namespace PRM.Model
             }
             if (server is ProtocolBaseWithAddressPortUserPwd tmp)
             {
-                actions.Add(new ProtocolAction(context.LanguageService.Translate("server_card_operate_copy_username"),
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_username"),
                     () =>
                    {
                        try
@@ -92,7 +93,7 @@ namespace PRM.Model
             }
             if (server is ProtocolBaseWithAddressPortUserPwd protocolServerWithAddrPortUserPwdBase)
             {
-                actions.Add(new ProtocolAction(context.LanguageService.Translate("server_card_operate_copy_password"),
+                actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("server_card_operate_copy_password"),
                     action: () =>
                     {
                         try
@@ -106,7 +107,7 @@ namespace PRM.Model
                     }));
             }
 
-            actions.Add(new ProtocolAction(context.LanguageService.Translate("Delete"), () =>
+            actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Delete"), () =>
             {
                 GlobalEventHelper.OnRequestDeleteServer?.Invoke(server.Id);
             }));

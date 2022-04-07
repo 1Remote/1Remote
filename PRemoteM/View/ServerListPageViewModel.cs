@@ -21,6 +21,7 @@ using PRM.Utils;
 using PRM.Utils.mRemoteNG;
 using PRM.View.Settings;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
@@ -30,19 +31,18 @@ namespace PRM.View
     public partial class ServerListPageViewModel : NotifyPropertyChangedBase
     {
         public PrmContext Context { get; }
-        public SettingsPageViewModel SettingsPageViewModel { get; }
         private readonly MainWindowViewModel _mainWindowViewModel;
 
         #region properties
 
         public bool ListPageIsCardView
         {
-            get => SettingsPageViewModel.ListPageIsCardView;
+            get => IoC.Get<SettingsPageViewModel>().ListPageIsCardView;
             set
             {
-                if (SettingsPageViewModel.ListPageIsCardView != value)
+                if (IoC.Get<SettingsPageViewModel>().ListPageIsCardView != value)
                 {
-                    SettingsPageViewModel.ListPageIsCardView = value;
+                    IoC.Get<SettingsPageViewModel>().ListPageIsCardView = value;
                     RaisePropertyChanged();
                 }
             }
@@ -104,10 +104,9 @@ namespace PRM.View
 
         #endregion
 
-        public ServerListPageViewModel(PrmContext context, SettingsPageViewModel settingsPageView, MainWindowViewModel mainWindowViewModel)
+        public ServerListPageViewModel(PrmContext context, MainWindowViewModel mainWindowViewModel)
         {
             Context = context;
-            SettingsPageViewModel = settingsPageView;
             _mainWindowViewModel = mainWindowViewModel;
             RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
@@ -135,8 +134,8 @@ namespace PRM.View
                 GlobalEventHelper.OnRequestDeleteServer += id =>
                 {
                     if (MessageBoxResult.Yes == MessageBox.Show(
-                        Context.LanguageService.Translate("confirm_to_delete_selected"),
-                        Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"),
+                        IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
                         Context.AppData.DeleteServer(id);
@@ -265,7 +264,7 @@ namespace PRM.View
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
-                    var path = SelectFileHelper.SaveFile(title: Context.LanguageService.Translate("system_options_data_security_export_dialog_title"),
+                    var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("system_options_data_security_export_dialog_title"),
                         filter: "PRM json array|*.prma",
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
                     if (path == null) return;
@@ -290,9 +289,9 @@ namespace PRM.View
             {
                 return _cmdImportFromJson ??= new RelayCommand((o) =>
                 {
-                    var path = SelectFileHelper.OpenFile(title: Context.LanguageService.Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "PRM json array|*.prma");
                     if (path == null) return;
-                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, Context.LanguageService.Translate("system_options_data_security_info_data_processing"));
+                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -312,7 +311,7 @@ namespace PRM.View
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {
-                                MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), IoC.Get<ILanguageService>().Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                             });
                         }
                         catch (Exception e)
@@ -321,7 +320,7 @@ namespace PRM.View
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {
-                                MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                             });
                         }
                     });
@@ -338,9 +337,9 @@ namespace PRM.View
             {
                 return _cmdImportFromCsv ??= new RelayCommand((o) =>
                 {
-                    var path = SelectFileHelper.OpenFile(title: Context.LanguageService.Translate("import_server_dialog_title"), filter: "csv|*.csv");
+                    var path = SelectFileHelper.OpenFile(title: IoC.Get<ILanguageService>().Translate("import_server_dialog_title"), filter: "csv|*.csv");
                     if (path == null) return;
-                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, Context.LanguageService.Translate("system_options_data_security_info_data_processing"));
+                    GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Visible, IoC.Get<ILanguageService>().Translate("system_options_data_security_info_data_processing"));
                     Task.Factory.StartNew(() =>
                     {
                         try
@@ -352,7 +351,7 @@ namespace PRM.View
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                                 Execute.OnUIThread(() =>
                                 {
-                                    MessageBox.Show(Context.LanguageService.Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), Context.LanguageService.Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                    MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), IoC.Get<ILanguageService>().Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
                                 });
                                 return;
                             }
@@ -366,7 +365,7 @@ namespace PRM.View
                         GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                         Execute.OnUIThread(() =>
                         {
-                            MessageBox.Show(Context.LanguageService.Translate("import_failure_with_data_format_error"), Context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         });
                     });
                 });
@@ -400,8 +399,8 @@ namespace PRM.View
                     var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (MessageBoxResult.Yes == MessageBox.Show(
-                        Context.LanguageService.Translate("confirm_to_delete_selected"),
-                        Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"),
+                        IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
                         MessageBoxImage.Question, MessageBoxResult.None))
                     {
                         var ids = ss.Select(x => x.Id);
@@ -421,7 +420,7 @@ namespace PRM.View
                 return _cmdMultiEditSelected ??= new RelayCommand((o) =>
                     {
                         GlobalEventHelper.OnRequestGoToServerMultipleEditPage?.Invoke(ServerListItems.Where(x => x.IsSelected).Select(x => x.Server), true);
-                    }, o => IoC.Get<MainWindowViewModel>().AnimationPageEditor == null && ServerListItems.Any(x => x.IsSelected == true));
+                    }, o => ServerListItems.Any(x => x.IsSelected == true));
             }
         }
 

@@ -19,38 +19,12 @@ namespace PRM.View
 {
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen
     {
-        public SettingsPageViewModel SettingsPageVm { get; }
-        public AboutPageViewModel AboutPageViewModel { get; }
-        public ServerListPageViewModel ServerListViewModel { get; }
+        private readonly ServerListPageViewModel _serverListViewModel;
 
         #region Properties
 
         public PrmContext Context { get; }
-
-
-
-        //private AnimationPage _animationPageEditor = null;
-        //public AnimationPage AnimationPageEditor
-        //{
-        //    get => _animationPageEditor;
-        //    set => SetAndNotifyIfChanged(ref _animationPageEditor, value);
-        //}
-
-        //private AnimationPage _animationPageSettings = null;
-        //public AnimationPage AnimationPageSettings
-        //{
-        //    get => _animationPageSettings;
-        //    set => SetAndNotifyIfChanged(ref _animationPageSettings, value);
-        //}
-
-
-
-        //private AnimationPage _animationPageAbout = null;
-        //public AnimationPage AnimationPageAbout
-        //{
-        //    get => _animationPageAbout;
-        //    set => SetAndNotifyIfChanged(ref _animationPageAbout, value);
-        //}
+        
 
         private INotifyPropertyChanged _contentViewModel;
         public INotifyPropertyChanged ContentViewModel
@@ -66,7 +40,6 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
         }
 
-        #endregion Properties
 
         #region FilterString
         public Action OnFilterStringChangedByUi;
@@ -98,16 +71,15 @@ namespace PRM.View
         }
         #endregion
 
+        #endregion Properties
+
         public MainWindowView WindowView { get; private set; }
 
-        public MainWindowViewModel(PrmContext context, SettingsPageViewModel settingsPageVm)
+        public MainWindowViewModel(PrmContext context)
         {
             Context = context;
-            SettingsPageVm = settingsPageVm;
-            SettingsPageVm.Host = this;
-            AboutPageViewModel = new AboutPageViewModel();
-            ServerListViewModel = new ServerListPageViewModel(Context, SettingsPageVm, this);
-            ContentViewModel = ServerListViewModel;
+            _serverListViewModel = new ServerListPageViewModel(Context, this);
+            ShowList();
         }
 
         public void Init(MainWindowView windowView)
@@ -134,18 +106,8 @@ namespace PRM.View
                 if (id <= 0) return;
                 Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
-                Execute.OnUIThread(() =>
-                {
-                    AnimationPageAbout = null;
-                    AnimationPageSettings = null;
-                    AnimationPageEditor = new AnimationPage()
-                    {
-                        InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
-                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, server, isDuplicate)),
-                    };
-                    WindowView.ActivateMe();
-                });
+                ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server, isDuplicate);
+                WindowView.ActivateMe();
             });
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
@@ -154,56 +116,57 @@ namespace PRM.View
                 {
                     Tags = new List<string>(tagNames)
                 };
-                Execute.OnUIThread(() =>
-                {
-                    AnimationPageEditor = new AnimationPage()
-                    {
-                        InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
-                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, server)),
-                    };
-                    WindowView.ActivateMe();
-                });
+                ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server);
+                WindowView.ActivateMe();
             });
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
-                Execute.OnUIThread(() =>
-                {
-                    var page = new AnimationPage()
-                    {
-                        InAnimationType = isInAnimationShow ? AnimationPage.InOutAnimationType.SlideFromRight : AnimationPage.InOutAnimationType.None,
-                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                    };
-                    var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
-                    if (serverBases.Count() > 1)
-                        page.Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, serverBases));
-                    else
-                        page.Content = new ServerEditorPage(Context, new ServerEditorPageViewModel(Context.AppData, Context.DataService, Context.LanguageService, serverBases.First()));
-                    AnimationPageEditor = page;
-                    WindowView.ActivateMe();
-                });
+                var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
+                if (serverBases.Count() > 1)
+                    ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases);
+                else
+                    ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases.First());
+                WindowView.ActivateMe();
             };
         }
+
+        public void ShowList()
+        {
+            ContentViewModel = _serverListViewModel;
+        }
+
+        public bool IsShownList()
+        {
+            return ContentViewModel is ServerListPageViewModel;
+        }
+
 
         #region CMD
 
         private RelayCommand _cmdGoSysOptionsPage;
-
         public RelayCommand CmdGoSysOptionsPage
         {
             get
             {
                 return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
-                    AnimationPageSettings = new AnimationPage()
-                    {
-                        InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Content = new SettingsPage(Context, SettingsPageVm, o?.ToString()),
-                    };
+                    ContentViewModel = IoC.Get<SettingsPageViewModel>();
                     WindowView.PopupMenu.IsOpen = false;
-                }, o => AnimationPageAbout == null && AnimationPageSettings == null && AnimationPageEditor == null);
+                }, o => IsShownList());
+            }
+        }
+
+        private RelayCommand _cmdGoAboutPage;
+        public RelayCommand CmdGoAboutPage
+        {
+            get
+            {
+                return _cmdGoAboutPage ??= new RelayCommand((o) =>
+                {
+                    ContentViewModel = IoC.Get<AboutPageViewModel>();
+                    WindowView.PopupMenu.IsOpen = false;
+                }, o => IsShownList());
             }
         }
 
@@ -215,28 +178,9 @@ namespace PRM.View
             {
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
-                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
+                    this._serverListViewModel.ListPageIsCardView = !this._serverListViewModel.ListPageIsCardView;
                     WindowView.PopupMenu.IsOpen = false;
-                }, o => AnimationPageAbout == null && AnimationPageEditor == null && AnimationPageSettings == null);
-            }
-        }
-
-        private RelayCommand _cmdGoAboutPage;
-
-        public RelayCommand CmdGoAboutPage
-        {
-            get
-            {
-                return _cmdGoAboutPage ??= new RelayCommand((o) =>
-                {
-                    AnimationPageAbout = new AnimationPage()
-                    {
-                        InAnimationType = AnimationPage.InOutAnimationType.SlideFromRight,
-                        OutAnimationType = AnimationPage.InOutAnimationType.SlideToRight,
-                        Content = new AboutPage(AboutPageViewModel, this),
-                    };
-                    WindowView.PopupMenu.IsOpen = false;
-                }, o => AnimationPageAbout?.Content?.GetType() != typeof(AboutPage));
+                }, o => IsShownList());
             }
         }
 
