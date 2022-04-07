@@ -17,21 +17,22 @@ using Stylet;
 
 namespace PRM.View
 {
+    public enum EnumPage
+    {
+        List,
+        Setting,
+        About,
+    }
+
     public class MainWindowViewModel : NotifyPropertyChangedBaseScreen
     {
-        private readonly ServerListPageViewModel _serverListViewModel;
+        public PrmContext Context { get; }
+        public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
+        public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
+        public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
 
         #region Properties
 
-        public PrmContext Context { get; }
-        
-
-        private INotifyPropertyChanged _contentViewModel;
-        public INotifyPropertyChanged ContentViewModel
-        {
-            get => _contentViewModel;
-            set => SetAndNotifyIfChanged(ref _contentViewModel, value);
-        }
 
         private INotifyPropertyChanged _topLevelViewModel;
         public INotifyPropertyChanged TopLevelViewModel
@@ -39,7 +40,19 @@ namespace PRM.View
             get => _topLevelViewModel;
             set => SetAndNotifyIfChanged(ref _topLevelViewModel, value);
         }
+        private ServerEditorPageViewModel _contentViewModel = null;
+        public ServerEditorPageViewModel ContentViewModel
+        {
+            get => _contentViewModel;
+            set => SetAndNotifyIfChanged(ref _contentViewModel, value);
+        }
 
+        private EnumPage _displayPage = EnumPage.List;
+        public EnumPage DisplayPage
+        {
+            get => _displayPage;
+            set => SetAndNotifyIfChanged(ref _displayPage, value);
+        }
 
         #region FilterString
         public Action OnFilterStringChangedByUi;
@@ -78,7 +91,7 @@ namespace PRM.View
         public MainWindowViewModel(PrmContext context)
         {
             Context = context;
-            _serverListViewModel = new ServerListPageViewModel(Context, this);
+            ServerListViewModel.Init(this);
             ShowList();
         }
 
@@ -133,12 +146,13 @@ namespace PRM.View
 
         public void ShowList()
         {
-            ContentViewModel = _serverListViewModel;
+            ContentViewModel = null;
+            DisplayPage = EnumPage.List;
         }
 
         public bool IsShownList()
         {
-            return ContentViewModel is ServerListPageViewModel;
+            return ContentViewModel is null && DisplayPage == EnumPage.List;
         }
 
 
@@ -151,7 +165,7 @@ namespace PRM.View
             {
                 return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
-                    ContentViewModel = IoC.Get<SettingsPageViewModel>();
+                    DisplayPage = EnumPage.Setting;
                     WindowView.PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
@@ -164,7 +178,7 @@ namespace PRM.View
             {
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
-                    ContentViewModel = IoC.Get<AboutPageViewModel>();
+                    DisplayPage = EnumPage.About;
                     WindowView.PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
@@ -178,7 +192,7 @@ namespace PRM.View
             {
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
-                    this._serverListViewModel.ListPageIsCardView = !this._serverListViewModel.ListPageIsCardView;
+                    this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
                     WindowView.PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }

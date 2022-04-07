@@ -34,20 +34,14 @@
         <Grid>
             <Grid.Style>
                 <Style TargetType="Grid">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                        </Setter.Value>
+                    </Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=ProcessingRingVisibility, Mode=OneWay}" Value="Visible">
-                            <Setter Property="Effect">
-                                <Setter.Value>
-                                    <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
-                                </Setter.Value>
-                            </Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=RequestRatingPopupVisibility, Mode=OneWay}" Value="Visible">
-                            <Setter Property="Effect">
-                                <Setter.Value>
-                                    <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
-                                </Setter.Value>
-                            </Setter>
+                        <DataTrigger Binding="{Binding Path=TopLevelViewModel, Mode=OneWay}" Value="{x:Null}">
+                            <Setter Property="Effect" Value="{x:Null}"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -298,6 +292,42 @@
                 <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding AnimationPageEditor}"></pageHost:PageHost>
                 <pageHost:PageHost x:Name="SettingsPageHost" NewPage="{Binding AnimationPageSettings}"></pageHost:PageHost>
                 <pageHost:PageHost x:Name="AboutPageHost" NewPage="{Binding AnimationPageAbout}"></pageHost:PageHost>-->
+                <ContentControl s:View.Model="{Binding ServerListViewModel}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DisplayPage}" Value="{x:Static view:EnumPage.List}">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+                <ContentControl s:View.Model="{Binding SettingViewModel}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DisplayPage}" Value="{x:Static view:EnumPage.Setting}">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+                <ContentControl s:View.Model="{Binding AboutViewModel}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DisplayPage}" Value="{x:Static view:EnumPage.About}">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
                 <ContentControl s:View.Model="{Binding ContentViewModel}"></ContentControl>
             </Grid>
         </Grid>

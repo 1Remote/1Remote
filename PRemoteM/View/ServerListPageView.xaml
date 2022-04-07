@@ -544,7 +544,7 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <ListBox ItemsSource="{Binding Context.AppData.TagList}" Margin="20" MaxWidth="700">
+            <ListBox ItemsSource="{Binding Context.AppData.TagList}" Margin="20" Visibility="Visible" MaxWidth="700" Background="Aqua" MinHeight="300" MinWidth="500">
                 <ListBox.Template>
                     <ControlTemplate TargetType="ListBox">
                         <ItemsPresenter></ItemsPresenter>
