@@ -27,7 +27,7 @@ namespace PRM.Model
         public readonly KeywordMatchService KeywordMatchService;
         public readonly LocalityService LocalityService;
         public bool IsPortable { get; private set; }
-        public readonly GlobalData AppData;
+        public GlobalData AppData { get; private set; }
 
         public PrmContext(KeywordMatchService keywordMatchService, ConfigurationService configurationService, LanguageService languageService, LauncherService launcherService, ThemeService themeService, LocalityService localityService, ProtocolConfigurationService protocolConfigurationService, GlobalData appData)
         {

@@ -27,7 +27,7 @@ namespace PRM.Utils
                 {
                     bool isExcluded = word.StartsWith("-#");
                     string tagName = word.Substring(word.IndexOf("#", StringComparison.Ordinal) + 1);
-                    if (IoC.Get<PrmContext>().AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                    if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));
                     }
@@ -37,7 +37,7 @@ namespace PRM.Utils
                         if (words[j].StartsWith("#") || words[j].StartsWith("-#") || words[j].StartsWith("+#"))
                             break;
                         tagName = $"{tagName} {words[j]}";
-                        if (IoC.Get<PrmContext>().AppData.TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
+                        if (IoC.Get<GlobalData>().TagList.Any(x => string.Equals(x.Name, tagName, StringComparison.CurrentCultureIgnoreCase)))
                         {
                             words[j] = "";
                             tagFilters.Add(TagFilter.Create(tagName, isExcluded ? TagFilter.FilterType.Excluded : TagFilter.FilterType.Included));

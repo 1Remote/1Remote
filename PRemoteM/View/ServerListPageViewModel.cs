@@ -31,7 +31,7 @@ namespace PRM.View
     public partial class ServerListPageViewModel : NotifyPropertyChangedBase
     {
         public PrmContext Context { get; }
-        private readonly MainWindowViewModel _mainWindowViewModel;
+        private MainWindowViewModel _mainWindowViewModel;
 
         #region properties
 
@@ -104,14 +104,28 @@ namespace PRM.View
 
         #endregion
 
-        public ServerListPageViewModel(PrmContext context, MainWindowViewModel mainWindowViewModel)
+        public ServerListPageViewModel(PrmContext context)
         {
             Context = context;
-            _mainWindowViewModel = mainWindowViewModel;
             RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
 
+            if (GlobalEventHelper.OnRequestDeleteServer == null)
+                GlobalEventHelper.OnRequestDeleteServer += id =>
+                {
+                    if (MessageBoxResult.Yes == MessageBox.Show(
+                        IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"),
+                        IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
+                        MessageBoxImage.Question, MessageBoxResult.None))
+                    {
+                        Context.AppData.DeleteServer(id);
+                    }
+                };
+        }
 
+        public void Init(MainWindowViewModel mainWindowViewModel)
+        {
+            _mainWindowViewModel = mainWindowViewModel;
             _mainWindowViewModel.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName == nameof(MainWindowViewModel.FilterString))
@@ -129,18 +143,6 @@ namespace PRM.View
                     });
                 }
             };
-
-            if (GlobalEventHelper.OnRequestDeleteServer == null)
-                GlobalEventHelper.OnRequestDeleteServer += id =>
-                {
-                    if (MessageBoxResult.Yes == MessageBox.Show(
-                        IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"),
-                        IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question, MessageBoxResult.None))
-                    {
-                        Context.AppData.DeleteServer(id);
-                    }
-                };
         }
 
         private void RebuildVmServerList()
@@ -217,7 +219,7 @@ namespace PRM.View
 
         private void CalcVisibleByFilter()
         {
-            Debug.Assert(_mainWindowViewModel != null);
+            if(_mainWindowViewModel == null) return;
             var keyword = _mainWindowViewModel.FilterString;
             var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
             var tagFilters = tmp.Item1;
