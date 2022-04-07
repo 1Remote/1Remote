@@ -6,7 +6,9 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Model;
+using PRM.Service;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -15,21 +17,14 @@ using UserControl = System.Windows.Controls.UserControl;
 
 namespace PRM.View.Settings
 {
-    public partial class SettingsPage : UserControl
+    public partial class SettingsPageView : UserControl
     {
-        private readonly SettingsPageViewModel _vm;
-
-        private readonly PrmContext _context;
-
-        public SettingsPage(PrmContext context, SettingsPageViewModel vm, string destination = null)
+        public SettingsPageView()
         {
-            _context = context;
             InitializeComponent();
-            _vm = vm;
-            DataContext = _vm;
-
-            if (destination == "Data")
-                TabItemDataBase.IsSelected = true;
+            // TODO 跳转目的地
+            //if (destination == "Data")
+            //    TabItemDataBase.IsSelected = true;
         }
 
         private void TextBoxKey_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -65,9 +60,10 @@ namespace PRM.View.Settings
                                       Key.Apps };
 
             if (!specialKeys.Contains(key)
-            && this.IsLoaded)
+            && this.IsLoaded
+            && this.DataContext is SettingsPageViewModel vm)
             {
-                _vm.LauncherHotKeyKey = key;
+                vm.LauncherHotKeyKey = key;
             }
         }
 
@@ -80,22 +76,22 @@ namespace PRM.View.Settings
             var resourceDictionary = MultiLanguageHelper.LangDictFromXamlFile(fi.FullName);
             if (resourceDictionary?.Contains("language_name") != true)
             {
-                MessageBox.Show("language resource must contain field: \"language_name\"!", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show("language resource must contain field: \"language_name\"!", IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
-            var en = _context.LanguageService.Resources["en-us"];
+            var en = IoC.Get<LanguageService>().Resources["en-us"];
             Debug.Assert(en != null);
             var missingFields = MultiLanguageHelper.FindMissingFields(en, resourceDictionary);
             if (missingFields.Count > 0)
             {
                 var mf = string.Join(", ", missingFields);
-                MessageBox.Show($"language resource missing:\r\n {mf}", _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show($"language resource missing:\r\n {mf}", IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
             var code = fi.Name.ReplaceLast(fi.Extension, "");
-            _context.LanguageService.AddXamlLanguageResources(code, fi.FullName);
+            IoC.Get<ILanguageService>().AddXamlLanguageResources(code, fi.FullName);
         }
     }
 

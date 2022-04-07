@@ -15,6 +15,7 @@ using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.Protocol.FileTransmit.Transmitters;
 using PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Application = System.Windows.Application;
@@ -332,7 +333,7 @@ namespace PRM.View.Host.ProtocolHosts
 
             var aMenu = new System.Windows.Controls.ContextMenu();
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_refresh") };
+                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_refresh") };
                 menu.Click += (o, a) =>
                 {
                     CmdGoToPathCurrent.Execute();
@@ -340,7 +341,7 @@ namespace PRM.View.Host.ProtocolHosts
                 aMenu.Items.Add(menu);
             }
             {
-                var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_create_folder") };
+                var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_create_folder") };
                 menu.Click += (o, a) =>
                 {
                     CmdEndRenaming.Execute();
@@ -363,7 +364,7 @@ namespace PRM.View.Host.ProtocolHosts
                 ((ListView)sender).SelectedItem = null;
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUploadClipboard.CanExecute())
@@ -374,7 +375,7 @@ namespace PRM.View.Host.ProtocolHosts
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_select_files_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_select_files_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -384,7 +385,7 @@ namespace PRM.View.Host.ProtocolHosts
                 }
 
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_select_folder_upload") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_select_folder_upload") };
                     menu.Click += (o, a) =>
                     {
                         if (CmdUpload.CanExecute())
@@ -396,7 +397,7 @@ namespace PRM.View.Host.ProtocolHosts
             else if (MyVisualTreeHelper.VisualUpwardSearch<ListViewItem>(e.OriginalSource as DependencyObject) is ListViewItem item)
             {
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_delete") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_delete") };
                     menu.Click += (o, a) =>
                     {
                         CmdDelete.Execute();
@@ -404,7 +405,7 @@ namespace PRM.View.Host.ProtocolHosts
                     aMenu.Items.Add(menu);
                 }
                 {
-                    var menu = new System.Windows.Controls.MenuItem { Header = Context.LanguageService.Translate("file_transmit_host_command_save_to") };
+                    var menu = new System.Windows.Controls.MenuItem { Header = IoC.Get<ILanguageService>().Translate("file_transmit_host_command_save_to") };
                     menu.Click += (o, a) =>
                     {
                         CmdDownload.Execute();
@@ -434,8 +435,8 @@ namespace PRM.View.Host.ProtocolHosts
                             if (Trans?.IsConnected() != true)
                                 return;
                             if (MessageBox.Show(
-                                Context.LanguageService.Translate("confirm_to_delete"),
-                                Context.LanguageService.Translate("messagebox_title_warning"),
+                                IoC.Get<ILanguageService>().Translate("confirm_to_delete"),
+                                IoC.Get<ILanguageService>().Translate("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
                             {
                                 foreach (var itemInfo in RemoteItems)
@@ -610,12 +611,12 @@ namespace PRM.View.Host.ProtocolHosts
                         else if (SelectedRemoteItem?.IsSymlink == false)
                         {
                             const int limit = 1;
-                            var msg = Context.LanguageService.Translate("file_transmit_host_message_preview_over_size");
+                            var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
                             msg = msg.Replace("1 MB", $"{limit} MB");
                             if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
                             && MessageBox.Show(
                                 msg,
-                                Context.LanguageService.Translate("messagebox_title_warning"),
+                                IoC.Get<ILanguageService>().Translate("messagebox_title_warning"),
                                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) != MessageBoxResult.Yes)
                             {
                                 return;
@@ -631,7 +632,7 @@ namespace PRM.View.Host.ProtocolHosts
 
                                 var fi = new FileInfo(tmpPath);
                                 var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                                var t = new TransmitTask(Context.LanguageService, Trans, fi.Directory.FullName, ris);
+                                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, fi.Directory.FullName, ris);
                                 AddTransmitTask(t);
                                 t.StartTransmitAsync();
                                 t.OnTaskEnd += (status, exception) =>
@@ -779,7 +780,7 @@ namespace PRM.View.Host.ProtocolHosts
                             return;
                         }
 
-                        var path = SelectFileHelper.SaveFile(title: Context.LanguageService.Translate("file_transmit_host_message_files_download_to"), selectedFileName: Context.LanguageService.Translate("file_transmit_host_message_files_download_to_dir"));
+                        var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_files_download_to"), selectedFileName: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_files_download_to_dir"));
                         if (path == null) return;
                         {
                             var destinationDirectoryPath = new FileInfo(path).DirectoryName;
@@ -787,13 +788,13 @@ namespace PRM.View.Host.ProtocolHosts
                             if (!IoPermissionHelper.HasWritePermissionOnFile(path)
                             || !IoPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
                             {
-                                IoMessage = Context.LanguageService.Translate("string_permission_denied") + $": {path}";
+                                IoMessage = IoC.Get<ILanguageService>().Translate("string_permission_denied") + $": {path}";
                                 IoMessageLevel = 2;
                                 return;
                             }
 
                             var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                            var t = new TransmitTask(Context.LanguageService, Trans, destinationDirectoryPath, ris);
+                            var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, destinationDirectoryPath, ris);
                             AddTransmitTask(t);
                             t.StartTransmitAsync();
                         }
@@ -818,7 +819,7 @@ namespace PRM.View.Host.ProtocolHosts
                             if (Trans?.IsConnected() != true)
                                 return;
 
-                            var paths = SelectFileHelper.OpenFiles(title: Context.LanguageService.Translate("file_transmit_host_message_select_files_to_upload"));
+                            var paths = SelectFileHelper.OpenFiles(title: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_select_files_to_upload"));
                             if (paths == null) return;
 
                             if (paths?.Length > 0)
@@ -833,7 +834,7 @@ namespace PRM.View.Host.ProtocolHosts
                                 return;
 
                             var fbd = new FolderBrowserDialog();
-                            fbd.Description = Context.LanguageService.Translate("file_transmit_host_message_select_files_to_upload");
+                            fbd.Description = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_select_files_to_upload");
                             fbd.ShowNewFolderButton = false;
                             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
@@ -900,7 +901,7 @@ namespace PRM.View.Host.ProtocolHosts
 
             if (fis.Count > 0 || dis.Count > 0)
             {
-                var t = new TransmitTask(Context.LanguageService, Trans, CurrentPath, fis.ToArray(), dis.ToArray());
+                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, CurrentPath, fis.ToArray(), dis.ToArray());
                 AddTransmitTask(t);
                 t.StartTransmitAsync();
             }

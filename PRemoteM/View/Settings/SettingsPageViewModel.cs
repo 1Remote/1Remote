@@ -12,6 +12,7 @@ using PRM.Model;
 using PRM.Model.DAO;
 using PRM.Service;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 
@@ -19,9 +20,8 @@ namespace PRM.View.Settings
 {
     public class SettingsPageViewModel : NotifyPropertyChangedBase
     {
-        public MainWindowViewModel Host = null;
         private readonly PrmContext _context;
-        private LanguageService _languageService => _context.LanguageService;
+        private LanguageService _languageService => IoC.Get<LanguageService>();
         private ConfigurationService _configurationService => _context.ConfigurationService;
         private ProtocolConfigurationService _protocolConfigurationService => _context.ProtocolConfigurationService;
         private LauncherService _launcherService => _context.LauncherService;
@@ -48,22 +48,7 @@ namespace PRM.View.Settings
                 _configurationService.General.CurrentLanguageCode = languageCode;
             }
         }
-
-        //public static void Init(PrmContext context, string languageCode = "")
-        //{
-        //    _settingsPage = new SettingsPageViewModel(context, languageCode);
-        //}
-
-        //public static SettingsPageViewModel GetInstance(MainWindowViewModel host = null)
-        //{
-        //    Debug.Assert(_settingsPage != null);
-        //    if (host != null)
-        //    {
-        //        _settingsPage.Host = host;
-        //    }
-        //    return _settingsPage;
-        //}
-
+        
 
         private Visibility _progressBarVisibility = Visibility.Collapsed;
         public Visibility ProgressBarVisibility
@@ -86,15 +71,14 @@ namespace PRM.View.Settings
                     var res = _context.DataService?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
                     if (res != EnumDbStatus.OK)
                     {
-                        MessageBox.Show(res.GetErrorInfo(), _context.LanguageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        MessageBox.Show(res.GetErrorInfo(), IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         return;
                     }
 
 
                     _configurationService.Save();
                     _protocolConfigurationService.Save();
-                    if (Host != null)
-                        Host.AnimationPageSettings = null;
+                    IoC.Get<MainWindowViewModel>().ShowList();
                 });
                 return _cmdSaveAndGoBack;
             }

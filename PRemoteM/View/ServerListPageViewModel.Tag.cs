@@ -9,6 +9,7 @@ using PRM.Model;
 using PRM.Properties;
 using PRM.Utils;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 
 namespace PRM.View
@@ -170,7 +171,7 @@ namespace PRM.View
             {
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
-                    if (!(o is Tag obj) || MessageBox.Show(Context.LanguageService.Translate("confirm_to_delete"), Context.LanguageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
+                    if (!(o is Tag obj) || MessageBox.Show(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
                         return;
 
                     var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);
@@ -202,7 +203,7 @@ namespace PRM.View
                     var obj = o as Tag;
                     if (obj == null)
                         return;
-                    string newTagName = InputWindow.InputBox(Context.LanguageService.Translate("Tags"), Context.LanguageService.Translate("Tags"), obj.Name);
+                    string newTagName = InputWindow.InputBox(IoC.Get<ILanguageService>().Translate("Tags"), IoC.Get<ILanguageService>().Translate("Tags"), obj.Name);
                     newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
                     if (string.IsNullOrEmpty(newTagName) || obj.Name == newTagName)
                         return;

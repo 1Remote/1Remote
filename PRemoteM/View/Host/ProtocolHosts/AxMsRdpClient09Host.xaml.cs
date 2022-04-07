@@ -12,6 +12,7 @@ using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf.Controls;
 using Color = System.Drawing.Color;
 
@@ -695,7 +696,7 @@ namespace PRM.View.Host.ProtocolHosts
                     {
                         ++_retryCount;
                         TbMessageTitle.Visibility = Visibility.Visible;
-                        TbMessageTitle.Text = Context.LanguageService.Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
+                        TbMessageTitle.Text = IoC.Get<ILanguageService>().Translate("host_reconecting_info") + $"({_retryCount}/{MaxRetryCount})";
                         TbMessage.Text = reason;
                         ReConn();
                     }

@@ -9,6 +9,7 @@ using PRM.Model.DAO;
 using PRM.Model.DAO.Dapper;
 using PRM.Service;
 using PRM.View;
+using PRM.View.Editor;
 using PRM.View.ErrorReport;
 using PRM.View.Guidance;
 using PRM.View.Settings;
@@ -98,10 +99,12 @@ namespace PRM
             builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowView>().ToSelf().InSingletonScope();
             builder.Bind<LauncherWindowViewModel>().ToSelf().InSingletonScope();
+            builder.Bind<AboutPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<SettingsPageViewModel>().ToSelf().InSingletonScope();
             builder.Bind<ServerListPageViewModel>().ToSelf();
             builder.Bind<ProcessingRingViewModel>().ToSelf();
             builder.Bind<RequestRatingViewModel>().ToSelf();
+            builder.Bind<ServerEditorPageViewModel>().ToSelf();
             base.ConfigureIoC(builder);
         }
 

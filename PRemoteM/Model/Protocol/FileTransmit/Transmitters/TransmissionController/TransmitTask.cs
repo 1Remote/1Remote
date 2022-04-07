@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using PRM.Service;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 
 namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 {
@@ -40,9 +41,9 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         public string TransmitItemSrcDirectoryPath { get; private set; }
         public string TransmitItemDstDirectoryPath { get; private set; }
 
-        private readonly LanguageService _languageService;
+        private readonly ILanguageService _languageService;
 
-        public TransmitTask(LanguageService languageService, ITransmitter trans, string destinationDirectoryPath, FileInfo[] fis, DirectoryInfo[] dis = null)
+        public TransmitTask(ILanguageService languageService, ITransmitter trans, string destinationDirectoryPath, FileInfo[] fis, DirectoryInfo[] dis = null)
         {
             Debug.Assert(fis != null || dis != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
@@ -78,7 +79,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             RaisePropertyChanged(nameof(TransmitItemNames));
         }
 
-        public TransmitTask(LanguageService languageService, ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
+        public TransmitTask(ILanguageService languageService, ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
         {
             Debug.Assert(ris != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;

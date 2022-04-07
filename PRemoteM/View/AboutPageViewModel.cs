@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using System.Windows.Input;
 using Shawn.Utils;
 
 namespace PRM.View
@@ -23,15 +24,24 @@ namespace PRM.View
                 checker.CheckUpdateAsync();
             };
             _checkUpdateTimer.Start();
+
+
+            CurrentVersion = AppVersion.Version;
+#if FOR_MICROSOFT_STORE_ONLY
+            CurrentVersion = ConfigurationService.AppName + "(Store)";
+#endif
         }
 
         ~AboutPageViewModel()
         {
+            _checkUpdateTimer?.Stop();
             _checkUpdateTimer?.Dispose();
         }
 
-        private string _newVersion = "";
+        public string CurrentVersion { get; }
 
+
+        private string _newVersion = "";
         public string NewVersion
         {
             get => _newVersion;
@@ -50,6 +60,20 @@ namespace PRM.View
         {
             this.NewVersion = version;
             this.NewVersionUrl = url;
+        }
+
+        public void Close()
+        {
+            IoC.Get<MainWindowViewModel>().ShowList();
+        }
+
+
+        public void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 3)
+            {
+                ConsoleManager.Toggle();
+            }
         }
     }
 }
