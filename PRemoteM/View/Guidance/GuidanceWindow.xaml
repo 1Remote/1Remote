@@ -264,6 +264,7 @@
                                 </Style>
                             </Grid.Resources>
                             <StackPanel Margin="0 15 0 0">
+
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Style="{DynamicResource HeaderStyle}"

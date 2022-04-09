@@ -87,6 +87,7 @@ namespace PRM.Model
         private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
 
         public int TabWindowCount => _tabWindows.Count;
+        public Dictionary<string, HostBase> ProtocolHosts => _protocolHosts;
 
         private bool ActivateOrReConnIfServerSessionIsOpened(ProtocolBase server)
         {

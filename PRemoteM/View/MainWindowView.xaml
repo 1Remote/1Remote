@@ -79,8 +79,9 @@
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding AnimationPageAbout}" Value="{x:Null}"></Condition>
-                                            <Condition Binding="{Binding AnimationPageEditor}" Value="{x:Null}"></Condition>
+                                            <Condition Binding="{Binding ContentViewModel}" Value="{x:Null}"></Condition>
+                                            <Condition Binding="{Binding ShowAbout}" Value="False"></Condition>
+                                            <Condition Binding="{Binding ShowSetting}" Value="False"></Condition>
                                         </MultiDataTrigger.Conditions>
                                         <MultiDataTrigger.EnterActions>
                                             <BeginStoryboard>
@@ -142,7 +143,7 @@
                             <Path.Style>
                                 <Style TargetType="Path">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding AboutPageViewModel.NewVersion}" Value="">
+                                        <DataTrigger Binding="{Binding AboutViewModel.NewVersion}" Value="">
                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -188,7 +189,7 @@
                                                 <Path.Style>
                                                     <Style TargetType="Path">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding AboutPageViewModel.NewVersion}" Value="">
+                                                            <DataTrigger Binding="{Binding AboutViewModel.NewVersion}" Value="">
                                                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -277,40 +278,48 @@
             <Grid Grid.Row="1">
                 <Grid.Style>
                     <Style TargetType="Grid">
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
+                            </Setter.Value>
+                        </Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=ProcessingRingVisibility, Mode=OneWay}" Value="Visible">
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <BlurEffect Radius="2" KernelType="Box"></BlurEffect>
-                                    </Setter.Value>
-                                </Setter>
+                            <DataTrigger Binding="{Binding Path=TopLevelViewModel, Mode=OneWay}" Value="{x:Null}">
+                                <Setter Property="Effect" Value="{x:Null}"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <!--<pageHost:PageHost NewPage="{Binding AnimationPageServerList}"></pageHost:PageHost>
-                <pageHost:PageHost x:Name="MidPageHost" NewPage="{Binding AnimationPageEditor}"></pageHost:PageHost>
-                <pageHost:PageHost x:Name="SettingsPageHost" NewPage="{Binding AnimationPageSettings}"></pageHost:PageHost>
-                <pageHost:PageHost x:Name="AboutPageHost" NewPage="{Binding AnimationPageAbout}"></pageHost:PageHost>-->
-                <ContentControl s:View.Model="{Binding ServerListViewModel}">
-                    <ContentControl.Style>
-                        <Style TargetType="ContentControl">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding DisplayPage}" Value="{x:Static view:EnumPage.List}">
-                                    <Setter Property="Visibility" Value="Visible"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ContentControl.Style>
-                </ContentControl>
+                <ContentControl s:View.Model="{Binding ServerListViewModel}"></ContentControl>
                 <ContentControl s:View.Model="{Binding SettingViewModel}">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Setter Property="Opacity" Value="0"></Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding DisplayPage}" Value="{x:Static view:EnumPage.Setting}">
-                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                <DataTrigger Binding="{Binding ShowSetting}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" From="0" To="1" Duration="0:0:0.3"/>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" SpeedRatio="0.8" From="1000 0 0 0" To="0" Duration="0:0:0.3"></ThicknessAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard >
+                                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                    <DiscreteObjectKeyFrame KeyTime="00:00:0.5" Value="{x:Static Visibility.Collapsed}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="0" Duration="0:0:0.3"/>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" SpeedRatio="0.9" From="0 0 0 0" To="1000 0 0 0" Duration="0:0:0.3"></ThicknessAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -320,15 +329,68 @@
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Setter Property="Opacity" Value="0"></Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding DisplayPage}" Value="{x:Static view:EnumPage.About}">
-                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                <DataTrigger Binding="{Binding ShowAbout}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" From="0" To="1" Duration="0:0:0.3"/>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" SpeedRatio="0.8" From="1000 0 0 0" To="0" Duration="0:0:0.3"></ThicknessAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard >
+                                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                    <DiscreteObjectKeyFrame KeyTime="00:00:0.5" Value="{x:Static Visibility.Collapsed}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="0" Duration="0:0:0.3"/>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" SpeedRatio="0.9" From="0 0 0 0" To="1000 0 0 0" Duration="0:0:0.3"></ThicknessAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>
-                <ContentControl s:View.Model="{Binding ContentViewModel}"></ContentControl>
+                <ContentControl s:View.Model="{Binding ContentViewModel}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Setter Property="Opacity" Value="0"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ContentViewModel}" Value="{x:Null}">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard >
+                                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" AccelerationRatio="0.9" To="1" Duration="0:0:0.3"/>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" SpeedRatio="0.8" From="1000 0 0 0" To="0" Duration="0:0:0.3"></ThicknessAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </Grid>
         </Grid>
 

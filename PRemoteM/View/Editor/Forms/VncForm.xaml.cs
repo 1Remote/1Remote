@@ -9,12 +9,9 @@ namespace PRM.View.Editor.Forms
 {
     public partial class VncForm : FormBase
     {
-        public readonly ProtocolBase Vm;
         public VncForm(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
-            Vm = vm;
-            DataContext = vm;
         }
     }
 

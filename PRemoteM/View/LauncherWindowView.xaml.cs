@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Model;
+using PRM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -14,53 +16,28 @@ namespace PRM.View
     public partial class LauncherWindowView : WindowChromeBase
     {
         private readonly LauncherWindowViewModel _vm;
-        public readonly PrmContext Context;
-
-        public LauncherWindowView(PrmContext context, LauncherWindowViewModel launcherWindowViewModel)
+        public LauncherWindowView(LauncherWindowViewModel vm)
         {
-            Context = context;
+            _vm = vm;
             InitializeComponent();
 
             ShowActivated = true;
             ShowInTaskbar = false;
 
-            double gridMainWidth = (double)FindResource("GridMainWidth");
-            double oneItemHeight = (double)FindResource("OneItemHeight");
-            double oneActionItemHeight = (double)FindResource("OneActionItemHeight");
-            double cornerRadius = (double)FindResource("CornerRadius");
-            _vm = launcherWindowViewModel;
-            _vm.Init(gridMainWidth, oneItemHeight, oneActionItemHeight, cornerRadius, GridMenuActions);
 
-            DataContext = _vm;
             Loaded += (sender, args) =>
             {
-                HideMe();
-                Deactivated += (sender1, args1) => { Dispatcher.Invoke(HideMe); };
-                KeyDown += (sender1, args1) =>
-                {
-                    if (args1.Key == Key.Escape) HideMe();
-                };
+                Hide();
                 SetHotKey();
-            };
-            Show();
-
-            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
-
-            _vm.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(LauncherWindowViewModel.SelectedIndex))
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        ListBoxSelections.ScrollIntoView(ListBoxSelections.SelectedItem);
-                    });
-                }
+                GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
+                Deactivated += (s, a) => { HideMe(); };
+                KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
             };
         }
 
         private readonly object _hideToggleLocker = new object();
         private bool _isHidden = false;
-        private void HideMe()
+        public void HideMe()
         {
             if (_isHidden == false)
                 lock (_hideToggleLocker)
@@ -70,7 +47,7 @@ namespace PRM.View
                         this.Visibility = Visibility.Hidden;
                         _isHidden = true;
                         this.Hide();
-                        _vm.HideActionsList();
+                        GridMenuActions.Visibility = Visibility.Hidden;
                         _vm.Filter = "";
                     }
                 }
@@ -88,9 +65,10 @@ namespace PRM.View
         {
             SimpleLogHelper.Debug($"Call shortcut to invoke launcher _isHidden = {_isHidden}");
             _assignTabTokenThisTime = assignTabTokenThisTime;
+            GridMenuActions.Visibility = Visibility.Hidden;
 
             if (IoC.Get<MainWindowViewModel>().TopLevelViewModel != null) return;
-            if (!Context.ConfigurationService.Launcher.LauncherEnabled) return;
+            if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false) return;
             if (_isHidden != true) return;
 
             lock (_hideToggleLocker)
@@ -99,14 +77,14 @@ namespace PRM.View
 
                 if (_isHidden != true) return;
 
-                // show position
-                var p = ScreenInfoEx.GetMouseSystemPosition();
-                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
-                this.Top = screenEx.VirtualWorkingAreaCenter.Y - this.Height / 2;
-                this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
 
                 _vm.Filter = "";
                 _vm.CalcVisibleByFilter();
+                // show position
+                var p = ScreenInfoEx.GetMouseSystemPosition();
+                var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
+                this.Top = screenEx.VirtualWorkingAreaCenter.Y - _vm.GridMainHeight / 2;
+                this.Left = screenEx.VirtualWorkingAreaCenter.X - this.Width / 2;
 
                 this.Show();
                 this.Visibility = Visibility.Visible;
@@ -210,7 +188,7 @@ namespace PRM.View
                     HideMe();
                     return;
                 }
-                
+
                 if (GridMenuActions.Visibility == Visibility.Visible)
                 {
                     MenuActions(key);
@@ -257,9 +235,9 @@ namespace PRM.View
         public void SetHotKey()
         {
             GlobalHotkeyHooker.Instance.Unregist(this);
-            if (Context.ConfigurationService.Launcher.LauncherEnabled == false)
+            if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false)
                 return;
-            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)Context.ConfigurationService.Launcher.HotKeyModifiers, Context.ConfigurationService.Launcher.HotKeyKey, this.ShowMe);
+            var r = GlobalHotkeyHooker.Instance.Register(this, (uint)IoC.Get<ConfigurationService>().Launcher.HotKeyModifiers, IoC.Get<ConfigurationService>().Launcher.HotKeyKey, this.ShowMe);
             var title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
             switch (r.Item1)
             {
@@ -304,7 +282,7 @@ namespace PRM.View
         private void ListBoxSelections_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (_vm.SelectedIndex >= 0 &&
-                _vm.SelectedIndex < _vm.Context.AppData.VmItemList.Count)
+                _vm.SelectedIndex < IoC.Get<GlobalData>().VmItemList.Count)
             {
                 _vm.ShowActionsList();
             }

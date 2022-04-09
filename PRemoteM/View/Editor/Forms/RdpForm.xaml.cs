@@ -18,12 +18,9 @@ namespace PRM.View.Editor.Forms
 {
     public partial class RdpForm : FormBase
     {
-        public RDP Vm;
         public RdpForm(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
-            Vm = (RDP)vm;
-            DataContext = vm;
             TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
             TextEditor.GotFocus += (sender, args) =>
             {
@@ -103,31 +100,33 @@ namespace PRM.View.Editor.Forms
         }
         private void ButtonPreviewRdpFile_OnClick(object sender, RoutedEventArgs e)
         {
-            var rdp = Vm;
-            var tmp = Path.GetTempPath();
-            var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
-            var invalid = new string(Path.GetInvalidFileNameChars()) +
-                          new string(Path.GetInvalidPathChars());
-            rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
-            var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
-
-            // write a .rdp file for mstsc.exe
-            File.WriteAllText(rdpFile, rdp.ToRdpConfig(null).ToString());
-            var p = new Process
+            if (_vm is RDP rdp)
             {
-                StartInfo =
+                var tmp = Path.GetTempPath();
+                var rdpFileName = $"{rdp.DisplayName}_{rdp.Port}_{MD5Helper.GetMd5Hash16BitString(rdp.UserName)}";
+                var invalid = new string(Path.GetInvalidFileNameChars()) +
+                              new string(Path.GetInvalidPathChars());
+                rdpFileName = invalid.Aggregate(rdpFileName, (current, c) => current.Replace(c.ToString(), ""));
+                var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
+
+                // write a .rdp file for mstsc.exe
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig(null).ToString());
+                var p = new Process
                 {
-                    FileName = "cmd.exe",
-                    UseShellExecute = false,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                }
-            };
-            p.Start();
-            p.StandardInput.WriteLine($"notepad " + rdpFile);
-            p.StandardInput.WriteLine("exit");
+                    StartInfo =
+                    {
+                        FileName = "cmd.exe",
+                        UseShellExecute = false,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+                p.Start();
+                p.StandardInput.WriteLine($"notepad " + rdpFile);
+                p.StandardInput.WriteLine("exit");
+            }
         }
     }
 

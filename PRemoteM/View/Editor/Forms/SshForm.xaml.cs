@@ -11,41 +11,31 @@ namespace PRM.View.Editor.Forms
 {
     public partial class SshForm : FormBase
     {
-        public readonly ProtocolBase Vm;
         public SshForm(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
-            Vm = vm;
-            DataContext = vm;
 
             GridUserName.Visibility = Visibility.Collapsed;
             GridPwd.Visibility = Visibility.Collapsed;
             GridPrivateKey.Visibility = Visibility.Collapsed;
 
 
-            if (Vm.GetType() == typeof(SSH)
-                || Vm.GetType().BaseType == typeof(ProtocolBaseWithAddressPortUserPwd))
+            if (vm.GetType() == typeof(SSH)
+                || vm.GetType().BaseType == typeof(ProtocolBaseWithAddressPortUserPwd))
             {
                 GridPrivateKey.Visibility =
                 GridUserName.Visibility =
                     GridPwd.Visibility =  Visibility.Visible;
             }
 
-
-            if (Vm.GetType() == typeof(Telnet)
-                || Vm.GetType().BaseType == typeof(ProtocolBaseWithAddressPort))
-            {
-                
-            }
-
-            if (Vm.GetType() == typeof(SSH))
+            if (vm.GetType() == typeof(SSH))
             {
                 CbUsePrivateKey.IsChecked = false;
-                if (((SSH)Vm).PrivateKey == vm.ServerEditorDifferentOptions)
+                if (((SSH)vm).PrivateKey == vm.ServerEditorDifferentOptions)
                 {
                     CbUsePrivateKey.IsChecked = null;
                 }
-                if (!string.IsNullOrEmpty(((SSH)Vm).PrivateKey))
+                if (!string.IsNullOrEmpty(((SSH)vm).PrivateKey))
                 {
                     CbUsePrivateKey.IsChecked = true;
                 }
@@ -54,11 +44,11 @@ namespace PRM.View.Editor.Forms
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm.GetType() == typeof(SSH))
+            if (_vm is SSH ssh)
             {
-                var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
+                    var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                 if (path == null) return;
-                ((SSH)Vm).PrivateKey = path;
+                ssh.PrivateKey = path;
             }
         }
 
@@ -66,14 +56,14 @@ namespace PRM.View.Editor.Forms
         {
             if (CbUsePrivateKey.IsChecked == false)
             {
-                if (Vm.GetType() == typeof(SSH))
-                    ((SSH)Vm).PrivateKey = "";
+                if (_vm is SSH ssh)
+                    ssh.PrivateKey = "";
             }
         }
 
         private void ButtonSelectSessionConfigFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm is IKittyConnectable pc)
+            if (_vm is IKittyConnectable pc)
             {
                 var path = SelectFileHelper.OpenFile(filter: "KiTTY Session|*.*");
                 if (path == null) return;

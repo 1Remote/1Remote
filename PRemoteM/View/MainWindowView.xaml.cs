@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using PRM.Model;
 using PRM.Service;
 using PRM.Utils;
+using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -110,8 +113,14 @@ namespace PRM.View
                     GlobalEventHelper.OnScreenResolutionChanged?.Invoke();
                     TaskTrayInit();
                 };
-                LauncherWindowView = IoC.Get<LauncherWindowView>();
-                vm.Init(this);
+
+
+
+                var myWindowHandle = new WindowInteropHelper(this).Handle;
+                var source = HwndSource.FromHwnd(myWindowHandle);
+                source.AddHook(new HwndSourceHook(WndProc));
+
+                _wm.ShowWindow(IoC.Get<LauncherWindowViewModel>());
             };
         }
 
@@ -256,7 +265,27 @@ namespace PRM.View
         }
         #endregion
 
-        public LauncherWindowView LauncherWindowView { get; private set; } = null;
 
+
+        /// <summary>
+        /// Redirect USB Device, TODO move to main window.
+        /// </summary>
+        /// <returns></returns>
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_DEVICECHANGE = 0x0219;
+            if (msg == WM_DEVICECHANGE)
+            {
+                foreach (var host in RemoteWindowPool.Instance.ProtocolHosts.Where(x => x.Value is AxMsRdpClient09Host).Select(x => x.Value))
+                {
+                    if (host is AxMsRdpClient09Host rdp)
+                    {
+                        SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
+                        rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
+                    }
+                }
+            }
+            return IntPtr.Zero;
+        }
     }
 }

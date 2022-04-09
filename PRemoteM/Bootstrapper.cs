@@ -24,6 +24,7 @@ namespace PRM
     public class Bootstrapper : Bootstrapper<MainWindowViewModel>
     {
         private bool _canPortable = false;
+        private bool _isNewUser = false;
         private string _baseFolder;
 
         private KeywordMatchService _keywordMatchService;
@@ -82,7 +83,6 @@ namespace PRM
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
-
             // Step2
             // Configure the IoC container in here
             builder.Bind<IDataService>().And<DataService>().To<DataService>();
@@ -125,6 +125,14 @@ namespace PRM
             RemoteWindowPool.Init(context);
             _dbConnectionStatus = context.InitSqliteDb();
             IoC.Get<GlobalData>().ReloadServerList();
+
+            // if cfg is not existed, then it would be a new user
+            _isNewUser = !File.Exists(context.ConfigurationService.JsonPath);
+            if (_isNewUser)
+            {
+                var gw = new GuidanceWindow(context, IoC.Get<SettingsPageViewModel>());
+                gw.ShowDialog();
+            }
         }
 
         protected override void OnLaunch()
@@ -132,15 +140,7 @@ namespace PRM
             // Step4
             // This is called just after the root ViewModel has been launched
             // Something like a version check that displays a dialog might be launched from here
-            var context = IoC.Get<PrmContext>();
 
-            // if cfg is not existed, then it would be a new user
-            var isNewUser = !File.Exists(context.ConfigurationService.JsonPath);
-            if (isNewUser)
-            {
-                var gw = new GuidanceWindow(context, IoC.Get<SettingsPageViewModel>());
-                gw.ShowDialog();
-            }
 
             // init Database here after ui init, to show alert if db connection goes wrong.
             if (_dbConnectionStatus != EnumDbStatus.OK)
@@ -153,7 +153,7 @@ namespace PRM
 
 
             if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false
-                || isNewUser)
+                || _isNewUser)
             {
                 IoC.Get<MainWindowView>().ActivateMe();
             }
