@@ -149,6 +149,11 @@ namespace Shawn.Utils.RdpFile
         [RdpConfName("bitmapcachepersistenable:i:")]
         public int BitmapCachePersistenable { get; set; } = 1;
 
+        /// <summary>
+        /// - 0: Play sounds on the local computer (Play on this computer)
+        /// - 1: Play sounds on the remote computer(Play on remote computer)
+        /// - 2: Do not play sounds(Do not play)
+        /// </summary>
         [RdpConfName("audiomode:i:")]
         public int AudioMode { get; set; } = 1;
 

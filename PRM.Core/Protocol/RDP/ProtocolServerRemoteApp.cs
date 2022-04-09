@@ -64,7 +64,7 @@ namespace PRM.Core.Protocol.RDP
             var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.KeyboardHook = 0;
-            rdpConfig.AudioMode = 2;
+            //rdpConfig.AudioMode = 2;
             rdpConfig.AudioCaptureMode = 0;
 
             rdpConfig.RedirectPosDevices = 0;
@@ -76,7 +76,7 @@ namespace PRM.Core.Protocol.RDP
             rdpConfig.RedirectPrinters = 0;
             rdpConfig.RedirectSmartCards = 1;
             rdpConfig.KeyboardHook = 2;
-            rdpConfig.AudioMode = 0;
+            rdpConfig.AudioMode = 1;
             rdpConfig.AudioCaptureMode = 1;
             rdpConfig.AutoReconnectionEnabled = 1;
 
