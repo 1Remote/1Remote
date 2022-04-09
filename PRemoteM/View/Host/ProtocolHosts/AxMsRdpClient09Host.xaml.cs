@@ -969,18 +969,27 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
+        private uint _previousWidth = 0;
+        private uint _previousHeight = 0;
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (_canAutoResizeByWindowSizeChanged && this._rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
+            if (ParentWindow.WindowState != WindowState.Minimized && _canAutoResizeByWindowSizeChanged && this._rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
-                try
+                var nw = (uint)e.NewSize.Width;
+                var nh = (uint)e.NewSize.Height;
+                if (nw != _previousWidth || nh != _previousHeight)
                 {
-                    _resizeEndTimer?.Stop();
-                    _resizeEndTimer?.Start();
-                }
-                catch (Exception)
-                {
-                    // ignored
+                    _previousWidth = (uint)e.NewSize.Width;
+                    _previousHeight = (uint)e.NewSize.Height;
+                    try
+                    {
+                        _resizeEndTimer?.Stop();
+                        _resizeEndTimer?.Start();
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
                 }
             }
         }
