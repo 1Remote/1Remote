@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using PRM.Model;
@@ -16,15 +17,14 @@ using Stylet;
 namespace PRM.View
 {
 
-    public class LauncherWindowViewModel : NotifyPropertyChangedBase
+    public class LauncherWindowViewModel : NotifyPropertyChangedBaseScreen
     {
-        private  double _gridMainWidth;
+        private double _gridMainWidth;
         private double _oneItemHeight;
         private double _oneActionHeight;
         private double _cornerRadius;
         private FrameworkElement _gridMenuActions;
 
-        public PrmContext Context { get; }
 
         #region properties
 
@@ -51,6 +51,13 @@ namespace PRM.View
                 if (SetAndNotifyIfChanged(ref _selectedIndex, value))
                 {
                     RaisePropertyChanged(nameof(SelectedItem));
+                    if (this.View is LauncherWindowView view)
+                    {
+                        Execute.OnUIThread(() =>
+                        {
+                            view.ListBoxSelections.ScrollIntoView(view.ListBoxSelections.SelectedItem);
+                        });
+                    }
                 }
             }
         }
@@ -149,27 +156,27 @@ namespace PRM.View
 
         #endregion
 
-        public LauncherWindowViewModel(PrmContext context)
+        public LauncherWindowViewModel()
         {
-            Context = context;
             ReCalcWindowHeight(false);
             RebuildVmServerList();
-            Context.AppData.VmItemListDataChanged += RebuildVmServerList;
+            IoC.Get<GlobalData>().VmItemListDataChanged += RebuildVmServerList;
         }
 
-        public void Init(double gridMainWidth, double oneItemHeight, double oneActionHeight, double cornerRadius, FrameworkElement gridMenuActions)
+        protected override void OnViewLoaded()
         {
-            _gridMainWidth = gridMainWidth;
-            _oneItemHeight = oneItemHeight;
-            _oneActionHeight = oneActionHeight;
-            _gridMenuActions = gridMenuActions;
-            _cornerRadius = cornerRadius;
+            var view = (LauncherWindowView)this.View;
+            _gridMenuActions = view.GridMenuActions;
+            _gridMainWidth = (double)view.FindResource("GridMainWidth");
+            _oneItemHeight = (double)view.FindResource("OneItemHeight");
+            _oneActionHeight = (double)view.FindResource("OneActionItemHeight");
+            _cornerRadius = (double)view.FindResource("CornerRadius");
         }
 
 
         private void RebuildVmServerList()
         {
-            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList.OrderByDescending(x => x.Server.LastConnTime));
+            VmServerList = new ObservableCollection<ProtocolBaseViewModel>(IoC.Get<GlobalData>().VmItemList.OrderByDescending(x => x.Server.LastConnTime));
 
             Execute.OnUIThread(() =>
             {
@@ -218,7 +225,7 @@ namespace PRM.View
             RaisePropertyChanged(nameof(SelectedItem));
 
             var protocolServer = VmServerList[SelectedIndex].Server;
-            Actions = new ObservableCollection<ProtocolAction>(protocolServer.GetActions(Context, RemoteWindowPool.Instance.TabWindowCount));
+            Actions = new ObservableCollection<ProtocolAction>(protocolServer.GetActions());
             SelectedActionIndex = 0;
 
             ReCalcWindowHeight(true);
@@ -253,7 +260,7 @@ namespace PRM.View
             TagFilters = tagFilters;
 
             var newList = new List<ProtocolBaseViewModel>();
-            foreach (var vm in Context.AppData.VmItemList)
+            foreach (var vm in IoC.Get<GlobalData>().VmItemList)
             {
                 var server = vm.Server;
                 var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tagFilters, keyWords);

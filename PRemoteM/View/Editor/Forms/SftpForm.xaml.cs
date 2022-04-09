@@ -9,21 +9,18 @@ namespace PRM.View.Editor.Forms
 {
     public partial class SftpForm : FormBase
     {
-        public readonly ProtocolBase Vm;
         public SftpForm(ProtocolBase vm) : base(vm)
         {
             InitializeComponent();
-            Vm = vm;
-            DataContext = vm;
 
-            if (Vm.GetType() == typeof(SFTP))
+            if (vm.GetType() == typeof(SFTP))
             {
                 CbUsePrivateKey.IsChecked = false;
-                if (((SFTP)Vm).PrivateKey == vm.ServerEditorDifferentOptions)
+                if (((SFTP)vm).PrivateKey == vm.ServerEditorDifferentOptions)
                 {
                     CbUsePrivateKey.IsChecked = null;
                 }
-                if (!string.IsNullOrEmpty(((SFTP)Vm).PrivateKey))
+                if (!string.IsNullOrEmpty(((SFTP)vm).PrivateKey))
                 {
                     CbUsePrivateKey.IsChecked = true;
                 }
@@ -32,11 +29,11 @@ namespace PRM.View.Editor.Forms
 
         private void ButtonOpenPrivateKey_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Vm.GetType() == typeof(SFTP))
+            if (_vm is SFTP sftp)
             {
                 var path = SelectFileHelper.OpenFile(filter: "ppk|*.*", currentDirectoryForShowingRelativePath: Environment.CurrentDirectory);
                 if (path == null) return;
-                ((SFTP)Vm).PrivateKey = path;
+                sftp.PrivateKey = path;
             }
         }
 
@@ -44,8 +41,8 @@ namespace PRM.View.Editor.Forms
         {
             if (CbUsePrivateKey.IsChecked == false)
             {
-                if (Vm.GetType() == typeof(SFTP))
-                    ((SFTP)Vm).PrivateKey = "";
+                if (_vm is SFTP sftp)
+                    sftp.PrivateKey = "";
             }
         }
     }

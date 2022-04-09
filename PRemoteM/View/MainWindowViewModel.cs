@@ -17,14 +17,7 @@ using Stylet;
 
 namespace PRM.View
 {
-    public enum EnumPage
-    {
-        List,
-        Setting,
-        About,
-    }
-
-    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen
+    public class MainWindowViewModel : NotifyPropertyChangedBaseScreen, IViewAware
     {
         public PrmContext Context { get; }
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
@@ -47,11 +40,18 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _contentViewModel, value);
         }
 
-        private EnumPage _displayPage = EnumPage.List;
-        public EnumPage DisplayPage
+        private bool _showAbout = false;
+        public bool ShowAbout
         {
-            get => _displayPage;
-            set => SetAndNotifyIfChanged(ref _displayPage, value);
+            get => _showAbout;
+            set => SetAndNotifyIfChanged(ref _showAbout, value);
+        }
+
+        private bool _showSetting = false;
+        public bool ShowSetting
+        {
+            get => _showSetting;
+            set => SetAndNotifyIfChanged(ref _showSetting, value);
         }
 
         #region FilterString
@@ -86,7 +86,6 @@ namespace PRM.View
 
         #endregion Properties
 
-        public MainWindowView WindowView { get; private set; }
 
         public MainWindowViewModel(PrmContext context)
         {
@@ -95,9 +94,9 @@ namespace PRM.View
             ShowList();
         }
 
-        public void Init(MainWindowView windowView)
+        protected override void OnViewLoaded()
         {
-            WindowView = windowView;
+            var windowView = (MainWindowView)this.View;
             GlobalEventHelper.ShowProcessingRing += (visibility, msg) =>
             {
                 Execute.OnUIThread(() =>
@@ -120,7 +119,7 @@ namespace PRM.View
                 Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
                 ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server, isDuplicate);
-                WindowView.ActivateMe();
+                windowView.ActivateMe();
             });
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
@@ -130,7 +129,7 @@ namespace PRM.View
                     Tags = new List<string>(tagNames)
                 };
                 ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server);
-                WindowView.ActivateMe();
+                windowView.ActivateMe();
             });
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
@@ -140,19 +139,20 @@ namespace PRM.View
                     ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases);
                 else
                     ContentViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases.First());
-                WindowView.ActivateMe();
+                windowView.ActivateMe();
             };
         }
 
         public void ShowList()
         {
             ContentViewModel = null;
-            DisplayPage = EnumPage.List;
+            ShowAbout = false;
+            ShowSetting = false;
         }
 
         public bool IsShownList()
         {
-            return ContentViewModel is null && DisplayPage == EnumPage.List;
+            return ContentViewModel is null && ShowAbout == false && ShowSetting == false;
         }
 
 
@@ -165,8 +165,8 @@ namespace PRM.View
             {
                 return _cmdGoSysOptionsPage ??= new RelayCommand((o) =>
                 {
-                    DisplayPage = EnumPage.Setting;
-                    WindowView.PopupMenu.IsOpen = false;
+                    ShowSetting = true;
+                    ((MainWindowView)this.View).PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
         }
@@ -178,8 +178,8 @@ namespace PRM.View
             {
                 return _cmdGoAboutPage ??= new RelayCommand((o) =>
                 {
-                    DisplayPage = EnumPage.About;
-                    WindowView.PopupMenu.IsOpen = false;
+                    ShowAbout = true;
+                    ((MainWindowView)this.View).PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
         }
@@ -193,7 +193,7 @@ namespace PRM.View
                 return _cmdToggleCardList ??= new RelayCommand((o) =>
                 {
                     this.ServerListViewModel.ListPageIsCardView = !this.ServerListViewModel.ListPageIsCardView;
-                    WindowView.PopupMenu.IsOpen = false;
+                    ((MainWindowView)this.View).PopupMenu.IsOpen = false;
                 }, o => IsShownList());
             }
         }

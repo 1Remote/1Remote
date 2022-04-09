@@ -31,8 +31,6 @@ namespace PRM.View.Editor
                     if (vm.IsAddMode)
                     {
                         ButtonSave.Content = IoC.Get<ILanguageService>().Translate("Add");
-                        //ColorPick.Color = ColorAndBrushHelper.HexColorToMediaColor(context.ConfigurationService.Theme.PrimaryMidColor);
-
                         if (vm.Server.IconImg == null
                             && ServerIcons.Instance.Icons.Count > 0)
                         {

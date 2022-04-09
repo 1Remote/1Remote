@@ -26,7 +26,6 @@
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.0</ApplicationVersion>
@@ -48,7 +47,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;DEBUG;UseKiTTY;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -79,7 +78,7 @@
     <ManifestKeyFile>PRemoteM_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
+    <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -223,7 +222,6 @@
     <Compile Include="Model\DAO\IDbServerModel.cs" />
     <Compile Include="Utils\MicrosoftStoreUtils.cs" />
     <Compile Include="Utils\NotifyPropertyChangedBaseScreen.cs" />
-    <Compile Include="View\Host\ITabWindow.cs" />
     <Compile Include="Model\ProtocolAction.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="Model\GlobalEventHelper.cs" />
@@ -255,9 +253,6 @@
     <Compile Include="Model\ProtocolRunner\Default\KittyRunner.cs" />
     <Compile Include="Model\ProtocolRunner\ExternalRunner.cs" />
     <Compile Include="Model\ProtocolRunner\Runner.cs" />
-    <Compile Include="View\ProcessingRingView.xaml.cs">
-      <DependentUpon>ProcessingRingView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\ProcessingRingViewModel.cs" />
     <Compile Include="View\ProtocolBaseViewModel.cs" />
     <Compile Include="Model\Protocol\Vnc.cs" />
@@ -607,7 +602,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 和 x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

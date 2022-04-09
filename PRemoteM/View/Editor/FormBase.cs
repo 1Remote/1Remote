@@ -1,17 +1,17 @@
 ﻿using System.Windows.Controls;
-using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 
 namespace PRM.View.Editor
 {
     public abstract class FormBase : UserControl
     {
-        private readonly ProtocolBase _vm = null;
+        protected readonly ProtocolBase _vm = null;
 
 
         protected FormBase(ProtocolBase protocol)
         {
             _vm = protocol;
+            DataContext = protocol;
         }
         /// <summary>
         /// validate whether all fields are correct to save

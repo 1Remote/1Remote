@@ -20,14 +20,13 @@ using Timer = System.Timers.Timer;
 
 namespace PRM.View.Host
 {
-    public abstract class TabWindowBase : WindowChromeBase, ITabWindow
+    public abstract class TabWindowBase : WindowChromeBase
     {
         protected TabWindowViewModel Vm;
         private TabablzControl _tabablzControl = null;
         public string Token => Vm?.Token;
 
         private IntPtr _lastActivatedWindowHandle = IntPtr.Zero;
-        private IntPtr _myWindowHandle;
         private readonly Timer _timer4CheckForegroundWindow;
         private WindowState _lastWindowState;
         private readonly LocalityService _localityService;
@@ -47,10 +46,6 @@ namespace PRM.View.Host
                 _timer4CheckForegroundWindow.AutoReset = false;
                 _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
                 _timer4CheckForegroundWindow.Start();
-
-                _myWindowHandle = new WindowInteropHelper(this).Handle;
-                var source = HwndSource.FromHwnd(_myWindowHandle);
-                source.AddHook(new HwndSourceHook(WndProc));
             };
 
 
@@ -58,22 +53,6 @@ namespace PRM.View.Host
             {
                 _timer4CheckForegroundWindow.Dispose();
             };
-        }
-
-        /// <summary>
-        /// Redirect USB Device, TODO move to main window.
-        /// </summary>
-        /// <returns></returns>
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            const int WM_DEVICECHANGE = 0x0219;
-            if (msg == WM_DEVICECHANGE)
-                if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdp)
-                {
-                    SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
-                    rdp.NotifyRedirectDeviceChange(msg, (uint)wParam, (int)lParam);
-                }
-            return IntPtr.Zero;
         }
 
         private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)
@@ -89,16 +68,17 @@ namespace PRM.View.Host
                 var nowActivatedWindowHandle = GetForegroundWindow();
 
                 // bring Tab window to top, when the host content is Integrate.
+                var myWindowHandle = new WindowInteropHelper(this).Handle;
                 if (nowActivatedWindowHandle == hWnd && nowActivatedWindowHandle != _lastActivatedWindowHandle)
                 {
                     SimpleLogHelper.Debug($"TabWindowBase: _lastActivatedWindowHandle = ({_lastActivatedWindowHandle})");
                     SimpleLogHelper.Debug($"TabWindowBase: nowActivatedWindowHandle = ({nowActivatedWindowHandle}), hWnd = {hWnd}");
-                    SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({_myWindowHandle})");
-                    BringWindowToTop(_myWindowHandle);
+                    SimpleLogHelper.Debug($"TabWindowBase: BringWindowToTop({myWindowHandle})");
+                    BringWindowToTop(myWindowHandle);
                 }
 
                 // focus content when tab is focused and host is Integrate and left mouse is not pressed
-                if (nowActivatedWindowHandle == _myWindowHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
+                if (nowActivatedWindowHandle == myWindowHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
                 {
                     Vm?.SelectedItem?.Content?.MakeItFocus();
                 }
@@ -270,7 +250,6 @@ namespace PRM.View.Host
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
-
 
 
 

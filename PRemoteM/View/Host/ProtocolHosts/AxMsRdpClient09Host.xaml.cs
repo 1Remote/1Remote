@@ -576,7 +576,7 @@ namespace PRM.View.Host.ProtocolHosts
             Conn();
 
             // if parent is FullScreenWindow, go to full screen.
-            if (!(ParentWindow is ITabWindow))
+            if (!(ParentWindow is TabWindowBase))
             {
                 SimpleLogHelper.Debug("RDP Host: ReConn with full screen");
                 GoFullScreen();
@@ -810,7 +810,7 @@ namespace PRM.View.Host.ProtocolHosts
         {
             // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
-            if (ParentWindow is ITabWindow)
+            if (ParentWindow is TabWindowBase)
             {
                 // full-all-screen session switch to TabWindow, and click "Reconn" button, will entry this case.
                 _rdpClient.FullScreen = false;
@@ -879,7 +879,7 @@ namespace PRM.View.Host.ProtocolHosts
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
-            if (ParentWindow is ITabWindow)
+            if (ParentWindow is TabWindowBase)
             {
                 return;
             }

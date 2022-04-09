@@ -5,6 +5,7 @@ using System.Windows;
 using PRM.Model.Protocol.Base;
 using PRM.Model.ProtocolRunner;
 using PRM.Model.ProtocolRunner.Default;
+using PRM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
@@ -30,23 +31,24 @@ namespace PRM.Model
 
     public static class ProtocolActionHelper
     {
-        public static List<ProtocolAction> GetActions(this ProtocolBase server, PrmContext context, int tabWindowCount)
+        public static List<ProtocolAction> GetActions(this ProtocolBase server)
         {
             #region Build Actions
             var actions = new List<ProtocolAction>();
             {
-                if (tabWindowCount > 0)
+                if (RemoteWindowPool.Instance.TabWindowCount > 0)
                     actions.Add(new ProtocolAction(
                         actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
                         action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString()); }
                     ));
 
                 // external runners
-                if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
-                && context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
+                var protocolConfigurationService = IoC.Get<ProtocolConfigurationService>();
+                if (protocolConfigurationService.ProtocolConfigs.ContainsKey(server.Protocol)
+                    && protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.Count > 1)
                 {
-                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name); }));
-                    foreach (var runner in context.ProtocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
+                    actions.Add(new ProtocolAction(IoC.Get<ILanguageService>().Translate("Connect") + $" (Internal)", () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, assignRunnerName: protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners.First().Name); }));
+                    foreach (var runner in protocolConfigurationService.ProtocolConfigs[server.Protocol].Runners)
                     {
                         if (runner is InternalDefaultRunner) continue;
                         if (runner is ExternalRunner er && er.IsExeExisted == false) continue;
@@ -98,7 +100,7 @@ namespace PRM.Model
                     {
                         try
                         {
-                            Clipboard.SetText(context.DataService.DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
+                            Clipboard.SetText(IoC.Get<DataService>().DecryptOrReturnOriginalString(protocolServerWithAddrPortUserPwdBase.Password));
                         }
                         catch (Exception)
                         {
