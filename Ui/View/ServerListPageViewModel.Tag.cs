@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Input;
 using PRM.Controls;
 using PRM.Model;
-using PRM.Properties;
 using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -49,7 +48,6 @@ namespace PRM.View
 
 
         private List<TagFilter> _tagFilters = new List<TagFilter>();
-        [NotNull]
         public List<TagFilter> TagFilters
         {
             get => _tagFilters;

@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using PRM.Model;
-using PRM.View.Settings;
 
 namespace PRM.View
 {
-    public partial class ServerListPageView : UserControl
+    public partial class ServerListPageView
     {
         public ServerListPageView()
         {

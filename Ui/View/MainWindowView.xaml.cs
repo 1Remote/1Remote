@@ -239,29 +239,29 @@ namespace PRM.View
 
         private void ReloadTaskTrayContextMenu()
         {
-            // rebuild TaskTrayContextMenu while language changed
-            if (_taskTrayIcon == null) return;
+            //// rebuild TaskTrayContextMenu while language changed
+            //if (_taskTrayIcon == null) return;
 
-            var title = new System.Windows.Forms.MenuItem(ConfigurationService.AppName);
-            title.Click += (sender, args) =>
-            {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
-            };
-            var @break = new System.Windows.Forms.MenuItem("-");
-            var linkHowToUse = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
-            linkHowToUse.Click += (sender, args) =>
-            {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
-            };
-            var linkFeedback = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
-            linkFeedback.Click += (sender, args) =>
-            {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
-            };
-            var exit = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
-            exit.Click += (sender, args) => App.Close();
-            var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
-            _taskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
+            //var title = new System.Windows.Forms.MenuItem(ConfigurationService.AppName);
+            //title.Click += (sender, args) =>
+            //{
+            //    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+            //};
+            //var @break = new System.Windows.Forms.MenuItem("-");
+            //var linkHowToUse = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
+            //linkHowToUse.Click += (sender, args) =>
+            //{
+            //    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
+            //};
+            //var linkFeedback = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
+            //linkFeedback.Click += (sender, args) =>
+            //{
+            //    System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
+            //};
+            //var exit = new System.Windows.Forms.MenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
+            //exit.Click += (sender, args) => App.Close();
+            //var child = new System.Windows.Forms.MenuItem[] { title, @break, linkHowToUse, linkFeedback, exit };
+            //_taskTrayIcon.ContextMenu = new System.Windows.Forms.ContextMenu(child);
         }
         #endregion
 
