@@ -2,13 +2,32 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net6.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
     <RootNamespace>Ui</RootNamespace>
     <AssemblyName>PRemoteM</AssemblyName>
     <ApplicationIcon>LOGO.ico</ApplicationIcon>
+    <Configurations>Debug;Release;StoreDebug;StoreRelease</Configurations>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;DEV;UseKiTTY;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;DEV;FOR_MICROSOFT_STORE_ONLY;UseKiTTY;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;UseKiTTY;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE_ONLY;UseKiTTY;</DefineConstants>
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
