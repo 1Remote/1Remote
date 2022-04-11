@@ -1,6 +1,6 @@
 ﻿//#define SHORTCUT_METHOD
 #define REGISTRY_METHOD
-#define STORE_METHOD
+//#define STORE_METHOD
 
 #if FOR_MICROSOFT_STORE_ONLY
 #undef REGISTRY_METHOD
@@ -11,8 +11,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Windows.ApplicationModel;
 #if STORE_METHOD
+using Windows.ApplicationModel;
 #endif
 
 

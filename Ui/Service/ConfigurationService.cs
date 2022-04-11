@@ -119,7 +119,7 @@ namespace PRM.Service
 
         private readonly KeywordMatchService _keywordMatchService;
 
-        public readonly List<MatchProviderInfo> AvailableMatcherProviders;
+        public readonly List<MatchProviderInfo> AvailableMatcherProviders = new List<MatchProviderInfo>();
         private readonly Configuration _cfg;
 
         public GeneralConfig General => _cfg.General;
@@ -143,7 +143,6 @@ namespace PRM.Service
             _keywordMatchService = keywordMatchService;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
             _cfg = new Configuration();
-
             #region init
 
             // init path by `IsPortable`
@@ -224,7 +223,6 @@ namespace PRM.Service
                         Database.SqliteDatabasePath = new DatabaseConfig().SqliteDatabasePath;
                 }
             #endregion
-
 
 
 

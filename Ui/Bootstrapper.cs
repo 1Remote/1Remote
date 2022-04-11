@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Threading;
 using PRM.Model;
@@ -105,6 +104,7 @@ namespace PRM
             builder.Bind<ProcessingRingViewModel>().ToSelf();
             builder.Bind<RequestRatingViewModel>().ToSelf();
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
+            builder.Bind<GuidanceWindow>().ToSelf();
             base.ConfigureIoC(builder);
         }
 
@@ -130,7 +130,7 @@ namespace PRM
             _isNewUser = !File.Exists(context.ConfigurationService.JsonPath);
             if (_isNewUser)
             {
-                var gw = new GuidanceWindow(context, IoC.Get<SettingsPageViewModel>());
+                var gw = IoC.Get<GuidanceWindow>();
                 gw.ShowDialog();
             }
         }

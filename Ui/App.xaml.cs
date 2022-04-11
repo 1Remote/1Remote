@@ -1,29 +1,16 @@
 ﻿using System;
 using System.IO;
-using System.Diagnostics;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
-using Shawn.Utils;
-using PRM.Model;
-using PRM.Model.DAO;
-using PRM.Model.DAO.Dapper;
-using PRM.Service;
-using PRM.Utils.KiTTY;
 using PRM.View;
-using PRM.View.ErrorReport;
-using PRM.View.Guidance;
-using PRM.View.Settings;
-using Shawn.Utils.Wpf;
-using Shawn.Utils.Wpf.FileSystem;
 
-namespace PRM
+namespace Ui
 {
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
     public partial class App : Application
     {
-        public static ResourceDictionary ResourceDictionary { get; private set; }
+        public static ResourceDictionary ResourceDictionary { get; private set; } = new ResourceDictionary();
 
         protected override void OnStartup(StartupEventArgs e)
         {
