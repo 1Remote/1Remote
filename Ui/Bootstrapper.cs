@@ -176,7 +176,7 @@ namespace PRM
                 var errorReport = new ErrorReportWindow(e.Exception);
                 errorReport.ShowDialog();
 #if FOR_MICROSOFT_STORE_ONLY
-                    throw e;
+                    throw e.Exception;
 #else
                 Environment.Exit(100);
 #endif

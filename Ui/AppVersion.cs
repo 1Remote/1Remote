@@ -5,7 +5,7 @@ namespace PRM
     public static class AppVersion
     {
         public const uint Major = 0;
-        public const uint Minor = 7;
+        public const uint Minor = 0;
         public const uint Patch = 0;
         public const uint Build = 0;
         public const string PreRelease = ""; // e.g. "alpha" "beta.2"
@@ -17,9 +17,7 @@ namespace PRM
         public static readonly string[] UpdateUrls =
         {
             "https://github.com/VShawn/PRemoteM",
-#if DEV
-            "https://github.com/VShawn/PRemoteM-Test/wiki",
-#endif
+            "https://gitee.com/vshawn/PRemoteM"
         };
     }
 }

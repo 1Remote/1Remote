@@ -1,9 +1,9 @@
 ﻿//#define SHORTCUT_METHOD
 #define REGISTRY_METHOD
-//#define STORE_METHOD
 
 #if FOR_MICROSOFT_STORE_ONLY
 #undef REGISTRY_METHOD
+#define STORE_UWP_METHOD
 #endif
 
 using System;
@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-#if STORE_METHOD
+#if STORE_UWP_METHOD
 using Windows.ApplicationModel;
 #endif
 
@@ -200,7 +200,7 @@ namespace PRM.Utils
 
 #endif
 
-#if STORE_METHOD
+#if STORE_UWP_METHOD
 
         public static async Task<bool> IsSelfStartByStartupTask(string appName)
         {
