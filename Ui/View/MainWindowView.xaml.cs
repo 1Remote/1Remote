@@ -12,6 +12,7 @@ using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
 using Ui;
@@ -246,17 +247,17 @@ namespace PRM.View
             var title = new System.Windows.Forms.ToolStripMenuItem(ConfigurationService.AppName);
             title.Click += (sender, args) =>
             {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM");
             };
             var linkHowToUse = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_how_to_use"));
             linkHowToUse.Click += (sender, args) =>
             {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/wiki");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/wiki");
             };
             var linkFeedback = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("about_page_feedback"));
             linkFeedback.Click += (sender, args) =>
             {
-                System.Diagnostics.Process.Start("https://github.com/VShawn/PRemoteM/issues");
+                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/issues");
             };
             var exit = new System.Windows.Forms.ToolStripMenuItem(IoC.Get<ILanguageService>().Translate("Exit"));
             exit.Click += (sender, args) => App.Close();

@@ -147,7 +147,7 @@
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>
-                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
+                                                <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki" TextDecorations="{x:Null}" controls:HyperlinkHelper.IsOpenExternal="True">
                                                     How to use
                                                 </Hyperlink>
                                             </TextBlock>

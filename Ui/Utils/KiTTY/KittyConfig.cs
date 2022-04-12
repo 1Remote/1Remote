@@ -281,7 +281,6 @@ namespace PRM.Utils.KiTTY
             Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialStopHalfbits.ToString(), 0x00000002));
             Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialParity.ToString(), 0x00000000));
             Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.SerialFlowControl.ToString(), 0x00000001));
-            // #if UseKiTTY
             Options.Add(KittyConfigKeyValuePair.Create(EnumKittyConfigKey.Autocommand.ToString(), ""));
 
             #endregion Default

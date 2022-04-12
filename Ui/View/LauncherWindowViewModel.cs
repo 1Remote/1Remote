@@ -17,7 +17,6 @@ using Ui;
 
 namespace PRM.View
 {
-
     public class LauncherWindowViewModel : NotifyPropertyChangedBaseScreen
     {
         private double _gridMainWidth;

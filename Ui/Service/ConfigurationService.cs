@@ -108,12 +108,19 @@ namespace PRM.Service
 
     public class ConfigurationService
     {
+        private const string App = "PRemoteM";
 #if DEV
-        public const string AppName = "PRemoteM_Debug";
-        public const string AppFullName = "PersonalRemoteManager_Debug";
+#if FOR_MICROSOFT_STORE_ONLY
+        public const string AppName = $"{App}(Store)_Debug";
 #else
-        public const string AppName = "PRemoteM";
-        public const string AppFullName = "PersonalRemoteManager";
+        public const string AppName = $"{App}_Debug";
+#endif
+#else
+#if FOR_MICROSOFT_STORE_ONLY
+        public const string AppName = $"{App}(Store)";
+#else
+        public const string AppName = $"{App}";
+#endif
 #endif
         public string JsonPath;
 

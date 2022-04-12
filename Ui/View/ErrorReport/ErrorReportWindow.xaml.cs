@@ -168,7 +168,7 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://github.com/VShawn/PRemoteM/issues"));
+                HyperlinkHelper.OpenUriBySystem("https://github.com/VShawn/PRemoteM/issues");
             }
             catch
             {
@@ -182,8 +182,7 @@ namespace PRM.View.ErrorReport
             {
                 string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{ConfigurationService.AppName} error report.", "");
                 mailto = Uri.EscapeUriString(mailto);
-                System.Diagnostics.Process.Start(mailto);
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("mailto:veckshawn@gmail.com"));
+                HyperlinkHelper.OpenUriBySystem(mailto);
             }
             catch
             {
