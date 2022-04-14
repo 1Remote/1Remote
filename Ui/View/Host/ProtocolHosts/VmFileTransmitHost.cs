@@ -223,12 +223,12 @@ namespace PRM.View.Host.ProtocolHosts
                     GridLoadingVisibility = Visibility.Visible;
                     try
                     {
-                        SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) START");
+                        //SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) START");
                         if (string.IsNullOrWhiteSpace(path))
                             path = "/";
                         if (path.EndsWith("/.."))
                         {
-                            SimpleLogHelper.Debug($"ShowFolder after path.EndsWith(/..)");
+                            //SimpleLogHelper.Debug($"ShowFolder after path.EndsWith(/..)");
                             path = path.Substring(0, path.Length - 3);
                             if (path.LastIndexOf("/") > 0)
                             {
@@ -240,7 +240,7 @@ namespace PRM.View.Host.ProtocolHosts
                         try
                         {
                             var remoteItemInfos = new ObservableCollection<RemoteItem>();
-                            SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
+                            //SimpleLogHelper.Debug($"ShowFolder before ListDirectoryItems");
                             var items = Trans.ListDirectoryItems(path);
                             if (Enumerable.Any<RemoteItem>(items))
                             {
@@ -248,7 +248,7 @@ namespace PRM.View.Host.ProtocolHosts
                             }
 
                             RemoteItems = remoteItemInfos;
-                            SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
+                            //SimpleLogHelper.Debug($"ShowFolder before MakeRemoteItemsOrderBy");
                             MakeRemoteItemsOrderBy();
 
                             if (path != CurrentPath)
@@ -292,7 +292,7 @@ namespace PRM.View.Host.ProtocolHosts
                     {
                         GridLoadingVisibility = Visibility.Collapsed;
                     }
-                    SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) END");
+                    //SimpleLogHelper.Debug($"ShowFolder({path}, {mode}) END");
                 }
             });
             t.Start();

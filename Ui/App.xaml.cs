@@ -22,7 +22,7 @@ namespace Ui
         public static void Close(int exitCode = 0)
         {
             IoC.Get<LauncherWindowView>()?.Close();
-            IoC.Get<MainWindowView>()?.CloseMe();
+            IoC.Get<MainWindowView>()?.Close();
             Environment.Exit(exitCode);
         }
     }

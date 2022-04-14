@@ -80,7 +80,7 @@ namespace PRM
                 SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
                 if (message == "ActivateMe")
                 {
-                    IoC.Get<MainWindowView>()?.ActivateMe();
+                    IoC.Get<MainWindowViewModel>()?.ActivateMe();
                 }
             };
         }

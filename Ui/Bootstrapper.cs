@@ -149,14 +149,14 @@ namespace PRM
                 string error = _dbConnectionStatus.GetErrorInfo();
                 MessageBox.Show(error, IoC.Get<LanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 IoC.Get<MainWindowViewModel>().CmdGoSysOptionsPage.Execute("Data");
-                IoC.Get<MainWindowView>().ActivateMe();
+                IoC.Get<MainWindowViewModel>().ActivateMe();
             }
 
 
             if (IoC.Get<ConfigurationService>().General.AppStartMinimized == false
                 || _isNewUser)
             {
-                IoC.Get<MainWindowView>().ActivateMe();
+                IoC.Get<MainWindowViewModel>().ActivateMe();
             }
 
 
