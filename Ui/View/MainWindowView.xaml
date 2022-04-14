@@ -3,9 +3,7 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:pageHost="clr-namespace:Shawn.Utils.Wpf.PageHost;assembly=Shawn.Utils.Wpf"
                   xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
-                  xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                   xmlns:s="https://github.com/canton7/Stylet"
                   xmlns:view="clr-namespace:PRM.View"
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
@@ -66,6 +64,7 @@
 
                 <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                     <TextBox Name="TbFilter" Width="150" Height="25"
+                             attachProperty:TextBoxAttachProperty.CaretIndex="{Binding TbFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
                          Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
                          Tag="{DynamicResource 'Search (Ctrl+F)'}"
                          KeyUp="TbFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
@@ -79,7 +78,7 @@
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding ContentViewModel}" Value="{x:Null}"></Condition>
+                                            <Condition Binding="{Binding EditorViewModel}" Value="{x:Null}"></Condition>
                                             <Condition Binding="{Binding ShowAbout}" Value="False"></Condition>
                                             <Condition Binding="{Binding ShowSetting}" Value="False"></Condition>
                                         </MultiDataTrigger.Conditions>
@@ -205,7 +204,7 @@
                                         </StackPanel>
                                     </Grid>
                                 </Button>
-                                <Button Click="ButtonExit_OnClick"
+                                <Button Command="{s:Action Exit}"
                                     HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Exit}"></Button>
@@ -359,13 +358,13 @@
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>
-                <ContentControl s:View.Model="{Binding ContentViewModel}">
+                <ContentControl s:View.Model="{Binding EditorViewModel}">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                             <Setter Property="Opacity" Value="0"></Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ContentViewModel}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding EditorViewModel}" Value="{x:Null}">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard >
