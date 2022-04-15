@@ -22,23 +22,23 @@ namespace PRM.Controls
             Cancel = 2
         }
 
-        public string Prompt { get; private set; }
+        public string Prompt { get; private init; }
 
-        public string Response { get; private set; }
+        public string? Response { get; private set; }
 
         public Results Result { get; private set; }
 
         /// <summary>
         /// input string return error message or null
         /// </summary>
-        public Func<string, string> Validator { get; private set; } = null;
+        public Func<string, string>? Validator { get; private init; }
 
         protected InputWindow()
         {
             InitializeComponent();
         }
 
-        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string> validate = null, Window owner = null)
+        public static string InputBox(string prompt, string title = "", string defaultResponse = "", Func<string, string>? validate = null, Window? owner = null)
         {
             var inputWindow = new InputWindow
             {

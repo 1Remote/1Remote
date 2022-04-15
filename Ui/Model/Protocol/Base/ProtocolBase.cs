@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media.Imaging;
@@ -122,10 +123,10 @@ namespace PRM.Model.Protocol.Base
             }
         }
 
-        private BitmapSource _iconCache = null;
+        private BitmapSource? _iconCache = null;
 
         [JsonIgnore]
-        public BitmapSource IconImg
+        public BitmapSource? IconImg
         {
             get
             {
@@ -180,7 +181,7 @@ namespace PRM.Model.Protocol.Base
         /// <summary>
         /// copy all value type fields
         /// </summary>
-        public bool Update(ProtocolBase copyFromObj, Type levelType = null)
+        public bool Update(ProtocolBase copyFromObj, Type? levelType = null)
         {
             var baseType = levelType;
             if (baseType == null)
@@ -240,7 +241,7 @@ namespace PRM.Model.Protocol.Base
         /// </summary>
         /// <param name="jsonString"></param>
         /// <returns></returns>
-        public abstract ProtocolBase CreateFromJsonString(string jsonString);
+        public abstract ProtocolBase? CreateFromJsonString(string jsonString);
 
         /// <summary>
         /// subtitle of every server, different form each protocol
@@ -260,6 +261,7 @@ namespace PRM.Model.Protocol.Base
         public ProtocolBase Clone()
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
+            Debug.Assert(clone != null);
             clone.ServerEditorDifferentOptions = IoC.Get<ILanguageService>().Translate("server_editor_different_options") ?? "<different options>";
             clone.Tags = new List<string>(this.Tags);
             return clone;
@@ -311,7 +313,7 @@ namespace PRM.Model.Protocol.Base
             var assembly = typeof(ProtocolBase).Assembly;
             var types = assembly.GetTypes();
             // reflect remote protocols
-            var protocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolBase)) && !item.IsAbstract).Select(type => (ProtocolBase)Activator.CreateInstance(type)).OrderBy(x => x.GetListOrder()).ToList();
+            var protocolList = types.Where(item => item.IsSubclassOf(typeof(ProtocolBase)) && !item.IsAbstract).Select(type => (ProtocolBase)Activator.CreateInstance(type)!).OrderBy(x => x.GetListOrder()).ToList();
             return protocolList;
         }
 

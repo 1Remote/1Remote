@@ -12,16 +12,15 @@ namespace PRM.Model.DAO.Dapper
 {
     public class DapperDataBase : IDataBase
     {
-        protected IDbConnection _dbConnection;
-        protected string _connectionString;
-        protected readonly object _locker = new object();
+        protected IDbConnection? _dbConnection;
+        protected string? _connectionString;
         protected DatabaseType _databaseType = DatabaseType.Sqlite;
 
         public virtual void CloseConnection()
         {
             if (_dbConnection == null)
                 return;
-            lock (_locker)
+            lock (this)
             {
                 _dbConnection.Close();
                 SQLiteConnection.ClearAllPools();
@@ -33,7 +32,7 @@ namespace PRM.Model.DAO.Dapper
             if (string.IsNullOrWhiteSpace(_connectionString))
                 return;
             if (IsConnected()) return;
-            lock (_locker)
+            lock (this)
             {
                 if (IsConnected()) return;
                 if (_dbConnection == null)
@@ -50,7 +49,7 @@ namespace PRM.Model.DAO.Dapper
 
         public virtual void OpenConnection(DatabaseType type, string newConnectionString)
         {
-            lock (_locker)
+            lock (this)
             {
                 if (_databaseType == type && _connectionString == newConnectionString && IsConnected())
                     return;
@@ -73,7 +72,7 @@ namespace PRM.Model.DAO.Dapper
 
         public virtual bool IsConnected()
         {
-            lock (_locker)
+            lock (this)
             {
                 return _dbConnection?.State == ConnectionState.Open;
             }
@@ -112,8 +111,7 @@ COMMIT TRANSACTION;
 
         public virtual List<ProtocolBase> GetServers()
         {
-            return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`")
-                ?.Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
+            return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`")?.Select(x => x?.ToProtocolServerBase())?.Where(x => x != null)?.ToList();
         }
 
 

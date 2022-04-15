@@ -6,36 +6,30 @@ namespace PRM.View.Host
 {
     public class TabItemViewModel : NotifyPropertyChangedBase
     {
-        public TabItemViewModel()
-        {
-        }
-
-        private object _header;
-
-        public object Header
+        private object? _header;
+        public object? Header
         {
             get => _header;
             set => SetAndNotifyIfChanged(ref _header, value);
         }
 
-        private HostBase _content;
-
-        public HostBase Content
+        private HostBase? _content;
+        public HostBase? Content
         {
             get => _content;
             set
             {
-                SetAndNotifyIfChanged(ref _content, value);
-                //MarkColorHex = Content.ProtocolServer.MarkColorHex;
-                ColorHex = Content.ProtocolServer.ColorHex;
-                IconImg = Content.ProtocolServer.IconImg;
-                CanResizeNow = _content.CanResizeNow();
-                _content.OnCanResizeNowChanged += () => CanResizeNow = _content.CanResizeNow();
+                if (SetAndNotifyIfChanged(ref _content, value) && value != null)
+                {
+                    ColorHex = value.ProtocolServer.ColorHex;
+                    IconImg = value.ProtocolServer.IconImg;
+                    CanResizeNow = value.CanResizeNow();
+                    value.OnCanResizeNowChanged += () => CanResizeNow = value.CanResizeNow();
+                }
             }
         }
 
         private bool _canResizeNow = false;
-
         public bool CanResizeNow
         {
             get => _canResizeNow;
@@ -62,9 +56,8 @@ namespace PRM.View.Host
             }
         }
 
-        private System.Windows.Media.Imaging.BitmapSource _iconImg;
-
-        public System.Windows.Media.Imaging.BitmapSource IconImg
+        private System.Windows.Media.Imaging.BitmapSource? _iconImg;
+        public System.Windows.Media.Imaging.BitmapSource? IconImg
         {
             get => _iconImg;
             private set => SetAndNotifyIfChanged(ref _iconImg, value);

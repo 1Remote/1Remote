@@ -111,12 +111,10 @@ namespace PRM.View.Host
         }
 
         public Visibility TitleTextVisibility => !IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
-
         public Visibility TitleTagEditorVisibility => IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
 
-        private TabItemViewModel _selectedItem = null;
-
-        public TabItemViewModel SelectedItem
+        private TabItemViewModel? _selectedItem = null;
+        public TabItemViewModel? SelectedItem
         {
             get => _selectedItem;
             set
@@ -169,8 +167,7 @@ namespace PRM.View.Host
 
         #region CMD
 
-        private RelayCommand _cmdHostGoFullScreen;
-
+        private RelayCommand? _cmdHostGoFullScreen;
         public RelayCommand CmdHostGoFullScreen
         {
             get
@@ -181,15 +178,14 @@ namespace PRM.View.Host
                     {
                         if (IsLocked) return;
                         if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                            RemoteWindowPool.Instance.MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
+                            IoC.Get<RemoteWindowPool>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                     }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
                 }
                 return _cmdHostGoFullScreen;
             }
         }
 
-        private RelayCommand _cmdIsTagEditToggle;
-
+        private RelayCommand? _cmdIsTagEditToggle;
         public RelayCommand CmdIsTagEditToggle
         {
             get
@@ -205,8 +201,7 @@ namespace PRM.View.Host
             }
         }
 
-        private RelayCommand _cmdInvokeLauncher;
-
+        private RelayCommand? _cmdInvokeLauncher;
         public RelayCommand CmdInvokeLauncher
         {
             get
@@ -215,15 +210,14 @@ namespace PRM.View.Host
                 {
                     _cmdInvokeLauncher = new RelayCommand((o) =>
                     {
-                        IoC.Get<LauncherWindowView>().ShowMe(this.Token);
+                        IoC.Get<LauncherWindowViewModel>().ShowMe();
                     }, o => this.SelectedItem != null);
                 }
                 return _cmdInvokeLauncher;
             }
         }
 
-        private RelayCommand _cmdShowTabByIndex;
-
+        private RelayCommand? _cmdShowTabByIndex;
         public RelayCommand CmdShowTabByIndex
         {
             get
@@ -241,8 +235,7 @@ namespace PRM.View.Host
             }
         }
 
-        private RelayCommand _cmdGoMinimize;
-
+        private RelayCommand? _cmdGoMinimize;
         public RelayCommand CmdGoMinimize
         {
             get
@@ -252,14 +245,14 @@ namespace PRM.View.Host
                     if (o is Window window)
                     {
                         window.WindowState = WindowState.Minimized;
-                        SelectedItem.Content.ToggleAutoResize(false);
+                        if (SelectedItem?.Content != null)
+                            SelectedItem.Content.ToggleAutoResize(false);
                     }
                 });
             }
         }
 
-        private RelayCommand _cmdGoMaximize;
-
+        private RelayCommand? _cmdGoMaximize;
         public RelayCommand CmdGoMaximize
         {
             get
@@ -274,7 +267,7 @@ namespace PRM.View.Host
 
         private bool _canCmdClose = true;
 
-        private RelayCommand _cmdCloseAll;
+        private RelayCommand? _cmdCloseAll;
         public RelayCommand CmdCloseAll
         {
             get
@@ -293,7 +286,7 @@ namespace PRM.View.Host
                         }
                         else
                         {
-                            RemoteWindowPool.Instance.DelTabWindow(Token);
+                            IoC.Get<RemoteWindowPool>().DelTabWindow(Token);
                         }
                         _canCmdClose = true;
                     }
@@ -301,7 +294,7 @@ namespace PRM.View.Host
             }
         }
 
-        private RelayCommand _cmdClose;
+        private RelayCommand? _cmdClose;
         public RelayCommand CmdClose
         {
             get
@@ -313,7 +306,7 @@ namespace PRM.View.Host
                     {
                         _canCmdClose = false;
                         var cid = SelectedItem?.Content?.ConnectionId;
-                        RemoteWindowPool.Instance.DelProtocolHostInSyncContext(cid, true);
+                        IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(cid, true);
                         _canCmdClose = true;
                     }
                 }, o => this.SelectedItem != null);
@@ -328,8 +321,8 @@ namespace PRM.View.Host
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
-            var v = new TabWindowChrome(token, IoC.Get<PrmContext>().LocalityService);
-            RemoteWindowPool.Instance.AddTab(v);
+            var v = new TabWindowView(token, IoC.Get<PrmContext>().LocalityService);
+            IoC.Get<RemoteWindowPool>().AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
 
@@ -337,7 +330,7 @@ namespace PRM.View.Host
         {
             if (window is TabWindowBase tab)
             {
-                RemoteWindowPool.Instance.DelTabWindow(tab.GetViewModel().Token);
+                IoC.Get<RemoteWindowPool>().DelTabWindow(tab.GetViewModel().Token);
             }
             return TabEmptiedResponse.CloseWindowOrLayoutBranch;
         }

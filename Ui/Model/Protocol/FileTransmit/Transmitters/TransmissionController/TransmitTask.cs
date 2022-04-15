@@ -27,23 +27,23 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
     public class TransmitTask : NotifyPropertyChangedBase
     {
-        private readonly ITransmitter _transOrg = null;
-        private ITransmitter _trans = null;
+        private readonly ITransmitter? _transOrg = null;
+        private ITransmitter? _trans = null;
         public readonly ETransmissionType TransmissionType;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
         private readonly string _destinationDirectoryPath;
 
-        private readonly FileInfo[] _fis = null;
-        private readonly DirectoryInfo[] _dis = null;
-        private readonly RemoteItem[] _ris = null;
+        private readonly FileInfo[]? _fis = null;
+        private readonly DirectoryInfo[]? _dis = null;
+        private readonly RemoteItem[]? _ris = null;
 
-        public string TransmitItemNames { get; private set; }
-        public string TransmitItemSrcDirectoryPath { get; private set; }
-        public string TransmitItemDstDirectoryPath { get; private set; }
+        public string TransmitItemNames { get; private init; }
+        public string TransmitItemSrcDirectoryPath { get; private init; }
+        public string TransmitItemDstDirectoryPath { get; private init; }
 
         private readonly ILanguageService _languageService;
 
-        public TransmitTask(ILanguageService languageService, ITransmitter trans, string destinationDirectoryPath, FileInfo[] fis, DirectoryInfo[] dis = null)
+        public TransmitTask(ILanguageService languageService, ITransmitter trans, string destinationDirectoryPath, FileInfo[]? fis, DirectoryInfo[]? dis = null)
         {
             Debug.Assert(fis != null || dis != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
@@ -73,13 +73,14 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                     TransmitItemNames += di.Name + ", ";
                 }
             }
+            Debug.Assert(TransmitItemNames != null);
             TransmitItemNames = TransmitItemNames.Trim(',', ' ');
             RaisePropertyChanged(nameof(TransmitItemDstDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemSrcDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemNames));
         }
 
-        public TransmitTask(ILanguageService languageService, ITransmitter trans, string destinationDirectoryPath, RemoteItem[] ris)
+        public TransmitTask(ILanguageService languageService, ITransmitter trans, string destinationDirectoryPath, RemoteItem[]? ris)
         {
             Debug.Assert(ris != null);
             TransmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
@@ -100,6 +101,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             {
                 TransmitItemNames += item.Name + ", ";
             }
+            Debug.Assert(TransmitItemNames != null);
             TransmitItemNames = TransmitItemNames.Trim(',', ' ');
             RaisePropertyChanged(nameof(TransmitItemDstDirectoryPath));
             RaisePropertyChanged(nameof(TransmitItemSrcDirectoryPath));
@@ -121,9 +123,9 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
         }
 
-        public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception e = null);
+        public delegate void OnTaskEndDelegate(ETransmitTaskStatus status, Exception? e = null);
 
-        public OnTaskEndDelegate OnTaskEnd { get; set; } = null;
+        public OnTaskEndDelegate? OnTaskEnd { get; set; } = null;
 
         private ETransmitTaskStatus _transmitTaskStatus = ETransmitTaskStatus.WaitTransmitStart;
 
@@ -142,7 +144,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         /// <summary>
         /// return the parent directory full path of Transmission
         /// </summary>
-        public string TransmitDstDirectoryPath
+        public string? TransmitDstDirectoryPath
         {
             get
             {
@@ -285,6 +287,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 if (!topDirectory.Exists)
                     return;
 
+                Debug.Assert(topDirectory?.Parent?.FullName != null);
                 var srcParentDirPath = topDirectory.Parent.FullName.TrimEnd('/', '\\');
 
                 var dis = new Queue<DirectoryInfo>();

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Controls;
 using PRM.Model;
 using PRM.Model.Protocol;
@@ -10,35 +11,30 @@ namespace PRM.View
 {
     public class ProtocolBaseViewModel : NotifyPropertyChangedBase
     {
-        private ProtocolBase _server = null;
 
         public int Id => Server?.Id ?? 0;
 
-        public ProtocolBase Server
-        {
-            get => _server;
-            set => SetAndNotifyIfChanged(ref _server, value);
-        }
-
+        public ProtocolBase Server { get; }
         public ProtocolBaseViewModel(ProtocolBase psb)
         {
+            Debug.Assert(psb != null);
             Server = psb;
         }
 
-        public object OrgDisplayNameControl => new TextBlock() { Text = Server.DisplayName, };
+        public object OrgDisplayNameControl => new TextBlock() { Text = Server?.DisplayName, };
         public object OrgSubTitleControl => new TextBlock() { Text = Server?.SubTitle, };
 
 
-        private object _displayNameControl = null;
-        public object DisplayNameControl
+        private object? _displayNameControl = null;
+        public object? DisplayNameControl
         {
             get => _displayNameControl ??= OrgDisplayNameControl;
             set => SetAndNotifyIfChanged(ref _displayNameControl, value);
         }
 
 
-        private object _subTitleControl = null;
-        public object SubTitleControl
+        private object? _subTitleControl = null;
+        public object? SubTitleControl
         {
             get => _subTitleControl ??= OrgSubTitleControl;
             set => SetAndNotifyIfChanged(ref _subTitleControl, value);
@@ -56,9 +52,8 @@ namespace PRM.View
 
         #region CMD
 
-        private RelayCommand _cmdConnServer;
-
-        public RelayCommand CmdConnServer
+        private RelayCommand? _cmdConnServer;
+        public RelayCommand? CmdConnServer
         {
             get
             {
@@ -69,8 +64,7 @@ namespace PRM.View
             }
         }
 
-        private RelayCommand _cmdEditServer;
-
+        private RelayCommand? _cmdEditServer;
         public RelayCommand CmdEditServer
         {
             get
@@ -82,7 +76,7 @@ namespace PRM.View
             }
         }
 
-        private RelayCommand _cmdDuplicateServer;
+        private RelayCommand? _cmdDuplicateServer;
         public RelayCommand CmdDuplicateServer
         {
             get
@@ -94,8 +88,8 @@ namespace PRM.View
             }
         }
 
-        private List<ProtocolAction> _actions;
-        public List<ProtocolAction> Actions
+        private List<ProtocolAction>? _actions;
+        public List<ProtocolAction>? Actions
         {
             get => _actions;
             set => SetAndNotifyIfChanged(ref _actions, value);

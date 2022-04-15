@@ -107,7 +107,7 @@ namespace PRM.View.Host.ProtocolHosts
         public readonly string ExeArguments;
         private readonly Dictionary<string, string> _environmentVariables;
 
-        public IntegrateHost(PrmContext context, ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(context, protocol, false)
+        public IntegrateHost(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(protocol, false)
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;

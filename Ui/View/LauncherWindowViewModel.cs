@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -9,8 +10,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using PRM.Model;
+using PRM.Service;
 using PRM.Utils;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using Ui;
@@ -28,7 +32,7 @@ namespace PRM.View
 
         #region properties
 
-        public ProtocolBaseViewModel SelectedItem
+        public ProtocolBaseViewModel? SelectedItem
         {
             get
             {
@@ -85,7 +89,6 @@ namespace PRM.View
         }
 
         private int _selectedActionIndex;
-
         public int SelectedActionIndex
         {
             get => _selectedActionIndex;
@@ -124,8 +127,8 @@ namespace PRM.View
             }
         }
 
-        private RectangleGeometry _gridMainClip = null;
-        public RectangleGeometry GridMainClip
+        private RectangleGeometry? _gridMainClip = null;
+        public RectangleGeometry? GridMainClip
         {
             get => _gridMainClip;
             set => SetAndNotifyIfChanged(ref _gridMainClip, value);
@@ -147,8 +150,8 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _gridActionsHeight, value);
         }
 
-        private List<TagFilter> _tagFilters;
-        public List<TagFilter> TagFilters
+        private List<TagFilter>? _tagFilters;
+        public List<TagFilter>? TagFilters
         {
             get => _tagFilters;
             set => SetAndNotifyIfChanged(ref _tagFilters, value);
@@ -165,12 +168,22 @@ namespace PRM.View
 
         protected override void OnViewLoaded()
         {
+            HideMe();
+            SetHotKey();
+            GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
             var view = (LauncherWindowView)this.View;
             _gridMenuActions = view.GridMenuActions;
             _gridMainWidth = (double)view.FindResource("GridMainWidth");
             _oneItemHeight = (double)view.FindResource("OneItemHeight");
             _oneActionHeight = (double)view.FindResource("OneActionItemHeight");
             _cornerRadius = (double)view.FindResource("CornerRadius");
+            if (this.View is LauncherWindowView window)
+            {
+                window.ShowActivated = true;
+                window.ShowInTaskbar = false;
+                window.Deactivated += (s, a) => { HideMe(); };
+                window.KeyDown += (s, a) => { if (a.Key == Key.Escape) HideMe(); };
+            }
         }
 
 
@@ -278,7 +291,7 @@ namespace PRM.View
                             var mrs = s.Item2;
                             if (mrs.IsMatchAllKeywords)
                             {
-                                var dispName = server.DisplayName;
+                                var displayName = server.DisplayName;
                                 var subTitle = server.SubTitle;
                                 var m1 = mrs.HitFlags[0];
                                 if (m1.Any(x => x == true))
@@ -289,13 +302,13 @@ namespace PRM.View
                                         if (m1[i])
                                             sp.Children.Add(new TextBlock()
                                             {
-                                                Text = dispName[i].ToString(),
+                                                Text = displayName[i].ToString(),
                                                 Background = _highLightBrush,
                                             });
                                         else
                                             sp.Children.Add(new TextBlock()
                                             {
-                                                Text = dispName[i].ToString(),
+                                                Text = displayName[i].ToString(),
                                             });
                                     }
 
@@ -344,7 +357,7 @@ namespace PRM.View
             }
             else
             {
-                App.Current.Dispatcher.Invoke(() =>
+                Execute.OnUIThread(() =>
                 {
                     VmServerList = new ObservableCollection<ProtocolBaseViewModel>(newList.OrderByDescending(x => x.Server.LastConnTime));
                 });
@@ -360,6 +373,112 @@ namespace PRM.View
             if (index >= VmServerList.Count)
                 index = VmServerList.Count - 1;
             SelectedIndex = index;
+        }
+
+
+        public void ShowMe()
+        {
+            if (this.View is LauncherWindowView window)
+            {
+                SimpleLogHelper.Debug($"Call shortcut to invoke launcher Visibility = {window.Visibility}");
+                window.GridMenuActions.Visibility = Visibility.Hidden;
+
+                if (IoC.Get<MainWindowViewModel>().TopLevelViewModel != null) return;
+                if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false) return;
+                if (window.Visibility == Visibility.Visible) return;
+
+                lock (this)
+                {
+                    window.WindowState = WindowState.Normal;
+                    if (window.Visibility == Visibility.Visible) return;
+
+                    Filter = "";
+                    CalcVisibleByFilter();
+                    // show position
+                    var p = ScreenInfoEx.GetMouseSystemPosition();
+                    var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
+                    window.Top = screenEx.VirtualWorkingAreaCenter.Y - GridMainHeight / 2;
+                    window.Left = screenEx.VirtualWorkingAreaCenter.X - window.Width / 2;
+
+                    window.Show();
+                    window.Visibility = Visibility.Visible;
+                    window.Activate();
+                    window.Topmost = true; // important
+                    window.Topmost = false; // important
+                    window.Topmost = true; // important
+                    window.Focus(); // important
+                    window.TbKeyWord.Focus();
+                }
+            }
+        }
+
+
+        public void HideMe()
+        {
+            if (this.View is LauncherWindowView window)
+            {
+                if (window.Visibility != Visibility.Visible) return;
+                lock (this)
+                {
+                    if (window.Visibility != Visibility.Visible) return;
+                    window.Visibility = Visibility.Hidden;
+                    window.Hide();
+                    window.GridMenuActions.Visibility = Visibility.Hidden;
+                    this.Filter = "";
+                }
+                SimpleLogHelper.Debug("Call HideMe()");
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// use it after Show() has been called
+        /// </summary>
+        public void SetHotKey()
+        {
+            if (this.View is LauncherWindowView window)
+            {
+                GlobalHotkeyHooker.Instance.Unregist(window);
+                if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false)
+                    return;
+                var r = GlobalHotkeyHooker.Instance.Register(window, (uint)IoC.Get<ConfigurationService>().Launcher.HotKeyModifiers, IoC.Get<ConfigurationService>().Launcher.HotKeyKey, this.ShowMe);
+                var title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
+                switch (r.Item1)
+                {
+                    case GlobalHotkeyHooker.RetCode.Success:
+                        break;
+
+                    case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
+                        {
+                            var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_registered_fail")}: {r.Item2}";
+                            SimpleLogHelper.Warning(msg);
+                            MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
+                            break;
+                        }
+                    case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
+                        {
+                            var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_already_registered")}: {r.Item2}";
+                            SimpleLogHelper.Warning(msg);
+                            MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
+                            break;
+                        }
+                    default:
+                        throw new ArgumentOutOfRangeException(r.Item1.ToString());
+                }
+            }
+        }
+
+
+        public void OpenSessionAndHide()
+        {
+            HideMe();
+            var item = SelectedItem;
+            if (item?.Id != null)
+            {
+                GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id);
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using PRM.Model.Protocol.Base;
 using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.Protocol.FileTransmit.Transmitters;
+using PRM.Service;
 using Shawn.Utils;
 
 namespace PRM.Model.Protocol
@@ -28,7 +29,7 @@ namespace PRM.Model.Protocol
             return false;
         }
 
-        public override ProtocolBase CreateFromJsonString(string jsonString)
+        public override ProtocolBase? CreateFromJsonString(string jsonString)
         {
             try
             {
@@ -46,12 +47,12 @@ namespace PRM.Model.Protocol
             return 4;
         }
 
-        public ITransmitter GeTransmitter(PrmContext context)
+        public ITransmitter GeTransmitter()
         {
             var hostname = this.Address;
             int port = this.GetPort();
             var username = this.UserName;
-            var password = context.DataService.DecryptOrReturnOriginalString(this.Password);
+            var password = IoC.Get<DataService>().DecryptOrReturnOriginalString(this.Password);
             return new TransmitterFtp(hostname, port, username, password);
         }
 

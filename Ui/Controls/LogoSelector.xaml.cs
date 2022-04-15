@@ -118,7 +118,7 @@ namespace PRM.Controls
             OnLogoChanged?.Invoke();
         }
 
-        public BitmapSource Logo
+        public BitmapSource? Logo
         {
             //private set => SetImg(value);
             get
@@ -128,11 +128,14 @@ namespace PRM.Controls
 
                 ReplaceChild(ref CanvasImage, ref CanvasWhiteBoard);
 
-                BitmapSource resize;
+                BitmapSource? resize;
                 if (Math.Abs(Scaling - 1) < 0.01)
                     resize = (Img.Source as BitmapSource);
                 else
                     resize = (Img.Source as BitmapSource).Resize(Scaling, Scaling);
+
+                if (resize == null)
+                    return null;
 
                 // calc roi
                 double x = (double)CanvasImage.GetValue(Canvas.LeftProperty);

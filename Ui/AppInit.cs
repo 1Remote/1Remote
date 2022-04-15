@@ -28,7 +28,7 @@ namespace PRM
             // init log file placement
             var logFilePath = Path.Combine(baseDir, "Logs", $"{ConfigurationService.AppName}.log.md");
             var fi = new FileInfo(logFilePath);
-            if (!fi.Directory.Exists)
+            if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
             SimpleLogHelper.LogFileName = logFilePath;
 
@@ -53,7 +53,7 @@ namespace PRM
 
 
 
-        private static NamedPipeHelper _namedPipeHelper;
+        private static NamedPipeHelper? _namedPipeHelper;
         public static void OnlyOneAppInstanceCheck()
         {
 #if FOR_MICROSOFT_STORE_ONLY
@@ -69,7 +69,7 @@ namespace PRM
                     _namedPipeHelper.NamedPipeSendMessage("ActivateMe");
                     Environment.Exit(0);
                 }
-                catch (Exception e)
+                catch
                 {
                     Environment.Exit(1);
                 }

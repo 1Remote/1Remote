@@ -11,8 +11,10 @@ using MSTSCLib;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Color = System.Drawing.Color;
 
@@ -52,8 +54,8 @@ namespace PRM.View.Host.ProtocolHosts
 
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
-        private AxMsRdpClient9NotSafeForScriptingEx _rdpClient = null;
-        private readonly RDP _rdpServer = null;
+        private AxMsRdpClient9NotSafeForScriptingEx _rdpClient;
+        private readonly RDP _rdpServer;
         /// <summary>
         /// system scale factor, 100 = 100%, 200 = 200%
         /// </summary>
@@ -66,7 +68,7 @@ namespace PRM.View.Host.ProtocolHosts
         private int _retryCount = 0;
         private const int MaxRetryCount = 20;
 
-        public AxMsRdpClient09Host(PrmContext context, RDP rdp, double width = 0, double height = 0) : base(context, rdp, true)
+        public AxMsRdpClient09Host(RDP rdp, double width = 0, double height = 0) : base(rdp, true)
         {
             InitializeComponent();
 
@@ -135,7 +137,7 @@ namespace PRM.View.Host.ProtocolHosts
 
 
             var secured = (MSTSCLib.IMsTscNonScriptable)_rdpClient.GetOcx();
-            secured.ClearTextPassword = Context.DataService.DecryptOrReturnOriginalString(_rdpServer.Password);
+            secured.ClearTextPassword = IoC.Get<DataService>().DecryptOrReturnOriginalString(_rdpServer.Password);
             _rdpClient.FullScreenTitle = _rdpServer.DisplayName + " - " + _rdpServer.SubTitle;
 
             #endregion server info
@@ -289,7 +291,7 @@ namespace PRM.View.Host.ProtocolHosts
             #endregion Redirect
         }
 
-        private void RdpInitDisplay(double width = 0, double height = 0, bool isReconn = false)
+        private void RdpInitDisplay(double width = 0, double height = 0, bool isReconnecting = false)
         {
             #region Display
 
@@ -337,15 +339,15 @@ namespace PRM.View.Host.ProtocolHosts
                             height = 600;
 
 
-                        if (isReconn == true)
+                        if (isReconnecting == true)
                         {
-                            // if isReconn == true, then width is DesktopWidth, ScaleFactor should == 100
+                            // if isReconnecting == true, then width is DesktopWidth, ScaleFactor should == 100
                             _rdpClient.DesktopWidth = (int)(width);
                             _rdpClient.DesktopHeight = (int)(height);
                         }
                         else
                         {
-                            // if isReconn == false, then width is Tab width, true width = Tab width * ScaleFactor
+                            // if isReconnecting == false, then width is Tab width, true width = Tab width * ScaleFactor
                             if (_rdpServer.ThisTimeConnWithFullScreen())
                             {
                                 var size = GetScreenSize();
@@ -486,7 +488,7 @@ namespace PRM.View.Host.ProtocolHosts
                     case EGatewayLogonMethod.Password:
                         _rdpClient.TransportSettings.GatewayCredsSource = 0; // TSC_PROXY_CREDS_MODE_USERPASS
                         _rdpClient.TransportSettings2.GatewayUsername = _rdpServer.GatewayUserName;
-                        _rdpClient.TransportSettings2.GatewayPassword = Context.DataService.DecryptOrReturnOriginalString(_rdpServer.GatewayPassword);
+                        _rdpClient.TransportSettings2.GatewayPassword = IoC.Get<DataService>().DecryptOrReturnOriginalString(_rdpServer.GatewayPassword);
                         break;
 
                     default:
@@ -575,7 +577,7 @@ namespace PRM.View.Host.ProtocolHosts
             InitRdp(width, height, true);
             Conn();
 
-            // if parent is FullScreenWindow, go to full screen.
+            // if parent is FullScreenWindowView, go to full screen.
             if (!(ParentWindow is TabWindowBase))
             {
                 SimpleLogHelper.Debug("RDP Host: ReConn with full screen");
@@ -614,7 +616,7 @@ namespace PRM.View.Host.ProtocolHosts
                     throw new ArgumentOutOfRangeException();
             }
 
-            Context.DataService.Database_UpdateServer(_rdpServer);
+            IoC.Get<DataService>().Database_UpdateServer(_rdpServer);
             _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
         }
 
@@ -853,7 +855,7 @@ namespace PRM.View.Host.ProtocolHosts
                 }
             }
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = true;
-            Context.DataService.Database_UpdateServer(_rdpServer);
+            IoC.Get<DataService>().Database_UpdateServer(_rdpServer);
         }
 
         private System.Drawing.Rectangle GetScreenSize()
@@ -892,7 +894,7 @@ namespace PRM.View.Host.ProtocolHosts
 
             _rdpServer.AutoSetting.FullScreenLastSessionIsFullScreen = false;
             base.OnFullScreen2Window?.Invoke(base.ConnectionId);
-            Context.DataService.Database_UpdateServer(_rdpServer);
+            IoC.Get<DataService>().Database_UpdateServer(_rdpServer);
         }
 
         private void MakeForm2Minimize()
@@ -952,7 +954,7 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 try
                 {
-                    _resizeEndTimer?.Stop();
+                    _resizeEndTimer.Stop();
                     _resizeEndTimer.Elapsed -= _InvokeResizeEndEnd;
                 }
                 catch
@@ -1023,35 +1025,30 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void RdpDispose()
         {
-            if (_rdpClient != null)
+            try
+            {
+                GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            var tmp = _rdpClient;
+            var t = new Task(() =>
             {
                 try
                 {
-                    GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
+                    if (tmp.Connected > 0)
+                        tmp.Disconnect();
+                    tmp.Dispose();
                 }
-                catch
+                finally
                 {
+                    tmp = null;
                 }
-                var tmp = _rdpClient;
-                var t = new Task(() =>
-                {
-                    try
-                    {
-                        if (tmp.Connected > 0)
-                            tmp.Disconnect();
-                        tmp.Dispose();
-                    }
-                    finally
-                    {
-                        tmp = null;
-                    }
-                });
-                t.Start();
-                lock (this)
-                {
-                    _rdpClient = null;
-                }
-            }
+            });
+            t.Start();
             SimpleLogHelper.Debug("RDP Host: _rdpClient.Dispose()");
         }
     }

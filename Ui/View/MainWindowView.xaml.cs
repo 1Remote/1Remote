@@ -63,21 +63,16 @@ namespace PRM.View
                 if ((Vm.Context.ConfigurationService.Engagement.DoNotShowAgain == false || AppVersion.VersionData > Vm.Context.ConfigurationService.Engagement.DoNotShowAgainVersion)
                     && Vm.Context.ConfigurationService.Engagement.InstallTime < DateTime.Now.AddDays(-15)
                     && Vm.Context.ConfigurationService.Engagement.LastRequestRatingsTime < DateTime.Now.AddDays(-60)
-                    && Vm.Context.ConfigurationService.Engagement.ConnectCount > 100
+                    && Vm.Context.ConfigurationService.Engagement.ConnectCount > 30
                    )
                 {
                     // 显示“请求应用的评分和评价”页面 https://docs.microsoft.com/zh-cn/windows/uwp/monetize/request-ratings-and-reviews
                     Vm.TopLevelViewModel = IoC.Get<RequestRatingViewModel>();
                     return;
                 }
-
+                vm.HideMe();
 #if DEV
                 App.Close();
-                return;
-#else
-                if (Shawn.Utils.ConsoleManager.HasConsole)
-                    Shawn.Utils.ConsoleManager.Hide();
-                HideMe();
 #endif
             };
 
@@ -104,7 +99,7 @@ namespace PRM.View
             Keyboard.ClearFocus();
             this.Focus();
         }
-        
+
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {

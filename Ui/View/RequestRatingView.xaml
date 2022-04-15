@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PRM.View"
              xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance local:RequestRatingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -51,8 +52,7 @@
 
                         <Border Margin="4, 0" VerticalAlignment="Center" CornerRadius="4" Width="130" Background="#2f855a">
                             <TextBlock>
-                                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Buy-a-coffee" controls:HyperlinkHelper.IsOpenExternal="True" TextDecorations=""
-                                               Click="HyperlinkRating_OnClick">
+                                    <Hyperlink NavigateUri="https://github.com/VShawn/PRemoteM/wiki/Buy-a-coffee" controls:HyperlinkHelper.IsOpenExternal="True" TextDecorations="">
                                         <Grid Width="130" Background="Transparent">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <Path Width="16" Height="16" Margin="2" Fill="White" Data="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.565 20.565 0 008 13.393a20.561 20.561 0 003.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 01-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5zM8 14.25l-.345.666-.002-.001-.006-.003-.018-.01a7.643 7.643 0 01-.31-.17 22.075 22.075 0 01-3.434-2.414C2.045 10.731 0 8.35 0 5.5 0 2.836 2.086 1 4.25 1 5.797 1 7.153 1.802 8 3.02 8.847 1.802 10.203 1 11.75 1 13.914 1 16 2.836 16 5.5c0 2.85-2.045 5.231-3.885 6.818a22.08 22.08 0 01-3.744 2.584l-.018.01-.006.003h-.002L8 14.25zm0 0l.345.666a.752.752 0 01-.69 0L8 14.25z" Stretch="Uniform"></Path>
@@ -65,8 +65,7 @@
 
                         <Border Margin="4, 0" VerticalAlignment="Center" CornerRadius="4" Width="130" Background="#3182ce">
                             <TextBlock>
-                                    <Hyperlink NavigateUri="ms-windows-store://review/?productid=9PNMNF92JNFP" TextDecorations="" controls:HyperlinkHelper.IsOpenExternal="True"
-                                               Click="HyperlinkRating_OnClick">
+                                    <Hyperlink NavigateUri="ms-windows-store://review/?productid=9PNMNF92JNFP" TextDecorations="" controls:HyperlinkHelper.IsOpenExternal="True">
                                         <Grid Width="130" Background="Transparent">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <Path Width="16" Height="16" Margin="2" Fill="White" Data="M944.512 256.810667l-149.333333-42.666667a23.082667 23.082667 0 0 0-9.685334-0.469333l-704 128a21.333333 21.333333 0 0 0-17.493333 20.992v512a21.333333 21.333333 0 0 0 17.536 20.992l704 128a22.442667 22.442667 0 0 0 9.642667-0.469334l149.333333-42.666666a21.376 21.376 0 0 0 15.488-20.522667v-682.666667a21.376 21.376 0 0 0-15.488-20.522666zM405.333333 741.802667l-128-14.208V640h128v101.802667zM405.333333 597.333333h-128v-87.552l128-14.208V597.333333z m213.333334 168.149334l-170.666667-18.986667V640h170.666667v125.482667z m0-168.149334h-170.666667v-106.538666l170.666667-18.986667V597.333333zM298.666667 256a21.333333 21.333333 0 0 0 21.333333-21.333333v-85.333334C320 104.789333 360.576 42.666667 426.666667 42.666667c62.805333 0 106.666667 26.325333 106.666666 64v85.333333a21.333333 21.333333 0 0 0 42.666667 0v-85.333333C576 43.861333 514.602667 0 426.666667 0 338.645333 0 277.333333 78.72 277.333333 149.333333v85.333334A21.333333 21.333333 0 0 0 298.666667 256z M458.368 88.362667C407.893333 118.656 405.333333 197.76 405.333333 213.333333a21.333333 21.333333 0 0 0 42.666667 0c0-33.237333 10.112-75.050667 32.298667-88.362666a21.333333 21.333333 0 0 0-21.930667-36.608zM613.717333 106.069333c4.48 9.216 6.826667 37.589333 5.034667 63.061334a21.333333 21.333333 0 0 0 19.712 22.826666L640 192a21.333333 21.333333 0 0 0 21.248-19.754667c1.621333-21.845333 3.114667-74.965333-17.365333-96.938666A34.133333 34.133333 0 0 0 618.666667 64a21.333333 21.333333 0 0 0-4.949334 42.069333z" Stretch="Uniform"></Path>
@@ -80,7 +79,7 @@
 
                     <StackPanel Margin="0 10 " VerticalAlignment="Bottom">
                         <CheckBox Margin="0 5 0 15" Name="CbDoNotShowEngagementAgain" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Content="{DynamicResource 'Do not show this again in current version'}"></CheckBox>
-                        <Button Click="ButtonDismissEngagementPopup_OnClick" Content="{DynamicResource Dismiss}" Style="{DynamicResource ButtonPrimaryStyle}"></Button>
+                        <Button Click="{s:Action Close}" Content="{DynamicResource Dismiss}" Style="{DynamicResource ButtonPrimaryStyle}"></Button>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

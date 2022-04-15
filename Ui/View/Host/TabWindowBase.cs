@@ -13,6 +13,7 @@ using PRM.Model;
 using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
@@ -154,7 +155,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
                 {
                     var pb = viewModel.Content;
-                    RemoteWindowPool.Instance.DelProtocolHostInSyncContext(pb?.ConnectionId, true);
+                    IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(pb?.ConnectionId, true);
                 }
             };
         }
@@ -173,7 +174,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 try
                 {
                     Vm?.CmdCloseAll.Execute();
-                    RemoteWindowPool.Instance.DelTabWindow(Token);
+                    IoC.Get<RemoteWindowPool>().DelTabWindow(Token);
                     Vm?.Dispose();
                 }
                 finally

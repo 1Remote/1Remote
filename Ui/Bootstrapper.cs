@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -50,6 +51,7 @@ namespace PRM
             // Check for permissions based on CanPortable
             var tmp = new ConfigurationService(_canPortable, null);
             var dbDir = new FileInfo(tmp.Database.SqliteDatabasePath).Directory;
+            Debug.Assert(dbDir != null);
             {
                 var languageService = new LanguageService(App.ResourceDictionary);
                 languageService.SetLanguage(CultureInfo.CurrentCulture.Name.ToLower());
@@ -106,6 +108,7 @@ namespace PRM
             builder.Bind<RequestRatingViewModel>().ToSelf();
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<GuidanceWindow>().ToSelf();
+            builder.Bind<RemoteWindowPool>().ToSelf().InSingletonScope();
             base.ConfigureIoC(builder);
         }
 
@@ -123,7 +126,7 @@ namespace PRM
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
             var context = IoC.Get<PrmContext>();
             context.Init(_canPortable);
-            RemoteWindowPool.Init(context);
+            IoC.Get<RemoteWindowPool>();
             _dbConnectionStatus = context.InitSqliteDb();
             IoC.Get<GlobalData>().ReloadServerList();
 

@@ -43,15 +43,9 @@ namespace PRM.Controls
             if (target.Document != null)
             {
                 var caretOffset = target.CaretOffset;
-                var newValue = args.NewValue;
-
-                if (newValue == null)
-                {
-                    newValue = "";
-                }
-
+                var newValue = args.NewValue ?? "";
                 target.Document.Text = (string)newValue;
-                target.CaretOffset = Math.Min(caretOffset, newValue.ToString().Length);
+                target.CaretOffset = Math.Min(caretOffset, newValue?.ToString()?.Length ?? 0);
             }
         }
 
@@ -74,6 +68,6 @@ namespace PRM.Controls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

@@ -73,12 +73,12 @@ namespace PRM.Utils
                 return "";
             return filterString + (keyWords.Count > 0 ? "" : " ");
         }
-        public static Tuple<bool, MatchResults> MatchKeywords(ProtocolBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
+        public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
         {
             var kws = keywords?.ToArray();
             if (tagFilters?.Any() != true && kws?.Any() != true)
             {
-                return new Tuple<bool, MatchResults>(true, null);
+                return new Tuple<bool, MatchResults?>(true, null);
             }
 
             // check tags
@@ -95,14 +95,14 @@ namespace PRM.Utils
 
                 if (bTagMatched == false)
                 {
-                    return new Tuple<bool, MatchResults>(false, null);
+                    return new Tuple<bool, MatchResults?>(false, null);
                 }
             }
 
             // no keyword
             if (kws?.Any() != true)
             {
-                return new Tuple<bool, MatchResults>(true, null);
+                return new Tuple<bool, MatchResults?>(true, null);
             }
 
             // match keywords
@@ -110,9 +110,9 @@ namespace PRM.Utils
             var subTitle = server.SubTitle;
             var mrs = IoC.Get<PrmContext>().KeywordMatchService.Match(new List<string>() { dispName, subTitle }, kws);
             if (mrs.IsMatchAllKeywords)
-                return new Tuple<bool, MatchResults>(true, mrs);
+                return new Tuple<bool, MatchResults?>(true, mrs);
 
-            return new Tuple<bool, MatchResults>(false, null);
+            return new Tuple<bool, MatchResults?>(false, null);
         }
     }
 }

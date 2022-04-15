@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,7 @@ namespace PRM.Controls
 {
     public class ComboboxWithKeyInvoke : ComboBox
     {
-        public Action<KeyEventArgs> OnPreviewKeyDownAction;
+        public Action<KeyEventArgs>? OnPreviewKeyDownAction;
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             OnPreviewKeyDownAction?.Invoke(e);
@@ -52,6 +53,7 @@ namespace PRM.Controls
             if (o._textChangedEnabled == false)
                 return;
             o._textChangedEnabled = false;
+            Debug.Assert(o?.Selections != null);
             if (string.IsNullOrWhiteSpace(newValue))
             {
                 o.CbContent.IsDropDownOpen = false;
@@ -63,8 +65,6 @@ namespace PRM.Controls
                 if (o.Selections4Show?.Count() > 0)
                 {
                     o.CbContent.IsDropDownOpen = true;
-                    var tb = (TextBox)o.CbContent.Template.FindName("PART_EditableTextBox", o.CbContent);
-                    tb?.Select(tb.Text.Length, 0);
                 }
                 else
                 {
@@ -92,7 +92,7 @@ namespace PRM.Controls
             }
         }
 
-        public IEnumerable<string> Selections
+        public IEnumerable<string>? Selections
         {
             get => (IEnumerable<string>)GetValue(SelectionsProperty);
             set
@@ -127,7 +127,7 @@ namespace PRM.Controls
                 if (CbContent.IsDropDownOpen && Selections4Show.Any())
                 {
                     var cmbTextBox = (TextBox)CbContent.Template.FindName("PART_EditableTextBox", CbContent);
-                    cmbTextBox.Text = Selections4Show.First();
+                    cmbTextBox.Text = CbContent.SelectedItem?.ToString() ?? Selections4Show.First();
                     cmbTextBox.CaretIndex = cmbTextBox.Text.Length;
                     CbContent.IsDropDownOpen = false;
                 }

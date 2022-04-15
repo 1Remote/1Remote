@@ -90,7 +90,7 @@ namespace PRM.Utils
             // start process
             if (er.RunWithHosting)
             {
-                var integrateHost = new IntegrateHost(context, protocolServerBase, exePath, exeArguments, environmentVariables);
+                var integrateHost = new IntegrateHost(protocolServerBase, exePath, exeArguments, environmentVariables);
                 return integrateHost;
             }
             else
@@ -129,7 +129,7 @@ namespace PRM.Utils
             {
                 case RDP rdp:
                     {
-                        var host = new AxMsRdpClient09Host(context, rdp, width, height);
+                        var host = new AxMsRdpClient09Host(rdp, width, height);
                         return host;
                     }
                 case SSH ssh:
@@ -137,7 +137,7 @@ namespace PRM.Utils
                         Debug.Assert(runner is KittyRunner);
                         var kitty = (KittyRunner)runner;
                         ssh.InstallKitty();
-                        var host = new IntegrateHost(context, ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
+                        var host = new IntegrateHost(ssh, ssh.GetExeFullPath(), ssh.GetExeArguments(context))
                         {
                             RunBeforeConnect = () => ssh.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ssh.PrivateKey),
                             RunAfterConnected = () => ssh.DelKittySessionConfig()
@@ -149,7 +149,7 @@ namespace PRM.Utils
                         Debug.Assert(runner is KittyRunner);
                         var kitty = (KittyRunner)runner;
                         telnet.InstallKitty();
-                        var host = new IntegrateHost(context, telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
+                        var host = new IntegrateHost(telnet, telnet.GetExeFullPath(), telnet.GetExeArguments(context))
                         {
                             RunBeforeConnect = () => telnet.SetKittySessionConfig(kitty.GetPuttyFontSize(), kitty.GetPuttyThemeName(), ""),
                             RunAfterConnected = () => telnet.DelKittySessionConfig()
@@ -158,15 +158,15 @@ namespace PRM.Utils
                     }
                 case VNC vnc:
                     {
-                        return new VncHost(context, vnc);
+                        return new VncHost(vnc);
                     }
                 case SFTP sftp:
                     {
-                        return new FileTransmitHost(context, sftp);
+                        return new FileTransmitHost(sftp);
                     }
                 case FTP ftp:
                     {
-                        return new FileTransmitHost(context, ftp);
+                        return new FileTransmitHost(ftp);
                     }
                 case LocalApp app:
                     {
@@ -178,7 +178,7 @@ namespace PRM.Utils
 
                         if (app.RunWithHosting)
                         {
-                            var host = new IntegrateHost(context, app, app.ExePath, app.Arguments);
+                            var host = new IntegrateHost(app, app.ExePath, app.Arguments);
                             return host;
                         }
                         else

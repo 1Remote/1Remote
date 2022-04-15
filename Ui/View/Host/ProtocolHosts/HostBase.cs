@@ -31,7 +31,6 @@ namespace PRM.View.Host.ProtocolHosts
     public abstract class HostBase : UserControl
     {
         public ProtocolBase ProtocolServer { get; }
-        protected PrmContext Context;
 
         private Window _parentWindow = null;
 
@@ -72,9 +71,8 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        protected HostBase(PrmContext context, ProtocolBase protocolServer, bool canFullScreen = false)
+        protected HostBase(ProtocolBase protocolServer, bool canFullScreen = false)
         {
-            Context = context;
             ProtocolServer = protocolServer;
             CanFullScreen = canFullScreen;
 
