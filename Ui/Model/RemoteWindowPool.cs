@@ -27,29 +27,8 @@ namespace PRM.Model
 {
     public class RemoteWindowPool
     {
-        #region singleton
-
-        private static RemoteWindowPool _uniqueInstance = null;
-        private static readonly object InstanceLock = new object();
-
-        public static RemoteWindowPool Instance => _uniqueInstance;
-
-        #endregion singleton
-
-        public static void Init(PrmContext context)
-        {
-            lock (InstanceLock)
-            {
-                if (_uniqueInstance == null)
-                {
-                    _uniqueInstance = new RemoteWindowPool(context);
-                }
-            }
-        }
-
         private readonly PrmContext _context;
-
-        private RemoteWindowPool(PrmContext context)
+        public RemoteWindowPool(PrmContext context)
         {
             _context = context;
             GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
@@ -84,7 +63,7 @@ namespace PRM.Model
         private string _lastTabToken = null;
         private readonly Dictionary<string, TabWindowBase> _tabWindows = new Dictionary<string, TabWindowBase>();
         private readonly Dictionary<string, HostBase> _protocolHosts = new Dictionary<string, HostBase>();
-        private readonly Dictionary<string, FullScreenWindow> _host2FullScreenWindows = new Dictionary<string, FullScreenWindow>();
+        private readonly Dictionary<string, FullScreenWindowView> _host2FullScreenWindows = new Dictionary<string, FullScreenWindowView>();
 
         public int TabWindowCount => _tabWindows.Count;
         public Dictionary<string, HostBase> ProtocolHosts => _protocolHosts;
@@ -345,9 +324,7 @@ namespace PRM.Model
                     return;
                 }
             }
-
             ConnectWithTab(server, runner, assignTabToken);
-
             CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
         }
@@ -372,7 +349,7 @@ namespace PRM.Model
                 _lastTabToken = tab.Token;
         }
 
-        private FullScreenWindow MoveToExistedFullScreenWindow(string connectionId, TabWindowBase fromTab)
+        private FullScreenWindowView MoveToExistedFullScreenWindow(string connectionId, TabWindowBase? fromTab)
         {
             Debug.Assert(_host2FullScreenWindows.ContainsKey(connectionId));
             Debug.Assert(_protocolHosts.ContainsKey(connectionId));
@@ -396,21 +373,21 @@ namespace PRM.Model
             return full;
         }
 
-        private FullScreenWindow MoveToNewFullScreenWindow(string connectionId, TabWindowBase fromTab)
+        private FullScreenWindowView MoveToNewFullScreenWindow(string connectionId, TabWindowBase fromTab)
         {
             Debug.Assert(!_host2FullScreenWindows.ContainsKey(connectionId));
             Debug.Assert(_protocolHosts.ContainsKey(connectionId));
             var host = _protocolHosts[connectionId];
 
             // first time to full
-            var full = new FullScreenWindow
+            var full = new FullScreenWindowView
             {
                 LastTabToken = fromTab?.Token ?? "",
                 WindowStartupLocation = WindowStartupLocation.Manual,
             };
 
             // full screen placement
-            ScreenInfoEx screenEx;
+            ScreenInfoEx? screenEx;
             if (fromTab != null)
                 screenEx = ScreenInfoEx.GetCurrentScreen(fromTab);
             else if (host.ProtocolServer is RDP rdp
@@ -421,12 +398,15 @@ namespace PRM.Model
             else
                 screenEx = ScreenInfoEx.GetCurrentScreen(IoC.Get<MainWindowView>());
 
-            full.Top = screenEx.VirtualWorkingAreaCenter.Y - full.Height / 2;
-            full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
-            full.SetProtocolHost(host);
-            full.Loaded += (sender, args) => { host.GoFullScreen(); };
+            if (screenEx != null)
+            {
+                full.Top = screenEx.VirtualWorkingAreaCenter.Y - full.Height / 2;
+                full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
+            }
 
-            _host2FullScreenWindows.Add(full.HostBase.ConnectionId, full);
+            full.SetProtocolHost(host);
+            //full.Loaded += (sender, args) => { host.GoFullScreen(); };
+            _host2FullScreenWindows.Add(host.ConnectionId, full);
             host.ParentWindow = full;
             full.Show();
             return full;
@@ -476,7 +456,7 @@ namespace PRM.Model
         }
 
         /// <summary>
-        /// move ProtocolHost to Tab, if host has a FullScreenWindow Parent, then remove it from old parent first.
+        /// move ProtocolHost to Tab, if host has a FullScreenWindowView Parent, then remove it from old parent first.
         /// if assignTabToken != null, then move to assign tab.
         /// </summary>
         /// <param name="host"></param>
@@ -486,9 +466,9 @@ namespace PRM.Model
         {
             var parentWindow = host.ParentWindow;
             // remove from old parent
-            if (parentWindow is FullScreenWindow fullScreenWindow)
+            if (parentWindow is FullScreenWindowView fullScreenWindow)
             {
-                // !importance: do not close old FullScreenWindow, or RDP will lose conn bar when restore from tab to fullscreen.
+                // !importance: do not close old FullScreenWindowView, or RDP will lose conn bar when restore from tab to fullscreen.
                 SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
                 fullScreenWindow.Hide();
                 if (string.IsNullOrEmpty(assignTabToken))
@@ -521,7 +501,7 @@ namespace PRM.Model
             var token = DateTime.Now.Ticks.ToString();
             if (string.IsNullOrEmpty(assignTabToken) == false)
                 token = assignTabToken;
-            AddTab(new TabWindowChrome(token, _context.LocalityService));
+            AddTab(new TabWindowView(token, _context.LocalityService));
             var tab = _tabWindows[token];
 
             // set location

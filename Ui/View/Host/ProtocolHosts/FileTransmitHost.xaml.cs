@@ -15,7 +15,7 @@ namespace PRM.View.Host.ProtocolHosts
     public partial class FileTransmitHost : HostBase
     {
         private readonly VmFileTransmitHost _vmRemote;
-        public FileTransmitHost(PrmContext context, ProtocolBase protocolServer) : base(context, protocolServer, false)
+        public FileTransmitHost(ProtocolBase protocolServer) : base(protocolServer, false)
         {
             InitializeComponent();
             Focusable = true;
@@ -23,11 +23,11 @@ namespace PRM.View.Host.ProtocolHosts
 
             if (protocolServer is SFTP protocolServerSftp)
             {
-                _vmRemote = new VmFileTransmitHost(context, protocolServerSftp);
+                _vmRemote = new VmFileTransmitHost(protocolServerSftp);
             }
             else if (protocolServer is FTP protocolServerFtp)
             {
-                _vmRemote = new VmFileTransmitHost(context, protocolServerFtp);
+                _vmRemote = new VmFileTransmitHost(protocolServerFtp);
             }
             else
                 throw new ArgumentException($"Send {protocolServer.GetType()} to {nameof(FileTransmitHost)}!");

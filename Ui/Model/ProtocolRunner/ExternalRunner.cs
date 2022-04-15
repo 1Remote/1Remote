@@ -19,7 +19,6 @@ namespace PRM.Model.ProtocolRunner
             }
 
             private V _value;
-
             public V Value
             {
                 get => _value;
@@ -29,6 +28,8 @@ namespace PRM.Model.ProtocolRunner
             public ObservableKvp(K key, V value)
             {
                 Key = key;
+                _value = value;
+                _key = key;
                 Value = value;
             }
         }

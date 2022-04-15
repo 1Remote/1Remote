@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
+using PRM.Service;
 using Shawn.Utils.Wpf;
 using VncSharpCore;
 
@@ -14,7 +15,7 @@ namespace PRM.View.Host.ProtocolHosts
     {
         private readonly VNC _vncBase;
 
-        public VncHost(PrmContext context, VNC vnc) : base(context, vnc, false)
+        public VncHost(VNC vnc) : base(vnc, false)
         {
             InitializeComponent();
             GridMessageBox.Visibility = Visibility.Collapsed;
@@ -82,7 +83,7 @@ namespace PRM.View.Host.ProtocolHosts
             GridLoading.Visibility = Visibility.Visible;
             VncFormsHost.Visibility = Visibility.Collapsed;
             Vnc.VncPort = _vncBase.GetPort();
-            Vnc.GetPassword = () => Context.DataService.DecryptOrReturnOriginalString(_vncBase.Password);
+            Vnc.GetPassword = () => IoC.Get<DataService>().DecryptOrReturnOriginalString(_vncBase.Password);
             if (Vnc.VncPort <= 0)
                 Vnc.VncPort = 5900;
             try

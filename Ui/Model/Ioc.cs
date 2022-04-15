@@ -11,12 +11,15 @@ public static class IoC
         BuildUp = iContainer.BuildUp;
     }
 
-    public static IContainer Instances { get; private set; } = null;
+    public static IContainer? Instances { get; private set; } = null;
 
     public static Action<object> BuildUp { get; private set; } = instance => throw new InvalidOperationException("IoC is not initialized");
 
-    public static T Get<T>(string key = null) where T : class
+    public static T Get<T>(string? key = null) where T : class
     {
-        return (T)Instances?.Get(typeof(T), key);
+        var obj = Instances?.Get(typeof(T), key);
+        if (obj == null)
+            throw new Exception("Ioc can not get an item.");
+        return (T)obj;
     }
 }

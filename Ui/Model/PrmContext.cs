@@ -15,8 +15,8 @@ namespace PRM.Model
         public readonly ConfigurationService ConfigurationService;
         public readonly ProtocolConfigurationService ProtocolConfigurationService;
 
-        private IDataService _dataService;
-        public IDataService DataService
+        private IDataService? _dataService;
+        public IDataService? DataService
         {
             get => _dataService;
             set => SetAndNotifyIfChanged(ref _dataService, value);

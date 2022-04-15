@@ -28,11 +28,9 @@ namespace PRM.View.Host.ProtocolHosts
 {
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
-        public readonly PrmContext Context;
 
-        public VmFileTransmitHost(PrmContext context, IFileTransmittable protocol)
+        public VmFileTransmitHost(IFileTransmittable protocol)
         {
-            Context = context;
             _protocol = protocol;
         }
 
@@ -60,7 +58,7 @@ namespace PRM.View.Host.ProtocolHosts
                 {
                     try
                     {
-                        Trans = _protocol.GeTransmitter(Context);
+                        Trans = _protocol.GeTransmitter();
                         if (!string.IsNullOrWhiteSpace(_protocol.GetStartupPath()))
                             ShowFolder(_protocol.GetStartupPath());
                     }

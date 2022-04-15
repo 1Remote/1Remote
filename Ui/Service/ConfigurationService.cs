@@ -124,9 +124,9 @@ namespace PRM.Service
 #endif
         public string JsonPath;
 
-        private readonly KeywordMatchService _keywordMatchService;
+        private readonly KeywordMatchService? _keywordMatchService;
 
-        public readonly List<MatchProviderInfo> AvailableMatcherProviders = new List<MatchProviderInfo>();
+        public readonly List<MatchProviderInfo>? AvailableMatcherProviders;
         private readonly Configuration _cfg;
 
         public GeneralConfig General => _cfg.General;
@@ -145,7 +145,7 @@ namespace PRM.Service
         }
 
 
-        public ConfigurationService(bool isPortable, KeywordMatchService keywordMatchService)
+        public ConfigurationService(bool isPortable, KeywordMatchService? keywordMatchService)
         {
             _keywordMatchService = keywordMatchService;
             AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();

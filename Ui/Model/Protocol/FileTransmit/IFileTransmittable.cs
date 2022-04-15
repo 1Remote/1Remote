@@ -4,7 +4,7 @@ namespace PRM.Model.Protocol.FileTransmit
 {
     public interface IFileTransmittable
     {
-        ITransmitter GeTransmitter(PrmContext context);
+        ITransmitter GeTransmitter();
         string GetStartupPath();
     }
 }

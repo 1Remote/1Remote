@@ -297,7 +297,7 @@
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-		<Page Update="View\Host\FullScreenWindow.xaml">
+		<Page Update="View\Host\FullScreenWindowView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\Host\ProtocolHosts\AxMsRdpClient09Host.xaml">
@@ -312,7 +312,7 @@
 		<Page Update="View\Host\ProtocolHosts\VncHost.xaml">
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="View\Host\TabWindowChrome.xaml">
+		<Page Update="View\Host\TabWindowView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
 		<Page Update="View\LauncherWindowView.xaml">

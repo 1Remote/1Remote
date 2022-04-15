@@ -20,28 +20,28 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
             set => SetAndNotifyIfChanged(ref _isRenaming, value);
         }
 
-        private BitmapSource _icon;
-        public BitmapSource Icon
+        private BitmapSource? _icon;
+        public BitmapSource? Icon
         {
             get => _icon;
             set => SetAndNotifyIfChanged(ref _icon, value);
         }
 
-        private string _name;
+        private string _name = "";
         public string Name
         {
             get => _name;
             set => SetAndNotifyIfChanged(ref _name, value);
         }
 
-        private string _fullName;
+        private string _fullName = "";
         public string FullName
         {
             get => _fullName;
             set => SetAndNotifyIfChanged(ref _fullName, value);
         }
 
-        private string _fileType;
+        private string _fileType = "";
         public string FileType
         {
             get

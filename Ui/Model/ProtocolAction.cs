@@ -36,7 +36,7 @@ namespace PRM.Model
             #region Build Actions
             var actions = new List<ProtocolAction>();
             {
-                if (RemoteWindowPool.Instance.TabWindowCount > 0)
+                if (IoC.Get<RemoteWindowPool>().TabWindowCount > 0)
                     actions.Add(new ProtocolAction(
                         actionName: IoC.Get<ILanguageService>().Translate("Connect (New window)"),
                         action: () => { GlobalEventHelper.OnRequestServerConnect?.Invoke(server.Id, DateTime.Now.Ticks.ToString()); }
