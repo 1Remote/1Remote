@@ -11,7 +11,7 @@ namespace PRM.Model.DAO.Dapper
         public string ClassVersion { get; set; } = "";
         public string JsonConfigString { get; set; } = "";
 
-        public ProtocolBase ToProtocolServerBase()
+        public ProtocolBase? ToProtocolServerBase()
         {
             return ItemCreateHelper.CreateFromDbOrm(this);
         }

@@ -24,7 +24,7 @@ namespace PRM.View.Host
             Items.CollectionChanged += ItemsOnCollectionChanged;
         }
 
-        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
         }
@@ -142,7 +142,7 @@ namespace PRM.View.Host
             }
         }
 
-        private void SelectedItemOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void SelectedItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(TabItemViewModel.CanResizeNow))
             {
@@ -224,7 +224,7 @@ namespace PRM.View.Host
             {
                 return _cmdShowTabByIndex ??= new RelayCommand((o) =>
                 {
-                    if (int.TryParse(o.ToString(), out int i))
+                    if (int.TryParse(o?.ToString() ?? "0", out int i))
                     {
                         if (i > 0 && i <= Items.Count)
                         {
@@ -305,8 +305,8 @@ namespace PRM.View.Host
                     if (_canCmdClose)
                     {
                         _canCmdClose = false;
-                        var cid = SelectedItem?.Content?.ConnectionId;
-                        IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(cid, true);
+                        if (SelectedItem?.Content?.ConnectionId != null)
+                            IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(SelectedItem.Content.ConnectionId, true);
                         _canCmdClose = true;
                     }
                 }, o => this.SelectedItem != null);

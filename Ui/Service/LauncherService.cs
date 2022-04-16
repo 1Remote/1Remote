@@ -55,7 +55,9 @@ namespace PRM.Service
         public bool CheckIfHotkeyAvailable(HotkeyModifierKeys modifier, Key key)
         {
             // check if HOTKEY_ALREADY_REGISTERED
+#pragma warning disable CS8625
             var r = GlobalHotkeyHooker.Instance.Register(null, (uint)modifier, key, () => { });
+#pragma warning restore CS8625
             switch (r.Item1)
             {
                 case GlobalHotkeyHooker.RetCode.Success:
@@ -77,6 +79,6 @@ namespace PRM.Service
             return false;
         }
 
-        public Action OnLauncherHotkeyPressed { get; set; }
+        public Action? OnLauncherHotkeyPressed { get; set; }
     }
 }

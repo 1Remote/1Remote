@@ -21,14 +21,14 @@ namespace PRM.View.Editor
         private readonly GlobalData _globalData;
         private readonly IDataService _dataService;
 
-        public bool IsAddMode => _orgServers == null && Server.Id == 0;
-        public bool IsBuckEdit => IsAddMode == false && _orgServers?.Count() > 1;
+        public bool IsAddMode => _serversInBuckEdit == null && Server.Id == 0;
+        public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
+        private readonly ProtocolBase _orgServer = null!;
 
         #region single edit
         /// <summary>
         /// to remember original protocol's options, for restore use
         /// </summary>
-        private readonly ProtocolBase _orgServer = null;
         public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, ProtocolBase server, bool isDuplicate = false)
         {
             _globalData = globalData;
@@ -48,12 +48,12 @@ namespace PRM.View.Editor
         /// <summary>
         /// to remember original protocols' options, for restore use
         /// </summary>
-        private readonly IEnumerable<ProtocolBase> _orgServers = null;
+        private readonly IEnumerable<ProtocolBase>? _serversInBuckEdit = null;
         /// <summary>
-        /// the common parent class of _orgServers
+        /// the common parent class of _serversInBuckEdit
         /// </summary>
-        private readonly Type _orgServersCommonType = null;
-        private readonly List<string> _commonTags;
+        private readonly Type? _sharedTypeInBuckEdit = null;
+        private readonly List<string> _sharedTagsInBuckEdit = new List<string>();
 
         public ServerEditorPageViewModel(GlobalData globalData, IDataService dataService, IEnumerable<ProtocolBase> servers)
         {
@@ -73,7 +73,7 @@ namespace PRM.View.Editor
 
 
             Server = (ProtocolBase)serverBases.First().Clone();
-            _orgServers = serverBases;
+            _serversInBuckEdit = serverBases;
 
 
             // find the common base class
@@ -90,11 +90,11 @@ namespace PRM.View.Editor
                 type = AssemblyHelper.FindCommonBaseClass(type, types[i]);
             }
             Debug.Assert(type.IsSubclassOf(typeof(ProtocolBase)));
-            _orgServersCommonType = type;
+            _sharedTypeInBuckEdit = type;
 
             // copy the same value properties
             // set the different options to `ServerEditorDifferentOptions` or null
-            var properties = _orgServersCommonType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in properties)
             {
                 if (property.SetMethod?.IsPublic != true || property.SetMethod.IsAbstract != false) continue;
@@ -107,7 +107,7 @@ namespace PRM.View.Editor
             }
 
             // tags
-            _commonTags = new List<string>(); // remember the common tags
+            _sharedTagsInBuckEdit = new List<string>(); // remember the common tags
             bool isAllTagsSameFlag = true;
             for (var i = 0; i < serverBases.Length; i++)
             {
@@ -115,22 +115,22 @@ namespace PRM.View.Editor
                 {
                     if (serverBases.All(x => x.Tags.Contains(tagName)))
                     {
-                        _commonTags.Add(tagName);
+                        _sharedTagsInBuckEdit.Add(tagName);
                     }
                     else
                     {
-                        isAllTagsSameFlag = false;  
+                        isAllTagsSameFlag = false;
                     }
                 }
             }
-            Server.Tags = new List<string>(_commonTags.Count + 1);
+            Server.Tags = new List<string>(_sharedTagsInBuckEdit.Count + 1);
             if (isAllTagsSameFlag == false)
                 Server.Tags.Add(Server.ServerEditorDifferentOptions);
-            Server.Tags.AddRange(_commonTags);
+            Server.Tags.AddRange(_sharedTagsInBuckEdit);
 
             _orgServer = Server.Clone();
             // init ui
-            ReflectProtocolEditControl(_orgServersCommonType);
+            ReflectProtocolEditControl(_sharedTypeInBuckEdit);
 
             Init();
         }
@@ -167,7 +167,7 @@ namespace PRM.View.Editor
         public string Title { get; set; }
 
 
-        private ProtocolBase _server = null;
+        private ProtocolBase _server = null!;
         public ProtocolBase Server
         {
             get => _server;
@@ -175,7 +175,7 @@ namespace PRM.View.Editor
         }
 
 
-        private ProtocolBase _selectedProtocol = null;
+        private ProtocolBase _selectedProtocol = null!;
         public ProtocolBase SelectedProtocol
         {
             get => _selectedProtocol;
@@ -199,21 +199,31 @@ namespace PRM.View.Editor
         public List<ProtocolBase> ProtocolList { get; set; } = new List<ProtocolBase>();
 
 
-        private FormBase _protocolEditControl = null;
+        private FormBase? _protocolEditControl = null!;
         public FormBase ProtocolEditControl
         {
-            get => _protocolEditControl;
+            get
+            {
+                if (_protocolEditControl == null) throw new NullReferenceException();
+                return _protocolEditControl;
+            }
             set => SetAndNotifyIfChanged(ref _protocolEditControl, value);
         }
 
 
-        public List<string> NameSelections { get; set; }
-        public List<string> TagSelections { get; set; }
+        /// <summary>
+        /// suggested name for name field
+        /// </summary>
+        public List<string> NameSelections { get; set; } = new List<string>();
+        /// <summary>
+        /// suggested tag for tag field
+        /// </summary>
+        public List<string> TagSelections { get; set; } = new List<string>();
 
-        public TagsEditor TagsEditor { get; set; }
+        public TagsEditor TagsEditor { get; set; } = null!;
 
 
-        private RelayCommand _cmdSave;
+        private RelayCommand? _cmdSave;
         public RelayCommand CmdSave
         {
             get
@@ -222,10 +232,10 @@ namespace PRM.View.Editor
                 _cmdSave = new RelayCommand((o) =>
                 {
                     // bulk edit
-                    if (IsBuckEdit == true)
+                    if (IsBuckEdit == true && _sharedTypeInBuckEdit != null && _serversInBuckEdit != null)
                     {
                         // copy the same value properties
-                        var properties = _orgServersCommonType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                        var properties = _sharedTypeInBuckEdit.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                         foreach (var property in properties)
                         {
                             if (property.SetMethod?.IsPublic == true
@@ -239,7 +249,7 @@ namespace PRM.View.Editor
                                 else if (obj.ToString() == Server.ServerEditorDifferentOptions)
                                     continue;
                                 else
-                                    foreach (var server in _orgServers)
+                                    foreach (var server in _serversInBuckEdit)
                                     {
                                         property.SetValue(server, obj);
                                     }
@@ -248,21 +258,21 @@ namespace PRM.View.Editor
 
 
                         // merge tags
-                        foreach (var server in _orgServers)
+                        foreach (var server in _serversInBuckEdit)
                         {
                             // process old tags, remove the not existed tags.
                             foreach (var tag in server.Tags.ToArray())
                             {
-                                if (_commonTags.Contains(tag) == true)
+                                if (_sharedTagsInBuckEdit.Contains(tag) == true)
                                 {
                                     // remove tag if it is in common and not in Server.Tags
-                                    if(Server.Tags.Contains(tag) == false)
+                                    if (Server.Tags.Contains(tag) == false)
                                         server.Tags.Remove(tag);
                                 }
                                 else
                                 {
                                     // remove tag if it is in not common and ServerEditorDifferentOptions is not existed
-                                    if(Server.Tags.Contains(Server.ServerEditorDifferentOptions) == false)
+                                    if (Server.Tags.Contains(Server.ServerEditorDifferentOptions) == false)
                                         server.Tags.Remove(tag);
                                 }
                             }
@@ -277,7 +287,7 @@ namespace PRM.View.Editor
                         }
 
                         // save
-                        _globalData.UpdateServer(_orgServers);
+                        _globalData.UpdateServer(_serversInBuckEdit);
                     }
                     // edit
                     else if (Server.Id > 0)
@@ -297,7 +307,7 @@ namespace PRM.View.Editor
 
 
 
-        private RelayCommand _cmdCancel;
+        private RelayCommand? _cmdCancel;
         public RelayCommand CmdCancel
         {
             get
@@ -319,7 +329,7 @@ namespace PRM.View.Editor
             Debug.Assert(newProtocolType?.FullName != null);
             // change protocol
             var protocolServerBaseAssembly = typeof(ProtocolBase).Assembly;
-            var server = (ProtocolBase)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName);
+            var server = (ProtocolBase)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
             // restore original server base info
             if (_orgServer.GetType() == server.GetType())
             {
@@ -355,22 +365,22 @@ namespace PRM.View.Editor
             }
 
 
-            #region change default port and username
+            #region change port and username if the old velue is the default port and username
             if (server is ProtocolBaseWithAddressPort newPort && Server is ProtocolBaseWithAddressPort)
             {
-                var oldPortDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName);
+                var oldPortDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName!)!;
                 if (newPort.Port == oldPortDefault.Port)
                 {
-                    var newDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName);
+                    var newDefault = (ProtocolBaseWithAddressPort)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
                     newPort.Port = newDefault.Port;
                 }
             }
             if (server is ProtocolBaseWithAddressPortUserPwd newUserName && Server is ProtocolBaseWithAddressPortUserPwd)
             {
-                var oldDefault = (ProtocolBaseWithAddressPortUserPwd)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName);
+                var oldDefault = (ProtocolBaseWithAddressPortUserPwd)protocolServerBaseAssembly.CreateInstance(Server.GetType().FullName!)!;
                 if (newUserName.UserName == oldDefault.UserName)
                 {
-                    var newDefault = (ProtocolBaseWithAddressPortUserPwd)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName);
+                    var newDefault = (ProtocolBaseWithAddressPortUserPwd)protocolServerBaseAssembly.CreateInstance(newProtocolType.FullName)!;
                     newUserName.UserName = newDefault.UserName;
                 }
             }
@@ -390,7 +400,6 @@ namespace PRM.View.Editor
 
             try
             {
-                ProtocolEditControl = null;
                 if (protocolType == typeof(RDP))
                 {
                     ProtocolEditControl = new RdpForm(Server);

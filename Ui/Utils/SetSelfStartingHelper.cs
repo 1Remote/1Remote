@@ -193,7 +193,7 @@ namespace PRM.Utils
             {
                 if (isSetSelfStart)
                 {
-                    key?.SetValue(appName, Process.GetCurrentProcess().MainModule.FileName);
+                    key?.SetValue(appName, Process.GetCurrentProcess().MainModule!.FileName!);
                 }
             }
         }

@@ -31,8 +31,7 @@ namespace PRM.View
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBase
     {
-        public PrmContext? Context { get; }
-        private MainWindowViewModel? _mainWindowViewModel;
+        public PrmContext Context { get; }
 
         #region properties
 
@@ -50,7 +49,7 @@ namespace PRM.View
         }
 
         private ProtocolBaseViewModel? _selectedServerViewModelListItem = null;
-        public ProtocolBaseViewModel SelectedServerViewModelListItem
+        public ProtocolBaseViewModel? SelectedServerViewModelListItem
         {
             get => _selectedServerViewModelListItem;
             set => SetAndNotifyIfChanged(ref _selectedServerViewModelListItem, value);
@@ -80,7 +79,7 @@ namespace PRM.View
             {
                 if (SetAndNotifyIfChanged(ref _serverOrderBy, value))
                 {
-                    Context.LocalityService.ServerOrderBy = value;
+                    IoC.Get<LocalityService>().ServerOrderBy = value;
                 }
             }
         }
@@ -108,7 +107,6 @@ namespace PRM.View
         public ServerListPageViewModel(PrmContext context)
         {
             Context = context;
-            RebuildVmServerList();
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
 
             if (GlobalEventHelper.OnRequestDeleteServer == null)
@@ -124,32 +122,11 @@ namespace PRM.View
                 };
         }
 
-        public void Init(MainWindowViewModel mainWindowViewModel)
-        {
-            _mainWindowViewModel = mainWindowViewModel;
-            _mainWindowViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(MainWindowViewModel.FilterString))
-                {
-
-                    Task.Factory.StartNew(() =>
-                    {
-                        var filter = _mainWindowViewModel.FilterString;
-                        Thread.Sleep(100);
-                        if (filter == _mainWindowViewModel.FilterString)
-                        {
-                            CalcVisibleByFilter();
-                            RaisePropertyChanged(nameof(IsMultipleSelected));
-                        }
-                    });
-                }
-            };
-        }
-
         private void RebuildVmServerList()
         {
             Execute.OnUIThread(() =>
             {
+                if (Context?.AppData?.VmItemList == null) return;
                 foreach (var vs in Context.AppData.VmItemList)
                 {
                     try
@@ -218,10 +195,9 @@ namespace PRM.View
             }
         }
 
-        private void CalcVisibleByFilter()
+        public void CalcVisibleByFilter()
         {
-            if(_mainWindowViewModel == null) return;
-            var keyword = _mainWindowViewModel.FilterString;
+            var keyword = IoC.Get<MainWindowViewModel>().FilterString;
             var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
             var tagFilters = tmp.Item1;
             var keyWords = tmp.Item2;
@@ -229,6 +205,7 @@ namespace PRM.View
             SetSelectedTabName(tagFilters);
 
             var newList = new List<ProtocolBaseViewModel>();
+            if (Context?.AppData?.VmItemList == null) return;
             foreach (var vm in Context.AppData.VmItemList)
             {
                 var server = vm.Server;
@@ -241,6 +218,7 @@ namespace PRM.View
 
             ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(newList);
             RaisePropertyChanged(nameof(IsSelectedAll));
+            RaisePropertyChanged(nameof(IsMultipleSelected));
         }
 
 
@@ -267,7 +245,7 @@ namespace PRM.View
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
-                    if (Context.DataService == null) return;
+                    if (Context?.DataService == null) return;
                     var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("system_options_data_security_export_dialog_title"),
                         filter: "PRM json array|*.prma",
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
@@ -311,6 +289,7 @@ namespace PRM.View
                                     list.Add(server);
                                 }
                             }
+                            if (Context?.AppData == null) return;
                             Context.AppData.AddServer(list);
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
@@ -351,6 +330,7 @@ namespace PRM.View
                             var list = MRemoteNgImporter.FromCsv(path, ServerIcons.Instance.Icons);
                             if (list?.Count > 0)
                             {
+                                if (Context?.AppData == null) return;
                                 Context.AppData.AddServer(list);
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                                 Execute.OnUIThread(() =>
@@ -400,6 +380,7 @@ namespace PRM.View
             {
                 return _cmdDeleteSelected ??= new RelayCommand((o) =>
                 {
+                    if (Context?.AppData == null) return;
                     var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
                     if (!(ss?.Count > 0)) return;
                     if (MessageBoxResult.Yes == MessageBox.Show(
@@ -435,6 +416,7 @@ namespace PRM.View
         {
             get
             {
+                Debug.Assert(Context != null);
                 return _cmdCancelSelected ??= new RelayCommand((o) => { Context.AppData.UnselectAllServers(); });
             }
         }
@@ -449,7 +431,7 @@ namespace PRM.View
             {
                 return _cmdReOrder ??= new RelayCommand((o) =>
                 {
-                    if (int.TryParse(o.ToString(), out int ot))
+                    if (int.TryParse(o?.ToString() ?? "0", out int ot))
                     {
                         if ((DateTime.Now - _lastCmdReOrder).TotalMilliseconds > 200)
                         {

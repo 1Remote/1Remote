@@ -12,6 +12,6 @@ namespace PRM.Model.DAO
 
         string GetJson();
 
-        ProtocolBase ToProtocolServerBase();
+        ProtocolBase? ToProtocolServerBase();
     }
 }

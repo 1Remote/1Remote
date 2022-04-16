@@ -10,6 +10,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using Shawn.Utils;
@@ -39,7 +40,7 @@ namespace PRM.View.Editor.Forms
         }
 
 
-        private CompletionWindow _completionWindow;
+        private CompletionWindow? _completionWindow;
         private void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
         {
             int offset = TextEditor.CaretOffset - 1;
@@ -110,7 +111,7 @@ namespace PRM.View.Editor.Forms
                 var rdpFile = Path.Combine(tmp, rdpFileName + ".rdp");
 
                 // write a .rdp file for mstsc.exe
-                File.WriteAllText(rdpFile, rdp.ToRdpConfig(null).ToString());
+                File.WriteAllText(rdpFile, rdp.ToRdpConfig(IoC.Get<PrmContext>()).ToString());
                 var p = new Process
                 {
                     StartInfo =
@@ -138,7 +139,7 @@ namespace PRM.View.Editor.Forms
             Text = text;
         }
 
-        public ImageSource Image => null;
+        public ImageSource? Image => null;
 
         public string Text { get; }
 
@@ -215,38 +216,18 @@ namespace PRM.View.Editor.Forms
     public class ConverterERdpFullScreenFlag : IValueConverter
     {
         #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return Enum.GetValues(typeof(ERdpFullScreenFlag)).Cast<int>().Max() + 1;
             return ((int)((ERdpFullScreenFlag)value)).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return (ERdpFullScreenFlag)(int.Parse(value.ToString()));
-        }
-        #endregion
-    }
-
-
-
-
-    public class ConverterTrueWhenERdpFullScreen : IValueConverter
-    {
-        #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
-                return false;
-            if ((ERdpFullScreenFlag)value == ERdpFullScreenFlag.Disable)
-                return false;
-            return true;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return 0;
+                return null;
+            return (ERdpFullScreenFlag)(int.Parse(value.ToString() ?? "0"));
         }
         #endregion
     }
@@ -255,18 +236,18 @@ namespace PRM.View.Editor.Forms
     public class ConverterERdpWindowResizeMode : IValueConverter
     {
         #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return Enum.GetValues(typeof(ERdpWindowResizeMode)).Cast<int>().Max() + 1;
             return ((int)((ERdpWindowResizeMode)value)).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return null;
-            return (ERdpWindowResizeMode)(int.Parse(value.ToString()));
+            return (ERdpWindowResizeMode)(int.Parse(value.ToString() ?? "0"));
         }
         #endregion
     }
@@ -276,16 +257,18 @@ namespace PRM.View.Editor.Forms
     public class ConverterEDisplayPerformance : IValueConverter
     {
         #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return Enum.GetValues(typeof(EDisplayPerformance)).Cast<int>().Max() + 1;
             return ((int)((EDisplayPerformance)value)).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (EDisplayPerformance)(int.Parse(value.ToString()));
+            if (value == null)
+                return null;
+            return (EDisplayPerformance)(int.Parse(value.ToString() ?? "0"));
         }
         #endregion
     }
@@ -295,16 +278,18 @@ namespace PRM.View.Editor.Forms
     public class ConverterEGatewayMode : IValueConverter
     {
         #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return Enum.GetValues(typeof(EGatewayMode)).Cast<int>().Max() + 1;
             return ((int)((EGatewayMode)value)).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (EGatewayMode)(int.Parse(value.ToString()));
+            if (value == null)
+                return null;
+            return (EGatewayMode)(int.Parse(value.ToString() ?? "0"));
         }
         #endregion
     }
@@ -314,32 +299,36 @@ namespace PRM.View.Editor.Forms
     public class ConverterEGatewayLogonMethod : IValueConverter
     {
         #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return Enum.GetValues(typeof(EGatewayLogonMethod)).Cast<int>().Max() + 1;
             return ((int)((EGatewayLogonMethod)value)).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (EGatewayLogonMethod)(int.Parse(value.ToString()));
+            if (value == null)
+                return null;
+            return (EGatewayLogonMethod)(int.Parse(value.ToString() ?? "0"));
         }
         #endregion
     }
 
     public class ConverterEAudioRedirectionMode : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return Enum.GetValues(typeof(EAudioRedirectionMode)).Cast<int>().Max() + 1;
             return ((int)((EAudioRedirectionMode)value)).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (EAudioRedirectionMode)(int.Parse(value.ToString()));
+            if (value == null)
+                return null;
+            return (EAudioRedirectionMode)(int.Parse(value.ToString() ?? "0"));
         }
     }
 }

@@ -155,7 +155,7 @@ namespace PRM.Utils.mRemoteNG
             return "";
         }
 
-        private static List<string> GetTitles(string firstLine)
+        private static List<string>? GetTitles(string firstLine)
         {
             if (string.IsNullOrWhiteSpace(firstLine))
                 return null;
@@ -166,13 +166,15 @@ namespace PRM.Utils.mRemoteNG
             return titles;
         }
 
-        private static Dictionary<string, MRemoteNgItem> GetMRemoteNgItems(ref string[] csvLines)
+        private static Dictionary<string, MRemoteNgItem>? GetMRemoteNgItems(ref string[] csvLines)
         {
             if (csvLines.Length == 0)
                 return null;
 
             // split title line by ';'
             var titles = GetTitles(csvLines[0]);
+            if (titles == null)
+                return null;
             if (titles.Count == 0)
                 return null;
 
@@ -244,7 +246,7 @@ namespace PRM.Utils.mRemoteNG
             }
         }
 
-        public static List<ProtocolBase> FromCsv(string csvPath, List<BitmapSource> icons)
+        public static List<ProtocolBase>? FromCsv(string csvPath, List<BitmapSource> icons)
         {
             if (!File.Exists(csvPath))
                 return null;
@@ -267,7 +269,7 @@ namespace PRM.Utils.mRemoteNG
                 if (item.NodeType != NodeTypeConnection)
                     continue;
 
-                ProtocolBase server = null;
+                ProtocolBase? server = null;
                 List<string> tags = new List<string>();
                 //if (id2MRemoteNgItem.ContainsKey(item.Parent))
                 //{

@@ -19,7 +19,7 @@ namespace PRM.Model
             ReloadServerList();
         }
 
-        private IDataService _dataService;
+        private IDataService? _dataService;
         private readonly ConfigurationService _configurationService;
 
         public void SetDbOperator(IDataService dataService)
@@ -40,7 +40,7 @@ namespace PRM.Model
 
         #region Server Data
 
-        public Action VmItemListDataChanged;
+        public Action? VmItemListDataChanged;
 
         public List<ProtocolBaseViewModel> VmItemList { get; set; } = new List<ProtocolBaseViewModel>();
 
@@ -53,8 +53,6 @@ namespace PRM.Model
             var tags = new List<Tag>();
             foreach (var tagNames in VmItemList.Select(x => x.Server.Tags))
             {
-                if (tagNames == null)
-                    continue;
                 foreach (var tagName in tagNames)
                 {
                     if (tags.All(x => x.Name != tagName))
@@ -112,6 +110,7 @@ namespace PRM.Model
 
         public void AddServer(ProtocolBase protocolServer, bool doInvoke = true)
         {
+            if (_dataService == null) return;
             _dataService.Database_InsertServer(protocolServer);
             if (doInvoke)
             {
@@ -135,6 +134,7 @@ namespace PRM.Model
 
         public void UpdateServer(ProtocolBase protocolServer, bool doInvoke = true)
         {
+            if (_dataService == null) return;
             Debug.Assert(protocolServer.Id > 0);
             UnselectAllServers();
             _dataService.Database_UpdateServer(protocolServer);

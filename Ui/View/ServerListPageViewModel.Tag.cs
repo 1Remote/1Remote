@@ -40,7 +40,7 @@ namespace PRM.View
                         {
                             TagFilters = new List<TagFilter>();
                         }
-                        var s = TagAndKeywordEncodeHelper.DecodeKeyword(_mainWindowViewModel.FilterString);
+                        var s = TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().FilterString);
                         SetFilterString(TagFilters, s.Item2);
                     }
                 }
@@ -116,7 +116,7 @@ namespace PRM.View
                 }
 
                 TagFilters = filters;
-                var s = TagAndKeywordEncodeHelper.DecodeKeyword(_mainWindowViewModel?.FilterString ?? "");
+                var s = TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().FilterString ?? "");
                 SetFilterString(TagFilters, s.Item2);
             }
         }
@@ -294,7 +294,7 @@ namespace PRM.View
 
         private void SetFilterString(List<TagFilter> filters, List<string> keywords)
         {
-            _mainWindowViewModel?.SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(TagFilters, keywords));
+            IoC.Get<MainWindowViewModel>().SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(TagFilters, keywords));
             SetSelectedTabName(filters);
         }
 

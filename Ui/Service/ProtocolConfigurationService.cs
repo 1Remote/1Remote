@@ -20,19 +20,19 @@ namespace PRM.Service
         public Dictionary<string, ProtocolSettings> ProtocolConfigs { get; }
 
 
-        private static string[] _customProtocolBlackList = null;
+        private static List<string> _customProtocolBlackList = new List<string>();
         /// <summary>
         /// Protocol name in this list can not be custom
         /// </summary>
-        public static string[] CustomProtocolBlackList
+        public static List<string> CustomProtocolBlackList
         {
             get
             {
-                if (_customProtocolBlackList == null)
+                if (_customProtocolBlackList.Count == 0)
                 {
                     var protocolList = ProtocolBase.GetAllSubInstance();
                     var names = protocolList.Select(x => x.Protocol);
-                    _customProtocolBlackList = names.ToArray();
+                    _customProtocolBlackList = names.ToList();
                 }
                 return _customProtocolBlackList;
             }
@@ -151,7 +151,7 @@ namespace PRM.Service
         }
 
 
-        public static ProtocolSettings LoadConfig(string protocolFolderName, string protocolName)
+        public static ProtocolSettings? LoadConfig(string protocolFolderName, string protocolName)
         {
             protocolName = protocolName.ToUpper();
             var file = Path.Combine(protocolFolderName, $"{protocolName}.json");
@@ -162,7 +162,7 @@ namespace PRM.Service
                 var runners = jobj[nameof(ProtocolSettings.Runners)] as JArray;
                 jobj.Remove(nameof(ProtocolSettings.Runners));
                 var serializer = new JsonSerializer();
-                var c = (ProtocolSettings)serializer.Deserialize(new JTokenReader(jobj), typeof(ProtocolSettings));
+                var c = (ProtocolSettings)serializer.Deserialize(new JTokenReader(jobj), typeof(ProtocolSettings))!;
 
                 if (runners != null)
                     foreach (var runner in runners)

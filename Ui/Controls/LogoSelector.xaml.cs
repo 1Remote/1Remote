@@ -20,9 +20,9 @@ namespace PRM.Controls
     {
         #region INotifyPropertyChanged
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -51,7 +51,7 @@ namespace PRM.Controls
             }
         }*/
 
-        public Action OnLogoChanged;
+        public Action? OnLogoChanged;
 
         private double _scaling = 1.0;
 
@@ -101,11 +101,11 @@ namespace PRM.Controls
             //SetImg(GetBitmapSource(@"D:\Users\Desktop\LOGO\hp-logo-png-1.png"));
         }
 
-        public void SetImg(BitmapSource img)
+        public void SetImg(BitmapSource? img)
         {
             Scaling = 1.0;
             Img.Source = img;
-            if (img != null)
+            if (Img.Source != null)
             {
                 CanvasImage.Width = ((BitmapSource)Img.Source).PixelWidth * Scaling;
                 CanvasImage.Height = ((BitmapSource)Img.Source).PixelHeight * Scaling;

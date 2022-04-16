@@ -53,8 +53,7 @@ namespace PRM.Model.Protocol
         [JsonIgnore]
         public ProtocolBase ProtocolBase => this;
 
-        private string _externalKittySessionConfigPath;
-
+        private string _externalKittySessionConfigPath = "";
         public string ExternalKittySessionConfigPath
         {
             get => _externalKittySessionConfigPath;

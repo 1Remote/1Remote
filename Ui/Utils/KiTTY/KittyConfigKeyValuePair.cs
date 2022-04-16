@@ -38,8 +38,8 @@ namespace PRM.Utils.KiTTY
             }
         }
 
-        public string Key;
-        public object Value;
-        public RegistryValueKind ValueKind;
+        public string Key = "";
+        public object Value = "";
+        public RegistryValueKind ValueKind = RegistryValueKind.String;
     }
 }

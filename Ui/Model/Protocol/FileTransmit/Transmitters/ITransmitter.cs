@@ -17,13 +17,13 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (_locker)
             {
-                if (!_fileIcons.ContainsKey("*"))
-                    _fileIcons.Add("*", SystemIconHelper.GetIcon("*"));
+                if (_fileIcons.ContainsKey("*") == false)
+                    _fileIcons.Add("*", SystemIconHelper.GetIcon("*")!);
                 if (_fileIcons.ContainsKey(key))
                     return _fileIcons[key];
                 var icon = SystemIconHelper.GetIcon(key);
-                _fileIcons.Add(key, icon);
-                return icon;
+                _fileIcons.Add(key, icon ?? _fileIcons["*"]);
+                return _fileIcons[key];
             }
         }
 
@@ -31,13 +31,13 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (_locker)
             {
-                if (!_dictIcons.ContainsKey(""))
-                    _dictIcons.Add("", SystemIconHelper.GetFolderIcon(System.IO.Path.GetTempPath()));
+                if (_dictIcons.ContainsKey("") == false)
+                    _dictIcons.Add("", SystemIconHelper.GetFolderIcon(System.IO.Path.GetTempPath())!);
                 if (_dictIcons.ContainsKey(key))
                     return _dictIcons[key];
                 var icon = SystemIconHelper.GetFolderIcon(key);
-                _dictIcons.Add(key, icon);
-                return icon;
+                _dictIcons.Add(key, icon ?? _dictIcons[""]);
+                return _dictIcons[key];
             }
         }
     }
@@ -50,7 +50,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         ITransmitter Clone();
 
-        RemoteItem Get(string path);
+        RemoteItem? Get(string path);
 
         /// <summary>
         /// get items of a directory, sub-directory treat as a item too

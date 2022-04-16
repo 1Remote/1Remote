@@ -6,6 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+#pragma warning disable CS8602
+#pragma warning disable CS8600
+#pragma warning disable CS8618
 
 namespace PRM.Controls
 {
@@ -334,7 +337,7 @@ namespace PRM.Controls
             /// <summary>
             ///     <see cref="_owner" /> の <see cref="System.Windows.Controls.ItemContainerGenerator" />。
             /// </summary>
-            private readonly IItemContainerGenerator _generator;
+            private readonly IItemContainerGenerator? _generator;
 
             /// <summary>
             ///     <see cref="_generator" /> の生成プロセスの有効期間を追跡するオブジェクト。
@@ -410,7 +413,7 @@ namespace PRM.Controls
             /// </summary>
             /// <param name="index">取得するアイテムのインデックス。</param>
             /// <returns>指定したインデックスのアイテム。</returns>
-            public UIElement GetOrCreateChild(int index)
+            public UIElement? GetOrCreateChild(int index)
             {
                 if (_generator == null)
                     return _owner.InternalChildren[index];

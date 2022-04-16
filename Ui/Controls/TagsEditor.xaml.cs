@@ -93,9 +93,9 @@ namespace PRM.Controls
         {
             if (sender is Button b)
             {
-                if (Tags.Contains(b.Tag.ToString()))
+                if (Tags.Contains(b.Tag.ToString()!))
                 {
-                    Tags.Remove(b.Tag.ToString());
+                    Tags.Remove(b.Tag.ToString()!);
                     Tags = Tags;
                     TbNewTag.Selections = TagsForSelect.Where(x => Tags.Contains(x) == false);
                 }

@@ -27,7 +27,7 @@ namespace PRM.View
         private double _oneItemHeight;
         private double _oneActionHeight;
         private double _cornerRadius;
-        private FrameworkElement _gridMenuActions;
+        private FrameworkElement _gridMenuActions = null!;
 
 
         #region properties

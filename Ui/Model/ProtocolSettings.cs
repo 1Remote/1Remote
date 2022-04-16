@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using PRM.Model.Protocol;
 using PRM.Model.ProtocolRunner;
 
 namespace PRM.Model
 {
     public class ProtocolSettings
     {
-        public string SelectedRunnerName { get; set; }
-        public List<Runner> Runners { get; set; }
+        public string SelectedRunnerName { get; set; } = "";
+        public List<Runner> Runners { get; set; } = new List<Runner>();
 
 
 
         [JsonIgnore]
-        public Type ProtocolType { get; private set; }
+        public Type ProtocolType { get; private set; } = typeof(RDP);
 
         /// <summary>
         /// All macros name
         /// </summary>
         [JsonIgnore]
-        public List<string> MarcoNames { get; private set; }
+        public List<string> MarcoNames { get; private set; } = new List<string>();
         /// <summary>
         /// All macros Descriptions
         /// </summary>
         [JsonIgnore]
-        public List<string> MarcoDescriptions { get; private set; }
+        public List<string> MarcoDescriptions { get; private set; } = new List<string>();
 
         /// <summary>
         /// Descriptions like:
@@ -49,7 +50,6 @@ namespace PRM.Model
 
         public ProtocolSettings()
         {
-            Runners = new List<Runner>();
         }
 
         public void Init(List<string> marcoNames, List<string> marcoDescriptions, Type protocolType)

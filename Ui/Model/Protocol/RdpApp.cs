@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using PRM.Model.Protocol.Base;
 using PRM.Utils.RdpFile;
@@ -36,7 +37,7 @@ namespace PRM.Model.Protocol
             return false;
         }
 
-        public override ProtocolBase CreateFromJsonString(string jsonString)
+        public override ProtocolBase? CreateFromJsonString(string jsonString)
         {
             try
             {
@@ -60,6 +61,7 @@ namespace PRM.Model.Protocol
         /// <returns></returns>
         public RdpConfig ToRdpConfig(PrmContext context)
         {
+            Debug.Assert(context?.DataService != null);
             var rdpConfig = new RdpConfig($"{this.Address}:{this.GetPort()}", this.UserName, context.DataService.DecryptOrReturnOriginalString(Password));
             rdpConfig.AuthenticationLevel = 0;
             rdpConfig.KeyboardHook = 0;

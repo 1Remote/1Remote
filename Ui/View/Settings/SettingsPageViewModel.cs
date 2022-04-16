@@ -88,7 +88,7 @@ namespace PRM.View.Settings
                 if (_cmdOpenPath != null) return _cmdOpenPath;
                 _cmdOpenPath = new RelayCommand((o) =>
                 {
-                    var path = o.ToString();
+                    var path = o?.ToString() ?? "";
                     if (File.Exists(path))
                     {
                         System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")

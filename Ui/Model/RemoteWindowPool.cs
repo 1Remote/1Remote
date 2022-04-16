@@ -12,6 +12,7 @@ using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
 using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.ProtocolRunner;
+using PRM.Model.ProtocolRunner.Default;
 using PRM.Utils;
 using Shawn.Utils;
 using PRM.View;
@@ -60,7 +61,7 @@ namespace PRM.Model
             }
         }
 
-        private string _lastTabToken = null;
+        private string _lastTabToken = "";
         private readonly Dictionary<string, TabWindowBase> _tabWindows = new Dictionary<string, TabWindowBase>();
         private readonly Dictionary<string, HostBase> _protocolHosts = new Dictionary<string, HostBase>();
         private readonly Dictionary<string, FullScreenWindowView> _host2FullScreenWindows = new Dictionary<string, FullScreenWindowView>();
@@ -76,7 +77,7 @@ namespace PRM.Model
             {
                 if (_protocolHosts[serverId.ToString()].ParentWindow is TabWindowBase t)
                 {
-                    var s = t?.GetViewModel()?.Items?.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
+                    var s = t.GetViewModel().Items.FirstOrDefault(x => x.Content?.ProtocolServer?.Id == serverId);
                     if (s != null)
                         t.GetViewModel().SelectedItem = s;
                     t?.Activate();
@@ -213,7 +214,7 @@ namespace PRM.Model
             }
 
             var size = new Size(0, 0);
-            TabWindowBase tab = null;
+            TabWindowBase? tab = null;
             if (protocol is RDP)
             {
                 tab = GetOrCreateTabWindow(assignTabToken);
@@ -221,12 +222,12 @@ namespace PRM.Model
             }
 
             protocol.ConnectPreprocess(_context);
-            HostBase host;
+            HostBase? host = null;
             if (runner is ExternalRunner)
             {
                 host = ProtocolRunnerHostHelper.GetHostOrRunDirectlyForExternalRunner(_context, protocol, runner);
             }
-            else
+            else if (runner is InternalDefaultRunner)
             {
                 host = ProtocolRunnerHostHelper.GetHostForInternalRunner(_context, protocol, runner, size.Width, size.Height);
             }
@@ -239,18 +240,14 @@ namespace PRM.Model
             Debug.Assert(!_protocolHosts.ContainsKey(host.ConnectionId));
             host.OnClosed += OnProtocolClose;
             host.OnFullScreen2Window += OnFullScreen2Window;
-            tab.AddItem(new TabItemViewModel()
-            {
-                Content = host,
-                Header = protocol.DisplayName,
-            });
+            tab.AddItem(new TabItemViewModel((HostBase)host, protocol.DisplayName));
             host.ParentWindow = tab;
             _protocolHosts.Add(host.ConnectionId, host);
             host.Conn();
             tab.Activate();
         }
 
-        public void ShowRemoteHost(long serverId, string assignTabToken, string assignRunnerName)
+        public void ShowRemoteHost(long serverId, string? assignTabToken, string? assignRunnerName)
         {
             #region START MULTIPLE SESSION
             // if serverId <= 0, then start multiple sessions
@@ -280,6 +277,7 @@ namespace PRM.Model
 
             // update the last conn time
             server.LastConnTime = DateTime.Now;
+            Debug.Assert(_context.DataService != null);
             _context.DataService.Database_UpdateServer(server);
 
             // if is OnlyOneInstance protocol and it is connected now, activate it and return.
@@ -296,11 +294,7 @@ namespace PRM.Model
             }
 
 
-
-
-            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server.Protocol, assignRunnerName);
-
-
+            var runner = ProtocolRunnerHostHelper.GetRunner(_context, server.Protocol, assignRunnerName)!;
             if (server is RDP rdp)
             {
                 // check if screens are in different scale factors
@@ -324,7 +318,7 @@ namespace PRM.Model
                     return;
                 }
             }
-            ConnectWithTab(server, runner, assignTabToken);
+            ConnectWithTab(server, runner, assignTabToken ?? "");
             CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
         }
@@ -373,7 +367,7 @@ namespace PRM.Model
             return full;
         }
 
-        private FullScreenWindowView MoveToNewFullScreenWindow(string connectionId, TabWindowBase fromTab)
+        private FullScreenWindowView MoveToNewFullScreenWindow(string connectionId, TabWindowBase? fromTab)
         {
             Debug.Assert(!_host2FullScreenWindows.ContainsKey(connectionId));
             Debug.Assert(_protocolHosts.ContainsKey(connectionId));
@@ -417,7 +411,7 @@ namespace PRM.Model
         /// </summary>
         /// <param name="connectionId"></param>
         /// <returns></returns>
-        private TabWindowBase GetTabParent(string connectionId)
+        private TabWindowBase? GetTabParent(string connectionId)
         {
             var tabs = _tabWindows.Values.Where(x => x.GetViewModel()?.Items != null && x.GetViewModel().Items.Any(y => y.Content.ConnectionId == connectionId)).ToArray();
             Debug.Assert(tabs.Length <= 1);
@@ -438,14 +432,10 @@ namespace PRM.Model
             // remove from old parent
             var tab = GetTabParent(connectionId);
             if (tab != null)
-            {
                 RemoveFromTabWindow(connectionId);
-            }
 
             // move to full-screen-window
-            var full = _host2FullScreenWindows.ContainsKey(connectionId) ?
-                MoveToExistedFullScreenWindow(connectionId, tab)
-                : MoveToNewFullScreenWindow(connectionId, tab);
+            var full = _host2FullScreenWindows.ContainsKey(connectionId) ? MoveToExistedFullScreenWindow(connectionId, tab) : MoveToNewFullScreenWindow(connectionId, tab);
 
             CleanupTabs();
 
@@ -462,7 +452,7 @@ namespace PRM.Model
         /// <param name="host"></param>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private TabWindowBase GetOrCreateTabWindow(HostBase host, string assignTabToken = null)
+        private TabWindowBase GetOrCreateTabWindow(HostBase host, string assignTabToken = "")
         {
             var parentWindow = host.ParentWindow;
             // remove from old parent
@@ -479,7 +469,7 @@ namespace PRM.Model
             return tab;
         }
 
-        private TabWindowBase FindTabWindow(string assignTabToken)
+        private TabWindowBase? FindTabWindow(string assignTabToken)
         {
             // get TabWindowBase by assignTabToken
             if (!string.IsNullOrEmpty(assignTabToken)
@@ -488,7 +478,7 @@ namespace PRM.Model
             return null;
         }
 
-        private TabWindowBase FindLastTabWindow()
+        private TabWindowBase? FindLastTabWindow()
         {
             if (_tabWindows.Count <= 0) return null;
             if (!string.IsNullOrEmpty(_lastTabToken) && _tabWindows.ContainsKey(_lastTabToken))
@@ -496,7 +486,7 @@ namespace PRM.Model
             return _tabWindows.LastOrDefault().Value;
         }
 
-        private TabWindowBase CreateNewTabWindow(string assignTabToken = null)
+        private TabWindowBase CreateNewTabWindow(string assignTabToken = "")
         {
             var token = DateTime.Now.Ticks.ToString();
             if (string.IsNullOrEmpty(assignTabToken) == false)
@@ -528,7 +518,7 @@ namespace PRM.Model
         /// </summary>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private TabWindowBase GetOrCreateTabWindow(string assignTabToken = null)
+        private TabWindowBase GetOrCreateTabWindow(string assignTabToken = "")
         {
             var tab = FindTabWindow(assignTabToken);
             if (tab != null) return tab;
@@ -558,11 +548,7 @@ namespace PRM.Model
             if (tab.GetViewModel().Items.All(x => x.Content != host))
             {
                 // move
-                tab.AddItem(new TabItemViewModel()
-                {
-                    Content = host,
-                    Header = host.ProtocolServer.DisplayName,
-                });
+                tab.AddItem(new TabItemViewModel((HostBase)host, host.ProtocolServer.DisplayName));
             }
             else
             {
@@ -592,7 +578,7 @@ namespace PRM.Model
             if (tab == null)
                 return;
             var item = tab.GetViewModel().Items.First(x => x.Content.ConnectionId == connectionId);
-            tab?.GetViewModel().Items.Remove(item);
+            tab.GetViewModel().Items.Remove(item);
             tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Count > 0 ? tab.GetViewModel().Items.First() : null;
             SimpleLogHelper.Debug($@"Remove connectionId = {connectionId} from tab({tab.GetHashCode()})");
             CleanupTabs();
@@ -612,7 +598,7 @@ namespace PRM.Model
             // remove from tab
             RemoveFromTabWindow(connectionId);
 
-            HostBase host = null;
+            HostBase? host = null;
 
             if (_protocolHosts.ContainsKey(connectionId))
                 lock (this)
@@ -675,7 +661,7 @@ namespace PRM.Model
 
 
             SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-            SynchronizationContext.Current.Post(pl => { DelProtocolHost(connectionId); }, null);
+            SynchronizationContext.Current?.Post(pl => { DelProtocolHost(connectionId); }, null);
         }
 
         /// <summary>
@@ -690,7 +676,7 @@ namespace PRM.Model
                 var tab = _tabWindows[token];
                 var items = tab.GetViewModel()?.Items?.ToArray() ?? new TabItemViewModel[0];
                 SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                SynchronizationContext.Current.Post(pl =>
+                SynchronizationContext.Current?.Post(pl =>
                 {
                     // del protocol
                     foreach (var tabItemViewModel in items)
@@ -741,7 +727,7 @@ namespace PRM.Model
         private void CleanupTabs()
         {
             SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-            SynchronizationContext.Current.Post(pl =>
+            SynchronizationContext.Current?.Post(pl =>
             {
                 CloseUnhandledProtocols();
                 CloseEmptyTabs();

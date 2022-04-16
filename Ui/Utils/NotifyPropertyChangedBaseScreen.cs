@@ -6,7 +6,7 @@ namespace PRM.Utils
 {
     public abstract class NotifyPropertyChangedBaseScreen: Screen, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public new event PropertyChangedEventHandler? PropertyChanged;
 
         #region INotifyPropertyChanged
 
@@ -18,13 +18,13 @@ namespace PRM.Utils
         }
 
 
-        public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        public void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             if (NotifyPropertyChangedEnabled)
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool SetAndNotifyIfChanged<T>(string propertyName, ref T oldValue, T newValue)
+        private bool SetAndNotifyIfChanged<T>(string? propertyName, ref T oldValue, T newValue)
         {
             if (oldValue == null && newValue == null) return false;
             if (oldValue != null && oldValue.Equals(newValue)) return false;
@@ -34,7 +34,7 @@ namespace PRM.Utils
             return true;
         }
 
-        protected virtual bool SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = null)
+        protected virtual bool SetAndNotifyIfChanged<T>(ref T oldValue, T newValue, [CallerMemberName] string? propertyName = null)
         {
             return SetAndNotifyIfChanged(propertyName, ref oldValue, newValue);
         }

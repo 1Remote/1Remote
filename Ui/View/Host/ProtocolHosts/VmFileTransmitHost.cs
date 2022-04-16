@@ -28,7 +28,6 @@ namespace PRM.View.Host.ProtocolHosts
 {
     public partial class VmFileTransmitHost : NotifyPropertyChangedBase
     {
-
         public VmFileTransmitHost(IFileTransmittable protocol)
         {
             _protocol = protocol;
@@ -45,8 +44,7 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 t.TryCancel();
             }
-            Trans?.Release();
-            Trans = null;
+            Trans.Release();
         }
 
         public void Conn()
@@ -82,7 +80,7 @@ namespace PRM.View.Host.ProtocolHosts
         private void AddTransmitTask(TransmitTask t)
         {
             TransmitTasks.Add(t);
-            void func(ETransmitTaskStatus status, Exception e)
+            void func(ETransmitTaskStatus status, Exception? e)
             {
                 if (t.OnTaskEnd != null)
                     t.OnTaskEnd -= func;
@@ -100,7 +98,7 @@ namespace PRM.View.Host.ProtocolHosts
                         if (Application.Current == null)
                             return;
                         SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                        SynchronizationContext.Current.Post(pl =>
+                        SynchronizationContext.Current?.Post(pl =>
                         {
                             try
                             {
@@ -298,13 +296,13 @@ namespace PRM.View.Host.ProtocolHosts
 
         public void TvFileList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ListView view = null;
-            ScrollContentPresenter p = null;
+            ListView? view = null;
+            ScrollContentPresenter? p = null;
             if (sender is ListView lv)
             {
                 view = lv;
                 var ip = MyVisualTreeHelper.FindVisualChild<ItemsPresenter>(view);
-                p = MyVisualTreeHelper.FindVisualChild<ScrollContentPresenter>((DependencyObject)ip);
+                p = MyVisualTreeHelper.FindVisualChild<ScrollContentPresenter>((DependencyObject)ip!);
             }
             if (view == null || p == null)
                 return;
@@ -318,13 +316,13 @@ namespace PRM.View.Host.ProtocolHosts
 
         public void FileList_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            ListView view = null;
-            ScrollContentPresenter p = null;
+            ListView? view = null;
+            ScrollContentPresenter? p = null;
             if (sender is ListView lv)
             {
                 view = lv;
                 var ip = MyVisualTreeHelper.FindVisualChild<ItemsPresenter>(view);
-                p = MyVisualTreeHelper.FindAncestor<ScrollContentPresenter>((DependencyObject)ip);
+                p = MyVisualTreeHelper.FindAncestor<ScrollContentPresenter>((DependencyObject)ip!);
             }
             if (view == null || p == null)
                 return;
@@ -418,7 +416,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         #region CMD
 
-        private RelayCommand _cmdDelete;
+        private RelayCommand? _cmdDelete;
 
         public RelayCommand CmdDelete
         {
@@ -464,7 +462,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdBeginRenaming;
+        private RelayCommand? _cmdBeginRenaming;
 
         public RelayCommand CmdBeginRenaming
         {
@@ -489,7 +487,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdEndRenaming;
+        private RelayCommand? _cmdEndRenaming;
 
         public RelayCommand CmdEndRenaming
         {
@@ -548,7 +546,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdCancelRenaming;
+        private RelayCommand? _cmdCancelRenaming;
 
         public RelayCommand CmdCancelRenaming
         {
@@ -583,7 +581,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdListViewDoubleClick;
+        private RelayCommand? _cmdListViewDoubleClick;
 
         /// <summary>
         /// double click to enter folder or open file
@@ -656,7 +654,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdGoToPathCurrent;
+        private RelayCommand? _cmdGoToPathCurrent;
 
         public RelayCommand CmdGoToPathCurrent
         {
@@ -685,7 +683,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdGoToParent;
+        private RelayCommand? _cmdGoToParent;
 
         public RelayCommand CmdGoToParent
         {
@@ -710,7 +708,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdGoToPathPrevious;
+        private RelayCommand? _cmdGoToPathPrevious;
 
         public RelayCommand CmdGoToPathPrevious
         {
@@ -735,144 +733,131 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdGoToPathFollowing;
-
+        private RelayCommand? _cmdGoToPathFollowing;
         public RelayCommand CmdGoToPathFollowing
         {
             get
             {
-                if (_cmdGoToPathFollowing == null)
+                return _cmdGoToPathFollowing ??= new RelayCommand((o) =>
                 {
-                    _cmdGoToPathFollowing = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (_pathHistoryFollowing.Count > 0)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (_pathHistoryFollowing.Count > 0)
-                        {
-                            SimpleLogHelper.Debug($"call CmdGoToPathFollowing");
-                            var p = _pathHistoryFollowing.Pop();
-                            _pathHistoryPrevious.Push(CurrentPath);
-                            ShowFolder(p, 2);
-                        }
-                    });
-                }
-                return _cmdGoToPathFollowing;
+                        SimpleLogHelper.Debug($"call CmdGoToPathFollowing");
+                        var p = _pathHistoryFollowing.Pop();
+                        _pathHistoryPrevious.Push(CurrentPath);
+                        ShowFolder(p, 2);
+                    }
+                });
             }
         }
 
-        private RelayCommand _cmdDownload;
+        private RelayCommand? _cmdDownload;
 
         public RelayCommand CmdDownload
         {
             get
             {
-                if (_cmdDownload == null)
+                return _cmdDownload ??= new RelayCommand((o) =>
                 {
-                    _cmdDownload = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+
+                    if (RemoteItems.All(x => x.IsSelected != true))
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
+                        return;
+                    }
 
-                        if (RemoteItems.All(x => x.IsSelected != true))
-                        {
-                            return;
-                        }
+                    var path = SelectFileHelper.SaveFile(
+                        title: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_files_download_to"),
+                        selectedFileName: IoC.Get<ILanguageService>()
+                            .Translate("file_transmit_host_message_files_download_to_dir"));
+                    if (path == null) return;
+                    {
+                        var destinationDirectoryPath = new FileInfo(path).DirectoryName!;
 
-                        var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_files_download_to"), selectedFileName: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_files_download_to_dir"));
-                        if (path == null) return;
-                        {
-                            var destinationDirectoryPath = new FileInfo(path).DirectoryName;
-
-                            if (!IoPermissionHelper.HasWritePermissionOnFile(path)
+                        if (!IoPermissionHelper.HasWritePermissionOnFile(path)
                             || !IoPermissionHelper.HasWritePermissionOnDir(destinationDirectoryPath))
-                            {
-                                IoMessage = IoC.Get<ILanguageService>().Translate("string_permission_denied") + $": {path}";
-                                IoMessageLevel = 2;
-                                return;
-                            }
-
-                            var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                            var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, destinationDirectoryPath, ris);
-                            AddTransmitTask(t);
-                            t.StartTransmitAsync();
+                        {
+                            IoMessage = IoC.Get<ILanguageService>().Translate("string_permission_denied") + $": {path}";
+                            IoMessageLevel = 2;
+                            return;
                         }
-                    });
-                }
-                return _cmdDownload;
+
+                        var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
+                        var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, destinationDirectoryPath, ris);
+                        AddTransmitTask(t);
+                        t.StartTransmitAsync();
+                    }
+                });
             }
         }
 
-        private RelayCommand _cmdUpload;
-
+        private RelayCommand? _cmdUpload;
         public RelayCommand CmdUpload
         {
             get
             {
-                if (_cmdUpload == null)
+                return _cmdUpload ??= new RelayCommand((o) =>
                 {
-                    _cmdUpload = new RelayCommand((o) =>
+                    if (o == null)
                     {
-                        if (o == null)
+                        if (Trans?.IsConnected() != true)
+                            return;
+
+                        var paths = SelectFileHelper.OpenFiles(title: IoC.Get<ILanguageService>()
+                            .Translate("file_transmit_host_message_select_files_to_upload"));
+                        if (paths == null) return;
+
+                        if (paths?.Length > 0)
                         {
-                            if (Trans?.IsConnected() != true)
-                                return;
-
-                            var paths = SelectFileHelper.OpenFiles(title: IoC.Get<ILanguageService>().Translate("file_transmit_host_message_select_files_to_upload"));
-                            if (paths == null) return;
-
-                            if (paths?.Length > 0)
-                            {
-                                DoUpload(paths.ToList());
-                            }
+                            DoUpload(paths.ToList());
                         }
-                        else if (o is int n)
+                    }
+                    else if (o is int n)
+                    {
+                        // upload select folder
+                        if (Trans?.IsConnected() != true)
+                            return;
+
+                        var fbd = new FolderBrowserDialog();
+                        fbd.Description = IoC.Get<ILanguageService>()
+                            .Translate("file_transmit_host_message_select_files_to_upload");
+                        fbd.ShowNewFolderButton = false;
+                        if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
-                            // upload select folder
-                            if (Trans?.IsConnected() != true)
-                                return;
-
-                            var fbd = new FolderBrowserDialog();
-                            fbd.Description = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_select_files_to_upload");
-                            fbd.ShowNewFolderButton = false;
-                            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                            {
-                                DoUpload(new List<string>() { fbd.SelectedPath });
-                            }
+                            DoUpload(new List<string>() {fbd.SelectedPath});
                         }
-                    });
-                }
-                return _cmdUpload;
+                    }
+                });
             }
         }
 
-        private RelayCommand _cmdUploadClipboard;
-
+        private RelayCommand? _cmdUploadClipboard;
         public RelayCommand CmdUploadClipboard
         {
             get
             {
-                if (_cmdUploadClipboard == null)
+                return _cmdUploadClipboard ??= new RelayCommand((o) =>
                 {
-                    _cmdUploadClipboard = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    var fl = Clipboard.GetFileDropList().Cast<string>().ToList();
+                    if (fl.Count == 0)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        var fl = Clipboard.GetFileDropList().Cast<string>().ToList();
-                        if (fl.Count == 0)
-                        {
-                            return;
-                        }
+                        return;
+                    }
 
-                        if (fl.Any(f => !File.Exists(f) && !Directory.Exists(f)))
-                        {
-                            return;
-                        }
-                        DoUpload(fl);
-                    }, o => Trans?.IsConnected() == true
-                            && Clipboard.GetFileDropList().Count > 0
-                            && Clipboard.GetFileDropList().Cast<string>().All(f => File.Exists(f) || Directory.Exists(f)));
-                }
-                return _cmdUploadClipboard;
+                    if (fl.Any(f => !File.Exists(f) && !Directory.Exists(f)))
+                    {
+                        return;
+                    }
+
+                    DoUpload(fl);
+                }, o => Trans?.IsConnected() == true
+                        && Clipboard.GetFileDropList().Count > 0
+                        && Clipboard.GetFileDropList().Cast<string>().All(f => File.Exists(f) || Directory.Exists(f)));
             }
         }
 
@@ -905,70 +890,54 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private RelayCommand _cmdShowTransmitDstPath;
+        private RelayCommand? _cmdShowTransmitDstPath;
 
         public RelayCommand CmdShowTransmitDstPath
         {
             get
             {
-                if (_cmdShowTransmitDstPath == null)
+                return _cmdShowTransmitDstPath ??= new RelayCommand((o) =>
                 {
-                    _cmdShowTransmitDstPath = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (o is TransmitTask t)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (o is TransmitTask t)
+                        var dst = t.TransmitDstDirectoryPath;
+                        if (!string.IsNullOrEmpty(dst))
                         {
-                            var dst = t.TransmitDstDirectoryPath;
-                            if (!string.IsNullOrEmpty(dst))
+                            if (t.TransmissionType == ETransmissionType.HostToServer)
                             {
-                                if (t.TransmissionType == ETransmissionType.HostToServer)
+                                ShowFolder(dst);
+                            }
+                            else
+                            {
+                                if (Directory.Exists(dst))
                                 {
-                                    ShowFolder(dst);
-                                }
-                                else
-                                {
-                                    //var path = o.ToString();
-                                    //if (File.Exists(path))
-                                    //{
-                                    //    System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe");
-                                    //    //psi.Arguments = "/e,/select," + path;
-                                    //    System.Diagnostics.Process.Start(psi);
-                                    //}
-                                    if (Directory.Exists(dst))
-                                    {
-                                        System.Diagnostics.Process.Start("explorer.exe", dst);
-                                    }
+                                    System.Diagnostics.Process.Start("explorer.exe", dst);
                                 }
                             }
                         }
-                    });
-                }
-                return _cmdShowTransmitDstPath;
+                    }
+                });
             }
         }
 
-        private RelayCommand _cmdDeleteTransmitTask;
-
+        private RelayCommand? _cmdDeleteTransmitTask;
         public RelayCommand CmdDeleteTransmitTask
         {
             get
             {
-                if (_cmdDeleteTransmitTask == null)
+                return _cmdDeleteTransmitTask ??= new RelayCommand((o) =>
                 {
-                    _cmdDeleteTransmitTask = new RelayCommand((o) =>
+                    if (Trans?.IsConnected() != true)
+                        return;
+                    if (o is TransmitTask t)
                     {
-                        if (Trans?.IsConnected() != true)
-                            return;
-                        if (o is TransmitTask t)
-                        {
-                            SimpleLogHelper.Debug($"Try to cancel and delete Task:{t.GetHashCode()}");
-                            t.TryCancel();
-                            TransmitTasks.Remove(t);
-                        }
-                    });
-                }
-                return _cmdDeleteTransmitTask;
+                        SimpleLogHelper.Debug($"Try to cancel and delete Task:{t.GetHashCode()}");
+                        t.TryCancel();
+                        TransmitTasks.Remove(t);
+                    }
+                });
             }
         }
 
@@ -977,8 +946,8 @@ namespace PRM.View.Host.ProtocolHosts
 
         #region Properties
 
-        public ITransmitter Trans = null;
-        private readonly IFileTransmittable _protocol = null;
+        public ITransmitter Trans = null!;
+        private readonly IFileTransmittable _protocol;
 
         private readonly CancellationTokenSource _consumingTransmitTaskCancellationTokenSource = new CancellationTokenSource();
 
@@ -1087,8 +1056,8 @@ namespace PRM.View.Host.ProtocolHosts
 
 
         #region File list
-        private RemoteItem _selectedRemoteItem;
-        public RemoteItem SelectedRemoteItem
+        private RemoteItem? _selectedRemoteItem;
+        public RemoteItem? SelectedRemoteItem
         {
             get => _selectedRemoteItem;
             set => SetAndNotifyIfChanged(ref _selectedRemoteItem, value);

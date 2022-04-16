@@ -73,10 +73,10 @@ namespace PRM.Utils
                 return "";
             return filterString + (keyWords.Count > 0 ? "" : " ");
         }
-        public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, IEnumerable<TagFilter> tagFilters, IEnumerable<string> keywords)
+        public static Tuple<bool, MatchResults?> MatchKeywords(ProtocolBase server, IEnumerable<TagFilter>? tagFilters, IEnumerable<string> keywords)
         {
             var kws = keywords?.ToArray();
-            if (tagFilters?.Any() != true && kws?.Any() != true)
+            if (tagFilters == null || tagFilters?.Any() != true && kws?.Any() != true)
             {
                 return new Tuple<bool, MatchResults?>(true, null);
             }
@@ -84,7 +84,7 @@ namespace PRM.Utils
             // check tags
             {
                 bool bTagMatched = true;
-                foreach (var tagFilter in tagFilters)
+                foreach (var tagFilter in tagFilters!)
                 {
                     if (tagFilter.IsIncluded != server.Tags.Any(x => String.Equals(x, tagFilter.TagName, StringComparison.CurrentCultureIgnoreCase)))
                     {
