@@ -17,7 +17,7 @@ namespace PRM.Model.ProtocolRunner
     {
         public Runner(string runnerName)
         {
-            Name = runnerName?.Trim();
+            Name = runnerName.Trim();
         }
 
         protected string _name = "";

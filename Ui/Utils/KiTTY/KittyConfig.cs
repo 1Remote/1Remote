@@ -48,7 +48,7 @@ namespace PRM.Utils.KiTTY
             return ret;
         }
 
-        public KittyConfig(string sessionName, string overwritePath = null)
+        public KittyConfig(string sessionName, string? overwritePath = null)
         {
             SessionName = sessionName;
             InitDefault();

@@ -38,7 +38,7 @@ namespace PRM.Service
         {
             var resourceDictionary = GetResourceDictionaryByXamlFilePath(fullName);
             if (resourceDictionary?.Contains("language_name") != true) return;
-            AddLanguage(code, resourceDictionary["language_name"].ToString(), resourceDictionary);
+            AddLanguage(code, resourceDictionary["language_name"].ToString()!, resourceDictionary);
         }
 
         private void AddStaticLanguageResources(string code)
@@ -49,10 +49,10 @@ namespace PRM.Service
             var r = GetResourceDictionaryByXamlUri(path);
             Debug.Assert(r != null);
             Debug.Assert(r.Contains("language_name"));
-            AddLanguage(code, r["language_name"].ToString(), r);
+            AddLanguage(code, r["language_name"].ToString()!, r);
         }
 
-        private static ResourceDictionary GetResourceDictionaryByXamlUri(string path)
+        private static ResourceDictionary? GetResourceDictionaryByXamlUri(string path)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace PRM.Service
             return null;
         }
 
-        private static ResourceDictionary GetResourceDictionaryByXamlFilePath(string path)
+        private static ResourceDictionary? GetResourceDictionaryByXamlFilePath(string path)
         {
             Debug.Assert(path.EndsWith(".xaml", true, CultureInfo.InstalledUICulture));
             try
@@ -140,7 +140,7 @@ namespace PRM.Service
         {
             key = key.Trim(new[] { '\'' });
             if (_applicationResourceDictionary.Contains(key))
-                return _applicationResourceDictionary[key].ToString();
+                return _applicationResourceDictionary[key].ToString() ?? key;
 
 #if DEBUG
             var tw = new StreamWriter("need translation " + _languageCode + ".txt", true);

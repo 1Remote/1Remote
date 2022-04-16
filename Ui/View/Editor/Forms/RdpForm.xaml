@@ -178,7 +178,6 @@
                     <Grid Style="{StaticResource EditorRowGridInput}">
                         <Grid.Resources>
                             <forms:ConverterERdpWindowResizeMode x:Key="ConverterERdpWindowResizeMode" />
-                            <forms:ConverterTrueWhenERdpFullScreen x:Key="ConverterTrueWhenERdpFullScreen" />
                         </Grid.Resources>
                         <ComboBox Name="ComboBoxResolution" SelectedIndex="{Binding RdpWindowResizeMode, Converter={StaticResource ConverterERdpWindowResizeMode}}">
                             <ComboBoxItem Content="{DynamicResource 'Fit to window'}"></ComboBoxItem>

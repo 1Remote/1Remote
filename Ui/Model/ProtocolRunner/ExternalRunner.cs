@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using Newtonsoft.Json;
+using PRM.Model.Protocol;
 using Shawn.Utils;
 
 namespace PRM.Model.ProtocolRunner
@@ -96,8 +97,9 @@ namespace PRM.Model.ProtocolRunner
         /// Marco names for auto complete use
         /// </summary>
         [JsonIgnore]
-        public List<string> MarcoNames { get; set; }
-        [JsonIgnore]
-        public Type ProtocolType { get; set; }
+        public List<string> MarcoNames { get; set; } = new();
+
+        [JsonIgnore] 
+        public Type ProtocolType { get; set; } = typeof(RDP);
     }
 }

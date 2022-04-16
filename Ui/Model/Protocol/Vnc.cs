@@ -34,7 +34,7 @@ namespace PRM.Model.Protocol
             return true;
         }
 
-        public override ProtocolBase CreateFromJsonString(string jsonString)
+        public override ProtocolBase? CreateFromJsonString(string jsonString)
         {
             try
             {

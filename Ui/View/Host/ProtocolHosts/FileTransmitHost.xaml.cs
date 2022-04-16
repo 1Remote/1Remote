@@ -122,7 +122,7 @@ namespace PRM.View.Host.ProtocolHosts
             if (headerClicked == null)
                 return;
             var p = headerClicked.Parent as GridViewHeaderRowPresenter;
-            foreach (var t in p.Columns)
+            foreach (var t in p!.Columns)
             {
                 t.HeaderTemplate = TvFileList.Resources["HeaderTemplateDefault"] as DataTemplate;
             }
@@ -161,6 +161,9 @@ namespace PRM.View.Host.ProtocolHosts
                 if (_vmRemote.RemoteItems.Count == 0)
                     return;
 
+                if (_vmRemote.SelectedRemoteItem == null)
+                    return;
+
                 switch (e.Key)
                 {
                     case Key.Up:
@@ -196,7 +199,7 @@ namespace PRM.View.Host.ProtocolHosts
                 var key = e.Key.ToString();
                 if (key.Length == 1)
                 {
-                    if (_vmRemote?.SelectedRemoteItem != null
+                    if (_vmRemote.SelectedRemoteItem != null
                         && _vmRemote.SelectedRemoteItem.Name.StartsWith(key, true, CultureInfo.CurrentCulture))
                     {
                         var i = _vmRemote.RemoteItems.IndexOf(_vmRemote.SelectedRemoteItem);
@@ -221,7 +224,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void ReConn()
         {
-            _vmRemote?.Conn();
+            _vmRemote.Conn();
         }
     }
 

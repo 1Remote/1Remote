@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
@@ -19,6 +20,8 @@ namespace PRM.Utils.KiTTY
             stream.Read(bytes, 0, (int)stream.Length);
             var json = Encoding.UTF8.GetString(bytes);
             var themes = JsonConvert.DeserializeObject<Dictionary<string, List<KittyConfigKeyValuePair>>>(json);
+            if (themes == null)
+                throw new NullReferenceException("Resources/KiTTY/PuttyThemes.json can not be deserialize!");
             return themes;
         }
     }

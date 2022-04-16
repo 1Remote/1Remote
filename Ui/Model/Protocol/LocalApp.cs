@@ -44,7 +44,7 @@ namespace PRM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _runWithHosting, value);
         }
 
-        public override ProtocolBase CreateFromJsonString(string jsonString)
+        public override ProtocolBase? CreateFromJsonString(string jsonString)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace PRM.Model.Protocol
             return $"{this.ExePath} {this.Arguments}";
         }
 
-        private RelayCommand _cmdSelectExePath;
+        private RelayCommand? _cmdSelectExePath;
         [JsonIgnore]
         public RelayCommand CmdSelectExePath
         {
@@ -87,7 +87,7 @@ namespace PRM.Model.Protocol
                     string initPath;
                     try
                     {
-                        initPath = new FileInfo(ExePath).DirectoryName;
+                        initPath = new FileInfo(ExePath).DirectoryName!;
                     }
                     catch (Exception)
                     {
@@ -101,7 +101,7 @@ namespace PRM.Model.Protocol
             }
         }
 
-        private RelayCommand _cmdSelectArgumentFile;
+        private RelayCommand? _cmdSelectArgumentFile;
         [JsonIgnore]
         public RelayCommand CmdSelectArgumentFile
         {
@@ -112,7 +112,7 @@ namespace PRM.Model.Protocol
                     string initPath;
                     try
                     {
-                        initPath = new FileInfo(Arguments).DirectoryName;
+                        initPath = new FileInfo(Arguments).DirectoryName!;
                     }
                     catch (Exception)
                     {
@@ -125,7 +125,7 @@ namespace PRM.Model.Protocol
             }
         }
 
-        private RelayCommand _cmdPreview;
+        private RelayCommand? _cmdPreview;
         [JsonIgnore]
         public RelayCommand CmdPreview
         {
@@ -138,7 +138,7 @@ namespace PRM.Model.Protocol
             }
         }
 
-        private RelayCommand _cmdTest;
+        private RelayCommand? _cmdTest;
         [JsonIgnore]
         public RelayCommand CmdTest
         {

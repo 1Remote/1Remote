@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using PRM.Model;
@@ -76,9 +78,22 @@ namespace PRM.View
         public string FilterString
         {
             get => _filterString;
-            set =>
+            set
+            { 
                 // can only be called by the Ui
-                SetAndNotifyIfChanged(ref _filterString, value);
+                if (SetAndNotifyIfChanged(ref _filterString, value))
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        var filter = FilterString;
+                        Thread.Sleep(100);
+                        if (filter == FilterString)
+                        {
+                            ServerListViewModel.CalcVisibleByFilter();
+                        }
+                    });
+                }
+            }
         }
 
         public void SetFilterStringByBackend(string newValue)
@@ -100,7 +115,6 @@ namespace PRM.View
         {
             Context = context;
             _wm = wm;
-            ServerListViewModel.Init(this);
             ShowList();
         }
 
@@ -132,6 +146,7 @@ namespace PRM.View
             };
             GlobalEventHelper.OnRequestGoToServerEditPage += new GlobalEventHelper.OnRequestGoToServerEditPageDelegate((id, isDuplicate, isInAnimationShow) =>
             {
+                if (Context.DataService == null) return;
                 if (id <= 0) return;
                 Debug.Assert(Context.AppData.VmItemList.Any(x => x.Server.Id == id));
                 var server = Context.AppData.VmItemList.First(x => x.Server.Id == id).Server;
@@ -141,9 +156,10 @@ namespace PRM.View
 
             GlobalEventHelper.OnGoToServerAddPage += new GlobalEventHelper.OnGoToServerAddPageDelegate((tagNames, isInAnimationShow) =>
             {
+                if (Context.DataService == null) return;
                 var server = new RDP
                 {
-                    Tags = new List<string>(tagNames)
+                    Tags = tagNames?.Count == 0 ? new List<string>() : new List<string>(tagNames!)
                 };
                 EditorViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, server);
                 ActivateMe();
@@ -151,6 +167,7 @@ namespace PRM.View
 
             GlobalEventHelper.OnRequestGoToServerMultipleEditPage += (servers, isInAnimationShow) =>
             {
+                if (Context.DataService == null) return;
                 var serverBases = servers as ProtocolBase[] ?? servers.ToArray();
                 if (serverBases.Count() > 1)
                     EditorViewModel = new ServerEditorPageViewModel(Context.AppData, Context.DataService, serverBases);
@@ -238,7 +255,7 @@ namespace PRM.View
 
         #region TaskTray
 
-        private static System.Windows.Forms.NotifyIcon _taskTrayIcon = null;
+        private static System.Windows.Forms.NotifyIcon? _taskTrayIcon = null;
         private void TaskTrayInit()
         {
             TaskTrayDispose();

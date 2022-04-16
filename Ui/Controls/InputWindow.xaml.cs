@@ -24,7 +24,7 @@ namespace PRM.Controls
 
         public string Prompt { get; private init; } = "";
 
-        public string? Response { get; private set; } = "";
+        public string Response { get; private set; } = "";
 
         public Results Result { get; private set; } = Results.Ok;
 
@@ -92,7 +92,7 @@ namespace PRM.Controls
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
             Result = Results.Cancel;
-            Response = null;
+            Response = "";
             Close();
         }
 

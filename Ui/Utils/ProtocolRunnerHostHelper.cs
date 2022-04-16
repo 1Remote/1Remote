@@ -24,20 +24,19 @@ namespace PRM.Utils
         /// <param name="protocolName"></param>
         /// <param name="assignRunnerName"></param>
         /// <returns></returns>
-        public static Runner GetRunner(PrmContext context, string protocolName, string assignRunnerName = null)
+        public static Runner GetRunner(PrmContext context, string protocolName, string? assignRunnerName = null)
         {
             if (context.ProtocolConfigurationService.ProtocolConfigs.ContainsKey(protocolName) == false)
             {
-                SimpleLogHelper.Info($"we don't have a custom protocol named: {protocolName}!");
-                return null;
+                SimpleLogHelper.Debug($"we don't have a custom protocol named: {protocolName}");
+                return new InternalDefaultRunner();
             }
 
             var p = context.ProtocolConfigurationService.ProtocolConfigs[protocolName];
             if (p.Runners.Count == 0)
             {
-                SimpleLogHelper.Warning($"{protocolName} does not have any runner!");
-                MessageBox.Show($"{protocolName} does not have any runner!");
-                return null;
+                SimpleLogHelper.Fatal($"{protocolName} does not have any runner!");
+                return new InternalDefaultRunner();
             }
 
             var runnerName = assignRunnerName;
@@ -50,7 +49,7 @@ namespace PRM.Utils
                 r = p.Runners.FirstOrDefault();
             }
 
-            return r;
+            return r ?? new InternalDefaultRunner();
         }
 
         /// <summary>
@@ -61,9 +60,9 @@ namespace PRM.Utils
         /// <param name="protocolServerBase"></param>
         /// <param name="runner"></param>
         /// <returns></returns>
-        public static HostBase GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T protocolServerBase, Runner runner) where T : ProtocolBase
+        public static HostBase? GetHostOrRunDirectlyForExternalRunner<T>(PrmContext context, T protocolServerBase, Runner runner) where T : ProtocolBase
         {
-            if (!(runner is ExternalRunner er)) return null;
+            if (runner is not ExternalRunner er) return null;
 
             var exePath = er.ExePath;
             var args = er.Arguments;
@@ -79,12 +78,10 @@ namespace PRM.Utils
             var environmentVariables = new Dictionary<string, string>();
             {
                 exeArguments = OtherNameAttributeExtensions.Replace(protocolServerBase, args);
-
-                if (er.EnvironmentVariables != null)
-                    foreach (var kv in er.EnvironmentVariables)
-                    {
-                        environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
-                    }
+                foreach (var kv in er.EnvironmentVariables)
+                {
+                    environmentVariables.Add(kv.Key, OtherNameAttributeExtensions.Replace(protocolServerBase, kv.Value));
+                }
             }
 
             // start process
@@ -118,13 +115,13 @@ namespace PRM.Utils
         /// </summary>
         /// <param name="context"></param>
         /// <param name="server"></param>
-        /// <param name="runner"></param>
+        /// <param name="runner">指定使用哪个 runner 来启动 session，可以为空</param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public static HostBase GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
+        public static HostBase? GetHostForInternalRunner(PrmContext context, ProtocolBase server, Runner runner, double width = 0, double height = 0)
         {
-            Debug.Assert(runner is InternalDefaultRunner || runner == null);
+            Debug.Assert(runner is InternalDefaultRunner);
             switch (server)
             {
                 case RDP rdp:

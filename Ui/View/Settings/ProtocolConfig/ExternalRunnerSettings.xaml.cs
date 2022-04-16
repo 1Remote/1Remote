@@ -37,7 +37,7 @@ namespace PRM.View.Settings.ProtocolConfig
 
 
 
-        private RelayCommand _cmdSelectDbPath;
+        private RelayCommand? _cmdSelectDbPath;
         [JsonIgnore]
         public RelayCommand CmdSelectExePath
         {
@@ -45,7 +45,7 @@ namespace PRM.View.Settings.ProtocolConfig
             {
                 return _cmdSelectDbPath ??= new RelayCommand((o) =>
                 {
-                    string initPath = null;
+                    string? initPath = null;
                     try
                     {
                         initPath = new FileInfo(ExternalRunner.ExePath).DirectoryName;
@@ -113,7 +113,7 @@ namespace PRM.View.Settings.ProtocolConfig
         }
 
 
-        private RelayCommand _cmdAddEnvironmentVariable;
+        private RelayCommand? _cmdAddEnvironmentVariable;
         public RelayCommand CmdAddEnvironmentVariable
         {
             get
@@ -125,7 +125,7 @@ namespace PRM.View.Settings.ProtocolConfig
             }
         }
 
-        private RelayCommand _cmdDelEnvironmentVariable;
+        private RelayCommand? _cmdDelEnvironmentVariable;
         public RelayCommand CmdDelEnvironmentVariable
         {
             get
@@ -158,7 +158,7 @@ namespace PRM.View.Settings.ProtocolConfig
             TextEditor.TextArea.TextEntered += TextAreaOnTextEntered;
         }
 
-        private CompletionWindow _completionWindow;
+        private CompletionWindow? _completionWindow;
         private void TextAreaOnTextEntered(object sender, TextCompositionEventArgs e)
         {
             if (e.Text == "%"
@@ -187,7 +187,7 @@ namespace PRM.View.Settings.ProtocolConfig
             Text = text;
         }
 
-        public ImageSource Image => null;
+        public ImageSource? Image => null;
 
         public string Text { get; }
 

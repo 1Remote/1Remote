@@ -339,7 +339,7 @@ namespace PRM.Utils.RdpFile
         /// The user password in a binary hash value. Will be overruled by RDP+.
         /// </summary>
         [RdpConfName("password 51:b:")]
-        private string Password { get; }
+        private string Password { get; } = "";
 
         private readonly string _additionalSettings;
 
@@ -354,7 +354,7 @@ namespace PRM.Utils.RdpFile
             Username = username;
             _additionalSettings = additionalSettings;
 
-            if ((password ?? "") != "")
+            if (string.IsNullOrEmpty(password) == false)
             {
                 // encryption for rdp file
                 Password = BitConverter.ToString(DataProtection.ProtectData(Encoding.Unicode.GetBytes(password), "")).Replace("-", "");
@@ -370,7 +370,7 @@ namespace PRM.Utils.RdpFile
             {
                 foreach (RdpConfNameAttribute attr in prop.GetCustomAttributes(typeof(RdpConfNameAttribute), false))
                 {
-                    settings.Add(attr.Name, prop.GetValue(this).ToString());
+                    settings.Add(attr.Name, prop.GetValue(this)!.ToString()!);
                 }
             }
 
@@ -381,7 +381,7 @@ namespace PRM.Utils.RdpFile
                     .GetProperty(nameof(this.Password), BindingFlags.NonPublic | BindingFlags.Instance)
                     ?.GetCustomAttributes(typeof(RdpConfNameAttribute), false)
                     .First() as RdpConfNameAttribute;
-                settings.Add(attr.Name, this.Password); 
+                settings.Add(attr!.Name, this.Password!); 
             }
 
 

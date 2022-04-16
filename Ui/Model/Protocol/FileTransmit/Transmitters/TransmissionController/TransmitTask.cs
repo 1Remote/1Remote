@@ -27,8 +27,8 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
     public class TransmitTask : NotifyPropertyChangedBase
     {
-        private readonly ITransmitter? _transOrg = null;
-        private ITransmitter? _trans = null;
+        private readonly ITransmitter _transOrg = null!;
+        private ITransmitter _trans = null!;
         public readonly ETransmissionType TransmissionType;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
         private readonly string _destinationDirectoryPath;
@@ -37,9 +37,9 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         private readonly DirectoryInfo[]? _dis = null;
         private readonly RemoteItem[]? _ris = null;
 
-        public string TransmitItemNames { get; private init; }
-        public string TransmitItemSrcDirectoryPath { get; private init; }
-        public string TransmitItemDstDirectoryPath { get; private init; }
+        public string TransmitItemNames { get; private init; } = "";
+        public string TransmitItemSrcDirectoryPath { get; private init; } = "";
+        public string TransmitItemDstDirectoryPath { get; private init; } = "";
 
         private readonly ILanguageService _languageService;
 
@@ -59,7 +59,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             TransmitItemDstDirectoryPath = destinationDirectoryPath;
             if (_fis?.Length > 0)
             {
-                TransmitItemSrcDirectoryPath = _fis.First().DirectoryName;
+                TransmitItemSrcDirectoryPath = _fis.First().DirectoryName!;
                 foreach (var fi in _fis)
                 {
                     TransmitItemNames += fi.Name + ", ";
@@ -462,7 +462,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 if (File.Exists(item.DstPath))
                 {
                     // check if file in used
-                    FileStream fs = null;
+                    FileStream? fs = null;
                     try
                     {
                         fs = new FileStream(item.DstPath, FileMode.Open, FileAccess.Read, FileShare.None);
@@ -558,7 +558,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                 var fi = new FileInfo(item.DstPath);
                 if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
-                if (fi.Exists)
+                if (fi!.Exists)
                     fi.Delete();
 
                 item.TransmittedSize = 0;

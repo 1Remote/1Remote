@@ -25,11 +25,11 @@ namespace PRM.View.Host
     public abstract class TabWindowBase : WindowChromeBase
     {
         protected TabWindowViewModel Vm;
-        private TabablzControl _tabablzControl = null;
-        public string Token => Vm?.Token;
+        private TabablzControl _tabablzControl = null!;
+        public string Token => Vm.Token;
 
         private IntPtr _myHandle = IntPtr.Zero;
-        private readonly Timer _timer4CheckForegroundWindow;
+        private readonly Timer _timer4CheckForegroundWindow = new();
         private WindowState _lastWindowState;
         private readonly LocalityService _localityService;
 
@@ -38,9 +38,8 @@ namespace PRM.View.Host
             _localityService = localityService;
             Vm = new TabWindowViewModel(token);
             DataContext = Vm;
-            _timer4CheckForegroundWindow = new Timer();
 
-            _lastWindowState = _localityService?.TabWindowState ?? WindowState.Normal;
+            _lastWindowState = _localityService.TabWindowState;
 
             this.Loaded += (sender, args) =>
             {
@@ -56,19 +55,10 @@ namespace PRM.View.Host
             {
                 _timer4CheckForegroundWindow.Dispose();
             };
-
-            //this.Activated += (sender, args) =>
-            //{
-            //    if (_timer4CheckForegroundWindow.Enabled == false)
-            //    {
-            //        SimpleLogHelper.Debug($"TabWindowBase: Activated! start timer.");
-            //        _timer4CheckForegroundWindow.Start();
-            //    }
-            //};
         }
 
         private IntPtr _lastActivatedWindowHandle = IntPtr.Zero;
-        private void Timer4CheckForegroundWindowOnElapsed(object sender, ElapsedEventArgs e)
+        private void Timer4CheckForegroundWindowOnElapsed(object? sender, ElapsedEventArgs e)
         {
             _timer4CheckForegroundWindow.Stop();
             try
@@ -123,7 +113,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
 
         private void InitWindowStateChanged()
         {
-            this.StateChanged += delegate (object sender, EventArgs args)
+            this.StateChanged += delegate
             {
                 if (this.WindowState != WindowState.Minimized)
                     if (Vm.SelectedItem?.CanResizeNow != true)
@@ -152,10 +142,10 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             _tabablzControl.ClosingItemCallback += args =>
             {
                 args.Cancel();
-                if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
+                if (args.DragablzItem.DataContext is TabItemViewModel viewModel
+                    && viewModel.Content != null)
                 {
-                    var pb = viewModel.Content;
-                    IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(pb?.ConnectionId, true);
+                    IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(viewModel.Content.ConnectionId, true);
                 }
             };
         }
@@ -179,7 +169,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 }
                 finally
                 {
-                    Vm = null;
                     DataContext = null;
                 }
             };
@@ -213,7 +202,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
 
         protected virtual void TabablzControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Vm?.SelectedItem != null)
+            if (Vm?.SelectedItem?.Content != null)
             {
                 this.Icon = Vm.SelectedItem.Content.ProtocolServer.IconImg;
             }
@@ -227,11 +216,11 @@ TabWindowBase: BringWindowToTop({_myHandle})");
         public void AddItem(TabItemViewModel newItem)
         {
             Debug.Assert(newItem?.Content?.ConnectionId != null);
-            if (Vm?.Items == null)
-                return;
+            if (Vm?.SelectedItem?.Content == null) return;
+            if (Vm?.Items == null) return;
             if (Vm.Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
             {
-                Vm.SelectedItem = Vm.Items.First(x => x.Content.ConnectionId == newItem.Content.ConnectionId);
+                Vm.SelectedItem = Vm.Items.First(x => x.Content!.ConnectionId == newItem.Content.ConnectionId);
                 return;
             }
             Vm.Items.Add(newItem);
@@ -272,7 +261,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
         {
             if (e.ClickCount == 2)
             {
-                if (!Vm.SelectedItem.CanResizeNow)
+                if (Vm.SelectedItem?.CanResizeNow == false)
                     return;
                 if (Vm.IsLocked)
                     return;

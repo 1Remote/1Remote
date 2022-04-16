@@ -9,11 +9,11 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 {
     public class TransmitterFtp : ITransmitter
     {
-        public readonly string Hostname = "";
-        public readonly int Port = 21;
-        public readonly string Username = "";
-        public readonly string Password = "";
-        private FtpClient _ftp = null;
+        public readonly string Hostname;
+        public readonly int Port;
+        public readonly string Username;
+        public readonly string Password;
+        private FtpClient _ftp = null!;
 
         public TransmitterFtp(string host, int port, string username, string password)
         {
@@ -27,7 +27,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         ~TransmitterFtp()
         {
-            _ftp?.Dispose();
+            _ftp.Dispose();
             _timerKeepAlive.Stop();
         }
 
@@ -40,7 +40,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                return _ftp?.IsConnected == true;
+                return _ftp.IsConnected == true;
             }
         }
 
@@ -49,7 +49,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
             return new TransmitterFtp(Hostname, Port, Username, Password);
         }
 
-        public RemoteItem Get(string path)
+        public RemoteItem? Get(string path)
         {
             lock (this)
             {
@@ -164,8 +164,8 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                if (_ftp?.DirectoryExists(path) == false)
-                    _ftp?.CreateDirectory(path);
+                if (_ftp.DirectoryExists(path) == false)
+                    _ftp.CreateDirectory(path);
             }
         }
 
@@ -175,7 +175,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                 if (Exists(path))
                     lock (this)
                     {
-                        _ftp?.Rename(path, newPath);
+                        _ftp.Rename(path, newPath);
                     }
         }
 
@@ -194,11 +194,11 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                     {
                         var parent = saveToRemotePath.Substring(0,
                             saveToRemotePath.LastIndexOf("/", StringComparison.Ordinal));
-                        if (_ftp?.DirectoryExists(parent) == false)
-                            _ftp?.CreateDirectory(parent);
+                        if (_ftp.DirectoryExists(parent) == false)
+                            _ftp.CreateDirectory(parent);
                     }
 
-                    _ftp?.UploadFileAsync(localFilePath, saveToRemotePath, FtpRemoteExists.Overwrite, true, FtpVerify.Delete,
+                    _ftp.UploadFileAsync(localFilePath, saveToRemotePath, FtpRemoteExists.Overwrite, true, FtpVerify.Delete,
                         new Progress<FtpProgress>(progress =>
                         {
                             writeCallBack?.Invoke((ulong)progress.TransferredBytes);
@@ -232,17 +232,17 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public void Release()
         {
-            _ftp?.Disconnect();
-            _ftp?.Dispose();
+            _ftp.Disconnect();
+            _ftp.Dispose();
         }
 
         private void InitClient()
         {
             lock (this)
             {
-                if (_ftp?.IsConnected != true)
+                if (_ftp.IsConnected != true)
                 {
-                    _ftp?.Dispose();
+                    _ftp.Dispose();
                     _ftp = new FtpClient(Hostname, Port, Username, Password);
                     //_ftp.Credentials = new NetworkCredential(Username, Password);
                     _ftp.Connect();

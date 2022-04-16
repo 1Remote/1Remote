@@ -40,15 +40,15 @@ namespace PRM.View.Settings.ProtocolConfig
                 RaisePropertyChanged(nameof(Runners));
                 RaisePropertyChanged(nameof(RunnerNames));
                 SelectedRunnerName = c.SelectedRunnerName;
-                if (Runners.All(x => x.Name != SelectedRunnerName))
+                if (Runners.Count > 0 && Runners.All(x => x.Name != SelectedRunnerName))
                 {
-                    SelectedRunnerName = c.Runners.FirstOrDefault()?.Name;
+                    SelectedRunnerName = c.Runners.First().Name;
                 }
             }
         }
 
 
-        private string _selectedRunnerName;
+        private string _selectedRunnerName = "";
         public string SelectedRunnerName
         {
             get => _selectedRunnerName;
@@ -64,10 +64,10 @@ namespace PRM.View.Settings.ProtocolConfig
         }
         public List<string> RunnerNames => Runners.Select(x => x.Name).ToList();
 
-        public ObservableCollection<Runner> Runners { get; set; }
+        public ObservableCollection<Runner> Runners { get; set; } = new ObservableCollection<Runner>();
         public List<string> Macros { get; set; } = new List<string>();
 
-        private RelayCommand _cmdAddRunner;
+        private RelayCommand? _cmdAddRunner;
         public RelayCommand CmdAddRunner
         {
             get
@@ -95,14 +95,15 @@ namespace PRM.View.Settings.ProtocolConfig
             }
         }
 
-        private RelayCommand _cmdDelRunner;
+        private RelayCommand? _cmdDelRunner;
         public RelayCommand CmdDeleteRunner
         {
             get
             {
                 return _cmdDelRunner ??= new RelayCommand((o) =>
                 {
-                    var pn = o.ToString();
+                    var pn = o?.ToString();
+                    if (pn == null) return;
                     if (MessageBox.Show(
                         _languageService.Translate("confirm_to_delete"),
                         _languageService.Translate("messagebox_title_warning"),
@@ -120,7 +121,7 @@ namespace PRM.View.Settings.ProtocolConfig
 
                         if (Runners.All(x => x.Name != SelectedRunnerName))
                         {
-                            SelectedRunnerName = c.Runners.FirstOrDefault()?.Name;
+                            SelectedRunnerName = c.Runners.FirstOrDefault()?.Name ?? "";
                         }
                         _protocolConfigurationService.Save();
                     }
@@ -129,7 +130,7 @@ namespace PRM.View.Settings.ProtocolConfig
         }
 
 
-        private RelayCommand _cmdShowProtocolHelp;
+        private RelayCommand? _cmdShowProtocolHelp;
         public RelayCommand CmdShowProtocolHelp
         {
             get

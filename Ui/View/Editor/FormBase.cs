@@ -5,7 +5,7 @@ namespace PRM.View.Editor
 {
     public abstract class FormBase : UserControl
     {
-        protected readonly ProtocolBase _vm = null;
+        protected readonly ProtocolBase _vm = null!;
 
 
         protected FormBase(ProtocolBase protocol)

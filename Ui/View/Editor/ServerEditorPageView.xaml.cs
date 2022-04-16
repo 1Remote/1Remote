@@ -15,8 +15,7 @@ namespace PRM.View.Editor
 {
     public partial class ServerEditorPageView : UserControl
     {
-        private ServerEditorPageViewModel _vm;
-        private BitmapSource _oldLogo;
+        private BitmapSource? _oldLogo;
 
         public ServerEditorPageView(PrmContext context)
         {
@@ -24,7 +23,6 @@ namespace PRM.View.Editor
             {
                 if (this.DataContext is ServerEditorPageViewModel vm)
                 {
-                    _vm = vm;
                     vm.TagsEditor = TagsEditor;
                     // add mode
                     if (vm.IsAddMode)
@@ -39,7 +37,7 @@ namespace PRM.View.Editor
                     }
                     _oldLogo = vm.Server.IconImg;
                     LogoSelector.SetImg(vm.Server.IconImg);
-                    LogoSelector.OnLogoChanged += () => _vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
+                    LogoSelector.OnLogoChanged += () => vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
                 }
             };
         }
@@ -63,8 +61,11 @@ namespace PRM.View.Editor
 
         private void ButtonLogoCancel_OnClick(object sender, RoutedEventArgs e)
         {
-            _vm.Server.IconBase64 = _oldLogo.ToBase64();
-            PopupLogoSelectorClose();
+            if (this.DataContext is ServerEditorPageViewModel vm)
+            {
+                vm.Server.IconBase64 = _oldLogo.ToBase64();
+                PopupLogoSelectorClose();
+            }
         }
 
         private void PopupLogoSelectorHeightAnimation(double to)
@@ -103,12 +104,14 @@ namespace PRM.View.Editor
 
         private void ButtonTryCommandBeforeConnected_OnClick(object sender, RoutedEventArgs e)
         {
-            TryCmd(_vm.Server.CommandBeforeConnected);
+            if (this.DataContext is ServerEditorPageViewModel vm)
+                TryCmd(vm.Server.CommandBeforeConnected);
         }
 
         private void ButtonTryCommandAfterDisconnected_OnClick(object sender, RoutedEventArgs e)
         {
-            TryCmd(_vm.Server.CommandAfterDisconnected);
+            if (this.DataContext is ServerEditorPageViewModel vm)
+                TryCmd(vm.Server.CommandAfterDisconnected);
         }
 
         private void TryCmd(string cmd)
@@ -128,10 +131,8 @@ namespace PRM.View.Editor
 
         private void LogoList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (_vm?.Server != null)
-            {
-                _vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
-            }
+            if (this.DataContext is ServerEditorPageViewModel vm)
+                vm.Server.IconBase64 = LogoSelector.Logo.ToBase64();
             PopupLogoSelectorClose();
         }
     }

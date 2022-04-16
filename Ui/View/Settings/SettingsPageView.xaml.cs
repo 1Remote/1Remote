@@ -122,7 +122,7 @@ namespace PRM.View.Settings
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string str = value?.ToString();
+            string str = value?.ToString() ?? "";
             return string.IsNullOrEmpty(str);
         }
 

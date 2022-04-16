@@ -23,7 +23,7 @@ namespace PRM.View.Settings.ProtocolConfig
     {
         #region IValueConverter 成员
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value is ExternalRunner er)
             {
@@ -32,7 +32,7 @@ namespace PRM.View.Settings.ProtocolConfig
             return null;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value is ExternalRunnerSettingsViewModel vm)
             {

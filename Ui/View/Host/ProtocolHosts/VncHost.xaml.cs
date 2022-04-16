@@ -157,7 +157,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private bool _invokeOnClosedWhenDisconnected = true;
 
-        private void OnConnectionLost(object sender, EventArgs e)
+        private void OnConnectionLost(object? sender, EventArgs e)
         {
             Status = ProtocolHostStatus.Disconnected;
             VncFormsHost.Visibility = Visibility.Collapsed;

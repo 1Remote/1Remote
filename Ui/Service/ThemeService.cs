@@ -8,17 +8,17 @@ namespace PRM.Service
 {
     public class Theme
     {
-        public string Name { get; set; }
-        public string PrimaryMidColor { get; set; }
-        public string PrimaryLightColor { get; set; }
-        public string PrimaryDarkColor { get; set; }
-        public string PrimaryTextColor { get; set; }
-        public string AccentMidColor { get; set; }
-        public string AccentLightColor { get; set; }
-        public string AccentDarkColor { get; set; }
-        public string AccentTextColor { get; set; }
-        public string BackgroundColor { get; set; }
-        public string BackgroundTextColor { get; set; }
+        public string Name { get; set; } = "";
+        public string PrimaryMidColor { get; set; } = "";
+        public string PrimaryLightColor { get; set; } = "";
+        public string PrimaryDarkColor { get; set; } = "";
+        public string PrimaryTextColor { get; set; } = "";
+        public string AccentMidColor { get; set; } = "";
+        public string AccentLightColor { get; set; } = "";
+        public string AccentDarkColor { get; set; } = "";
+        public string AccentTextColor { get; set; } = "";
+        public string BackgroundColor { get; set; } = "";
+        public string BackgroundTextColor { get; set; } = "";
     }
 
     public class ThemeService

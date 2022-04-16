@@ -63,9 +63,9 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             protected set => SetAndNotifyIfChanged(ref _transmissionType, value);
         }
 
-        public string ItemName { get; private set; }
+        public string ItemName { get; private set; } = "";
 
-        private string _srcPath;
+        private string _srcPath = "";
         public string SrcPath
         {
             get => _srcPath;
@@ -73,7 +73,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
 
-        private string _srcDirectoryPath;
+        private string _srcDirectoryPath = "";
         public string SrcDirectoryPath
         {
             get => _srcDirectoryPath;
@@ -81,7 +81,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
 
-        private string _dstPath;
+        private string _dstPath = "";
         public string DstPath
         {
             get => _dstPath;
@@ -89,7 +89,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         }
 
 
-        private string _dstDirectoryPath;
+        private string _dstDirectoryPath = "";
         public string DstDirectoryPath
         {
             get => _dstDirectoryPath;
