@@ -26,12 +26,12 @@ namespace PRM
     {
         private bool _canPortable = false;
         private bool _isNewUser = false;
-        private string _baseFolder;
+        private string _baseFolder = "";
 
-        private KeywordMatchService _keywordMatchService;
-        private ConfigurationService _configurationService;
-        private ThemeService _themeService;
-        private GlobalData _globalData;
+        private KeywordMatchService? _keywordMatchService;
+        private ConfigurationService? _configurationService;
+        private ThemeService? _themeService;
+        private GlobalData? _globalData;
 
         protected override void OnStart()
         {

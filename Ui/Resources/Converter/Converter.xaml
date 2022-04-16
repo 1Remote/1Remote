@@ -1,17 +1,3 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converter="clr-namespace:PRM.Resources.Converter">
-    <converter:ConverterIsGreaterThan x:Key="ConverterIsGreaterThan0" CompareValue="0" />
-    <converter:ConverterIsLowerThan x:Key="ConverterIsLowerThan1" CompareValue="1" />
-    <converter:ConverterBool2Visible x:Key="ConverterBool2Visible" />
-    <converter:ConverterBool2VisibleInv x:Key="ConverterBool2VisibleInv" />
-    <converter:ConverterBoolInverse x:Key="ConverterBoolInverse" />
-    <converter:ConverterTextWidthAndContent2PresentationSize x:Key="ConverterTextWidthAndContent2PresentationSize" />
-    <converter:ConverterDouble2Half x:Key="ConverterDouble2Half" />
-    <converter:ConverterColorHexString2Brush x:Key="ConverterColorHexString2Brush"></converter:ConverterColorHexString2Brush>
-    <converter:ConverterColorHexString2Color x:Key="ConverterColorHexString2Color"></converter:ConverterColorHexString2Color>
-    <converter:ConverterColorIsTransparent x:Key="ConverterColorIsTransparent"></converter:ConverterColorIsTransparent>
-    <converter:ConverterIsTheSame x:Key="ConverterIsTheSame"></converter:ConverterIsTheSame>
-    <converter:ConverterEqual2Visible x:Key="ConverterEqual2Visible"></converter:ConverterEqual2Visible>
-    <converter:DoubleAdd x:Key="DoubleAdd_2" AddValue="-2"></converter:DoubleAdd>
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 </ResourceDictionary>

@@ -630,7 +630,7 @@ namespace PRM.View.Host.ProtocolHosts
 
                                 var fi = new FileInfo(tmpPath);
                                 var ris = RemoteItems.Where(x => x.IsSelected == true).ToArray();
-                                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, fi.Directory.FullName, ris);
+                                var t = new TransmitTask(IoC.Get<ILanguageService>(), Trans, fi!.Directory!.FullName, ris);
                                 AddTransmitTask(t);
                                 t.StartTransmitAsync();
                                 t.OnTaskEnd += (status, exception) =>

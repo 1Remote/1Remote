@@ -13,7 +13,7 @@ namespace PRM.Model.DAO.Dapper
     public class DapperDataBase : IDataBase
     {
         protected IDbConnection? _dbConnection;
-        protected string? _connectionString;
+        protected string _connectionString = "";
         protected DatabaseType _databaseType = DatabaseType.Sqlite;
 
         public virtual void CloseConnection()
@@ -99,7 +99,7 @@ COMMIT TRANSACTION;
 ");
         }
 
-        public virtual ProtocolBase GetServer(int id)
+        public virtual ProtocolBase? GetServer(int id)
         {
             Debug.Assert(id > 0);
             var dbServer =
@@ -109,9 +109,11 @@ COMMIT TRANSACTION;
             return dbServer?.ToProtocolServerBase();
         }
 
-        public virtual List<ProtocolBase> GetServers()
+        public virtual List<ProtocolBase>? GetServers()
         {
-            return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`")?.Select(x => x?.ToProtocolServerBase())?.Where(x => x != null)?.ToList();
+#pragma warning disable CS8619
+            return _dbConnection?.Query<Server>($"SELECT * FROM `{nameof(Server)}`").Select(x => x?.ToProtocolServerBase()).Where(x => x != null).ToList();
+#pragma warning restore CS8619
         }
 
 
@@ -160,7 +162,7 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
             return _dbConnection?.Execute($@"DELETE FROM `{nameof(Server)}` WHERE `{nameof(Server.Id)}` IN @{nameof(Server.Id)};", new { Id = ids }) > 0;
         }
 
-        public virtual string GetConfig(string key)
+        public virtual string? GetConfig(string key)
         {
             var config = _dbConnection?.QueryFirstOrDefault<Config>($"SELECT * FROM `{nameof(Config)}` WHERE `{nameof(Config.Key)}` = @{nameof(Config.Key)}",
                 new { Key = key, });
@@ -193,6 +195,8 @@ WHERE `{nameof(Server.Id)}`= @{nameof(Server.Id)};";
 
         public virtual bool SetRsa(string privateKeyPath, string publicKey, IEnumerable<ProtocolBase> servers)
         {
+            if (_dbConnection == null)
+                return false;
             var existedPrivate = GetConfig("RSA_PrivateKeyPath") != null;
             var existedPublic = GetConfig("RSA_PublicKey") != null;
             CloseConnection();

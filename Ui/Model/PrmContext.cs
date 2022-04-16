@@ -57,10 +57,10 @@ namespace PRM.Model
             {
                 sqlitePath = IoC.Get<ConfigurationService>().Database.SqliteDatabasePath;
                 var fi = new FileInfo(sqlitePath);
-                if (fi.Exists == false)
+                if (fi?.Exists != true)
                     try
                     {
-                        if (fi.Directory.Exists == false)
+                        if (fi?.Directory?.Exists == false)
                             fi.Directory.Create();
                     }
                     catch

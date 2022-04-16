@@ -32,9 +32,9 @@ namespace PRM.Model.DAO
         /// </summary>
         void InitTables();
 
-        ProtocolBase GetServer(int id);
+        ProtocolBase? GetServer(int id);
 
-        List<ProtocolBase> GetServers();
+        List<ProtocolBase>? GetServers();
 
         /// <summary>
         /// insert and return id
@@ -61,7 +61,7 @@ namespace PRM.Model.DAO
         bool DeleteServer(int id);
         bool DeleteServer(IEnumerable<int> ids);
 
-        string GetConfig(string key);
+        string? GetConfig(string key);
 
         void SetConfig(string key, string value);
 
@@ -95,7 +95,8 @@ namespace PRM.Model.DAO
                 var val = iDataBase.GetConfig(key);
                 if (val == null)
                 {
-                    iDataBase.SetConfig(key, "");
+                    val = "";
+                    iDataBase.SetConfig(key, val);
                 }
                 return val;
             }

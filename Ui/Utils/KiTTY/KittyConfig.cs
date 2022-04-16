@@ -22,7 +22,7 @@ namespace PRM.Utils.KiTTY
         {
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
             {
-                return null;
+                return new List<KittyConfigKeyValuePair>();
             }
 
             var lines = File.ReadAllLines(path);
@@ -392,7 +392,7 @@ namespace PRM.Utils.KiTTY
                 }
 
                 var fi = new FileInfo(configPath);
-                if (fi.Directory.Exists == false)
+                if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
                 File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
             }

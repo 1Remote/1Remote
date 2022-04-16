@@ -208,7 +208,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         public void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack, CancellationToken cancellationToken)
         {
             var fi = new FileInfo(localFilePath);
-            if (!fi.Exists)
+            if (fi?.Exists != true)
                 return;
 
             lock (this)
@@ -256,7 +256,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                     var fi = new FileInfo(saveToLocalPath);
                     if (fi.Exists)
                         fi.Delete();
-                    if (!fi.Directory.Exists)
+                    if (fi?.Directory?.Exists == false)
                         fi.Directory.Create();
                     using var fileStream = File.OpenWrite(saveToLocalPath);
                     if (!fileStream.CanWrite)

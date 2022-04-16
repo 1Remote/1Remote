@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -124,9 +125,9 @@ namespace PRM.Service
 #endif
         public string JsonPath;
 
-        private readonly KeywordMatchService? _keywordMatchService;
+        private readonly KeywordMatchService _keywordMatchService = new KeywordMatchService();
 
-        public readonly List<MatchProviderInfo>? AvailableMatcherProviders;
+        public readonly List<MatchProviderInfo> AvailableMatcherProviders;
         private readonly Configuration _cfg;
 
         public GeneralConfig General => _cfg.General;
@@ -147,8 +148,7 @@ namespace PRM.Service
 
         public ConfigurationService(bool isPortable, KeywordMatchService? keywordMatchService)
         {
-            _keywordMatchService = keywordMatchService;
-            AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos();
+            AvailableMatcherProviders = KeywordMatchService.GetMatchProviderInfos() ?? new List<MatchProviderInfo>();
             _cfg = new Configuration();
             #region init
 
@@ -176,9 +176,9 @@ namespace PRM.Service
             }
             #endregion
 
-            if (_keywordMatchService == null)
+            if (keywordMatchService == null)
                 return;
-
+            _keywordMatchService = keywordMatchService;
 
             #region load settings
             // old user convert the 0.5 ini file to 0.6 json file
@@ -218,10 +218,10 @@ namespace PRM.Service
                 File.Delete(oldIniFilePath);
 
             var fi = new FileInfo(Database.SqliteDatabasePath);
-            if (fi.Exists == false)
+            if (fi?.Exists != true)
                 try
                 {
-                    if (fi.Directory.Exists == false)
+                    if (fi?.Directory?.Exists == false)
                         fi.Directory.Create();
                 }
                 catch (Exception)
@@ -270,7 +270,7 @@ namespace PRM.Service
 #endif
         }
 
-        private void OnMatchProviderChangedHandler(object sender, PropertyChangedEventArgs args)
+        private void OnMatchProviderChangedHandler(object? sender, PropertyChangedEventArgs args)
         {
             if (args.PropertyName == nameof(MatchProviderInfo.Enabled))
             {
@@ -288,7 +288,7 @@ namespace PRM.Service
                 return;
             CanSave = false;
             var fi = new FileInfo(JsonPath);
-            if (fi.Directory.Exists == false)
+            if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
             lock (this)
             {

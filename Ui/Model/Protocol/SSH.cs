@@ -46,8 +46,7 @@ namespace PRM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _startupAutoCommand, value);
         }
 
-        private string _externalKittySessionConfigPath;
-
+        private string _externalKittySessionConfigPath = "";
         public string ExternalKittySessionConfigPath
         {
             get => _externalKittySessionConfigPath;
@@ -67,7 +66,7 @@ namespace PRM.Model.Protocol
             return false;
         }
 
-        public override ProtocolBase CreateFromJsonString(string jsonString)
+        public override ProtocolBase? CreateFromJsonString(string jsonString)
         {
             try
             {
@@ -88,7 +87,7 @@ namespace PRM.Model.Protocol
 
         public string GetPuttyConnString(PrmContext context)
         {
-            var ssh = this.Clone() as SSH;
+            var ssh = (this.Clone() as SSH)!;
             ssh.ConnectPreprocess(context);
 
             // var arg = $"-ssh {port} {user} {pw} {server}";

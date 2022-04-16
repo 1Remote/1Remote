@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -32,22 +33,20 @@ namespace PRM.View.Host.ProtocolHosts
     {
         public ProtocolBase ProtocolServer { get; }
 
-        private Window _parentWindow = null;
+        private Window _parentWindow = null!;
 
         public Window ParentWindow
         {
             get => _parentWindow;
             set
             {
+                Debug.Assert(value != null);
                 ParentWindowHandle = IntPtr.Zero;
-                if (value != null)
+                var window = Window.GetWindow(value);
+                if (window != null)
                 {
-                    var window = Window.GetWindow(value);
-                    if (window != null)
-                    {
-                        var wih = new WindowInteropHelper(window);
-                        ParentWindowHandle = wih.Handle;
-                    }
+                    var wih = new WindowInteropHelper(window);
+                    ParentWindowHandle = wih.Handle;
                 }
                 _parentWindow = value;
             }
@@ -128,7 +127,7 @@ namespace PRM.View.Host.ProtocolHosts
         /// <summary>
         /// in rdp, tab window cannot resize until rdp is connected. or rdp will not fit window size.
         /// </summary>
-        public Action OnCanResizeNowChanged { get; set; } = null;
+        public Action? OnCanResizeNowChanged { get; set; } = null;
 
         public virtual void ToggleAutoResize(bool isEnable)
         {
@@ -164,7 +163,7 @@ namespace PRM.View.Host.ProtocolHosts
         /// <returns></returns>
         public abstract IntPtr GetHostHwnd();
 
-        public Action<string> OnClosed { get; set; } = null;
-        public Action<string> OnFullScreen2Window { get; set; } = null;
+        public Action<string>? OnClosed { get; set; } = null;
+        public Action<string>? OnFullScreen2Window { get; set; } = null;
     }
 }
