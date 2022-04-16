@@ -54,7 +54,7 @@ namespace PRM.View.Host.ProtocolHosts
 
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
-        private AxMsRdpClient9NotSafeForScriptingEx _rdpClient;
+        private AxMsRdpClient9NotSafeForScriptingEx _rdpClient = null!;
         private readonly RDP _rdpServer;
         /// <summary>
         /// system scale factor, 100 = 100%, 200 = 200%
@@ -658,7 +658,7 @@ namespace PRM.View.Host.ProtocolHosts
                     this._onResizeEnd -= ReSizeRdpOnResizeEnd;
 
                 const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
-                string reason = _rdpClient?.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason);
+                string reason = _rdpClient.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason);
                 if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
                     SimpleLogHelper.Warning($"RDP({_rdpServer.DisplayName}) exit with error code {e.discReason}({reason})");
 
@@ -719,7 +719,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private void RdpClientOnOnConnected(object sender, EventArgs e)
+        private void RdpClientOnOnConnected(object? sender, EventArgs e)
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnConnected");
             this.ParentWindow.FlashIfNotActive();
@@ -732,7 +732,7 @@ namespace PRM.View.Host.ProtocolHosts
             GridMessageBox.Visibility = Visibility.Collapsed;
         }
 
-        private void RdpClientOnOnLoginComplete(object sender, EventArgs e)
+        private void RdpClientOnOnLoginComplete(object? sender, EventArgs e)
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnLoginComplete");
 
@@ -761,7 +761,7 @@ namespace PRM.View.Host.ProtocolHosts
             });
         }
 
-        private void RdpClientOnConfirmClose(object sender, IMsTscAxEvents_OnConfirmCloseEvent e)
+        private void RdpClientOnConfirmClose(object? sender, IMsTscAxEvents_OnConfirmCloseEvent e)
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnConfirmClose");
 
@@ -921,7 +921,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private delegate void ResizeEndDelegage();
 
-        private ResizeEndDelegage _onResizeEnd;
+        private ResizeEndDelegage? _onResizeEnd;
         private readonly System.Timers.Timer _resizeEndTimer = new System.Timers.Timer(500) { Enabled = false };
         private readonly object _resizeEndLocker = new object();
         private void ResizeEndStartFireDelegate()
@@ -996,7 +996,7 @@ namespace PRM.View.Host.ProtocolHosts
             }
         }
 
-        private void _InvokeResizeEndEnd(object sender, ElapsedEventArgs e)
+        private void _InvokeResizeEndEnd(object? sender, ElapsedEventArgs e)
         {
             try
             {

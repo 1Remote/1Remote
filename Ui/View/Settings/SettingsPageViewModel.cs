@@ -25,7 +25,6 @@ namespace PRM.View.Settings
         private ConfigurationService _configurationService => _context.ConfigurationService;
         private ProtocolConfigurationService _protocolConfigurationService => _context.ProtocolConfigurationService;
         private LauncherService _launcherService => _context.LauncherService;
-        private IDataService _dataService => _context.DataService;
         private ThemeService _themeService => _context.ThemeService;
 
         public SettingsPageViewModel(PrmContext context)
@@ -48,7 +47,7 @@ namespace PRM.View.Settings
                 _configurationService.General.CurrentLanguageCode = languageCode;
             }
         }
-        
+
 
         private Visibility _progressBarVisibility = Visibility.Collapsed;
         public Visibility ProgressBarVisibility
@@ -58,14 +57,12 @@ namespace PRM.View.Settings
         }
 
 
-        private RelayCommand _cmdSaveAndGoBack;
-
+        private RelayCommand? _cmdSaveAndGoBack;
         public RelayCommand CmdSaveAndGoBack
         {
             get
             {
-                if (_cmdSaveAndGoBack != null) return _cmdSaveAndGoBack;
-                _cmdSaveAndGoBack = new RelayCommand((o) =>
+                return _cmdSaveAndGoBack ??= new RelayCommand((o) =>
                 {
                     // check if Db is ok
                     var res = _context.DataService?.Database_SelfCheck() ?? EnumDbStatus.AccessDenied;
@@ -80,11 +77,10 @@ namespace PRM.View.Settings
                     _protocolConfigurationService.Save();
                     IoC.Get<MainWindowViewModel>().ShowList();
                 });
-                return _cmdSaveAndGoBack;
             }
         }
 
-        private RelayCommand _cmdOpenPath;
+        private RelayCommand? _cmdOpenPath;
         public RelayCommand CmdOpenPath
         {
             get
@@ -95,8 +91,10 @@ namespace PRM.View.Settings
                     var path = o.ToString();
                     if (File.Exists(path))
                     {
-                        System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe");
-                        psi.Arguments = "/e,/select," + path;
+                        System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")
+                        {
+                            Arguments = "/e,/select," + path
+                        };
                         System.Diagnostics.Process.Start(psi);
                     }
 
@@ -224,23 +222,23 @@ namespace PRM.View.Settings
             }
         }
 
-        public string LogFolderName => new FileInfo(SimpleLogHelper.LogFileName).DirectoryName;
+        public string? LogFolderName => new FileInfo(SimpleLogHelper.LogFileName).DirectoryName;
 
         public List<MatchProviderInfo> AvailableMatcherProviders => _configurationService.AvailableMatcherProviders;
 
         #region Database
 
         public string DbPath => _configurationService.Database.SqliteDatabasePath;
-        //public string RsaPublicKey => _dataService?.Database_GetPublicKey() ?? "";
-        //public string RsaPrivateKeyPath => _dataService?.Database_GetPrivateKeyPath() ?? "";
+        //public string RsaPublicKey => _context.DataService?.Database_GetPublicKey() ?? "";
+        //public string RsaPrivateKeyPath => _context.DataService?.Database_GetPrivateKeyPath() ?? "";
 
-        private string _dbRsaPublicKey;
+        private string _dbRsaPublicKey = "";
         public string DbRsaPublicKey
         {
             get => _dbRsaPublicKey;
             set => SetAndNotifyIfChanged(ref _dbRsaPublicKey, value);
         }
-        private string _dbRsaPrivateKeyPath;
+        private string _dbRsaPrivateKeyPath = "";
         public string DbRsaPrivateKeyPath
         {
             get => _dbRsaPrivateKeyPath;
@@ -251,16 +249,16 @@ namespace PRM.View.Settings
         private bool ValidateDbStatusAndShowMessageBox(bool showAlert = true)
         {
             // validate rsa key
-            var res = (_dataService?.Database_SelfCheck()) ?? EnumDbStatus.NotConnected;
-            DbRsaPublicKey = _dataService?.Database_GetPublicKey() ?? "";
-            DbRsaPrivateKeyPath = _dataService?.Database_GetPrivateKeyPath() ?? "";
+            var res = (_context.DataService?.Database_SelfCheck()) ?? EnumDbStatus.NotConnected;
+            DbRsaPublicKey = _context.DataService?.Database_GetPublicKey() ?? "";
+            DbRsaPrivateKeyPath = _context.DataService?.Database_GetPrivateKeyPath() ?? "";
             if (res == EnumDbStatus.OK) return true;
             if (showAlert == false) return true;
             MessageBox.Show(res.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
             return false;
         }
 
-        private RelayCommand _cmdGenRsaKey;
+        private RelayCommand? _cmdGenRsaKey;
         public RelayCommand CmdGenRsaKey
         {
             get
@@ -289,15 +287,16 @@ namespace PRM.View.Settings
         }
 
         private const string PrivateKeyFileExt = ".prpk";
-        public Task GenRsa(string privateKeyPath = "")
+        public void GenRsa(string privateKeyPath = "")
         {
+            if (_context.DataService == null) return;
             if (string.IsNullOrEmpty(privateKeyPath))
             {
                 var path = SelectFileHelper.OpenFile(
                     selectedFileName: ConfigurationService.AppName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + PrivateKeyFileExt,
                     checkFileExists: false,
                     filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
-                if (path == null) return null;
+                if (path == null) return;
                 privateKeyPath = path;
             }
 
@@ -324,7 +323,7 @@ namespace PRM.View.Settings
                     }
 
                     var ss = _context.AppData.VmItemList.Select(x => x.Server);
-                    if (_dataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
+                    if (_context.DataService.Database_SetEncryptionKey(privateKeyPath, privateKeyContent, ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(true);
@@ -350,20 +349,20 @@ namespace PRM.View.Settings
                 }
             });
             t.Start();
-            return t;
         }
 
 
-        private bool clearingRsa = false;
-        private RelayCommand _cmdClearRsaKey;
+        private bool _clearingRsa = false;
+        private RelayCommand? _cmdClearRsaKey;
         public RelayCommand CmdClearRsaKey
         {
             get
             {
                 return _cmdClearRsaKey ??= new RelayCommand((o) =>
                 {
-                    if(clearingRsa) return;
-                    clearingRsa = true;
+                    if (_context.DataService == null) return;
+                    if (_clearingRsa) return;
+                    _clearingRsa = true;
                     // validate rsa key
                     if (!ValidateDbStatusAndShowMessageBox())
                     {
@@ -380,6 +379,7 @@ namespace PRM.View.Settings
         {
             var t = new Task(() =>
             {
+                if (_context.DataService == null) return;
                 OnRsaProgress(false);
                 lock (this)
                 {
@@ -388,7 +388,7 @@ namespace PRM.View.Settings
                     File.Copy(DbPath, DbPath + ".back", true);
 
                     var ss = _context.AppData.VmItemList.Select(x => x.Server);
-                    if (_dataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
+                    if (_context.DataService.Database_SetEncryptionKey("", "", ss) != RSA.EnumRsaStatus.NoError)
                     {
                         MessageBox.Show(EnumDbStatus.RsaPrivateKeyFormatError.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                         OnRsaProgress(true);
@@ -406,7 +406,7 @@ namespace PRM.View.Settings
                     // done
                     OnRsaProgress(true);
 
-                    clearingRsa = true;
+                    _clearingRsa = true;
                 }
             });
             t.Start();
@@ -415,47 +415,39 @@ namespace PRM.View.Settings
 
 
 
-        private RelayCommand _cmdSelectRsaPrivateKey;
-
+        private RelayCommand? _cmdSelectRsaPrivateKey;
         public RelayCommand CmdSelectRsaPrivateKey
         {
             get
             {
-                if (_cmdSelectRsaPrivateKey == null)
+                return _cmdSelectRsaPrivateKey ??= new RelayCommand((o) =>
                 {
-                    _cmdSelectRsaPrivateKey = new RelayCommand((o) =>
+                    if (_context.DataService == null) return;
+                    if (string.IsNullOrEmpty(DbRsaPrivateKeyPath)) return;
+                    lock (this)
                     {
-                        lock (this)
+                        var path = SelectFileHelper.OpenFile(
+                            initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
+                            filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
+                        if (path == null) return;
+                        var pks = RSA.CheckPrivatePublicKeyMatch(path, _context.DataService.Database_GetPublicKey());
+                        if (pks == RSA.EnumRsaStatus.NoError)
                         {
-                            if (string.IsNullOrEmpty(DbRsaPrivateKeyPath))
-                            {
-                                return;
-                            }
-                            var path = SelectFileHelper.OpenFile(
-                                initialDirectory: new FileInfo(DbRsaPrivateKeyPath).DirectoryName,
-                                filter: $"PRM RSA private key|*{PrivateKeyFileExt}");
-                            if (path == null) return;
-                            var pks = RSA.CheckPrivatePublicKeyMatch(path, _context.DataService.Database_GetPublicKey());
-                            if (pks == RSA.EnumRsaStatus.NoError)
-                            {
-                                // update private key only
-                                _dataService.Database_UpdatePrivateKeyPathOnly(path);
-                                ValidateDbStatusAndShowMessageBox();
-                            }
-                            else
-                            {
-                                MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
-                            }
+                            // update private key only
+                            _context.DataService.Database_UpdatePrivateKeyPathOnly(path);
+                            ValidateDbStatusAndShowMessageBox();
                         }
-                    });
-                }
-                return _cmdSelectRsaPrivateKey;
+                        else
+                        {
+                            MessageBox.Show(EnumDbStatus.RsaNotMatched.GetErrorInfo(), _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                        }
+                    }
+                });
             }
         }
 
 
-        private RelayCommand _cmdSelectDbPath;
-
+        private RelayCommand? _cmdSelectDbPath;
         public RelayCommand CmdSelectDbPath
         {
             get
@@ -503,14 +495,14 @@ namespace PRM.View.Settings
 
 
 
-        private RelayCommand _cmdDbMigrate;
-
+        private RelayCommand? _cmdDbMigrate;
         public RelayCommand CmdDbMigrate
         {
             get
             {
                 return _cmdDbMigrate ??= new RelayCommand((o) =>
                 {
+                    if (_context.DataService == null) return;
                     var path = SelectFileHelper.SaveFile(filter: "Sqlite Database|*.db", initialDirectory: new FileInfo(DbPath).DirectoryName, selectedFileName: new FileInfo(DbPath).Name);
                     if (path == null) return;
                     var oldDbPath = DbPath;
@@ -725,22 +717,17 @@ namespace PRM.View.Settings
         }
 
 
-        private RelayCommand _cmdPrmThemeReset;
-
+        private RelayCommand? _cmdPrmThemeReset;
         public RelayCommand CmdResetTheme
         {
             get
             {
-                if (_cmdPrmThemeReset == null)
+                return _cmdPrmThemeReset ??= new RelayCommand((o) =>
                 {
-                    _cmdPrmThemeReset = new RelayCommand((o) =>
-                    {
-                        SetTheme(ThemeName);
-                        _configurationService.Save();
-                        _themeService.ApplyTheme(_configurationService.Theme);
-                    });
-                }
-                return _cmdPrmThemeReset;
+                    SetTheme(ThemeName);
+                    _configurationService.Save();
+                    _themeService.ApplyTheme(_configurationService.Theme);
+                });
             }
         }
         #endregion

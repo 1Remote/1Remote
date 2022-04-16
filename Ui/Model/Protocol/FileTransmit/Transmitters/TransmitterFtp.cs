@@ -182,7 +182,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         public void UploadFile(string localFilePath, string saveToRemotePath, Action<ulong> writeCallBack, CancellationToken cancellationToken)
         {
             var fi = new FileInfo(localFilePath);
-            if (!fi.Exists)
+            if (fi?.Exists != true)
                 return;
 
             lock (this)

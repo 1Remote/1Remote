@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using PRM.Controls;
 using PRM.Model;
+using PRM.Model.Protocol.Base;
 using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -26,6 +27,7 @@ namespace PRM.View
             get => _selectedTabName;
             set
             {
+                if (Context?.DataService == null) return;
                 if (Context.AppData.TagListDoInvokeSelectedTabName)
                 {
                     if (SetAndNotifyIfChanged(ref _selectedTabName, value) && value != TabTagsListName)
@@ -62,11 +64,11 @@ namespace PRM.View
         /// </summary>
         /// <param name="o"></param>
         /// <param name="action"></param>
-        private void FilterTagsControl(object o, TagFilter.FilterTagsControlAction action)
+        private void FilterTagsControl(object? o, TagFilter.FilterTagsControlAction action)
         {
             if (o == null)
                 return;
-
+            if (Context?.DataService == null) return;
             string newTagName = string.Empty;
             if (o is Tag obj
                 && Context.AppData.TagList.Any(x => x.Name == obj.Name))
@@ -114,13 +116,13 @@ namespace PRM.View
                 }
 
                 TagFilters = filters;
-                var s = TagAndKeywordEncodeHelper.DecodeKeyword(_mainWindowViewModel.FilterString);
+                var s = TagAndKeywordEncodeHelper.DecodeKeyword(_mainWindowViewModel?.FilterString ?? "");
                 SetFilterString(TagFilters, s.Item2);
             }
         }
 
 
-        private RelayCommand _cmdTagAddIncluded;
+        private RelayCommand? _cmdTagAddIncluded;
         public RelayCommand CmdTagAddIncluded
         {
             get
@@ -134,7 +136,7 @@ namespace PRM.View
         }
 
 
-        private RelayCommand _cmdTagRemove;
+        private RelayCommand? _cmdTagRemove;
         public RelayCommand CmdTagRemove
         {
             get
@@ -147,7 +149,7 @@ namespace PRM.View
         }
 
 
-        private RelayCommand _cmdTagAddExcluded;
+        private RelayCommand? _cmdTagAddExcluded;
         public RelayCommand CmdTagAddExcluded
         {
             get
@@ -162,14 +164,15 @@ namespace PRM.View
         #endregion
 
 
-        private RelayCommand _cmdTagDelete;
+        private RelayCommand? _cmdTagDelete;
         public RelayCommand CmdTagDelete
         {
             get
             {
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
-                    if (!(o is Tag obj) || MessageBox.Show(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
+                    if (Context?.DataService == null) return;
+                    if (o is not Tag obj || MessageBox.Show(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
                         return;
 
                     var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);
@@ -190,13 +193,14 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdTagRename;
+        private RelayCommand? _cmdTagRename;
         public RelayCommand CmdTagRename
         {
             get
             {
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
+                    if (Context?.DataService == null) return;
                     var selectedTabName = SelectedTabName;
                     var obj = o as Tag;
                     if (obj == null)
@@ -206,7 +210,7 @@ namespace PRM.View
                     if (string.IsNullOrEmpty(newTagName) || obj.Name == newTagName)
                         return;
 
-                    var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);
+                    var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server) ?? new List<ProtocolBase>();
                     foreach (var server in protocolServerBases)
                     {
                         if (server.Tags.Contains(obj.Name))
@@ -234,13 +238,14 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdTagConnect;
+        private RelayCommand? _cmdTagConnect;
         public RelayCommand CmdTagConnect
         {
             get
             {
                 return _cmdTagConnect ??= new RelayCommand((o) =>
                 {
+                    if (Context?.DataService == null) return;
                     if (!(o is Tag obj))
                         return;
                     foreach (var vmProtocolServer in Context.AppData.VmItemList.ToArray())
@@ -257,13 +262,14 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdTagConnectToNewTab;
+        private RelayCommand? _cmdTagConnectToNewTab;
         public RelayCommand CmdTagConnectToNewTab
         {
             get
             {
                 return _cmdTagConnectToNewTab ??= new RelayCommand((o) =>
                 {
+                    if (Context?.DataService == null) return;
                     if (!(o is Tag obj))
                         return;
 
@@ -288,11 +294,11 @@ namespace PRM.View
 
         private void SetFilterString(List<TagFilter> filters, List<string> keywords)
         {
-            _mainWindowViewModel.SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(TagFilters, keywords));
+            _mainWindowViewModel?.SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(TagFilters, keywords));
             SetSelectedTabName(filters);
         }
 
-        private void SetSelectedTabName(List<TagFilter> filters = null)
+        private void SetSelectedTabName(List<TagFilter>? filters = null)
         {
             var tagName = TabAllName;
             if (filters?.Count == 1)

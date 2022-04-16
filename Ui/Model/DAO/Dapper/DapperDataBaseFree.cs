@@ -18,7 +18,7 @@ namespace PRM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override ProtocolBase GetServer(int id)
+        public override ProtocolBase? GetServer(int id)
         {
             OpenConnection();
             var ret = base.GetServer(id);
@@ -27,7 +27,7 @@ namespace PRM.Model.DAO.Dapper
         }
 
         /// <inheritdoc />
-        public override List<ProtocolBase> GetServers()
+        public override List<ProtocolBase>? GetServers()
         {
             OpenConnection();
             var ret = base.GetServers();
@@ -92,7 +92,7 @@ namespace PRM.Model.DAO.Dapper
 
 
         /// <inheritdoc />
-        public override string GetConfig(string key)
+        public override string? GetConfig(string key)
         {
             OpenConnection();
             var ret = base.GetConfig(key);

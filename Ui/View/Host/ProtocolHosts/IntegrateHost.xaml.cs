@@ -99,19 +99,19 @@ namespace PRM.View.Host.ProtocolHosts
 
         #endregion
 
-        private Process _process = null;
+        private Timer? _timer;
+        private Process? _process;
         private readonly System.Windows.Forms.Panel _panel;
         private readonly HashSet<IntPtr> _exeHandles = new HashSet<IntPtr>();
-        private Timer _timer = null;
         public readonly string ExeFullName;
         public readonly string ExeArguments;
         private readonly Dictionary<string, string> _environmentVariables;
 
-        public IntegrateHost(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string> environmentVariables = null) : base(protocol, false)
+        public IntegrateHost(ProtocolBase protocol, string exeFullName, string exeArguments, Dictionary<string, string>? environmentVariables = null) : base(protocol, false)
         {
             ExeFullName = exeFullName;
             ExeArguments = exeArguments;
-            _environmentVariables = environmentVariables;
+            _environmentVariables = environmentVariables ?? new Dictionary<string, string>();
             InitializeComponent();
 
             _panel = new System.Windows.Forms.Panel
@@ -156,7 +156,7 @@ namespace PRM.View.Host.ProtocolHosts
         //    base.OnRender(drawingContext);
         //}
 
-        private void PanelOnSizeChanged(object sender, EventArgs e)
+        private void PanelOnSizeChanged(object? sender, EventArgs e)
         {
             SetToPanelSize();
         }
@@ -313,7 +313,7 @@ namespace PRM.View.Host.ProtocolHosts
             _timer.Start();
         }
 
-        private void ProcessOnExited(object sender, EventArgs e)
+        private void ProcessOnExited(object? sender, EventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -350,7 +350,7 @@ namespace PRM.View.Host.ProtocolHosts
             return _process?.MainWindowHandle ?? IntPtr.Zero;
         }
 
-        public Action RunBeforeConnect { get; set; }
-        public Action RunAfterConnected { get; set; }
+        public Action? RunBeforeConnect { get; set; }
+        public Action? RunAfterConnected { get; set; }
     }
 }

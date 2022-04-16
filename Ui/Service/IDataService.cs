@@ -19,7 +19,6 @@ namespace PRM.Service
         public RSA.EnumRsaStatus Database_UpdatePrivateKeyPathOnly(string privateKeyPath);
 
         public string DecryptOrReturnOriginalString(string originalString);
-        public string Encrypt(string str);
         public void EncryptToDatabaseLevel(ref ProtocolBase server);
         public void DecryptToRamLevel(ref ProtocolBase server);
         public void DecryptToConnectLevel(ref ProtocolBase server);

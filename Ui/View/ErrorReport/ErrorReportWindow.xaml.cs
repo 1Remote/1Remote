@@ -89,8 +89,8 @@ namespace PRM.View.ErrorReport
         {
             try
             {
-                var osRelease = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "").ToString();
-                var osName = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "productName", "").ToString();
+                var osRelease = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "")!.ToString();
+                var osName = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "productName", "")!.ToString();
                 var osType = Environment.Is64BitOperatingSystem ? "64-bits" : "32-bits";
                 var osVersion = Environment.OSVersion.Version.ToString();
                 var platform = $"{osName} {osType} {osVersion} ({osRelease})";
@@ -181,7 +181,11 @@ namespace PRM.View.ErrorReport
             try
             {
                 string mailto = string.Format("mailto:{0}?Subject={1}&Body={2}", "mailto:veckshawn@gmail.com", $"{ConfigurationService.AppName} error report.", "");
+#pragma warning disable CS0618
+#pragma warning disable SYSLIB0013 // 类型或成员已过时
                 mailto = Uri.EscapeUriString(mailto);
+#pragma warning restore SYSLIB0013 // 类型或成员已过时
+#pragma warning restore CS0618
                 HyperlinkHelper.OpenUriBySystem(mailto);
             }
             catch

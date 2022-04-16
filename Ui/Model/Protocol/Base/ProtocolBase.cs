@@ -24,8 +24,7 @@ namespace PRM.Model.Protocol.Base
     //[JsonKnownType(typeof(SFTP), nameof(SFTP))]
     public abstract class ProtocolBase : NotifyPropertyChangedBase
     {
-        [JsonIgnore]
-        public string ServerEditorDifferentOptions { get; private set; }
+        [JsonIgnore] public string ServerEditorDifferentOptions => IoC.Get<ILanguageService>().Translate("server_editor_different_options");
 
         protected ProtocolBase(string protocol, string classVersion, string protocolDisplayName, string protocolDisplayNameInShort = "")
         {
@@ -36,7 +35,6 @@ namespace PRM.Model.Protocol.Base
                 ProtocolDisplayNameInShort = ProtocolDisplayName;
             else
                 ProtocolDisplayNameInShort = protocolDisplayNameInShort;
-            ServerEditorDifferentOptions = IoC.Get<ILanguageService>()?.Translate("server_editor_different_options") ?? "";
         }
 
         public abstract bool IsOnlyOneInstance();
@@ -262,7 +260,6 @@ namespace PRM.Model.Protocol.Base
         {
             var clone = this.MemberwiseClone() as ProtocolBase;
             Debug.Assert(clone != null);
-            clone.ServerEditorDifferentOptions = IoC.Get<ILanguageService>().Translate("server_editor_different_options") ?? "<different options>";
             clone.Tags = new List<string>(this.Tags);
             return clone;
         }

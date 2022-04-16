@@ -556,7 +556,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             else
             {
                 var fi = new FileInfo(item.DstPath);
-                if (!fi.Directory.Exists)
+                if (fi?.Directory?.Exists == false)
                     fi.Directory.Create();
                 if (fi.Exists)
                     fi.Delete();

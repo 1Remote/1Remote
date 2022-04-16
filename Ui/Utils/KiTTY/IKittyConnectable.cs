@@ -42,11 +42,10 @@ namespace PRM.Utils.KiTTY
         {
             var kittyExeFullName = GetKittyExeFullName();
             var fi = new FileInfo(kittyExeFullName);
-            if (fi.Directory.Exists == false)
+            if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
-            if (fi.Exists == false)
+            if (fi?.Exists != true)
                 iKittyConnectable.InstallKitty();
-            var kittyExeFolderPath = fi.Directory.FullName;
 
             var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName(), iKittyConnectable.ExternalKittySessionConfigPath);
             if (iKittyConnectable is SSH server)
@@ -163,6 +162,7 @@ namespace PRM.Utils.KiTTY
             //_puttyOption.Set(PuttyRegOptionKey.Colour20,"211,215,207");
             //_puttyOption.Set(PuttyRegOptionKey.Colour21,"238,238,236");
 
+            var kittyExeFolderPath = fi!.Directory!.FullName;
             puttyOption.SaveToKittyConfig(kittyExeFolderPath);
         }
 
@@ -170,11 +170,11 @@ namespace PRM.Utils.KiTTY
         {
             var kittyExeFullName = GetKittyExeFullName();
             var fi = new FileInfo(kittyExeFullName);
-            if (fi.Directory.Exists == false)
+            if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
-            if (fi.Exists == false)
+            if (fi?.Exists != true)
                 iKittyConnectable.InstallKitty();
-            var kittyExeFolderPath = fi.Directory.FullName;
+            var kittyExeFolderPath = fi!.Directory!.FullName;
 
             var puttyOption = new KittyConfig(iKittyConnectable.GetSessionName());
             puttyOption.DelFromKittyConfig(kittyExeFolderPath);
@@ -184,7 +184,7 @@ namespace PRM.Utils.KiTTY
         {
             var kittyExeFullName = GetKittyExeFullName();
             var fi = new FileInfo(kittyExeFullName);
-            if (fi.Directory.Exists == false)
+            if (fi?.Directory?.Exists == false)
                 fi.Directory.Create();
 
             var kitty = System.Windows.Application.GetResourceStream(ResourceUriHelper.GetUriFromCurrentAssembly("Resources/KiTTY/kitty_portable.exe")).Stream;
@@ -223,7 +223,7 @@ namespace PRM.Utils.KiTTY
                 kitty.Close();
             }
 
-            File.WriteAllText(Path.Combine(fi.Directory.FullName, "kitty.ini"),
+            File.WriteAllText(Path.Combine(fi!.Directory!.FullName, "kitty.ini"),
                 @"
 [Agent]
 [ConfigBox]

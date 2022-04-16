@@ -16,7 +16,7 @@ namespace PRM.Service
     public class MatchProviderInfo : NotifyPropertyChangedBase
     {
 
-        private string _name;
+        private string _name = "";
         public string Name
         {
             get => _name;
@@ -80,15 +80,15 @@ namespace PRM.Service
 
         private readonly Dictionary<string, Cache> _caches = new Dictionary<string, Cache>(500);
 
-        private VariableKeywordMatcher.Matcher _matcher = null;
+        private VariableKeywordMatcher.Matcher _matcher;
 
         public KeywordMatchService()
         {
-            Init(new string[]
+            _matcher = VariableKeywordMatcherIn1.Builder.Build(new string[]
             {
                 DirectMatchProvider.GetName(),
                 DiscreteMatchProvider.GetName(),
-            });
+            }, false);
         }
 
 
@@ -106,9 +106,12 @@ namespace PRM.Service
                 {
                     var kvs = _caches.Where(x => x.Value.GetAccessTime() < DateTime.Now.AddHours(-12))?
                         .OrderBy(x => x.Value.GetAccessTime())?.ToArray();
-                    foreach (var kv in kvs)
+                    if (kvs!= null)
                     {
-                        _caches.Remove(kv.Key);
+                        foreach (var kv in kvs)
+                        {
+                            _caches.Remove(kv.Key);
+                        }
                     }
                 } 
             }

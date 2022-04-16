@@ -31,8 +31,8 @@ namespace PRM.View
 {
     public partial class ServerListPageViewModel : NotifyPropertyChangedBase
     {
-        public PrmContext Context { get; }
-        private MainWindowViewModel _mainWindowViewModel;
+        public PrmContext? Context { get; }
+        private MainWindowViewModel? _mainWindowViewModel;
 
         #region properties
 
@@ -49,7 +49,7 @@ namespace PRM.View
             }
         }
 
-        private ProtocolBaseViewModel _selectedServerViewModelListItem = null;
+        private ProtocolBaseViewModel? _selectedServerViewModelListItem = null;
         public ProtocolBaseViewModel SelectedServerViewModelListItem
         {
             get => _selectedServerViewModelListItem;
@@ -179,7 +179,7 @@ namespace PRM.View
             });
         }
 
-        private void VmServerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void VmServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
             {
@@ -246,7 +246,7 @@ namespace PRM.View
 
         #region Commands
 
-        private RelayCommand _cmdAdd;
+        private RelayCommand? _cmdAdd;
         public RelayCommand CmdAdd
         {
             get
@@ -260,13 +260,14 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdExportSelectedToJson;
+        private RelayCommand? _cmdExportSelectedToJson;
         public RelayCommand CmdExportSelectedToJson
         {
             get
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
+                    if (Context.DataService == null) return;
                     var path = SelectFileHelper.SaveFile(title: IoC.Get<ILanguageService>().Translate("system_options_data_security_export_dialog_title"),
                         filter: "PRM json array|*.prma",
                         selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".prma");
@@ -285,7 +286,7 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdImportFromJson;
+        private RelayCommand? _cmdImportFromJson;
         public RelayCommand CmdImportFromJson
         {
             get
@@ -300,10 +301,10 @@ namespace PRM.View
                         try
                         {
                             var list = new List<ProtocolBase>();
-                            var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8));
+                            var jobj = JsonConvert.DeserializeObject<List<object>>(File.ReadAllText(path, Encoding.UTF8)) ?? new List<object>();
                             foreach (var json in jobj)
                             {
-                                var server = ItemCreateHelper.CreateFromJsonString(json.ToString());
+                                var server = ItemCreateHelper.CreateFromJsonString(json.ToString()!);
                                 if (server != null)
                                 {
                                     server.Id = 0;
@@ -333,7 +334,7 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdImportFromCsv;
+        private RelayCommand? _cmdImportFromCsv;
         public RelayCommand CmdImportFromCsv
         {
             get
@@ -377,7 +378,7 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdDelete;
+        private RelayCommand? _cmdDelete;
         public RelayCommand CmdDelete
         {
             get
@@ -392,7 +393,7 @@ namespace PRM.View
             }
         }
 
-        private RelayCommand _cmdDeleteSelected;
+        private RelayCommand? _cmdDeleteSelected;
         public RelayCommand CmdDeleteSelected
         {
             get
@@ -415,7 +416,7 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdMultiEditSelected;
+        private RelayCommand? _cmdMultiEditSelected;
         public RelayCommand CmdMultiEditSelected
         {
             get
@@ -429,7 +430,7 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdCancelSelected;
+        private RelayCommand? _cmdCancelSelected;
         public RelayCommand CmdCancelSelected
         {
             get
@@ -441,7 +442,7 @@ namespace PRM.View
 
 
         private DateTime _lastCmdReOrder;
-        private RelayCommand _cmdReOrder;
+        private RelayCommand? _cmdReOrder;
         public RelayCommand CmdReOrder
         {
             get
@@ -473,7 +474,7 @@ namespace PRM.View
 
 
 
-        private RelayCommand _cmdConnectSelected;
+        private RelayCommand? _cmdConnectSelected;
         public RelayCommand CmdConnectSelected
         {
             get

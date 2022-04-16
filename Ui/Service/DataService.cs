@@ -84,18 +84,18 @@ namespace PRM.Service
             return EnumDbStatus.OK;
         }
 
-        private RSA _rsa = null;
+        private RSA? _rsa = null;
 
         public string Database_GetPublicKey()
         {
             Debug.Assert(_dataBase != null);
-            return _dataBase?.Get_RSA_PublicKey();
+            return _dataBase?.Get_RSA_PublicKey() ?? "";
         }
 
         public string Database_GetPrivateKeyPath()
         {
             Debug.Assert(_dataBase != null);
-            return _dataBase?.GetFromDatabase_RSA_PrivateKeyPath();
+            return _dataBase?.GetFromDatabase_RSA_PrivateKeyPath() ?? "";
         }
 
         public RSA.EnumRsaStatus Database_SetEncryptionKey(string privateKeyPath, string privateKeyContent, IEnumerable<ProtocolBase> servers)
@@ -176,19 +176,20 @@ namespace PRM.Service
             return _rsa?.DecodeOrNull(originalString) ?? originalString;
         }
 
-        public static string Encrypt(RSA rsa, string str)
+        private static string Encrypt(RSA? rsa, string str)
         {
+            Debug.Assert(rsa != null);
             if (rsa.DecodeOrNull(str) == null)
                 return rsa.Encode(str);
             return str;
         }
 
-        public string Encrypt(string str)
+        private string Encrypt(string str)
         {
             return Encrypt(_rsa, str);
         }
 
-        public static void EncryptToDatabaseLevel(RSA rsa, ref ProtocolBase server)
+        public static void EncryptToDatabaseLevel(RSA? rsa, ref ProtocolBase server)
         {
             if (rsa == null) return;
             // ! server must be decrypted
@@ -327,7 +328,7 @@ namespace PRM.Service
 
         public List<ProtocolBase> Database_GetServers()
         {
-            return _dataBase.GetServers();
+            return _dataBase?.GetServers() ?? new List<ProtocolBase>();
         }
     }
 }

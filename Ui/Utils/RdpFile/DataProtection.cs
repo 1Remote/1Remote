@@ -5,6 +5,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+#pragma warning disable CS8600
+#pragma warning disable CS8603
+#pragma warning disable CS8625
 
 namespace PRM.Utils.RdpFile
 {

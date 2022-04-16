@@ -22,11 +22,11 @@ namespace PRM.Controls
             Cancel = 2
         }
 
-        public string Prompt { get; private init; }
+        public string Prompt { get; private init; } = "";
 
-        public string? Response { get; private set; }
+        public string? Response { get; private set; } = "";
 
-        public Results Result { get; private set; }
+        public Results Result { get; private set; } = Results.Ok;
 
         /// <summary>
         /// input string return error message or null
@@ -71,7 +71,7 @@ namespace PRM.Controls
         {
             if (e.Key == Key.Enter || e.Key == Key.Return)
             {
-                okButton_Click(sender, null);
+                okButton_Click(sender, new RoutedEventArgs());
             }
             else
             {

@@ -85,21 +85,21 @@ namespace PRM.View.Editor.Forms
     public class ConverterESshVersion : IValueConverter
     {
         #region IValueConverter 成员  
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
                 return 2;
             return ((int)value - 1).ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object? ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            var i = int.Parse(value.ToString());
+            var i = int.Parse(value?.ToString() ?? "0");
             if (i == 0)
                 return 1;
-            else if(i == 2)
-                return null;
-            return 2;
+            if (i == 1)
+                return 2;
+            return null;
         }
         #endregion
     }

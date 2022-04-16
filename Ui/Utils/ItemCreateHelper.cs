@@ -45,7 +45,7 @@ namespace PRM.Utils
             return null;
         }
 
-        public static ProtocolBase CreateFromJsonString(string jsonString)
+        public static ProtocolBase? CreateFromJsonString(string jsonString)
         {
             var jObj = JsonConvert.DeserializeObject<dynamic>(jsonString);
             if (jObj == null ||
