@@ -85,15 +85,18 @@ namespace PRM.View
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            //TbFilter.Focus();
+            SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
+            Vm.SearchControlViewModel.IsFocused = true;
         }
 
 
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (Keyboard.FocusedElement is TextBox)
+            SimpleLogHelper.Debug($"MainWindow_OnKeyDown");
+            if (Keyboard.FocusedElement is TextBox textBox)
             {
+                SimpleLogHelper.Debug($"Current FocusedElement is " + textBox.Name);
             }
             else if (e.Key == Key.Escape && this.DataContext is MainWindowViewModel vm && vm.IsShownList() == false)
             {
@@ -101,6 +104,7 @@ namespace PRM.View
             }
             else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
+                Vm.SearchControlViewModel.IsFocused = true;
                 //TbFilter.Focus();
                 //TbFilter.CaretIndex = TbFilter.Text.Length;
             }

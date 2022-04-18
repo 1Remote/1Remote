@@ -10,8 +10,8 @@
              d:DataContext="{d:DesignInstance local:MainWindowSearchControlViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-
-        <TextBox Name="TbFilter" Width="150" Height="25"
+        <TextBox Width="150" Height="25"
+                        attachProperty:FocusExtension.IsFocused="{Binding IsFocused}"
                         attachProperty:TextBoxAttachProperty.CaretIndex="{Binding TbFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
                          Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
                          Tag="{DynamicResource 'Search (Ctrl+F)'}"

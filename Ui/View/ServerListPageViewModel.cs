@@ -87,10 +87,7 @@ namespace PRM.View
 
         public bool IsSelectedAll
         {
-            get
-            {
-                return ServerListItems.All(x => x.IsSelected);
-            }
+            get => ServerListItems.All(x => x.IsSelected);
             set
             {
                 foreach (var vmServerCard in ServerListItems)
@@ -101,7 +98,7 @@ namespace PRM.View
             }
         }
 
-        public bool IsMultipleSelected => ServerListItems.Count(x => x.IsSelected) > 0;
+        public bool IsAnySelected => ServerListItems.Any(x => x.IsSelected == true);
 
         private string _filterString = "";
         #endregion
@@ -152,7 +149,7 @@ namespace PRM.View
                 }
                 _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList);
                 CalcVisibleByFilter(_filterString);
-                RaisePropertyChanged(nameof(IsMultipleSelected));
+                RaisePropertyChanged(nameof(IsAnySelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
             });
@@ -162,7 +159,7 @@ namespace PRM.View
         {
             if (e.PropertyName == nameof(ProtocolBaseViewModel.IsSelected))
             {
-                RaisePropertyChanged(nameof(IsMultipleSelected));
+                RaisePropertyChanged(nameof(IsAnySelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
             }
@@ -217,7 +214,7 @@ namespace PRM.View
 
             ServerListItems = new ObservableCollection<ProtocolBaseViewModel>(newList);
             RaisePropertyChanged(nameof(IsSelectedAll));
-            RaisePropertyChanged(nameof(IsMultipleSelected));
+            RaisePropertyChanged(nameof(IsAnySelected));
         }
 
 
@@ -478,8 +475,7 @@ namespace PRM.View
                 TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
             else
                 TagFilters = new List<TagFilter>();
-            var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(_filterString);
-            IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, tmp.Item2);
+            IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
         }
         #endregion
     }

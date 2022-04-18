@@ -297,6 +297,7 @@ namespace PRM.View
                     window.ShowInTaskbar = true;
                     window.Activate();
                     window.Topmost = false;
+                    window.Focus();
                 });
             }
         }
