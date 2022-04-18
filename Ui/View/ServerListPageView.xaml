@@ -484,7 +484,7 @@
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Setter Property="Margin" Value="0 0 0 -50"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMultipleSelected}" Value="True">
+                            <DataTrigger Binding="{Binding IsAnySelected}" Value="True">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
                                 <DataTrigger.EnterActions>
                                     <BeginStoryboard>

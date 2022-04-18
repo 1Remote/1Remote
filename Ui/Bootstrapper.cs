@@ -19,6 +19,7 @@ using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using StyletIoC;
 using Ui;
+using Ui.View;
 
 namespace PRM
 {
@@ -109,6 +110,7 @@ namespace PRM
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<GuidanceWindow>().ToSelf();
             builder.Bind<RemoteWindowPool>().ToSelf().InSingletonScope();
+            builder.Bind<MainWindowSearchControlViewModel>().ToSelf().InSingletonScope();
             base.ConfigureIoC(builder);
         }
 

@@ -22,10 +22,7 @@ namespace PRM.View
         public const string TAB_TAGS_LIST_NAME = "tags_selector_for_list@#@1__()!";
         public const string TAB_NONE_SELECTED = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
 
-        private string _selectedTabName = "";
-        public string SelectedTabName => _selectedTabName;
-
-
+        public string SelectedTabName { get; private set; }
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
         {
@@ -47,8 +44,8 @@ namespace PRM.View
                     {
                         tagName = TAB_NONE_SELECTED;
                     }
-                    if (_selectedTabName == tagName) return;
-                    _selectedTabName = tagName;
+                    if (SelectedTabName == tagName) return;
+                    SelectedTabName = tagName;
                     RaisePropertyChanged(nameof(SelectedTabName));
                 }
             }
@@ -68,13 +65,11 @@ namespace PRM.View
                 return;
             if (Context?.DataService == null) return;
             string newTagName = string.Empty;
-            if (o is Tag obj
-                && Context.AppData.TagList.Any(x => x.Name == obj.Name))
+            if (o is Tag obj && Context.AppData.TagList.Any(x => x.Name == obj.Name))
             {
                 newTagName = obj.Name;
             }
-            else if (o is string str
-                     && Context.AppData.TagList.Any(x => x.Name == str))
+            else if (o is string str && Context.AppData.TagList.Any(x => x.Name == str))
             {
                 newTagName = str;
             }
@@ -114,8 +109,7 @@ namespace PRM.View
                 }
 
                 TagFilters = filters;
-                var s = TagAndKeywordEncodeHelper.DecodeKeyword(_filterString);
-                IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, s.Item2);
+                IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
             }
         }
 
