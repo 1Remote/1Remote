@@ -538,7 +538,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:ServerListPageViewModel.TabTagsListName}">
+                        <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
@@ -664,7 +664,7 @@
                     <Button Grid.Column="1"
                                         MinWidth="80"
                                         Command="{s:Action ShowTabByName}"
-                                        CommandParameter="{x:Static view:ServerListPageViewModel.TabTagsListName}"
+                                        CommandParameter="{x:Static view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}"
                                         BorderThickness="0" Content="{DynamicResource Tags}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -688,7 +688,7 @@
                                         <Setter Property="Background" Value="{DynamicResource AccentLightBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                     </Trigger>
-                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:ServerListPageViewModel.TabTagsListName}">
+                                    <DataTrigger Binding="{Binding SelectedTabName}" Value="{x:Static view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}">
                                         <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
                                         <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
                                         <Setter Property="Cursor" Value="Arrow" />

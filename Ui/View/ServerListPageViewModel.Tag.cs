@@ -11,49 +11,47 @@ using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Ui.View;
 
 namespace PRM.View
 {
 
     public partial class ServerListPageViewModel
     {
-        public const string TabAllName = "";
-        public const string TabTagsListName = "tags_selector_for_list@#@1__()!";
-        public const string TabNoneSelected = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
+        public const string TAB_ALL_NAME = "";
+        public const string TAB_TAGS_LIST_NAME = "tags_selector_for_list@#@1__()!";
+        public const string TAB_NONE_SELECTED = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
 
         private string _selectedTabName = "";
-        public string SelectedTabName
-        {
-            get => _selectedTabName;
-            set
-            {
-                if (Context?.DataService == null) return;
-                if (Context.AppData.TagListDoInvokeSelectedTabName)
-                {
-                    if (SetAndNotifyIfChanged(ref _selectedTabName, value) && value != TabTagsListName)
-                    {
-                        if (Context.AppData.TagList.Any(x => x.Name == value))
-                        {
-                            TagFilters = new List<TagFilter>() { TagFilter.Create(value, TagFilter.FilterType.Included) };
-                        }
-                        else
-                        {
-                            TagFilters = new List<TagFilter>();
-                        }
-                        var s = TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().FilterString);
-                        SetFilterString(TagFilters, s.Item2);
-                    }
-                }
-                Context.AppData.TagListDoInvokeSelectedTabName = true;
-            }
-        }
+        public string SelectedTabName => _selectedTabName;
 
 
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
         {
             get => _tagFilters;
-            set => SetAndNotifyIfChanged(ref _tagFilters, value);
+            set
+            {
+                if (SetAndNotifyIfChanged(ref _tagFilters, value))
+                {
+                    string tagName;
+                    if (_tagFilters?.Count == 1)
+                    {
+                        tagName = _tagFilters.First().TagName;
+                    }
+                    else if (_tagFilters == null || _tagFilters?.Count == 0)
+                    {
+                        tagName = TAB_ALL_NAME;
+                    }
+                    else // if (filters?.Count > 1)
+                    {
+                        tagName = TAB_NONE_SELECTED;
+                    }
+                    if (_selectedTabName == tagName) return;
+                    _selectedTabName = tagName;
+                    RaisePropertyChanged(nameof(SelectedTabName));
+                }
+            }
         }
 
 
@@ -83,7 +81,7 @@ namespace PRM.View
 
             if (string.IsNullOrEmpty(newTagName) == false)
             {
-                var filters = TagFilters;
+                var filters = TagFilters.ToList();
                 var existed = filters.FirstOrDefault(x => x.TagName == newTagName);
                 // remove action
                 if (action == TagFilter.FilterTagsControlAction.Remove)
@@ -116,8 +114,8 @@ namespace PRM.View
                 }
 
                 TagFilters = filters;
-                var s = TagAndKeywordEncodeHelper.DecodeKeyword(IoC.Get<MainWindowViewModel>().FilterString ?? "");
-                SetFilterString(TagFilters, s.Item2);
+                var s = TagAndKeywordEncodeHelper.DecodeKeyword(_filterString);
+                IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, s.Item2);
             }
         }
 
@@ -184,7 +182,13 @@ namespace PRM.View
                         }
                     }
                     Context.AppData.UpdateServer(protocolServerBases);
-                    SelectedTabName = TabAllName;
+                    var delete = TagFilters.FirstOrDefault(x => x.TagName == obj.Name);
+                    if (delete != null)
+                    {
+                        var tmp = TagFilters.ToList();
+                        tmp.Remove(delete);
+                        TagFilters = new List<TagFilter>(tmp);
+                    }
                 });
             }
         }
@@ -201,30 +205,36 @@ namespace PRM.View
                 return _cmdTagRename ??= new RelayCommand((o) =>
                 {
                     if (Context?.DataService == null) return;
-                    var selectedTabName = SelectedTabName;
                     var obj = o as Tag;
                     if (obj == null)
                         return;
+                    string oldTagName = obj.Name;
                     string newTagName = InputWindow.InputBox(IoC.Get<ILanguageService>().Translate("Tags"), IoC.Get<ILanguageService>().Translate("Tags"), obj.Name);
                     newTagName = TagAndKeywordEncodeHelper.RectifyTagName(newTagName);
-                    if (string.IsNullOrEmpty(newTagName) || obj.Name == newTagName)
+                    if (string.IsNullOrEmpty(newTagName) || oldTagName == newTagName)
                         return;
 
                     var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server) ?? new List<ProtocolBase>();
                     foreach (var server in protocolServerBases)
                     {
-                        if (server.Tags.Contains(obj.Name))
+                        if (server.Tags.Contains(oldTagName))
                         {
-                            server.Tags.Remove(obj.Name);
+                            server.Tags.Remove(oldTagName);
                             server.Tags.Add(newTagName);
                         }
                     }
                     Context.AppData.UpdateServer(protocolServerBases);
 
+
                     // restore selected scene
-                    if (selectedTabName == obj.Name)
+                    var rename = TagFilters.FirstOrDefault(x => x.TagName == oldTagName);
+                    if (rename != null)
                     {
-                        SelectedTabName = newTagName;
+                        var renamed = TagFilter.Create(newTagName, rename.Type);
+                        var tmp = TagFilters.ToList();
+                        tmp.Remove(rename);
+                        tmp.Add(renamed);
+                        TagFilters = new List<TagFilter>(tmp);
                     }
 
                     // restore display scene
@@ -284,38 +294,6 @@ namespace PRM.View
                     }
                 });
             }
-        }
-
-
-
-
-
-
-
-        private void SetFilterString(List<TagFilter> filters, List<string> keywords)
-        {
-            IoC.Get<MainWindowViewModel>().SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(TagFilters, keywords));
-            SetSelectedTabName(filters);
-        }
-
-        private void SetSelectedTabName(List<TagFilter>? filters = null)
-        {
-            var tagName = TabAllName;
-            if (filters?.Count == 1)
-            {
-                tagName = filters.First().TagName;
-            }
-            else if (filters == null || filters?.Count == 0)
-            {
-                tagName = TabAllName;
-            }
-            else // if (filters?.Count > 1)
-            {
-                tagName = TabNoneSelected;
-            }
-            if (_selectedTabName == tagName) return;
-            _selectedTabName = tagName;
-            RaisePropertyChanged(nameof(SelectedTabName));
         }
     }
 }

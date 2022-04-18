@@ -19,6 +19,7 @@ namespace PRM.Model
         protected TagFilter(string tagName, FilterType type)
         {
             TagName = tagName;
+            Type = type;
             IsExcluded = type == FilterType.Excluded;
         }
 
@@ -26,6 +27,8 @@ namespace PRM.Model
         {
             return new TagFilter(tagName, type);
         }
+
+        public readonly FilterType Type;
 
         public string TagName { get; }
         public bool IsExcluded { get; }

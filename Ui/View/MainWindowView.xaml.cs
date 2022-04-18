@@ -85,20 +85,9 @@ namespace PRM.View
 
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            TbFilter.Focus();
+            //TbFilter.Focus();
         }
 
-        private void TbFilter_OnKeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Escape || sender is TextBox textBox == false) return;
-            var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.FilterString);
-            Vm.SetFilterStringByBackend(TagAndKeywordEncodeHelper.EncodeKeyword(s.Item1, new List<string>()));
-            // Kill logical focus
-            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(textBox), null);
-            // Kill keyboard focus
-            Keyboard.ClearFocus();
-            this.Focus();
-        }
 
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
@@ -112,8 +101,8 @@ namespace PRM.View
             }
             else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
-                TbFilter.Focus();
-                TbFilter.CaretIndex = TbFilter.Text.Length;
+                //TbFilter.Focus();
+                //TbFilter.CaretIndex = TbFilter.Text.Length;
             }
         }
 

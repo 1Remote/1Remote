@@ -65,5 +65,8 @@ namespace PRM.Model
         public static Action? OnScreenResolutionChanged { get; set; } = null;
 
         public static Action? OnLauncherHotKeyChanged { get; set; }
+
+        public delegate void OnFilterChangedDelegate(string filterString = "");
+        public static OnFilterChangedDelegate? OnFilterChanged { get; set; }
     }
 }

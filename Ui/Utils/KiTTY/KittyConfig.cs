@@ -35,7 +35,7 @@ namespace PRM.Utils.KiTTY
                 {
                     var para = line.Substring(0, i0);
                     var val = line.Substring(i0 + 1).TrimEnd('\\');
-                    if (double.TryParse(val.Replace(',', '_'), out var v))
+                    if (double.TryParse(val.Replace(',', '_'), out _))
                     {
                         ret.Add(new KittyConfigKeyValuePair() { Key = para, Value = val, ValueKind = RegistryValueKind.DWord });
                     }

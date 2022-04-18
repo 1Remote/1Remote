@@ -52,21 +52,23 @@ namespace PRM.Utils
 
             return new Tuple<List<TagFilter>, List<string>>(tagFilters, keyWords);
         }
-        public static string EncodeKeyword(List<TagFilter> tagFilters, List<string> keyWords)
+        public static string EncodeKeyword(List<TagFilter>? tagFilters = null, List<string>? keyWords = null)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var tag in tagFilters.Distinct())
-            {
-                if (tag.IsExcluded)
-                    sb.Append(" -#" + tag.TagName);
-                else
-                    sb.Append(" #" + tag.TagName);
-            }
+            if (tagFilters != null)
+                foreach (var tag in tagFilters.Distinct())
+                {
+                    if (tag.IsExcluded)
+                        sb.Append(" -#" + tag.TagName);
+                    else
+                        sb.Append(" #" + tag.TagName);
+                }
 
-            foreach (var keyWord in keyWords.Distinct())
-            {
-                sb.Append(" " + keyWord);
-            }
+            if (keyWords != null)
+                foreach (var keyWord in keyWords.Distinct())
+                {
+                    sb.Append(" " + keyWord);
+                }
 
             var filterString = sb.ToString().Trim();
             if (string.IsNullOrWhiteSpace(filterString))

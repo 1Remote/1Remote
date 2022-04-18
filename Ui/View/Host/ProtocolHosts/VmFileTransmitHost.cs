@@ -105,7 +105,7 @@ namespace PRM.View.Host.ProtocolHosts
                                 // refresh after transmitted
                                 if (t.ItemsHaveBeenTransmitted.Any(x =>
                                                                             x.TransmissionType == ETransmissionType.HostToServer
-                                                                        && x.DstPath.IndexOf(CurrentPath, StringComparison.OrdinalIgnoreCase) >= 0))
+                                                                        && x.DstPath.Contains(CurrentPath, StringComparison.OrdinalIgnoreCase)))
                                 {
                                     CmdGoToPathCurrent.Execute();
                                 }
@@ -226,9 +226,9 @@ namespace PRM.View.Host.ProtocolHosts
                         {
                             //SimpleLogHelper.Debug($"ShowFolder after path.EndsWith(/..)");
                             path = path.Substring(0, path.Length - 3);
-                            if (path.LastIndexOf("/") > 0)
+                            var i = path.LastIndexOf("/", StringComparison.Ordinal);
+                            if (i > 0)
                             {
-                                var i = path.LastIndexOf("/");
                                 path = path.Substring(0, i);
                             }
                         }
@@ -827,7 +827,7 @@ namespace PRM.View.Host.ProtocolHosts
                         fbd.ShowNewFolderButton = false;
                         if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                         {
-                            DoUpload(new List<string>() {fbd.SelectedPath});
+                            DoUpload(new List<string>() { fbd.SelectedPath });
                         }
                     }
                 });
@@ -977,17 +977,13 @@ namespace PRM.View.Host.ProtocolHosts
         /// </summary>
         public int IoMessageLevel { get; set; } = 0;
         private string _ioMessage = "";
-        private bool stopUpdateIoMessage = false;
         public string IoMessage
         {
             get => _ioMessage;
             set
             {
-                if (!stopUpdateIoMessage)
-                {
-                    SetAndNotifyIfChanged(ref _ioMessage, value);
-                    RaisePropertyChanged(nameof(IoMessageLevel));
-                }
+                SetAndNotifyIfChanged(ref _ioMessage, value);
+                RaisePropertyChanged(nameof(IoMessageLevel));
             }
         }
 
