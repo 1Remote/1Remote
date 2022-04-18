@@ -176,7 +176,7 @@ namespace PRM.Service
                         }
                         catch (Exception e)
                         {
-                            Console.Write(e);
+                            SimpleLogHelper.Error(e);
                         }
                     }
 

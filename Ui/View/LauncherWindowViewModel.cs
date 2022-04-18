@@ -164,6 +164,7 @@ namespace PRM.View
             ReCalcWindowHeight(false);
             RebuildVmServerList();
             IoC.Get<GlobalData>().VmItemListDataChanged += RebuildVmServerList;
+            RebuildVmServerList();
         }
 
         protected override void OnViewLoaded()

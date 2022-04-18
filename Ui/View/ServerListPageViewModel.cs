@@ -25,6 +25,7 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
+using Ui.View;
 
 
 namespace PRM.View
@@ -102,12 +103,14 @@ namespace PRM.View
 
         public bool IsMultipleSelected => ServerListItems.Count(x => x.IsSelected) > 0;
 
+        private string _filterString = "";
         #endregion
 
         public ServerListPageViewModel(PrmContext context)
         {
             Context = context;
             Context.AppData.VmItemListDataChanged += RebuildVmServerList;
+            RebuildVmServerList();
 
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += id =>
@@ -120,6 +123,15 @@ namespace PRM.View
                         Context.AppData.DeleteServer(id);
                     }
                 };
+
+            GlobalEventHelper.OnFilterChanged += (filterString) =>
+            {
+                if (_filterString != filterString)
+                {
+                    _filterString = filterString;
+                    CalcVisibleByFilter(_filterString);
+                }
+            };
         }
 
         private void RebuildVmServerList()
@@ -139,17 +151,7 @@ namespace PRM.View
                     }
                 }
                 _serverListItems = new ObservableCollection<ProtocolBaseViewModel>(Context.AppData.VmItemList);
-
-                if (string.IsNullOrEmpty(SelectedTabName) == false
-                    && false == Context.AppData.TagList.Any(x => String.Equals(x.Name, SelectedTabName, StringComparison.CurrentCultureIgnoreCase)))
-                {
-                    SelectedTabName = TabAllName;
-                }
-                else
-                {
-                    CalcVisibleByFilter();
-                }
-
+                CalcVisibleByFilter(_filterString);
                 RaisePropertyChanged(nameof(IsMultipleSelected));
                 RaisePropertyChanged(nameof(IsSelectedAll));
                 RaisePropertyChanged(nameof(SelectedCount));
@@ -166,9 +168,9 @@ namespace PRM.View
             }
         }
 
-        private static IEnumerable<ProtocolBaseViewModel> GetOrderedVmProtocolServers(IEnumerable<ProtocolBaseViewModel> servers, EnumServerOrderBy orderBy)
+        private static IEnumerable<ProtocolBaseViewModel> GetOrderedVmProtocolServers(IEnumerable<ProtocolBaseViewModel>? servers, EnumServerOrderBy orderBy)
         {
-            if (!(servers?.Count() > 0)) return new List<ProtocolBaseViewModel>();
+            if (servers == null || servers.Any() == false) return new List<ProtocolBaseViewModel>();
 
             switch (orderBy)
             {
@@ -195,21 +197,18 @@ namespace PRM.View
             }
         }
 
-        public void CalcVisibleByFilter()
+        public void CalcVisibleByFilter(string filterString)
         {
-            var keyword = IoC.Get<MainWindowViewModel>().FilterString;
-            var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(keyword);
+            var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(filterString);
             var tagFilters = tmp.Item1;
             var keyWords = tmp.Item2;
             TagFilters = tagFilters;
-            SetSelectedTabName(tagFilters);
-
             var newList = new List<ProtocolBaseViewModel>();
             if (Context?.AppData?.VmItemList == null) return;
             foreach (var vm in Context.AppData.VmItemList)
             {
                 var server = vm.Server;
-                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, tagFilters, keyWords);
+                var s = TagAndKeywordEncodeHelper.MatchKeywords(server, TagFilters, keyWords);
                 if (s.Item1 == true)
                 {
                     newList.Add(vm);
@@ -475,7 +474,12 @@ namespace PRM.View
 
         public void ShowTabByName(string tabName = "")
         {
-            SelectedTabName = tabName;
+            if (string.IsNullOrEmpty(tabName) == false)
+                TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
+            else
+                TagFilters = new List<TagFilter>();
+            var tmp = TagAndKeywordEncodeHelper.DecodeKeyword(_filterString);
+            IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, tmp.Item2);
         }
         #endregion
     }

@@ -22,6 +22,7 @@ using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using Ui;
+using Ui.View;
 
 namespace PRM.View
 {
@@ -32,6 +33,7 @@ namespace PRM.View
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
+        public MainWindowSearchControlViewModel SearchControlViewModel { get; } = IoC.Get<MainWindowSearchControlViewModel>();
 
         #region Properties
 
@@ -65,48 +67,7 @@ namespace PRM.View
         }
 
 
-        private int _tbFilterCaretIndex = 0;
-        public int TbFilterCaretIndex
-        {
-            get => _tbFilterCaretIndex;
-            set => SetAndNotifyIfChanged(ref _tbFilterCaretIndex, value);
-        }
 
-        #region FilterString
-
-        private string _filterString = "";
-        public string FilterString
-        {
-            get => _filterString;
-            set
-            { 
-                // can only be called by the Ui
-                if (SetAndNotifyIfChanged(ref _filterString, value))
-                {
-                    Task.Factory.StartNew(() =>
-                    {
-                        var filter = FilterString;
-                        Thread.Sleep(100);
-                        if (filter == FilterString)
-                        {
-                            ServerListViewModel.CalcVisibleByFilter();
-                        }
-                    });
-                }
-            }
-        }
-
-        public void SetFilterStringByBackend(string newValue)
-        {
-            // 区分关键词的来源，若是从后端设置关键词，则需要把搜索框的 CaretIndex 设置到末尾，以方便用户输入其他关键词。 
-            // Distinguish the source of keywords, if the keyword is set from the backend, we need to set the CaretIndex of the search box to the end to facilitate the user to enter other keywords.
-            if (_filterString == newValue)
-                return;
-            _filterString = newValue;
-            RaisePropertyChanged(nameof(FilterString));
-            TbFilterCaretIndex = FilterString?.Length ?? 0;
-        }
-        #endregion
 
         #endregion Properties
 
