@@ -7,6 +7,7 @@ using System.Windows;
 using Dragablz;
 using PRM.Model;
 using PRM.Service;
+using PRM.Utils;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -14,7 +15,7 @@ using Shawn.Utils.Wpf;
 
 namespace PRM.View.Host
 {
-    public class TabWindowViewModel : NotifyPropertyChangedBase, IDisposable
+    public class TabWindowViewModel : NotifyPropertyChangedBaseScreen, IDisposable
     {
         public readonly string Token;
 
@@ -59,7 +60,6 @@ namespace PRM.View.Host
         }
 
         private string _title = "";
-
         public string Title
         {
             get => _title;
@@ -96,22 +96,6 @@ namespace PRM.View.Host
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
         public Visibility BtnCloseAllVisibility => Items.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-
-        private bool _isTagEditing = false;
-
-        public bool IsTagEditing
-        {
-            get => _isTagEditing;
-            set
-            {
-                SetAndNotifyIfChanged(ref _isTagEditing, value);
-                RaisePropertyChanged(nameof(TitleTextVisibility));
-                RaisePropertyChanged(nameof(TitleTagEditorVisibility));
-            }
-        }
-
-        public Visibility TitleTextVisibility => !IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility TitleTagEditorVisibility => IsTagEditing ? Visibility.Visible : Visibility.Collapsed;
 
         private TabItemViewModel? _selectedItem = null;
         public TabItemViewModel? SelectedItem
@@ -172,32 +156,12 @@ namespace PRM.View.Host
         {
             get
             {
-                if (_cmdHostGoFullScreen == null)
+                return _cmdHostGoFullScreen ??= new RelayCommand((o) =>
                 {
-                    _cmdHostGoFullScreen = new RelayCommand((o) =>
-                    {
-                        if (IsLocked) return;
-                        if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                            IoC.Get<RemoteWindowPool>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
-                    }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
-                }
-                return _cmdHostGoFullScreen;
-            }
-        }
-
-        private RelayCommand? _cmdIsTagEditToggle;
-        public RelayCommand CmdIsTagEditToggle
-        {
-            get
-            {
-                if (_cmdIsTagEditToggle == null)
-                {
-                    _cmdIsTagEditToggle = new RelayCommand((o) =>
-                    {
-                        IsTagEditing = !IsTagEditing;
-                    }, o => this.SelectedItem != null);
-                }
-                return _cmdIsTagEditToggle;
+                    if (IsLocked) return;
+                    if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
+                        IoC.Get<RemoteWindowPool>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
+                }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
             }
         }
 
@@ -206,14 +170,7 @@ namespace PRM.View.Host
         {
             get
             {
-                if (_cmdInvokeLauncher == null)
-                {
-                    _cmdInvokeLauncher = new RelayCommand((o) =>
-                    {
-                        IoC.Get<LauncherWindowViewModel>().ShowMe();
-                    }, o => this.SelectedItem != null);
-                }
-                return _cmdInvokeLauncher;
+                return _cmdInvokeLauncher ??= new RelayCommand((o) => { IoC.Get<LauncherWindowViewModel>().ShowMe(); }, o => this.SelectedItem != null);
             }
         }
 
@@ -305,9 +262,17 @@ namespace PRM.View.Host
                     if (_canCmdClose)
                     {
                         _canCmdClose = false;
+
+                        if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
+                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                        {
+                            _canCmdClose = true; 
+                            return;
+                        }
+
                         if (SelectedItem?.Content?.ConnectionId != null)
-                            IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(SelectedItem.Content.ConnectionId, true);
-                        _canCmdClose = true;
+                            IoC.Get<RemoteWindowPool>().DelProtocolHost(SelectedItem.Content.ConnectionId);
+                        _canCmdClose = true; 
                     }
                 }, o => this.SelectedItem != null);
             }

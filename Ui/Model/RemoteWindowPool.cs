@@ -35,13 +35,8 @@ namespace PRM.Model
             GlobalEventHelper.OnRequestServerConnect += ShowRemoteHost;
         }
 
-        private bool _isReleased = false;
         public void Release()
         {
-            if (_isReleased)
-                return;
-            _isReleased = true;
-
             foreach (var tabWindow in _tabWindows.ToArray())
             {
                 tabWindow.Value.Hide();
@@ -54,10 +49,9 @@ namespace PRM.Model
             {
                 DelTabWindow(tabWindow.Key);
             }
-
             foreach (var kv in _protocolHosts.ToArray())
             {
-                DelProtocolHostInSyncContext(kv.Key);
+                DelProtocolHost(kv.Key);
             }
         }
 
@@ -262,6 +256,9 @@ namespace PRM.Model
             }
             #endregion
 
+            CloseUnhandledProtocols();
+            CloseEmptyTabs();
+
             Debug.Assert(_context.AppData.VmItemList.Any(x => x.Server.Id == serverId));
             _context.ConfigurationService.Engagement.ConnectCount++;
             _context.ConfigurationService.Save();
@@ -319,7 +316,6 @@ namespace PRM.Model
                 }
             }
             ConnectWithTab(server, runner, assignTabToken ?? "");
-            CloseEmptyTabs();
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
         }
 
@@ -330,7 +326,7 @@ namespace PRM.Model
 
         private void OnProtocolClose(string connectionId)
         {
-            DelProtocolHostInSyncContext(connectionId);
+            DelProtocolHost(connectionId);
         }
 
         public void AddTab(TabWindowBase tab)
@@ -437,7 +433,7 @@ namespace PRM.Model
             // move to full-screen-window
             var full = _host2FullScreenWindows.ContainsKey(connectionId) ? MoveToExistedFullScreenWindow(connectionId, tab) : MoveToNewFullScreenWindow(connectionId, tab);
 
-            CleanupTabs();
+            CleanupProtocolsAndTabs();
 
             SimpleLogHelper.Debug($@"Move host({host.GetHashCode()}) to full({full.GetHashCode()})");
             SimpleLogHelper.Debug($@"ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
@@ -581,10 +577,10 @@ namespace PRM.Model
             tab.GetViewModel().Items.Remove(item);
             tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.Count > 0 ? tab.GetViewModel().Items.First() : null;
             SimpleLogHelper.Debug($@"Remove connectionId = {connectionId} from tab({tab.GetHashCode()})");
-            CleanupTabs();
+            CleanupProtocolsAndTabs();
         }
 
-        private void DelProtocolHost(string connectionId)
+        public void DelProtocolHost(string connectionId)
         {
             if (string.IsNullOrEmpty(connectionId)
                 || !_protocolHosts.ContainsKey(connectionId))
@@ -639,30 +635,9 @@ namespace PRM.Model
 
             host?.ProtocolServer?.RunScriptAfterDisconnected();
 
-            CleanupTabs();
+            CleanupProtocolsAndTabs();
         }
 
-        /// <summary>
-        /// terminate remote connection
-        /// </summary>
-        public void DelProtocolHostInSyncContext(string connectionId, bool needConfirm = false)
-        {
-            if (_protocolHosts.ContainsKey(connectionId) == false)
-            {
-                return;
-            }
-
-            if (_context.ConfigurationService.General.ConfirmBeforeClosingSession == true
-                && needConfirm == true
-                && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
-
-            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-            SynchronizationContext.Current?.Post(pl => { DelProtocolHost(connectionId); }, null);
-        }
 
         /// <summary>
         /// del window & terminate remote connection
@@ -674,19 +649,14 @@ namespace PRM.Model
             {
                 if (!_tabWindows.ContainsKey(token)) return;
                 var tab = _tabWindows[token];
-                var items = tab.GetViewModel()?.Items?.ToArray() ?? new TabItemViewModel[0];
-                SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                SynchronizationContext.Current?.Post(pl =>
+                var items = tab.GetViewModel().Items.ToArray();
+                // del protocol
+                foreach (var tabItemViewModel in items)
                 {
-                    // del protocol
-                    foreach (var tabItemViewModel in items)
-                    {
-                        DelProtocolHostInSyncContext(tabItemViewModel.Content.ConnectionId);
-                    }
-
-                    SimpleLogHelper.Debug($@"DelTabWindow: deleted tab(token = {token}, hash = {tab.GetHashCode()})", $@"Now ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
-                    CleanupTabs();
-                }, null);
+                    DelProtocolHost(tabItemViewModel.Content.ConnectionId);
+                }
+                SimpleLogHelper.Debug($@"DelTabWindow: deleted tab(token = {token}, hash = {tab.GetHashCode()})", $@"Now ProtocolHosts.Count = {_protocolHosts.Count}, FullWin.Count = {_host2FullScreenWindows.Count}, _tabWindows.Count = {_tabWindows.Count}");
+                CleanupProtocolsAndTabs();
             }
         }
 
@@ -694,14 +664,12 @@ namespace PRM.Model
         {
             lock (this)
             {
-                var ps = _protocolHosts.Where(p => _tabWindows.Values.All(x => x?.GetViewModel()?.Items != null
-                                                                               && x.GetViewModel().Items.Count > 0
-                                                                               && x.GetViewModel().Items.All(y => y.Content.ConnectionId != p.Key))
+                var ps = _protocolHosts.Where(p => _tabWindows.Values.All(x => x.GetViewModel().Items.All(y => y.Content.ConnectionId != p.Key))
                                                    && !_host2FullScreenWindows.ContainsKey(p.Key));
                 var enumerable = ps as KeyValuePair<string, HostBase>[] ?? ps.ToArray();
                 if (enumerable.Any())
                 {
-                    DelProtocolHostInSyncContext(enumerable.First().Key);
+                    DelProtocolHost(enumerable.First().Key);
                 }
             }
         }
@@ -710,9 +678,7 @@ namespace PRM.Model
         {
             lock (this)
             {
-                var tabs = _tabWindows.Values.Where(x => x?.GetViewModel()?.Items == null
-                                                         || x.GetViewModel().Items.Count == 0
-                                                         || x.GetViewModel().Items.All(x => x.Content == null)).ToArray();
+                var tabs = _tabWindows.Values.Where(x => x.GetViewModel().Items.Count == 0).ToArray();
                 foreach (var tab in tabs)
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyTabs: Closing tab({tab.GetHashCode()})");
@@ -724,14 +690,10 @@ namespace PRM.Model
             }
         }
 
-        private void CleanupTabs()
+        private void CleanupProtocolsAndTabs()
         {
-            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-            SynchronizationContext.Current?.Post(pl =>
-            {
-                CloseUnhandledProtocols();
-                CloseEmptyTabs();
-            }, null);
+            CloseUnhandledProtocols();
+            CloseEmptyTabs();
         }
     }
 }

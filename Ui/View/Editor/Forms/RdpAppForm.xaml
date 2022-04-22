@@ -6,7 +6,10 @@
                         xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                         xmlns:controls="clr-namespace:Shawn.Utils.Wpf.Controls;assembly=Shawn.Utils.Wpf"
                         xmlns:editor="clr-namespace:PRM.View.Editor"
+                        xmlns:forms="clr-namespace:PRM.View.Editor.Forms"
+                        xmlns:protocol="clr-namespace:PRM.Model.Protocol"
                         mc:Ignorable="d"
+                        d:DataContext="{d:DesignInstance protocol:RdpApp}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
 
@@ -82,6 +85,24 @@
                                 </Hyperlink>
                         </TextBlock>
                     </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sounds}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <Grid.Resources>
+                        <forms:ConverterEAudioRedirectionMode x:Key="ConverterEAudioRedirectionMode" />
+                    </Grid.Resources>
+                    <ComboBox SelectedIndex="{Binding AudioRedirectionMode, Converter={StaticResource ConverterEAudioRedirectionMode}}">
+                        <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_local}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_local}" />
+                        <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_on_remote}" ToolTip="{DynamicResource server_editor_advantage_sounds_on_remote}" />
+                        <ComboBoxItem Content="{DynamicResource server_editor_advantage_sounds_disabled}" ToolTip="{DynamicResource server_editor_advantage_sounds_disabled}" />
+                        <ComboBoxItem Visibility="{Binding AudioRedirectionMode, Converter={StaticResource ConverterEqual2Visible}, ConverterParameter={x:Null}}" Content="{Binding ServerEditorDifferentOptions}" />
+                    </ComboBox>
                 </Grid>
             </StackPanel>
         </Grid>

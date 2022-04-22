@@ -120,7 +120,6 @@ namespace PRM.Model.Protocol
         #region Display
 
         private ERdpFullScreenFlag? _rdpFullScreenFlag = ERdpFullScreenFlag.EnableFullScreen;
-
         public ERdpFullScreenFlag? RdpFullScreenFlag
         {
             get => _rdpFullScreenFlag;
@@ -239,7 +238,6 @@ namespace PRM.Model.Protocol
         #region resource switch
 
         private bool? _enableClipboard = true;
-
         public bool? EnableClipboard
         {
             get => _enableClipboard;
@@ -247,7 +245,6 @@ namespace PRM.Model.Protocol
         }
 
         private bool? _enableDiskDrives = true;
-
         public bool? EnableDiskDrives
         {
             get => _enableDiskDrives;
@@ -255,7 +252,6 @@ namespace PRM.Model.Protocol
         }
 
         private bool? _enableKeyCombinations = true;
-
         public bool? EnableKeyCombinations
         {
             get => _enableKeyCombinations;
@@ -263,41 +259,39 @@ namespace PRM.Model.Protocol
         }
 
 
-
         private EAudioRedirectionMode? _audioRedirectionMode = EAudioRedirectionMode.RedirectToLocal;
-
         public EAudioRedirectionMode? AudioRedirectionMode
         {
             get => _audioRedirectionMode;
             set => SetAndNotifyIfChanged(ref _audioRedirectionMode, value);
         }
 
-        private bool? _enableAudioCapture = false;
 
+        private bool? _enableAudioCapture = false;
         public bool? EnableAudioCapture
         {
             get => _enableAudioCapture;
             set => SetAndNotifyIfChanged(ref _enableAudioCapture, value);
         }
 
-        private bool? _enablePorts = false;
 
+        private bool? _enablePorts = false;
         public bool? EnablePorts
         {
             get => _enablePorts;
             set => SetAndNotifyIfChanged(ref _enablePorts, value);
         }
 
-        private bool? _enablePrinters = false;
 
+        private bool? _enablePrinters = false;
         public bool? EnablePrinters
         {
             get => _enablePrinters;
             set => SetAndNotifyIfChanged(ref _enablePrinters, value);
         }
 
-        private bool? _enableSmartCardsAndWinHello = false;
 
+        private bool? _enableSmartCardsAndWinHello = false;
         public bool? EnableSmartCardsAndWinHello
         {
             get => _enableSmartCardsAndWinHello;
@@ -378,7 +372,6 @@ namespace PRM.Model.Protocol
         #endregion Gateway
 
         private LocalSetting _autoSetting = new LocalSetting();
-
         public LocalSetting AutoSetting
         {
             get => _autoSetting;

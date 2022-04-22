@@ -32,6 +32,13 @@ namespace PRM.Model.Protocol
             set => SetAndNotifyIfChanged(ref _remoteApplicationProgram, value);
         }
 
+        private EAudioRedirectionMode? _audioRedirectionMode = EAudioRedirectionMode.RedirectToLocal;
+        public EAudioRedirectionMode? AudioRedirectionMode
+        {
+            get => _audioRedirectionMode;
+            set => SetAndNotifyIfChanged(ref _audioRedirectionMode, value);
+        }
+
         public override bool IsOnlyOneInstance()
         {
             return false;
@@ -77,7 +84,6 @@ namespace PRM.Model.Protocol
             rdpConfig.RedirectPrinters = 0;
             rdpConfig.RedirectSmartCards = 1;
             rdpConfig.KeyboardHook = 2;
-            rdpConfig.AudioMode = 1;
             rdpConfig.AudioCaptureMode = 1;
             rdpConfig.AutoReconnectionEnabled = 1;
 
@@ -86,6 +92,14 @@ namespace PRM.Model.Protocol
             rdpConfig.RemoteApplicationProgram = RemoteApplicationProgram;
 
             rdpConfig.UseMultimon = 1;
+
+
+            if (this.AudioRedirectionMode == EAudioRedirectionMode.RedirectToLocal)
+                rdpConfig.AudioMode = 0;
+            else if (this.AudioRedirectionMode == EAudioRedirectionMode.LeaveOnRemote)
+                rdpConfig.AudioMode = 1;
+            else if (this.AudioRedirectionMode == EAudioRedirectionMode.Disabled)
+                rdpConfig.AudioMode = 2;
 
             return rdpConfig;
         }

@@ -54,7 +54,7 @@ namespace PRM.View.Host.ProtocolHosts
 
     public sealed partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
-        private AxMsRdpClient9NotSafeForScriptingEx _rdpClient = null!;
+        private AxMsRdpClient9NotSafeForScriptingEx? _rdpClient = null;
         private readonly RDP _rdpServer;
         /// <summary>
         /// system scale factor, 100 = 100%, 200 = 200%
@@ -116,7 +116,7 @@ namespace PRM.View.Host.ProtocolHosts
         private void RdpInitServerInfo()
         {
             #region server info
-
+            Debug.Assert(_rdpClient != null);
             // server info
             _rdpClient.Server = _rdpServer.Address;
             _rdpClient.Domain = _rdpServer.Domain;
@@ -145,6 +145,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void RdpInitStatic()
         {
+            Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init Static");
             // enable CredSSP, will use CredSsp if the client supports.
             _rdpClient.AdvancedSettings7.EnableCredSspSupport = true;
@@ -207,6 +208,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void RdpInitConnBar()
         {
+            Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init conn bar");
             _rdpClient.AdvancedSettings6.DisplayConnectionBar = _rdpServer.IsFullScreenWithConnectionBar == true;
             _rdpClient.AdvancedSettings6.ConnectionBarShowPinButton = true;
@@ -223,12 +225,14 @@ namespace PRM.View.Host.ProtocolHosts
             const int WM_DEVICECHANGE = 0x0219;
             // see https://docs.microsoft.com/en-us/windows/win32/termserv/imsrdpclientnonscriptable-notifyredirectdevicechange
             if (msg == WM_DEVICECHANGE
+                && _rdpClient != null
                 && ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).RedirectDynamicDevices)
                 ((IMsRdpClientNonScriptable3)_rdpClient.GetOcx()).NotifyRedirectDeviceChange(wParam, lParam);
         }
 
         private void RdpInitRedirect()
         {
+            Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init Redirect");
 
             #region Redirect
@@ -293,6 +297,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void RdpInitDisplay(double width = 0, double height = 0, bool isReconnecting = false)
         {
+            Debug.Assert(_rdpClient != null);
             #region Display
 
             _primaryScaleFactor = ScreenInfoEx.GetPrimaryScreenScaleFactor();
@@ -390,6 +395,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void RdpInitPerformance()
         {
+            Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init Performance");
 
             #region Performance
@@ -449,6 +455,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void RdpInitGateway()
         {
+            Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: init Gateway");
 
             #region Gateway
@@ -535,6 +542,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void Conn()
         {
+            Debug.Assert(_rdpClient != null);
             try
             {
                 if (Status == ProtocolHostStatus.Connected || Status == ProtocolHostStatus.Connecting)
@@ -557,6 +565,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void ReConn()
         {
+            Debug.Assert(_rdpClient != null);
             SimpleLogHelper.Debug("RDP Host: RDP ReConn, Status = " + Status);
             if (Status != ProtocolHostStatus.Connected
                 && Status != ProtocolHostStatus.Disconnected)
@@ -599,6 +608,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         public override void GoFullScreen()
         {
+            Debug.Assert(_rdpClient != null);
             Debug.Assert(this.ParentWindow != null);
 
             switch (_rdpServer.RdpFullScreenFlag)
@@ -810,6 +820,7 @@ namespace PRM.View.Host.ProtocolHosts
 
         private void MakeNormal2FullScreen()
         {
+            Debug.Assert(_rdpClient != null);
             // make sure ParentWindow is FullScreen Window
             Debug.Assert(ParentWindow != null);
             if (ParentWindow is TabWindowBase)
@@ -1039,13 +1050,13 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 try
                 {
-                    if (tmp.Connected > 0)
+                    if (tmp?.Connected > 0)
                         tmp.Disconnect();
-                    tmp.Dispose();
+                    tmp?.Dispose();
                 }
                 finally
                 {
-                    tmp = null;
+                    _rdpClient = null;
                 }
             });
             t.Start();

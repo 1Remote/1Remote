@@ -29,7 +29,7 @@ namespace PRM.View.Host
             {
                 if (Host != null)
                 {
-                    IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(Host.ConnectionId);
+                    IoC.Get<RemoteWindowPool>().DelProtocolHost(Host.ConnectionId);
                 }
             };
         }
