@@ -19,6 +19,7 @@ namespace PRM.View.Host
 
         public object Header { get; }
         public HostBase Content { get; }
+        public HostBase Host => Content;
         private bool _canResizeNow = false;
         public bool CanResizeNow
         {

@@ -44,21 +44,6 @@ namespace PRM.View.Host
             Items.Clear();
         }
 
-        private ObservableCollection<string> _tags = new ObservableCollection<string>();
-
-        /// <summary>
-        /// tag of the Tab, e.g. tag = Group1 then the servers in Group1 will be shown on this Tab.
-        /// </summary>
-        public ObservableCollection<string> Tags
-        {
-            get => _tags;
-            set
-            {
-                SetAndNotifyIfChanged(ref _tags, value);
-                SetTitle();
-            }
-        }
-
         private string _title = "";
         public string Title
         {
@@ -66,32 +51,16 @@ namespace PRM.View.Host
             set => SetAndNotifyIfChanged(ref _title, value);
         }
 
-
-
         public ResizeMode WindowResizeMode
         {
             get
             {
-                if (_isLocked
-                    || SelectedItem?.Content == null
+                if (SelectedItem?.Content == null
                     || (SelectedItem?.Content is AxMsRdpClient09Host && SelectedItem?.CanResizeNow == false))
                     return ResizeMode.NoResize;
                 return ResizeMode.CanResize;
             }
         }
-
-
-        private bool _isLocked = false;
-        public bool IsLocked
-        {
-            get => _isLocked;
-            set
-            {
-                SetAndNotifyIfChanged(ref _isLocked, value);
-                RaisePropertyChanged(nameof(WindowResizeMode));
-            }
-        }
-
 
         public ObservableCollection<TabItemViewModel> Items { get; } = new ObservableCollection<TabItemViewModel>();
 
@@ -136,8 +105,7 @@ namespace PRM.View.Host
 
         #region drag drop tab
 
-        private readonly IInterTabClient _interTabClient = new InterTabClient();
-        public IInterTabClient InterTabClient => _interTabClient;
+        public IInterTabClient InterTabClient { get; } = new InterTabClient();
 
         #endregion drag drop tab
 
@@ -158,7 +126,6 @@ namespace PRM.View.Host
             {
                 return _cmdHostGoFullScreen ??= new RelayCommand((o) =>
                 {
-                    if (IsLocked) return;
                     if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
                         IoC.Get<RemoteWindowPool>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                 }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
@@ -231,17 +198,12 @@ namespace PRM.View.Host
             {
                 return _cmdCloseAll ??= new RelayCommand((o) =>
                 {
-                    if (IsLocked) return;
                     if (_canCmdClose)
                     {
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
-                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) !=
-                            MessageBoxResult.Yes)
-                        {
-                        }
-                        else
+                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
                             IoC.Get<RemoteWindowPool>().DelTabWindow(Token);
                         }
@@ -258,21 +220,24 @@ namespace PRM.View.Host
             {
                 return _cmdClose ??= new RelayCommand((o) =>
                 {
-                    if (IsLocked) return;
                     if (_canCmdClose)
                     {
                         _canCmdClose = false;
 
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
-                            _canCmdClose = true; 
-                            return;
+                            if (o is string assign)
+                            {
+                                IoC.Get<RemoteWindowPool>().DelProtocolHost(assign);
+                            }
+                            else if (SelectedItem?.Content.ConnectionId != null)
+                            {
+                                IoC.Get<RemoteWindowPool>().DelProtocolHost(SelectedItem.Content.ConnectionId);
+                            }
                         }
 
-                        if (SelectedItem?.Content?.ConnectionId != null)
-                            IoC.Get<RemoteWindowPool>().DelProtocolHost(SelectedItem.Content.ConnectionId);
-                        _canCmdClose = true; 
+                        _canCmdClose = true;
                     }
                 }, o => this.SelectedItem != null);
             }
@@ -283,6 +248,13 @@ namespace PRM.View.Host
 
     public class InterTabClient : IInterTabClient
     {
+        /// <summary>
+        /// split tab window
+        /// </summary>
+        /// <param name="interTabClient"></param>
+        /// <param name="partition"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
             string token = DateTime.Now.Ticks.ToString();
@@ -291,11 +263,18 @@ namespace PRM.View.Host
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
 
+        /// <summary>
+        /// merge tab window
+        /// </summary>
+        /// <param name="tabControl"></param>
+        /// <param name="window"></param>
+        /// <returns></returns>
         public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)
         {
             if (window is TabWindowBase tab)
             {
-                IoC.Get<RemoteWindowPool>().DelTabWindow(tab.GetViewModel().Token);
+                tab.GetViewModel().Items.Clear();
+                IoC.Get<RemoteWindowPool>().CloseEmptyWindows();
             }
             return TabEmptiedResponse.CloseWindowOrLayoutBranch;
         }

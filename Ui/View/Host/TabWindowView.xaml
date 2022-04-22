@@ -164,7 +164,8 @@
                                                 attachProperty:VisionElement.OpacityAccent="0.9"
                                                 attachProperty:VisionElement.BackgroundAccent="Transparent"
                                                 Margin="5 0"
-                                                Command="dragablz:TabablzControl.CloseItemCommand">
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=host:TabWindowView}, Path=DataContext.CmdClose}"
+                                                CommandParameter="{Binding Content.ConnectionId}">
                                         <Grid Height="10" Width="8">
                                             <Path Data="F1 M 47.910156 -44.000000 L 87.183594 -4.683594 L 83.316406 -0.816406 L 44.000000 -40.089844 L 4.683594 -0.816406 L 0.816406 -4.683594 L 40.089844 -44.000000 L 0.816406 -83.316406 L 4.683594 -87.183594 L 44.000000 -47.910156 L 83.316406 -87.183594 L 87.183594 -83.316406 Z "
                                                       Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType=Button}}"
@@ -410,9 +411,7 @@
                                     </Grid>
                                 </Button>
 
-                                <Button IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
-                                                   Command="{Binding CmdHostGoFullScreen}" 
-                                                   CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
+                                <Button Command="{Binding CmdHostGoFullScreen}" CommandParameter="{Binding RelativeSource={ RelativeSource FindAncestor, AncestorType= Window}}">
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource WinTitleBarBtnStyle}">
                                             <Setter Property="Visibility" Value="Visible"></Setter>
@@ -434,7 +433,6 @@
 
                                 <Button Name="BtnCloseAll" ToolTip="{DynamicResource 'Close all'}" 
                                         Command="{Binding CmdCloseAll}" 
-                                        IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
                                         Style="{StaticResource WinTitleBarBtnStyle}"
                                         attachProperty:VisionElement.ForegroundAccent="White"
                                         attachProperty:VisionElement.BackgroundAccent="Red"
@@ -450,7 +448,6 @@
                                 <Button Name="BtnClose" 
                                                    ToolTip="{DynamicResource Close}" 
                                                    Command="{Binding CmdClose}" 
-                                                   IsEnabled="{Binding IsLocked, Converter={StaticResource ConverterBoolInverse}}"
                                                    Style="{StaticResource WinTitleBarBtnStyle}"
                                                    attachProperty:VisionElement.ForegroundAccent="White"
                                                    attachProperty:VisionElement.BackgroundAccent="Red"
