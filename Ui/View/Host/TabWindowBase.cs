@@ -13,10 +13,12 @@ using PRM.Model;
 using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
+using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using Stylet;
+using MessageBox = System.Windows.MessageBox;
 using ProtocolHostType = PRM.View.Host.ProtocolHosts.ProtocolHostType;
 using Timer = System.Timers.Timer;
 
@@ -142,10 +144,14 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             _tabablzControl.ClosingItemCallback += args =>
             {
                 args.Cancel();
-                if (args.DragablzItem.DataContext is TabItemViewModel viewModel
-                    && viewModel.Content != null)
+                if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
                 {
-                    IoC.Get<RemoteWindowPool>().DelProtocolHostInSyncContext(viewModel.Content.ConnectionId, true);
+                    if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
+                        && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                    {
+                        return;
+                    }
+                    IoC.Get<RemoteWindowPool>().DelProtocolHost(viewModel.Content.ConnectionId);
                 }
             };
         }
@@ -216,7 +222,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
         public void AddItem(TabItemViewModel newItem)
         {
             Debug.Assert(newItem?.Content?.ConnectionId != null);
-            if (Vm?.SelectedItem?.Content == null) return;
             if (Vm?.Items == null) return;
             if (Vm.Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
             {

@@ -22,7 +22,7 @@ namespace PRM.View
         public const string TAB_TAGS_LIST_NAME = "tags_selector_for_list@#@1__()!";
         public const string TAB_NONE_SELECTED = "@#@$*%&@!_)@#(&*&!@^$(*&@^*&$^1";
 
-        public string SelectedTabName { get; private set; }
+        public string SelectedTabName { get; private set; } = TAB_ALL_NAME;
         private List<TagFilter> _tagFilters = new List<TagFilter>();
         public List<TagFilter> TagFilters
         {
