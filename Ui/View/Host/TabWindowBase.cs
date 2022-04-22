@@ -52,7 +52,6 @@ namespace PRM.View.Host
                 _myHandle = new WindowInteropHelper(this).Handle;
             };
 
-
             this.Unloaded += (sender, args) =>
             {
                 _timer4CheckForegroundWindow.Dispose();
@@ -139,22 +138,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             };
         }
 
-        private void InitClosingItemCallback()
-        {
-            _tabablzControl.ClosingItemCallback += args =>
-            {
-                args.Cancel();
-                if (args.DragablzItem.DataContext is TabItemViewModel viewModel)
-                {
-                    if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) != MessageBoxResult.Yes)
-                    {
-                        return;
-                    }
-                    IoC.Get<RemoteWindowPool>().DelProtocolHost(viewModel.Content.ConnectionId);
-                }
-            };
-        }
 
         private void InitClosed()
         {
@@ -169,13 +152,27 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 }
                 try
                 {
-                    Vm?.CmdCloseAll.Execute();
                     IoC.Get<RemoteWindowPool>().DelTabWindow(Token);
                     Vm?.Dispose();
                 }
                 finally
                 {
                     DataContext = null;
+                }
+            };
+
+            Closing += (sender, args) =>
+            {
+                if (this.GetViewModel().Items.Count > 0)
+                {
+                    if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
+                        && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                    }
+                    else
+                    {
+                        args.Cancel = true;
+                    }
                 }
             };
         }
@@ -202,7 +199,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
 
             InitSizeChanged();
             InitWindowStateChanged();
-            InitClosingItemCallback();
             InitClosed();
         }
 
@@ -232,7 +228,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             Vm.SelectedItem = Vm.Items.Last();
         }
 
-        public Size GetTabContentSize(bool colorIsTransparent)
+        public Size GetTabContentSize(bool withoutBorderColor)
         {
             Debug.Assert(this.Resources["TitleBarHeight"] != null);
             Debug.Assert(this.Resources["TabContentBorderWithColor"] != null);
@@ -240,7 +236,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             var tabContentBorderWithColor = (Thickness)this.Resources["TabContentBorderWithColor"];
             var tabContentBorderWithOutColor = (Thickness)this.Resources["TabContentBorderWithOutColor"];
             var trapezoidHeight = (double)this.Resources["TitleBarHeight"];
-            if (colorIsTransparent)
+            if (withoutBorderColor)
                 return new Size()
                 {
                     Width = _tabablzControl.ActualWidth - tabContentBorderWithOutColor.Left - tabContentBorderWithOutColor.Right,
@@ -267,8 +263,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
             if (e.ClickCount == 2)
             {
                 if (Vm.SelectedItem?.CanResizeNow == false)
-                    return;
-                if (Vm.IsLocked)
                     return;
             }
             base.WinTitleBar_OnPreviewMouseDown(sender, e);
