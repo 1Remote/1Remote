@@ -63,7 +63,7 @@ namespace PRM.View.Host.ProtocolHosts
             throw new NotImplementedException();
         }
 
-        public override void MakeItFocus()
+        public override void FocusOnMe()
         {
             Dispatcher.Invoke(() =>
             {

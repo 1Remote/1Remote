@@ -109,7 +109,7 @@ namespace PRM
             builder.Bind<RequestRatingViewModel>().ToSelf();
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<GuidanceWindow>().ToSelf();
-            builder.Bind<RemoteWindowPool>().ToSelf().InSingletonScope();
+            builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
             builder.Bind<MainWindowSearchControlViewModel>().ToSelf().InSingletonScope();
             base.ConfigureIoC(builder);
         }
@@ -128,7 +128,7 @@ namespace PRM
             IoC.Get<LanguageService>().SetLanguage(IoC.Get<ConfigurationService>().General.CurrentLanguageCode);
             var context = IoC.Get<PrmContext>();
             context.Init(_canPortable);
-            IoC.Get<RemoteWindowPool>();
+            IoC.Get<SessionControlService>();
             _dbConnectionStatus = context.InitSqliteDb();
             IoC.Get<GlobalData>().ReloadServerList();
 

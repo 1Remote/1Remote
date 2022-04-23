@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>True</UseWindowsForms>
-		<RootNamespace>Ui</RootNamespace>
+		<RootNamespace>PRM</RootNamespace>
 		<AssemblyName>PRemoteM</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreDebug;StoreRelease</Configurations>

@@ -150,7 +150,7 @@ namespace PRM.View.Host.ProtocolHosts
         /// <summary>
         /// call to focus the AxRdp or putty
         /// </summary>
-        public virtual void MakeItFocus()
+        public virtual void FocusOnMe()
         {
             // do nothing
         }

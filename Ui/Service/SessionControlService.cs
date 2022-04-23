@@ -7,29 +7,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Threading;
+using PRM.Model;
 using PRM.Model.Protocol;
 using PRM.Model.Protocol.Base;
-using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.ProtocolRunner;
 using PRM.Model.ProtocolRunner.Default;
 using PRM.Utils;
-using Shawn.Utils;
 using PRM.View;
 using PRM.View.Host;
 using PRM.View.Host.ProtocolHosts;
-using Shawn.Utils.Interface;
+using Shawn.Utils;
 using Shawn.Utils.Wpf;
-using MessageBox = System.Windows.MessageBox;
 using ProtocolHostStatus = PRM.View.Host.ProtocolHosts.ProtocolHostStatus;
 
 
-namespace PRM.Model
+namespace PRM.Service
 {
-    public class RemoteWindowPool
+    public class SessionControlService
     {
         private readonly PrmContext _context;
-        public RemoteWindowPool(PrmContext context)
+        public SessionControlService(PrmContext context)
         {
             _context = context;
             GlobalEventHelper.OnRequestServerConnect += this.ShowRemoteHost;
@@ -176,9 +173,9 @@ namespace PRM.Model
                 return;
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
             _connectionId2Hosts.Add(host.ConnectionId, host);
-            host.OnClosed += OnProtocolClose;
-            host.OnFullScreen2Window += MoveProtocolHostToTab;
-            var full = MoveProtocolHostToFullScreen(host.ConnectionId);
+            host.OnClosed += this.OnProtocolClose;
+            host.OnFullScreen2Window += this.MoveProtocolHostToTab;
+            var full = this.MoveProtocolHostToFullScreen(host.ConnectionId);
             host.ParentWindow = full;
             host.Conn();
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
@@ -371,7 +368,6 @@ namespace PRM.Model
             }
 
             full.SetProtocolHost(host);
-            //full.Loaded += (sender, args) => { host.GoFullScreen(); };
             _connectionId2FullScreenWindows.Add(host.ConnectionId, full);
             host.ParentWindow = full;
             full.Show();
@@ -396,7 +392,7 @@ namespace PRM.Model
             }
 
             // move to full-screen-window
-            var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ? MoveToExistedFullScreenWindow(connectionId, tab) : MoveToNewFullScreenWindow(connectionId, tab);
+            var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ? this.MoveToExistedFullScreenWindow(connectionId, tab) : this.MoveToNewFullScreenWindow(connectionId, tab);
 
             this.CleanupProtocolsAndWindows();
 

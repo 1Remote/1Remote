@@ -333,7 +333,7 @@ namespace PRM.View.Host.ProtocolHosts
             throw new NotSupportedException("Integrate session can not go to full-screen mode!");
         }
 
-        public override void MakeItFocus()
+        public override void FocusOnMe()
         {
             SetForegroundWindow(this.GetHostHwnd());
         }

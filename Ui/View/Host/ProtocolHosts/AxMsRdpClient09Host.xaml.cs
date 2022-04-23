@@ -626,8 +626,11 @@ namespace PRM.View.Host.ProtocolHosts
                     throw new ArgumentOutOfRangeException();
             }
 
-            IoC.Get<DataService>().Database_UpdateServer(_rdpServer);
-            _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
+            if (_rdpClient.FullScreen != true)
+            {
+                IoC.Get<DataService>().Database_UpdateServer(_rdpServer);
+                _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
+            }
         }
 
         public override ProtocolHostType GetProtocolHostType()
@@ -927,7 +930,10 @@ namespace PRM.View.Host.ProtocolHosts
         /// <param name="isEnable"></param>
         public override void ToggleAutoResize(bool isEnable)
         {
-            _canAutoResizeByWindowSizeChanged = isEnable;
+            lock (_resizeEndLocker)
+            {
+                _canAutoResizeByWindowSizeChanged = isEnable;
+            }
         }
 
         private delegate void ResizeEndDelegage();

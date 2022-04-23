@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
 using PRM.Model;
+using PRM.Service;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 
@@ -10,58 +11,59 @@ namespace PRM.View.Host
 {
     public partial class FullScreenWindowView : Window
     {
-        public HostBase? Host { get; private set; } = null;
+        private HostBase? _host = null;
+
+        public HostBase? Host
+        {
+            get => _host;
+            private set
+            {
+                if (Equals(_host, value) == false)
+                {
+                    _host = value;
+                    SetWindowTitle();
+                }
+            }
+        }
+
         public FullScreenWindowView()
         {
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                if (Host != null)
-                {
-                    if (Equals(Content, Host) == false)
-                        Content = Host;
-                    Host.GoFullScreen();
-                }
-                //var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-                //source.AddHook(new HwndSourceHook(WndProc));
+                SetWindowTitle();
             };
             Closed += (sender, args) =>
             {
                 if (Host != null)
                 {
-                    IoC.Get<RemoteWindowPool>().DelProtocolHost(Host.ConnectionId);
+                    IoC.Get<SessionControlService>().DelProtocolHost(Host.ConnectionId);
                 }
             };
         }
 
-        //private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        //{
-        //    const int WM_DEVICECHANGE = 0x0219;
-        //    if (msg == WM_DEVICECHANGE)
-        //    {
-        //        if (Host is AxMsRdpClient09Host rdp)
-        //        {
-        //            SimpleLogHelper.Debug($"rdp.NotifyRedirectDeviceChange((uint){wParam}, (int){lParam})");
-        //            rdp.NotifyRedirectDeviceChange(msg, (uint) wParam, (int) lParam);
-        //        }
-        //    }
-        //    return IntPtr.Zero;
-        //}
+        private void SetWindowTitle()
+        {
+            if (Host != null && this.IsLoaded)
+            {
+                this.Title = Host.ProtocolServer.DisplayName + " - " + Host.ProtocolServer.SubTitle;
+                this.Icon = Host.ProtocolServer.IconImg;
+                Host.ParentWindow = this;
+                if (Equals(this.Content, Host) == false)
+                {
+                    this.Content = Host;
+                }
+                Host.GoFullScreen();
+            }
+        }
 
         public void SetProtocolHost(HostBase content)
         {
             Debug.Assert(content != null);
             this.Content = null;
             Host = content;
-            this.Title = Host.ProtocolServer.DisplayName + " - " + Host.ProtocolServer.SubTitle;
-            this.Icon = Host.ProtocolServer.IconImg;
-            Host.ParentWindow = this;
-            if (IsLoaded)
-            {
-                this.Content = content;
-                content.GoFullScreen();
-            }
         }
-        public string LastTabToken { get; set; }= "";
+
+        public string LastTabToken { get; set; } = "";
     }
 }
