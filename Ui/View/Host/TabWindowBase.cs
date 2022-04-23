@@ -50,6 +50,11 @@ namespace PRM.View.Host
                 _timer4CheckForegroundWindow.Elapsed += Timer4CheckForegroundWindowOnElapsed;
                 _timer4CheckForegroundWindow.Start();
                 _myHandle = new WindowInteropHelper(this).Handle;
+                var ws = _localityService.TabWindowState;
+                if (ws != System.Windows.WindowState.Minimized)
+                {
+                    this.WindowState = ws;
+                }
             };
 
             this.Unloaded += (sender, args) =>
@@ -83,7 +88,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 // focus content when tab is focused and host is Integrate and left mouse is not pressed
                 else if (nowActivatedWindowHandle == _myHandle && System.Windows.Forms.Control.MouseButtons != MouseButtons.Left)
                 {
-                    Vm?.SelectedItem?.Content?.MakeItFocus();
+                    Vm?.SelectedItem?.Content?.FocusOnMe();
                 }
                 _lastActivatedWindowHandle = nowActivatedWindowHandle;
             }
@@ -106,7 +111,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 {
                     _localityService.TabWindowHeight = this.Height;
                     _localityService.TabWindowWidth = this.Width;
-                    //_localityService.TabWindowState = this.WindowState;
                 }
                 SimpleLogHelper.Debug($"Tab size change to:W = {this.Width}, H = {this.Height}, Child {this.Vm?.SelectedItem?.Content?.Width}, {this.Vm?.SelectedItem?.Content?.Height}");
             };
@@ -152,7 +156,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 }
                 try
                 {
-                    IoC.Get<RemoteWindowPool>().DelTabWindow(Token);
+                    IoC.Get<SessionControlService>().DelTabWindow(Token);
                     Vm?.Dispose();
                 }
                 finally
@@ -166,7 +170,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 if (this.GetViewModel().Items.Count > 0)
                 {
                     if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                        && MessageBoxResult.Yes != MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo))
                     {
                     }
                     else
@@ -176,6 +180,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 }
             };
         }
+
 
         protected void Init(TabablzControl tabablzControl)
         {

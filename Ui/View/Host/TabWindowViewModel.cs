@@ -127,7 +127,7 @@ namespace PRM.View.Host
                 return _cmdHostGoFullScreen ??= new RelayCommand((o) =>
                 {
                     if (this.SelectedItem?.Content?.CanResizeNow() ?? false)
-                        IoC.Get<RemoteWindowPool>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
+                        IoC.Get<SessionControlService>().MoveProtocolHostToFullScreen(SelectedItem.Content.ConnectionId);
                 }, o => this.SelectedItem != null && (this.SelectedItem.Content?.CanFullScreen ?? false));
             }
         }
@@ -203,9 +203,12 @@ namespace PRM.View.Host
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
-                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                            && MessageBoxResult.Yes != MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo))
                         {
-                            IoC.Get<RemoteWindowPool>().DelTabWindow(Token);
+                        }
+                        else
+                        {
+                            IoC.Get<SessionControlService>().DelTabWindow(Token);
                         }
                         _canCmdClose = true;
                     }
@@ -225,15 +228,18 @@ namespace PRM.View.Host
                         _canCmdClose = false;
 
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                            && MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                            && MessageBoxResult.Yes != MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo))
+                        {
+                        }
+                        else
                         {
                             if (o is string assign)
                             {
-                                IoC.Get<RemoteWindowPool>().DelProtocolHost(assign);
+                                IoC.Get<SessionControlService>().DelProtocolHost(assign);
                             }
                             else if (SelectedItem?.Content.ConnectionId != null)
                             {
-                                IoC.Get<RemoteWindowPool>().DelProtocolHost(SelectedItem.Content.ConnectionId);
+                                IoC.Get<SessionControlService>().DelProtocolHost(SelectedItem.Content.ConnectionId);
                             }
                         }
 
@@ -259,7 +265,7 @@ namespace PRM.View.Host
         {
             string token = DateTime.Now.Ticks.ToString();
             var v = new TabWindowView(token, IoC.Get<PrmContext>().LocalityService);
-            IoC.Get<RemoteWindowPool>().AddTab(v);
+            IoC.Get<SessionControlService>().AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }
 
@@ -274,7 +280,7 @@ namespace PRM.View.Host
             if (window is TabWindowBase tab)
             {
                 tab.GetViewModel().Items.Clear();
-                IoC.Get<RemoteWindowPool>().CloseEmptyWindows();
+                IoC.Get<SessionControlService>().CloseEmptyWindows();
             }
             return TabEmptiedResponse.CloseWindowOrLayoutBranch;
         }
