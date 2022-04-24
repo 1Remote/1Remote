@@ -27,8 +27,8 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
 
     public class TransmitTask : NotifyPropertyChangedBase
     {
-        private readonly ITransmitter _transOrg = null!;
-        private ITransmitter _trans = null!;
+        private readonly ITransmitter _transOrg;
+        private ITransmitter? _trans;
         public readonly ETransmissionType TransmissionType;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
         private readonly string _destinationDirectoryPath;
@@ -491,7 +491,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         private bool CheckExistedFileHostToServer(TransmitItem item)
         {
             if (!item.IsDirectory)
-                if (_trans.Exists(item.DstPath))
+                if (_trans?.Exists(item.DstPath) == true)
                     return true;
             return false;
         }
@@ -562,7 +562,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
                     fi.Delete();
 
                 item.TransmittedSize = 0;
-                _trans.DownloadFile(item.SrcPath, item.DstPath, readLength =>
+                _trans?.DownloadFile(item.SrcPath, item.DstPath, readLength =>
                 {
                     DataTransmitting(ref item, readLength);
 
@@ -580,15 +580,15 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         {
             if (item.IsDirectory)
             {
-                _trans.CreateDirectory(item.DstPath);
+                _trans?.CreateDirectory(item.DstPath);
             }
             else if (File.Exists(item.SrcPath))
             {
-                if (_trans.Exists(item.DstPath))
-                    _trans.Delete(item.DstPath);
+                if (_trans?.Exists(item.DstPath) == true)
+                    _trans?.Delete(item.DstPath);
 
                 item.TransmittedSize = 0;
-                _trans.UploadFile(item.SrcPath, item.DstPath, readLength =>
+                _trans?.UploadFile(item.SrcPath, item.DstPath, readLength =>
                 {
                     DataTransmitting(ref item, readLength);
                 }, _cancellationSource.Token);

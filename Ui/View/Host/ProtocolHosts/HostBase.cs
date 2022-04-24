@@ -33,14 +33,12 @@ namespace PRM.View.Host.ProtocolHosts
     {
         public ProtocolBase ProtocolServer { get; }
 
-        private Window _parentWindow = null!;
-
-        public Window ParentWindow
+        private Window? _parentWindow;
+        public Window? ParentWindow
         {
             get => _parentWindow;
             set
             {
-                Debug.Assert(value != null);
                 ParentWindowHandle = IntPtr.Zero;
                 var window = Window.GetWindow(value);
                 if (window != null)

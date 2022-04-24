@@ -721,7 +721,7 @@ namespace PRM.View.Host.ProtocolHosts
                         BtnReconn.Visibility = Visibility.Visible;
                         TbMessage.Text = reason;
                     }
-                    this.ParentWindow.FlashIfNotActive();
+                    this.ParentWindow?.FlashIfNotActive();
                 }
                 else
                 {
@@ -735,7 +735,7 @@ namespace PRM.View.Host.ProtocolHosts
         private void RdpClientOnOnConnected(object? sender, EventArgs e)
         {
             SimpleLogHelper.Debug("RDP Host:  RdpOnOnConnected");
-            this.ParentWindow.FlashIfNotActive();
+            this.ParentWindow?.FlashIfNotActive();
 
             _flagHasConnected = true;
             Status = ProtocolHostStatus.Connected;
@@ -992,7 +992,7 @@ namespace PRM.View.Host.ProtocolHosts
         private uint _previousHeight = 0;
         private void _ResizeEnd_WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (ParentWindow.WindowState != WindowState.Minimized && _canAutoResizeByWindowSizeChanged && this._rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
+            if (ParentWindow?.WindowState != WindowState.Minimized && _canAutoResizeByWindowSizeChanged && this._rdpServer.RdpWindowResizeMode == ERdpWindowResizeMode.AutoResize)
             {
                 var nw = (uint)e.NewSize.Width;
                 var nh = (uint)e.NewSize.Height;

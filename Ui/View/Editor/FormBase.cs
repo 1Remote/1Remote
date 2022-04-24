@@ -5,7 +5,8 @@ namespace PRM.View.Editor
 {
     public abstract class FormBase : UserControl
     {
-        protected readonly ProtocolBase _vm = null!;
+        // ReSharper disable once InconsistentNaming
+        protected readonly ProtocolBase _vm;
 
 
         protected FormBase(ProtocolBase protocol)

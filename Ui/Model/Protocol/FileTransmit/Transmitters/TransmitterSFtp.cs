@@ -17,7 +17,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         public readonly string Username;
         public readonly string Password;
         public readonly string SshKey;
-        private SftpClient _sftp = null!;
+        private SftpClient? _sftp = null;
 
         public TransmitterSFtp(string host, int port, string username, string password)
         {
@@ -43,7 +43,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         ~TransmitterSFtp()
         {
-            _sftp.Dispose();
+            _sftp?.Dispose();
             //_timerKeepAlive.Stop();
         }
 
@@ -59,7 +59,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                return _sftp.IsConnected == true;
+                return _sftp?.IsConnected == true;
             }
         }
 
@@ -73,6 +73,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public RemoteItem? Get(string path)
         {
+            if (_sftp == null) return null;
             lock (this)
             {
                 return Exists(path) ? SftpFile2RemoteItem(_sftp.Get(path)) : null;
@@ -81,6 +82,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public List<RemoteItem> ListDirectoryItems(string path)
         {
+            if (_sftp == null) return new List<RemoteItem>();
             lock (this)
             {
                 var ret = new List<RemoteItem>();
@@ -104,7 +106,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         {
             lock (this)
             {
-                return _sftp.Exists(path) == true;
+                return _sftp?.Exists(path) == true;
             }
         }
 
@@ -150,6 +152,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public void Delete(string path)
         {
+            if (_sftp == null) return;
             lock (this)
             {
                 var item = Get(path);
@@ -161,10 +164,10 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                         foreach (var file in sub)
                         {
                             if (string.IsNullOrWhiteSpace(
-                                file.Name
-                                    .Replace('.', ' ')
-                                    .Replace('\\', ' ')
-                                    .Replace('/', ' ')))
+                                    file.Name
+                                        .Replace('.', ' ')
+                                        .Replace('\\', ' ')
+                                        .Replace('/', ' ')))
                                 continue;
                             Delete((string)file.FullName);
                         }
@@ -187,6 +190,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public void CreateDirectory(string path)
         {
+            if (_sftp == null) return;
             lock (this)
             {
                 if (_sftp.Exists(path) == false)
@@ -196,6 +200,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public void RenameFile(string path, string newPath)
         {
+            if (_sftp == null) return;
             if (path != newPath)
                 lock (this)
                 {
@@ -210,6 +215,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
             if (fi?.Exists != true)
                 return;
 
+            if (_sftp == null) return;
             lock (this)
             {
                 try
@@ -248,6 +254,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public void DownloadFile(string remoteFilePath, string saveToLocalPath, Action<ulong> readCallBack, CancellationToken cancellationToken)
         {
+            if (_sftp == null) return;
             lock (this)
             {
                 try
@@ -278,17 +285,17 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
 
         public void Release()
         {
-            _sftp.Disconnect();
-            _sftp.Dispose();
+            _sftp?.Disconnect();
+            _sftp?.Dispose();
         }
 
         private void InitClient()
         {
             lock (this)
             {
-                if (_sftp.IsConnected != true)
+                if (_sftp?.IsConnected != true)
                 {
-                    _sftp.Dispose();
+                    _sftp?.Dispose();
                     if (string.IsNullOrEmpty(Password))
                     {
                         var pkf = new PrivateKeyFile(new MemoryStream(Encoding.ASCII.GetBytes(SshKey)), Password);
@@ -315,7 +322,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                 InitClient();
                 lock (this)
                 {
-                    _sftp.ListDirectory("/");
+                    _sftp?.ListDirectory("/");
                 }
                 _timerKeepAlive.Interval = 10 * 1000;
                 _timerKeepAlive.Start();

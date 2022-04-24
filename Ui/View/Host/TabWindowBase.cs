@@ -11,6 +11,7 @@ using System.Windows.Interop;
 using Dragablz;
 using PRM.Model;
 using PRM.Service;
+using PRM.Utils;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
@@ -170,7 +171,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 if (this.GetViewModel().Items.Count > 0)
                 {
                     if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && MessageBoxResult.Yes != MessageBox.Show(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo))
+                        && false == MessageBoxHelper.ShowConfirmBox("messagebox_title_warning", "Are you sure you want to close the connection?"))
                     {
                     }
                     else

@@ -23,7 +23,7 @@ namespace PRM.View.Editor
 
         public bool IsAddMode => _serversInBuckEdit == null && Server.Id == 0;
         public bool IsBuckEdit => IsAddMode == false && _serversInBuckEdit?.Count() > 1;
-        private readonly ProtocolBase _orgServer = null!;
+        private readonly ProtocolBase _orgServer;
 
         #region single edit
         /// <summary>
@@ -167,7 +167,7 @@ namespace PRM.View.Editor
         public string Title { get; set; }
 
 
-        private ProtocolBase _server = null!;
+        private ProtocolBase _server = new RDP();
         public ProtocolBase Server
         {
             get => _server;
@@ -175,23 +175,23 @@ namespace PRM.View.Editor
         }
 
 
-        private ProtocolBase _selectedProtocol = null!;
+        private ProtocolBase _selectedProtocol = new RDP();
         public ProtocolBase SelectedProtocol
         {
             get => _selectedProtocol;
             set
             {
-                if (IsBuckEdit)
+                if (IsBuckEdit == false)
                 {
-                    // bulk edit can not change protocol
+                    // bulk edit do not allow change protocol
+                    if (SetAndNotifyIfChanged(ref _selectedProtocol, value))
+                    {
+                        if (_orgServer.GetType() == Server.GetType())
+                            _orgServer.Update(Server);
+                        UpdateServerWhenProtocolChanged(SelectedProtocol.GetType());
+                        ReflectProtocolEditControl(SelectedProtocol.GetType());
+                    }
                 }
-                if (value == _selectedProtocol) return;
-
-                SetAndNotifyIfChanged(ref _selectedProtocol, value);
-                if (_orgServer.GetType() == Server.GetType())
-                    _orgServer.Update(Server);
-                UpdateServerWhenProtocolChanged(SelectedProtocol.GetType());
-                ReflectProtocolEditControl(SelectedProtocol.GetType());
             }
         }
 
@@ -199,7 +199,7 @@ namespace PRM.View.Editor
         public List<ProtocolBase> ProtocolList { get; set; } = new List<ProtocolBase>();
 
 
-        private FormBase? _protocolEditControl = null!;
+        private FormBase? _protocolEditControl;
         public FormBase ProtocolEditControl
         {
             get
@@ -219,9 +219,6 @@ namespace PRM.View.Editor
         /// suggested tag for tag field
         /// </summary>
         public List<string> TagSelections { get; set; } = new List<string>();
-
-        public TagsEditor TagsEditor { get; set; } = null!;
-
 
         private RelayCommand? _cmdSave;
         public RelayCommand CmdSave
