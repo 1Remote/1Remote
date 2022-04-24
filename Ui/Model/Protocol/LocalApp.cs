@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using Newtonsoft.Json;
 using PRM.Model.Protocol.Base;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -133,7 +134,7 @@ namespace PRM.Model.Protocol
             {
                 return _cmdPreview ??= new RelayCommand((o) =>
                 {
-                    MessageBox.Show(GetCmd());
+                    MessageBoxHelper.Info(GetCmd());
                 });
             }
         }
@@ -168,8 +169,7 @@ namespace PRM.Model.Protocol
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show("Error: " + e.Message);
-                        throw;
+                        MessageBoxHelper.ErrorAlert("Error: " + e.Message);
                     }
                 });
             }

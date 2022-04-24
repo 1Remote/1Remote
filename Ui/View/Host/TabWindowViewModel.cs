@@ -9,10 +9,8 @@ using PRM.Model;
 using PRM.Service;
 using PRM.Utils;
 using PRM.View.Host.ProtocolHosts;
-using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Stylet;
 
 namespace PRM.View.Host
 {
@@ -204,7 +202,7 @@ namespace PRM.View.Host
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
                             && this.Items.Count > 0
-                            && false == MessageBoxHelper.ShowConfirmBox("messagebox_title_warning", "Are you sure you want to close the connection?"))
+                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
                         {
                         }
                         else
@@ -228,7 +226,7 @@ namespace PRM.View.Host
                     {
                         _canCmdClose = false;
                         if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                            && false == MessageBoxHelper.ShowConfirmBox("messagebox_title_warning", "Are you sure you want to close the connection?"))
+                            && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
                         {
                         }
                         else

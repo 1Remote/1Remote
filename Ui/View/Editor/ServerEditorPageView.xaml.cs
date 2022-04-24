@@ -7,6 +7,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using PRM.Model;
 using PRM.Resources.Icons;
+using PRM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Image;
@@ -124,7 +125,7 @@ namespace PRM.View.Editor
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBoxHelper.ErrorAlert(ex.Message);
             }
         }
 

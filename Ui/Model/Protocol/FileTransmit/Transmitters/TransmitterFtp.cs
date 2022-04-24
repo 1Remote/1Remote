@@ -131,7 +131,7 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                     }
                     else
                     {
-                        newItem.Icon = TransmitItemIconCache.GetFileIcon("*");
+                        newItem.Icon = TransmitItemIconCache.GetFileIcon();
                     }
                 }
                 return newItem;

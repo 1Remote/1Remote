@@ -456,9 +456,11 @@
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding IoMessageLevel}" Value="-1">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="0">
                                 <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
-                                <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IoMessageLevel}" Value="1">
                                 <Setter Property="Background" Value="Yellow"></Setter>

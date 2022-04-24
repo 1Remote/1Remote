@@ -14,6 +14,7 @@ using PRM.Model;
 using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.Protocol.FileTransmit.Transmitters;
 using PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -280,7 +281,7 @@ namespace PRM.View.Host.ProtocolHosts
                             IoMessageLevel = 2;
                             IoMessage = $"ls {CurrentPath}: " + e.Message;
                             if (CurrentPath != path)
-                                ShowFolder(CurrentPath);
+                                ShowFolder(CurrentPath, showIoMessage: false);
                             return;
                         }
                     }
@@ -430,10 +431,7 @@ namespace PRM.View.Host.ProtocolHosts
                         {
                             if (Trans?.IsConnected() != true)
                                 return;
-                            if (MessageBox.Show(
-                                IoC.Get<ILanguageService>().Translate("confirm_to_delete"),
-                                IoC.Get<ILanguageService>().Translate("messagebox_title_warning"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
+                            if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                             {
                                 foreach (var itemInfo in RemoteItems)
                                 {
@@ -610,10 +608,7 @@ namespace PRM.View.Host.ProtocolHosts
                             var msg = IoC.Get<ILanguageService>().Translate("file_transmit_host_message_preview_over_size");
                             msg = msg.Replace("1 MB", $"{limit} MB");
                             if (SelectedRemoteItem.ByteSize > 1024 * 1024 * limit
-                            && MessageBox.Show(
-                                msg,
-                                IoC.Get<ILanguageService>().Translate("messagebox_title_warning"),
-                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) != MessageBoxResult.Yes)
+                            && false == MessageBoxHelper.Confirm(msg))
                             {
                                 return;
                             }

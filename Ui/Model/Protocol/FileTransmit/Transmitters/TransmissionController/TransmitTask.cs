@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 
@@ -524,9 +525,8 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
             }
 
             if (existedFiles > 0
-            && MessageBox.Show(_languageService.Translate("file_transmit_host_warning_same_names").Replace("{0}", existedFiles.ToString()),
-                _languageService.Translate("file_transmit_host_warning_same_names_title"),
-                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly) != MessageBoxResult.Yes)
+            && false == MessageBoxHelper.Confirm(_languageService.Translate("file_transmit_host_warning_same_names", existedFiles.ToString()),
+                _languageService.Translate("file_transmit_host_warning_same_names_title")))
             {
                 return false;
             }

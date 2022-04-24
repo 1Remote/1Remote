@@ -164,7 +164,7 @@ namespace PRM.View
                 return _cmdTagDelete ??= new RelayCommand((o) =>
                 {
                     if (Context?.DataService == null) return;
-                    if (o is not Tag obj || MessageBox.Show(IoC.Get<ILanguageService>().Translate("confirm_to_delete"), IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.No)
+                    if (o is not Tag obj || false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         return;
 
                     var protocolServerBases = Context.AppData.VmItemList.Select(x => x.Server);

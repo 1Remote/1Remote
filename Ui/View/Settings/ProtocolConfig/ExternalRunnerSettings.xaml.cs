@@ -12,6 +12,7 @@ using PRM.Model.Protocol;
 using PRM.Model.Protocol.FileTransmit;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
@@ -135,7 +136,7 @@ namespace PRM.View.Settings.ProtocolConfig
                     if (o is ExternalRunner.ObservableKvp<string, string> item
                         && ExternalRunner.EnvironmentVariables.Contains(item)
                         && ((item.Key == "" && item.Value == "")
-                            || MessageBox.Show(_languageService.Translate("confirm_to_delete"), _languageService.Translate("messagebox_title_warning"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
+                            || true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                         )
                     {
                         ExternalRunner.EnvironmentVariables.Remove(item);
