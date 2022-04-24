@@ -23,7 +23,6 @@ namespace PRM.View.Editor
             {
                 if (this.DataContext is ServerEditorPageViewModel vm)
                 {
-                    vm.TagsEditor = TagsEditor;
                     // add mode
                     if (vm.IsAddMode)
                     {

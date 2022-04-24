@@ -32,6 +32,7 @@ namespace PRM.Service
             AddStaticLanguageResources("zh-cn");
             AddStaticLanguageResources("de-de");
             AddStaticLanguageResources("fr-fr");
+            AddStaticLanguageResources("pt-br");
         }
 
         public void AddXamlLanguageResources(string code, string fullName)
