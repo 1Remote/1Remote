@@ -68,7 +68,7 @@ namespace PRM.Utils
             var args = er.Arguments;
             if (!File.Exists(exePath))
             {
-                MessageBox.Show($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
+                MessageBoxHelper.ErrorAlert($"Exe file '{er.ExePath}' of runner '{er.Name}' does not existed!");
                 return null;
             }
 
@@ -169,7 +169,7 @@ namespace PRM.Utils
                     {
                         if (File.Exists(app.ExePath) == false)
                         {
-                            MessageBox.Show($"the path '{app.ExePath}' does not existed!");
+                            MessageBoxHelper.ErrorAlert($"the path '{app.ExePath}' does not existed!");
                             return null;
                         }
 

@@ -433,10 +433,7 @@ namespace PRM.View
 
 
 
-
-        /// <summary>
-        /// use it after Show() has been called
-        /// </summary>
+        
         public void SetHotKey()
         {
             if (this.View is LauncherWindowView window)
@@ -445,7 +442,6 @@ namespace PRM.View
                 if (IoC.Get<ConfigurationService>().Launcher.LauncherEnabled == false)
                     return;
                 var r = GlobalHotkeyHooker.Instance.Register(window, (uint)IoC.Get<ConfigurationService>().Launcher.HotKeyModifiers, IoC.Get<ConfigurationService>().Launcher.HotKeyKey, this.ShowMe);
-                var title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
                 switch (r.Item1)
                 {
                     case GlobalHotkeyHooker.RetCode.Success:
@@ -455,14 +451,14 @@ namespace PRM.View
                         {
                             var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_registered_fail")}: {r.Item2}";
                             SimpleLogHelper.Warning(msg);
-                            MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
+                            MessageBoxHelper.Warning(msg);
                             break;
                         }
                     case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
                         {
                             var msg = $"{IoC.Get<ILanguageService>().Translate("hotkey_already_registered")}: {r.Item2}";
                             SimpleLogHelper.Warning(msg);
-                            MessageBox.Show(msg, title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.None);
+                            MessageBoxHelper.Warning(msg);
                             break;
                         }
                     default:

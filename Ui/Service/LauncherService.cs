@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using PRM.Utils;
 using Shawn.Utils.Wpf;
 
 namespace PRM.Service
@@ -65,11 +66,11 @@ namespace PRM.Service
                     return true;
 
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_NOT_REGISTERED:
-                    MessageBox.Show(_languageService.Translate("hotkey_registered_fail") + ": " + r.Item2, _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                    MessageBoxHelper.ErrorAlert(_languageService.Translate("hotkey_registered_fail") + ": " + r.Item2);
                     break;
 
                 case GlobalHotkeyHooker.RetCode.ERROR_HOTKEY_ALREADY_REGISTERED:
-                    MessageBox.Show(_languageService.Translate("hotkey_already_registered") + ": " + r.Item2, _languageService.Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                    MessageBoxHelper.ErrorAlert(_languageService.Translate("hotkey_already_registered") + ": " + r.Item2);
                     break;
 
                 default:

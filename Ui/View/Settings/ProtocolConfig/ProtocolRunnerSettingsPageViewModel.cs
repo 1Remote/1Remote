@@ -6,6 +6,7 @@ using System.Windows;
 using PRM.Controls;
 using PRM.Model.ProtocolRunner;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -104,10 +105,8 @@ namespace PRM.View.Settings.ProtocolConfig
                 {
                     var pn = o?.ToString();
                     if (pn == null) return;
-                    if (MessageBox.Show(
-                        _languageService.Translate("confirm_to_delete"),
-                        _languageService.Translate("messagebox_title_warning"),
-                        MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None) == MessageBoxResult.Yes)
+                    
+                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete")))
                     {
                         var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
                         if (string.IsNullOrEmpty(pn) == false && c.Runners.Any(x => x.Name == pn))
@@ -138,7 +137,7 @@ namespace PRM.View.Settings.ProtocolConfig
                 return _cmdShowProtocolHelp ??= new RelayCommand((o) =>
                 {
                     var c = _protocolConfigurationService.ProtocolConfigs[_selectedProtocol];
-                    MessageBox.Show(c.GetAllDescriptions);
+                    MessageBoxHelper.Info(c.GetAllDescriptions);
                 });
             }
         }

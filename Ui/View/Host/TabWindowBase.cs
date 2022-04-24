@@ -171,7 +171,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 if (this.GetViewModel().Items.Count > 0)
                 {
                     if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && false == MessageBoxHelper.ShowConfirmBox("messagebox_title_warning", "Are you sure you want to close the connection?"))
+                        && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
                     {
                     }
                     else

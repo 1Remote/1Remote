@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Windows.Media.Imaging;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using Shawn.Utils;
@@ -137,12 +138,16 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
                     if (item.IsSymbolicLink)
                         newItem.FileType = ".lnk";
 
-                    var icon = TransmitItemIconCache.GetFileIcon("*");
+                    BitmapSource icon;
                     if (item.Name.IndexOf(".", StringComparison.Ordinal) > 0)
                     {
                         var ext = item.Name.Substring(item.Name.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
                         newItem.FileType = ext;
                         icon = TransmitItemIconCache.GetFileIcon(ext);
+                    }
+                    else
+                    {
+                        icon = TransmitItemIconCache.GetFileIcon();
                     }
                     newItem.Icon = icon;
                 }

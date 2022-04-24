@@ -7,6 +7,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using PRM.Model;
 using PRM.Service;
+using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
@@ -76,7 +77,7 @@ namespace PRM.View.Settings
             var resourceDictionary = MultiLanguageHelper.LangDictFromXamlFile(fi.FullName);
             if (resourceDictionary?.Contains("language_name") != true)
             {
-                MessageBox.Show("language resource must contain field: \"language_name\"!", IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBoxHelper.ErrorAlert("language resource must contain field: \"language_name\"!");
                 return;
             }
 
@@ -86,7 +87,7 @@ namespace PRM.View.Settings
             if (missingFields.Count > 0)
             {
                 var mf = string.Join(", ", missingFields);
-                MessageBox.Show($"language resource missing:\r\n {mf}", IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBoxHelper.ErrorAlert($"language resource missing:\r\n {mf}");
                 return;
             }
 

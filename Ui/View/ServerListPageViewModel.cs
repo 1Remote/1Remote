@@ -112,10 +112,7 @@ namespace PRM.View
             if (GlobalEventHelper.OnRequestDeleteServer == null)
                 GlobalEventHelper.OnRequestDeleteServer += id =>
                 {
-                    if (MessageBoxResult.Yes == MessageBox.Show(
-                        IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"),
-                        IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question, MessageBoxResult.None))
+                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
                         Context.AppData.DeleteServer(id);
                     }
@@ -290,7 +287,7 @@ namespace PRM.View
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {
-                                MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), IoC.Get<ILanguageService>().Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
                             });
                         }
                         catch (Exception e)
@@ -299,7 +296,7 @@ namespace PRM.View
                             GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                             Execute.OnUIThread(() =>
                             {
-                                MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                                MessageBoxHelper.ErrorAlert(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                             });
                         }
                     });
@@ -331,7 +328,7 @@ namespace PRM.View
                                 GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                                 Execute.OnUIThread(() =>
                                 {
-                                    MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_done_0_items_added").Replace("{0}", list.Count.ToString()), IoC.Get<ILanguageService>().Translate("messagebox_title_info"), MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.None);
+                                    MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_done_0_items_added", list.Count.ToString()));
                                 });
                                 return;
                             }
@@ -345,7 +342,7 @@ namespace PRM.View
                         GlobalEventHelper.ShowProcessingRing?.Invoke(Visibility.Collapsed, "");
                         Execute.OnUIThread(() =>
                         {
-                            MessageBox.Show(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"), IoC.Get<ILanguageService>().Translate("messagebox_title_error"), MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                            MessageBoxHelper.Info(IoC.Get<ILanguageService>().Translate("import_failure_with_data_format_error"));
                         });
                     });
                 });
@@ -379,10 +376,7 @@ namespace PRM.View
                     if (Context?.AppData == null) return;
                     var ss = ServerListItems.Where(x => x.IsSelected == true).ToList();
                     if (!(ss?.Count > 0)) return;
-                    if (MessageBoxResult.Yes == MessageBox.Show(
-                        IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected"),
-                        IoC.Get<ILanguageService>().Translate("messagebox_title_warning"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question, MessageBoxResult.None))
+                    if (true == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("confirm_to_delete_selected")))
                     {
                         var ids = ss.Select(x => x.Id);
                         Context.AppData.DeleteServer(ids);

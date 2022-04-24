@@ -13,16 +13,16 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
         private static readonly Dictionary<string, BitmapSource> _dictIcons = new Dictionary<string, BitmapSource>();
         private static readonly object _locker = new object();
 
-        public static BitmapSource GetFileIcon(string key = "*")
+        public static BitmapSource GetFileIcon(string key = ".tmz")
         {
             lock (_locker)
             {
-                if (_fileIcons.ContainsKey("*") == false)
-                    _fileIcons.Add("*", SystemIconHelper.GetIcon("*")!);
+                if (_fileIcons.ContainsKey(".tmz") == false)
+                    _fileIcons.Add(".tmz", SystemIconHelper.GetIcon(".tmz")!);
                 if (_fileIcons.ContainsKey(key))
                     return _fileIcons[key];
                 var icon = SystemIconHelper.GetIcon(key);
-                _fileIcons.Add(key, icon ?? _fileIcons["*"]);
+                _fileIcons.Add(key, icon ?? _fileIcons[".tmz"]);
                 return _fileIcons[key];
             }
         }
@@ -32,10 +32,12 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters
             lock (_locker)
             {
                 if (_dictIcons.ContainsKey("") == false)
-                    _dictIcons.Add("", SystemIconHelper.GetFolderIcon(System.IO.Path.GetTempPath())!);
+                {
+                    _dictIcons.Add("", SystemIconHelper.GetIcon("")!);
+                }
                 if (_dictIcons.ContainsKey(key))
                     return _dictIcons[key];
-                var icon = SystemIconHelper.GetFolderIcon(key);
+                var icon = SystemIconHelper.GetIcon(key);
                 _dictIcons.Add(key, icon ?? _dictIcons[""]);
                 return _dictIcons[key];
             }
