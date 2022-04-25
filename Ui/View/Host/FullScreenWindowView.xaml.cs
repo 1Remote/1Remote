@@ -21,17 +21,21 @@ namespace PRM.View.Host
                 if (Equals(_host, value) == false)
                 {
                     _host = value;
-                    SetWindowTitle();
+                    SetContent();
                 }
             }
         }
 
+        public const int DesignWidth = 600;
+        public const int DesignHeight = 480;
         public FullScreenWindowView()
         {
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                SetWindowTitle();
+                this.Width = DesignWidth;
+                this.Height = DesignHeight;
+                SetContent();
             };
             Closed += (sender, args) =>
             {
@@ -42,26 +46,28 @@ namespace PRM.View.Host
             };
         }
 
-        private void SetWindowTitle()
+        private void SetContent()
         {
             if (Host != null && this.IsLoaded)
             {
                 this.Title = Host.ProtocolServer.DisplayName + " - " + Host.ProtocolServer.SubTitle;
                 this.Icon = Host.ProtocolServer.IconImg;
-                Host.ParentWindow = this;
+                Host.SetParentWindow(this);
+            }
+
+            if (this.IsLoaded)
+            {
                 if (Equals(this.Content, Host) == false)
                 {
                     this.Content = Host;
                 }
-                Host.GoFullScreen();
             }
         }
 
-        public void SetProtocolHost(HostBase content)
+        public void SetProtocolHost(HostBase? host)
         {
-            Debug.Assert(content != null);
-            this.Content = null;
-            Host = content;
+            Host = null;
+            Host = host;
         }
 
         public string LastTabToken { get; set; } = "";

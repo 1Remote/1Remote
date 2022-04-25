@@ -126,7 +126,7 @@ namespace PRM.Utils
             {
                 case RDP rdp:
                     {
-                        var host = new AxMsRdpClient09Host(rdp, width, height);
+                        var host = new AxMsRdpClient09Host(rdp, (int)width, (int)height);
                         return host;
                     }
                 case SSH ssh:

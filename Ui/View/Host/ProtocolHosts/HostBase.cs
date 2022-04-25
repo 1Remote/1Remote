@@ -34,20 +34,19 @@ namespace PRM.View.Host.ProtocolHosts
         public ProtocolBase ProtocolServer { get; }
 
         private Window? _parentWindow;
-        public Window? ParentWindow
+        public Window? ParentWindow => _parentWindow;
+
+        public virtual void SetParentWindow(Window? value)
         {
-            get => _parentWindow;
-            set
+            if (_parentWindow == value) return;
+            ParentWindowHandle = IntPtr.Zero;
+            var window = Window.GetWindow(value);
+            if (window != null)
             {
-                ParentWindowHandle = IntPtr.Zero;
-                var window = Window.GetWindow(value);
-                if (window != null)
-                {
-                    var wih = new WindowInteropHelper(window);
-                    ParentWindowHandle = wih.Handle;
-                }
-                _parentWindow = value;
+                var wih = new WindowInteropHelper(window);
+                ParentWindowHandle = wih.Handle;
             }
+            _parentWindow = value;
         }
 
         public IntPtr ParentWindowHandle { get; private set; } = IntPtr.Zero;
@@ -140,10 +139,13 @@ namespace PRM.View.Host.ProtocolHosts
         /// </summary>
         public virtual void Close()
         {
-            OnClosed?.Invoke(ConnectionId);
+            this.OnClosed?.Invoke(ConnectionId);
         }
 
-        public abstract void GoFullScreen();
+        protected virtual void GoFullScreen()
+        {
+            throw new NotSupportedException();
+        }
 
         /// <summary>
         /// call to focus the AxRdp or putty

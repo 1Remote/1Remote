@@ -7,7 +7,5 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="FullScreenWindowView" Height="480" Width="600">
-    <Grid Background="{DynamicResource PrimaryMidBrush}">
-    </Grid>
+        Title="FullScreenWindowView" Height="480" Width="600" Background="{DynamicResource PrimaryMidBrush}">
 </Window>
