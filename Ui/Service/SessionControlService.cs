@@ -175,8 +175,7 @@ namespace PRM.Service
             _connectionId2Hosts.Add(host.ConnectionId, host);
             host.OnClosed += this.OnProtocolClose;
             host.OnFullScreen2Window += this.MoveProtocolHostToTab;
-            var full = this.MoveProtocolHostToFullScreen(host.ConnectionId);
-            host.ParentWindow = full;
+            this.MoveProtocolHostToFullScreen(host.ConnectionId);
             host.Conn();
             SimpleLogHelper.Debug($@"Start Conn: {server.DisplayName}({server.GetHashCode()}) by host({host.GetHashCode()}) with full");
         }
@@ -215,9 +214,8 @@ namespace PRM.Service
             // get display area size for host
             Debug.Assert(!_connectionId2Hosts.ContainsKey(host.ConnectionId));
             host.OnClosed += OnProtocolClose;
-            host.OnFullScreen2Window += MoveProtocolHostToTab;
+            host.OnFullScreen2Window += this.MoveProtocolHostToTab;
             tab.AddItem(new TabItemViewModel(host, protocol.DisplayName));
-            host.ParentWindow = tab;
             _connectionId2Hosts.Add(host.ConnectionId, host);
             host.Conn();
             tab.Activate();
@@ -329,10 +327,8 @@ namespace PRM.Service
                 full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
                 full.LastTabToken = _lastTabToken;
             }
-            full.Show();
             full.SetProtocolHost(host);
-            host.ParentWindow = full;
-            host.GoFullScreen();
+            full.Show();
             return full;
         }
 
@@ -367,9 +363,8 @@ namespace PRM.Service
                 full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
             }
 
+            _connectionId2FullScreenWindows.Add(connectionId, full);
             full.SetProtocolHost(host);
-            _connectionId2FullScreenWindows.Add(host.ConnectionId, full);
-            host.ParentWindow = full;
             full.Show();
             return full;
         }
@@ -446,7 +441,7 @@ namespace PRM.Service
             return tab;
         }
 
-        public void MoveProtocolHostToTab(string connectionId)
+        private void MoveProtocolHostToTab(string connectionId)
         {
             Debug.Assert(_connectionId2Hosts.ContainsKey(connectionId) == true);
             var host = _connectionId2Hosts[connectionId];
@@ -459,6 +454,7 @@ namespace PRM.Service
                 {
                     // !importance: do not close old FullScreenWindowView, or RDP will lose conn bar when restore from tab to fullscreen.
                     SimpleLogHelper.Debug($@"Hide full({fullScreenWindow.GetHashCode()})");
+                    fullScreenWindow.SetProtocolHost(null);
                     fullScreenWindow.Hide();
                     tab = this.GetOrCreateTabWindow(fullScreenWindow.LastTabToken ?? "");
                 }
@@ -469,14 +465,13 @@ namespace PRM.Service
             if (tab.GetViewModel().Items.All(x => x.Content != host))
             {
                 // move
-                tab.AddItem(new TabItemViewModel((HostBase)host, host.ProtocolServer.DisplayName));
+                tab.AddItem(new TabItemViewModel(host, host.ProtocolServer.DisplayName));
             }
             else
             {
                 // just show
                 tab.GetViewModel().SelectedItem = tab.GetViewModel().Items.First(x => x.Content == host);
             }
-            host.ParentWindow = tab;
             tab.Activate();
             SimpleLogHelper.Debug($@"MoveProtocolHostToTab: Moved host({host.GetHashCode()}) to tab({tab.GetHashCode()})", $@"Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
         }
@@ -505,7 +500,7 @@ namespace PRM.Service
                         if (host.OnClosed != null)
                             host.OnClosed -= OnProtocolClose;
                         if (host.OnFullScreen2Window != null)
-                            host.OnFullScreen2Window -= MoveProtocolHostToTab;
+                            host.OnFullScreen2Window -= this.MoveProtocolHostToTab;
                         _connectionId2Hosts.Remove(connectionId);
                         SimpleLogHelper.Debug($@"DelProtocolHost: removed and now, Hosts.Count = {_connectionId2Hosts.Count}, FullWin.Count = {_connectionId2FullScreenWindows.Count}, _token2tabWindows.Count = {_token2TabWindows.Count}");
                     }

@@ -126,11 +126,6 @@ namespace PRM.View.Host.ProtocolHosts
             base.Close();
         }
 
-        public override void GoFullScreen()
-        {
-            throw new NotImplementedException();
-        }
-
         public override ProtocolHostType GetProtocolHostType()
         {
             return ProtocolHostType.Native;

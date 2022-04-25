@@ -231,6 +231,7 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 return;
             }
             Vm.Items.Add(newItem);
+            newItem.Content.SetParentWindow(this);
             Vm.SelectedItem = Vm.Items.Last();
         }
 
