@@ -14,6 +14,7 @@ using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.Controls;
+using Stylet;
 
 namespace PRM.View.Host.ProtocolHosts
 {
@@ -155,17 +156,20 @@ namespace PRM.View.Host.ProtocolHosts
             this.ParentWindow?.FlashIfNotActive();
 
             _flagHasConnected = true;
-            Status = ProtocolHostStatus.Connected;
-            RdpHost.Visibility = Visibility.Visible;
-            GridLoading.Visibility = Visibility.Collapsed;
-            GridMessageBox.Visibility = Visibility.Collapsed;
-
-            // if parent is FullScreenWindowView, go to full screen.
-            if (ParentWindow is FullScreenWindowView)
+            Execute.OnUIThread(() =>
             {
-                SimpleLogHelper.Debug("RDP Host: ReConn with full screen");
-                GoFullScreen();
-            }
+                Status = ProtocolHostStatus.Connected;
+                RdpHost.Visibility = Visibility.Visible;
+                GridLoading.Visibility = Visibility.Collapsed;
+                GridMessageBox.Visibility = Visibility.Collapsed;
+
+                // if parent is FullScreenWindowView, go to full screen.
+                if (ParentWindow is FullScreenWindowView)
+                {
+                    SimpleLogHelper.Debug("RDP Host: ReConn with full screen");
+                    GoFullScreen();
+                }
+            });
         }
 
         private void OnRdpClientLoginComplete(object? sender, EventArgs e)

@@ -250,6 +250,7 @@ namespace PRM.Service
             }
 
             // update the last conn time
+            // TODO remember connection time in the localstorage
             server.LastConnTime = DateTime.Now;
             Debug.Assert(_context.DataService != null);
             _context.DataService.Database_UpdateServer(server);

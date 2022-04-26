@@ -92,7 +92,6 @@ namespace PRM.Model.Protocol.Base
 
 
         private List<string> _tags = new List<string>();
-
         public List<string> Tags
         {
             get
@@ -109,7 +108,6 @@ namespace PRM.Model.Protocol.Base
         }
 
         private string _iconBase64 = "";
-
         public string IconBase64
         {
             get => _iconBase64;
@@ -122,7 +120,6 @@ namespace PRM.Model.Protocol.Base
         }
 
         private BitmapSource? _iconCache = null;
-
         [JsonIgnore]
         public BitmapSource? IconImg
         {
@@ -152,7 +149,6 @@ namespace PRM.Model.Protocol.Base
         }
 
         private DateTime _lastConnTime = DateTime.MinValue;
-
         public DateTime LastConnTime
         {
             get => _lastConnTime;
@@ -160,7 +156,6 @@ namespace PRM.Model.Protocol.Base
         }
 
         private string _commandBeforeConnected = "";
-
         public string CommandBeforeConnected
         {
             get => _commandBeforeConnected;
@@ -168,11 +163,17 @@ namespace PRM.Model.Protocol.Base
         }
 
         private string _commandAfterDisconnected = "";
-
         public string CommandAfterDisconnected
         {
             get => _commandAfterDisconnected;
             set => SetAndNotifyIfChanged(ref _commandAfterDisconnected, value);
+        }
+
+        private string _note = "";
+        public string Note
+        {
+            get => _note;
+            set => SetAndNotifyIfChanged(ref _note, value);
         }
 
 
