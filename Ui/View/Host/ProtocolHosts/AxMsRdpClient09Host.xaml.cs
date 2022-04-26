@@ -562,7 +562,10 @@ namespace PRM.View.Host.ProtocolHosts
                 Status = ProtocolHostStatus.Connecting;
                 GridLoading.Visibility = Visibility.Visible;
                 RdpHost.Visibility = Visibility.Collapsed;
-                _rdpClient.Connect();
+                Task.Factory.StartNew(() =>
+                {
+                    _rdpClient.Connect();
+                });
             }
             catch (Exception e)
             {
