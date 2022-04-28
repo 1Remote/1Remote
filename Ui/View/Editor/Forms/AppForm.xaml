@@ -9,51 +9,49 @@
                         d:DataContext="{d:DesignInstance protocol:LocalApp}"
                         d:DesignHeight="1450" d:DesignWidth="800">
     <StackPanel>
-        <StackPanel>
-            <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Tag="e.g. C:/vnc/viewer.exe"
+        <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource Connection}"></TextBlock>
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Exe path'}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Tag="e.g. C:/vnc/viewer.exe"
                             Text="{Binding ExePath,UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                    </Grid>
-                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                </Grid>
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource Select}" 
                             Command="{Binding CmdSelectExePath}"></Button>
-                </StackPanel>
-            </Grid>
-            <Grid Style="{StaticResource EditorRowGrid}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
-                    <Grid Style="{StaticResource EditorRowGridInput}">
-                        <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                    </Grid>
+            </StackPanel>
+        </Grid>
+        <Grid Style="{StaticResource EditorRowGrid}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Cmd parameter'}"></TextBlock>
+                <Grid Style="{StaticResource EditorRowGridInput}">
+                    <TextBox Text="{Binding Arguments, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                </Grid>
 
-                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource Select}" 
                             Command="{Binding CmdSelectArgumentFile}"></Button>
-                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource 'Preview'}" 
                             Command="{Binding CmdPreview}"></Button>
-                    <Button Style="{StaticResource ButtonPrimaryStyle}" 
+                <Button Style="{StaticResource ButtonPrimaryStyle}" 
                             Margin="5 0 0 0"
                             Content="{DynamicResource 'Test'}" 
                             Command="{Binding CmdTest}"></Button>
-                </StackPanel>
-            </Grid>
+            </StackPanel>
+        </Grid>
 
-            <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
-                    <CheckBox IsChecked="{Binding RunWithHosting}">
-                        <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
-                    </CheckBox>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
+        <Grid Style="{StaticResource EditorRowGrid}" ToolTip="{DynamicResource 'Hosting this exe in PRemoteM tab view?'}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource 'Hosting'}"></TextBlock>
+                <CheckBox IsChecked="{Binding RunWithHosting}">
+                    <TextBlock Foreground="Red" Text="{DynamicResource 'Caution: some exe can not be hosted in PRemoteM.'}" TextWrapping="Wrap"></TextBlock>
+                </CheckBox>
+            </StackPanel>
+        </Grid>
     </StackPanel>
 </editor:FormBase>

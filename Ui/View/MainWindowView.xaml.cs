@@ -86,7 +86,8 @@ namespace PRM.View
         private void CommandFocusFilter_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
-            Vm.SearchControlViewModel.IsFocused = true;
+            if (Vm.IsShownList())
+                Vm.SearchControlViewModel.IsFocused = true;
         }
 
 

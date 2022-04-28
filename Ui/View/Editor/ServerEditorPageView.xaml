@@ -72,169 +72,199 @@
         </StackPanel>
 
         <Grid>
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="{DynamicResource BackgroundTextBrush}"></Setter>
+                    <Setter Property="MinWidth" Value="150"></Setter>
+                    <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                    <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                    <Setter Property="TextAlignment" Value="Right"></Setter>
+                    <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
+                    <Setter Property="Margin">
+                        <Setter.Value>
+                            <Thickness Right="30"></Thickness>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <Style TargetType="controls:GridWith4Columns">
+                    <Setter Property="Height" Value="Auto"></Setter>
+                    <Setter Property="MinHeight" Value="30"></Setter>
+                    <Setter Property="Margin">
+                        <Setter.Value>
+                            <Thickness Bottom="15"></Thickness>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Grid.Resources>
             <Grid.Margin>
                 <Thickness Top="{StaticResource TopHeight}" Bottom="{StaticResource BottomHeight}"></Thickness>
             </Grid.Margin>
 
-            <ScrollViewer
+            <ScrollViewer Grid.IsSharedSizeScope="True"
                 x:Name="ScrollViewerMain"
                 Margin="0 3 0 4"
-                HorizontalScrollBarVisibility="Hidden"
+                HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
                 <Grid>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_common}"></TextBlock>
-                        <StackPanel>
-                            <Grid Style="{StaticResource EditorRowGrid}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Name}"></TextBlock>
-                                    <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls:AutoCompleteComboBox
-                                                                    Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
-                                                                    Selections="{Binding NameSelections}"
-                                        />
-                                    </Grid>
-                                </StackPanel>
-                            </Grid>
 
-                            <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Tags}"></TextBlock>
-                                    <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <controls:TagsEditor x:Name="TagsEditor"
-                                                              Tags="{Binding Server.Tags, Mode=TwoWay}"
-                                                              TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls:TagsEditor>
-                                    </Grid>
-                                </StackPanel>
-                            </Grid>
+                        <Grid>
+                            <StackPanel Orientation="Vertical">
+                                <controls:GridWith4Columns>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Name}"></TextBlock>
+                                    <controls:AutoCompleteComboBox Grid.Column="1"
+                                                           Text="{Binding Server.DisplayName, UpdateSourceTrigger=PropertyChanged}"
+                                                           Selections="{Binding NameSelections}"/>
+                                </controls:GridWith4Columns>
 
-                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0" Height="Auto">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource Logo}"></TextBlock>
-                                        <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Grid Name="GridLogo" Width="64" Height="64"
+                                <controls:GridWith4Columns>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Tags}"></TextBlock>
+                                    <controls:TagsEditor x:Name="TagsEditor" Grid.Column="1" 
+                                                 Tags="{Binding Server.Tags, Mode=TwoWay}"
+                                                 TagsForSelect="{Binding TagSelections, Mode=TwoWay}"></controls:TagsEditor>
+                                </controls:GridWith4Columns>
+
+                                <controls:GridWith4Columns Margin="0">
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource Logo}"></TextBlock>
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <Grid Name="GridLogo" Width="64" Height="64"
                                                   MouseLeftButtonUp="ImgLogo_OnMouseLeftButtonUp"
                                                   Background="Transparent"
                                                   Cursor="Hand"
                                                   Margin="0 0 30 0">
-                                                    <Border BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
-                                                        <Border.Style>
-                                                            <Style TargetType="Border">
-                                                                <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
-                                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
-                                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Border.Style>
-                                                        <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
-                                                    </Border>
-                                                </Grid>
-                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource Color}"></TextBlock>
-                                                <colorPickerWpf:ColorPickRowPopup
+                                            <Border BorderThickness="1" CornerRadius="{StaticResource DefaultCornerRadius}" ClipToBounds="True">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource DefaultBorderBrush}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ElementName=GridLogo, Path=IsMouseOver}" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ElementName=PopupLogoSelector, Path=IsMouseOver}" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentMidBrush}"></Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <Image Name="ImgLogo" Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                            </Border>
+                                        </Grid>
+                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="50" Text="{DynamicResource Color}"></TextBlock>
+                                        <colorPickerWpf:ColorPickRowPopup
                                                     HexColor="{Binding Server.ColorHex}"
                                                     Foreground="{DynamicResource BackgroundTextBrush}" 
                                                     HexVisible="Collapsed"
                                                     Name="ColorPick" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                                <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="Auto" HorizontalAlignment="Left" 
+                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Width="Auto" HorizontalAlignment="Left" 
                                                            Text="{Binding Server.ColorHex}"></TextBlock>
-                                            </StackPanel>
-                                        </Grid>
                                     </StackPanel>
-                                </StackPanel>
-                            </Grid>
-
-                            <Grid Name="PopupLogoSelector" Height="0">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
-                                    <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
-                                        <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1">
-                                            <Grid Width="510">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                                    <ColumnDefinition></ColumnDefinition>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel >
-                                                    <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                                            <ColumnDefinition Width="*"></ColumnDefinition>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Button Style="{StaticResource ButtonBarAccentStyle}" 
+                                </controls:GridWith4Columns>
+                                <Grid Name="PopupLogoSelector" Height="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource EditorRowGridTitle}" Text=""></TextBlock>
+                                        <Grid Style="{StaticResource EditorRowGridInput}" Width="Auto">
+                                            <Border BorderBrush="{DynamicResource AccentMidBrush}" BorderThickness="1">
+                                                <Grid Width="510">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel >
+                                                        <controls:LogoSelector x:Name="LogoSelector"></controls:LogoSelector>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Style="{StaticResource ButtonBarAccentStyle}" 
                                                                 Content="{DynamicResource Done}" 
                                                                 Click="ButtonLogoSave_OnClick">
-                                                        </Button>
+                                                            </Button>
 
-                                                        <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
+                                                            <Button Style="{StaticResource ButtonBarPrimaryStyle}" 
                                                                 Content="{DynamicResource Reset}" 
                                                                 Click="ButtonLogoCancel_OnClick"  Grid.Column="1">
-                                                        </Button>
-                                                    </Grid>
-                                                </StackPanel>
-                                                <Grid Grid.Column="1">
-                                                    <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
-                                                    <ListView BorderThickness="0"
+                                                            </Button>
+                                                        </Grid>
+                                                    </StackPanel>
+                                                    <Grid Grid.Column="1">
+                                                        <Border BorderThickness="1 0 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
+                                                        <ListView BorderThickness="0"
                                                               SelectionChanged="Selector_OnSelectionChanged"
                                                               MouseDoubleClick="LogoList_OnMouseDoubleClick"
                                                               ItemsSource="{Binding Source={x:Static icons:ServerIcons.Instance}, Path=Icons}"
                                                               Background="Transparent">
-                                                        <ListView.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <WrapPanel Orientation="Horizontal" 
+                                                            <ListView.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <WrapPanel Orientation="Horizontal" 
                                                                            Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ListView}, Path=ActualWidth, Converter={StaticResource DoubleAdd_2}}" />
-                                                            </ItemsPanelTemplate>
-                                                        </ListView.ItemsPanel>
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Grid Margin="2">
-                                                                    <Image Source="{Binding}" Height="30"></Image>
-                                                                </Grid>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ListView>
+                                                                </ItemsPanelTemplate>
+                                                            </ListView.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid Margin="2">
+                                                                        <Image Source="{Binding}" Height="30"></Image>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ListView>
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        </Border>
-                                    </Grid>
-                                </StackPanel>
-                            </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
 
-                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0 20 0 0">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
-                                    <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <TextBox Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
-                                                                                                  ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
-                                                 Tag="{DynamicResource server_editor_cmd_before_connected_tag}"></TextBox>
-                                    </Grid>
-                                    <Button Margin="5 0 0 0" 
-                                            VerticalAlignment="Stretch"
-                                            Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
-                                </StackPanel>
-                            </Grid>
 
-                            <Grid Style="{StaticResource EditorRowGrid}" Margin="0 20 0 0">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
-                                    <Grid Style="{StaticResource EditorRowGridInput}">
-                                        <TextBox Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
-                                                                                                  ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
-                                                 Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
-                                    </Grid>
-                                    <Button Margin="5 0 0 0" 
-                                            VerticalAlignment="Stretch"
-                                            Click="ButtonTryCommandAfterDisconnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                        <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
+                                <controls:GridWith4Columns Margin="0 15">
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_before_connected}"></TextBlock>
+                                    <TextBox Grid.Column="1"
+                                     Text="{Binding Server.CommandBeforeConnected,UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="{DynamicResource server_editor_cmd_before_connected_tag}"
+                                     Tag="{DynamicResource server_editor_cmd_before_connected_tag}"/>
+                                    <Button Grid.Column="2" 
+                                    Margin="5 0 0 0" 
+                                    VerticalAlignment="Stretch"
+                                    Click="ButtonTryCommandBeforeConnected_OnClick" Style="{StaticResource ButtonPrimaryStyle}" Content="{DynamicResource Test}"></Button>
+                                </controls:GridWith4Columns>
+
+                                <controls:GridWith4Columns>
+                                    <TextBlock Grid.Column="0" Text="{DynamicResource server_editor_cmd_after_disconnected}"></TextBlock>
+                                    <TextBox Grid.Column="1"
+                                     Text="{Binding Server.CommandAfterDisconnected,UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="{DynamicResource server_editor_cmd_after_disconnected_tag}"
+                                     Tag="{DynamicResource server_editor_cmd_after_disconnected_tag}"></TextBox>
+                                    <Button Grid.Column="2" 
+                                    Margin="5 0 0 0" 
+                                    VerticalAlignment="Stretch"
+                                    Click="ButtonTryCommandAfterDisconnected_OnClick" 
+                                    Style="{StaticResource ButtonPrimaryStyle}" 
+                                    Content="{DynamicResource Test}"></Button>
+                                </controls:GridWith4Columns>
+                                <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
+                            </StackPanel>
+
+                            <controls:GridWith4Columns HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="60">
+                                <Grid Margin="40 0" Grid.Column="3">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Name}"
+                                                   HorizontalAlignment="Center"
+                                                   TextAlignment="Center"
+                                                   Width="Auto"
+                                                   Margin="0"
+                                                   ></TextBlock>
+                                        <TextBox TextWrapping="Wrap" MinHeight="100"
+                                                 TextAlignment="Left"
+                                                 VerticalContentAlignment="Top"
+                                                 AcceptsReturn="True"
+                                                 AcceptsTab="True"
+                                                 Text="{Binding Server.Note}"></TextBox>
+                                    </StackPanel>
+                                </Grid>
+                            </controls:GridWith4Columns>
+                        </Grid>
                     </StackPanel>
                 </Grid>
             </ScrollViewer>

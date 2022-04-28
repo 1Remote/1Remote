@@ -22,7 +22,6 @@ using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using Ui;
-using Ui.View;
 
 namespace PRM.View
 {

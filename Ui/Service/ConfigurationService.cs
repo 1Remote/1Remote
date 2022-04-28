@@ -18,7 +18,7 @@ namespace PRM.Service
 {
     public class EngagementSettings
     {
-        public DateTime InstallTime = DateTime.Today.AddDays(1);
+        public DateTime InstallTime = DateTime.Today;
         public bool DoNotShowAgain = false;
         public string DoNotShowAgainVersionString = "";
         [JsonIgnore]

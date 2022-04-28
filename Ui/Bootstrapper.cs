@@ -19,7 +19,6 @@ using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
 using StyletIoC;
 using Ui;
-using Ui.View;
 
 namespace PRM
 {
