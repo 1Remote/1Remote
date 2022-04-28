@@ -25,7 +25,6 @@ using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Stylet;
-using Ui.View;
 
 
 namespace PRM.View

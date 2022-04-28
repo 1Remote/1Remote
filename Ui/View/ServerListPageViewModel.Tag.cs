@@ -11,7 +11,6 @@ using PRM.Utils;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
-using Ui.View;
 
 namespace PRM.View
 {

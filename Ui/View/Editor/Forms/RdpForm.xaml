@@ -476,7 +476,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource EditorRowGrid}" Height="Auto">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_advantage_sounds}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -517,7 +517,7 @@
 
             <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="{DynamicResource server_editor_group_title_gateway}"></TextBlock>
 
-            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EditorRowGridTitle}" Text="{DynamicResource server_editor_gateway_mode}"></TextBlock>
                     <Grid Style="{StaticResource EditorRowGridInput}">
@@ -534,7 +534,7 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+            <Grid Style="{StaticResource EditorRowGrid}">
                 <StackPanel Orientation="Horizontal">
                     <Grid Margin="50 10 0 0">
                         <StackPanel>
@@ -611,7 +611,7 @@
         </StackPanel>
 
 
-        <Grid Style="{StaticResource EditorRowGrid}" Margin="0">
+        <Grid Style="{StaticResource EditorRowGrid}">
         </Grid>
     </StackPanel>
 </editor:FormBase>

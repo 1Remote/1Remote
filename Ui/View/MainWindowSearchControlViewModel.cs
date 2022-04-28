@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PRM.Model;
 using PRM.Utils;
-using PRM.View;
 
-namespace Ui.View
+namespace PRM.View
 {
     public class MainWindowSearchControlViewModel : NotifyPropertyChangedBaseScreen
     {
@@ -63,5 +59,9 @@ namespace Ui.View
             var s = TagAndKeywordEncodeHelper.DecodeKeyword(FilterString);
             SetFilterString(s.Item1, null);
         }
+        //public void TbFilter_PreviewKeyUpUp(object sender, KeyEventArgs e)
+        //{
+        //    e.Handled = true;
+        //}
     }
 }
