@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
 
-            <system:Double x:Key="OneItemHeight">40</system:Double>
+            <system:Double x:Key="ServerItemHeight">40</system:Double>
 
             <Style TargetType="ListBoxItem">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -82,7 +82,7 @@
                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
                     <Grid>
 
-                        <Grid Name="GridHeader" Height="{StaticResource OneItemHeight}" VerticalAlignment="Top" ZIndex="999">
+                        <Grid Name="GridHeader" Height="{StaticResource ServerItemHeight}" VerticalAlignment="Top" ZIndex="999">
                             <Grid.Style>
                                 <Style TargetType="Grid">
                                     <Style.Triggers>
@@ -233,7 +233,7 @@
 
                         <ScrollViewer Name="ScrollViewer" Focusable="false" Padding="0" HorizontalScrollBarVisibility="Disabled">
                             <ScrollViewer.Margin>
-                                <Thickness Top="{StaticResource OneItemHeight}"></Thickness>
+                                <Thickness Top="{StaticResource ServerItemHeight}"></Thickness>
                             </ScrollViewer.Margin>
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
                             </ItemsPresenter>
@@ -253,7 +253,7 @@
                         <MouseBinding MouseAction="RightClick" Command="{Binding CmdEditServer}"></MouseBinding>
                     </Grid.InputBindings>
                     <Border x:Name="GridContainer"></Border>
-                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" MinHeight="{StaticResource OneItemHeight}"></controls:ServerListItem>
+                    <controls:ServerListItem ProtocolBaseViewModel="{Binding}" MinHeight="{StaticResource ServerItemHeight}"></controls:ServerListItem>
                 </Grid>
                 <DataTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">

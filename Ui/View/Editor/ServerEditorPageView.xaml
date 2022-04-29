@@ -249,7 +249,7 @@
                             <controls:GridWith4Columns HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="60">
                                 <Grid Margin="40 0" Grid.Column="3">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource Name}"
+                                        <TextBlock Text="{DynamicResource Note}"
                                                    HorizontalAlignment="Center"
                                                    TextAlignment="Center"
                                                    Width="Auto"

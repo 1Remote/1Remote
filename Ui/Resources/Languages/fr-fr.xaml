@@ -34,6 +34,7 @@
     <s:String x:Key="Rename">Renommer</s:String>
     <s:String x:Key="Connect">Connexion</s:String>
     <s:String x:Key="Connect (New window)">Connexion (Nouvelle fenetre)</s:String>
+    <s:String x:Key="Note">Note</s:String>
 
     <s:String x:Key="filter_mainwindow">Mots-clés ou '#' + nom de tag</s:String>
     <s:String x:Key="Search (Ctrl+F)">Rechercher (Ctrl + F)</s:String>

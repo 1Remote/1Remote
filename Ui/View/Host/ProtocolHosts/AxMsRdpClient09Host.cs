@@ -97,7 +97,7 @@ namespace PRM.View.Host.ProtocolHosts
                 ParentWindowResize_StopWatch();
 
                 const int UI_ERR_NORMAL_DISCONNECT = 0xb08;
-                string reason = _rdpClient.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason);
+                string reason = _rdpClient?.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
                 if (e.discReason != UI_ERR_NORMAL_DISCONNECT)
                     SimpleLogHelper.Warning($"RDP({_rdpSettings.DisplayName}) exit with error code {e.discReason}({reason})");
 

@@ -45,7 +45,7 @@ namespace PRM.View.Host.ProtocolHosts
             {
                 t.TryCancel();
             }
-            Trans.Release();
+            Trans?.Release();
         }
 
         public void Conn()
