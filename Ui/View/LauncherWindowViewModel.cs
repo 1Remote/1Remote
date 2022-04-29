@@ -23,10 +23,11 @@ namespace PRM.View
 {
     public class LauncherWindowViewModel : NotifyPropertyChangedBaseScreen
     {
-        private double _gridMainWidth;
-        private double _oneItemHeight;
-        private double _oneActionHeight;
-        private double _cornerRadius;
+        private double _keywordHeight;
+        private double _listAreaWidth;
+        private double _serverListItemHeight;
+        private double _actionListItemHeight;
+        private double _outlineCornerRadius;
         private FrameworkElement _gridMenuActions = new Grid();
 
 
@@ -117,15 +118,24 @@ namespace PRM.View
         }
 
         private double _gridMainHeight;
+        public double GridNoteHeight { get; set; }
         public double GridMainHeight
         {
             get => _gridMainHeight;
             set
             {
-                SetAndNotifyIfChanged(ref _gridMainHeight, value);
-                GridMainClip = new RectangleGeometry(new Rect(new Size(_gridMainWidth, GridMainHeight)), _cornerRadius, _cornerRadius);
+                if (SetAndNotifyIfChanged(ref _gridMainHeight, value))
+                {
+                    GridMainClip = new RectangleGeometry(new Rect(new Size(_listAreaWidth, GridMainHeight)), _outlineCornerRadius, _outlineCornerRadius);
+                    if (_gridMainHeight > GridNoteHeight)
+                    {
+                        GridNoteHeight = _gridMainHeight;
+                        RaisePropertyChanged(nameof(GridNoteHeight));
+                    }
+                }
             }
         }
+
 
         private RectangleGeometry? _gridMainClip = null;
         public RectangleGeometry? GridMainClip
@@ -134,7 +144,6 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _gridMainClip, value);
         }
 
-        public double GridKeywordHeight { get; } = 46;
 
         private double _gridSelectionsHeight;
         public double GridSelectionsHeight
@@ -148,6 +157,13 @@ namespace PRM.View
         {
             get => _gridActionsHeight;
             set => SetAndNotifyIfChanged(ref _gridActionsHeight, value);
+        }
+
+        private double _noteWidth = 300;
+        public double NoteWidth 
+        {
+            get => _noteWidth;
+            set => SetAndNotifyIfChanged(ref _noteWidth, value);
         }
 
         private List<TagFilter>? _tagFilters;
@@ -174,10 +190,11 @@ namespace PRM.View
             GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
             var view = (LauncherWindowView)this.View;
             _gridMenuActions = view.GridMenuActions;
-            _gridMainWidth = (double)view.FindResource("GridMainWidth");
-            _oneItemHeight = (double)view.FindResource("OneItemHeight");
-            _oneActionHeight = (double)view.FindResource("OneActionItemHeight");
-            _cornerRadius = (double)view.FindResource("CornerRadius");
+            _keywordHeight = (double)view.FindResource("LauncherGridKeywordHeight");
+            _listAreaWidth = (double)view.FindResource("LauncherListAreaWidth");
+            _serverListItemHeight = (double)view.FindResource("LauncherServerListItemHeight");
+            _actionListItemHeight = (double)view.FindResource("LauncherActionListItemHeight");
+            _outlineCornerRadius = (double)view.FindResource("LauncherOutlineCornerRadius");
             if (this.View is LauncherWindowView window)
             {
                 window.ShowActivated = true;
@@ -209,8 +226,8 @@ namespace PRM.View
                 // show action list
                 if (showGridAction)
                 {
-                    GridSelectionsHeight = (Actions?.Count ?? 0) * _oneActionHeight;
-                    GridActionsHeight = GridKeywordHeight + GridSelectionsHeight;
+                    GridSelectionsHeight = (Actions?.Count ?? 0) * _actionListItemHeight;
+                    GridActionsHeight = _keywordHeight + GridSelectionsHeight;
                     GridMainHeight = GridActionsHeight;
                 }
                 // show server list
@@ -219,11 +236,11 @@ namespace PRM.View
                     const int nMaxCount = 8;
                     int visibleCount = VmServerList.Count();
                     if (visibleCount >= nMaxCount)
-                        GridSelectionsHeight = _oneItemHeight * nMaxCount;
+                        GridSelectionsHeight = _serverListItemHeight * nMaxCount;
                     else
-                        GridSelectionsHeight = _oneItemHeight * visibleCount;
-                    GridMainHeight = GridKeywordHeight + GridSelectionsHeight;
-                    SimpleLogHelper.Debug($"Launcher resize:  w = {_gridMainWidth}, h = {GridMainHeight}");
+                        GridSelectionsHeight = _serverListItemHeight * visibleCount;
+                    GridMainHeight = _keywordHeight + GridSelectionsHeight;
+                    SimpleLogHelper.Debug($"Launcher resize:  w = {_listAreaWidth}, h = {GridMainHeight}");
                 }
             });
         }
@@ -247,14 +264,14 @@ namespace PRM.View
             _gridMenuActions.Visibility = Visibility.Visible;
 
             var sb = new Storyboard();
-            sb.AddSlideFromLeft(0.3, _gridMainWidth);
+            sb.AddSlideFromLeft(0.3, _listAreaWidth);
             sb.Begin(_gridMenuActions);
         }
 
         public void HideActionsList()
         {
             var sb = new Storyboard();
-            sb.AddSlideToLeft(0.3, _gridMainWidth);
+            sb.AddSlideToLeft(0.3, _listAreaWidth);
             sb.Completed += (o, args) =>
             {
                 _gridMenuActions.Visibility = Visibility.Hidden;
@@ -399,7 +416,12 @@ namespace PRM.View
                     var p = ScreenInfoEx.GetMouseSystemPosition();
                     var screenEx = ScreenInfoEx.GetCurrentScreenBySystemPosition(p);
                     window.Top = screenEx.VirtualWorkingAreaCenter.Y - GridMainHeight / 2;
-                    window.Left = screenEx.VirtualWorkingAreaCenter.X - window.Width / 2;
+                    window.Left = screenEx.VirtualWorkingAreaCenter.X - window.BorderMainContent.ActualWidth / 2;
+
+                    var noteWidth = (screenEx.VirtualWorkingArea.Width - window.BorderMainContent.ActualWidth - 100) / 2;
+                    if (noteWidth < 100)
+                        noteWidth = 100;
+                    NoteWidth = Math.Min(noteWidth, NoteWidth);
 
                     window.Show();
                     window.Visibility = Visibility.Visible;
