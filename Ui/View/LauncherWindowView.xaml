@@ -1,7 +1,8 @@
 ﻿<styles:WindowChromeBase x:Class="PRM.View.LauncherWindowView"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:design="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:system="clr-namespace:System;assembly=mscorlib"
                   xmlns:view="clr-namespace:PRM.View"
                   xmlns:model="clr-namespace:PRM.Model"
@@ -12,6 +13,8 @@
                   WindowStyle="None"
                   SizeToContent="WidthAndHeight"
                   Background="Transparent"
+                  mc:Ignorable="d"
+                  d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"
                   Title="LauncherWindowView">
     <!--d:DataContext="{d:DesignInstance view:LauncherWindowViewModel}"-->
     <WindowChrome.WindowChrome>

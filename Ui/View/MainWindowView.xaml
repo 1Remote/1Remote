@@ -28,7 +28,7 @@
         <KeyBinding Gesture="Ctrl+F" Command="{StaticResource CommandFocusFilter}"></KeyBinding>
     </styles:WindowChromeBase.InputBindings>
 
-    <Grid Background="{DynamicResource BackgroundBrush}">
+    <Grid Background="{DynamicResource PrimaryMidBrush}">
         <Grid>
             <Grid.Style>
                 <Style TargetType="Grid">
@@ -49,7 +49,7 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Grid Background="{DynamicResource PrimaryMidBrush}" Name="WinTitleBar">
+            <Grid Background="Transparent" Name="WinTitleBar">
                 <StackPanel Orientation="Horizontal">
                     <Grid Background="Transparent" Width="24" Height="24" Margin="5">
                         <Image Source="/Resources/Image/Logo/logo64.png"></Image>
@@ -60,7 +60,7 @@
 
             <!-- System Button Area -->
             <StackPanel Grid.Row="0"
-                    Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource PrimaryMidBrush}">
+                    Orientation="Horizontal" HorizontalAlignment="Right" Background="Transparent">
                 <Grid Height="35" VerticalAlignment="Top" Margin="0 0 4 0">
                     <Grid.Style>
                         <Style TargetType="{x:Type Grid}">
