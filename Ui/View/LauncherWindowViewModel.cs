@@ -55,7 +55,8 @@ namespace PRM.View
             {
                 if (SetAndNotifyIfChanged(ref _selectedIndex, value))
                 {
-                    RaisePropertyChanged(nameof(SelectedItem));
+                    RaisePropertyChanged(nameof(SelectedItem)); 
+                    CalcNoteFieldVisibility();
                     if (this.View is LauncherWindowView view)
                     {
                         Execute.OnUIThread(() =>
@@ -118,7 +119,6 @@ namespace PRM.View
         }
 
         private double _gridMainHeight;
-        public double GridNoteHeight { get; set; }
         public double GridMainHeight
         {
             get => _gridMainHeight;
@@ -159,6 +159,9 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _gridActionsHeight, value);
         }
 
+        public Visibility GridNoteVisibility { get; set; } = Visibility.Visible;
+        public double GridNoteHeight { get; set; }
+
         private double _noteWidth = 300;
         public double NoteWidth 
         {
@@ -187,6 +190,7 @@ namespace PRM.View
         {
             HideMe();
             SetHotKey();
+            CalcNoteFieldVisibility();
             GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
             var view = (LauncherWindowView)this.View;
             _gridMenuActions = view.GridMenuActions;
@@ -498,6 +502,40 @@ namespace PRM.View
             {
                 GlobalEventHelper.OnRequestServerConnect?.Invoke(item.Id);
             }
+        }
+
+        public void HideNoteField()
+        {
+            IoC.Get<ConfigurationService>().Launcher.ShowNoteField = false;
+            IoC.Get<ConfigurationService>().Save();
+            CalcNoteFieldVisibility();
+            IsShowNoteFieldEnabled = true;
+        }
+
+        private bool _isShowNoteFieldEnabled;
+        public bool IsShowNoteFieldEnabled
+        {
+            get => this._isShowNoteFieldEnabled;
+            set => this.SetAndNotifyIfChanged(ref this._isShowNoteFieldEnabled, value);
+        }
+        public void ShowNoteField()
+        {
+            IoC.Get<ConfigurationService>().Launcher.ShowNoteField = true;
+            IoC.Get<ConfigurationService>().Save();
+            CalcNoteFieldVisibility();
+            IsShowNoteFieldEnabled = false;
+        }
+
+        private void CalcNoteFieldVisibility()
+        {
+            if (IoC.Get<ConfigurationService>().Launcher.ShowNoteField == false)
+                GridNoteVisibility = Visibility.Collapsed;
+            else if (string.IsNullOrEmpty(SelectedItem?.Server?.Note?.Trim()) == false)
+                GridNoteVisibility = Visibility.Visible;
+            else
+                GridNoteVisibility = Visibility.Collapsed;
+            IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteField == false;
+            RaisePropertyChanged(nameof(GridNoteVisibility));
         }
     }
 }
