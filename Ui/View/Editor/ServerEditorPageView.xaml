@@ -255,12 +255,12 @@
                                                    Width="Auto"
                                                    Margin="0"
                                                    ></TextBlock>
-                                        <TextBox TextWrapping="Wrap" MinHeight="100"
-                                                 TextAlignment="Left"
-                                                 VerticalContentAlignment="Top"
-                                                 AcceptsReturn="True"
-                                                 AcceptsTab="True"
-                                                 Text="{Binding Server.Note}"></TextBox>
+                                        <TextBox TextWrapping="Wrap" 
+                                                     TextAlignment="Left" Height="220" Margin="0 5"
+                                                     VerticalContentAlignment="Top"
+                                                     AcceptsReturn="True"
+                                                     AcceptsTab="True"
+                                                     Text="{Binding Server.Note, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                     </StackPanel>
                                 </Grid>
                             </controls:GridWith4Columns>
