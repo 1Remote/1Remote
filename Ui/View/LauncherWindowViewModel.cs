@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -18,6 +19,8 @@ using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.PageHost;
 using Stylet;
 using Ui;
+using Markdig.Wpf;
+using XamlReader = System.Windows.Markup.XamlReader;
 
 namespace PRM.View
 {
@@ -29,6 +32,7 @@ namespace PRM.View
         private double _actionListItemHeight;
         private double _outlineCornerRadius;
         private FrameworkElement _gridMenuActions = new Grid();
+        private Border? _noteField = null;
 
 
         #region properties
@@ -127,11 +131,6 @@ namespace PRM.View
                 if (SetAndNotifyIfChanged(ref _gridMainHeight, value))
                 {
                     GridMainClip = new RectangleGeometry(new Rect(new Size(_listAreaWidth, GridMainHeight)), _outlineCornerRadius, _outlineCornerRadius);
-                    if (_gridMainHeight > GridNoteHeight)
-                    {
-                        GridNoteHeight = _gridMainHeight;
-                        RaisePropertyChanged(nameof(GridNoteHeight));
-                    }
                 }
             }
         }
@@ -152,17 +151,17 @@ namespace PRM.View
             set => SetAndNotifyIfChanged(ref _gridSelectionsHeight, value);
         }
 
-        private double _gridActionsHeight;
-        public double GridActionsHeight
-        {
-            get => _gridActionsHeight;
-            set => SetAndNotifyIfChanged(ref _gridActionsHeight, value);
-        }
 
         public Visibility GridNoteVisibility { get; set; } = Visibility.Visible;
-        public double GridNoteHeight { get; set; }
 
-        private double _noteWidth = 300;
+        private double _gridNoteHeight;
+        public double GridNoteHeight
+        {
+            get => _gridNoteHeight;
+            set => SetAndNotifyIfChanged(ref _gridNoteHeight, value);
+        }
+
+        private double _noteWidth = 500;
         public double NoteWidth 
         {
             get => _noteWidth;
@@ -192,15 +191,15 @@ namespace PRM.View
             SetHotKey();
             CalcNoteFieldVisibility();
             GlobalEventHelper.OnLauncherHotKeyChanged += SetHotKey;
-            var view = (LauncherWindowView)this.View;
-            _gridMenuActions = view.GridMenuActions;
-            _keywordHeight = (double)view.FindResource("LauncherGridKeywordHeight");
-            _listAreaWidth = (double)view.FindResource("LauncherListAreaWidth");
-            _serverListItemHeight = (double)view.FindResource("LauncherServerListItemHeight");
-            _actionListItemHeight = (double)view.FindResource("LauncherActionListItemHeight");
-            _outlineCornerRadius = (double)view.FindResource("LauncherOutlineCornerRadius");
             if (this.View is LauncherWindowView window)
             {
+                _gridMenuActions = window.GridMenuActions;
+                _keywordHeight = (double)window.FindResource("LauncherGridKeywordHeight");
+                _listAreaWidth = (double)window.FindResource("LauncherListAreaWidth");
+                _serverListItemHeight = (double)window.FindResource("LauncherServerListItemHeight");
+                _actionListItemHeight = (double)window.FindResource("LauncherActionListItemHeight");
+                _outlineCornerRadius = (double)window.FindResource("LauncherOutlineCornerRadius");
+                _noteField = window.NoteField;
                 window.ShowActivated = true;
                 window.ShowInTaskbar = false;
                 window.Deactivated += (s, a) => { HideMe(); };
@@ -225,26 +224,24 @@ namespace PRM.View
 
         public void ReCalcWindowHeight(bool showGridAction)
         {
+            const int nMaxCount = 8;
+            double maxSelectionHeight = _serverListItemHeight * nMaxCount;
+            double maxHeight = _keywordHeight + maxSelectionHeight;
+            GridNoteHeight = maxHeight;
             Execute.OnUIThread(() =>
             {
                 // show action list
                 if (showGridAction)
                 {
                     GridSelectionsHeight = (Actions?.Count ?? 0) * _actionListItemHeight;
-                    GridActionsHeight = _keywordHeight + GridSelectionsHeight;
-                    GridMainHeight = GridActionsHeight;
+                    GridMainHeight = maxHeight;
                 }
                 // show server list
                 else
                 {
-                    const int nMaxCount = 8;
-                    int visibleCount = VmServerList.Count();
-                    if (visibleCount >= nMaxCount)
-                        GridSelectionsHeight = _serverListItemHeight * nMaxCount;
-                    else
-                        GridSelectionsHeight = _serverListItemHeight * visibleCount;
+                    var tmp = _serverListItemHeight * VmServerList.Count();
+                    GridSelectionsHeight = Math.Min(tmp, maxSelectionHeight);
                     GridMainHeight = _keywordHeight + GridSelectionsHeight;
-                    SimpleLogHelper.Debug($"Launcher resize:  w = {_listAreaWidth}, h = {GridMainHeight}");
                 }
             });
         }
@@ -513,6 +510,7 @@ namespace PRM.View
         }
 
         private bool _isShowNoteFieldEnabled;
+
         public bool IsShowNoteFieldEnabled
         {
             get => this._isShowNoteFieldEnabled;
@@ -528,14 +526,38 @@ namespace PRM.View
 
         private void CalcNoteFieldVisibility()
         {
+            Visibility newVisibility;
             if (IoC.Get<ConfigurationService>().Launcher.ShowNoteField == false)
-                GridNoteVisibility = Visibility.Collapsed;
+                newVisibility = Visibility.Collapsed;
             else if (string.IsNullOrEmpty(SelectedItem?.Server?.Note?.Trim()) == false)
-                GridNoteVisibility = Visibility.Visible;
+                newVisibility = Visibility.Visible;
             else
-                GridNoteVisibility = Visibility.Collapsed;
+                newVisibility = Visibility.Collapsed;
+            if (GridNoteVisibility == newVisibility) return;
+
             IsShowNoteFieldEnabled = IoC.Get<ConfigurationService>().Launcher.ShowNoteField == false;
-            RaisePropertyChanged(nameof(GridNoteVisibility));
+            GridNoteVisibility = newVisibility;
+            if (_noteField != null)
+            {
+                if (GridNoteVisibility == Visibility.Visible)
+                {
+                    RaisePropertyChanged(nameof(GridNoteVisibility));
+                    var sb = new Storyboard();
+                    sb.AddFadeIn(0.3);
+                    sb.Begin(_noteField);
+                }
+                else
+                {
+                    var sb = new Storyboard();
+                    sb.AddFadeOut(0.3);
+                    sb.Completed += (sender, args) => { RaisePropertyChanged(nameof(GridNoteVisibility)); };
+                    sb.Begin(_noteField);
+                }
+            }
+            else
+            {
+                RaisePropertyChanged(nameof(GridNoteVisibility));
+            }
         }
     }
 }

@@ -9,6 +9,7 @@
                   xmlns:styles="clr-namespace:Shawn.Utils.WpfResources.Theme.Styles;assembly=Shawn.Utils.WpfResources"
                   xmlns:attachProperty="clr-namespace:Shawn.Utils.WpfResources.Theme.AttachProperty;assembly=Shawn.Utils.WpfResources"
                   xmlns:s="https://github.com/canton7/Stylet"
+                  xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
                   WindowStartupLocation="CenterScreen"
                   ResizeMode="NoResize"
                   WindowStyle="None"
@@ -37,6 +38,10 @@
                 </Grid>
             </VisualBrush.Visual>
         </VisualBrush>
+
+        <Style TargetType="FlowDocument">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        </Style>
 
         <Style x:Key="SearchBoxTbKeyWordStyle" TargetType="{x:Type TextBox}">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
@@ -139,7 +144,7 @@
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
                                     <Setter Property="Margin" Value="5 0 0 0"></Setter>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Server.Note}" Value="">
+                                        <DataTrigger Binding="{Binding Server.Note, Converter={StaticResource GetClearNote}}" Value="">
                                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=view:LauncherWindowView}, Path=DataContext.IsShowNoteFieldEnabled}" Value="False">
@@ -401,7 +406,7 @@
                             </StackPanel>
                         </Grid>
 
-                        <Grid Name="GridMenuActions" Visibility="Hidden" Height="{Binding GridActionsHeight}" VerticalAlignment="Top">
+                        <Grid Name="GridMenuActions" Visibility="Hidden" VerticalAlignment="Top">
                             <StackPanel Background="{DynamicResource PrimaryMidBrush}">
                                 <Grid Margin="0 5" Width="{StaticResource LauncherListAreaWidth}">
                                     <Grid.ColumnDefinitions>
@@ -477,7 +482,7 @@
         </Border>
 
         <!--Note 显示备注-->
-        <Border Grid.Column="1" Padding="0 20 20 20" MinWidth="100" Visibility="{Binding GridNoteVisibility}">
+        <Border Name="NoteField" Grid.Column="1" Padding="0 20 20 20" MinWidth="100" Visibility="{Binding GridNoteVisibility}">
             <Border CornerRadius="{StaticResource LauncherOutlineCornerRadiusObj}" Background="{DynamicResource PrimaryMidBrush}" 
                     Width="{Binding NoteWidth}" Height="{Binding GridNoteHeight}" 
                     MinWidth="200"
@@ -531,12 +536,13 @@
                         <Border.CornerRadius>
                             <CornerRadius BottomLeft="{StaticResource LauncherOutlineCornerRadius}" BottomRight="{StaticResource LauncherOutlineCornerRadius}"></CornerRadius>
                         </Border.CornerRadius>
+                        <FrameworkElement.CommandBindings>
+                            <CommandBinding Command="{x:Static wpf:Commands.Hyperlink}" Executed="OpenHyperlink" />
+                            <CommandBinding Command="{x:Static wpf:Commands.Image}" Executed="ClickOnImage" />
+                        </FrameworkElement.CommandBindings>
                         <Grid Margin="10">
-                            <ScrollViewer>
-                                <TextBlock Text="{Binding SelectedItem.Server.Note}" 
-                                       FontSize="14"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
-                            </ScrollViewer>
+                            <wpf:MarkdownViewer Foreground="{DynamicResource PrimaryTextBrush}" Markdown="{Binding SelectedItem.Server.Note}">
+                            </wpf:MarkdownViewer>
                         </Grid>
                     </Border>
                 </Grid>

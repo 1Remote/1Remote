@@ -1,0 +1,57 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:wpf="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf">
+
+    <!-- Document styles -->
+    <Style TargetType="{x:Type FlowDocument}" x:Key="{x:Static wpf:Styles.DocumentStyleKey}">
+        <Setter Property="FontFamily" Value="Consolas, Lucida Sans Typewriter, Courier New" />
+        <Setter Property="TextAlignment" Value="Left" />
+    </Style>
+    <Style TargetType="{x:Type List}">
+        <Setter Property="Margin" Value="40,0,0,0" />
+        <Setter Property="Padding" Value="0,0,0,0" />
+    </Style>
+    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static wpf:Styles.CodeBlockStyleKey}">
+        <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}" />
+        <Setter Property="FontFamily" Value="Consolas, Lucida Sans Typewriter, Courier New" />
+    </Style>
+    <Style TargetType="{x:Type Run}" x:Key="{x:Static wpf:Styles.CodeStyleKey}">
+        <Setter Property="Background" Value="{DynamicResource PrimaryDarkBrush}" />
+        <Setter Property="FontFamily" Value="Consolas, Lucida Sans Typewriter, Courier New" />
+    </Style>
+    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static wpf:Styles.Heading1StyleKey}">
+        <Setter Property="FontSize" Value="42" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static wpf:Styles.Heading2StyleKey}">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static wpf:Styles.Heading3StyleKey}">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static wpf:Styles.Heading4StyleKey}">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="FontWeight" Value="Light" />
+        <Setter Property="TextDecorations" Value="Underline" />
+    </Style>
+    <Style TargetType="{x:Type Table}" x:Key="{x:Static wpf:Styles.TableStyleKey}">
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        <Setter Property="CellSpacing" Value="0"/>
+    </Style>
+    <Style TargetType="{x:Type TableCell}" x:Key="{x:Static wpf:Styles.TableCellStyleKey}">
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryLightBrush}"/>
+        <Setter Property="BorderThickness" Value="1,1,0,0"/>
+    </Style>
+    <Style TargetType="{x:Type Line}" x:Key="{x:Static wpf:Styles.ThematicBreakStyleKey}">
+        <Setter Property="Stretch" Value="Fill" />
+        <Setter Property="Stroke" Value="{DynamicResource PrimaryLightBrush}" />
+    </Style>
+
+</ResourceDictionary>

@@ -59,13 +59,9 @@ namespace PRM.Controls
             }
         }
 
-        private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
+        private void BtnShowNote_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupCardSettingMenu.IsOpen = false;
-            if (ProtocolBaseViewModel != null && ProtocolBaseViewModel.CmdDuplicateServer.CanExecute())
-            {
-                ProtocolBaseViewModel.CmdDuplicateServer.Execute();
-            }
+            PopupNote.IsOpen = true;
         }
     }
 }
