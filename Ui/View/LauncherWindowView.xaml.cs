@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +9,7 @@ using PRM.Service;
 using Shawn.Utils;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.WpfResources.Theme.Styles;
 
 namespace PRM.View
@@ -211,6 +213,24 @@ namespace PRM.View
             {
                 base.OnKeyDown(e);
             }
+        }
+
+
+        private void OpenHyperlink(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                HyperlinkHelper.OpenUriBySystem(e.Parameter.ToString());
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Error(ex);
+            }
+        }
+
+        private void ClickOnImage(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            MessageBox.Show($"URL: {e.Parameter}");
         }
     }
 }

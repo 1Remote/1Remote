@@ -49,40 +49,5 @@ namespace PRM
                 }
             }
         }
-
-
-
-
-        private static NamedPipeHelper? _namedPipeHelper;
-        public static void OnlyOneAppInstanceCheck()
-        {
-#if FOR_MICROSOFT_STORE_ONLY
-            string instanceName = ConfigurationService.AppName + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName);
-#else
-            string instanceName = ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName);
-#endif
-            _namedPipeHelper = new NamedPipeHelper(instanceName);
-            if (_namedPipeHelper.IsServer == false)
-            {
-                try
-                {
-                    _namedPipeHelper.NamedPipeSendMessage("ActivateMe");
-                    Environment.Exit(0);
-                }
-                catch
-                {
-                    Environment.Exit(1);
-                }
-            }
-
-            _namedPipeHelper.OnMessageReceived += message =>
-            {
-                SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
-                if (message == "ActivateMe")
-                {
-                    IoC.Get<MainWindowViewModel>()?.ActivateMe();
-                }
-            };
-        }
     }
 }

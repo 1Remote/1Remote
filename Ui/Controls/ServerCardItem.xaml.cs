@@ -5,16 +5,16 @@ using PRM.View;
 
 namespace PRM.Controls
 {
-    public partial class ServerCard : UserControl
+    public partial class ServerCardItem : UserControl
     {
         public static readonly DependencyProperty ProtocolServerViewModelProperty =
-            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerCard),
+            DependencyProperty.Register("ProtocolBaseViewModel", typeof(ProtocolBaseViewModel), typeof(ServerCardItem),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnServerDataChanged)));
 
         private static void OnServerDataChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var value = (ProtocolBaseViewModel)e.NewValue;
-            ((ServerCard)d).DataContext = value;
+            ((ServerCardItem)d).DataContext = value;
         }
 
         public ProtocolBaseViewModel ProtocolBaseViewModel
@@ -23,7 +23,7 @@ namespace PRM.Controls
             set => SetValue(ProtocolServerViewModelProperty, value);
         }
 
-        public ServerCard()
+        public ServerCardItem()
         {
             InitializeComponent();
         }
@@ -42,14 +42,9 @@ namespace PRM.Controls
                 afs.Run();
             }
         }
-
-        private void ButtonDuplicateServer_OnClick(object sender, RoutedEventArgs e)
+        private void BtnShowNote_OnClick(object sender, RoutedEventArgs e)
         {
-            PopupCardSettingMenu.IsOpen = false;
-            if (ProtocolBaseViewModel != null && ProtocolBaseViewModel.CmdDuplicateServer.CanExecute())
-            {
-                ProtocolBaseViewModel.CmdDuplicateServer.Execute();
-            }
+            PopupNote.IsOpen = true;
         }
     }
 }

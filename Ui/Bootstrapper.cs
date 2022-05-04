@@ -74,7 +74,7 @@ namespace PRM
             _baseFolder = _canPortable ? Environment.CurrentDirectory : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConfigurationService.AppName);
 
             AppInit.InitLog(_canPortable);
-            AppInit.OnlyOneAppInstanceCheck();
+            App.OnlyOneAppInstanceCheck();
 
 
             _keywordMatchService = new KeywordMatchService();

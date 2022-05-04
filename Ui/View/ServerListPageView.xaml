@@ -71,8 +71,8 @@
                             <Setter Property="Width" Value="165"></Setter>
                         </Style>
                     </Grid.Style>
-                    <controls:ServerCard ProtocolBaseViewModel="{Binding}">
-                    </controls:ServerCard>
+                    <controls:ServerCardItem ProtocolBaseViewModel="{Binding}">
+                    </controls:ServerCardItem>
                 </Grid>
             </DataTemplate>
 

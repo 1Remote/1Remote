@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using PRM.Service;
 using PRM.View;
+using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace Ui
 {
@@ -10,6 +13,39 @@ namespace Ui
     /// </summary>
     public partial class App : Application
     {
+        private static NamedPipeHelper? _namedPipeHelper;
+        public static void OnlyOneAppInstanceCheck()
+        {
+#if FOR_MICROSOFT_STORE_ONLY
+            string instanceName = ConfigurationService.AppName + "_Store_" + MD5Helper.GetMd5Hash16BitString(Environment.UserName);
+#else
+            string instanceName = ConfigurationService.AppName + "_" + MD5Helper.GetMd5Hash16BitString(Environment.CurrentDirectory + Environment.UserName);
+#endif
+            _namedPipeHelper = new NamedPipeHelper(instanceName);
+            if (_namedPipeHelper.IsServer == false)
+            {
+                try
+                {
+                    _namedPipeHelper.NamedPipeSendMessage("ActivateMe");
+                    Environment.Exit(0);
+                }
+                catch
+                {
+                    Environment.Exit(1);
+                }
+            }
+
+            _namedPipeHelper.OnMessageReceived += message =>
+            {
+                SimpleLogHelper.Debug("NamedPipeServerStream get: " + message);
+                if (message == "ActivateMe")
+                {
+                    IoC.Get<MainWindowViewModel>()?.ActivateMe();
+                }
+            };
+        }
+
+
         public static ResourceDictionary ResourceDictionary { get; private set; } = new ResourceDictionary();
 
         protected override void OnStartup(StartupEventArgs e)
@@ -21,6 +57,7 @@ namespace Ui
 
         public static void Close(int exitCode = 0)
         {
+            _namedPipeHelper?.Dispose();
             IoC.Get<LauncherWindowView>()?.Close();
             IoC.Get<MainWindowView>()?.Close();
             Environment.Exit(exitCode);
