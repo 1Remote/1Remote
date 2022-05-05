@@ -144,7 +144,7 @@
                     <Grid Grid.Column="1">
                         <StackPanel Orientation="Vertical" Margin="20 0 0 0">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support" MouseRightButtonDown="{s:Action SupportText_OnMouseRightButtonDown}"></TextBlock>
+                                <TextBlock Style="{StaticResource EditorGroupTextBlockTitle}" Text="Support"></TextBlock>
                                 <StackPanel>
                                     <Grid Style="{StaticResource RowGrid}">
                                         <StackPanel Orientation="Horizontal">
@@ -239,7 +239,7 @@
 
         <Grid VerticalAlignment="Bottom" Height="{StaticResource BottomHeight}">
             <Border BorderThickness="0 2 0 0" BorderBrush="{DynamicResource AccentMidBrush}"></Border>
-            <Button Padding="0 1 0 0" Width="80" Height="30" Content="{DynamicResource Close}" Command="{s:Action Close}"></Button>
+            <Button Padding="0 1 0 0" Width="80" Height="30" Content="{DynamicResource Close}" Command="{Binding CmdClose}"></Button>
         </Grid>
     </Grid>
 </UserControl>

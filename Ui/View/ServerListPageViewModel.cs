@@ -460,23 +460,34 @@ namespace PRM.View
             }
         }
 
-        public void ShowTabByName(string tabName = "")
+
+
+        private RelayCommand? _cmdShowTabByName;
+        public RelayCommand CmdShowTabByName
         {
-            if (tabName is TAB_TAGS_LIST_NAME or TAB_ALL_NAME)
+            get
             {
-                _tagFilters.Clear();
-                RaisePropertyChanged(nameof(TagFilters));
-                SelectedTabName = tabName;
-                RaisePropertyChanged(nameof(SelectedTabName));
+                return _cmdShowTabByName ??= new RelayCommand((o) =>
+                {
+                    string? tabName = (string?)o;
+                    if (tabName is TAB_TAGS_LIST_NAME or TAB_ALL_NAME)
+                    {
+                        _tagFilters.Clear();
+                        RaisePropertyChanged(nameof(TagFilters));
+                        SelectedTabName = tabName;
+                        RaisePropertyChanged(nameof(SelectedTabName));
+                    }
+                    else if (string.IsNullOrEmpty(tabName) == false)
+                    {
+                        TagFilters = new List<TagFilter>() { TagFilter.Create(tabName, TagFilter.FilterType.Included) };
+                    }
+                    else
+                        TagFilters = new List<TagFilter>();
+                    IoC.Get<MainWindowViewModel>().SetMainFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
+                });
             }
-            else if (string.IsNullOrEmpty(tabName) == false)
-            {
-                TagFilters = new List<TagFilter>() {TagFilter.Create(tabName, TagFilter.FilterType.Included)};
-            }
-            else
-                TagFilters = new List<TagFilter>();
-            IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
         }
+
         #endregion
     }
 }

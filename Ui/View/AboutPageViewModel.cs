@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using PRM.Service;
 using Shawn.Utils;
+using Shawn.Utils.Wpf;
 
 namespace PRM.View
 {
@@ -63,18 +64,25 @@ namespace PRM.View
             this.NewVersionUrl = url;
         }
 
-        public void Close()
-        {
-            IoC.Get<MainWindowViewModel>().ShowList();
-        }
 
-
-        public void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private RelayCommand? _cmdClose;
+        public RelayCommand CmdClose
         {
-            if (e.ClickCount == 3)
+            get
             {
-                ConsoleManager.Toggle();
+                return _cmdClose ??= new RelayCommand((o) =>
+                {
+                    IoC.Get<MainWindowViewModel>().ShowList();
+                });
             }
         }
+
+        //public void SupportText_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (e.ClickCount == 3)
+        //    {
+        //        ConsoleManager.Toggle();
+        //    }
+        //}
     }
 }

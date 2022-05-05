@@ -86,7 +86,7 @@ namespace PRM.View
         {
             SimpleLogHelper.Debug($"CommandFocusFilter_OnExecuted");
             if (Vm.IsShownList())
-                Vm.SearchControlViewModel.IsFocused = true;
+                Vm.MainFilterIsFocused = true;
         }
 
 
@@ -104,7 +104,7 @@ namespace PRM.View
             }
             else if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl)
             {
-                Vm.SearchControlViewModel.IsFocused = true;
+                Vm.MainFilterIsFocused = true;
                 //TbFilter.Focus();
                 //TbFilter.CaretIndex = TbFilter.Text.Length;
             }
@@ -115,6 +115,15 @@ namespace PRM.View
             if (e.ClickCount >= 2)
                 return;
             base.WinTitleBar_OnPreviewMouseDown(sender, e);
+        }
+
+
+        private void MainFilter_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            // When press Esc, clear all of the search keywords, but keep selected tags;
+            if (e.Key != Key.Escape || sender is TextBox textBox == false) return;
+            var s = TagAndKeywordEncodeHelper.DecodeKeyword(Vm.MainFilterString);
+            Vm.SetMainFilterString(s.Item1, null);
         }
     }
 }

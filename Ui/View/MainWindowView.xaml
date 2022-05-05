@@ -89,7 +89,24 @@
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    <ContentControl s:View.Model="{Binding SearchControlViewModel}"></ContentControl>
+
+                    <Grid>
+                        <TextBox Width="150" Height="25"
+                                 attachProperty:FocusExtension.IsFocused="{Binding MainFilterIsFocused}"
+                                 attachProperty:TextBoxAttachProperty.CaretIndex="{Binding MainFilterCaretIndex, UpdateSourceTrigger=PropertyChanged}"
+                                 Text="{Binding MainFilterString, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="{DynamicResource 'Search (Ctrl+F)'}"
+                                 KeyUp="MainFilter_OnKeyUp" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Left">
+                            <TextBox.Style>
+                                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxAccentStyle}">
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                    <Setter Property="Background" Value="Transparent"></Setter>
+                                    <Setter Property="Opacity" Value="0.5"></Setter>
+                                    <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"></Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Grid>
                 </Grid>
 
                 <Grid Width="35" Height="35" Margin="0" VerticalAlignment="Top">
@@ -188,7 +205,7 @@
                                         </StackPanel>
                                     </Grid>
                                 </Button>
-                                <Button Command="{s:Action Exit}"
+                                <Button Command="{Binding CmdExit}"
                                     HorizontalContentAlignment="Left" 
                                     Padding="25 8 0 8"
                                     Content="{DynamicResource Exit}"></Button>

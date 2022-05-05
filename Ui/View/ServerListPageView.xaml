@@ -622,7 +622,7 @@
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button MinWidth="80"
-                                        Command="{s:Action ShowTabByName}" CommandParameter=""
+                                        Command="{Binding CmdShowTabByName}" CommandParameter=""
                                         Content="{DynamicResource All}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ButtonBarPrimaryStyle}">
@@ -663,7 +663,7 @@
 
                     <Button Grid.Column="1"
                                         MinWidth="80"
-                                        Command="{s:Action ShowTabByName}"
+                                        Command="{Binding CmdShowTabByName}"
                                         CommandParameter="{x:Static view:ServerListPageViewModel.TAB_TAGS_LIST_NAME}"
                                         BorderThickness="0" Content="{DynamicResource Tags}">
                         <Button.Style>

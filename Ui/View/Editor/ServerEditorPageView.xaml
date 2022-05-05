@@ -243,7 +243,7 @@
                                     Style="{StaticResource ButtonPrimaryStyle}" 
                                     Content="{DynamicResource Test}"></Button>
                                 </controls:GridWith4Columns>
-                                <ContentControl Name="ContentDetail" Content="{Binding ProtocolEditControl}"></ContentControl>
+                                <ContentControl Content="{Binding ProtocolEditControl}"></ContentControl>
                             </StackPanel>
 
                             <controls:GridWith4Columns HorizontalAlignment="Stretch" VerticalAlignment="Top" MinHeight="60">

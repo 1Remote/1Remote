@@ -108,7 +108,7 @@ namespace PRM.View
                 }
 
                 TagFilters = filters;
-                IoC.Get<MainWindowSearchControlViewModel>().SetFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
+                IoC.Get<MainWindowViewModel>().SetMainFilterString(TagFilters, TagAndKeywordEncodeHelper.DecodeKeyword(_filterString).Item2);
             }
         }
 
