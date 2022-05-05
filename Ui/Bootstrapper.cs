@@ -109,7 +109,6 @@ namespace PRM
             builder.Bind<ServerEditorPageViewModel>().ToSelf();
             builder.Bind<GuidanceWindow>().ToSelf();
             builder.Bind<SessionControlService>().ToSelf().InSingletonScope();
-            builder.Bind<MainWindowSearchControlViewModel>().ToSelf().InSingletonScope();
             base.ConfigureIoC(builder);
         }
 

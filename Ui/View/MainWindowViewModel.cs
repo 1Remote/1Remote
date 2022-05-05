@@ -32,7 +32,6 @@ namespace PRM.View
         public ServerListPageViewModel ServerListViewModel { get; } = IoC.Get<ServerListPageViewModel>();
         public SettingsPageViewModel SettingViewModel { get; } = IoC.Get<SettingsPageViewModel>();
         public AboutPageViewModel AboutViewModel { get; } = IoC.Get<AboutPageViewModel>();
-        public MainWindowSearchControlViewModel SearchControlViewModel { get; } = IoC.Get<MainWindowSearchControlViewModel>();
 
         #region Properties
 
@@ -316,12 +315,17 @@ namespace PRM.View
             }
         }
 
-        public void Exit()
+        private RelayCommand? _cmdExit;
+        public RelayCommand CmdExit
         {
-            App.Close();
+            get
+            {
+                return _cmdExit ??= new RelayCommand((o) =>
+                {
+                    App.Close();
+                });
+            }
         }
-
-
 
         /// <summary>
         /// Redirect USB Device
@@ -343,5 +347,51 @@ namespace PRM.View
             }
             return IntPtr.Zero;
         }
+
+
+
+        #region MainFilter
+        private bool _mainFilterIsFocused = false;
+        public bool MainFilterIsFocused
+        {
+            get => _mainFilterIsFocused;
+            set => SetAndNotifyIfChanged(ref _mainFilterIsFocused, value);
+        }
+
+        private int _mainFilterCaretIndex = 0;
+        public int MainFilterCaretIndex
+        {
+            get => _mainFilterCaretIndex;
+            set => SetAndNotifyIfChanged(ref _mainFilterCaretIndex, value);
+        }
+
+        private string _mainFilterString = "";
+        public string MainFilterString
+        {
+            get => _mainFilterString;
+            set
+            {
+                // can only be called by the Ui
+                if (SetAndNotifyIfChanged(ref _mainFilterString, value))
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        var filter = MainFilterString;
+                        Thread.Sleep(100);
+                        if (filter == MainFilterString)
+                        {
+                            GlobalEventHelper.OnFilterChanged?.Invoke(MainFilterString);
+                        }
+                    });
+                }
+            }
+        }
+
+        public void SetMainFilterString(List<TagFilter>? tags, List<string>? keywords)
+        {
+            MainFilterString = TagAndKeywordEncodeHelper.EncodeKeyword(tags, keywords);
+            MainFilterCaretIndex = MainFilterString?.Length ?? 0;
+        }
+        #endregion
     }
 }

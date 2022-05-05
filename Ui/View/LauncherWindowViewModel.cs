@@ -501,27 +501,42 @@ namespace PRM.View
             }
         }
 
-        public void HideNoteField()
+
+        private RelayCommand? _cmdHideNoteField;
+        public RelayCommand CmdHideNoteField
         {
-            IoC.Get<ConfigurationService>().Launcher.ShowNoteField = false;
-            IoC.Get<ConfigurationService>().Save();
-            CalcNoteFieldVisibility();
-            IsShowNoteFieldEnabled = true;
+            get
+            {
+                return _cmdHideNoteField ??= new RelayCommand((o) =>
+                {
+                    IoC.Get<ConfigurationService>().Launcher.ShowNoteField = false;
+                    IoC.Get<ConfigurationService>().Save();
+                    CalcNoteFieldVisibility();
+                    IsShowNoteFieldEnabled = true;
+                });
+            }
+        }
+
+        private RelayCommand? _cmdShowNoteField;
+        public RelayCommand CmdShowNoteField
+        {
+            get
+            {
+                return _cmdShowNoteField ??= new RelayCommand((o) =>
+                {
+                    IoC.Get<ConfigurationService>().Launcher.ShowNoteField = true;
+                    IoC.Get<ConfigurationService>().Save();
+                    CalcNoteFieldVisibility();
+                    IsShowNoteFieldEnabled = false;
+                });
+            }
         }
 
         private bool _isShowNoteFieldEnabled;
-
         public bool IsShowNoteFieldEnabled
         {
             get => this._isShowNoteFieldEnabled;
             set => this.SetAndNotifyIfChanged(ref this._isShowNoteFieldEnabled, value);
-        }
-        public void ShowNoteField()
-        {
-            IoC.Get<ConfigurationService>().Launcher.ShowNoteField = true;
-            IoC.Get<ConfigurationService>().Save();
-            CalcNoteFieldVisibility();
-            IsShowNoteFieldEnabled = false;
         }
 
         private void CalcNoteFieldVisibility()
