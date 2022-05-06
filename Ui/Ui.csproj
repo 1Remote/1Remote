@@ -9,12 +9,19 @@
 		<AssemblyName>PRemoteM</AssemblyName>
 		<ApplicationIcon>LOGO.ico</ApplicationIcon>
 		<Configurations>Debug;Release;StoreDebug;StoreRelease</Configurations>
-		<TargetFramework>net6.0-windows7.0</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
 		<DebugType>embedded</DebugType>
+		<Platforms>AnyCPU;x86</Platforms>
+		<LangVersion>latest</LangVersion>
+		<StartupObject>Ui.App</StartupObject>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+	  <DefineConstants>TRACE;DEBUG;DEV;</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|AnyCPU'">
@@ -22,15 +29,31 @@
 		<DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE_ONLY;DEV;</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreDebug|x86'">
+	  <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+	  <DefineConstants>TRACE;DEBUG;FOR_MICROSOFT_STORE_ONLY;DEV;</DefineConstants>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DefineConstants>TRACE;</DefineConstants>
 		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+	  <DefineConstants>TRACE;</DefineConstants>
+	  <Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|AnyCPU'">
 		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StoreRelease|x86'">
+	  <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+	  <DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
+	  <Optimize>True</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -59,6 +82,7 @@
 		<Reference Include="AxMSTSCLib">
 			<HintPath>..\lib\AxMSTSCLib.dll</HintPath>
 		</Reference>
+		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="MSTSCLib">
 			<HintPath>..\lib\MSTSCLib.dll</HintPath>
 		</Reference>

@@ -311,14 +311,10 @@ namespace PRM.Service
                 _lastTabToken = tab.Token;
         }
 
-        private FullScreenWindowView MoveToExistedFullScreenWindow(string connectionId, TabWindowBase? fromTab)
+        private FullScreenWindowView MoveToExistedFullScreenWindow(HostBase host, TabWindowBase? fromTab)
         {
-            Debug.Assert(_connectionId2FullScreenWindows.ContainsKey(connectionId));
-            Debug.Assert(_connectionId2Hosts.ContainsKey(connectionId));
-            var host = _connectionId2Hosts[connectionId];
-
             // restore from tab to full
-            var full = _connectionId2FullScreenWindows[connectionId];
+            var full = _connectionId2FullScreenWindows[host.ConnectionId];
             full.LastTabToken = "";
             // full screen placement
             if (fromTab != null)
@@ -333,12 +329,8 @@ namespace PRM.Service
             return full;
         }
 
-        private FullScreenWindowView MoveToNewFullScreenWindow(string connectionId, TabWindowBase? fromTab)
+        private FullScreenWindowView MoveToNewFullScreenWindow(HostBase host, TabWindowBase? fromTab)
         {
-            Debug.Assert(!_connectionId2FullScreenWindows.ContainsKey(connectionId));
-            Debug.Assert(_connectionId2Hosts.ContainsKey(connectionId));
-            var host = _connectionId2Hosts[connectionId];
-
             // first time to full
             var full = new FullScreenWindowView
             {
@@ -364,7 +356,7 @@ namespace PRM.Service
                 full.Left = screenEx.VirtualWorkingAreaCenter.X - full.Width / 2;
             }
 
-            _connectionId2FullScreenWindows.Add(connectionId, full);
+            _connectionId2FullScreenWindows.Add(host.ConnectionId, full);
             full.SetProtocolHost(host);
             full.Show();
             return full;
@@ -388,7 +380,9 @@ namespace PRM.Service
             }
 
             // move to full-screen-window
-            var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ? this.MoveToExistedFullScreenWindow(connectionId, tab) : this.MoveToNewFullScreenWindow(connectionId, tab);
+            var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ? 
+                this.MoveToExistedFullScreenWindow(host, tab) : 
+                this.MoveToNewFullScreenWindow(host, tab);
 
             this.CleanupProtocolsAndWindows();
 
@@ -562,11 +556,15 @@ namespace PRM.Service
         {
             lock (this)
             {
-                foreach (var (id, host) in _connectionId2Hosts.ToArray())
+                foreach (var c2h in _connectionId2Hosts.ToArray())
                 {
+                    var id = c2h.Key;
+                    var host = c2h.Value;
                     bool unhandledFlag = true;
-                    foreach (var (token, tab) in _token2TabWindows)
+                    foreach (var kv in _token2TabWindows)
                     {
+                        var token = kv.Key;
+                        var tab = kv.Value;
                         var vm = tab.GetViewModel();
                         if (vm.Items.Any(x => x.Host.ConnectionId == id))
                         {
@@ -593,8 +591,10 @@ namespace PRM.Service
             bool flag = false;
             lock (this)
             {
-                foreach (var (token, tab) in _token2TabWindows.ToArray())
+                foreach (var kv in _token2TabWindows.ToArray())
                 {
+                    var token = kv.Key;
+                    var tab = kv.Value;
                     var items = tab.GetViewModel().Items.Where(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false).ToArray();
                     foreach (var item in items)
                     {
@@ -602,8 +602,10 @@ namespace PRM.Service
                     }
                 }
 
-                foreach (var (token, tab) in _token2TabWindows.ToArray())
+                foreach (var kv in _token2TabWindows.ToArray())
                 {
+                    var token = kv.Key;
+                    var tab = kv.Value;
                     if (tab.GetViewModel().Items.Count == 0 || tab.GetViewModel().Items.All(x => _connectionId2Hosts.ContainsKey(x.Content.ConnectionId) == false))
                     {
                         SimpleLogHelper.Debug($@"CloseEmptyWindows: Close tab({tab.GetHashCode()})");
@@ -613,8 +615,10 @@ namespace PRM.Service
                     }
                 }
 
-                foreach (var (connectionId, fullScreenWindow) in _connectionId2FullScreenWindows.ToArray())
+                foreach (var kv in _connectionId2FullScreenWindows.ToArray())
                 {
+                    var connectionId = kv.Key;
+                    var fullScreenWindow = kv.Value;
                     if (fullScreenWindow.Host == null || _connectionId2Hosts.ContainsKey(fullScreenWindow.Host.ConnectionId) == false)
                     {
                         SimpleLogHelper.Debug($@"CloseFullWindow: close(hash = {fullScreenWindow.GetHashCode()})");

@@ -106,7 +106,7 @@ namespace PRM.View.Host.ProtocolHosts
                                 // refresh after transmitted
                                 if (t.ItemsHaveBeenTransmitted.Any(x =>
                                                                             x.TransmissionType == ETransmissionType.HostToServer
-                                                                        && x.DstPath.Contains(CurrentPath, StringComparison.OrdinalIgnoreCase)))
+                                                                        && x.DstPath.Contains(CurrentPath)))
                                 {
                                     CmdGoToPathCurrent.Execute();
                                 }

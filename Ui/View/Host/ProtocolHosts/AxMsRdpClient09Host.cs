@@ -72,8 +72,8 @@ namespace PRM.View.Host.ProtocolHosts
             ParentWindow.ResizeMode = ResizeMode.CanResize;
             ParentWindow.WindowStyle = WindowStyle.SingleBorderWindow;
             ParentWindow.WindowState = WindowState.Normal;
-            ParentWindow.Width = FullScreenWindowView.DesignWidth / (_primaryScaleFactor / 100.0);
-            ParentWindow.Height = FullScreenWindowView.DesignHeight / (_primaryScaleFactor / 100.0);
+            ParentWindow.Width = FullScreenWindowView.DESIGN_WIDTH / (_primaryScaleFactor / 100.0);
+            ParentWindow.Height = FullScreenWindowView.DESIGN_HEIGHT / (_primaryScaleFactor / 100.0);
             var screenEx = ScreenInfoEx.GetCurrentScreen(this.ParentWindow);
             ParentWindow.Top = screenEx.VirtualWorkingAreaCenter.Y - ParentWindow.Height / 2;
             ParentWindow.Left = screenEx.VirtualWorkingAreaCenter.X - ParentWindow.Width / 2;

@@ -187,14 +187,17 @@ namespace PRM.View.Host.ProtocolHosts
                 // set call back
                 _rdpClient.OnRequestGoFullScreen += (sender, args) =>
                 {
+                    SimpleLogHelper.Debug("RDP Host:  OnRequestGoFullScreen");
                     OnGoToFullScreenRequested();
                 };
                 _rdpClient.OnRequestLeaveFullScreen += (sender, args) =>
                 {
+                    SimpleLogHelper.Debug("RDP Host:  OnRequestLeaveFullScreen");
                     OnConnectionBarRestoreWindowCall();
                 };
                 _rdpClient.OnRequestContainerMinimize += (sender, args) =>
                 {
+                    SimpleLogHelper.Debug("RDP Host:  OnRequestContainerMinimize");
                     if (ParentWindow is FullScreenWindowView)
                     {
                         ParentWindow.WindowState = WindowState.Minimized;
@@ -227,7 +230,6 @@ namespace PRM.View.Host.ProtocolHosts
             _rdpClient.AdvancedSettings6.ConnectionBarShowMinimizeButton = true;
             _rdpClient.AdvancedSettings6.ConnectionBarShowRestoreButton = true;
             _rdpClient.AdvancedSettings6.BitmapVirtualCache32BppSize = 48;
-            //((IMsRdpClientNonScriptable5) _rdpClient.GetOcx()).devi = _rdpSettings.EnableDiskDrives;
         }
 
         public void NotifyRedirectDeviceChange(int msg, uint wParam, int lParam)
@@ -590,16 +592,17 @@ namespace PRM.View.Host.ProtocolHosts
         {
             Debug.Assert(_rdpClient != null);
             Debug.Assert(this.ParentWindow != null);
-
             if (_rdpSettings.RdpFullScreenFlag == ERdpFullScreenFlag.Disable)
             {
                 return;
             }
-
-            if (_rdpClient.FullScreen != true)
+            if (ParentWindow is FullScreenWindowView)
             {
-                IoC.Get<DataService>().Database_UpdateServer(_rdpSettings);
-                _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
+                if (_rdpClient?.FullScreen == false)
+                {
+                    IoC.Get<DataService>().Database_UpdateServer(_rdpSettings);
+                    _rdpClient.FullScreen = true; // this will invoke OnRequestGoFullScreen -> MakeNormal2FullScreen
+                }
             }
         }
 
@@ -815,7 +818,10 @@ namespace PRM.View.Host.ProtocolHosts
         public override void SetParentWindow(Window? value)
         {
             base.SetParentWindow(value);
-            this.GoFullScreen();
+            if (value is FullScreenWindowView)
+            {
+                this.GoFullScreen();
+            }
         }
     }
 }
