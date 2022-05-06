@@ -26,15 +26,15 @@ namespace PRM.View.Host
             }
         }
 
-        public const int DesignWidth = 600;
-        public const int DesignHeight = 480;
+        public const int DESIGN_WIDTH = 600;
+        public const int DESIGN_HEIGHT = 480;
         public FullScreenWindowView()
         {
             InitializeComponent();
             Loaded += (sender, args) =>
             {
-                this.Width = DesignWidth;
-                this.Height = DesignHeight;
+                this.Width = DESIGN_WIDTH;
+                this.Height = DESIGN_HEIGHT;
                 SetContent();
             };
             Closed += (sender, args) =>
@@ -48,19 +48,16 @@ namespace PRM.View.Host
 
         private void SetContent()
         {
-            if (Host != null && this.IsLoaded)
+            if (this.IsLoaded && Host != null)
             {
                 this.Title = Host.ProtocolServer.DisplayName + " - " + Host.ProtocolServer.SubTitle;
                 this.Icon = Host.ProtocolServer.IconImg;
                 Host.SetParentWindow(this);
             }
 
-            if (this.IsLoaded)
+            if (this.IsLoaded && Equals(this.Content, Host) == false)
             {
-                if (Equals(this.Content, Host) == false)
-                {
-                    this.Content = Host;
-                }
+                this.Content = Host;
             }
         }
 

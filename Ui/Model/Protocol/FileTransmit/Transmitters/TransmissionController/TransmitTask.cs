@@ -38,9 +38,9 @@ namespace PRM.Model.Protocol.FileTransmit.Transmitters.TransmissionController
         private readonly DirectoryInfo[]? _dis = null;
         private readonly RemoteItem[]? _ris = null;
 
-        public string TransmitItemNames { get; private init; } = "";
-        public string TransmitItemSrcDirectoryPath { get; private init; } = "";
-        public string TransmitItemDstDirectoryPath { get; private init; } = "";
+        public string TransmitItemNames { get; private set; } = "";
+        public string TransmitItemSrcDirectoryPath { get; private set; } = "";
+        public string TransmitItemDstDirectoryPath { get; private set; } = "";
 
         private readonly ILanguageService _languageService;
 

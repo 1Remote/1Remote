@@ -22,7 +22,7 @@ namespace PRM.Controls
             Cancel = 2
         }
 
-        public string Prompt { get; private init; } = "";
+        public string Prompt { get; private set; } = "";
 
         public string Response { get; private set; } = "";
 
@@ -31,7 +31,7 @@ namespace PRM.Controls
         /// <summary>
         /// input string return error message or null
         /// </summary>
-        public Func<string, string>? Validator { get; private init; }
+        public Func<string, string>? Validator { get; private set; }
 
         protected InputWindow()
         {

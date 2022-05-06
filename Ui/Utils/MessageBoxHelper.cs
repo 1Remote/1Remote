@@ -11,50 +11,62 @@ namespace PRM.Utils
 {
     public static class MessageBoxHelper
     {
-        public static bool Confirm(string content, string title = "")
+        public static bool Confirm(string content, string title = "", bool useNativeBox = false)
         {
             if (string.IsNullOrEmpty(title))
                 title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
-            var ret = IoC.Get<IWindowManager>().ShowMessageBox(content, title, buttons: MessageBoxButton.YesNo,
-                buttonLabels: new Dictionary<MessageBoxResult, string>()
-                {
+            if (useNativeBox)
+            {
+                return MessageBoxResult.Yes == MessageBox.Show(content, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            }
+            else
+            {
+                var ret = IoC.Get<IWindowManager>().ShowMessageBox(content, title, buttons: MessageBoxButton.YesNo,
+                    buttonLabels: new Dictionary<MessageBoxResult, string>()
+                    {
                     { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
                     { MessageBoxResult.No, IoC.Get<ILanguageService>().Translate("Cancel") },
-                }, icon: MessageBoxImage.Question);
-            return ret == MessageBoxResult.Yes;
+                    }, icon: MessageBoxImage.Question);
+                return ret == MessageBoxResult.Yes;
+            }
         }
 
-        public static void Info(string content, string title = "")
+        public static void Info(string content, string title = "", bool useNativeBox = false)
         {
             if (string.IsNullOrEmpty(title))
                 title = IoC.Get<ILanguageService>().Translate("messagebox_title_info");
-            Alert(title, content, MessageBoxImage.Information);
+            Alert(title, content, MessageBoxImage.Information, useNativeBox);
         }
 
-        public static void Warning(string content, string title = "")
+        public static void Warning(string content, string title = "", bool useNativeBox = false)
         {
             if (string.IsNullOrEmpty(title))
                 title = IoC.Get<ILanguageService>().Translate("messagebox_title_warning");
-            Alert(title, content, MessageBoxImage.Warning);
+            Alert(title, content, MessageBoxImage.Warning, useNativeBox);
         }
 
 
-        public static void ErrorAlert(string content, string title = "")
+        public static void ErrorAlert(string content, string title = "", bool useNativeBox = false)
         {
             if (string.IsNullOrEmpty(title))
                 title = IoC.Get<ILanguageService>().Translate("messagebox_title_error");
-            Alert(title, content, MessageBoxImage.Error);
+            Alert(title, content, MessageBoxImage.Error, useNativeBox);
         }
 
-        private static void Alert(string title, string content, MessageBoxImage icon)
+        private static void Alert(string title, string content, MessageBoxImage icon, bool useNativeBox)
         {
-            IoC.Get<IWindowManager>().ShowMessageBox(content, title,
-                buttonLabels: new Dictionary<MessageBoxResult, string>()
-                {
+            if (useNativeBox)
+            {
+                MessageBox.Show(content, title, MessageBoxButton.OK, icon);
+            }
+            else
+                IoC.Get<IWindowManager>().ShowMessageBox(content, title,
+                    buttonLabels: new Dictionary<MessageBoxResult, string>()
+                    {
                     { MessageBoxResult.None, IoC.Get<ILanguageService>().Translate("OK") },
                     { MessageBoxResult.Yes, IoC.Get<ILanguageService>().Translate("OK") },
                     { MessageBoxResult.OK, IoC.Get<ILanguageService>().Translate("OK") },
-                }, icon: icon);
+                    }, icon: icon);
         }
     }
 }
