@@ -11,6 +11,7 @@ using PRM.Utils;
 using PRM.View.Host.ProtocolHosts;
 using Shawn.Utils.Interface;
 using Shawn.Utils.Wpf;
+using Stylet;
 
 namespace PRM.View.Host
 {
@@ -30,22 +31,24 @@ namespace PRM.View.Host
             if (Items.Count == 0 && this.View is TabWindowView tab)
             {
                 tab.Hide();
-                this.CmdClose
             }
         }
 
         public void Dispose()
         {
-            SelectedItem = null;
-            foreach (var item in Items.ToArray())
+            Execute.OnUIThread(() =>
             {
-                if (item.Content is IDisposable dp)
+                SelectedItem = null;
+                foreach (var item in Items.ToArray())
                 {
-                    dp.Dispose();
+                    if (item.Content is IDisposable dp)
+                    {
+                        dp.Dispose();
+                    }
                 }
-            }
-            Items.CollectionChanged -= ItemsOnCollectionChanged;
-            Items.Clear();
+                Items.CollectionChanged -= ItemsOnCollectionChanged;
+                Items.Clear();
+            });
         }
 
         private string _title = "";
@@ -212,7 +215,7 @@ namespace PRM.View.Host
                         }
                         else
                         {
-                            IoC.Get<SessionControlService>().DelTabWindow(Token);
+                            IoC.Get<SessionControlService>().CloseProtocolHostAsync(Items.Select(x => x.Host.ConnectionId).ToArray());
                         }
                         _canCmdClose = true;
                     }
@@ -238,11 +241,13 @@ namespace PRM.View.Host
                         {
                             if (o is string connectionId)
                             {
-                                IoC.Get<SessionControlService>().DelProtocolHost(connectionId);
+                                //Items.Remove(Items.FirstOrDefault(x => x.Content.ConnectionId == connectionId));
+                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(connectionId);
                             }
                             else if (SelectedItem?.Content.ConnectionId != null)
                             {
-                                IoC.Get<SessionControlService>().DelProtocolHost(SelectedItem.Content.ConnectionId);
+                                //Items.Remove(SelectedItem);
+                                IoC.Get<SessionControlService>().CloseProtocolHostAsync(SelectedItem.Content.ConnectionId);
                             }
                         }
 
@@ -283,7 +288,7 @@ namespace PRM.View.Host
             if (window is TabWindowBase tab)
             {
                 tab.GetViewModel().Items.Clear();
-                IoC.Get<SessionControlService>().CloseEmptyWindows();
+                IoC.Get<SessionControlService>().CleanupProtocolsAndWindows();
             }
             return TabEmptiedResponse.CloseWindowOrLayoutBranch;
         }

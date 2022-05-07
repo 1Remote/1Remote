@@ -157,7 +157,8 @@ TabWindowBase: BringWindowToTop({_myHandle})");
                 }
                 try
                 {
-                    IoC.Get<SessionControlService>().DelTabWindow(Token);
+                    if (Vm.Items.Count > 0)
+                        IoC.Get<SessionControlService>().CloseProtocolHostAsync(this.Vm.Items.Select(x => x.Host.ConnectionId).ToArray());
                     Vm?.Dispose();
                 }
                 finally
@@ -168,16 +169,11 @@ TabWindowBase: BringWindowToTop({_myHandle})");
 
             Closing += (sender, args) =>
             {
-                if (this.GetViewModel().Items.Count > 0)
+                if (this.GetViewModel().Items.Count > 0
+                    && IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
+                    && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
                 {
-                    if (IoC.Get<ConfigurationService>().General.ConfirmBeforeClosingSession == true
-                        && false == MessageBoxHelper.Confirm(IoC.Get<ILanguageService>().Translate("Are you sure you want to close the connection?")))
-                    {
-                    }
-                    else
-                    {
-                        args.Cancel = true;
-                    }
+                    args.Cancel = true;
                 }
             };
         }
@@ -223,7 +219,6 @@ TabWindowBase: BringWindowToTop({_myHandle})");
 
         public void AddItem(TabItemViewModel newItem)
         {
-            Debug.Assert(newItem?.Content?.ConnectionId != null);
             if (Vm?.Items == null) return;
             if (Vm.Items.Any(x => x.Content?.ConnectionId == newItem.Content.ConnectionId))
             {

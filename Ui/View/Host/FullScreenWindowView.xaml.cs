@@ -41,7 +41,7 @@ namespace PRM.View.Host
             {
                 if (Host != null)
                 {
-                    IoC.Get<SessionControlService>().DelProtocolHost(Host.ConnectionId);
+                    IoC.Get<SessionControlService>().CloseProtocolHostAsync(Host.ConnectionId);
                 }
             };
         }

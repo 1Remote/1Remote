@@ -90,16 +90,19 @@ namespace PRM.View.Host.ProtocolHosts
         public void Dispose()
         {
             Console.WriteLine($"Dispose {this.GetType().Name}({this.GetHashCode()})");
-            try
+            Dispatcher.Invoke(() =>
             {
-                GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
-            }
-            catch
-            {
-            }
+                try
+                {
+                    GlobalEventHelper.OnScreenResolutionChanged -= OnScreenResolutionChanged;
+                }
+                catch
+                {
+                }
 
-            RdpDispose();
-            _resizeEndTimer?.Dispose();
+                RdpDispose();
+                _resizeEndTimer?.Dispose();
+            });
         }
 
         private void OnScreenResolutionChanged()
